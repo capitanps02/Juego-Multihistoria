@@ -1,0 +1,69 @@
+{
+  "task": "T5.1-batch-02A",
+  "phase": "26_30",
+  "issue": 4,
+  "status": "prepared_for_implementation",
+  "rule": "Exact title matches are not aliases unless trigger, intel, choices, consequences, memory and save continuity are semantically equivalent.",
+  "cases": [
+    {
+      "canonicalId": "EVT_27_STAR_001",
+      "technicalId": "EVT_28_TEAM_001",
+      "title": "Dos estrellas, un foco",
+      "decision": "same_scene_concept_requires_semantic_rewrite_and_id_migration",
+      "directAliasApproved": false,
+      "canonicalAge": 27,
+      "technicalAge": 28,
+      "seedMigration": {
+        "seedId": "SEED_SECOND_STAR",
+        "oldOrigin": "EVT_28_TEAM_001",
+        "newOrigin": "EVT_27_STAR_001",
+        "oldAgeWindow": [28,36],
+        "newAgeWindow": [27,36]
+      },
+      "additionalMemory": ["SEED_PENALTY_HIERARCHY"]
+    },
+    {
+      "canonicalId": "EVT_27_AWARD_001",
+      "technicalId": "EVT_28_GALA_001",
+      "title": "La gala",
+      "decision": "same_scene_concept_requires_semantic_rewrite_and_id_migration",
+      "directAliasApproved": false,
+      "technicalVerifiedFlagIsSufficient": false,
+      "canonicalAge": 27,
+      "technicalAge": 28,
+      "seedMigration": {
+        "seedId": "SEED_GLOBAL_AWARD_BEHAVIOR",
+        "oldOrigin": "EVT_28_GALA_001",
+        "newOrigin": "EVT_27_AWARD_001",
+        "oldAgeWindow": [28,null],
+        "newAgeWindow": [27,null]
+      },
+      "additionalMemory": ["SEED_RECORD_CHASE"]
+    },
+    {
+      "canonicalId": "EVT_28_RICH_001",
+      "technicalId": "EVT_29_MKT_001",
+      "title": "La oferta financieramente absurda",
+      "decision": "close_semantic_precursor_requires_rewrite_and_id_migration",
+      "directAliasApproved": false,
+      "technicalVerifiedFlagIsSufficient": false,
+      "canonicalAge": 28,
+      "technicalAge": 29,
+      "seedMigration": {
+        "seedId": "SEED_WEALTHY_PEAK_EXIT",
+        "oldOrigin": "EVT_29_MKT_001",
+        "newOrigin": "EVT_28_RICH_001",
+        "oldAgeWindow": [29,null],
+        "newAgeWindow": [28,null]
+      },
+      "additionalMemory": ["SEED_WEALTHY_EXIT"],
+      "downstreamDependencies": [
+        "src/content/events/26_30/conditional-events.ts",
+        "src/simulation/state30-classifier.ts"
+      ]
+    }
+  ],
+  "saveRule": "Preserve old event IDs in historical saves/history; do not translate SEEN_old to SEEN_new because direct semantic equivalence was not approved.",
+  "verifiedRule": "A technical event with a noncanonical ID cannot be treated as canonically verified solely because title/concept matches the source.",
+  "implementationBrief": "project/tasks/T5_1_BATCH_02A_TITLE_CANDIDATES.md"
+}
