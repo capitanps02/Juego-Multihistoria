@@ -1,0 +1,30 @@
+{
+  "task": "T5.1-batch-01",
+  "phase": "20_23",
+  "issue": 2,
+  "status": "prepared_for_implementation",
+  "rule": "No alias is accepted without explicit semantic equivalence review.",
+  "canonicalMissing": [
+    {"id":"EVT_20_BRIDGE_001","title":"La reunión de los veinte","decision":"canonical_scene_missing","aliasApproved":false},
+    {"id":"EVT_20_MATCH_003","title":"El minuto 65","decision":"canonical_scene_missing","aliasApproved":false},
+    {"id":"EVT_20_JAN_001","title":"Enero: la compra que depende de otro","decision":"canonical_scene_missing","aliasApproved":false},
+    {"id":"EVT_21_MKT_001","title":"El club que te quiere… cedido","decision":"canonical_scene_missing","aliasApproved":false},
+    {"id":"EVT_21_SOC_001","title":"Tu amigo contra tu agente","decision":"canonical_scene_missing","aliasApproved":false},
+    {"id":"EVT_21_PRS_002","title":"La llamada que llega por Clara","decision":"canonical_scene_missing","aliasApproved":false}
+  ],
+  "engineOnlyInPhase": [
+    {"id":"EVT_20_MATCH_001","title":"Tres partidos que pesan más","decision":"needs_retire_migrate_or_noncanonical_review"},
+    {"id":"EVT_21_AGT_002","title":"Una llamada que no escuchaste","decision":"needs_retire_migrate_or_noncanonical_review"},
+    {"id":"EVT_21_ABR_001","title":"Navidad lejos","decision":"needs_retire_migrate_or_noncanonical_review"},
+    {"id":"EVT_21_CCH_001","title":"Un banquillo después de una promesa","decision":"needs_retire_migrate_or_noncanonical_review"},
+    {"id":"EVT_22_LIFE_001","title":"Tu entorno ya es una decisión","decision":"needs_retire_migrate_or_noncanonical_review"},
+    {"id":"EVT_22_END_001","title":"Cumples 23","decision":"needs_retire_migrate_or_noncanonical_review"}
+  ],
+  "evidence": [
+    "analysis/2026-09-11/t1/principal-traceability.json",
+    "analysis/2026-09-11/canonical-id-audit.json",
+    "analysis/2026-09-15/T5.1-reconciliation.json",
+    "src/content/events/20_23/principal-events.ts"
+  ],
+  "implementationBrief": "project/tasks/T5_1_BATCH_01_20_23.md"
+}
