@@ -1,0 +1,21 @@
+Persistence cycles: 0 /100
+Persistence cycles: 10 /100
+Persistence cycles: 20 /100
+Persistence cycles: 30 /100
+Persistence cycles: 40 /100
+Persistence cycles: 50 /100
+Persistence cycles: 60 /100
+Persistence cycles: 70 /100
+Persistence cycles: 80 /100
+Persistence cycles: 90 /100
+✔ 100 pending decision cycles: interruption matrix and retry preserve exact state and RNG (204055.733387ms)
+✔ concurrent replacements: one wins and recovery copy remains the former active (379.033838ms)
+✔ invalid import, quota failure, corrupt active recovery and legacy raw saves (598.088998ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 205211.281876

@@ -1,0 +1,63 @@
+
+> multihistoria-engine@0.4.0 demo
+> npm run build && node dist/demo/run-demo.js
+
+
+> multihistoria-engine@0.4.0 build
+> tsc -p tsconfig.json
+
+BUILD VALIDATION OK
+CANON COVERAGE {
+  sourceVersion: 'Documento Maestro v0.9 · 10/09/2026',
+  phase: '18_20',
+  expectedPrincipal: 30,
+  expectedConditional: 14,
+  implementedPrincipal: 30,
+  implementedConditional: 14,
+  verifiedNpcDefinitions: 20,
+  expectedNpcDefinitions: 20,
+  verifiedSeedDefinitions: 31,
+  expectedGlobalSeedDefinitions: 210
+}
+
+EVENT EVT_18_PRE_001 — La lista de 26
+El móvil vibra mientras desayunas. El delegado del primer equipo te cita para la pretemporada. Nano no ha recibido la llamada.
+CHOICES [
+  'CALL_NANO: Llamar a Nano y contarle exactamente lo que sabes',
+  'CALL_RIVAS: Llamar a Rivas para saber qué espera realmente el primer equipo',
+  'CALL_NO_ONE: No llamar a nadie y tratarlo como una convocatoria más'
+]
+MEDIA [
+  {
+    ref: {
+      id: 'hero_evt_18_pre_001',
+      type: 'image',
+      role: 'hero',
+      fallbackId: 'generic_preseason'
+    },
+    asset: {
+      id: 'hero_evt_18_pre_001',
+      type: 'image',
+      uri: '/assets/events/18_20/evt_18_pre_001.webp',
+      bytesHint: 180000,
+      fallbackId: 'generic_preseason'
+    },
+    fallbackChain: [ [Object] ]
+  }
+]
+
+RESOLUTION {
+  choice: 'CALL_NANO',
+  outcome: 'CALL_NANO__PRIMARY',
+  messages: [ 'Nano agradece que se lo cuentes directamente.' ]
+}
+COMPOSITES {
+  ROLE: 18,
+  TRUST_CCH: 45.5,
+  MARKET_HEAT: 5,
+  LEVERAGE: 7.220000000000001,
+  BODY_RISK: 18,
+  PUBLIC_HEAT: 3,
+  LOCKER_WEIGHT: 51
+}
+RNG { narrative: 2, football: 0, qa: 0 }

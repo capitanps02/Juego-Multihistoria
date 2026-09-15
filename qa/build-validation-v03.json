@@ -1,0 +1,15 @@
+{
+  "issues": [],
+  "canonCoverage": {
+    "sourceVersion": "Documento Maestro v0.9 · 10/09/2026",
+    "phase": "18_20",
+    "expectedPrincipal": 30,
+    "expectedConditional": 14,
+    "implementedPrincipal": 30,
+    "implementedConditional": 14,
+    "verifiedNpcDefinitions": 20,
+    "expectedNpcDefinitions": 20,
+    "verifiedSeedDefinitions": 21,
+    "expectedGlobalSeedDefinitions": 210
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "version": "0.7.0",
+  "seed": 1357911,
+  "narrativeSignatureEqual": true,
+  "state34Equal": true,
+  "microfeedCounts": {
+    "on": 45,
+    "off": 0
+  },
+  "passed": true
+}

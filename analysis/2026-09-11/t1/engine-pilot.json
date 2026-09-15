@@ -1,0 +1,4267 @@
+[
+  {
+    "id": "EVT_18_PRE_001",
+    "ageWindow": [
+      18,
+      18
+    ],
+    "phase": "18_20",
+    "family": "preseason",
+    "gates": [
+      {
+        "path": "flags.PRESEASON_FIRST_TEAM_CALL",
+        "op": "eq",
+        "value": true
+      }
+    ],
+    "timeWindow": {
+      "months": [
+        7
+      ]
+    },
+    "cooldown": 99999,
+    "repeatable": false,
+    "weight": 100,
+    "text": {
+      "title": "La lista de 26",
+      "body": "El móvil vibra mientras desayunas. El delegado del primer equipo te cita para la pretemporada. Nano no ha recibido la llamada."
+    },
+    "intel": {
+      "visible": [
+        "La convocatoria es real.",
+        "No existe promesa de quedarse con el primer equipo."
+      ],
+      "uncertain": [
+        "No sabes si eres proyecto real o un número para completar entrenamientos."
+      ]
+    },
+    "choices": [
+      {
+        "id": "CALL_NANO",
+        "label": "Llamar a Nano y contarle exactamente lo que sabes",
+        "intentTags": [
+          "friendship",
+          "openness"
+        ],
+        "immediateEffects": [
+          {
+            "kind": "flag",
+            "flag": "PRESEASON_STARTED",
+            "value": true
+          }
+        ],
+        "outcomeIds": [
+          "CALL_NANO__PRIMARY",
+          "CALL_NANO__SECONDARY"
+        ]
+      },
+      {
+        "id": "CALL_RIVAS",
+        "label": "Llamar a Rivas para saber qué espera realmente el primer equipo",
+        "intentTags": [
+          "information",
+          "mentor"
+        ],
+        "immediateEffects": [
+          {
+            "kind": "flag",
+            "flag": "PRESEASON_STARTED",
+            "value": true
+          }
+        ],
+        "outcomeIds": [
+          "CALL_RIVAS__PRIMARY",
+          "CALL_RIVAS__SECONDARY"
+        ]
+      },
+      {
+        "id": "CALL_NO_ONE",
+        "label": "No llamar a nadie y tratarlo como una convocatoria más",
+        "intentTags": [
+          "autonomy",
+          "reserve"
+        ],
+        "immediateEffects": [
+          {
+            "kind": "flag",
+            "flag": "PRESEASON_STARTED",
+            "value": true
+          }
+        ],
+        "outcomeIds": [
+          "CALL_NO_ONE__PRIMARY",
+          "CALL_NO_ONE__SECONDARY"
+        ]
+      }
+    ],
+    "outcomes": [
+      {
+        "id": "CALL_NANO__PRIMARY",
+        "baseWeight": 55,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "rel.NPC_PLR_14.trust",
+            "delta": 5,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "Nano agradece que se lo cuentes directamente."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_NANO_SHADOW",
+            "action": "create",
+            "intensity": 25,
+            "payload": {
+              "earlyTone": "trusted"
+            }
+          }
+        ],
+        "historyTags": [
+          "friendship",
+          "openness",
+          "primary_interpretation"
+        ]
+      },
+      {
+        "id": "CALL_NANO__SECONDARY",
+        "baseWeight": 45,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "rel.NPC_PLR_14.resentment",
+            "delta": 7,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "Nano responde bien, pero la diferencia entre ambos le duele más de lo que admite."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_NANO_SHADOW",
+            "action": "create",
+            "intensity": 38,
+            "payload": {
+              "earlyTone": "shadow"
+            }
+          }
+        ],
+        "historyTags": [
+          "friendship",
+          "openness",
+          "secondary_interpretation"
+        ]
+      },
+      {
+        "id": "CALL_RIVAS__PRIMARY",
+        "baseWeight": 55,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "rel.NPC_ACA_01.trust",
+            "delta": 5,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "control.career",
+            "delta": 2,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "Rivas te da contexto útil sin venderte certezas."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_RIVAS_TRUST",
+            "action": "create",
+            "intensity": 35,
+            "payload": {
+              "firstCall": "context"
+            }
+          }
+        ],
+        "historyTags": [
+          "information",
+          "mentor",
+          "primary_interpretation"
+        ]
+      },
+      {
+        "id": "CALL_RIVAS__SECONDARY",
+        "baseWeight": 45,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "rel.NPC_ACA_01.leverage",
+            "delta": 6,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "Rivas ayuda, pero refuerza su papel como filtro de tu carrera."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_RIVAS_TRUST",
+            "action": "create",
+            "intensity": 42,
+            "payload": {
+              "firstCall": "dependency"
+            }
+          }
+        ],
+        "historyTags": [
+          "information",
+          "mentor",
+          "secondary_interpretation"
+        ]
+      },
+      {
+        "id": "CALL_NO_ONE__PRIMARY",
+        "baseWeight": 55,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "control.career",
+            "delta": 4,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "La discreción se lee como autonomía y concentración."
+        ],
+        "historyTags": [
+          "autonomy",
+          "reserve",
+          "primary_interpretation"
+        ]
+      },
+      {
+        "id": "CALL_NO_ONE__SECONDARY",
+        "baseWeight": 45,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "control.career",
+            "delta": -2,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "Descubres después que había contexto útil que podrías haber conocido."
+        ],
+        "historyTags": [
+          "autonomy",
+          "reserve",
+          "secondary_interpretation"
+        ]
+      }
+    ],
+    "seedsWrite": [
+      "SEED_RIVAS_TRUST",
+      "SEED_NANO_SHADOW"
+    ],
+    "npcRefs": [
+      "NPC_PLR_14",
+      "NPC_ACA_01"
+    ],
+    "tags": [
+      "origin",
+      "friendship",
+      "mentor"
+    ],
+    "presentation": {
+      "layoutHint": "decision",
+      "preloadPriority": "normal",
+      "assets": [
+        {
+          "id": "hero_evt_18_pre_001",
+          "type": "image",
+          "role": "hero",
+          "fallbackId": "generic_preseason"
+        }
+      ]
+    },
+    "canonStatus": "technical_adaptation"
+  },
+  {
+    "id": "EVT_18_MED_001",
+    "ageWindow": [
+      18,
+      18
+    ],
+    "phase": "18_20",
+    "family": "medical",
+    "gates": [
+      {
+        "path": "flags.BODY_WINDOW",
+        "op": "eq",
+        "value": true
+      }
+    ],
+    "timeWindow": {
+      "months": [
+        9,
+        10,
+        11,
+        12,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "cooldown": 99999,
+    "repeatable": false,
+    "weight": 10,
+    "text": {
+      "title": "El aductor",
+      "body": "El jueves notas un pinchazo pequeño. Paula recomienda 48 horas de descarga. El domingo podría abrirse una oportunidad porque Bruno está sancionado."
+    },
+    "intel": {
+      "visible": [
+        "Paula recomienda descarga; no ordena baja médica."
+      ],
+      "uncertain": [
+        "No sabes si la oportunidad del domingo llegará realmente."
+      ]
+    },
+    "choices": [
+      {
+        "id": "FOLLOW_PAULA",
+        "label": "Seguir exactamente el plan de Paula",
+        "intentTags": [
+          "health",
+          "trust"
+        ],
+        "outcomeIds": [
+          "FOLLOW_PAULA__PRIMARY",
+          "FOLLOW_PAULA__SECONDARY"
+        ]
+      },
+      {
+        "id": "TEST_SATURDAY",
+        "label": "Pedir una prueba el sábado y decidir entonces",
+        "intentTags": [
+          "information",
+          "balance"
+        ],
+        "outcomeIds": [
+          "TEST_SATURDAY__PRIMARY",
+          "TEST_SATURDAY__SECONDARY"
+        ]
+      },
+      {
+        "id": "TRAIN_NORMAL",
+        "label": "Quitar importancia y entrenar normal",
+        "intentTags": [
+          "risk",
+          "opportunity"
+        ],
+        "outcomeIds": [
+          "TRAIN_NORMAL__PRIMARY",
+          "TRAIN_NORMAL__SECONDARY"
+        ]
+      },
+      {
+        "id": "TELL_COACH",
+        "label": "Contárselo solo a Montalbán y dejar que él decida",
+        "intentTags": [
+          "hierarchy",
+          "delegation"
+        ],
+        "outcomeIds": [
+          "TELL_COACH__PRIMARY",
+          "TELL_COACH__SECONDARY"
+        ]
+      }
+    ],
+    "outcomes": [
+      {
+        "id": "FOLLOW_PAULA__PRIMARY",
+        "baseWeight": 55,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "body.risk",
+            "delta": -8,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "rel.NPC_MED_01.trust",
+            "delta": 7,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "La descarga funciona y sigues disponible con mejor información."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_PHYSIO_CONFIDENCE",
+            "action": "create",
+            "intensity": 45,
+            "payload": {
+              "pattern": "followed"
+            }
+          },
+          {
+            "seedId": "SEED_BODY_PRECEDENT",
+            "action": "create",
+            "intensity": 35,
+            "payload": {
+              "pattern": "protect"
+            }
+          }
+        ],
+        "historyTags": [
+          "health",
+          "trust",
+          "primary_interpretation"
+        ]
+      },
+      {
+        "id": "FOLLOW_PAULA__SECONDARY",
+        "baseWeight": 45,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "body.risk",
+            "delta": -6,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "sport.roleScore",
+            "delta": -3,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "Pierdes la ventana deportiva aunque el cuerpo hubiera tolerado entrenar."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_PHYSIO_CONFIDENCE",
+            "action": "create",
+            "intensity": 40,
+            "payload": {
+              "pattern": "followed_cost"
+            }
+          },
+          {
+            "seedId": "SEED_BODY_PRECEDENT",
+            "action": "create",
+            "intensity": 37,
+            "payload": {
+              "pattern": "protect_cost"
+            }
+          }
+        ],
+        "historyTags": [
+          "health",
+          "trust",
+          "secondary_interpretation"
+        ]
+      },
+      {
+        "id": "TEST_SATURDAY__PRIMARY",
+        "baseWeight": 55,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "body.risk",
+            "delta": -4,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "rel.NPC_MED_01.trust",
+            "delta": 5,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "La prueba añade información suficiente para ajustar el riesgo."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_PHYSIO_CONFIDENCE",
+            "action": "create",
+            "intensity": 42,
+            "payload": {
+              "pattern": "test"
+            }
+          },
+          {
+            "seedId": "SEED_BODY_PRECEDENT",
+            "action": "create",
+            "intensity": 32,
+            "payload": {
+              "pattern": "test"
+            }
+          }
+        ],
+        "historyTags": [
+          "information",
+          "balance",
+          "primary_interpretation"
+        ]
+      },
+      {
+        "id": "TEST_SATURDAY__SECONDARY",
+        "baseWeight": 45,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "sport.roleScore",
+            "delta": -2,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "Esperar a la prueba te deja fuera de una convocatoria decidida antes."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_BODY_PRECEDENT",
+            "action": "create",
+            "intensity": 35,
+            "payload": {
+              "pattern": "test_missed"
+            }
+          }
+        ],
+        "historyTags": [
+          "information",
+          "balance",
+          "secondary_interpretation"
+        ]
+      },
+      {
+        "id": "TRAIN_NORMAL__PRIMARY",
+        "baseWeight": 55,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "sport.roleScore",
+            "delta": 3,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "body.risk",
+            "delta": 5,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "El aductor responde y mantienes abierta la oportunidad."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_BODY_PRECEDENT",
+            "action": "create",
+            "intensity": 48,
+            "payload": {
+              "pattern": "played_through"
+            }
+          }
+        ],
+        "historyTags": [
+          "risk",
+          "opportunity",
+          "primary_interpretation"
+        ]
+      },
+      {
+        "id": "TRAIN_NORMAL__SECONDARY",
+        "baseWeight": 45,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "body.risk",
+            "delta": 16,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "rel.NPC_MED_01.trust",
+            "delta": -9,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "La molestia empeora y el coste de haber ocultado información pesa más que el pinchazo inicial."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_BODY_PRECEDENT",
+            "action": "create",
+            "intensity": 68,
+            "payload": {
+              "pattern": "hidden_recurrence"
+            }
+          },
+          {
+            "seedId": "SEED_PHYSIO_CONFIDENCE",
+            "action": "create",
+            "intensity": 58,
+            "payload": {
+              "pattern": "withheld"
+            }
+          }
+        ],
+        "historyTags": [
+          "risk",
+          "opportunity",
+          "secondary_interpretation"
+        ]
+      },
+      {
+        "id": "TELL_COACH__PRIMARY",
+        "baseWeight": 55,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "rel.NPC_CCH_01.trust",
+            "delta": 5,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "Montalbán valora que se lo comuniques y coordina con Paula."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_BODY_PRECEDENT",
+            "action": "create",
+            "intensity": 38,
+            "payload": {
+              "pattern": "delegated_coach"
+            }
+          }
+        ],
+        "historyTags": [
+          "hierarchy",
+          "delegation",
+          "primary_interpretation"
+        ]
+      },
+      {
+        "id": "TELL_COACH__SECONDARY",
+        "baseWeight": 45,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "rel.NPC_MED_01.trust",
+            "delta": -6,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "Paula descubre que la dejaste fuera de una decisión médica y reduce su confianza."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_PHYSIO_CONFIDENCE",
+            "action": "create",
+            "intensity": 50,
+            "payload": {
+              "pattern": "bypassed"
+            }
+          }
+        ],
+        "historyTags": [
+          "hierarchy",
+          "delegation",
+          "secondary_interpretation"
+        ]
+      }
+    ],
+    "seedsWrite": [
+      "SEED_PHYSIO_CONFIDENCE",
+      "SEED_BODY_PRECEDENT"
+    ],
+    "npcRefs": [
+      "NPC_MED_01",
+      "NPC_CCH_01",
+      "NPC_PLR_12",
+      "NPC_FAM_02"
+    ],
+    "tags": [
+      "body",
+      "opportunity"
+    ],
+    "presentation": {
+      "layoutHint": "decision",
+      "preloadPriority": "normal",
+      "assets": [
+        {
+          "id": "hero_evt_18_med_001",
+          "type": "image",
+          "role": "hero",
+          "fallbackId": "generic_medical"
+        }
+      ]
+    },
+    "canonStatus": "technical_adaptation"
+  },
+  {
+    "id": "EVT_20_CCH_001",
+    "ageWindow": [
+      20,
+      20
+    ],
+    "phase": "20_23",
+    "family": "tactical",
+    "gates": [],
+    "timeWindow": {
+      "months": [
+        8,
+        9
+      ]
+    },
+    "cooldown": 99999,
+    "repeatable": false,
+    "weight": 12,
+    "text": {
+      "title": "La promesa de agosto",
+      "body": "El entrenador te dice en privado que vas a jugar mucho si mantienes el nivel. Dos semanas después el club ficha a un futbolista en tu zona."
+    },
+    "intel": {
+      "visible": [
+        "Conoces los hechos formales de la situación y las condiciones que ya se han producido."
+      ],
+      "uncertain": [
+        "No conoces la agenda completa de terceros ni cómo cambiará el contexto durante las próximas semanas."
+      ]
+    },
+    "choices": [
+      {
+        "id": "A",
+        "label": "Tomar la iniciativa",
+        "intentTags": [
+          "initiative"
+        ],
+        "outcomeIds": [
+          "A__PRIMARY",
+          "A__SECONDARY"
+        ]
+      },
+      {
+        "id": "B",
+        "label": "Esperar y reunir información",
+        "intentTags": [
+          "patience"
+        ],
+        "outcomeIds": [
+          "B__PRIMARY",
+          "B__SECONDARY"
+        ]
+      },
+      {
+        "id": "C",
+        "label": "Proteger tu posición",
+        "intentTags": [
+          "self_protection"
+        ],
+        "outcomeIds": [
+          "C__PRIMARY",
+          "C__SECONDARY"
+        ]
+      },
+      {
+        "id": "D",
+        "label": "Buscar una solución intermedia",
+        "intentTags": [
+          "compromise"
+        ],
+        "outcomeIds": [
+          "D__PRIMARY",
+          "D__SECONDARY"
+        ]
+      }
+    ],
+    "outcomes": [
+      {
+        "id": "A__PRIMARY",
+        "baseWeight": 55,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "sport.roleScore",
+            "delta": 5,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.roleSecurity",
+            "delta": 4,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "La iniciativa abre margen, pero también hace visible tu posición."
+        ],
+        "historyTags": [
+          "initiative",
+          "primary_interpretation"
+        ]
+      },
+      {
+        "id": "A__SECONDARY",
+        "baseWeight": 45,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "sport.roleScore",
+            "delta": 5,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.roleSecurity",
+            "delta": 4,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.environmentStability",
+            "delta": -2,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "La misma iniciativa es interpretada como precipitación por parte del entorno."
+        ],
+        "historyTags": [
+          "initiative",
+          "secondary_interpretation"
+        ]
+      },
+      {
+        "id": "B__PRIMARY",
+        "baseWeight": 55,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "sport.roleScore",
+            "delta": 2,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "reputation.marketHeat",
+            "delta": 3,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "Esperar aporta información que cambia la lectura del problema."
+        ],
+        "historyTags": [
+          "patience",
+          "primary_interpretation"
+        ]
+      },
+      {
+        "id": "B__SECONDARY",
+        "baseWeight": 45,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "sport.roleScore",
+            "delta": 2,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "reputation.marketHeat",
+            "delta": 3,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.contractPower",
+            "delta": -1,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "El tiempo también consume parte de la ventana disponible."
+        ],
+        "historyTags": [
+          "patience",
+          "secondary_interpretation"
+        ]
+      },
+      {
+        "id": "C__PRIMARY",
+        "baseWeight": 55,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "sport.roleScore",
+            "delta": -2,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "reputation.marketHeat",
+            "delta": 5,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "Proteges tu margen de decisión y el coste inmediato queda contenido."
+        ],
+        "historyTags": [
+          "self_protection",
+          "primary_interpretation"
+        ]
+      },
+      {
+        "id": "C__SECONDARY",
+        "baseWeight": 45,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "sport.roleScore",
+            "delta": -2,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "reputation.marketHeat",
+            "delta": 5,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.institutionalTrust",
+            "delta": -2,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "Otros leen la cautela como distancia o falta de compromiso."
+        ],
+        "historyTags": [
+          "self_protection",
+          "secondary_interpretation"
+        ]
+      },
+      {
+        "id": "D__PRIMARY",
+        "baseWeight": 55,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "professional.contractPower",
+            "delta": 3,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.institutionalTrust",
+            "delta": -2,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "La solución intermedia conserva varias puertas abiertas."
+        ],
+        "historyTags": [
+          "compromise",
+          "primary_interpretation"
+        ]
+      },
+      {
+        "id": "D__SECONDARY",
+        "baseWeight": 45,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "professional.contractPower",
+            "delta": 3,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.institutionalTrust",
+            "delta": -2,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.roleSecurity",
+            "delta": -1,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "Intentar conservar todas las puertas reduce la claridad de tu postura."
+        ],
+        "historyTags": [
+          "compromise",
+          "secondary_interpretation"
+        ]
+      }
+    ],
+    "tags": [
+      "tactical",
+      "professionalization"
+    ],
+    "presentation": {
+      "layoutHint": "decision",
+      "preloadPriority": "normal",
+      "assets": [
+        {
+          "id": "hero_evt_20_cch_001",
+          "type": "image",
+          "role": "hero",
+          "fallbackId": "generic_tactical"
+        }
+      ]
+    },
+    "canonStatus": "verified"
+  },
+  {
+    "id": "EVT_21_PRS_001",
+    "ageWindow": [
+      21,
+      21
+    ],
+    "phase": "20_23",
+    "family": "press",
+    "gates": [
+      {
+        "path": "reputation.mediaHeat",
+        "op": "gte",
+        "value": 20
+      }
+    ],
+    "timeWindow": {
+      "months": [
+        9,
+        10,
+        11,
+        12
+      ]
+    },
+    "cooldown": 99999,
+    "repeatable": false,
+    "weight": 12,
+    "text": {
+      "title": "La cifra publicada",
+      "body": "Un medio publica tu salario con una cifra inflada. El club no desmiente porque la noticia puede convenirle."
+    },
+    "intel": {
+      "visible": [
+        "Conoces los hechos formales de la situación y las condiciones que ya se han producido."
+      ],
+      "uncertain": [
+        "No conoces la agenda completa de terceros ni cómo cambiará el contexto durante las próximas semanas."
+      ]
+    },
+    "choices": [
+      {
+        "id": "A",
+        "label": "Tomar la iniciativa",
+        "intentTags": [
+          "initiative"
+        ],
+        "outcomeIds": [
+          "A__PRIMARY",
+          "A__SECONDARY"
+        ]
+      },
+      {
+        "id": "B",
+        "label": "Esperar y reunir información",
+        "intentTags": [
+          "patience"
+        ],
+        "outcomeIds": [
+          "B__PRIMARY",
+          "B__SECONDARY"
+        ]
+      },
+      {
+        "id": "C",
+        "label": "Proteger tu posición",
+        "intentTags": [
+          "self_protection"
+        ],
+        "outcomeIds": [
+          "C__PRIMARY",
+          "C__SECONDARY"
+        ]
+      },
+      {
+        "id": "D",
+        "label": "Buscar una solución intermedia",
+        "intentTags": [
+          "compromise"
+        ],
+        "outcomeIds": [
+          "D__PRIMARY",
+          "D__SECONDARY"
+        ]
+      }
+    ],
+    "outcomes": [
+      {
+        "id": "A__PRIMARY",
+        "baseWeight": 55,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "reputation.mediaHeat",
+            "delta": 8,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.contractPower",
+            "delta": 3,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "La iniciativa abre margen, pero también hace visible tu posición."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_PUBLIC_CONTRACT",
+            "action": "create",
+            "intensity": 55,
+            "payload": {
+              "choice": "A"
+            }
+          }
+        ],
+        "historyTags": [
+          "initiative",
+          "primary_interpretation"
+        ]
+      },
+      {
+        "id": "A__SECONDARY",
+        "baseWeight": 45,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "reputation.mediaHeat",
+            "delta": 8,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.contractPower",
+            "delta": 3,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.environmentStability",
+            "delta": -2,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "La misma iniciativa es interpretada como precipitación por parte del entorno."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_PUBLIC_CONTRACT",
+            "action": "create",
+            "intensity": 48,
+            "payload": {
+              "choice": "A"
+            }
+          }
+        ],
+        "historyTags": [
+          "initiative",
+          "secondary_interpretation"
+        ]
+      },
+      {
+        "id": "B__PRIMARY",
+        "baseWeight": 55,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "reputation.mediaHeat",
+            "delta": 3,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.institutionalTrust",
+            "delta": 2,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "Esperar aporta información que cambia la lectura del problema."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_PUBLIC_CONTRACT",
+            "action": "create",
+            "intensity": 48,
+            "payload": {
+              "choice": "B"
+            }
+          }
+        ],
+        "historyTags": [
+          "patience",
+          "primary_interpretation"
+        ]
+      },
+      {
+        "id": "B__SECONDARY",
+        "baseWeight": 45,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "reputation.mediaHeat",
+            "delta": 3,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.institutionalTrust",
+            "delta": 2,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.contractPower",
+            "delta": -1,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "El tiempo también consume parte de la ventana disponible."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_PUBLIC_CONTRACT",
+            "action": "create",
+            "intensity": 42,
+            "payload": {
+              "choice": "B"
+            }
+          }
+        ],
+        "historyTags": [
+          "patience",
+          "secondary_interpretation"
+        ]
+      },
+      {
+        "id": "C__PRIMARY",
+        "baseWeight": 55,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "reputation.mediaHeat",
+            "delta": -2,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.contractPower",
+            "delta": 2,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "Proteges tu margen de decisión y el coste inmediato queda contenido."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_PUBLIC_CONTRACT",
+            "action": "create",
+            "intensity": 52,
+            "payload": {
+              "choice": "C"
+            }
+          }
+        ],
+        "historyTags": [
+          "self_protection",
+          "primary_interpretation"
+        ]
+      },
+      {
+        "id": "C__SECONDARY",
+        "baseWeight": 45,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "reputation.mediaHeat",
+            "delta": -2,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.contractPower",
+            "delta": 2,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.institutionalTrust",
+            "delta": -2,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "Otros leen la cautela como distancia o falta de compromiso."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_PUBLIC_CONTRACT",
+            "action": "create",
+            "intensity": 46,
+            "payload": {
+              "choice": "C"
+            }
+          }
+        ],
+        "historyTags": [
+          "self_protection",
+          "secondary_interpretation"
+        ]
+      },
+      {
+        "id": "D__PRIMARY",
+        "baseWeight": 55,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "professional.institutionalTrust",
+            "delta": 4,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "reputation.mediaHeat",
+            "delta": 1,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "La solución intermedia conserva varias puertas abiertas."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_PUBLIC_CONTRACT",
+            "action": "create",
+            "intensity": 50,
+            "payload": {
+              "choice": "D"
+            }
+          }
+        ],
+        "historyTags": [
+          "compromise",
+          "primary_interpretation"
+        ]
+      },
+      {
+        "id": "D__SECONDARY",
+        "baseWeight": 45,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "professional.institutionalTrust",
+            "delta": 4,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "reputation.mediaHeat",
+            "delta": 1,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.roleSecurity",
+            "delta": -1,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "Intentar conservar todas las puertas reduce la claridad de tu postura."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_PUBLIC_CONTRACT",
+            "action": "create",
+            "intensity": 44,
+            "payload": {
+              "choice": "D"
+            }
+          }
+        ],
+        "historyTags": [
+          "compromise",
+          "secondary_interpretation"
+        ]
+      }
+    ],
+    "seedsWrite": [
+      "SEED_PUBLIC_CONTRACT"
+    ],
+    "tags": [
+      "press",
+      "professionalization"
+    ],
+    "presentation": {
+      "layoutHint": "decision",
+      "preloadPriority": "normal",
+      "assets": [
+        {
+          "id": "hero_evt_21_prs_001",
+          "type": "image",
+          "role": "hero",
+          "fallbackId": "generic_press"
+        }
+      ]
+    },
+    "canonStatus": "verified"
+  },
+  {
+    "id": "EVT_23_AGT_001",
+    "ageWindow": [
+      23,
+      23
+    ],
+    "phase": "23_26",
+    "family": "agent",
+    "gates": [],
+    "timeWindow": {
+      "months": [
+        8,
+        9,
+        10
+      ]
+    },
+    "cooldown": 99999,
+    "repeatable": false,
+    "weight": 12,
+    "text": {
+      "title": "Ya no llaman solo a tu agente",
+      "body": "La etapa adulta de la carrera enfrenta objetivos compatibles en teoría, pero difíciles de conservar a la vez."
+    },
+    "intel": {
+      "visible": [
+        "Conoces las condiciones formales y tu situación deportiva actual."
+      ],
+      "uncertain": [
+        "No conoces la agenda completa de terceros ni cómo evolucionará el contexto."
+      ]
+    },
+    "choices": [
+      {
+        "id": "A",
+        "label": "Tomar la iniciativa",
+        "intentTags": [
+          "ceiling"
+        ],
+        "immediateEffects": [],
+        "outcomeIds": [
+          "A__PRIMARY",
+          "A__SECONDARY"
+        ]
+      },
+      {
+        "id": "B",
+        "label": "Esperar y reunir información",
+        "intentTags": [
+          "patience"
+        ],
+        "immediateEffects": [],
+        "outcomeIds": [
+          "B__PRIMARY",
+          "B__SECONDARY"
+        ]
+      },
+      {
+        "id": "C",
+        "label": "Proteger tu posición",
+        "intentTags": [
+          "control"
+        ],
+        "immediateEffects": [],
+        "outcomeIds": [
+          "C__PRIMARY",
+          "C__SECONDARY"
+        ]
+      },
+      {
+        "id": "D",
+        "label": "Buscar una solución intermedia",
+        "intentTags": [
+          "balance"
+        ],
+        "immediateEffects": [],
+        "outcomeIds": [
+          "D__PRIMARY",
+          "D__SECONDARY"
+        ]
+      }
+    ],
+    "outcomes": [
+      {
+        "id": "A__PRIMARY",
+        "baseWeight": 55,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "professional.agentControl",
+            "delta": -7,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.contractPower",
+            "delta": 5,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "La decisión abre una oportunidad sin eliminar sus costes."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_DIRECT_RECRUIT",
+            "action": "create",
+            "intensity": 54,
+            "payload": {
+              "choice": "A"
+            }
+          }
+        ],
+        "historyTags": [
+          "ceiling",
+          "primary_interpretation"
+        ]
+      },
+      {
+        "id": "A__SECONDARY",
+        "baseWeight": 45,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "professional.agentControl",
+            "delta": -7,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.contractPower",
+            "delta": 5,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.environmentStability",
+            "delta": -1,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "El mismo movimiento produce una lectura menos favorable de la esperada."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_DIRECT_RECRUIT",
+            "action": "create",
+            "intensity": 46,
+            "payload": {
+              "choice": "A"
+            }
+          }
+        ],
+        "historyTags": [
+          "ceiling",
+          "secondary_interpretation"
+        ]
+      },
+      {
+        "id": "B__PRIMARY",
+        "baseWeight": 55,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "professional.agentControl",
+            "delta": 5,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.environmentStability",
+            "delta": 2,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "La espera mejora una parte de la información, pero consume tiempo."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_DIRECT_RECRUIT",
+            "action": "create",
+            "intensity": 54,
+            "payload": {
+              "choice": "B"
+            }
+          }
+        ],
+        "historyTags": [
+          "patience",
+          "primary_interpretation"
+        ]
+      },
+      {
+        "id": "B__SECONDARY",
+        "baseWeight": 45,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "professional.agentControl",
+            "delta": 5,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.environmentStability",
+            "delta": 2,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.environmentStability",
+            "delta": 1,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "Mientras esperas, un tercero mueve primero."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_DIRECT_RECRUIT",
+            "action": "create",
+            "intensity": 46,
+            "payload": {
+              "choice": "B"
+            }
+          }
+        ],
+        "historyTags": [
+          "patience",
+          "secondary_interpretation"
+        ]
+      },
+      {
+        "id": "C__PRIMARY",
+        "baseWeight": 55,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "professional.agentControl",
+            "delta": 8,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "reputation.marketHeat",
+            "delta": -2,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "Proteges una dimensión de la carrera y aceptas perder margen en otra."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_DIRECT_RECRUIT",
+            "action": "create",
+            "intensity": 54,
+            "payload": {
+              "choice": "C"
+            }
+          }
+        ],
+        "historyTags": [
+          "control",
+          "primary_interpretation"
+        ]
+      },
+      {
+        "id": "C__SECONDARY",
+        "baseWeight": 45,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "professional.agentControl",
+            "delta": 8,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "reputation.marketHeat",
+            "delta": -2,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.environmentStability",
+            "delta": -1,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "La protección funciona, pero cambia cómo te leen club, mercado o vestuario."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_DIRECT_RECRUIT",
+            "action": "create",
+            "intensity": 46,
+            "payload": {
+              "choice": "C"
+            }
+          }
+        ],
+        "historyTags": [
+          "control",
+          "secondary_interpretation"
+        ]
+      },
+      {
+        "id": "D__PRIMARY",
+        "baseWeight": 55,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "professional.agentControl",
+            "delta": 1,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.contractPower",
+            "delta": 3,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "Mantienes varias puertas abiertas, a cambio de una postura menos nítida."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_DIRECT_RECRUIT",
+            "action": "create",
+            "intensity": 54,
+            "payload": {
+              "choice": "D"
+            }
+          }
+        ],
+        "historyTags": [
+          "balance",
+          "primary_interpretation"
+        ]
+      },
+      {
+        "id": "D__SECONDARY",
+        "baseWeight": 45,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "professional.agentControl",
+            "delta": 1,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.contractPower",
+            "delta": 3,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.environmentStability",
+            "delta": -1,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "El compromiso reduce el conflicto inmediato sin resolver toda la tensión."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_DIRECT_RECRUIT",
+            "action": "create",
+            "intensity": 46,
+            "payload": {
+              "choice": "D"
+            }
+          }
+        ],
+        "historyTags": [
+          "balance",
+          "secondary_interpretation"
+        ]
+      }
+    ],
+    "seedsWrite": [
+      "SEED_DIRECT_RECRUIT"
+    ],
+    "tags": [
+      "agent",
+      "adult_consolidation"
+    ],
+    "presentation": {
+      "layoutHint": "decision",
+      "preloadPriority": "normal",
+      "assets": [
+        {
+          "id": "hero_evt_23_agt_001",
+          "type": "image",
+          "role": "hero",
+          "fallbackId": "generic_agent"
+        }
+      ]
+    },
+    "canonStatus": "technical_adaptation"
+  },
+  {
+    "id": "EVT_24_MATCH_001",
+    "ageWindow": [
+      24,
+      24
+    ],
+    "phase": "23_26",
+    "family": "sport",
+    "gates": [],
+    "timeWindow": {
+      "months": [
+        9,
+        10,
+        11,
+        2,
+        3
+      ]
+    },
+    "cooldown": 99999,
+    "repeatable": false,
+    "weight": 12,
+    "text": {
+      "title": "El penalti no tiene dueño",
+      "body": "La etapa adulta de la carrera enfrenta objetivos compatibles en teoría, pero difíciles de conservar a la vez."
+    },
+    "intel": {
+      "visible": [
+        "Conoces las condiciones formales y tu situación deportiva actual."
+      ],
+      "uncertain": [
+        "No conoces la agenda completa de terceros ni cómo evolucionará el contexto."
+      ]
+    },
+    "choices": [
+      {
+        "id": "A",
+        "label": "Entregarle el balón",
+        "intentTags": [
+          "ceiling"
+        ],
+        "immediateEffects": [],
+        "outcomeIds": [
+          "A__PRIMARY",
+          "A__SECONDARY"
+        ]
+      },
+      {
+        "id": "B",
+        "label": "Decir que lo tiras tú",
+        "intentTags": [
+          "patience"
+        ],
+        "immediateEffects": [],
+        "outcomeIds": [
+          "B__PRIMARY",
+          "B__SECONDARY"
+        ]
+      },
+      {
+        "id": "C",
+        "label": "Preguntar al capitán o técnico desde el campo",
+        "intentTags": [
+          "control"
+        ],
+        "immediateEffects": [],
+        "outcomeIds": [
+          "C__PRIMARY",
+          "C__SECONDARY"
+        ]
+      },
+      {
+        "id": "D",
+        "label": "Proponer decidirlo con una regla rápida entre ambos",
+        "intentTags": [
+          "balance"
+        ],
+        "immediateEffects": [],
+        "outcomeIds": [
+          "D__PRIMARY",
+          "D__SECONDARY"
+        ]
+      }
+    ],
+    "outcomes": [
+      {
+        "id": "A__PRIMARY",
+        "baseWeight": 55,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "professional.continentalCred",
+            "delta": 7,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.bodyLoad",
+            "delta": 4,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "La decisión abre una oportunidad sin eliminar sus costes."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_PENALTY_HIERARCHY",
+            "action": "create",
+            "intensity": 54,
+            "payload": {
+              "choice": "A"
+            }
+          }
+        ],
+        "historyTags": [
+          "ceiling",
+          "primary_interpretation"
+        ]
+      },
+      {
+        "id": "A__SECONDARY",
+        "baseWeight": 45,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "professional.continentalCred",
+            "delta": 7,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.bodyLoad",
+            "delta": 4,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.environmentStability",
+            "delta": -1,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "El mismo movimiento produce una lectura menos favorable de la esperada."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_PENALTY_HIERARCHY",
+            "action": "create",
+            "intensity": 46,
+            "payload": {
+              "choice": "A"
+            }
+          }
+        ],
+        "historyTags": [
+          "ceiling",
+          "secondary_interpretation"
+        ]
+      },
+      {
+        "id": "B__PRIMARY",
+        "baseWeight": 55,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "professional.continentalCred",
+            "delta": 4,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.bodyLoad",
+            "delta": 1,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "La espera mejora una parte de la información, pero consume tiempo."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_PENALTY_HIERARCHY",
+            "action": "create",
+            "intensity": 54,
+            "payload": {
+              "choice": "B"
+            }
+          }
+        ],
+        "historyTags": [
+          "patience",
+          "primary_interpretation"
+        ]
+      },
+      {
+        "id": "B__SECONDARY",
+        "baseWeight": 45,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "professional.continentalCred",
+            "delta": 4,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.bodyLoad",
+            "delta": 1,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.environmentStability",
+            "delta": 1,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "Mientras esperas, un tercero mueve primero."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_PENALTY_HIERARCHY",
+            "action": "create",
+            "intensity": 46,
+            "payload": {
+              "choice": "B"
+            }
+          }
+        ],
+        "historyTags": [
+          "patience",
+          "secondary_interpretation"
+        ]
+      },
+      {
+        "id": "C__PRIMARY",
+        "baseWeight": 55,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "sport.roleScore",
+            "delta": 5,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.bodyLoad",
+            "delta": 3,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "Proteges una dimensión de la carrera y aceptas perder margen en otra."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_PENALTY_HIERARCHY",
+            "action": "create",
+            "intensity": 54,
+            "payload": {
+              "choice": "C"
+            }
+          }
+        ],
+        "historyTags": [
+          "control",
+          "primary_interpretation"
+        ]
+      },
+      {
+        "id": "C__SECONDARY",
+        "baseWeight": 45,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "sport.roleScore",
+            "delta": 5,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.bodyLoad",
+            "delta": 3,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.environmentStability",
+            "delta": -1,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "La protección funciona, pero cambia cómo te leen club, mercado o vestuario."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_PENALTY_HIERARCHY",
+            "action": "create",
+            "intensity": 46,
+            "payload": {
+              "choice": "C"
+            }
+          }
+        ],
+        "historyTags": [
+          "control",
+          "secondary_interpretation"
+        ]
+      },
+      {
+        "id": "D__PRIMARY",
+        "baseWeight": 55,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "professional.roleSecurity",
+            "delta": 4,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.continentalCred",
+            "delta": 2,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "Mantienes varias puertas abiertas, a cambio de una postura menos nítida."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_PENALTY_HIERARCHY",
+            "action": "create",
+            "intensity": 54,
+            "payload": {
+              "choice": "D"
+            }
+          }
+        ],
+        "historyTags": [
+          "balance",
+          "primary_interpretation"
+        ]
+      },
+      {
+        "id": "D__SECONDARY",
+        "baseWeight": 45,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "professional.roleSecurity",
+            "delta": 4,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.continentalCred",
+            "delta": 2,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.environmentStability",
+            "delta": -1,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "El compromiso reduce el conflicto inmediato sin resolver toda la tensión."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_PENALTY_HIERARCHY",
+            "action": "create",
+            "intensity": 46,
+            "payload": {
+              "choice": "D"
+            }
+          }
+        ],
+        "historyTags": [
+          "balance",
+          "secondary_interpretation"
+        ]
+      }
+    ],
+    "seedsWrite": [
+      "SEED_PENALTY_HIERARCHY"
+    ],
+    "tags": [
+      "sport",
+      "adult_consolidation"
+    ],
+    "presentation": {
+      "layoutHint": "decision",
+      "preloadPriority": "normal",
+      "assets": [
+        {
+          "id": "hero_evt_24_match_001",
+          "type": "image",
+          "role": "hero",
+          "fallbackId": "generic_sport"
+        }
+      ]
+    },
+    "canonStatus": "technical_adaptation"
+  },
+  {
+    "id": "EVT_26_IDN_001",
+    "ageWindow": [
+      26,
+      26
+    ],
+    "phase": "26_30",
+    "family": "legacy",
+    "gates": [],
+    "timeWindow": {
+      "months": [
+        7,
+        8
+      ]
+    },
+    "cooldown": 99999,
+    "repeatable": false,
+    "weight": 13,
+    "text": {
+      "title": "Ahora te compran por lo que ya eres",
+      "body": "En la cima o cerca de ella, prestigio, títulos, dinero, minutos y control ya no avanzan necesariamente juntos."
+    },
+    "intel": {
+      "visible": [
+        "Conoces tu rol, contrato y contexto competitivo inmediato."
+      ],
+      "uncertain": [
+        "No conoces por completo las prioridades de club, mercado, selección o entorno."
+      ]
+    },
+    "choices": [
+      {
+        "id": "A",
+        "label": "Apostar por el máximo techo",
+        "intentTags": [
+          "ceiling"
+        ],
+        "immediateEffects": [],
+        "outcomeIds": [
+          "A__PRIMARY",
+          "A__SECONDARY"
+        ]
+      },
+      {
+        "id": "B",
+        "label": "Proteger la posición actual",
+        "intentTags": [
+          "stability"
+        ],
+        "immediateEffects": [],
+        "outcomeIds": [
+          "B__PRIMARY",
+          "B__SECONDARY"
+        ]
+      },
+      {
+        "id": "C",
+        "label": "Ganar control aunque pierdas algo de techo",
+        "intentTags": [
+          "control"
+        ],
+        "immediateEffects": [],
+        "outcomeIds": [
+          "C__PRIMARY",
+          "C__SECONDARY"
+        ]
+      },
+      {
+        "id": "D",
+        "label": "Mantener varias puertas abiertas",
+        "intentTags": [
+          "balance"
+        ],
+        "immediateEffects": [],
+        "outcomeIds": [
+          "D__PRIMARY",
+          "D__SECONDARY"
+        ]
+      }
+    ],
+    "outcomes": [
+      {
+        "id": "A__PRIMARY",
+        "baseWeight": 55,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "professional.publicMyth",
+            "delta": 5,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.trophyCapital",
+            "delta": 2,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "El movimiento funciona, pero eleva también las expectativas."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_PEAK_IDENTITY",
+            "action": "create",
+            "intensity": 55,
+            "payload": {
+              "choice": "A"
+            }
+          }
+        ],
+        "historyTags": [
+          "ceiling",
+          "primary_interpretation"
+        ]
+      },
+      {
+        "id": "A__SECONDARY",
+        "baseWeight": 45,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "professional.publicMyth",
+            "delta": 5,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.trophyCapital",
+            "delta": 2,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.environmentStability",
+            "delta": -1,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "El techo prometido resulta menos controlable de lo esperado."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_PEAK_IDENTITY",
+            "action": "create",
+            "intensity": 45,
+            "payload": {
+              "choice": "A"
+            }
+          }
+        ],
+        "historyTags": [
+          "ceiling",
+          "secondary_interpretation"
+        ]
+      },
+      {
+        "id": "B__PRIMARY",
+        "baseWeight": 55,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "professional.careerControl",
+            "delta": 5,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.peakStatus",
+            "delta": 1,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "La estabilidad protege una parte de la carrera sin congelar el entorno."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_PEAK_IDENTITY",
+            "action": "create",
+            "intensity": 55,
+            "payload": {
+              "choice": "B"
+            }
+          }
+        ],
+        "historyTags": [
+          "stability",
+          "primary_interpretation"
+        ]
+      },
+      {
+        "id": "B__SECONDARY",
+        "baseWeight": 45,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "professional.careerControl",
+            "delta": 5,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.peakStatus",
+            "delta": 1,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.environmentStability",
+            "delta": 1,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "Mientras proteges estabilidad, el contexto cambia alrededor."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_PEAK_IDENTITY",
+            "action": "create",
+            "intensity": 45,
+            "payload": {
+              "choice": "B"
+            }
+          }
+        ],
+        "historyTags": [
+          "stability",
+          "secondary_interpretation"
+        ]
+      },
+      {
+        "id": "C__PRIMARY",
+        "baseWeight": 55,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "professional.recoveryMargin",
+            "delta": 4,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.publicMyth",
+            "delta": 1,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "Ganas margen de decisión a costa de otra ventaja inmediata."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_PEAK_IDENTITY",
+            "action": "create",
+            "intensity": 55,
+            "payload": {
+              "choice": "C"
+            }
+          }
+        ],
+        "historyTags": [
+          "control",
+          "primary_interpretation"
+        ]
+      },
+      {
+        "id": "C__SECONDARY",
+        "baseWeight": 45,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "professional.recoveryMargin",
+            "delta": 4,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.publicMyth",
+            "delta": 1,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.environmentStability",
+            "delta": -1,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "El control adicional tiene un coste deportivo o relacional."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_PEAK_IDENTITY",
+            "action": "create",
+            "intensity": 45,
+            "payload": {
+              "choice": "C"
+            }
+          }
+        ],
+        "historyTags": [
+          "control",
+          "secondary_interpretation"
+        ]
+      },
+      {
+        "id": "D__PRIMARY",
+        "baseWeight": 55,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "professional.contractPower",
+            "delta": 4,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.careerControl",
+            "delta": 4,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "El compromiso mantiene opciones abiertas, aunque nadie obtiene exactamente lo que quería."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_PEAK_IDENTITY",
+            "action": "create",
+            "intensity": 55,
+            "payload": {
+              "choice": "D"
+            }
+          }
+        ],
+        "historyTags": [
+          "balance",
+          "primary_interpretation"
+        ]
+      },
+      {
+        "id": "D__SECONDARY",
+        "baseWeight": 45,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "professional.contractPower",
+            "delta": 4,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.careerControl",
+            "delta": 4,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.environmentStability",
+            "delta": -1,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "La solución intermedia aplaza parte del conflicto en lugar de resolverlo."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_PEAK_IDENTITY",
+            "action": "create",
+            "intensity": 45,
+            "payload": {
+              "choice": "D"
+            }
+          }
+        ],
+        "historyTags": [
+          "balance",
+          "secondary_interpretation"
+        ]
+      }
+    ],
+    "seedsWrite": [
+      "SEED_PEAK_IDENTITY"
+    ],
+    "tags": [
+      "legacy",
+      "peak"
+    ],
+    "presentation": {
+      "layoutHint": "decision",
+      "preloadPriority": "normal",
+      "assets": [
+        {
+          "id": "hero_evt_26_idn_001",
+          "type": "image",
+          "role": "hero",
+          "fallbackId": "generic_legacy"
+        }
+      ]
+    },
+    "canonStatus": "verified"
+  },
+  {
+    "id": "EVT_26_MKT_001",
+    "ageWindow": [
+      26,
+      26
+    ],
+    "phase": "26_30",
+    "family": "market",
+    "gates": [
+      {
+        "path": "reputation.marketHeat",
+        "op": "gte",
+        "value": 42
+      }
+    ],
+    "timeWindow": {
+      "months": [
+        7,
+        8
+      ]
+    },
+    "cooldown": 99999,
+    "repeatable": false,
+    "weight": 13,
+    "text": {
+      "title": "Quieren construir alrededor de ti",
+      "body": "En la cima o cerca de ella, prestigio, títulos, dinero, minutos y control ya no avanzan necesariamente juntos."
+    },
+    "intel": {
+      "visible": [
+        "Conoces tu rol, contrato y contexto competitivo inmediato."
+      ],
+      "uncertain": [
+        "No conoces por completo las prioridades de club, mercado, selección o entorno."
+      ]
+    },
+    "choices": [
+      {
+        "id": "A",
+        "label": "Apostar por el máximo techo",
+        "intentTags": [
+          "ceiling"
+        ],
+        "immediateEffects": [],
+        "outcomeIds": [
+          "A__PRIMARY",
+          "A__SECONDARY"
+        ]
+      },
+      {
+        "id": "B",
+        "label": "Proteger la posición actual",
+        "intentTags": [
+          "stability"
+        ],
+        "immediateEffects": [],
+        "outcomeIds": [
+          "B__PRIMARY",
+          "B__SECONDARY"
+        ]
+      },
+      {
+        "id": "C",
+        "label": "Ganar control aunque pierdas algo de techo",
+        "intentTags": [
+          "control"
+        ],
+        "immediateEffects": [],
+        "outcomeIds": [
+          "C__PRIMARY",
+          "C__SECONDARY"
+        ]
+      },
+      {
+        "id": "D",
+        "label": "Mantener varias puertas abiertas",
+        "intentTags": [
+          "balance"
+        ],
+        "immediateEffects": [],
+        "outcomeIds": [
+          "D__PRIMARY",
+          "D__SECONDARY"
+        ]
+      }
+    ],
+    "outcomes": [
+      {
+        "id": "A__PRIMARY",
+        "baseWeight": 55,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "reputation.marketHeat",
+            "delta": 6,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.careerControl",
+            "delta": -2,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "El movimiento funciona, pero eleva también las expectativas."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_SHADOW_ESCAPE",
+            "action": "create",
+            "intensity": 55,
+            "payload": {
+              "choice": "A"
+            }
+          }
+        ],
+        "historyTags": [
+          "ceiling",
+          "primary_interpretation"
+        ]
+      },
+      {
+        "id": "A__SECONDARY",
+        "baseWeight": 45,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "reputation.marketHeat",
+            "delta": 6,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.careerControl",
+            "delta": -2,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.environmentStability",
+            "delta": -1,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "El techo prometido resulta menos controlable de lo esperado."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_SHADOW_ESCAPE",
+            "action": "create",
+            "intensity": 45,
+            "payload": {
+              "choice": "A"
+            }
+          }
+        ],
+        "historyTags": [
+          "ceiling",
+          "secondary_interpretation"
+        ]
+      },
+      {
+        "id": "B__PRIMARY",
+        "baseWeight": 55,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "professional.careerControl",
+            "delta": 5,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.roleSecurity",
+            "delta": 2,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "La estabilidad protege una parte de la carrera sin congelar el entorno."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_SHADOW_ESCAPE",
+            "action": "create",
+            "intensity": 55,
+            "payload": {
+              "choice": "B"
+            }
+          }
+        ],
+        "historyTags": [
+          "stability",
+          "primary_interpretation"
+        ]
+      },
+      {
+        "id": "B__SECONDARY",
+        "baseWeight": 45,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "professional.careerControl",
+            "delta": 5,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.roleSecurity",
+            "delta": 2,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.environmentStability",
+            "delta": 1,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "Mientras proteges estabilidad, el contexto cambia alrededor."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_SHADOW_ESCAPE",
+            "action": "create",
+            "intensity": 45,
+            "payload": {
+              "choice": "B"
+            }
+          }
+        ],
+        "historyTags": [
+          "stability",
+          "secondary_interpretation"
+        ]
+      },
+      {
+        "id": "C__PRIMARY",
+        "baseWeight": 55,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "professional.clubPrestigeTier",
+            "delta": 1,
+            "min": 1,
+            "max": 5
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.roleSecurity",
+            "delta": -5,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "Ganas margen de decisión a costa de otra ventaja inmediata."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_SHADOW_ESCAPE",
+            "action": "create",
+            "intensity": 55,
+            "payload": {
+              "choice": "C"
+            }
+          }
+        ],
+        "historyTags": [
+          "control",
+          "primary_interpretation"
+        ]
+      },
+      {
+        "id": "C__SECONDARY",
+        "baseWeight": 45,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "professional.clubPrestigeTier",
+            "delta": 1,
+            "min": 1,
+            "max": 5
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.roleSecurity",
+            "delta": -5,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.environmentStability",
+            "delta": -1,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "El control adicional tiene un coste deportivo o relacional."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_SHADOW_ESCAPE",
+            "action": "create",
+            "intensity": 45,
+            "payload": {
+              "choice": "C"
+            }
+          }
+        ],
+        "historyTags": [
+          "control",
+          "secondary_interpretation"
+        ]
+      },
+      {
+        "id": "D__PRIMARY",
+        "baseWeight": 55,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "professional.contractPower",
+            "delta": 5,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.institutionalTrust",
+            "delta": -3,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "El compromiso mantiene opciones abiertas, aunque nadie obtiene exactamente lo que quería."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_SHADOW_ESCAPE",
+            "action": "create",
+            "intensity": 55,
+            "payload": {
+              "choice": "D"
+            }
+          }
+        ],
+        "historyTags": [
+          "balance",
+          "primary_interpretation"
+        ]
+      },
+      {
+        "id": "D__SECONDARY",
+        "baseWeight": 45,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "professional.contractPower",
+            "delta": 5,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.institutionalTrust",
+            "delta": -3,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.environmentStability",
+            "delta": -1,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "La solución intermedia aplaza parte del conflicto en lugar de resolverlo."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_SHADOW_ESCAPE",
+            "action": "create",
+            "intensity": 45,
+            "payload": {
+              "choice": "D"
+            }
+          }
+        ],
+        "historyTags": [
+          "balance",
+          "secondary_interpretation"
+        ]
+      }
+    ],
+    "seedsRead": [
+      "SEED_ELITE_ROLE_BARGAIN"
+    ],
+    "seedsWrite": [
+      "SEED_SHADOW_ESCAPE"
+    ],
+    "tags": [
+      "market",
+      "peak"
+    ],
+    "presentation": {
+      "layoutHint": "decision",
+      "preloadPriority": "normal",
+      "assets": [
+        {
+          "id": "hero_evt_26_mkt_001",
+          "type": "image",
+          "role": "hero",
+          "fallbackId": "generic_market"
+        }
+      ]
+    },
+    "canonStatus": "verified"
+  },
+  {
+    "id": "EVT_30_IDN_001",
+    "ageWindow": [
+      30,
+      30
+    ],
+    "phase": "30_34",
+    "family": "legacy",
+    "gates": [],
+    "timeWindow": {
+      "months": [
+        7,
+        8
+      ]
+    },
+    "cooldown": 99999,
+    "repeatable": false,
+    "weight": 10,
+    "text": {
+      "title": "La palabra veterano",
+      "body": "La madurez separa reputación, minutos, cuerpo, contrato y deseo. Ninguna opción protege todo a la vez."
+    },
+    "intel": {
+      "visible": [
+        "Conoces tu situación deportiva y contractual actual."
+      ],
+      "uncertain": [
+        "No sabes cuánto durarán mercado, cuerpo ni paciencia institucional."
+      ]
+    },
+    "choices": [
+      {
+        "id": "A",
+        "label": "Proteger el nivel competitivo",
+        "intentTags": [
+          "competition"
+        ],
+        "immediateEffects": [],
+        "outcomeIds": [
+          "A__PRIMARY",
+          "A__SECONDARY"
+        ]
+      },
+      {
+        "id": "B",
+        "label": "Proteger cuerpo y estabilidad",
+        "intentTags": [
+          "stability"
+        ],
+        "immediateEffects": [],
+        "outcomeIds": [
+          "B__PRIMARY",
+          "B__SECONDARY"
+        ]
+      },
+      {
+        "id": "C",
+        "label": "Adaptar rol y condiciones",
+        "intentTags": [
+          "adapt"
+        ],
+        "immediateEffects": [],
+        "outcomeIds": [
+          "C__PRIMARY",
+          "C__SECONDARY"
+        ]
+      },
+      {
+        "id": "D",
+        "label": "Esperar más información",
+        "intentTags": [
+          "wait"
+        ],
+        "immediateEffects": [],
+        "outcomeIds": [
+          "D__PRIMARY",
+          "D__SECONDARY"
+        ]
+      }
+    ],
+    "outcomes": [
+      {
+        "id": "A__PRIMARY",
+        "baseWeight": 55,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "professional.veteranLeverage",
+            "delta": 3,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.motivationReserve",
+            "delta": 2,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "Priorizas competir ahora; el coste puede aparecer después."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_VETERAN_LABEL",
+            "action": "create",
+            "intensity": 60,
+            "payload": {
+              "choice": "A"
+            }
+          }
+        ],
+        "historyTags": [
+          "competition",
+          "primary_interpretation"
+        ]
+      },
+      {
+        "id": "A__SECONDARY",
+        "baseWeight": 45,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "professional.recoveryDebt",
+            "delta": 3,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "La apuesta sostiene estatus, pero consume margen."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_VETERAN_LABEL",
+            "action": "create",
+            "intensity": 60,
+            "payload": {
+              "choice": "A"
+            }
+          }
+        ],
+        "historyTags": [
+          "competition",
+          "secondary_interpretation"
+        ]
+      },
+      {
+        "id": "B__PRIMARY",
+        "baseWeight": 55,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "professional.matchSelectivity",
+            "delta": 5,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.recoveryDebt",
+            "delta": -4,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "Compras margen físico y previsibilidad."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_VETERAN_LABEL",
+            "action": "create",
+            "intensity": 48,
+            "payload": {
+              "choice": "B"
+            }
+          }
+        ],
+        "historyTags": [
+          "stability",
+          "primary_interpretation"
+        ]
+      },
+      {
+        "id": "B__SECONDARY",
+        "baseWeight": 45,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "professional.statusInertia",
+            "delta": -2,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "El descanso protege el cuerpo, pero alguien ocupa parte de tu espacio."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_VETERAN_LABEL",
+            "action": "create",
+            "intensity": 48,
+            "payload": {
+              "choice": "B"
+            }
+          }
+        ],
+        "historyTags": [
+          "stability",
+          "secondary_interpretation"
+        ]
+      },
+      {
+        "id": "C__PRIMARY",
+        "baseWeight": 55,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "professional.roleAdaptability",
+            "delta": 4,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.tacticalReading",
+            "delta": 3,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "Redefines utilidad en vez de defender una versión antigua."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_VETERAN_LABEL",
+            "action": "create",
+            "intensity": 55,
+            "payload": {
+              "choice": "C"
+            }
+          }
+        ],
+        "historyTags": [
+          "adapt",
+          "primary_interpretation"
+        ]
+      },
+      {
+        "id": "C__SECONDARY",
+        "baseWeight": 45,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "professional.careerControl",
+            "delta": 2,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "La adaptación abre un nicho, aunque no garantiza jerarquía."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_VETERAN_LABEL",
+            "action": "create",
+            "intensity": 55,
+            "payload": {
+              "choice": "C"
+            }
+          }
+        ],
+        "historyTags": [
+          "adapt",
+          "secondary_interpretation"
+        ]
+      },
+      {
+        "id": "D__PRIMARY",
+        "baseWeight": 55,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "professional.careerControl",
+            "delta": 1,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "Evitas cerrar una puerta demasiado pronto."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_VETERAN_LABEL",
+            "action": "create",
+            "intensity": 60,
+            "payload": {
+              "choice": "D"
+            }
+          }
+        ],
+        "historyTags": [
+          "wait",
+          "primary_interpretation"
+        ]
+      },
+      {
+        "id": "D__SECONDARY",
+        "baseWeight": 45,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "professional.veteranLeverage",
+            "delta": -2,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "Mientras esperas, el mercado y el club también se mueven."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_VETERAN_LABEL",
+            "action": "create",
+            "intensity": 60,
+            "payload": {
+              "choice": "D"
+            }
+          }
+        ],
+        "historyTags": [
+          "wait",
+          "secondary_interpretation"
+        ]
+      }
+    ],
+    "seedsWrite": [
+      "SEED_VETERAN_LABEL"
+    ],
+    "tags": [
+      "maturity"
+    ],
+    "presentation": {
+      "layoutHint": "decision",
+      "preloadPriority": "normal",
+      "assets": [
+        {
+          "id": "hero_evt_30_idn_001",
+          "type": "image",
+          "role": "hero",
+          "fallbackId": "generic_legacy"
+        }
+      ]
+    },
+    "canonStatus": "verified"
+  },
+  {
+    "id": "EVT_31_RETURN_001",
+    "ageWindow": [
+      31,
+      31
+    ],
+    "phase": "30_34",
+    "family": "medical",
+    "gates": [
+      {
+        "path": "flags.RECOVERING_INJURY",
+        "op": "eq",
+        "value": true
+      }
+    ],
+    "timeWindow": {
+      "months": [
+        9,
+        10,
+        11,
+        2,
+        3
+      ]
+    },
+    "cooldown": 99999,
+    "repeatable": false,
+    "weight": 10,
+    "text": {
+      "title": "Volver sin ritmo",
+      "body": "La madurez separa reputación, minutos, cuerpo, contrato y deseo. Ninguna opción protege todo a la vez."
+    },
+    "intel": {
+      "visible": [
+        "Conoces tu situación deportiva y contractual actual."
+      ],
+      "uncertain": [
+        "No sabes cuánto durarán mercado, cuerpo ni paciencia institucional."
+      ]
+    },
+    "choices": [
+      {
+        "id": "A",
+        "label": "Proteger el nivel competitivo",
+        "intentTags": [
+          "competition"
+        ],
+        "immediateEffects": [],
+        "outcomeIds": [
+          "A__PRIMARY",
+          "A__SECONDARY"
+        ]
+      },
+      {
+        "id": "B",
+        "label": "Proteger cuerpo y estabilidad",
+        "intentTags": [
+          "stability"
+        ],
+        "immediateEffects": [],
+        "outcomeIds": [
+          "B__PRIMARY",
+          "B__SECONDARY"
+        ]
+      },
+      {
+        "id": "C",
+        "label": "Adaptar rol y condiciones",
+        "intentTags": [
+          "adapt"
+        ],
+        "immediateEffects": [],
+        "outcomeIds": [
+          "C__PRIMARY",
+          "C__SECONDARY"
+        ]
+      },
+      {
+        "id": "D",
+        "label": "Esperar más información",
+        "intentTags": [
+          "wait"
+        ],
+        "immediateEffects": [],
+        "outcomeIds": [
+          "D__PRIMARY",
+          "D__SECONDARY"
+        ]
+      }
+    ],
+    "outcomes": [
+      {
+        "id": "A__PRIMARY",
+        "baseWeight": 55,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "professional.veteranLeverage",
+            "delta": 3,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.motivationReserve",
+            "delta": 2,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "Priorizas competir ahora; el coste puede aparecer después."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_COMEBACK_PACING",
+            "action": "create",
+            "intensity": 60,
+            "payload": {
+              "choice": "A"
+            }
+          }
+        ],
+        "historyTags": [
+          "competition",
+          "primary_interpretation"
+        ]
+      },
+      {
+        "id": "A__SECONDARY",
+        "baseWeight": 45,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "professional.recoveryDebt",
+            "delta": 3,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "La apuesta sostiene estatus, pero consume margen."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_COMEBACK_PACING",
+            "action": "create",
+            "intensity": 60,
+            "payload": {
+              "choice": "A"
+            }
+          }
+        ],
+        "historyTags": [
+          "competition",
+          "secondary_interpretation"
+        ]
+      },
+      {
+        "id": "B__PRIMARY",
+        "baseWeight": 55,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "professional.matchSelectivity",
+            "delta": 5,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.recoveryDebt",
+            "delta": -4,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "Compras margen físico y previsibilidad."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_COMEBACK_PACING",
+            "action": "create",
+            "intensity": 48,
+            "payload": {
+              "choice": "B"
+            }
+          }
+        ],
+        "historyTags": [
+          "stability",
+          "primary_interpretation"
+        ]
+      },
+      {
+        "id": "B__SECONDARY",
+        "baseWeight": 45,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "professional.statusInertia",
+            "delta": -2,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "El descanso protege el cuerpo, pero alguien ocupa parte de tu espacio."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_COMEBACK_PACING",
+            "action": "create",
+            "intensity": 48,
+            "payload": {
+              "choice": "B"
+            }
+          }
+        ],
+        "historyTags": [
+          "stability",
+          "secondary_interpretation"
+        ]
+      },
+      {
+        "id": "C__PRIMARY",
+        "baseWeight": 55,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "professional.roleAdaptability",
+            "delta": 4,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.tacticalReading",
+            "delta": 3,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "Redefines utilidad en vez de defender una versión antigua."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_COMEBACK_PACING",
+            "action": "create",
+            "intensity": 55,
+            "payload": {
+              "choice": "C"
+            }
+          }
+        ],
+        "historyTags": [
+          "adapt",
+          "primary_interpretation"
+        ]
+      },
+      {
+        "id": "C__SECONDARY",
+        "baseWeight": 45,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "professional.careerControl",
+            "delta": 2,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "La adaptación abre un nicho, aunque no garantiza jerarquía."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_COMEBACK_PACING",
+            "action": "create",
+            "intensity": 55,
+            "payload": {
+              "choice": "C"
+            }
+          }
+        ],
+        "historyTags": [
+          "adapt",
+          "secondary_interpretation"
+        ]
+      },
+      {
+        "id": "D__PRIMARY",
+        "baseWeight": 55,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "professional.careerControl",
+            "delta": 1,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "Evitas cerrar una puerta demasiado pronto."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_COMEBACK_PACING",
+            "action": "create",
+            "intensity": 60,
+            "payload": {
+              "choice": "D"
+            }
+          }
+        ],
+        "historyTags": [
+          "wait",
+          "primary_interpretation"
+        ]
+      },
+      {
+        "id": "D__SECONDARY",
+        "baseWeight": 45,
+        "effects": [
+          {
+            "kind": "numeric",
+            "path": "professional.veteranLeverage",
+            "delta": -2,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "messages": [
+          "Mientras esperas, el mercado y el club también se mueven."
+        ],
+        "seedTransitions": [
+          {
+            "seedId": "SEED_COMEBACK_PACING",
+            "action": "create",
+            "intensity": 60,
+            "payload": {
+              "choice": "D"
+            }
+          }
+        ],
+        "historyTags": [
+          "wait",
+          "secondary_interpretation"
+        ]
+      }
+    ],
+    "seedsWrite": [
+      "SEED_COMEBACK_PACING"
+    ],
+    "tags": [
+      "maturity"
+    ],
+    "presentation": {
+      "layoutHint": "decision",
+      "preloadPriority": "normal",
+      "assets": [
+        {
+          "id": "hero_evt_31_return_001",
+          "type": "image",
+          "role": "hero",
+          "fallbackId": "generic_medical"
+        }
+      ]
+    },
+    "canonStatus": "verified"
+  },
+  {
+    "id": "EVT_34_CON_001",
+    "ageWindow": [
+      34,
+      null
+    ],
+    "phase": "34_plus",
+    "family": "contract",
+    "gates": [
+      {
+        "path": "retirement.status",
+        "op": "eq",
+        "value": "playing"
+      }
+    ],
+    "timeWindow": {
+      "months": [
+        7,
+        8,
+        9
+      ]
+    },
+    "cooldown": 99999,
+    "weight": 1.15,
+    "text": {
+      "title": "Un año o dos",
+      "body": "La carrera ya no gira solo alrededor del nivel: cada decisión modifica cuánto quieres jugar, cuánto puedes jugar y bajo qué condiciones."
+    },
+    "intel": {
+      "visible": [
+        "rol actual",
+        "estado físico",
+        "situación contractual"
+      ],
+      "uncertain": [
+        "demanda real",
+        "planes del club"
+      ]
+    },
+    "choices": [
+      {
+        "id": "A",
+        "label": "Proteger el rol",
+        "intentTags": [
+          "a"
+        ],
+        "immediateEffects": [
+          {
+            "kind": "numeric",
+            "path": "professional.careerControl",
+            "delta": 3,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.motivationReserve",
+            "delta": 1,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "outcomeIds": [
+          "A_OUT"
+        ]
+      },
+      {
+        "id": "B",
+        "label": "Aceptar una adaptación",
+        "intentTags": [
+          "b"
+        ],
+        "immediateEffects": [
+          {
+            "kind": "numeric",
+            "path": "professional.roleAdaptability",
+            "delta": 4,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.statusInertia",
+            "delta": -2,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "outcomeIds": [
+          "B_OUT"
+        ]
+      },
+      {
+        "id": "C",
+        "label": "Priorizar el cuerpo",
+        "intentTags": [
+          "c"
+        ],
+        "immediateEffects": [
+          {
+            "kind": "numeric",
+            "path": "professional.matchSelectivity",
+            "delta": 5,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.recoveryDebt",
+            "delta": -4,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "outcomeIds": [
+          "C_OUT"
+        ]
+      },
+      {
+        "id": "D",
+        "label": "Explorar el mercado",
+        "intentTags": [
+          "d"
+        ],
+        "immediateEffects": [
+          {
+            "kind": "numeric",
+            "path": "reputation.marketHeat",
+            "delta": 3,
+            "min": 0,
+            "max": 100
+          },
+          {
+            "kind": "numeric",
+            "path": "professional.environmentStability",
+            "delta": -2,
+            "min": 0,
+            "max": 100
+          }
+        ],
+        "outcomeIds": [
+          "D_OUT"
+        ]
+      }
+    ],
+    "outcomes": [
+      {
+        "id": "A_OUT",
+        "baseWeight": 1,
+        "effects": [],
+        "messages": [
+          "La decisión cambia el equilibrio de tu tramo final."
+        ]
+      },
+      {
+        "id": "B_OUT",
+        "baseWeight": 1,
+        "effects": [],
+        "messages": [
+          "La decisión cambia el equilibrio de tu tramo final."
+        ]
+      },
+      {
+        "id": "C_OUT",
+        "baseWeight": 1,
+        "effects": [],
+        "messages": [
+          "La decisión cambia el equilibrio de tu tramo final."
+        ]
+      },
+      {
+        "id": "D_OUT",
+        "baseWeight": 1,
+        "effects": [],
+        "messages": [
+          "La decisión cambia el equilibrio de tu tramo final."
+        ]
+      }
+    ],
+    "tags": [
+      "late_career"
+    ],
+    "canonStatus": "technical_adaptation"
+  },
+  {
+    "id": "EVT_RET_LAST_001",
+    "ageWindow": [
+      34,
+      null
+    ],
+    "phase": "34_plus",
+    "family": "life",
+    "gates": [
+      {
+        "path": "retirement.status",
+        "op": "eq",
+        "value": "announced"
+      },
+      {
+        "path": "flags.LAST_MATCH_WINDOW",
+        "op": "eq",
+        "value": true
+      }
+    ],
+    "timeWindow": {
+      "months": [
+        4,
+        5,
+        6
+      ]
+    },
+    "cooldown": 99999,
+    "repeatable": false,
+    "weight": 6,
+    "text": {
+      "title": "El último partido no está garantizado",
+      "body": "La retirada deja de ser una idea abstracta y se convierte en una decisión concreta."
+    },
+    "intel": {
+      "visible": [
+        "cuerpo",
+        "rol",
+        "mercado",
+        "familia"
+      ],
+      "uncertain": [
+        "cómo recordarás este momento"
+      ]
+    },
+    "choices": [
+      {
+        "id": "PLAY",
+        "label": "Jugar si el cuerpo y el entrenador lo permiten",
+        "intentTags": [
+          "play"
+        ],
+        "immediateEffects": [
+          {
+            "kind": "flag",
+            "flag": "LAST_MATCH_PLAYED",
+            "value": true
+          },
+          {
+            "kind": "set",
+            "path": "retirement.status",
+            "value": "closed"
+          },
+          {
+            "kind": "set",
+            "path": "retirement.closureType",
+            "value": "planned_last_match"
+          }
+        ],
+        "outcomeIds": [
+          "PLAY_OUT"
+        ]
+      },
+      {
+        "id": "NO_MATCH",
+        "label": "Aceptar que quizá no haya despedida",
+        "intentTags": [
+          "no_match"
+        ],
+        "immediateEffects": [
+          {
+            "kind": "set",
+            "path": "retirement.status",
+            "value": "closed"
+          },
+          {
+            "kind": "set",
+            "path": "retirement.closureType",
+            "value": "no_last_match"
+          }
+        ],
+        "outcomeIds": [
+          "NO_MATCH_OUT"
+        ]
+      }
+    ],
+    "outcomes": [
+      {
+        "id": "PLAY_OUT",
+        "baseWeight": 1,
+        "effects": [],
+        "messages": [
+          "La decisión cambia el equilibrio de tu tramo final."
+        ]
+      },
+      {
+        "id": "NO_MATCH_OUT",
+        "baseWeight": 1,
+        "effects": [],
+        "messages": [
+          "La decisión cambia el equilibrio de tu tramo final."
+        ]
+      }
+    ],
+    "tags": [
+      "retirement_terminal"
+    ],
+    "canonStatus": "verified"
+  }
+]

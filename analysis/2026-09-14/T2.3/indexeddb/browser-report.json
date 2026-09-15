@@ -1,0 +1,24 @@
+{
+  "cycles": 100,
+  "aborts": 300,
+  "lostAcknowledgements": 100,
+  "checks": [
+    "concurrent replacement: one winner",
+    "invalid import preserves save",
+    "SHA-256 corruption and recovery, including unchanged payload",
+    "old tab divergence detected; both copies preserved",
+    "corrupt legacy recoverable without deletion",
+    "migration abort and retry"
+  ],
+  "timingsMs": [
+    {
+      "label": "250-command save",
+      "duration": 57,
+      "bytes": 65837,
+      "date": "2029-09-13"
+    }
+  ],
+  "status": "passed",
+  "durationMs": 182350,
+  "evidenceSource": "Transcribed from qa-persistence.html DOM observed by browser tool on previous turn; no rerun inferred."
+}

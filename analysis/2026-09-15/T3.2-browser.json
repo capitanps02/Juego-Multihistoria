@@ -1,0 +1,38 @@
+{
+  "pass": "T3.2",
+  "date": "2026-09-15",
+  "url": "http://127.0.0.1:4173/web/qa-continuity.html",
+  "fixture": "QA_T32_LONG_TEXT",
+  "longText": {
+    "characters": 6401,
+    "decisionSheetClientHeight": 453,
+    "decisionSheetScrollHeight": 3743,
+    "overflow": "auto",
+    "choicesVisibleAfterScroll": true
+  },
+  "touchViewport": {
+    "width": 390,
+    "height": 844,
+    "choiceCount": 3,
+    "choiceBoxes": [
+      {"width": 316, "height": 62, "top": 523, "bottom": 585},
+      {"width": 316, "height": 65, "top": 594, "bottom": 659},
+      {"width": 316, "height": 65, "top": 667, "bottom": 732}
+    ],
+    "pauseButton": {"width": 72, "height": 46}
+  },
+  "pauseResume": {
+    "pausedStatus": "Juego en pausa · pulsa Reanudar para continuar.",
+    "choicesDisabledWhilePaused": true,
+    "statusRemovedAfterResume": true,
+    "choicesEnabledAfterResume": true
+  },
+  "continuity": {
+    "browserBackKeepsPageAndReturnsHome": true,
+    "escapeReturnsHome": true,
+    "pendingSceneRestoredAfterReload": true,
+    "resultRenderedAfterChoice": true
+  },
+  "consoleErrors": 0,
+  "sourceChecks": "scripts/test-t32.mjs"
+}

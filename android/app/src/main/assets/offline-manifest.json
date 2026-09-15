@@ -1,0 +1,744 @@
+{
+  "integration": "T3.3",
+  "package": "android-webview-offline",
+  "entry": "index.html",
+  "storage": {
+    "type": "IndexedDB",
+    "key": "historia-jugador.android.offline.session.v1",
+    "legacyMigration": "localStorage",
+    "androidRuntimeVerified": true
+  },
+  "origin": "https://appassets.androidplatform.net/assets/",
+  "networkPolicy": {
+    "internetPermission": false,
+    "connectSrc": "none",
+    "externalUrls": []
+  },
+  "resources": {
+    "images": "data-uri-in-local.js",
+    "fonts": "system-only"
+  },
+  "files": [
+    {
+      "path": "dist/build-manifest.json",
+      "bytes": 15118,
+      "sha256": "b2db6e321fdfbe863b5b48167d2da413ac76d51b00985ed4e68109e5323e3856"
+    },
+    {
+      "path": "dist/catalog/canon-coverage.d.ts",
+      "bytes": 178,
+      "sha256": "dd764fe5bdd95fcb965053736112f59af96f51252282572abb278ffeddaf5075"
+    },
+    {
+      "path": "dist/catalog/canon-coverage.js",
+      "bytes": 1324,
+      "sha256": "bd6bcd96c790847fb168d200e535112940444a4f7a03647f7552760fd54c1fb5"
+    },
+    {
+      "path": "dist/catalog/npcs.d.ts",
+      "bytes": 286,
+      "sha256": "0118a502660a15d0cf48fddec5d0bfd58a06265a73ead9e188e97c79c2c83b9a"
+    },
+    {
+      "path": "dist/catalog/npcs.js",
+      "bytes": 7726,
+      "sha256": "a5fab850cd9702a843d7388ac25fc3218facc7ad6c13d07f982c27a9cd4c6614"
+    },
+    {
+      "path": "dist/catalog/seeds.d.ts",
+      "bytes": 450,
+      "sha256": "9d47791caf5c588cb5b5ee9d4f9db6b7a48cacf829fdd98f7e85d8b63b0a6df2"
+    },
+    {
+      "path": "dist/catalog/seeds.js",
+      "bytes": 40333,
+      "sha256": "d3e247a4e01005265c9924dbdf2b6b276e6e0e76be5d43a7d145b8c7b427b1d5"
+    },
+    {
+      "path": "dist/content/events/18_20/canonical-events.d.ts",
+      "bytes": 117,
+      "sha256": "462e25769b211fbf54e04e42c0a3fd204893012c733d403cdad8c558553966b9"
+    },
+    {
+      "path": "dist/content/events/18_20/canonical-events.js",
+      "bytes": 51733,
+      "sha256": "ef3e1c3f1eb0715535035d6f91d85c7d2e9dbaf9f83c0ecff7e7f85def1b77ed"
+    },
+    {
+      "path": "dist/content/events/18_20/conditional-events.d.ts",
+      "bytes": 358,
+      "sha256": "9fe2c938eee77f3b55e71992f056b2dd01b3b575ea33b9169440a34b77758678"
+    },
+    {
+      "path": "dist/content/events/18_20/conditional-events.js",
+      "bytes": 27899,
+      "sha256": "130b1c1300dd16e03422ddd34a7ec8ac127ca43800364e75520602d6a7365c9b"
+    },
+    {
+      "path": "dist/content/events/18_20/helpers.d.ts",
+      "bytes": 1710,
+      "sha256": "791c04a996574186a8034fce366de0be399ee3b1b917a984696055165786edbe"
+    },
+    {
+      "path": "dist/content/events/18_20/helpers.js",
+      "bytes": 2417,
+      "sha256": "6e7f3cc4c14da5916bd9a218aeebe09be7e191fd20788bb3e64bbc2565e3c4d4"
+    },
+    {
+      "path": "dist/content/events/18_20/principal-additions.d.ts",
+      "bytes": 130,
+      "sha256": "3deb444d7023ab8108b9d0f39051d52f8296915ead33e79f075dae2c8b2eef6c"
+    },
+    {
+      "path": "dist/content/events/18_20/principal-additions.js",
+      "bytes": 33894,
+      "sha256": "f857885991fdc69c205122c905366cdd0ec7aa8b423dfe5310c683bd384f8f9b"
+    },
+    {
+      "path": "dist/content/events/20_23/conditional-events.d.ts",
+      "bytes": 129,
+      "sha256": "f93e305ea71f0c126322c087597841a17f1aeda67bf6d5e454b58f7a79689617"
+    },
+    {
+      "path": "dist/content/events/20_23/conditional-events.js",
+      "bytes": 4994,
+      "sha256": "f89b22e60d4eead5280552b5464bbb836b4a588142f17ad714afde0e82f025f5"
+    },
+    {
+      "path": "dist/content/events/20_23/index.d.ts",
+      "bytes": 87,
+      "sha256": "f2f0a5212df12dc40a4be7b43398e72ed08a008915db2bb064d3a36a982a45ba"
+    },
+    {
+      "path": "dist/content/events/20_23/index.js",
+      "bytes": 218,
+      "sha256": "ef8aa9cea5a4ad8b4f649b528252ab931dcf119a82ce3e9c9b5877de0323a915"
+    },
+    {
+      "path": "dist/content/events/20_23/principal-events.d.ts",
+      "bytes": 127,
+      "sha256": "290015c748a1b3568e90e42cf540db68f3b602f6d599310f4ad325a2694ea0b3"
+    },
+    {
+      "path": "dist/content/events/20_23/principal-events.js",
+      "bytes": 14999,
+      "sha256": "daf0b98e68f7106f13bae1fb37854520c595c4f84120f6bd13483e7804d55a27"
+    },
+    {
+      "path": "dist/content/events/23_26/conditional-events.d.ts",
+      "bytes": 129,
+      "sha256": "a25855db76f875b29659f373e57141db6f5eb3d29911affb09ea65080e18d527"
+    },
+    {
+      "path": "dist/content/events/23_26/conditional-events.js",
+      "bytes": 5775,
+      "sha256": "b45a30308cc66046cb47f4ba3a59565037458b2eca3bce3be4c038f718980e63"
+    },
+    {
+      "path": "dist/content/events/23_26/index.d.ts",
+      "bytes": 87,
+      "sha256": "441a874af0c20c5f966bcbe74bddee059057cac5cc2d02e3e919149c2c7f5aaa"
+    },
+    {
+      "path": "dist/content/events/23_26/index.js",
+      "bytes": 218,
+      "sha256": "1ac2c013cc318d328ad31543bee62046575a7395a8746d20ae119a6be3cabd9d"
+    },
+    {
+      "path": "dist/content/events/23_26/principal-events.d.ts",
+      "bytes": 127,
+      "sha256": "c4cd6696aa01ad483a38c91f5fddfc8ad3a1c5b91d34ecf8d44c2a5e5055d2c0"
+    },
+    {
+      "path": "dist/content/events/23_26/principal-events.js",
+      "bytes": 24153,
+      "sha256": "2471dc6abe9e02d557bdb3fc3911f5938c8f8c7f1f463ddb36a7c19bc9a5624c"
+    },
+    {
+      "path": "dist/content/events/26_30/conditional-events.d.ts",
+      "bytes": 129,
+      "sha256": "8953b619e6b4aae31917fb3aae820066e206b447b8df2c2d62c0e047473a0ca2"
+    },
+    {
+      "path": "dist/content/events/26_30/conditional-events.js",
+      "bytes": 6858,
+      "sha256": "4d94667191e5a6a932c6bd5e41c593fd6ac9fbe98932959f38a2da29be94a4be"
+    },
+    {
+      "path": "dist/content/events/26_30/index.d.ts",
+      "bytes": 87,
+      "sha256": "ec7e8c77d4999513706fdef36717a3b227c5d10cbf865b62b545e91939742069"
+    },
+    {
+      "path": "dist/content/events/26_30/index.js",
+      "bytes": 218,
+      "sha256": "bb2efa952229cb96661b22c447fc3d10c3c0023e45a0a6360c277ffeaa5463ef"
+    },
+    {
+      "path": "dist/content/events/26_30/principal-events.d.ts",
+      "bytes": 127,
+      "sha256": "e4984f524227b1a6b96ee39d75232a6b0c3aa9d77f212415383fd007979c4f01"
+    },
+    {
+      "path": "dist/content/events/26_30/principal-events.js",
+      "bytes": 18012,
+      "sha256": "60a9d1cc3ce5d4f87dec82ed98ed585ff4c28f1c5445ef29991cd343f9d18a98"
+    },
+    {
+      "path": "dist/content/events/30_34/conditional-events.d.ts",
+      "bytes": 129,
+      "sha256": "2252111c888902d6eda994466c9813aa70bc91a5d0f78af80d6ff46b8cd5a3bc"
+    },
+    {
+      "path": "dist/content/events/30_34/conditional-events.js",
+      "bytes": 7237,
+      "sha256": "bb8b3ba9c5683c32a3fd4d510a44052c53716e4285e91bed79b339815f125b90"
+    },
+    {
+      "path": "dist/content/events/30_34/index.d.ts",
+      "bytes": 87,
+      "sha256": "5d9e833a3851b223aae05caa15676f197017a4eb715a4ab33fa917d158685fff"
+    },
+    {
+      "path": "dist/content/events/30_34/index.js",
+      "bytes": 218,
+      "sha256": "96e036e6151c19f4645aec54295cb4eb2111bc0701384a69f9544145f3fc8aec"
+    },
+    {
+      "path": "dist/content/events/30_34/principal-events.d.ts",
+      "bytes": 127,
+      "sha256": "0ee420663bd31a6cb4970466ef7da823d6b209ca211f356270d95d04c044c694"
+    },
+    {
+      "path": "dist/content/events/30_34/principal-events.js",
+      "bytes": 17360,
+      "sha256": "061b6694b6841ef78eb5a9656a4a6ec0e42318db193c94a5e1ba7a6f28c19fde"
+    },
+    {
+      "path": "dist/content/events/34_plus/conditional-events.d.ts",
+      "bytes": 131,
+      "sha256": "783a9fb4cad8b2640f7e8370d9181c0e795999caaf15a31584470ca149a1979f"
+    },
+    {
+      "path": "dist/content/events/34_plus/conditional-events.js",
+      "bytes": 9714,
+      "sha256": "1c4390d3af00965bffa96e3796544a16d221ce4f431f3c21183e939ee70f7204"
+    },
+    {
+      "path": "dist/content/events/34_plus/index.d.ts",
+      "bytes": 89,
+      "sha256": "2c69cf87f8f3ccbe6f7e7564506fb61537a8ee1f9e4758972eba191027006018"
+    },
+    {
+      "path": "dist/content/events/34_plus/index.js",
+      "bytes": 228,
+      "sha256": "a035c79dbbb26d5d4d7e82e10df2e67ee1e0319113f6501d2c8d91e61baad72a"
+    },
+    {
+      "path": "dist/content/events/34_plus/principal-events.d.ts",
+      "bytes": 129,
+      "sha256": "7aa875d63759b64315e66bee54fc13625c0f9707ec2bbb1ed2ccee338aedabfd"
+    },
+    {
+      "path": "dist/content/events/34_plus/principal-events.js",
+      "bytes": 10650,
+      "sha256": "00c515ccb1a9a5ad023a80dc1f4db744df7c4dc836d5cc86f107a5da7fd3482d"
+    },
+    {
+      "path": "dist/content/events/index.d.ts",
+      "bytes": 494,
+      "sha256": "af76d56313b12c55cc3eeebe98e98a7e82002db6440b48f4c22bec8537cf02ce"
+    },
+    {
+      "path": "dist/content/events/index.js",
+      "bytes": 816,
+      "sha256": "c8475f3b06fa55a221eff193804fd3dcd2753f8a7b73333fe1efff48c8d0ac21"
+    },
+    {
+      "path": "dist/content/initial-state.d.ts",
+      "bytes": 125,
+      "sha256": "d34e5a10ebaa7cc28f1bf3e3c110b40a85c4c95f4e93a39abf488c689fe08efb"
+    },
+    {
+      "path": "dist/content/initial-state.js",
+      "bytes": 5931,
+      "sha256": "5979cbe416a2c6e824795444668cd6fec4fec313c512c3302e4cb93f9ff075a1"
+    },
+    {
+      "path": "dist/content/media-manifest.d.ts",
+      "bytes": 123,
+      "sha256": "b17a1666abad0a9717da61bd9773f329bc158ddd863cfac0bc2b1795dd0e300d"
+    },
+    {
+      "path": "dist/content/media-manifest.js",
+      "bytes": 989,
+      "sha256": "0e0e4ffd262f216952d3956d7de2978c07bc3c074240d2a3b9be99470c37ce67"
+    },
+    {
+      "path": "dist/content/microfeeds/26_30.d.ts",
+      "bytes": 126,
+      "sha256": "c6f211224151fb39de1361d4ec35b454cc4816cb86c577639b7c12074ee76317"
+    },
+    {
+      "path": "dist/content/microfeeds/26_30.js",
+      "bytes": 3634,
+      "sha256": "fab1015efaf48a50268b8db645bc6f221e458940f129f8c05cae9ac46031b2da"
+    },
+    {
+      "path": "dist/content/microfeeds/30_34.d.ts",
+      "bytes": 126,
+      "sha256": "eba7ccca2b399d2abbaae3884f2f102a8c8f6fc6ec5bd42f1e0e3790056a595d"
+    },
+    {
+      "path": "dist/content/microfeeds/30_34.js",
+      "bytes": 6013,
+      "sha256": "4f8195ae48806564864c2abff83bdec57b91af68068cdae1a3b01c0e55d161c4"
+    },
+    {
+      "path": "dist/content/microfeeds/34_plus.d.ts",
+      "bytes": 128,
+      "sha256": "67780b5298f3f6e2865c8fb9542e860f452264d209b4ac1c1da08dcd0ff14338"
+    },
+    {
+      "path": "dist/content/microfeeds/34_plus.js",
+      "bytes": 10445,
+      "sha256": "c06e2fe73d6c5b8c6c24c2c493684daed5b5b2fbe8f79e23a44611c4e779694c"
+    },
+    {
+      "path": "dist/core/build.d.ts",
+      "bytes": 50,
+      "sha256": "f8ba980be27ea6c9b681203ea64cd00d13ab1301be38afa49ad7db07b7eaea43"
+    },
+    {
+      "path": "dist/core/build.js",
+      "bytes": 42,
+      "sha256": "e76aeeda6d5ef3d2e5fd7c9c860dcac5b3a484e0cc35e59cd0e5c2f82f894e81"
+    },
+    {
+      "path": "dist/core/composites.d.ts",
+      "bytes": 150,
+      "sha256": "1a52013e68d4650a51428c7192f4d25eb0fb72e70ed04346d3d85db43185ba9d"
+    },
+    {
+      "path": "dist/core/composites.js",
+      "bytes": 1160,
+      "sha256": "4819e7e213712b2747632a4607d1dee84d54f5aa07738cda6054a3084a097ada"
+    },
+    {
+      "path": "dist/core/conditions.d.ts",
+      "bytes": 135,
+      "sha256": "38fc3b60181bf05160c1a39f34fc36272843461e564a3f7295e97af064fcf2c9"
+    },
+    {
+      "path": "dist/core/conditions.js",
+      "bytes": 970,
+      "sha256": "8693a752816f68b08513c634cfe7f4c08292e129e4be342b2a4e198a04732164"
+    },
+    {
+      "path": "dist/core/path.d.ts",
+      "bytes": 201,
+      "sha256": "b64df5f5afdaff6ac239a8f924ebf87a332824dc7950cf6553149ae378e4dca5"
+    },
+    {
+      "path": "dist/core/path.js",
+      "bytes": 1602,
+      "sha256": "79da76e7f1911e85bfbd1b99daee657948c0f11d7ddf9a240f03f18f03e9009a"
+    },
+    {
+      "path": "dist/core/rng.d.ts",
+      "bytes": 389,
+      "sha256": "52617b32ce27696e4611e200868f7b7c5fb8bef82e47425ed6fb178ed3e5196b"
+    },
+    {
+      "path": "dist/core/rng.js",
+      "bytes": 1153,
+      "sha256": "86e1e655e10ec58e2c1fd6059389d2be00f748b4ea4a82656be47a0c3f02e13e"
+    },
+    {
+      "path": "dist/core/types.d.ts",
+      "bytes": 13035,
+      "sha256": "e30bf649df651d4706f75ef8c14bcf9f318e3506e93f01d9147a7dacc895ac61"
+    },
+    {
+      "path": "dist/core/types.js",
+      "bytes": 11,
+      "sha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+    },
+    {
+      "path": "dist/demo/run-batch.d.ts",
+      "bytes": 11,
+      "sha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+    },
+    {
+      "path": "dist/demo/run-batch.js",
+      "bytes": 907,
+      "sha256": "8358b401a4fbcfecaf8b12de034341621dcea562077bfe07dc734465da235f2e"
+    },
+    {
+      "path": "dist/demo/run-demo.d.ts",
+      "bytes": 11,
+      "sha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+    },
+    {
+      "path": "dist/demo/run-demo.js",
+      "bytes": 1671,
+      "sha256": "179e3759f50ca055b7c13ad0dcbbb7be1b666da2ad6f0a0639c20b440457f8c8"
+    },
+    {
+      "path": "dist/demo/run-v06.d.ts",
+      "bytes": 11,
+      "sha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+    },
+    {
+      "path": "dist/demo/run-v06.js",
+      "bytes": 583,
+      "sha256": "899da9c8ce3b3b251541fd11595beee1aa339ef9144ec5e60aa5ecfc3cb8a62d"
+    },
+    {
+      "path": "dist/demo/run-v07.d.ts",
+      "bytes": 11,
+      "sha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+    },
+    {
+      "path": "dist/demo/run-v07.js",
+      "bytes": 1146,
+      "sha256": "a2d060a462c8e7fa530292c42a6cfddad0cddae1f0448a0a65cef97737e8af75"
+    },
+    {
+      "path": "dist/epilogue/generator.d.ts",
+      "bytes": 185,
+      "sha256": "1a504afd644c0ede8857c3c7d7ee9f8bc60a7bbc48eaf69659ac649acdcd64f4"
+    },
+    {
+      "path": "dist/epilogue/generator.js",
+      "bytes": 5703,
+      "sha256": "5c0c5c518c473846c1a6362f3c47c4a9d8b82472113172010113efcc5bb4f61c"
+    },
+    {
+      "path": "dist/media/media-manager.d.ts",
+      "bytes": 531,
+      "sha256": "d530d7936fcb26bf2952af9474920284633c59b0ed2ec5334a9cae99a3d0c24f"
+    },
+    {
+      "path": "dist/media/media-manager.js",
+      "bytes": 1486,
+      "sha256": "e40324da5104f464c4c0da44d161eccdfa9f9afafbd44bd729439cf43a4575e2"
+    },
+    {
+      "path": "dist/multihistoria-engine-bundle.js",
+      "bytes": 498005,
+      "sha256": "df3454ee4e832572a24aecfabb7b374f89a692f1402f487ba7572ae1d44ea2bb"
+    },
+    {
+      "path": "dist/narrative/event-index.d.ts",
+      "bytes": 368,
+      "sha256": "053efae6ecc675517fa8f311072a787b043ed1a0e93388e7b64a5268810a4253"
+    },
+    {
+      "path": "dist/narrative/event-index.js",
+      "bytes": 884,
+      "sha256": "5f389ea1e74f16658c796e29548dcae741d9b4cd9b550c05a2b04a40f58a6970"
+    },
+    {
+      "path": "dist/narrative/resolver.d.ts",
+      "bytes": 494,
+      "sha256": "b63282ad98ec791b279b32c09b986677d733b59f87a293e65d9db55b3332ec10"
+    },
+    {
+      "path": "dist/narrative/resolver.js",
+      "bytes": 6067,
+      "sha256": "1d19ec77f8f4614230bc5c8a6018b4795a9326cc42e3345dff9f09d89d48ff82"
+    },
+    {
+      "path": "dist/narrative/scheduler.d.ts",
+      "bytes": 393,
+      "sha256": "9e7627398af7a86ea01d8d3a45274bcb87dddce5b81c9f3c3cf3f5219e392287"
+    },
+    {
+      "path": "dist/narrative/scheduler.js",
+      "bytes": 13608,
+      "sha256": "d009add99a54a10f56274bf8f3f08eedc2ce3fbb03b0c8a1700216cecfdb36c1"
+    },
+    {
+      "path": "dist/narrative/tick.d.ts",
+      "bytes": 126,
+      "sha256": "db669de66021556249df6e08071dcb4ea877d0d07ca09d207584f148fbac862b"
+    },
+    {
+      "path": "dist/narrative/tick.js",
+      "bytes": 245,
+      "sha256": "c2506d12cfec00aed3d239f0e98df604c80640d88aa03fff6b3a903cc6856db0"
+    },
+    {
+      "path": "dist/narrative/validate.d.ts",
+      "bytes": 254,
+      "sha256": "a753ec427efaa14bd61531fef6200b94bcb8c9afb2f78d1f606ad45477fa449b"
+    },
+    {
+      "path": "dist/narrative/validate.js",
+      "bytes": 970,
+      "sha256": "f5c087d53e47fe798112ce28769033b6a9ccb6e4186af5b0e31839cf25de9c64"
+    },
+    {
+      "path": "dist/save/save.d.ts",
+      "bytes": 241,
+      "sha256": "e2e68039e6e6985d98cb1a3a93df472763167766176801581a63a6a8c7f1e52e"
+    },
+    {
+      "path": "dist/save/save.js",
+      "bytes": 13191,
+      "sha256": "e03b5a63da8e92c14cf8902b7749a4ac584d15b4746b7b796ba98c96b4b9db08"
+    },
+    {
+      "path": "dist/save/validate-save.d.ts",
+      "bytes": 1064,
+      "sha256": "196d9036d9adcfc8ed10ec6d782a136220f27132b95b7bc1a70ae9254cc837a9"
+    },
+    {
+      "path": "dist/save/validate-save.js",
+      "bytes": 10149,
+      "sha256": "fafad8743bdde6f6513c6200d614b3b16232c2f9d5e780727cb68fe1a64bc1db"
+    },
+    {
+      "path": "dist/save/validation.d.ts",
+      "bytes": 1646,
+      "sha256": "e6f9753abebdce47016a06889c71e24727df008fbfe61363563eea11a29ddd9b"
+    },
+    {
+      "path": "dist/save/validation.js",
+      "bytes": 20480,
+      "sha256": "9ea31ae1000b8a566f831b3abac2e7dd0e3a668521c80291a0708e7179ce5682"
+    },
+    {
+      "path": "dist/session/game-session.d.ts",
+      "bytes": 4621,
+      "sha256": "2002639440374fb51f436dd5f9d9ff298f2ca6675d2f165d45d273c2e34d74b1"
+    },
+    {
+      "path": "dist/session/game-session.js",
+      "bytes": 12058,
+      "sha256": "9381d59d42841dac0518ba3afa745a3eb712f468769ee480d7659bc103de7d49"
+    },
+    {
+      "path": "dist/session/validate-session.d.ts",
+      "bytes": 239,
+      "sha256": "edb3a697bcb1675cc2ae41aa6b3c7e890174bcf9e4c8fc0b111fd2aaaf8c2c81"
+    },
+    {
+      "path": "dist/session/validate-session.js",
+      "bytes": 7589,
+      "sha256": "5019873e82faa03cc8cc2eb11f091b67c66f9343913d187f6b8235532d25e367"
+    },
+    {
+      "path": "dist/simulation/adult-adapter.d.ts",
+      "bytes": 239,
+      "sha256": "07eec89f56c97f49f5786801aca2de203f9de1115c748b9c716d2f84570c6938"
+    },
+    {
+      "path": "dist/simulation/adult-adapter.js",
+      "bytes": 1814,
+      "sha256": "9c8a42ea757a803a342bb5d5f1aad3349b89e7bb08216bbb36cff9b8f80f1f5f"
+    },
+    {
+      "path": "dist/simulation/age-milestones.d.ts",
+      "bytes": 787,
+      "sha256": "d985249b0b60437d5ba7926c9d04958e19f0410b56657b36dfa760bbfd93aa16"
+    },
+    {
+      "path": "dist/simulation/age-milestones.js",
+      "bytes": 1748,
+      "sha256": "d87ea72f834871ae6d8e99a9550ab5f64d3c74685494dfe0a1b2f351271b1419"
+    },
+    {
+      "path": "dist/simulation/ageing-engine.d.ts",
+      "bytes": 267,
+      "sha256": "bf312b13a57a3679a61462091b4f83fe332cb8627fcec816312d3587e90dee47"
+    },
+    {
+      "path": "dist/simulation/ageing-engine.js",
+      "bytes": 5922,
+      "sha256": "007cd3a6fc0bee25a440e62f3a4e082a9215dda613aef5ec0fc9b689663bbed1"
+    },
+    {
+      "path": "dist/simulation/batch.d.ts",
+      "bytes": 2597,
+      "sha256": "5c56f20c53ac7d2a4e4c0d9a3dfa0690255530f40cbc4514224047903b3409ef"
+    },
+    {
+      "path": "dist/simulation/batch.js",
+      "bytes": 6568,
+      "sha256": "956e7641131ec34e9ee1bf6166abcf76b24e784e212b1f8325ee827722d1d961"
+    },
+    {
+      "path": "dist/simulation/career-simulator.d.ts",
+      "bytes": 1331,
+      "sha256": "bb7e37bb71a84131caadd4210b0b21a85bf032835c53c5ef6cbbc8ca59821fb1"
+    },
+    {
+      "path": "dist/simulation/career-simulator.js",
+      "bytes": 4726,
+      "sha256": "93abca55e06ab4bdb9325fd59f7d6465cb8b48f2312b45b1a0cf19040cdb5107"
+    },
+    {
+      "path": "dist/simulation/late-career-engine.d.ts",
+      "bytes": 463,
+      "sha256": "b7eb75b7b18f22fd4924af3b3c2e81e6a5a88024c806cb4cdce107bcd67e497b"
+    },
+    {
+      "path": "dist/simulation/late-career-engine.js",
+      "bytes": 9744,
+      "sha256": "ec988dcebe020cda89a4e44189142d5f666b7b95d4ecfb57097f9c1c9fb41b07"
+    },
+    {
+      "path": "dist/simulation/maturity-adapter.d.ts",
+      "bytes": 155,
+      "sha256": "b3147c2ba7ff7dcf39d3155383e4254e9f315413de83b51a4b6a1e54d45356b7"
+    },
+    {
+      "path": "dist/simulation/maturity-adapter.js",
+      "bytes": 3102,
+      "sha256": "f055d333789f898698369d730acc9e001887a5fc5bcc0ab8f24e071332499fa9"
+    },
+    {
+      "path": "dist/simulation/microfeed.d.ts",
+      "bytes": 221,
+      "sha256": "32a75d4b90984276d20ebfbcd7ec279d4f37fbb6eb26bbb3034b9e8b5f826e03"
+    },
+    {
+      "path": "dist/simulation/microfeed.js",
+      "bytes": 1049,
+      "sha256": "ef7a3ba1a295c00749e53edd391e16219868311df334a06c9ec3f38faa2dfded"
+    },
+    {
+      "path": "dist/simulation/offers.d.ts",
+      "bytes": 1484,
+      "sha256": "f9e9da115b4d8c82c1eccecccf9b993f1fe7881f19e7f608b2af550abc1e811e"
+    },
+    {
+      "path": "dist/simulation/offers.js",
+      "bytes": 4019,
+      "sha256": "e5b9612baffb887584ae327f8525d34646d5beb18ba7fa556c01c54f76ec34bb"
+    },
+    {
+      "path": "dist/simulation/peak-adapter.d.ts",
+      "bytes": 151,
+      "sha256": "bfaf63d08710d3e7a5066501d4ee281d5ef598fd6564884d1624e3dd120ca85e"
+    },
+    {
+      "path": "dist/simulation/peak-adapter.js",
+      "bytes": 1611,
+      "sha256": "7eea344f7c3e99d7b91f7e3853891bf95d8a983da3496cbb62ca4f31c2a71516"
+    },
+    {
+      "path": "dist/simulation/professional-adapter.d.ts",
+      "bytes": 159,
+      "sha256": "202c273fb0a78fe151d8045c199e4640ed94f7704bb43adb28cb1c9f6bc1abee"
+    },
+    {
+      "path": "dist/simulation/professional-adapter.js",
+      "bytes": 5437,
+      "sha256": "e8d10813829609641522ecb00de15dc073ec4ccd0e1bb154659b5a7ae6827333"
+    },
+    {
+      "path": "dist/simulation/state20-classifier.d.ts",
+      "bytes": 416,
+      "sha256": "af4f158903368dbe2631183e2d99d04becdb81f405db84a4958522c109f908a8"
+    },
+    {
+      "path": "dist/simulation/state20-classifier.js",
+      "bytes": 2553,
+      "sha256": "4b4db233ecf4dadf21cc680acfb877de716b6ca784f0d15492eea139f81306d7"
+    },
+    {
+      "path": "dist/simulation/state23-classifier.d.ts",
+      "bytes": 312,
+      "sha256": "4bd8193fde99f6137d55b99325bff621ef653d609ed10f1fc787239dc7bb345b"
+    },
+    {
+      "path": "dist/simulation/state23-classifier.js",
+      "bytes": 3366,
+      "sha256": "c5a9d8467c069c9e0659bf0c26ac2a0236da3ed9ad684923901971e334d83d3f"
+    },
+    {
+      "path": "dist/simulation/state26-classifier.d.ts",
+      "bytes": 312,
+      "sha256": "ec0f4555a0173e5dd9f54129edb88234869c19903cabb405298c7a80ca4a9f32"
+    },
+    {
+      "path": "dist/simulation/state26-classifier.js",
+      "bytes": 4118,
+      "sha256": "a1450da6da2c17e3ac99968edbe043162485047ab683d4bc04177021b44d0f2d"
+    },
+    {
+      "path": "dist/simulation/state30-classifier.d.ts",
+      "bytes": 312,
+      "sha256": "1113b7a5ded5a69f2fabb3326cfba78dd8eace0fe02f503ededa3146d3ea70fd"
+    },
+    {
+      "path": "dist/simulation/state30-classifier.js",
+      "bytes": 4951,
+      "sha256": "82388ef6c64c4f706eccc30bc3ab21e483de91f041ac919fa9f92d56425ead69"
+    },
+    {
+      "path": "dist/simulation/state34-classifier.d.ts",
+      "bytes": 335,
+      "sha256": "7a90e296d69e02be74ae278850c189402f3d24cff611836e00c088baaccda4c6"
+    },
+    {
+      "path": "dist/simulation/state34-classifier.js",
+      "bytes": 5369,
+      "sha256": "a07469502de3b708cc36315c398d34b4d3c1bbd1625d7da1a4f8be1eb7fa25ec"
+    },
+    {
+      "path": "dist/simulation/world-simulator.d.ts",
+      "bytes": 197,
+      "sha256": "27ae6bdcadc0e89a0c39849ca582e932229b1b61b32fca56836fbbede3bc636e"
+    },
+    {
+      "path": "dist/simulation/world-simulator.js",
+      "bytes": 29803,
+      "sha256": "b4464979cdc3fe28dd6f760c0d1827a2c56928f5ba2d36cadfc2707f3a5dfa2f"
+    },
+    {
+      "path": "dist/validation/build-validation.d.ts",
+      "bytes": 262,
+      "sha256": "03b03c0c8859d95b0cb2566793eb5416b58894b67096932946fda66ab8ccae2c"
+    },
+    {
+      "path": "dist/validation/build-validation.js",
+      "bytes": 9453,
+      "sha256": "812ba8ae6f34507977d74fdd18217da9dc83c6548f5b30711e13e883c4ebf227"
+    },
+    {
+      "path": "index.html",
+      "bytes": 618,
+      "sha256": "8f6400c8ff1633ed1b1726c89e1ebba4b6551f51c58debef984f32df10d52940"
+    },
+    {
+      "path": "web/game-ui.css",
+      "bytes": 13814,
+      "sha256": "c71bc37bbcce8c9ba8625eac000dd84636f57fb508400026d6ea1368a6c19f5f"
+    },
+    {
+      "path": "web/game-ui.js",
+      "bytes": 23783,
+      "sha256": "6af6fe5dfb9c21d7452823241fcc414ec9245d624c60e4da80884edb52cba6c9"
+    },
+    {
+      "path": "web/indexed-save-store.js",
+      "bytes": 4942,
+      "sha256": "0a124e36954dcebeffe7761913eb1333e57a8fd8053cc07d89f0ed4409f5668d"
+    },
+    {
+      "path": "web/local.js",
+      "bytes": 9160554,
+      "sha256": "42fc877aecbd811b05fb4fc827ba0f9eef994d3d0ea7c30f22d40cf1cba3ecd2"
+    },
+    {
+      "path": "web/page.css",
+      "bytes": 60,
+      "sha256": "9f41c33e78e23c808eb548781244cff9ddd00be19e5365fcdafd216c68413c82"
+    }
+  ],
+  "generatedAt": "2026-09-15"
+}

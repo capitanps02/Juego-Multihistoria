@@ -1,0 +1,30 @@
+.android-tools/
+android/.gradle/
+android/app/build/
+android/local.properties
+
+# macOS
+.DS_Store
+
+# Node
+node_modules/
+
+# Android / Gradle
+android/**/build/
+android/.gradle/
+android/local.properties
+
+# Secrets
+.env
+.env.*
+*.jks
+*.keystore
+
+# Logs / caches
+*.log
+.cache/
+.tmp/
+
+# Generated analysis files
+analysis/**/guion-render/page-*.png
+analysis/**/tools/package/

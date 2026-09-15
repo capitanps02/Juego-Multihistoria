@@ -1,0 +1,166 @@
+import type { EventDefinition } from "../../../core/types.js";
+import { ambiguousEvent as E, flag, n, seedCreate, set } from "./helpers.js";
+
+const verified = { canonStatus: "verified" as const };
+
+export const PRINCIPAL_ADDITIONS_18_20: EventDefinition[] = [
+  E({
+    ...verified, id: "EVT_18_LOCK_001", ageWindow: [18, 18], family: "team", title: "La cena de los mayores",
+    body: "En la primera cena de pretemporada, Leo te avisa de una costumbre: los nuevos pagan una parte desproporcionada. No es una norma y nadie aclara cuánto importa el ritual.",
+    visible: ["El coste es asumible pero relevante para un canterano.", "No existe una norma formal del club."],
+    uncertain: ["No sabes si Vela espera que sigas el ritual ni cómo leerán los veteranos cualquier límite."],
+    gates: [{ path: "flags.PRESEASON_STARTED", op: "eq", value: true }], timeWindow: { months: [7, 8] },
+    npcRefs: ["NPC_PLR_10", "NPC_PLR_11", "NPC_PLR_12", "NPC_PLR_14"], seedsWrite: ["SEED_VELA_STANCE"], tags: ["locker", "ritual", "boundaries"], weight: 13,
+    choices: [
+      { id: "PAY", label: "Pagar sin discutir", intentTags: ["belonging", "quiet"], primaryMessage: "El gesto compra comodidad y nadie vuelve a mencionarlo.", secondaryMessage: "La facilidad con la que aceptas el ritual te coloca, por ahora, abajo en la jerarquía informal.", primaryEffects: [n("rel.NPC_PLR_10.affinity", 5), n("rel.NPC_PLR_11.affinity", 4)], secondaryEffects: [n("rel.NPC_PLR_10.respect", -3)] },
+      { id: "JOKE", label: "Pagar tu parte normal y bromear con que el resto llegará cuando cobres como ellos", intentTags: ["humor", "boundary"], primaryMessage: "La broma funciona y marcas un límite sin romper el ambiente.", secondaryMessage: "El comentario suena más desafiante de lo que pretendías.", primaryEffects: [n("rel.NPC_PLR_10.respect", 5), n("rel.NPC_PLR_11.affinity", 3)], secondaryEffects: [n("rel.NPC_PLR_10.affinity", -4)], primarySeedTransitions: [seedCreate("SEED_VELA_STANCE", 22, { dinner: "joke_worked" })], secondarySeedTransitions: [seedCreate("SEED_VELA_STANCE", 28, { dinner: "joke_bad" })] },
+      { id: "ASK_VELA", label: "Preguntar en privado a Vela si de verdad espera que lo hagas", intentTags: ["direct", "hierarchy"], primaryMessage: "Vela aprecia que se lo preguntes a él y no conviertas el ritual en un debate público.", secondaryMessage: "Vela cree que has hecho demasiado grande una costumbre que para él era trivial.", primaryEffects: [n("rel.NPC_PLR_10.trust", 5)], secondaryEffects: [n("rel.NPC_PLR_10.affinity", -3)], primarySeedTransitions: [seedCreate("SEED_VELA_STANCE", 26, { dinner: "direct" })] },
+      { id: "SKIP", label: "No ir a la cena alegando un compromiso familiar", intentTags: ["avoid", "family"], primaryMessage: "La ausencia no tiene coste: el vestuario sigue con su vida.", secondaryMessage: "Evitas el conflicto, pero pierdes una pequeña oportunidad de pertenecer al grupo.", primaryEffects: [], secondaryEffects: [n("rel.NPC_PLR_11.affinity", -3), n("rel.NPC_PLR_12.affinity", -2)] }
+    ]
+  }),
+
+  E({
+    ...verified, id: "EVT_18_OPP_001", ageWindow: [18, 18], family: "sport", title: "La primera ventana",
+    body: "Bruno termina una sesión tocándose el isquio. Montalbán te pregunta si estás para veinte minutos mañana. Tienes las piernas cargadas, pero no existe lesión diagnosticada.",
+    visible: ["La convocatoria todavía no está confirmada.", "No tienes dolor concreto."],
+    uncertain: ["Paula cree que la carga es alta y Montalbán no promete que vayas a jugar."],
+    gates: [{ path: "flags.FIRST_TEAM_ATTENTION", op: "eq", value: true }, { path: "flags.OFFICIAL_DEBUT", op: "eq", value: false }], timeWindow: { months: [8, 9, 10, 11, 12] },
+    npcRefs: ["NPC_CCH_01", "NPC_CCH_02", "NPC_MED_01", "NPC_PLR_12"], seedsWrite: ["SEED_BODY_PRECEDENT", "SEED_MENA_EARLY_READ"], tags: ["debut", "body", "opportunity"], weight: 16,
+    choices: [
+      { id: "HUNDRED", label: "Decir que estás al cien por cien", intentTags: ["ambition", "conceal"], primaryMessage: "La respuesta abre la convocatoria y tu cuerpo tolera la carga.", secondaryMessage: "La oportunidad sigue viva, pero el precedente de ocultar carga complica cómo se interpretan tus molestias futuras.", primaryEffects: [n("sport.roleScore", 7), flag("WIN_DEBUT", true)], secondaryEffects: [n("body.risk", 8), flag("WIN_DEBUT", true)], primarySeedTransitions: [seedCreate("SEED_BODY_PRECEDENT", 38, { early: "said_100" })], secondarySeedTransitions: [seedCreate("SEED_BODY_PRECEDENT", 50, { early: "concealed_load" })] },
+      { id: "AVAILABLE_LOADED", label: "Decir que estás disponible, pero contar que vienes cargado", intentTags: ["transparent", "professional"], primaryMessage: "Montalbán valora que le des información útil y mantiene abierta la convocatoria.", secondaryMessage: "El técnico prefiere a otro jugador más fresco para una oportunidad que quizá no vuelva pronto.", primaryEffects: [n("rel.NPC_CCH_01.trust", 6), flag("WIN_DEBUT", true)], secondaryEffects: [n("sport.roleScore", -3), n("body.risk", -4)], primarySeedTransitions: [seedCreate("SEED_BODY_PRECEDENT", 28, { early: "transparent" })] },
+      { id: "ASK_ROLE", label: "Preguntar primero qué papel imagina para ti antes de contestar sobre sensaciones", intentTags: ["information", "negotiation"], primaryMessage: "La pregunta se interpreta como lectura madura de la oportunidad y Mena te explica el plan.", secondaryMessage: "Montalbán cree que estás negociando antes de ganarte el sitio.", primaryEffects: [n("rel.NPC_CCH_02.trust", 7), n("control.career", 3), flag("WIN_DEBUT", true)], secondaryEffects: [n("rel.NPC_CCH_01.trust", -5)], primarySeedTransitions: [seedCreate("SEED_MENA_EARLY_READ", 34, { early: "asked_role" })] }
+    ]
+  }),
+
+  E({
+    ...verified, id: "EVT_18_MKT_001", ageWindow: [18, 18], family: "market", title: "La oferta que no existe",
+    body: "Te llega que un club de Segunda preguntaría seriamente por ti si UDV abre la puerta. No existe documento, cifra ni llamada oficial.",
+    visible: ["Existe una pista informal plausible, no una oferta formal."],
+    uncertain: ["La fuente puede estar inflando el interés y el comprador puede desaparecer antes de que UDV reaccione."],
+    gates: [{ path: "reputation.marketHeat", op: "gte", value: 10 }], timeWindow: { months: [11, 12] },
+    npcRefs: ["NPC_AGT_01", "NPC_AGT_02", "NPC_ACA_01", "NPC_PRS_01", "NPC_DIR_02"], seedsRead: ["SEED_FIRST_AGENT"], seedsWrite: ["SEED_FIRST_LEAK", "SEED_FIRST_AGENT", "SEED_EXIT_STYLE_UDV"], tags: ["market", "rumor", "leverage"], weight: 14,
+    choices: [
+      { id: "MOVE_NAME", label: "Autorizar a la fuente a mover tu nombre discretamente", intentTags: ["market", "discreet"], primaryMessage: "El tanteo convierte el interés en una conversación real.", secondaryMessage: "El posible comprador interpreta que el entorno está subastando un jugador todavía verde y enfría el interés.", primaryEffects: [n("reputation.marketHeat", 10), n("control.career", 3), flag("FORMAL_INTEREST", true)], secondaryEffects: [n("reputation.marketHeat", -4)], primarySeedTransitions: [seedCreate("SEED_FIRST_AGENT", 40, { market18: "authorized" })] },
+      { id: "SOFT_LEVERAGE", label: "Usar el interés para preguntar a Ferrer por renovación y minutos sin nombrar al club", intentTags: ["leverage", "private"], primaryMessage: "La palanca suave consigue información y mejora tu posición negociadora.", secondaryMessage: "Ferrer detecta la maniobra, pero sin una oferta real no cambia su postura.", primaryEffects: [n("control.career", 7), n("rel.NPC_DIR_02.respect", 4)], secondaryEffects: [n("rel.NPC_DIR_02.trust", -3)] },
+      { id: "WAIT_WRITTEN", label: "No hablar hasta que exista una oferta por escrito", intentTags: ["patience", "certainty"], primaryMessage: "Esperar protege tu credibilidad y el interés sobrevive hasta formalizarse.", secondaryMessage: "El club interesado cubre la vacante antes de dar el paso formal.", primaryEffects: [n("rel.NPC_DIR_02.trust", 3), flag("FORMAL_INTEREST", true)], secondaryEffects: [n("reputation.marketHeat", -5)] },
+      { id: "LEAK", label: "Filtrar que un club de Segunda sigue al canterano para medir la reacción", intentTags: ["leak", "pressure"], primaryMessage: "La filtración genera competencia y aumenta tu palanca.", secondaryMessage: "UDV sospecha de tu entorno y el comprador no quiere aparecer en una operación pública tan pronto.", primaryEffects: [n("reputation.marketHeat", 12), n("reputation.mediaHeat", 8)], secondaryEffects: [n("rel.NPC_DIR_02.trust", -9), n("reputation.mediaHeat", 10)], primarySeedTransitions: [seedCreate("SEED_FIRST_LEAK", 58, { first: "useful" })], secondarySeedTransitions: [seedCreate("SEED_FIRST_LEAK", 72, { first: "costly" }), seedCreate("SEED_EXIT_STYLE_UDV", 42, { market18: "leak" })] }
+    ]
+  }),
+
+  E({
+    ...verified, id: "EVT_19_MKT_001", ageWindow: [19, 19], family: "market", title: "La cláusula y el salto",
+    body: "Un club superior pregunta condiciones. No garantiza titularidad y UDV aún controla precio y tiempos.",
+    visible: ["El interés está confirmado, pero todavía puede no existir oferta final."], uncertain: ["El rol real oscila entre primer equipo, rotación y proyecto; las fuentes no coinciden."],
+    gates: [{ path: "reputation.marketHeat", op: "gte", value: 20 }], timeWindow: { months: [7, 8] }, npcRefs: ["NPC_DIR_02", "NPC_AGT_01", "NPC_AGT_02"], seedsWrite: ["SEED_EXIT_STYLE_UDV", "SEED_FIRST_LEAK", "SEED_CONTRACT_HARDLINE"], tags: ["market", "jump", "control"], weight: 16,
+    choices: [
+      { id: "PRIVATE_FACILITATE", label: "Pedir a UDV que facilite la negociación en privado", intentTags: ["private", "exit"], primaryMessage: "La discreción mantiene a todas las partes dentro y el salto se vuelve negociable.", secondaryMessage: "UDV utiliza el silencio para endurecer precio y la ventana se estrecha.", primaryEffects: [n("control.career", 7), flag("HIGHER_CLUB_ROUTE", true)], secondaryEffects: [n("reputation.marketHeat", -3)], primarySeedTransitions: [seedCreate("SEED_EXIT_STYLE_UDV", 48, { year19: "private" })] },
+      { id: "PUBLIC_LISTEN", label: "Decir que estás feliz, pero escucharías un proyecto superior", intentTags: ["public", "market"], primaryMessage: "La frase abre mercado sin romper del todo con UDV.", secondaryMessage: "La exposición convierte una consulta en ruido y endurece a la dirección.", primaryEffects: [n("reputation.mediaHeat", 8), n("reputation.marketHeat", 8), flag("HIGHER_CLUB_ROUTE", true)], secondaryEffects: [n("rel.NPC_DIR_02.trust", -7), n("reputation.mediaHeat", 10)], primarySeedTransitions: [seedCreate("SEED_FIRST_LEAK", 48, { year19: "public_listen" })] },
+      { id: "GUARANTEE", label: "No moverte sin una garantía contractual/deportiva fuerte", intentTags: ["guarantee", "control"], primaryMessage: "Un destino acepta proteger parte de tu rol y reduce incertidumbre.", secondaryMessage: "La exigencia elimina compradores que sí ofrecían un salto plausible, aunque sin garantías.", primaryEffects: [n("control.career", 9), flag("HIGHER_CLUB_ROUTE", true)], secondaryEffects: [n("reputation.marketHeat", -6)] },
+      { id: "CREATE_BIDDING", label: "Autorizar al agente a crear competencia con otros clubes", intentTags: ["agent", "bidding"], primaryMessage: "La competencia mejora condiciones y aparecen dos rutas reales.", secondaryMessage: "Un club de desarrollo se retira al percibir una subasta que no quiere pagar.", primaryEffects: [n("reputation.marketHeat", 13), n("control.career", 5), flag("BIG_CLUB_INTEREST", true)], secondaryEffects: [n("reputation.marketHeat", -5)], primarySeedTransitions: [seedCreate("SEED_FIRST_LEAK", 42, { year19: "bidding" })] }
+    ]
+  }),
+
+  E({
+    ...verified, id: "EVT_19_RIV_001", ageWindow: [19, 19], family: "team", title: "Adrián entra en la foto",
+    body: "Adrián Costa hace una pretemporada excelente y Rivas empieza a llamarlo otra joya de Cerro Alto. La comparación ya existe aunque ninguno la haya pedido.",
+    visible: ["Adrián está rindiendo bien y recibe atención."], uncertain: ["No sabes si el club, la agencia o la prensa acabará tratándoos como competencia directa."],
+    timeWindow: { months: [7, 8, 9] }, npcRefs: ["NPC_PLR_15", "NPC_ACA_01", "NPC_AGT_02"], seedsWrite: ["SEED_ADRIAN_MIRROR"], tags: ["rival", "academy", "comparison"], weight: 13,
+    choices: [
+      { id: "TRAIN_TOGETHER", label: "Felicitarle y proponer entrenar juntos", intentTags: ["cooperate", "rival"], primaryMessage: "La cooperación eleva el nivel de ambos sin borrar la competencia.", secondaryMessage: "Adrián agradece el gesto, pero sospecha que quieres vigilar de cerca su progreso.", primaryEffects: [n("rel.NPC_PLR_15.affinity", 7), n("sport.roleScore", 3)], secondaryEffects: [n("rel.NPC_PLR_15.trust", -2)], primarySeedTransitions: [seedCreate("SEED_ADRIAN_MIRROR", 38, { start: "cooperative" })], secondarySeedTransitions: [seedCreate("SEED_ADRIAN_MIRROR", 43, { start: "guarded" })] },
+      { id: "CORDIAL_FOCUS", label: "Ser cordial y centrarte en tu trabajo", intentTags: ["distance", "focus"], primaryMessage: "La distancia evita fabricar una rivalidad que todavía no existe.", secondaryMessage: "El silencio deja que otros definan la comparación por vosotros.", primaryEffects: [n("sport.roleScore", 2)], secondaryEffects: [n("reputation.mediaHeat", 3)], primarySeedTransitions: [seedCreate("SEED_ADRIAN_MIRROR", 30, { start: "parallel" })] },
+      { id: "OWN_NUMBERS", label: "Dejar que tu entorno destaque públicamente tus números y experiencia", intentTags: ["image", "competitive"], primaryMessage: "La comparación te favorece a corto plazo y refuerza tu estatus.", secondaryMessage: "Adrián siente que has convertido una competencia deportiva en campaña de entorno.", primaryEffects: [n("reputation.mediaHeat", 6), n("reputation.marketHeat", 4)], secondaryEffects: [n("rel.NPC_PLR_15.resentment", 8)], primarySeedTransitions: [seedCreate("SEED_ADRIAN_MIRROR", 58, { start: "public_competition" })] },
+      { id: "ASK_AGENCY", label: "Preguntar a tu agente si Prisma está priorizando a Adrián antes de reaccionar", intentTags: ["information", "agent"], primaryMessage: "Consigues contexto útil antes de convertir la sospecha en conflicto.", secondaryMessage: "La consulta vuelve a la agencia y alimenta la idea de que ya estás compitiendo por recursos.", primaryEffects: [n("control.career", 5)], secondaryEffects: [n("rel.NPC_PLR_15.trust", -3)], primarySeedTransitions: [seedCreate("SEED_ADRIAN_MIRROR", 44, { start: "agency_question" })] }
+    ]
+  }),
+
+  E({
+    ...verified, id: "EVT_19_CCH_001", ageWindow: [19, 19], family: "tactical", title: "El jefe del segundo año",
+    body: "El entrenador del segundo año puede ser Montalbán o alguien nuevo. Dice que todos empiezan de cero, aunque la jerarquía real nunca parte de cero.",
+    visible: ["Conoces al técnico actual y la plantilla."], uncertain: ["No sabes cuánto pesan realmente la temporada anterior, los fichajes ni los informes del staff."],
+    timeWindow: { months: [7, 8, 9] }, npcRefs: ["NPC_CCH_01", "NPC_CCH_02", "NPC_DIR_02"], tags: ["coach", "role", "hierarchy"], weight: 13,
+    choices: [
+      { id: "ADAPT", label: "Adaptarte sin hablar de las semanas anteriores", intentTags: ["adapt", "quiet"], primaryMessage: "El técnico valora que compitas sin pedir créditos del pasado.", secondaryMessage: "La ausencia de conversación hace que tu mejor rol tarde en aparecer.", primaryEffects: [n("rel.NPC_CCH_01.trust", 4)], secondaryEffects: [n("sport.roleScore", -3)] },
+      { id: "ROLE_TALK", label: "Pedir pronto una conversación y explicar dónde rindes mejor", intentTags: ["direct", "role"], primaryMessage: "La charla ayuda al staff a usarte mejor y mejora tu encaje.", secondaryMessage: "El técnico la lee como necesidad de estatus demasiado pronto.", primaryEffects: [n("sport.roleScore", 7), n("control.career", 3)], secondaryEffects: [n("rel.NPC_CCH_01.trust", -5)] },
+      { id: "AGENT_CLARITY", label: "Pedir al agente que aclare tu jerarquía con el club antes del cierre de mercado", intentTags: ["agent", "leverage"], primaryMessage: "El club responde y obtienes información antes de que cierre el mercado.", secondaryMessage: "La intervención externa irrita al cuerpo técnico y convierte el rol en negociación institucional.", primaryEffects: [n("control.career", 6)], secondaryEffects: [n("rel.NPC_CCH_01.trust", -7), n("rel.NPC_DIR_02.trust", -3)] }
+    ]
+  }),
+
+  E({
+    ...verified, id: "EVT_19_MEDIA_001", ageWindow: [19, 19], family: "press", title: "¿Quién es mejor?",
+    body: "Raúl publica una encuesta comparándote con Adrián y Clara te pregunta por ella. La comparación ya circula aunque decidas no participar.",
+    visible: ["La encuesta y sus respuestas son públicas."], uncertain: ["No sabes si la comparación durará días o definirá la narrativa de la temporada."],
+    gates: [{ path: "reputation.mediaHeat", op: "gte", value: 8 }], timeWindow: { months: [8, 9, 10, 11] }, npcRefs: ["NPC_PLR_15", "NPC_PRS_01", "NPC_PRS_02"], seedsRead: ["SEED_ADRIAN_MIRROR"], seedsWrite: ["SEED_ADRIAN_MIRROR"], tags: ["media", "rival", "public"], weight: 11,
+    choices: [
+      { id: "PRAISE", label: "Quitar importancia y elogiar a Adrián", intentTags: ["deescalate", "public"], primaryMessage: "La respuesta enfría el marco de rivalidad y Adrián lo aprecia.", secondaryMessage: "El titular se recorta como si evitaras compararte porque no te sientes superior.", primaryEffects: [n("rel.NPC_PLR_15.affinity", 5)], secondaryEffects: [n("reputation.mediaHeat", 3)] },
+      { id: "PROVE_BETTER", label: "Decir que la competencia te motiva y quieres demostrar que eres mejor", intentTags: ["competitive", "public"], primaryMessage: "La ambición encaja con tu rendimiento y eleva interés.", secondaryMessage: "La frase convierte cualquier mala semana en material para la comparación.", primaryEffects: [n("reputation.marketHeat", 6), n("reputation.mediaHeat", 5)], secondaryEffects: [n("reputation.mediaHeat", 9), n("rel.NPC_PLR_15.resentment", 5)] },
+      { id: "JOKE_TOGETHER", label: "Bromear públicamente con Adrián si hay confianza suficiente", intentTags: ["humor", "rival"], primaryMessage: "La broma compartida le quita gravedad a la comparación.", secondaryMessage: "La ironía no se entiende igual fuera del vestuario y la rivalidad se amplifica.", primaryEffects: [n("rel.NPC_PLR_15.trust", 5)], secondaryEffects: [n("reputation.mediaHeat", 6)] },
+      { id: "NO_FEED", label: "No entrar y pedir a tu entorno que tampoco alimente la comparación", intentTags: ["silence", "control"], primaryMessage: "Sin combustible nuevo, la encuesta pierde fuerza.", secondaryMessage: "Otros llenan el vacío y la comparación sigue sin tu versión.", primaryEffects: [n("reputation.mediaHeat", -3)], secondaryEffects: [n("control.career", -1)] }
+    ]
+  }),
+
+  E({
+    ...verified, id: "EVT_19_BODY_001", ageWindow: [19, 19], family: "medical", title: "Volver antes",
+    body: "Una lesión muscular te deja fuera varias semanas. Cinco días antes de la fecha prevista casi te encuentras normal, mientras otro jugador aprovecha tus minutos.",
+    visible: ["Conoces diagnóstico, evolución y fecha médica prevista."], uncertain: ["No sabes si adelantar cinco días será irrelevante o suficiente para provocar una recaída."],
+    gates: [{ path: "flags.RECOVERING_INJURY", op: "eq", value: true }], npcRefs: ["NPC_MED_01", "NPC_CCH_01"], seedsRead: ["SEED_BODY_PRECEDENT"], seedsWrite: ["SEED_BODY_PRECEDENT", "SEED_PHYSIO_CONFIDENCE"], tags: ["injury", "return", "role"], weight: 15,
+    choices: [
+      { id: "FULL_DATE", label: "Respetar la fecha completa", intentTags: ["medical", "patience"], primaryMessage: "La recuperación termina limpia y vuelves con margen físico.", secondaryMessage: "El sustituto consolida parte de tu sitio mientras tú sigues fuera.", primaryEffects: [n("body.risk", -10), flag("RECOVERING_INJURY", false)], secondaryEffects: [n("sport.roleScore", -6), flag("RECOVERING_INJURY", false)], primarySeedTransitions: [seedCreate("SEED_PHYSIO_CONFIDENCE", 45, { return19: "full_date" })] },
+      { id: "EXTRA_TESTS", label: "Pedir alta anticipada si superas pruebas adicionales", intentTags: ["information", "risk"], primaryMessage: "Las pruebas aportan información útil y permiten adelantar sin empeorar.", secondaryMessage: "Las pruebas son aceptables pero no perfectas; el regreso temprano deja más riesgo residual.", primaryEffects: [n("body.risk", -5), n("sport.roleScore", 4), flag("RECOVERING_INJURY", false)], secondaryEffects: [n("body.risk", 7), flag("RECOVERING_INJURY", false)], primarySeedTransitions: [seedCreate("SEED_PHYSIO_CONFIDENCE", 40, { return19: "tests" })] },
+      { id: "TELL_READY", label: "Decir al entrenador que estás listo aunque Paula prefiera esperar", intentTags: ["ambition", "staff_conflict"], primaryMessage: "El cuerpo aguanta y recuperas una ventana competitiva antes de lo previsto.", secondaryMessage: "La precipitación aumenta la deuda física y tensiona la confianza con Paula.", primaryEffects: [n("sport.roleScore", 8), flag("RECOVERING_INJURY", false)], secondaryEffects: [n("body.risk", 15), n("rel.NPC_MED_01.trust", -8), flag("RECOVERING_INJURY", false)], secondarySeedTransitions: [seedCreate("SEED_BODY_PRECEDENT", 68, { return19: "pushed" })] }
+    ]
+  }),
+
+  E({
+    ...verified, id: "EVT_19_AGENT_001", ageWindow: [19, 19], family: "agent", title: "El correo que faltaba",
+    body: "Una fuente independiente demuestra que un club preguntó por ti semanas atrás y tu representante no te lo contó. Su explicación puede ser razonable o interesada.",
+    visible: ["La consulta existió."], uncertain: ["No sabes si era realmente seria ni si tu agente la descartó por criterio deportivo, comercial o por descuido."],
+    gates: [{ path: "flags.AGENT_ACTIVE", op: "eq", value: true }], npcRefs: ["NPC_AGT_01", "NPC_AGT_02", "NPC_PRS_01"], seedsRead: ["SEED_FIRST_AGENT"], seedsWrite: ["SEED_AGENT_OMISSION", "SEED_FIRST_AGENT"], tags: ["agent", "information", "control"], weight: 13,
+    choices: [
+      { id: "REQUIRE_ALL", label: "Aceptar la explicación, pero exigir que desde ahora te lleguen todas las consultas serias", intentTags: ["boundary", "agent"], primaryMessage: "La regla mejora el flujo de información sin romper una relación útil.", secondaryMessage: "El agente acepta, pero la definición de 'seria' sigue dejándole margen para filtrar.", primaryEffects: [n("control.career", 6), n("rel.NPC_AGT_01.trust", 2)], secondaryEffects: [n("control.career", 2)], primarySeedTransitions: [seedCreate("SEED_AGENT_OMISSION", 45, { reaction: "boundary" })] },
+      { id: "AUDIT", label: "Pedir documentos y mensajes para auditar qué ocurrió", intentTags: ["audit", "control"], primaryMessage: "Los documentos aclaran el episodio y descubres que el descarte tenía argumentos reales.", secondaryMessage: "La revisión descubre más lagunas y el problema deja de parecer aislado.", primaryEffects: [n("control.career", 8)], secondaryEffects: [n("rel.NPC_AGT_01.trust", -7), flag("AGENT_SECOND_DISCREPANCY", true)], primarySeedTransitions: [seedCreate("SEED_AGENT_OMISSION", 55, { reaction: "audit_clean" })], secondarySeedTransitions: [seedCreate("SEED_AGENT_OMISSION", 78, { reaction: "audit_more" })] },
+      { id: "SOUND_OTHER", label: "Hablar discretamente con otro agente sin romper todavía", intentTags: ["parallel", "agent"], primaryMessage: "El contraste mejora tu información y crea una alternativa real.", secondaryMessage: "La conversación se filtra y tu representante empieza a proteger su posición.", primaryEffects: [n("control.career", 8)], secondaryEffects: [n("rel.NPC_AGT_01.trust", -8), n("reputation.mediaHeat", 3)], primarySeedTransitions: [seedCreate("SEED_AGENT_OMISSION", 62, { reaction: "parallel" })] },
+      { id: "BREAK", label: "Romper la relación si el contrato lo permite", intentTags: ["break", "control"], primaryMessage: "La ruptura recupera control y deja espacio para una representación distinta.", secondaryMessage: "Pierdes una red útil justo cuando el mercado empieza a moverse.", primaryEffects: [n("control.career", 12), flag("AGENT_ACTIVE", false)], secondaryEffects: [n("reputation.marketHeat", -6), flag("AGENT_ACTIVE", false)], primarySeedTransitions: [seedCreate("SEED_AGENT_OMISSION", 85, { reaction: "break" })] }
+    ]
+  }),
+
+  E({
+    ...verified, id: "EVT_19_JAN_001", ageWindow: [19, 19], family: "market", title: "El segundo enero",
+    body: "El segundo mercado de invierno llega con más información y más coste de oportunidad: continuidad, préstamo, salto sin minutos garantizados o salida forzada pueden ser reales a la vez.",
+    visible: ["Ves ofertas formales, contrato y rol actual."], uncertain: ["No conoces qué huecos seguirán abiertos al cierre del mercado."],
+    timeWindow: { months: [1] }, npcRefs: ["NPC_DIR_02", "NPC_AGT_01", "NPC_AGT_02"], seedsRead: ["SEED_EXIT_STYLE_UDV", "SEED_AGENT_OMISSION"], seedsWrite: ["SEED_EXIT_STYLE_UDV"], tags: ["market", "route", "january"], weight: 18,
+    choices: [
+      { id: "CONTINUITY", label: "Continuidad para terminar la temporada", intentTags: ["stability", "club"], primaryMessage: "La estabilidad coincide con una mejora de rol y quedarte tiene valor deportivo.", secondaryMessage: "El mercado cierra y la jerarquía permanece casi igual.", primaryEffects: [n("sport.roleScore", 8)], secondaryEffects: [n("control.career", -4)] },
+      { id: "CLEAR_ROLE_LOWER", label: "Ir a un proyecto de menor prestigio con función clara", intentTags: ["minutes", "ladder"], primaryMessage: "El nuevo contexto te da continuidad y responsabilidad real.", secondaryMessage: "Juegas más, pero el cambio reduce exposición y el proyecto no es tan estable como prometía.", primaryEffects: [set("club", "DEVELOPMENT_CLUB"), set("tier", 3), set("role", "loan_starter"), flag("LOAN_ACTIVE", true), n("sport.roleScore", 18)], secondaryEffects: [set("club", "DEVELOPMENT_CLUB"), set("tier", 4), flag("LOAN_ACTIVE", true), n("reputation.prestige", -4), n("sport.roleScore", 10)] },
+      { id: "LEVEL_JUMP", label: "Saltar de nivel sin minutos garantizados", intentTags: ["jump", "risk"], primaryMessage: "El salto abre una oportunidad real y encuentras minutos antes de lo esperado.", secondaryMessage: "El nivel de entrenamiento sube, pero quedas atrapado en una rotación profunda.", primaryEffects: [set("club", "HIGHER_CLUB"), set("world.ownerClub", "HIGHER_CLUB"), set("tier", 2), set("role", "rotation"), n("sport.roleScore", 12), n("reputation.prestige", 10), flag("BIG_CLUB", true)], secondaryEffects: [set("club", "HIGHER_CLUB"), set("world.ownerClub", "HIGHER_CLUB"), set("tier", 2), set("role", "reserve"), n("sport.roleScore", -8), n("reputation.prestige", 10), flag("BIG_CLUB", true)] },
+      { id: "FORCE_EXIT", label: "Forzar la salida si estás bloqueado y hay destino real", intentTags: ["force", "conflict"], primaryMessage: "La presión desbloquea la operación y el destino te da un rol útil.", secondaryMessage: "Sales, pero el conflicto deja memoria institucional y el nuevo sitio no compensa todo el coste.", primaryEffects: [set("club", "NEW_CLUB"), set("world.ownerClub", "NEW_CLUB"), set("tier", 3), n("sport.roleScore", 10), flag("CONFLICT_EXIT", true)], secondaryEffects: [set("club", "NEW_CLUB"), set("world.ownerClub", "NEW_CLUB"), set("tier", 4), n("rel.NPC_DIR_02.trust", -15), flag("CONFLICT_EXIT", true)], primarySeedTransitions: [seedCreate("SEED_EXIT_STYLE_UDV", 72, { year19: "forced_worked" })], secondarySeedTransitions: [seedCreate("SEED_EXIT_STYLE_UDV", 84, { year19: "forced_cost" })] }
+    ]
+  }),
+
+  E({
+    ...verified, id: "EVT_19_TEAM_001", ageWindow: [19, 19], family: "social", title: "Nano no celebra",
+    body: "Tras un gran partido tuyo, Nano te felicita tarde y seco. Él vuelve a quedarse fuera. La asimetría de vuestras carreras ya pesa aunque nadie la nombre.",
+    visible: ["Nano atraviesa un momento deportivo peor que el tuyo."], uncertain: ["No sabes si el tono tiene que ver contigo o simplemente con su propia frustración."],
+    npcRefs: ["NPC_PLR_14"], seedsRead: ["SEED_NANO_SHADOW"], seedsWrite: ["SEED_NANO_SHADOW"], tags: ["friendship", "status", "nano"], weight: 12,
+    choices: [
+      { id: "ASK_DIRECT", label: "Preguntarle directamente si le pasa algo contigo", intentTags: ["direct", "friendship"], primaryMessage: "La conversación aclara una parte de la tensión y os permite hablar sin fingir.", secondaryMessage: "La pregunta obliga a Nano a verbalizar una comparación que todavía podía diluirse sola.", primaryEffects: [n("rel.NPC_PLR_14.trust", 6)], secondaryEffects: [n("rel.NPC_PLR_14.resentment", 7)], primarySeedTransitions: [seedCreate("SEED_NANO_SHADOW", 50, { year19: "talked" })] },
+      { id: "NORMAL", label: "No hacer de su mal momento una conversación sobre ti y mantener el trato normal", intentTags: ["normality", "friendship"], primaryMessage: "La normalidad es exactamente lo que Nano necesitaba.", secondaryMessage: "La distancia deportiva sigue creciendo sin que ninguno encuentre cómo hablarla.", primaryEffects: [n("rel.NPC_PLR_14.affinity", 5)], secondaryEffects: [n("rel.NPC_PLR_14.resentment", 4)], primarySeedTransitions: [seedCreate("SEED_NANO_SHADOW", 42, { year19: "normal" })] },
+      { id: "MOVE_CONTACT", label: "Mover discretamente un contacto para ayudarle con una cesión o prueba", intentTags: ["help", "unsolicited"], primaryMessage: "El contacto abre una oportunidad real para Nano y el favor tiene valor deportivo.", secondaryMessage: "Nano se entera y siente que has empezado a tratar su carrera como un problema que debes arreglar.", primaryEffects: [n("rel.NPC_PLR_14.trust", 7), flag("NANO_OPPORTUNITY", true)], secondaryEffects: [n("rel.NPC_PLR_14.resentment", 12), flag("UNSOLICITED_NANO_HELP", true)], primarySeedTransitions: [seedCreate("SEED_NANO_SHADOW", 58, { year19: "help_worked" })], secondarySeedTransitions: [seedCreate("SEED_NANO_SHADOW", 76, { year19: "paternalistic" })] },
+      { id: "DISTANCE", label: "Tomar distancia: no puedes gestionar también su carrera", intentTags: ["distance", "self"], primaryMessage: "La distancia reduce fricción inmediata y ambos recuperáis espacio.", secondaryMessage: "Nano interpreta la retirada como confirmación de que ya vivís mundos distintos.", primaryEffects: [n("rel.NPC_PLR_14.affinity", -3)], secondaryEffects: [n("rel.NPC_PLR_14.affinity", -8), n("rel.NPC_PLR_14.resentment", 6)] }
+    ]
+  }),
+
+  E({
+    ...verified, id: "EVT_19_FIN_001", ageWindow: [19, 19], family: "life", title: "Cumples 20",
+    body: "Dos años después del primer día con el primer equipo, el juego no pregunta si vas bien: reconstruye qué puertas existen ahora y qué quieres priorizar en el siguiente ciclo.",
+    visible: ["Se muestran estadísticas, contrato, club, posición, lesiones, relaciones relevantes y ofertas existentes."], uncertain: ["Entrenadores, mercado y desarrollo futuro siguen siendo inciertos."],
+    timeWindow: { months: [6], minSeasonDay: 350 }, tags: ["bridge", "state20", "priority"], weight: 95,
+    choices: [
+      { id: "MINUTES", label: "Priorizar minutos", intentTags: ["priority", "minutes"], primaryMessage: "Tu siguiente ciclo dará más peso a oportunidades con función deportiva clara.", secondaryMessage: "Priorizar minutos puede llevarte a contextos de menor exposición sin que eso sea un fracaso.", primaryEffects: [set("world.nextCyclePriority", "minutes")], secondaryEffects: [set("world.nextCyclePriority", "minutes")] },
+      { id: "LEVEL", label: "Priorizar nivel competitivo", intentTags: ["priority", "level"], primaryMessage: "Tu siguiente ciclo buscará primero contextos de mayor exigencia.", secondaryMessage: "Aceptar mayor nivel también puede significar menos control inmediato del rol.", primaryEffects: [set("world.nextCyclePriority", "level")], secondaryEffects: [set("world.nextCyclePriority", "level")] },
+      { id: "STABILITY", label: "Priorizar estabilidad contractual y económica", intentTags: ["priority", "security"], primaryMessage: "Tu siguiente ciclo valorará especialmente duración y seguridad.", secondaryMessage: "La estabilidad puede reducir movilidad futura sin convertirla en mala decisión.", primaryEffects: [set("world.nextCyclePriority", "stability")], secondaryEffects: [set("world.nextCyclePriority", "stability")] },
+      { id: "RECOVERY", label: "Priorizar recuperación y desarrollo", intentTags: ["priority", "development"], primaryMessage: "Tu siguiente ciclo colocará cuerpo y desarrollo por delante de la exposición inmediata.", secondaryMessage: "El coste puede ser dejar pasar una ventana deportiva que no espere.", primaryEffects: [set("world.nextCyclePriority", "recovery")], secondaryEffects: [set("world.nextCyclePriority", "recovery")] },
+      { id: "OPEN_MARKET", label: "Mantener máxima apertura al mercado", intentTags: ["priority", "open"], primaryMessage: "No cierras ninguna familia de oportunidades y aceptas más incertidumbre.", secondaryMessage: "Más opciones también significan más ruido y menos capacidad de planificar con un solo club.", primaryEffects: [set("world.nextCyclePriority", "open_market")], secondaryEffects: [set("world.nextCyclePriority", "open_market")] }
+    ]
+  })
+];

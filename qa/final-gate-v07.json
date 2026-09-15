@@ -1,0 +1,12 @@
+{
+  "version": "0.7.0",
+  "acceptance": true,
+  "saveMigration": true,
+  "reproducibility": true,
+  "microfeedIndependence": true,
+  "build": {
+    "errors": 0,
+    "warnings": 0
+  },
+  "passed": true
+}

@@ -1,0 +1,35 @@
+{
+  "passed": true,
+  "runs": 1000,
+  "age30Reached": 1000,
+  "uniqueSequences": 1000,
+  "principalCoverage": [
+    51,
+    51
+  ],
+  "conditionalCoverage": [
+    24,
+    24
+  ],
+  "microfeedCoverage": [
+    35,
+    35
+  ],
+  "state30Coverage": [
+    17,
+    17
+  ],
+  "uniqueState30Combinations": 191,
+  "avgPrincipal26_30": 21.413,
+  "avgConditional26_30": 8.481,
+  "avgMicrofeeds26_30": 21.819,
+  "primaryState30EntropyBits": 2.924,
+  "missingPrincipal": [],
+  "missingConditional": [],
+  "missingStates": [],
+  "finalNarrativeFrequency": {
+    "EVT_28_FINAL_001": 142,
+    "CEVT_27_FINAL_01": 5,
+    "EVT_27_FINAL_001": 2
+  }
+}

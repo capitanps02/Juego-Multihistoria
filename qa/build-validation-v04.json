@@ -1,0 +1,30 @@
+{
+  "issues": [],
+  "errors": 0,
+  "canonCoverage": [
+    {
+      "sourceVersion": "Documento Maestro v0.9 · 10/09/2026",
+      "phase": "18_20",
+      "expectedPrincipal": 30,
+      "expectedConditional": 14,
+      "implementedPrincipal": 30,
+      "implementedConditional": 14,
+      "verifiedNpcDefinitions": 20,
+      "expectedNpcDefinitions": 20,
+      "verifiedSeedDefinitions": 31,
+      "expectedGlobalSeedDefinitions": 210
+    },
+    {
+      "sourceVersion": "Documento Maestro v0.9 · 10/09/2026",
+      "phase": "20_23",
+      "expectedPrincipal": 33,
+      "expectedConditional": 18,
+      "implementedPrincipal": 33,
+      "implementedConditional": 18,
+      "verifiedNpcDefinitions": 20,
+      "expectedNpcDefinitions": 20,
+      "verifiedSeedDefinitions": 31,
+      "expectedGlobalSeedDefinitions": 210
+    }
+  ]
+}

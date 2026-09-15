@@ -1,0 +1,58 @@
+{
+  "pass": "T2.2",
+  "date": "2026-09-13",
+  "build": "0.8.0-t2.2",
+  "sourceIdentity": "0fcb5a9641e03fd3a646b3fe72980f817e8488ba130d1579972ce7f8cff891e8",
+  "buildExitCode": 0,
+  "testCommand": "node --test --test-reporter=tap scripts/test-session.mjs scripts/test-saves.mjs",
+  "tests": {
+    "count": 54,
+    "passed": 54,
+    "failed": 0,
+    "skipped": 0,
+    "exitCode": 0,
+    "tap": "tests.tap"
+  },
+  "migrationVersions": [
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+  ],
+  "v2Evidence": "synthetic fixture derived from supplied v3; no authentic v2 archive available",
+  "browser": {
+    "url": "http://127.0.0.1:4173/",
+    "edition": "T2.2",
+    "scene": "Cinco minutos más",
+    "date": "2026-07-06",
+    "decisions": 1,
+    "reloadPreservedSceneAndOptions": true,
+    "playerChoiceOrResetPerformed": false
+  },
+  "earnedPercent": 10.4,
+  "nextPass": "T2.3",
+  "limits": [
+    "No claim of save authenticity or complete semantic replay.",
+    "External-copy import UI and transactional recovery scheduled for T2.3.",
+    "No PlayCanvas publication, APK or physical Android measurement in this pass."
+  ],
+  "sha256": {
+    "src/save/validation.ts": "72c1e67449b4c554744ebc44f53ffa83830c66fd166b07b12256af24d7f195d6",
+    "src/save/save.ts": "b7963ca2500a4fd0626e3244da4d95426cacae36b1b25c117036216f4b243439",
+    "src/session/validate-session.ts": "e5293663c06240e2cb933cd0e9a6193fa197313cf72c7bad62df4def6377da40",
+    "src/session/game-session.ts": "1be1db6027efab3f3a7b5d4fd7627b51df8a3d5dc575e8ac08088d3ae3394912",
+    "src/core/build.ts": "2364e216dc168e05f65701d1c4396460f04e58f1c46a119c80d8ba5c00ef9fdc",
+    "scripts/build.mjs": "49a391a94561f3b63d7f3689742e75dcde91e99d9328f0ed056708874b6af61c",
+    "scripts/test-saves.mjs": "2fa68c6967e950dcfdf335cb9af5b8e0ead37ca43c51cb3900565ca7ffe4bc7e",
+    "scripts/test-session.mjs": "3b8217b29f8af484051bed5112ee96d13ae8e38dfad19e90b7f455f607e8a21c",
+    "qa/fixtures/migration-baselines.json": "0beadc5b74542f7ace06bbdd1fb3c183e679f75f6b0d481f876561540f4f6f21",
+    "qa/fixtures/save-v02-derived.json": "121a180e0069e0da31781accda3be455c777b67ee9dcbf88b79b1b8afe256d30",
+    "preview/app.js": "a704ce3e448d03fcbf3572d337095efc6e68336b51bd6e44cf14674e9d0b58b1",
+    "preview/index.html": "659ea015e033dc70f472f2193035c752bcd86f27e485c40580b576057f8551f3",
+    "package.json": "974ddf734f1d9d2902f002552a84aa457c9ef8cbe74cd045036da2843e37b430",
+    "analysis/2026-09-13/T2.2/tests.tap": "6ce4ef3422ab319157dc6b138142b74909c026d815f5e9b0ae0727f9628a5adc"
+  }
+}

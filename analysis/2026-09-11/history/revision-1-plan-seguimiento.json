@@ -1,0 +1,201 @@
+{
+  "baselineDate": "2026-09-11",
+  "baselineStatus": "proposed_capacity_pending",
+  "product": "Carrera de Futbolista Android v1",
+  "audit": "T0 entregada; excluida del esfuerzo restante",
+  "percentageMeaning": "Trabajo restante aceptado desde la línea base; no porcentaje histórico del producto",
+  "capacityHoursPerWeek": 30,
+  "capacityConfirmed": false,
+  "baselineHours": 900,
+  "lowHours": 715,
+  "highHours": 1085,
+  "contingencyPercent": 20,
+  "additionalElapsedWeeks": [
+    2,
+    4
+  ],
+  "baselineElapsedWeeks": [
+    38,
+    40
+  ],
+  "estimatedElapsedRangeWeeks": [
+    31,
+    48
+  ],
+  "remainingWorkEarnedPercent": 0,
+  "stages": [
+    {
+      "id": "T1",
+      "title": "Alcance y trazabilidad piloto",
+      "status": "not_started",
+      "baselineHours": 50,
+      "lowHours": 40,
+      "highHours": 60,
+      "weightPercent": 6,
+      "cumulativeTargetPercent": 6,
+      "earnedPercent": 0,
+      "dependencies": [],
+      "acceptanceCriteria": [
+        "Alcance de v1 aceptado",
+        "12 escenas piloto comparadas con el guion",
+        "IDs discrepantes inventariados y estimación recalibrada"
+      ]
+    },
+    {
+      "id": "T2",
+      "title": "Sesión y guardado",
+      "status": "not_started",
+      "baselineHours": 100,
+      "lowHours": 80,
+      "highHours": 120,
+      "weightPercent": 11,
+      "cumulativeTargetPercent": 17,
+      "earnedPercent": 0,
+      "dependencies": [
+        "T1"
+      ],
+      "acceptanceCriteria": [
+        "Evento pendiente y RNG persistidos",
+        "Doble comando sin doble efecto",
+        "Guardados inválidos rechazados y recuperación probada",
+        "Gates con salida de proceso fallida ante errores"
+      ]
+    },
+    {
+      "id": "T3",
+      "title": "Demo PlayCanvas en Android",
+      "status": "not_started",
+      "baselineHours": 100,
+      "lowHours": 80,
+      "highHours": 120,
+      "weightPercent": 11,
+      "cumulativeTargetPercent": 28,
+      "earnedPercent": 0,
+      "dependencies": [
+        "T2"
+      ],
+      "acceptanceCriteria": [
+        "APK local instalado y offline",
+        "Mismo escenario y resultado en motor navegador y Android",
+        "Lectura pausa regreso y navegación comprobados"
+      ]
+    },
+    {
+      "id": "T4",
+      "title": "Primer tramo y ciclo de juego",
+      "status": "not_started",
+      "baselineHours": 100,
+      "lowHours": 80,
+      "highHours": 120,
+      "weightPercent": 11,
+      "cumulativeTargetPercent": 39,
+      "earnedPercent": 0,
+      "dependencies": [
+        "T3"
+      ],
+      "acceptanceCriteria": [
+        "Tramo 18–20 representativo",
+        "8–12 participantes y dos rondas de mejora",
+        "Criterios de comprensión y continuación evaluados"
+      ]
+    },
+    {
+      "id": "T5",
+      "title": "Contenido y memoria completos",
+      "status": "not_started",
+      "baselineHours": 300,
+      "lowHours": 240,
+      "highHours": 360,
+      "weightPercent": 33,
+      "cumulativeTargetPercent": 72,
+      "earnedPercent": 0,
+      "dependencies": [
+        "T4"
+      ],
+      "acceptanceCriteria": [
+        "388 escenas reconciliadas o desviaciones aceptadas",
+        "210 semillas con origen y destino trazables",
+        "NPC y epílogos con contenido contextual"
+      ]
+    },
+    {
+      "id": "T6",
+      "title": "Alfa y balance por rutas",
+      "status": "not_started",
+      "baselineHours": 100,
+      "lowHours": 80,
+      "highHours": 120,
+      "weightPercent": 11,
+      "cumulativeTargetPercent": 83,
+      "earnedPercent": 0,
+      "dependencies": [
+        "T5"
+      ],
+      "acceptanceCriteria": [
+        "15 perfiles semánticos evaluados",
+        "Hasta 10000 carreras en candidata de balance",
+        "Cero bloqueos o estados imposibles reproducibles",
+        "20 epílogos auditados"
+      ]
+    },
+    {
+      "id": "T7",
+      "title": "Beta Android",
+      "status": "not_started",
+      "baselineHours": 70,
+      "lowHours": 55,
+      "highHours": 85,
+      "weightPercent": 8,
+      "cumulativeTargetPercent": 91,
+      "earnedPercent": 0,
+      "dependencies": [
+        "T6"
+      ],
+      "acceptanceCriteria": [
+        "3 teléfonos físicos de capacidades distintas",
+        "Sin pérdida de guardado en matriz de interrupción",
+        "Rendimiento acordado y 5 carreras humanas completas",
+        "Cero incidencias críticas o altas abiertas"
+      ]
+    },
+    {
+      "id": "T8",
+      "title": "Publicación",
+      "status": "not_started",
+      "baselineHours": 60,
+      "lowHours": 45,
+      "highHours": 75,
+      "weightPercent": 7,
+      "cumulativeTargetPercent": 98,
+      "earnedPercent": 0,
+      "dependencies": [
+        "T7"
+      ],
+      "acceptanceCriteria": [
+        "AAB firmado y ficha coherente",
+        "Prueba cerrada exigible completada",
+        "Aplicación disponible en Google Play en región acordada"
+      ]
+    },
+    {
+      "id": "T9",
+      "title": "Estabilización",
+      "status": "not_started",
+      "baselineHours": 20,
+      "lowHours": 15,
+      "highHours": 25,
+      "weightPercent": 2,
+      "cumulativeTargetPercent": 100,
+      "earnedPercent": 0,
+      "dependencies": [
+        "T8"
+      ],
+      "acceptanceCriteria": [
+        "14 días de observación",
+        "Actualización con saves preservados",
+        "Sin incidencias críticas o altas abiertas",
+        "Instrucciones de producción y recuperación entregadas"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "date": "2026-09-14",
+  "pass": "T2.3",
+  "status": "in_progress",
+  "earnedPercent": 13.15,
+  "tests": {
+    "regressionPassed": 57,
+    "persistencePassed": 3,
+    "failed": 0,
+    "pendingDecisionCycles": 100,
+    "injectedInterruptions": 400
+  },
+  "browserQA": "Read result, acknowledge, restore previous with confirmation, reload same result and one decision. Isolated QA only.",
+  "playcanvas": {
+    "assetId": 306862614,
+    "uploaded": true,
+    "launch": "https://launch.playcanvas.com/2593315?debug=true",
+    "restoredDate": "2026-07-16",
+    "restoredDecisions": 4,
+    "userCareerMutated": false,
+    "consoleErrors": [],
+    "localPackageSha256": "8f82b274dd9fb1491f6b2059d1d8bceaa1bc207fb231b4db5b57d943bcd9eaad"
+  },
+  "remaining": [
+    "IndexedDB adapter required by T1 contract",
+    "Preserving migration from legacy localStorage",
+    "Real transaction abort and reopen tests",
+    "Long-career persistence performance measurements"
+  ]
+}

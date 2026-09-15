@@ -1,0 +1,49 @@
+{
+  "task": "T4.7",
+  "round": "R1",
+  "date": "2026-09-15",
+  "observer": "OBS-LOCAL-01",
+  "participantType": "observacion instrumentada en visor local; no sustituye una ronda con participante externo",
+  "device": "Codex in-app browser",
+  "origin": "http://localhost.:4173",
+  "flow": [
+    "Abrir carrera nueva",
+    "Simular semana",
+    "Leer primera escena y contexto",
+    "Elegir una respuesta",
+    "Leer resultado y continuar",
+    "Pausar y reanudar",
+    "Abrir Carrera",
+    "Abrir Tu partida y localizar Descargar copia"
+  ],
+  "observations": {
+    "initialObjective": "si",
+    "visibleAndUncertain": "parcial antes de la correccion; el contexto estaba plegado",
+    "timeToFirstAction": "inferior a un minuto; una accion",
+    "attemptsToFirstAction": 1,
+    "desireToContinue": null,
+    "desireToContinueNote": "no se puntua como participante externo; el flujo ofrece Continuar y la ronda local lo uso correctamente",
+    "pauseResume": "correcto",
+    "saveCopy": "localizada en Tu partida; el visor embebido no expuso evento de descarga durante la prueba",
+    "consoleErrorBeforeFix": "TypeError al renderizar el resultado tras elegir una respuesta"
+  },
+  "findings": [
+    {
+      "id": "J01",
+      "severity": "alta",
+      "area": "resultado",
+      "evidence": "Tras elegir Llamar a Rivas, la pantalla quedo vacia y la consola informo lectura de family sobre decision null.",
+      "correction": "PlayerView expone resultCategory y la UI clasifica el resumen sin usar la decision consumida.",
+      "retest": "correcto: el resultado mostro titulo, eleccion, mensaje y Continuar tras recarga"
+    },
+    {
+      "id": "J02",
+      "severity": "media",
+      "area": "contexto",
+      "evidence": "Lo que sabes / lo que no esta claro exigia abrir un disclosure aunque el tutorial pide revisarlo.",
+      "correction": "El contexto de la escena queda desplegado por defecto.",
+      "retest": "correcto: la primera escena mostro ambos bloques antes de elegir"
+    }
+  ],
+  "externalValidation": "pendiente"
+}

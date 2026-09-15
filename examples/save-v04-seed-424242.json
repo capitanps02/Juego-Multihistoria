@@ -1,0 +1,1816 @@
+{
+  "schemaVersion": 4,
+  "date": "2031-07-02",
+  "age": 23,
+  "season": "2031-32",
+  "phase": "23_26",
+  "club": "UDV",
+  "tier": 3,
+  "role": "academy_callup",
+  "careerStateTags": [
+    "STATE20_HOME_ROTATION",
+    "STATE23_LATE_PRO"
+  ],
+  "contract": {
+    "monthsRemaining": 26,
+    "salaryMonthly": 4195,
+    "releaseClause": null
+  },
+  "professional": {
+    "ownerClub": "UDV",
+    "registrationClub": "UDV",
+    "leagueTier": 3,
+    "clubPrestigeTier": 1,
+    "clubPrestigeScore": 28,
+    "contractPower": 0.03517655670642855,
+    "roleSecurity": 0,
+    "agentControl": 98,
+    "environmentStability": 87,
+    "moneyComfort": 12.657857142857083,
+    "lockerPower": 1.7876978795081357,
+    "foreignAdaptation": 0,
+    "nationalHeat": 9.855571956573833,
+    "institutionalTrust": 0.13826833212646572,
+    "injuryMinutesImpact": 0,
+    "route": "home",
+    "initializedAt20": true
+  },
+  "finances": {
+    "cash": 1200
+  },
+  "body": {
+    "risk": 1.3,
+    "fatigue": 1.7,
+    "fitness": 100,
+    "acuteInjury": false
+  },
+  "selection": {
+    "level": "none"
+  },
+  "reputation": {
+    "prestige": 27.008512549250735,
+    "mediaHeat": 13,
+    "marketHeat": 7.2
+  },
+  "control": {
+    "career": 32,
+    "agentDependency": 0
+  },
+  "sport": {
+    "roleScore": 0,
+    "minutesShare": 5.8,
+    "form": 43.9,
+    "positionIdentity": "winger",
+    "appearances": 3
+  },
+  "world": {
+    "udvCashGap": 1100000,
+    "clubPressure": 42,
+    "coachSecurity": 0,
+    "marketWindowOpen": false,
+    "ownerClub": "UDV",
+    "nextCyclePriority": "stability",
+    "udvSeasonResolved": true
+  },
+  "personality": {
+    "reserve": 50,
+    "impulsivity": 50,
+    "ambition": 55,
+    "professionalism": 55
+  },
+  "relationships": [
+    {
+      "npcId": "NPC_DIR_01",
+      "trust": 50,
+      "affinity": 50,
+      "respect": 50,
+      "resentment": 0,
+      "leverage": 20,
+      "memories": []
+    },
+    {
+      "npcId": "NPC_DIR_02",
+      "trust": 50,
+      "affinity": 50,
+      "respect": 50,
+      "resentment": 0,
+      "leverage": 20,
+      "memories": []
+    },
+    {
+      "npcId": "NPC_CCH_01",
+      "trust": 45,
+      "affinity": 45,
+      "respect": 45,
+      "resentment": 0,
+      "leverage": 65,
+      "memories": []
+    },
+    {
+      "npcId": "NPC_CCH_02",
+      "trust": 52,
+      "affinity": 52,
+      "respect": 55,
+      "resentment": 0,
+      "leverage": 45,
+      "memories": []
+    },
+    {
+      "npcId": "NPC_ACA_01",
+      "trust": 68,
+      "affinity": 65,
+      "respect": 76,
+      "resentment": 0,
+      "leverage": 30,
+      "memories": []
+    },
+    {
+      "npcId": "NPC_MED_01",
+      "trust": 54,
+      "affinity": 50,
+      "respect": 50,
+      "resentment": 0,
+      "leverage": 20,
+      "memories": []
+    },
+    {
+      "npcId": "NPC_PLR_10",
+      "trust": 48,
+      "affinity": 53,
+      "respect": 53,
+      "resentment": 0,
+      "leverage": 45,
+      "memories": []
+    },
+    {
+      "npcId": "NPC_PLR_11",
+      "trust": 50,
+      "affinity": 54,
+      "respect": 50,
+      "resentment": 0,
+      "leverage": 20,
+      "memories": []
+    },
+    {
+      "npcId": "NPC_PLR_12",
+      "trust": 47,
+      "affinity": 52,
+      "respect": 52,
+      "resentment": 5,
+      "leverage": 35,
+      "memories": []
+    },
+    {
+      "npcId": "NPC_PLR_13",
+      "trust": 50,
+      "affinity": 50,
+      "respect": 50,
+      "resentment": 0,
+      "leverage": 20,
+      "memories": []
+    },
+    {
+      "npcId": "NPC_PLR_14",
+      "trust": 79,
+      "affinity": 74,
+      "respect": 58,
+      "resentment": 6,
+      "leverage": 10,
+      "memories": []
+    },
+    {
+      "npcId": "NPC_PLR_15",
+      "trust": 42,
+      "affinity": 52,
+      "respect": 54,
+      "resentment": 8,
+      "leverage": 10,
+      "memories": []
+    },
+    {
+      "npcId": "NPC_AGT_01",
+      "trust": 35,
+      "affinity": 40,
+      "respect": 42,
+      "resentment": 0,
+      "leverage": 20,
+      "memories": []
+    },
+    {
+      "npcId": "NPC_AGT_02",
+      "trust": 30,
+      "affinity": 35,
+      "respect": 50,
+      "resentment": 0,
+      "leverage": 20,
+      "memories": []
+    },
+    {
+      "npcId": "NPC_PRS_01",
+      "trust": 40,
+      "affinity": 40,
+      "respect": 42,
+      "resentment": 0,
+      "leverage": 15,
+      "memories": []
+    },
+    {
+      "npcId": "NPC_PRS_02",
+      "trust": 50,
+      "affinity": 50,
+      "respect": 50,
+      "resentment": 0,
+      "leverage": 20,
+      "memories": []
+    },
+    {
+      "npcId": "NPC_FAM_01",
+      "trust": 82,
+      "affinity": 90,
+      "respect": 75,
+      "resentment": 0,
+      "leverage": 35,
+      "memories": []
+    },
+    {
+      "npcId": "NPC_FAM_02",
+      "trust": 78,
+      "affinity": 88,
+      "respect": 70,
+      "resentment": 0,
+      "leverage": 38,
+      "memories": []
+    },
+    {
+      "npcId": "NPC_FAM_03",
+      "trust": 82,
+      "affinity": 92,
+      "respect": 68,
+      "resentment": 0,
+      "leverage": 8,
+      "memories": []
+    },
+    {
+      "npcId": "NPC_SOC_01",
+      "trust": 78,
+      "affinity": 88,
+      "respect": 60,
+      "resentment": 0,
+      "leverage": 8,
+      "memories": []
+    }
+  ],
+  "npcs": [
+    {
+      "id": "NPC_DIR_01",
+      "role": "Presidenta UDV",
+      "club": "UDV",
+      "careerState": "active",
+      "trustAxes": {},
+      "agenda": [
+        "Necesita cerrar el agujero financiero sin admitir debilidad; puede vender proyecto de cantera y a la vez monetizarla."
+      ],
+      "knowledge": {},
+      "reliability": 50,
+      "access": 65,
+      "memories": []
+    },
+    {
+      "id": "NPC_DIR_02",
+      "role": "Director deportivo",
+      "club": "UDV",
+      "careerState": "active",
+      "trustAxes": {},
+      "agenda": [
+        "Su posición mejora con balance positivo de traspasos; tenderá a valorar ventas más de lo que reconoce."
+      ],
+      "knowledge": {},
+      "reliability": 50,
+      "access": 65,
+      "memories": []
+    },
+    {
+      "id": "NPC_CCH_01",
+      "role": "Entrenador",
+      "club": "UDV",
+      "careerState": "active",
+      "trustAxes": {},
+      "agenda": [
+        "Su renovación depende del resultado inmediato; desconfía del riesgo táctico de los jóvenes."
+      ],
+      "knowledge": {},
+      "reliability": 50,
+      "access": 65,
+      "memories": []
+    },
+    {
+      "id": "NPC_CCH_02",
+      "role": "Segundo entrenador",
+      "club": "UDV",
+      "careerState": "active",
+      "trustAxes": {},
+      "agenda": [
+        "Ve valor en datos y jóvenes, pero no quiere quemar su carrera contradiciendo al jefe."
+      ],
+      "knowledge": {},
+      "reliability": 50,
+      "access": 65,
+      "memories": []
+    },
+    {
+      "id": "NPC_ACA_01",
+      "role": "Técnico de cantera",
+      "club": "UDV",
+      "careerState": "active",
+      "trustAxes": {},
+      "agenda": [
+        "Resentimiento hacia agentes y directivos que, según él, venden demasiado pronto."
+      ],
+      "knowledge": {},
+      "reliability": 50,
+      "access": 65,
+      "memories": []
+    },
+    {
+      "id": "NPC_MED_01",
+      "role": "Fisioterapeuta",
+      "club": "UDV",
+      "careerState": "active",
+      "trustAxes": {},
+      "agenda": [
+        "Su reputación depende de no forzar jugadores; puede chocar con técnico o futbolista."
+      ],
+      "knowledge": {},
+      "reliability": 50,
+      "access": 65,
+      "memories": []
+    },
+    {
+      "id": "NPC_PLR_10",
+      "role": "Central y capitán",
+      "club": "UDV",
+      "careerState": "active",
+      "trustAxes": {},
+      "agenda": [
+        "Valora licencias de entrenador y sospecha que quieren apartarlo para liberar salario."
+      ],
+      "knowledge": {},
+      "reliability": 50,
+      "access": 65,
+      "memories": []
+    },
+    {
+      "id": "NPC_PLR_11",
+      "role": "Portero y vicecapitán",
+      "club": "UDV",
+      "careerState": "active",
+      "trustAxes": {},
+      "agenda": [
+        "Evita guerras públicas, pero guarda memoria de quien rompe códigos de vestuario."
+      ],
+      "knowledge": {},
+      "reliability": 50,
+      "access": 65,
+      "memories": []
+    },
+    {
+      "id": "NPC_PLR_12",
+      "role": "Extremo derecho titular",
+      "club": "UDV",
+      "careerState": "active",
+      "trustAxes": {},
+      "agenda": [
+        "Compite con el protagonista y tiene una promesa privada de salida si llega una oferta razonable."
+      ],
+      "knowledge": {},
+      "reliability": 50,
+      "access": 65,
+      "memories": []
+    },
+    {
+      "id": "NPC_PLR_13",
+      "role": "Centrocampista",
+      "club": "UDV",
+      "careerState": "active",
+      "trustAxes": {},
+      "agenda": [
+        "Observador social; comparte información si confía y evita bandos hasta que le afectan."
+      ],
+      "knowledge": {},
+      "reliability": 50,
+      "access": 65,
+      "memories": []
+    },
+    {
+      "id": "NPC_PLR_14",
+      "role": "Delantero canterano",
+      "club": "UDV",
+      "careerState": "active",
+      "trustAxes": {},
+      "agenda": [
+        "Impulsivo; teme quedarse atrás si el protagonista despega."
+      ],
+      "knowledge": {},
+      "reliability": 50,
+      "access": 65,
+      "memories": []
+    },
+    {
+      "id": "NPC_PLR_15",
+      "role": "Mediapunta/extremo canterano",
+      "club": "UDV",
+      "careerState": "active",
+      "trustAxes": {},
+      "agenda": [
+        "Percibe trato desigual; una gran agencia también lo observa."
+      ],
+      "knowledge": {},
+      "reliability": 50,
+      "access": 65,
+      "memories": []
+    },
+    {
+      "id": "NPC_AGT_01",
+      "role": "Agente local",
+      "club": null,
+      "careerState": "active",
+      "trustAxes": {},
+      "agenda": [
+        "Tiene relación comercial fuerte con un club de Segunda; su mejor consejo puede beneficiarle también."
+      ],
+      "knowledge": {},
+      "reliability": 50,
+      "access": 35,
+      "memories": []
+    },
+    {
+      "id": "NPC_AGT_02",
+      "role": "Agente, Prisma Sports",
+      "club": null,
+      "careerState": "active",
+      "trustAxes": {},
+      "agenda": [
+        "Solo invertirá recursos fuertes en uno de los dos jóvenes; usa prensa y contactos con agresividad."
+      ],
+      "knowledge": {},
+      "reliability": 50,
+      "access": 35,
+      "memories": []
+    },
+    {
+      "id": "NPC_PRS_01",
+      "role": "Periodista local",
+      "club": null,
+      "careerState": "active",
+      "trustAxes": {},
+      "agenda": [
+        "Necesita exclusivas; puede respetar al jugador y publicar algo que le perjudique."
+      ],
+      "knowledge": {},
+      "reliability": 50,
+      "access": 35,
+      "memories": []
+    },
+    {
+      "id": "NPC_PRS_02",
+      "role": "Locutor deportivo",
+      "club": null,
+      "careerState": "active",
+      "trustAxes": {},
+      "agenda": [
+        "Premia conflicto y cambia de tono según el sentir de la afición."
+      ],
+      "knowledge": {},
+      "reliability": 50,
+      "access": 35,
+      "memories": []
+    },
+    {
+      "id": "NPC_FAM_01",
+      "role": "Madre",
+      "club": null,
+      "careerState": "active",
+      "trustAxes": {},
+      "agenda": [
+        "Desconfía de promesas; valora formación y contratos seguros."
+      ],
+      "knowledge": {},
+      "reliability": 50,
+      "access": 35,
+      "memories": []
+    },
+    {
+      "id": "NPC_FAM_02",
+      "role": "Padre",
+      "club": null,
+      "careerState": "active",
+      "trustAxes": {},
+      "agenda": [
+        "Exjugador regional; proyecta parte de su arrepentimiento."
+      ],
+      "knowledge": {},
+      "reliability": 50,
+      "access": 35,
+      "memories": []
+    },
+    {
+      "id": "NPC_FAM_03",
+      "role": "Hermana menor",
+      "club": null,
+      "careerState": "active",
+      "trustAxes": {},
+      "agenda": [
+        "Entiende redes y detecta cambios de fama que los adultos no ven."
+      ],
+      "knowledge": {},
+      "reliability": 50,
+      "access": 35,
+      "memories": []
+    },
+    {
+      "id": "NPC_SOC_01",
+      "role": "Amigo de infancia",
+      "club": null,
+      "careerState": "active",
+      "trustAxes": {},
+      "agenda": [
+        "Busca normalidad y diversión incluso cuando el calendario lo hace arriesgado."
+      ],
+      "knowledge": {},
+      "reliability": 50,
+      "access": 35,
+      "memories": []
+    }
+  ],
+  "flags": {
+    "PRESEASON_FIRST_TEAM_CALL": true,
+    "PRESEASON_STARTED": true,
+    "NANO_CALLED_UP": false,
+    "WIN_AGENT": true,
+    "FIRST_TEAM_ATTENTION": true,
+    "OFFICIAL_DEBUT": true,
+    "FORMATION_532": true,
+    "VELA_BOARD_TENSION": true,
+    "BODY_WINDOW": true,
+    "BRUNO_SCOUTS": true,
+    "SET_PIECE_WINDOW": true,
+    "CLARA_CONTACTED": true,
+    "WIN_DEBUT": false,
+    "AGENT_ACTIVE": false,
+    "EARLY_BREAKOUT": false,
+    "JAN_NO_DEBUT": true,
+    "BRUNO_EXIT": true,
+    "VELA_SEPARATED": true,
+    "COACH_FIRED": true,
+    "UDV_RELEGATED": false,
+    "UDV_PLAYOFF": false,
+    "BIG_CLUB_INTEREST": false,
+    "AGENT_SECOND_DISCREPANCY": false,
+    "RECOVERING_INJURY": false,
+    "LONG_INJURY": false,
+    "FOREIGN_DEV_INTEREST": false,
+    "NIGHT_PHOTO": false,
+    "LOAN_ACTIVE": false,
+    "LOAN_RETURN": false,
+    "CONFLICT_EXIT": false,
+    "BIG_CLUB": false,
+    "ABROAD_ROUTE": false,
+    "ABROAD_STRONG": false,
+    "LOWER_REBUILD": false,
+    "PROFESSIONAL_ADAPTED": true,
+    "CONTRACT_DISPUTE": false,
+    "CLUB_RELATION_DAMAGED": false,
+    "MEDIA_PROFILE": false,
+    "NATIONAL_RADAR": false,
+    "FOREIGN_STABLE": false,
+    "ROLE_PROMISE_BROKEN": false,
+    "TEAMMATE_COVER_CONTEXT": false,
+    "DEADLINE_CONTEXT": false,
+    "CAPTAIN_ROOM_CONTEXT": false,
+    "HAS_SEED_NANO_SHADOW": true,
+    "SEEN_EVT_18_PRE_001": true,
+    "HAS_SEED_BODY_PRECEDENT": true,
+    "SEEN_EVT_18_PRE_002": true,
+    "HAS_SEED_MENA_EARLY_READ": true,
+    "SEEN_EVT_18_PRE_003": true,
+    "SEEN_EVT_18_LOCK_001": true,
+    "HAS_SEED_CLARA_CHANNEL": true,
+    "SEEN_EVT_18_PRS_001": true,
+    "SEEN_EVT_18_PRS_002": true,
+    "SEEN_CEVT_18_CCH_01": true,
+    "SEEN_EVT_18_TACT_001": true,
+    "SEEN_EVT_18_MED_001": true,
+    "SEEN_CEVT_18_NODEBUT_01": true,
+    "HAS_SEED_VELA_STANCE": true,
+    "SEEN_EVT_18_CAP_001": true,
+    "SEEN_CEVT_18_BRUNO_01": true,
+    "HAS_SEED_EXIT_STYLE_UDV": true,
+    "SEEN_EVT_18_END_001": true,
+    "HAS_SEED_CONTRACT_HARDLINE": true,
+    "SEEN_EVT_18_SUM_001": true,
+    "HAS_SEED_ADRIAN_MIRROR": true,
+    "SEEN_EVT_19_RIV_001": true,
+    "SEEN_EVT_19_TEAM_001": true,
+    "SEEN_EVT_19_MEDIA_001": true,
+    "SEEN_CEVT_18_VELA_01": true,
+    "SEEN_EVT_19_JAN_001": true,
+    "SEEN_EVT_19_FIN_001": true,
+    "SEEN_CEVT_20_HOME_01": true,
+    "HAS_SEED_FIRST_BIG_MONEY": true,
+    "SEEN_EVT_20_LIFE_001": true,
+    "HAS_SEED_MEDICAL_DISCLOSURE": true,
+    "SEEN_EVT_20_MED_001": true,
+    "SEEN_EVT_20_LOCK_001": true,
+    "HAS_SEED_TEAMMATE_COVER": true,
+    "SEEN_EVT_20_LOCK_002": true,
+    "SEEN_EVT_20_MATCH_001": true,
+    "SEEN_CEVT_21_ADRIAN_01": true,
+    "HAS_SEED_FAMILY_MONEY": true,
+    "SEEN_EVT_21_MONEY_001": true,
+    "SEEN_CEVT_21_FAMILY_01": true,
+    "HAS_SEED_AGENT_POWER": true,
+    "SEEN_EVT_21_AGT_001": true,
+    "SEEN_EVT_21_AGT_002": true,
+    "SEEN_EVT_21_CCH_001": true,
+    "HAS_SEED_TACTICAL_SACRIFICE": true,
+    "SEEN_EVT_21_CCH_002": true,
+    "SEEN_EVT_21_MED_001": true,
+    "HAS_SEED_FIRST_FREE_AGENCY": true,
+    "SEEN_EVT_22_CON_001": true,
+    "SEEN_EVT_22_MED_001": true,
+    "SEEN_EVT_22_LIFE_001": true,
+    "HAS_SEED_HOME_DISTANCE": true,
+    "SEEN_EVT_22_HOME_001": true,
+    "SEEN_EVT_22_CON_002": true,
+    "SEEN_EVT_22_END_001": true
+  },
+  "seeds": [
+    {
+      "id": "SEED_NANO_SHADOW",
+      "state": "dormant",
+      "intensity": 25,
+      "originEvent": "EVT_18_PRE_001",
+      "originSeason": "2026-27",
+      "npcRefs": [
+        "NPC_PLR_14",
+        "NPC_ACA_01"
+      ],
+      "payload": {
+        "earlyTone": "trusted"
+      },
+      "lastTouchedDate": "2026-07-01"
+    },
+    {
+      "id": "SEED_BODY_PRECEDENT",
+      "state": "dormant",
+      "intensity": 48,
+      "originEvent": "EVT_18_PRE_002",
+      "originSeason": "2026-27",
+      "npcRefs": [
+        "NPC_PLR_10",
+        "NPC_PLR_12",
+        "NPC_MED_01"
+      ],
+      "payload": {
+        "pattern": "played_through"
+      },
+      "lastTouchedDate": "2027-01-06"
+    },
+    {
+      "id": "SEED_MENA_EARLY_READ",
+      "state": "dormant",
+      "intensity": 27,
+      "originEvent": "EVT_18_PRE_003",
+      "originSeason": "2026-27",
+      "npcRefs": [
+        "NPC_CCH_02",
+        "NPC_PLR_12",
+        "NPC_CCH_01"
+      ],
+      "payload": {
+        "read": "literal"
+      },
+      "lastTouchedDate": "2026-07-11"
+    },
+    {
+      "id": "SEED_CLARA_CHANNEL",
+      "state": "dormant",
+      "intensity": 55,
+      "originEvent": "EVT_18_PRS_001",
+      "originSeason": "2026-27",
+      "npcRefs": [
+        "NPC_PRS_01",
+        "NPC_CCH_01"
+      ],
+      "payload": {
+        "mode": "trade"
+      },
+      "lastTouchedDate": "2026-11-01"
+    },
+    {
+      "id": "SEED_VELA_STANCE",
+      "state": "dormant",
+      "intensity": 25,
+      "originEvent": "EVT_18_CAP_001",
+      "originSeason": "2026-27",
+      "npcRefs": [
+        "NPC_PLR_10",
+        "NPC_PLR_11",
+        "NPC_PLR_12",
+        "NPC_CCH_02",
+        "NPC_DIR_01"
+      ],
+      "payload": {
+        "stance": "neutral"
+      },
+      "lastTouchedDate": "2027-03-01"
+    },
+    {
+      "id": "SEED_EXIT_STYLE_UDV",
+      "state": "dormant",
+      "intensity": 40,
+      "originEvent": "EVT_18_END_001",
+      "originSeason": "2026-27",
+      "npcRefs": [
+        "NPC_CCH_01",
+        "NPC_MED_01",
+        "NPC_AGT_01",
+        "NPC_AGT_02"
+      ],
+      "payload": {
+        "end": "pressure",
+        "summer": "renew_flexible"
+      },
+      "lastTouchedDate": "2027-06-01"
+    },
+    {
+      "id": "SEED_CONTRACT_HARDLINE",
+      "state": "dormant",
+      "intensity": 45,
+      "originEvent": "EVT_18_SUM_001",
+      "originSeason": "2026-27",
+      "npcRefs": [
+        "NPC_DIR_02",
+        "NPC_CCH_01",
+        "NPC_AGT_01",
+        "NPC_AGT_02"
+      ],
+      "payload": {
+        "style": "flexibility"
+      },
+      "lastTouchedDate": "2027-06-01"
+    },
+    {
+      "id": "SEED_ADRIAN_MIRROR",
+      "state": "dormant",
+      "intensity": 38,
+      "originEvent": "EVT_19_RIV_001",
+      "originSeason": "2027-28",
+      "npcRefs": [
+        "NPC_PLR_15",
+        "NPC_ACA_01",
+        "NPC_AGT_02"
+      ],
+      "payload": {
+        "start": "cooperative"
+      },
+      "lastTouchedDate": "2027-07-01"
+    },
+    {
+      "id": "SEED_FIRST_BIG_MONEY",
+      "state": "dormant",
+      "intensity": 50,
+      "originEvent": "EVT_20_LIFE_001",
+      "originSeason": "2028-29",
+      "npcRefs": [],
+      "payload": {
+        "choice": "D"
+      },
+      "lastTouchedDate": "2028-07-06"
+    },
+    {
+      "id": "SEED_MEDICAL_DISCLOSURE",
+      "state": "dormant",
+      "intensity": 48,
+      "originEvent": "EVT_20_MED_001",
+      "originSeason": "2028-29",
+      "npcRefs": [],
+      "payload": {
+        "choice": "B"
+      },
+      "lastTouchedDate": "2030-07-06"
+    },
+    {
+      "id": "SEED_TEAMMATE_COVER",
+      "state": "dormant",
+      "intensity": 44,
+      "originEvent": "EVT_20_LOCK_002",
+      "originSeason": "2028-29",
+      "npcRefs": [],
+      "payload": {
+        "choice": "D"
+      },
+      "lastTouchedDate": "2028-12-01"
+    },
+    {
+      "id": "SEED_FAMILY_MONEY",
+      "state": "dormant",
+      "intensity": 46,
+      "originEvent": "EVT_21_MONEY_001",
+      "originSeason": "2029-30",
+      "npcRefs": [],
+      "payload": {
+        "choice": "C"
+      },
+      "lastTouchedDate": "2029-07-06"
+    },
+    {
+      "id": "SEED_AGENT_POWER",
+      "state": "dormant",
+      "intensity": 52,
+      "originEvent": "EVT_21_AGT_001",
+      "originSeason": "2029-30",
+      "npcRefs": [],
+      "payload": {
+        "choice": "D"
+      },
+      "lastTouchedDate": "2029-09-01"
+    },
+    {
+      "id": "SEED_TACTICAL_SACRIFICE",
+      "state": "dormant",
+      "intensity": 42,
+      "originEvent": "EVT_21_CCH_002",
+      "originSeason": "2029-30",
+      "npcRefs": [],
+      "payload": {
+        "choice": "B"
+      },
+      "lastTouchedDate": "2030-01-01"
+    },
+    {
+      "id": "SEED_FIRST_FREE_AGENCY",
+      "state": "dormant",
+      "intensity": 48,
+      "originEvent": "EVT_22_CON_001",
+      "originSeason": "2030-31",
+      "npcRefs": [],
+      "payload": {
+        "choice": "B"
+      },
+      "lastTouchedDate": "2030-12-06"
+    },
+    {
+      "id": "SEED_HOME_DISTANCE",
+      "state": "dormant",
+      "intensity": 48,
+      "originEvent": "EVT_22_HOME_001",
+      "originSeason": "2030-31",
+      "npcRefs": [],
+      "payload": {
+        "choice": "A"
+      },
+      "lastTouchedDate": "2030-12-01"
+    }
+  ],
+  "history": [
+    {
+      "eventId": "EVT_18_PRE_001",
+      "date": "2026-07-01",
+      "season": "2026-27",
+      "choiceId": "CALL_NANO",
+      "outcomeId": "CALL_NANO__PRIMARY",
+      "club": "UDV",
+      "snapshot": {
+        "family": "preseason",
+        "npcRefs": [
+          "NPC_PLR_14",
+          "NPC_ACA_01"
+        ],
+        "tags": [
+          "origin",
+          "friendship",
+          "mentor"
+        ],
+        "age": 18
+      },
+      "salience": 70,
+      "visibility": "private"
+    },
+    {
+      "eventId": "EVT_18_PRE_002",
+      "date": "2026-07-06",
+      "season": "2026-27",
+      "choiceId": "TECHNICAL_ONLY",
+      "outcomeId": "TECHNICAL_ONLY__PRIMARY",
+      "club": "UDV",
+      "snapshot": {
+        "family": "preseason",
+        "npcRefs": [
+          "NPC_PLR_10",
+          "NPC_PLR_12",
+          "NPC_MED_01"
+        ],
+        "tags": [
+          "body",
+          "locker"
+        ],
+        "age": 18
+      },
+      "salience": 70,
+      "visibility": "private"
+    },
+    {
+      "eventId": "EVT_18_PRE_003",
+      "date": "2026-07-11",
+      "season": "2026-27",
+      "choiceId": "OBEY_MENA",
+      "outcomeId": "OBEY_MENA__SECONDARY",
+      "club": "UDV",
+      "snapshot": {
+        "family": "preseason",
+        "npcRefs": [
+          "NPC_CCH_02",
+          "NPC_PLR_12",
+          "NPC_CCH_01"
+        ],
+        "tags": [
+          "tactical",
+          "hierarchy"
+        ],
+        "age": 18
+      },
+      "salience": 70,
+      "visibility": "private"
+    },
+    {
+      "eventId": "EVT_18_LOCK_001",
+      "date": "2026-07-16",
+      "season": "2026-27",
+      "choiceId": "PAY",
+      "outcomeId": "PAY__PRIMARY",
+      "club": "UDV",
+      "snapshot": {
+        "family": "team",
+        "npcRefs": [
+          "NPC_PLR_10",
+          "NPC_PLR_11",
+          "NPC_PLR_12",
+          "NPC_PLR_14"
+        ],
+        "tags": [
+          "locker",
+          "ritual",
+          "boundaries"
+        ],
+        "age": 18
+      },
+      "salience": 70,
+      "visibility": "private"
+    },
+    {
+      "eventId": "EVT_18_PRS_001",
+      "date": "2026-09-01",
+      "season": "2026-27",
+      "choiceId": "PRUDENT_QUOTE",
+      "outcomeId": "PRUDENT_QUOTE__PRIMARY",
+      "club": "UDV",
+      "snapshot": {
+        "family": "press",
+        "npcRefs": [
+          "NPC_PRS_01",
+          "NPC_CCH_01"
+        ],
+        "tags": [
+          "media",
+          "control"
+        ],
+        "age": 18
+      },
+      "salience": 70,
+      "visibility": "private"
+    },
+    {
+      "eventId": "EVT_18_PRS_002",
+      "date": "2026-11-01",
+      "season": "2026-27",
+      "choiceId": "TRADE_INFO",
+      "outcomeId": "TRADE_INFO__PRIMARY",
+      "club": "UDV",
+      "snapshot": {
+        "family": "press",
+        "npcRefs": [
+          "NPC_PRS_01",
+          "NPC_PLR_10",
+          "NPC_DIR_02"
+        ],
+        "tags": [
+          "information",
+          "press",
+          "confidentiality"
+        ],
+        "age": 18
+      },
+      "salience": 70,
+      "visibility": "private"
+    },
+    {
+      "eventId": "CEVT_18_CCH_01",
+      "date": "2026-12-02",
+      "season": "2026-27",
+      "choiceId": "MENA",
+      "outcomeId": "MENA__SECONDARY",
+      "club": "UDV",
+      "snapshot": {
+        "family": "conditional",
+        "npcRefs": [
+          "NPC_CCH_01",
+          "NPC_CCH_02"
+        ],
+        "tags": [
+          "coach",
+          "change",
+          "role"
+        ],
+        "age": 18
+      },
+      "salience": 70,
+      "visibility": "private"
+    },
+    {
+      "eventId": "EVT_18_TACT_001",
+      "date": "2027-01-01",
+      "season": "2026-27",
+      "choiceId": "REFUSE",
+      "outcomeId": "REFUSE__PRIMARY",
+      "club": "UDV",
+      "snapshot": {
+        "family": "tactical",
+        "npcRefs": [
+          "NPC_CCH_01",
+          "NPC_ACA_01"
+        ],
+        "tags": [
+          "role",
+          "reinvention"
+        ],
+        "age": 18
+      },
+      "salience": 70,
+      "visibility": "private"
+    },
+    {
+      "eventId": "EVT_18_MED_001",
+      "date": "2027-01-06",
+      "season": "2026-27",
+      "choiceId": "TRAIN_NORMAL",
+      "outcomeId": "TRAIN_NORMAL__PRIMARY",
+      "club": "UDV",
+      "snapshot": {
+        "family": "medical",
+        "npcRefs": [
+          "NPC_MED_01",
+          "NPC_CCH_01",
+          "NPC_PLR_12",
+          "NPC_FAM_02"
+        ],
+        "tags": [
+          "body",
+          "opportunity"
+        ],
+        "age": 18
+      },
+      "salience": 70,
+      "visibility": "private"
+    },
+    {
+      "eventId": "CEVT_18_NODEBUT_01",
+      "date": "2027-01-11",
+      "season": "2026-27",
+      "choiceId": "PATIENT",
+      "outcomeId": "PATIENT__PRIMARY",
+      "club": "UDV",
+      "snapshot": {
+        "family": "conditional",
+        "npcRefs": [
+          "NPC_ACA_01",
+          "NPC_CCH_01"
+        ],
+        "tags": [
+          "no_debut",
+          "route",
+          "modest_route"
+        ],
+        "age": 18
+      },
+      "salience": 70,
+      "visibility": "private"
+    },
+    {
+      "eventId": "EVT_18_CAP_001",
+      "date": "2027-03-01",
+      "season": "2026-27",
+      "choiceId": "NEUTRAL",
+      "outcomeId": "NEUTRAL__PRIMARY",
+      "club": "UDV",
+      "snapshot": {
+        "family": "captaincy",
+        "npcRefs": [
+          "NPC_PLR_10",
+          "NPC_PLR_11",
+          "NPC_PLR_12",
+          "NPC_CCH_02",
+          "NPC_DIR_01"
+        ],
+        "tags": [
+          "locker",
+          "institution",
+          "confidentiality"
+        ],
+        "age": 18
+      },
+      "salience": 70,
+      "visibility": "private"
+    },
+    {
+      "eventId": "CEVT_18_BRUNO_01",
+      "date": "2027-03-24",
+      "season": "2026-27",
+      "choiceId": "MARKET",
+      "outcomeId": "MARKET__PRIMARY",
+      "club": "UDV",
+      "snapshot": {
+        "family": "conditional",
+        "npcRefs": [
+          "NPC_PLR_12",
+          "NPC_DIR_02"
+        ],
+        "tags": [
+          "bruno",
+          "role",
+          "market"
+        ],
+        "age": 18
+      },
+      "salience": 70,
+      "visibility": "private"
+    },
+    {
+      "eventId": "EVT_18_END_001",
+      "date": "2027-05-01",
+      "season": "2026-27",
+      "choiceId": "EXTERNAL_PRESSURE",
+      "outcomeId": "EXTERNAL_PRESSURE__PRIMARY",
+      "club": "UDV",
+      "snapshot": {
+        "family": "contract",
+        "npcRefs": [
+          "NPC_CCH_01",
+          "NPC_MED_01",
+          "NPC_AGT_01",
+          "NPC_AGT_02"
+        ],
+        "tags": [
+          "contract",
+          "coach",
+          "endseason"
+        ],
+        "age": 18
+      },
+      "salience": 70,
+      "visibility": "private"
+    },
+    {
+      "eventId": "EVT_18_SUM_001",
+      "date": "2027-06-01",
+      "season": "2026-27",
+      "choiceId": "FLEXIBILITY",
+      "outcomeId": "FLEXIBILITY__PRIMARY",
+      "club": "UDV",
+      "snapshot": {
+        "family": "contract",
+        "npcRefs": [
+          "NPC_DIR_02",
+          "NPC_CCH_01",
+          "NPC_AGT_01",
+          "NPC_AGT_02"
+        ],
+        "tags": [
+          "contract",
+          "market",
+          "control"
+        ],
+        "age": 18
+      },
+      "salience": 70,
+      "visibility": "private"
+    },
+    {
+      "eventId": "EVT_19_RIV_001",
+      "date": "2027-07-01",
+      "season": "2027-28",
+      "choiceId": "TRAIN_TOGETHER",
+      "outcomeId": "TRAIN_TOGETHER__PRIMARY",
+      "club": "UDV",
+      "snapshot": {
+        "family": "team",
+        "npcRefs": [
+          "NPC_PLR_15",
+          "NPC_ACA_01",
+          "NPC_AGT_02"
+        ],
+        "tags": [
+          "rival",
+          "academy",
+          "comparison"
+        ],
+        "age": 19
+      },
+      "salience": 70,
+      "visibility": "private"
+    },
+    {
+      "eventId": "EVT_19_TEAM_001",
+      "date": "2027-07-06",
+      "season": "2027-28",
+      "choiceId": "DISTANCE",
+      "outcomeId": "DISTANCE__SECONDARY",
+      "club": "UDV",
+      "snapshot": {
+        "family": "social",
+        "npcRefs": [
+          "NPC_PLR_14"
+        ],
+        "tags": [
+          "friendship",
+          "status",
+          "nano"
+        ],
+        "age": 19
+      },
+      "salience": 70,
+      "visibility": "private"
+    },
+    {
+      "eventId": "EVT_19_MEDIA_001",
+      "date": "2027-09-01",
+      "season": "2027-28",
+      "choiceId": "PRAISE",
+      "outcomeId": "PRAISE__SECONDARY",
+      "club": "UDV",
+      "snapshot": {
+        "family": "press",
+        "npcRefs": [
+          "NPC_PLR_15",
+          "NPC_PRS_01",
+          "NPC_PRS_02"
+        ],
+        "tags": [
+          "media",
+          "rival",
+          "public"
+        ],
+        "age": 19
+      },
+      "salience": 70,
+      "visibility": "private"
+    },
+    {
+      "eventId": "CEVT_18_VELA_01",
+      "date": "2027-11-03",
+      "season": "2027-28",
+      "choiceId": "DISTANCE",
+      "outcomeId": "DISTANCE__PRIMARY",
+      "club": "UDV",
+      "snapshot": {
+        "family": "conditional",
+        "npcRefs": [
+          "NPC_PLR_10",
+          "NPC_PLR_11",
+          "NPC_DIR_02"
+        ],
+        "tags": [
+          "vela",
+          "locker",
+          "conflict"
+        ],
+        "age": 19
+      },
+      "salience": 70,
+      "visibility": "private"
+    },
+    {
+      "eventId": "EVT_19_JAN_001",
+      "date": "2028-01-01",
+      "season": "2027-28",
+      "choiceId": "CONTINUITY",
+      "outcomeId": "CONTINUITY__PRIMARY",
+      "club": "UDV",
+      "snapshot": {
+        "family": "market",
+        "npcRefs": [
+          "NPC_DIR_02",
+          "NPC_AGT_01",
+          "NPC_AGT_02"
+        ],
+        "tags": [
+          "market",
+          "route",
+          "january"
+        ],
+        "age": 19
+      },
+      "salience": 70,
+      "visibility": "private"
+    },
+    {
+      "eventId": "EVT_19_FIN_001",
+      "date": "2028-06-15",
+      "season": "2027-28",
+      "choiceId": "STABILITY",
+      "outcomeId": "STABILITY__SECONDARY",
+      "club": "UDV",
+      "snapshot": {
+        "family": "life",
+        "npcRefs": [],
+        "tags": [
+          "bridge",
+          "state20",
+          "priority"
+        ],
+        "age": 19
+      },
+      "salience": 70,
+      "visibility": "private"
+    },
+    {
+      "eventId": "CEVT_20_HOME_01",
+      "date": "2028-07-01",
+      "season": "2028-29",
+      "choiceId": "B",
+      "outcomeId": "B__PRIMARY",
+      "club": "UDV",
+      "snapshot": {
+        "family": "conditional",
+        "npcRefs": [],
+        "tags": [
+          "conditional",
+          "causal_callback"
+        ],
+        "age": 20
+      },
+      "salience": 70,
+      "visibility": "private"
+    },
+    {
+      "eventId": "EVT_20_LIFE_001",
+      "date": "2028-07-06",
+      "season": "2028-29",
+      "choiceId": "D",
+      "outcomeId": "D__PRIMARY",
+      "club": "UDV",
+      "snapshot": {
+        "family": "life",
+        "npcRefs": [],
+        "tags": [
+          "life",
+          "professionalization"
+        ],
+        "age": 20
+      },
+      "salience": 70,
+      "visibility": "private"
+    },
+    {
+      "eventId": "EVT_20_MED_001",
+      "date": "2028-07-11",
+      "season": "2028-29",
+      "choiceId": "B",
+      "outcomeId": "B__PRIMARY",
+      "club": "UDV",
+      "snapshot": {
+        "family": "medical",
+        "npcRefs": [],
+        "tags": [
+          "medical",
+          "professionalization"
+        ],
+        "age": 20
+      },
+      "salience": 70,
+      "visibility": "private"
+    },
+    {
+      "eventId": "EVT_20_LOCK_001",
+      "date": "2028-09-01",
+      "season": "2028-29",
+      "choiceId": "C",
+      "outcomeId": "C__SECONDARY",
+      "club": "UDV",
+      "snapshot": {
+        "family": "team",
+        "npcRefs": [],
+        "tags": [
+          "team",
+          "professionalization"
+        ],
+        "age": 20
+      },
+      "salience": 70,
+      "visibility": "private"
+    },
+    {
+      "eventId": "EVT_20_LOCK_002",
+      "date": "2028-12-01",
+      "season": "2028-29",
+      "choiceId": "D",
+      "outcomeId": "D__SECONDARY",
+      "club": "UDV",
+      "snapshot": {
+        "family": "team",
+        "npcRefs": [],
+        "tags": [
+          "team",
+          "professionalization"
+        ],
+        "age": 20
+      },
+      "salience": 70,
+      "visibility": "private"
+    },
+    {
+      "eventId": "EVT_20_MATCH_001",
+      "date": "2029-02-01",
+      "season": "2028-29",
+      "choiceId": "D",
+      "outcomeId": "D__SECONDARY",
+      "club": "UDV",
+      "snapshot": {
+        "family": "sport",
+        "npcRefs": [],
+        "tags": [
+          "sport",
+          "professionalization"
+        ],
+        "age": 20
+      },
+      "salience": 70,
+      "visibility": "private"
+    },
+    {
+      "eventId": "CEVT_21_ADRIAN_01",
+      "date": "2029-07-01",
+      "season": "2029-30",
+      "choiceId": "B",
+      "outcomeId": "B__SECONDARY",
+      "club": "UDV",
+      "snapshot": {
+        "family": "conditional",
+        "npcRefs": [],
+        "tags": [
+          "conditional",
+          "causal_callback"
+        ],
+        "age": 21
+      },
+      "salience": 70,
+      "visibility": "private"
+    },
+    {
+      "eventId": "EVT_21_MONEY_001",
+      "date": "2029-07-06",
+      "season": "2029-30",
+      "choiceId": "C",
+      "outcomeId": "C__SECONDARY",
+      "club": "UDV",
+      "snapshot": {
+        "family": "money",
+        "npcRefs": [],
+        "tags": [
+          "money",
+          "professionalization"
+        ],
+        "age": 21
+      },
+      "salience": 70,
+      "visibility": "private"
+    },
+    {
+      "eventId": "CEVT_21_FAMILY_01",
+      "date": "2029-07-11",
+      "season": "2029-30",
+      "choiceId": "B",
+      "outcomeId": "B__PRIMARY",
+      "club": "UDV",
+      "snapshot": {
+        "family": "conditional",
+        "npcRefs": [],
+        "tags": [
+          "conditional",
+          "causal_callback"
+        ],
+        "age": 21
+      },
+      "salience": 70,
+      "visibility": "private"
+    },
+    {
+      "eventId": "EVT_21_AGT_001",
+      "date": "2029-07-16",
+      "season": "2029-30",
+      "choiceId": "C",
+      "outcomeId": "C__PRIMARY",
+      "club": "UDV",
+      "snapshot": {
+        "family": "agent",
+        "npcRefs": [],
+        "tags": [
+          "agent",
+          "professionalization"
+        ],
+        "age": 21
+      },
+      "salience": 70,
+      "visibility": "private"
+    },
+    {
+      "eventId": "EVT_21_AGT_002",
+      "date": "2029-09-01",
+      "season": "2029-30",
+      "choiceId": "D",
+      "outcomeId": "D__SECONDARY",
+      "club": "UDV",
+      "snapshot": {
+        "family": "agent",
+        "npcRefs": [],
+        "tags": [
+          "agent",
+          "professionalization"
+        ],
+        "age": 21
+      },
+      "salience": 70,
+      "visibility": "private"
+    },
+    {
+      "eventId": "EVT_21_CCH_001",
+      "date": "2029-12-01",
+      "season": "2029-30",
+      "choiceId": "A",
+      "outcomeId": "A__SECONDARY",
+      "club": "UDV",
+      "snapshot": {
+        "family": "tactical",
+        "npcRefs": [],
+        "tags": [
+          "tactical",
+          "professionalization"
+        ],
+        "age": 21
+      },
+      "salience": 70,
+      "visibility": "private"
+    },
+    {
+      "eventId": "EVT_21_CCH_002",
+      "date": "2030-01-01",
+      "season": "2029-30",
+      "choiceId": "B",
+      "outcomeId": "B__SECONDARY",
+      "club": "UDV",
+      "snapshot": {
+        "family": "tactical",
+        "npcRefs": [],
+        "tags": [
+          "tactical",
+          "professionalization"
+        ],
+        "age": 21
+      },
+      "salience": 70,
+      "visibility": "private"
+    },
+    {
+      "eventId": "EVT_21_MED_001",
+      "date": "2030-03-01",
+      "season": "2029-30",
+      "choiceId": "D",
+      "outcomeId": "D__PRIMARY",
+      "club": "UDV",
+      "snapshot": {
+        "family": "medical",
+        "npcRefs": [],
+        "tags": [
+          "medical",
+          "professionalization"
+        ],
+        "age": 21
+      },
+      "salience": 70,
+      "visibility": "private"
+    },
+    {
+      "eventId": "EVT_22_CON_001",
+      "date": "2030-07-01",
+      "season": "2030-31",
+      "choiceId": "D",
+      "outcomeId": "D__SECONDARY",
+      "club": "UDV",
+      "snapshot": {
+        "family": "contract",
+        "npcRefs": [],
+        "tags": [
+          "contract",
+          "transition23"
+        ],
+        "age": 22
+      },
+      "salience": 70,
+      "visibility": "private"
+    },
+    {
+      "eventId": "EVT_22_MED_001",
+      "date": "2030-07-06",
+      "season": "2030-31",
+      "choiceId": "B",
+      "outcomeId": "B__SECONDARY",
+      "club": "UDV",
+      "snapshot": {
+        "family": "medical",
+        "npcRefs": [],
+        "tags": [
+          "medical",
+          "transition23"
+        ],
+        "age": 22
+      },
+      "salience": 70,
+      "visibility": "private"
+    },
+    {
+      "eventId": "EVT_22_LIFE_001",
+      "date": "2030-09-01",
+      "season": "2030-31",
+      "choiceId": "B",
+      "outcomeId": "B__SECONDARY",
+      "club": "UDV",
+      "snapshot": {
+        "family": "life",
+        "npcRefs": [],
+        "tags": [
+          "life",
+          "transition23"
+        ],
+        "age": 22
+      },
+      "salience": 70,
+      "visibility": "private"
+    },
+    {
+      "eventId": "EVT_22_HOME_001",
+      "date": "2030-12-01",
+      "season": "2030-31",
+      "choiceId": "A",
+      "outcomeId": "A__SECONDARY",
+      "club": "UDV",
+      "snapshot": {
+        "family": "family",
+        "npcRefs": [],
+        "tags": [
+          "family",
+          "transition23"
+        ],
+        "age": 22
+      },
+      "salience": 70,
+      "visibility": "private"
+    },
+    {
+      "eventId": "EVT_22_CON_002",
+      "date": "2030-12-06",
+      "season": "2030-31",
+      "choiceId": "B",
+      "outcomeId": "B__PRIMARY",
+      "club": "UDV",
+      "snapshot": {
+        "family": "contract",
+        "npcRefs": [],
+        "tags": [
+          "contract",
+          "transition23"
+        ],
+        "age": 22
+      },
+      "salience": 70,
+      "visibility": "private"
+    },
+    {
+      "eventId": "EVT_22_END_001",
+      "date": "2031-05-01",
+      "season": "2030-31",
+      "choiceId": "D",
+      "outcomeId": "D__SECONDARY",
+      "club": "UDV",
+      "snapshot": {
+        "family": "legacy",
+        "npcRefs": [],
+        "tags": [
+          "legacy",
+          "transition23"
+        ],
+        "age": 22
+      },
+      "salience": 70,
+      "visibility": "private"
+    }
+  ],
+  "eventCooldowns": {
+    "EVT_18_PRE_001": 98172,
+    "EVT_18_PRE_002": 98177,
+    "EVT_18_PRE_003": 98182,
+    "EVT_18_LOCK_001": 98187,
+    "EVT_18_PRS_001": 98234,
+    "EVT_18_PRS_002": 98295,
+    "CEVT_18_CCH_01": 98326,
+    "EVT_18_TACT_001": 98356,
+    "EVT_18_MED_001": 98361,
+    "CEVT_18_NODEBUT_01": 98366,
+    "EVT_18_CAP_001": 98415,
+    "CEVT_18_BRUNO_01": 98438,
+    "EVT_18_END_001": 98476,
+    "EVT_18_SUM_001": 98507,
+    "EVT_19_RIV_001": 98537,
+    "EVT_19_TEAM_001": 98542,
+    "EVT_19_MEDIA_001": 98599,
+    "CEVT_18_VELA_01": 98662,
+    "EVT_19_JAN_001": 98721,
+    "EVT_19_FIN_001": 98887,
+    "CEVT_20_HOME_01": 98903,
+    "EVT_20_LIFE_001": 98908,
+    "EVT_20_MED_001": 98913,
+    "EVT_20_LOCK_001": 98965,
+    "EVT_20_LOCK_002": 99056,
+    "EVT_20_MATCH_001": 99118,
+    "CEVT_21_ADRIAN_01": 99268,
+    "EVT_21_MONEY_001": 99273,
+    "CEVT_21_FAMILY_01": 99278,
+    "EVT_21_AGT_001": 99283,
+    "EVT_21_AGT_002": 99330,
+    "EVT_21_CCH_001": 99421,
+    "EVT_21_CCH_002": 99452,
+    "EVT_21_MED_001": 99511,
+    "EVT_22_CON_001": 99633,
+    "EVT_22_MED_001": 99638,
+    "EVT_22_LIFE_001": 99695,
+    "EVT_22_HOME_001": 99786,
+    "EVT_22_CON_002": 99791,
+    "EVT_22_END_001": 99937
+  },
+  "familyLastSeen": {
+    "preseason": 10,
+    "team": 884,
+    "press": 427,
+    "conditional": 1106,
+    "tactical": 1280,
+    "medical": 1466,
+    "captaincy": 243,
+    "contract": 1619,
+    "social": 370,
+    "market": 549,
+    "life": 1523,
+    "sport": 946,
+    "money": 1101,
+    "agent": 1158,
+    "family": 1614,
+    "legacy": 1765
+  },
+  "narrativePressure": {
+    "origin": 20,
+    "friendship": 15,
+    "body": 10,
+    "market": 8
+  },
+  "runtime": {
+    "day": 1827,
+    "seasonDay": 1,
+    "daysSinceNarrative": 62,
+    "eventsThisSeason": 0
+  },
+  "rngState": {
+    "narrative": {
+      "seed": 424242,
+      "state": 149179936213,
+      "draws": 80
+    },
+    "football": {
+      "seed": 424242,
+      "state": 5663219008457,
+      "draws": 3091
+    },
+    "qa": {
+      "seed": 424242,
+      "state": 75923138850,
+      "draws": 40
+    }
+  }
+}

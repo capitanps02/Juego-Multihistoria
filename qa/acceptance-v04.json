@@ -1,0 +1,71 @@
+{
+  "version": "0.4.0",
+  "schemaVersion": 4,
+  "passed": true,
+  "checks": {
+    "build_errors_zero": true,
+    "reproducible": true,
+    "content_count_20_23": true,
+    "all_events_reachable_20_23": true,
+    "all_state23_reachable": true,
+    "principal_density_in_target": true,
+    "conditional_density_in_target": true,
+    "league_dimension_varied": true,
+    "prestige_dimension_varied": true,
+    "one_thousand_unique_sequences": true
+  },
+  "coverage20_23": {
+    "expected": 51,
+    "seen": 51,
+    "missing": [],
+    "verifiedSourceScenes": 10,
+    "technicalAdaptations": 41
+  },
+  "state23Coverage": {
+    "expected": 12,
+    "seen": 12,
+    "missing": []
+  },
+  "density": {
+    "principalAverage": 19.12,
+    "principalTarget": [
+      14,
+      20
+    ],
+    "conditionalAverage": 6.34,
+    "conditionalTarget": [
+      5,
+      8
+    ]
+  },
+  "diversity": {
+    "uniqueSequences": 1000,
+    "uniqueFinalStateSignatures": 100,
+    "state23EntropyBits": 3.078
+  },
+  "dimensions": {
+    "leagueTierFrequency": {
+      "1": 284,
+      "2": 41,
+      "3": 485,
+      "4": 190
+    },
+    "clubPrestigeTierFrequency": {
+      "1": 602,
+      "2": 94,
+      "3": 19,
+      "4": 112,
+      "5": 173
+    }
+  },
+  "qaShards": [
+    {
+      "startSeed": 950000,
+      "runs": 500
+    },
+    {
+      "startSeed": 950500,
+      "runs": 500
+    }
+  ]
+}

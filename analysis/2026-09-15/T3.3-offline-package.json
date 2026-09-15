@@ -1,0 +1,55 @@
+{
+  "pass": "T3.3",
+  "date": "2026-09-15",
+  "package": {
+    "type": "android-webview-offline",
+    "entry": "android/app/src/main/assets/index.html",
+    "files": 144,
+    "bytes": 10278171,
+    "manifest": "android/app/src/main/assets/offline-manifest.json",
+    "networkPermission": false,
+    "connectSrc": "none",
+    "externalUrls": [],
+    "resources": "Motor compilado, UI, CSS e imágenes data-uri copiados bajo android/app/src/main/assets/",
+    "origin": "https://appassets.androidplatform.net/assets/"
+  },
+  "persistence": {
+    "store": "IndexedDB",
+    "key": "historia-jugador.android.offline.session.v1",
+    "verification": "scripts/test-android-offline.mjs",
+    "legacyMigration": "localStorage",
+    "androidRuntimeVerified": true
+  },
+  "checks": {
+    "build": {
+      "command": "node scripts/build.mjs",
+      "status": "pass"
+    },
+    "offlinePackage": {
+      "command": "node scripts/build-android-offline.mjs",
+      "status": "pass"
+    },
+    "offlineTests": {
+      "command": "node --test scripts/test-android-offline.mjs",
+      "status": "pass",
+      "tests": 4
+    },
+    "runtimeImport": {
+      "command": "node --input-type=module -e import GameSession from android assets",
+      "status": "pass",
+      "result": "career · revision 0 · age 18"
+    },
+    "apk": {
+      "command": "node scripts/build-android-apk.mjs",
+      "status": "pass",
+      "exitCode": 0,
+      "bytes": 8528829,
+      "sha256": "af03e31052c2ca3871d021d4fcdba29d19dd0f2fa148aed09988383bce1b3247",
+      "signatureVerified": true,
+      "assetHashesVerified": 144
+    }
+  },
+  "technicalAcceptancePassed": true,
+  "runtimeEvidence": "analysis/2026-09-15/T3.3-android-runtime.json",
+  "nextAction": "Continuar con T3.4 en un teléfono físico; adaptar importación/exportación nativas."
+}

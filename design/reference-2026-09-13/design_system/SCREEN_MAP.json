@@ -1,0 +1,114 @@
+{
+  "globalNavigation": [
+    "home",
+    "career",
+    "world",
+    "relations",
+    "profile"
+  ],
+  "specialStates": [
+    "simulation",
+    "match",
+    "cinematic",
+    "offer",
+    "seasonend"
+  ],
+  "screens": {
+    "home": {
+      "purpose": "At-a-glance career state and next action",
+      "primaryAction": "simulation",
+      "modules": [
+        "HeroPlayer",
+        "NextMatch",
+        "SeasonState",
+        "Objectives",
+        "NewsFeature",
+        "Messages",
+        "Calendar"
+      ]
+    },
+    "simulation": {
+      "purpose": "Fast temporal progression",
+      "primaryAction": "automatic event interruption",
+      "modules": [
+        "DateRange",
+        "DayTimeline",
+        "ProgressBar",
+        "EventToast"
+      ]
+    },
+    "cinematic": {
+      "purpose": "Narrative decision",
+      "primaryAction": "DecisionOption",
+      "modules": [
+        "FullBleedScene",
+        "ContextLine",
+        "DecisionSheet"
+      ]
+    },
+    "match": {
+      "purpose": "Choose match experience",
+      "primaryAction": "Simulate match",
+      "modules": [
+        "FixtureHero",
+        "Role",
+        "MatchModeActions"
+      ]
+    },
+    "career": {
+      "purpose": "Biography/history",
+      "modules": [
+        "SeasonTimeline",
+        "CareerStats",
+        "Trophies"
+      ]
+    },
+    "world": {
+      "purpose": "Independent football world",
+      "modules": [
+        "Tabs",
+        "NewsHero",
+        "WorldNews",
+        "Trends"
+      ]
+    },
+    "relations": {
+      "purpose": "Human environment",
+      "modules": [
+        "RelationshipList",
+        "ConversationPanel",
+        "QualitativeStatus"
+      ]
+    },
+    "profile": {
+      "purpose": "Player depth",
+      "modules": [
+        "PlayerPortrait",
+        "Overall",
+        "Attributes",
+        "Bio"
+      ]
+    },
+    "offer": {
+      "purpose": "Career contract decision",
+      "primaryAction": "Accept",
+      "modules": [
+        "ClubHero",
+        "OfferData",
+        "Accept",
+        "Negotiate",
+        "Reject"
+      ]
+    },
+    "seasonend": {
+      "purpose": "Emotional chapter closure",
+      "primaryAction": "Continue next season",
+      "modules": [
+        "SeasonHero",
+        "KeyStats",
+        "CompetitionResults",
+        "Milestones"
+      ]
+    }
+  }
+}

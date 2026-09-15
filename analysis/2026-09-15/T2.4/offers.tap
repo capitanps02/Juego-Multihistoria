@@ -1,0 +1,17 @@
+✔ 20th birthday proposes terms without changing club or silently renewing (44.945999ms)
+✔ reject retains terms and RNG, records response and unlocks time (14.095832ms)
+✔ acceptance persists once across double click, reload and replay (11.844352ms)
+✔ failed signing commit preserves offer, contract and RNG; retry equals clean run (17.752685ms)
+✔ delegation has deterministic limits and never grants authority to the next offer (3.475291ms)
+✔ transfer acceptance changes registration, owner, contract and context together (2.358798ms)
+✔ corrupt offers, authority records and receipt mismatches are rejected (26.58426ms)
+✔ v1 migration preserves pending narrative, history and RNG and grants no delegation (136.492424ms)
+✔ world renewal, summer moves and loan continuity remain proposals across seeds (212.845424ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 638.815436

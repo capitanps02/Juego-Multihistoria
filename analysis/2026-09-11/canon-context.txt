@@ -1,0 +1,348 @@
+B139 Heading1 19. PASADA 1 — Biblia del universo base
+B140  Estado de la pasada: CERRADA. Esta sección convierte la premisa abstracta de la Pasada 0 en un universo concreto y programable. Todo nombre, rol, relación inicial y tensión estructural fijado aquí pasa a ser canon salvo cambio posterior registrado expresamente.
+B141 Heading2 19.1. Decisión de mundo y capa de ficción
+B142  El juego transcurre en una España contemporánea reconocible, pero utiliza clubes, ciudades deportivas y marcas de competición ficticias. Los países y la lógica general del fútbol europeo pueden ser reales; la identidad de clubes y torneos permanece desacoplada de licencias. Esta solución permite escribir con realismo sin atar el motor narrativo a derechos comerciales ni a bases de datos concretas.
+B143 ListBullet País inicial: España.
+B144 ListBullet Ciudad inicial: Valdoria, ciudad ficticia del norte de España, costera e industrial, con aproximadamente 180.000 habitantes y una fuerte identidad local.
+B145 ListBullet Club inicial: Unión Deportiva Valdoria (UDV).
+B146 ListBullet Categoría inicial: tercer nivel nacional, denominado internamente Liga Federación. El nombre comercial podrá sustituirse más adelante sin alterar el guion.
+B147 ListBullet Temporada inicial: Temporada 1 / Año 0. La fecha absoluta podrá decidirse en programación; la cronología narrativa se almacena por edad y temporada para no envejecer el juego.
+B148 ListBullet Todos los clubes externos importantes se definirán mediante IDs y arquetipos. Sus nombres visibles podrán cambiarse o reemplazarse por licencias reales en otra capa de datos.
+B149 Heading2 19.2. Protagonista canónico y personalización permitida
+B150  El protagonista debe sentirse como “tu futbolista”, pero el guion necesita suficientes hechos fijos para producir relaciones profundas. Por ello se separa identidad superficial de biografía canónica.
+B151 TABLE under 19.2. Protagonista canónico y personalización permitida
+Elemento | Canon / regla
+ID interno | PLR_001
+Edad inicial | 18 años recién cumplidos al comenzar la pretemporada.
+Nombre y apellido | Editables por el jugador. Ningún personaje familiar dependerá del apellido elegido.
+Aspecto | Editable. Altura y complexión pueden variar dentro de rangos plausibles; no condicionarán escenas salvo que una mecánica futura lo haga explícito.
+Origen | Criado en Valdoria desde pequeño. Lleva ocho temporadas en la cantera de la UDV.
+Posición base | Mediapunta/extremo derecho ofensivo. Puede jugar también por izquierda. Esta versatilidad justifica distintos caminos tácticos sin convertirlo en un jugador universal.
+Pie dominante | Configurable; los textos narrativos deben evitar asumir uno concreto salvo que se parametrice.
+Situación deportiva | Sin debut oficial con el primer equipo. Ha destacado en juveniles, pero no es una superestrella mediática ni una certeza de élite.
+Situación económica | Vive con su familia. Contrato formativo modesto; tiene poco poder de negociación.
+Educación | Ha terminado la enseñanza secundaria. Puede estudiar, aplazar estudios o centrarse exclusivamente en el fútbol mediante decisiones futuras.
+Potencial | Oculto, dinámico y no determinista. El juego no garantiza que el jugador llegue a la élite aunque tome decisiones razonables.
+B153 Heading3 Perfil futbolístico inicial
+B154  El protagonista comienza como un jugador técnico y creativo, con más intuición que oficio. Tiene suficiente talento para que una carrera grande sea creíble, pero también carencias que justifican un estancamiento. Las cifras siguientes son semillas de diseño, no una promesa de resultado.
+B155 TABLE under Perfil futbolístico inicial
+Área | Nivel inicial orientativo | Lectura narrativa
+Control y regate | 62–66 / 100 | Su mejor argumento para llamar la atención.
+Pase y visión | 57–62 | Ve soluciones, pero todavía fuerza jugadas.
+Definición | 51–56 | Puede marcar; no es goleador fiable.
+Aceleración/velocidad | 59–64 | Competitivo, no extraordinario.
+Resistencia | 50–55 | Debe adaptarse al ritmo sénior.
+Fuerza | 43–49 | Una debilidad inicial que algunos entrenadores usarán contra él.
+Trabajo defensivo | 36–44 | Mejorable; puede afectar su entrada en onces conservadores.
+Templanza | 45–52 | Variable bajo presión; crecerá o caerá según experiencia.
+Lectura táctica | 48–54 | Talento intuitivo con margen de aprendizaje.
+Potencial visible | NO MOSTRADO | Nunca se enseña un número de “potencial real”.
+B157  Regla clave: el potencial no es un techo rígido. Cada partida recibe una combinación oculta de facilidad de desarrollo, resistencia física, respuesta a la presión y ventanas de oportunidad. El jugador puede superar o desperdiciar ese punto de partida. No existe un número secreto que por sí solo decida la carrera.
+B158 Heading2 19.3. Valdoria: ciudad, identidad y presión social
+B159  Valdoria es una ciudad portuaria e industrial del norte, suficientemente grande para sostener un club profesional y suficientemente pequeña para que un canterano reconocido no pueda desaparecer en el anonimato. La ciudad tiene universidad, astillero, barrios obreros y una zona nueva de ocio junto al puerto. Esto permite que la vida personal y la reputación local sean visibles sin convertir el entorno en una caricatura.
+B160 ListBullet El club es una institución comunitaria. Para una parte de la afición, jugar en la UDV tiene una dimensión de pertenencia que los futbolistas de fuera no soportan igual.
+B161 ListBullet La prensa deportiva local es pequeña: periodistas, directivos, agentes y familiares terminan conociéndose. Los rumores viajan rápido y rara vez puede saberse quién los inició.
+B162 ListBullet El protagonista conserva amigos fuera del fútbol. El juego debe permitir que ese entorno funcione como apoyo, distracción, tentación, fuente de información o carga.
+B163 ListBullet La ciudad no idolatra automáticamente al canterano. Un buen mes lo convierte en promesa; dos malas entrevistas pueden convertirlo en “otro chico que se cree más de lo que es”.
+B164 Heading2 19.4. Unión Deportiva Valdoria — CLUB_UDV
+B165 TABLE under 19.4. Unión Deportiva Valdoria — CLUB_UDV
+Dato | Canon inicial
+Nombre | Unión Deportiva Valdoria (UDV).
+Fundación | 1936.
+Colores | Verde oscuro y blanco.
+Estadio | La Dársena, 11.800 localidades; viejo, cerrado y muy cercano al césped.
+Cantera | Cerro Alto. Buena reputación regional, pero poca capacidad para retener a sus mejores talentos.
+Categoría | Liga Federación, tercer nivel nacional.
+Contexto | Club recién estabilizado tras años de altibajos. No tiene margen económico para una temporada desastrosa.
+Objetivo público | Permanencia tranquila y consolidación de cantera.
+Objetivo real de la dirección | Permanencia + generar ingresos extraordinarios antes del cierre de la temporada.
+Presupuesto deportivo | Entre los cinco más bajos de su grupo.
+Cultura | Cercanía, orgullo local, impaciencia y memoria larga.
+Riesgo estructural | El club necesita convertir valor deportivo en dinero. Promover a un joven puede ser una apuesta deportiva o un escaparate de venta.
+B167 Heading3 Situación económica oculta de la UDV
+B168  La afición conoce que el club va justo de dinero, pero desconoce la magnitud. La dirección arrastra un desfase de caja aproximado de 1,1 millones de euros que debe cubrir mediante ventas, nueva inversión, premios deportivos o reducción de costes antes del siguiente verano. Esta información NO se mostrará al protagonista al inicio. Explica por qué distintos dirigentes pueden empujarle a renovar, jugar o marcharse por razones aparentemente contradictorias.
+B169 Heading2 19.5. Estructura deportiva del mundo
+B170  La simulación necesita suficiente profundidad para crear trayectorias muy distintas sin obligarnos a modelar miles de clubes con la misma precisión. Se utilizará una pirámide completa de ligas, pero solo los clubes narrativamente relevantes tendrán personalidad profunda.
+B171 TABLE under 19.5. Estructura deportiva del mundo
+Nivel | Estructura de referencia | Uso narrativo
+1 | División Nacional — 20 clubes | Élite doméstica, lucha continental, presión mediática y selección.
+2 | Liga Profesional 2 — 22 clubes | Puente principal entre desarrollo y élite.
+3 | Liga Federación — 2 grupos de 20 | Inicio de la carrera; mezcla de proyectos ambiciosos, históricos caídos y clubes modestos.
+4 | Segunda Federación — grupos regionales | Riesgo real de caída, cesiones y reconstrucciones.
+Copa | Copa Nacional | Permite cruces con clubes grandes y eventos inesperados.
+Europa | Tres niveles continentales genéricos | Se desbloquean si la carrera alcanza clubes clasificados.
+Selecciones | Absoluta + categorías inferiores cuando proceda | Nunca garantizadas; dependen de nivel, forma, rol y competencia.
+B173 Heading2 19.6. Núcleo de personajes recurrentes
+B174  Los NPC siguientes son canon. Cada uno tiene objetivo visible, agenda privada y memoria. Ninguno está destinado de antemano a ser aliado o enemigo; la relación dependerá de decisiones y de su propia evolución.
+B175 TABLE under 19.6. Núcleo de personajes recurrentes
+ID | Nombre | Rol | Cara visible | Agenda / sesgo | Evolución
+NPC_DIR_01 | Marta Valcárcel | Presidenta UDV | Modernizar sin perder control. | Necesita cerrar el agujero financiero sin admitir debilidad; puede vender “proyecto de cantera” y a la vez monetizarla. | Protectora, rival institucional o salida del club.
+NPC_DIR_02 | Óscar Ferrer | Director deportivo | Plantilla barata que sobreviva. | Su posición mejora con balance positivo de traspasos; tenderá a valorar ventas más de lo que reconoce. | Puede llegar a un club mayor y recordar negociaciones.
+NPC_CCH_01 | Darío Montalbán | Entrenador | Permanencia y control. | Su renovación depende del resultado inmediato; desconfía del riesgo táctico de los jóvenes. | Puede consolidar, bloquear o reencontrar al jugador.
+NPC_CCH_02 | Sergio Mena | Segundo entrenador | Demostrar que puede dirigir. | Ve valor en datos y jóvenes, pero no quiere quemar su carrera contradiciendo al jefe. | Entrenador principal futuro plausible.
+NPC_ACA_01 | Julián Rivas | Técnico de cantera | Oportunidades reales para canteranos. | Resentimiento hacia agentes y directivos que, según él, venden demasiado pronto. | Mentor sincero pero sesgado.
+NPC_MED_01 | Paula Requena | Fisioterapeuta | Proteger salud y disponibilidad. | Su reputación depende de no forzar jugadores; puede chocar con técnico o futbolista. | Clave en lesiones y confidencialidad.
+NPC_PLR_10 | Tomás Vela | Central y capitán | Cerrar su carrera con dignidad. | Valora licencias de entrenador y sospecha que quieren apartarlo para liberar salario. | Mentor, antagonista, técnico o director años después.
+NPC_PLR_11 | Leo Barreiro | Portero y vicecapitán | Estabilidad del grupo. | Evita guerras públicas, pero guarda memoria de quien rompe códigos de vestuario. | Influencia interna y posible veterano de referencia.
+NPC_PLR_12 | Bruno Leal | Extremo derecho titular | Lograr un último salto. | Compite con el protagonista y tiene una promesa privada de salida si llega una oferta razonable. | Mentor, bloqueo, venta o rival futuro.
+NPC_PLR_13 | Mamadou Diarra | Centrocampista | Jugar y progresar. | Observador social; comparte información si confía y evita bandos hasta que le afectan. | Puente de vestuario y extranjero.
+NPC_PLR_14 | Iván “Nano” Serrano | Delantero canterano | Debutar junto a su amigo. | Impulsivo; teme quedarse atrás si el protagonista despega. | Amistad, rivalidad, caída o carrera paralela.
+NPC_PLR_15 | Adrián Costa | Mediapunta/extremo canterano | Ser la verdadera joya de Cerro Alto. | Percibe trato desigual; una gran agencia también lo observa. | Rival espejo o aliado inesperado.
+NPC_AGT_01 | Héctor Salvatierra | Agente local | Conseguir un cliente bandera. | Tiene relación comercial fuerte con un club de Segunda; su mejor consejo puede beneficiarle también. | Primer agente plausible.
+NPC_AGT_02 | Lucía Falcón | Agente, Prisma Sports | Captar talento antes de que se encarezca. | Solo invertirá recursos fuertes en uno de los dos jóvenes; usa prensa y contactos con agresividad. | Ruta de poder y menor cercanía.
+NPC_PRS_01 | Clara Beltrán | Periodista local | Saltar a prensa nacional. | Necesita exclusivas; puede respetar al jugador y publicar algo que le perjudique. | Aliada informativa o relación transaccional.
+NPC_PRS_02 | Raúl Carrión | Locutor deportivo | Audiencia e influencia. | Premia conflicto y cambia de tono según el sentir de la afición. | Amplificador de reputación.
+NPC_FAM_01 | Elena | Madre | Futuro y estabilidad. | Desconfía de promesas; valora formación y contratos seguros. | Su prudencia puede salvar o cerrar oportunidades.
+NPC_FAM_02 | Julián | Padre | Que aproveche la oportunidad. | Exjugador regional; proyecta parte de su arrepentimiento. | Apoyo, presión o conflicto.
+NPC_FAM_03 | Mara | Hermana menor | Relación normal con su hermano. | Entiende redes y detecta cambios de fama que los adultos no ven. | Termómetro social/familiar.
+NPC_SOC_01 | Dani Lucas | Amigo de infancia | Que no desaparezca la amistad. | Busca normalidad y diversión incluso cuando el calendario lo hace arriesgado. | Apoyo, distracción o vínculo con Valdoria.
+B177 Heading2 19.7. Relaciones: no existe una única barra de “amistad”
+B178  Una relación puede ser positiva en un eje y negativa en otro. El entrenador puede apreciar al protagonista pero no confiar en su disciplina; un agente puede ser fiable en información y agresivo en negociación; un compañero puede quererle y al mismo tiempo competir por su puesto. Para evitar simplificaciones se usarán, cuando proceda, tres valores internos por relación:
+B179 ListBullet Afinidad: cuánto le gusta o le importa el protagonista a ese personaje.
+B180 ListBullet Confianza: cuánto cree el NPC que el protagonista cumplirá su palabra, guardará secretos o actuará de forma previsible.
+B181 ListBullet Poder/dependencia: quién necesita más a quién en ese momento. Puede cambiar radicalmente con minutos, contratos y reputación.
+B182  No todos los NPC necesitan los tres ejes con el mismo peso. El sistema expondrá principalmente señales textuales: tono de mensajes, acceso a información, invitaciones, silencios, filtraciones o decisiones de otros personajes.
+B183 Heading2 19.8. Estado inicial de las relaciones
+B184 TABLE under 19.8. Estado inicial de las relaciones
+Relación | Estado inicial | Matiz
+Montalbán → protagonista | Neutra / escéptica | Lo conoce de informes y entrenamientos puntuales; no le debe nada.
+Mena → protagonista | Levemente positiva | Cree que su perfil puede romper partidos, pero no arriesgará su puesto por él.
+Rivas → protagonista | Positiva | Lo ha entrenado y siente responsabilidad personal por su desarrollo.
+Tomás Vela → protagonista | Neutra | Respeta a canteranos si respetan códigos y entrenan.
+Bruno Leal → protagonista | Ambivalente | Puede verlo como chico al que ayudar o amenaza contractual.
+Nano Serrano y protagonista | Amistad alta | La diferencia de éxito puede tensarla.
+Adrián Costa y protagonista | Competencia latente | No hay enemistad abierta; ambos comparan oportunidades.
+Familia y protagonista | Vínculo alto | Existen desacuerdos legítimos sobre riesgo, estudios y agentes.
+Prensa → protagonista | Curiosidad baja | Todavía no genera audiencia por sí mismo.
+Agentes → protagonista | Interés potencial | Ninguno tiene contrato firmado al inicio.
+B186 Heading2 19.9. Hechos ocultos iniciales del universo
+B187  Estos hechos son verdad canónica al comenzar la partida, aunque el jugador no los conoce. Sirven para que las primeras decisiones produzcan reacciones coherentes y, al mismo tiempo, difíciles de leer.
+B188  1. La UDV necesita cubrir aproximadamente 1,1 M€ antes del siguiente verano. La presidenta y el director deportivo no coinciden en cómo hacerlo.
+B189  2. Óscar Ferrer tiene incentivos internos ligados al balance positivo de traspasos. No cobra por vender a un jugador concreto, pero una venta mejora su posición personal.
+B190  3. Darío Montalbán tiene una cláusula de renovación automática vinculada a la permanencia y determinados objetivos deportivos; su horizonte es más corto que el del club.
+B191  4. Bruno Leal recibió verbalmente la promesa de que el club escucharía una oferta superior a un umbral razonable. Ferrer conoce la promesa; Montalbán preferiría retenerlo.
+B192  5. Tomás Vela sospecha correctamente que la directiva estudia reducir su peso salarial. Nadie le ha comunicado todavía una decisión.
+B193  6. Héctor Salvatierra tiene una relación especialmente buena con un club de Segunda que busca jóvenes ofensivos. Si recomienda ese destino puede ser una buena oportunidad y también favorecerle a él.
+B194  7. Prisma Sports sigue tanto al protagonista como a Adrián Costa. Lucía Falcón todavía no ha decidido cuál merece una inversión fuerte de representación.
+B195  8. Clara Beltrán dispone de fuentes suficientes dentro de la UDV para confirmar algunas noticias, pero no todas. A veces publicará inferencias correctas sin tener toda la historia.
+B196  9. Julián Rivas cree que el protagonista debería esperar antes de irse a un club grande; esa opinión nace de experiencia real, pero también de su ideología de cantera.
+B197  10. El protagonista no tiene un destino predeterminado. Ningún gran club está “reservado” para ficharlo y ninguna lesión grave está escrita de antemano.
+B198 Heading2 19.10. Arquitectura temporal de una temporada
+B199 TABLE under 19.10. Arquitectura temporal de una temporada
+Fase | Ventana | Función narrativa
+Pretemporada | Julio–agosto | Ascensos desde cantera, dorsales, contratos, primeras jerarquías, rumores y adaptación física.
+Arranque | Agosto–octubre | Primeros minutos, reputación inicial, rol y primeras comparaciones públicas.
+Primer punto de presión | Noviembre–diciembre | Lesiones, banquillos, vestuario, resultados y promesas incumplidas.
+Mercado de invierno | Enero | Cesiones, renovaciones, agentes, fichajes, filtraciones y decisiones con reloj.
+Tramo de verdad | Febrero–abril | Permanencia/ascenso, cansancio, lucha de roles y consecuencias acumuladas.
+Cierre | Mayo–junio | Balance, premios, contratos, ventas, vacaciones, cambios de técnico y semillas del siguiente año.
+B201  Ritmo objetivo: en edades 18–23, entre 12 y 18 escenas de decisión relevantes por temporada y 20–40 sucesos menores/mensajes. Entre 24–31, de 10 a 16 decisiones relevantes. En el tramo final, de 7 a 12, aumentando el peso de cada una. El objetivo de biblioteca final es aproximadamente 650–900 escenas potenciales, de las cuales una carrera individual verá alrededor del 35–45 %.
+B202 Heading2 19.11. Variables del motor narrativo
+B203  Las variables se dividen por función. No se utilizará una puntuación de “bondad” o “maldad”. El sistema debe describir conductas y reputaciones concretas, no emitir un juicio moral universal.
+B204 TABLE under 19.11. Variables del motor narrativo
+Familia | Variables principales | Visibilidad
+Rendimiento | técnica, pase, regate, finalización, físico, ritmo, resistencia, defensa, táctica, compostura | Parcial/visible
+Estado | forma, fatiga, molestias, confianza, ritmo competitivo, presión | Parcial
+Carrera | rol, minutos, categoría, valor, salario, años contrato, importancia de mercado, palmarés | Visible
+Palanca | poder contractual, demanda de mercado, dependencia del club, alternativas reales | Oculta/indirecta
+Personalidad | ambición, paciencia, apetito de riesgo, profesionalidad, sensibilidad al estatus, adaptabilidad, instinto político | Mayormente oculta
+Reputación | afición local, afición nacional, vestuario, técnicos, ejecutivos, prensa | Indirecta
+Relaciones | afinidad, confianza, poder/dependencia por NPC | Indirecta
+Vida | dinero, gasto, descanso, estabilidad familiar, amistades, estudios, exposición pública | Parcial
+Riesgo | predisposición a lesión, sobrecarga, exposición a filtraciones, conflicto, vulnerabilidad contractual | Oculta
+Memoria | favores, promesas, traiciones, secretos, humillaciones, apoyos, silencios significativos | Oculta
+B206 Heading3 Rasgos emergentes
+B207  Patrones reiterados generan etiquetas internas que otros personajes interpretan: “negociador duro”, “predecible”, “volátil”, “fiable en privado”, “muy sensible a los minutos”, “jugador de vestuario”, “orientado al dinero”, “orientado al reto”, “mediático” o “reservado”. Ninguna etiqueta será universalmente positiva o negativa.
+B208 Heading2 19.12. Motor de azar condicionado
+B209  El azar debe introducir incertidumbre sin borrar responsabilidad. Cada resultado probabilístico nace de un peso base y varios modificadores. El jugador nunca verá el cálculo, pero sí señales que le permitan inferir parte del riesgo.
+B210 TABLE under 19.12. Motor de azar condicionado
+Componente | Regla
+Peso base | Probabilidad abstracta del desenlace en una situación neutra.
+Contexto deportivo | Forma, rol, resultados, competencia, nivel del club y calendario.
+Contexto humano | Confianza, afinidad, intereses, orgullo, miedo y memoria de NPC.
+Palanca | Qué alternativas reales tiene cada parte. Un jugador con contrato largo y sin ofertas negocia distinto a uno con tres clubes interesados.
+Información | La decisión puede basarse en datos ciertos, parciales o falsos.
+Ruido | Pequeña variación estocástica para impedir que dos partidas sean idénticas.
+Puertas de plausibilidad | Un resultado extremo no puede aparecer si carece de condiciones mínimas.
+Consecuencia diferida | Un “éxito” inmediato puede dejar una semilla negativa; un fracaso inmediato puede abrir una puerta futura.
+B212  El generador aleatorio de una partida deberá trabajar con una semilla de guardado. Esto permite depurar y reproducir carreras durante desarrollo, pero el jugador no conocerá la semilla. En modo normal se evitará mostrar porcentajes; la interfaz comunicará riesgo con lenguaje y contexto: “parece receptivo”, “la directiva está dividida”, “tu agente no está seguro”.
+B213 Heading2 19.13. Información imperfecta y agendas
+B214  Un consejo no se define como verdadero o falso de forma aislada. Cada fuente posee conocimiento, confianza subjetiva y sesgo. Un personaje puede decir algo falso creyendo sinceramente que es cierto. Otro puede decir una verdad parcial para inducir una decisión que le beneficia.
+B215 TABLE under 19.13. Información imperfecta y agendas
+Fuente | Suele saber bien | Sesgo frecuente
+Entrenador | Rol inmediato, táctica, confianza personal | Protege resultados y autoridad.
+Director deportivo | Mercado, contratos, presupuesto | Protege margen del club y su propia evaluación.
+Agente | Interés de clubes, contratos, reputación de mercado | Comisión, cartera, acceso y carrera propia.
+Compañero | Vestuario, estados de ánimo | Lealtades, celos, amistad y autoprotección.
+Periodista | Rumores, clima público, fuentes cruzadas | Necesidad de noticia, velocidad y exclusividad.
+Familia | Estado emocional y vida privada | Protección, proyección, miedo o ambición vicaria.
+Afición/redes | Percepción pública inmediata | Volatilidad, información incompleta y efecto manada.
+B217 Heading2 19.14. Macro-rutas de carrera
+B218  Las rutas no son ramas cerradas. Son estados narrativos que pueden combinarse, abandonarse y recuperar años después. Una misma carrera puede comenzar como “ascenso paciente”, pasar por “gran salto prematuro”, caer en “cesiones” y terminar como “regreso local”.
+B219 TABLE under 19.14. Macro-rutas de carrera
+ID | Ruta | Qué significa | Tensión principal
+ROUTE_HOME | Ídolo local | Permanece o regresa a la UDV y adquiere peso simbólico. | Lealtad puede dar minutos, capitanía y legado; también limitar techo deportivo o salario.
+ROUTE_LADDER | Escalera profesional | Sube categoría a categoría mediante minutos y mercado. | Menos glamour inicial; mayor control del desarrollo.
+ROUTE_BIGEARLY | Salto precoz | Un club superior apuesta pronto por él. | Mejor entrenamiento y salario; riesgo de banquillo, cesiones y pérdida de identidad.
+ROUTE_LOAN | Laberinto de cesiones | Pertenece a un club grande y encadena destinos. | Puede acelerar madurez o destruir estabilidad.
+ROUTE_ABROAD | Desarrollo extranjero | Acepta una liga exterior por estilo, minutos o mercado. | Adaptación cultural, idioma, distancia y volatilidad.
+ROUTE_MONEY | Palanca económica | Prioriza contratos y momentos de mercado. | Puede asegurar patrimonio y poder; también cerrar puertas deportivas, sin castigo moral automático.
+ROUTE_CONFLICT | Guerra contractual/política | Presiona, filtra, se planta o fuerza cambios. | A veces es la única vía para avanzar; otras destruye confianza.
+ROUTE_INJURY | Caída y reconstrucción | Una lesión o recaída cambia jerarquía y mercado. | No es final predeterminado; permite reinvención o declive.
+ROUTE_LATE | Late bloomer | No despega a los 20–23 y encuentra su mejor nivel más tarde. | Evita que una primera etapa mediocre sea derrota segura.
+ROUTE_MEDIA | Figura mediática | Construye marca, polémica o exposición pública. | Oportunidades comerciales e influencia, además de riesgo reputacional.
+ROUTE_JOURNEY | Profesional trotamundos | Carrera larga entre clubes y categorías. | Biografía rica sin necesidad de superestrella.
+ROUTE_RETURN | Hijo pródigo | Vuelve a Valdoria después de años fuera. | La recepción depende de cómo se marchó, quién siga y qué necesite cada parte.
+B221 Heading2 19.15. Clubes-arquetipo para rutas futuras
+B222  Estos clubes quedan disponibles como nodos recurrentes. No están destinados a fichar al protagonista; son piezas del mundo para que el mercado tenga memoria y estilos distintos.
+B223 TABLE under 19.15. Clubes-arquetipo para rutas futuras
+ID | Club | Entorno | Arquetipo
+CLUB_MON | CF Monteluz | España / élite | Gigante nacional; exige rendimiento inmediato y maneja plantillas profundas.
+CLUB_CAN | Sporting Cantábrico | España / alta Primera | Desarrollo de jóvenes, buen scouting y venta posterior.
+CLUB_TUR | Racing del Turia | España / Primera media | Fútbol técnico; proyecto atractivo pero directiva cambiante.
+CLUB_ALB | Deportivo Albor | España / ascensor 1ª-2ª | Ofrece minutos y responsabilidad; riesgo deportivo alto.
+CLUB_CAP | Unión Capital | España / gran mercado | Presión mediática y propiedad ambiciosa; decisiones frecuentes de entrenador.
+CLUB_RIJ | Rijnstad 1908 | Países Bajos | Desarrollo ofensivo, minutos a jóvenes y escaparate europeo.
+CLUB_FAL | Falken 04 | Alemania | Intensidad, disciplina táctica y preparación física exigente.
+CLUB_NBR | Northbridge FC | Inglaterra | Gran capacidad económica y fuerte competencia interna; usa cesiones.
+CLUB_BEL | Olympique Bellecour | Francia | Scouting joven, presión por vender con plusvalía.
+CLUB_NAH | Al-Nahda | Arabia Saudí | Contrato muy alto, gran foco externo y objetivos deportivos particulares.
+CLUB_MIA | Miami Athletic | Estados Unidos | Marca, estilo de vida y papel de estrella como parte del valor contractual.
+B225 Heading2 19.16. Tensiones estructurales de la Temporada 1
+B226  Estas tensiones existen desde el primer día y alimentarán los eventos de la Pasada 2. Todavía NO se fija cómo ni cuándo se resolverán.
+B227  1. Cantera vs. supervivencia: la presidenta presume de cantera; el entrenador necesita puntos inmediatos.
+B228  2. Protagonista vs. Bruno: compiten por espacio, pero sus intereses pueden coincidir si Bruno necesita escaparate y el joven necesita mentor.
+B229  3. Protagonista vs. Adrián: ambos quieren convertirse en la referencia joven y una agencia grande observa a los dos.
+B230  4. Capitán vs. dirección: Tomás Vela intuye que quieren reducir su peso; el vestuario observa quién toma partido.
+B231  5. Club vs. caja: una buena temporada del protagonista puede convertirlo en solución deportiva o en activo vendible.
+B232  6. Familia vs. oportunidad: la madre valora seguridad; el padre teme que esperar cierre puertas. Los dos pueden tener razón en momentos distintos.
+B233  7. Agente pequeño vs. agencia grande: cercanía e implicación frente a contactos y poder. Ninguna opción será sistemáticamente superior.
+B234  8. Privacidad vs. prensa: Clara puede ofrecer información útil a cambio de cercanía; cada conversación crea riesgo de filtración o acceso.
+B235  9. Amistad vs. carrera: Nano y Dani pertenecen a dos mundos distintos del protagonista. El éxito cambia la simetría de esas relaciones.
+B236  10. Paciencia vs. reloj: contratos, mercados y lesiones de terceros crean oportunidades que desaparecen aunque el protagonista no haga nada.
+B237 Heading2 19.17. Matriz de diseño para decisiones no obvias
+B238  Toda decisión grande de la Pasada 2 en adelante deberá construirse con esta receta mínima. No es obligatorio mostrar todos los ingredientes al jugador.
+B239 TABLE under 19.17. Matriz de diseño para decisiones no obvias
+Paso | Pregunta de diseño
+1. Conflicto | ¿Qué dos objetivos razonables chocan? Minutos ahora vs. mejor entrenamiento; dinero vs. rol; lealtad vs. ventana de mercado.
+2. Fuentes | ¿Quién informa al jugador y qué sabe realmente?
+3. Agenda | ¿Qué gana o pierde cada fuente si el protagonista elige una opción?
+4. Palanca | ¿Qué poder real tiene el protagonista hoy?
+5. Incertidumbre | ¿Qué variable o reacción no puede conocer con certeza?
+6. Azar condicionado | ¿Qué desenlaces plausibles cambian según forma, relaciones, contexto y ruido?
+7. Coste oculto | ¿Puede un éxito inmediato empeorar otra cosa? ¿Puede un fracaso abrir otra puerta?
+8. Memoria | ¿Quién recordará la decisión y durante cuánto tiempo?
+9. No-acción | ¿Esperar tiene un resultado propio en vez de ser un botón neutro?
+10. Prueba de relectura | Tras conocer el desenlace, ¿se entiende por qué pudo ocurrir sin que fuese predecible al 100 %?
+B241 Heading2 19.18. Reglas de programación derivadas del canon
+B242  La narrativa se escribirá pensando desde el principio en un motor de datos. Los nombres visibles nunca deben ser la clave lógica de un evento; todo se enlaza por IDs estables.
+B243 ListBullet IDs de evento: EVT_[EDAD/TEMP]_[FAMILIA]_[NÚMERO]. Ejemplo: EVT_18_AGENT_001.
+B244 ListBullet IDs de semillas: SEED_[ORIGEN]_[NÚMERO].
+B245 ListBullet IDs de banderas: FLAG_[DESCRIPCIÓN_CORTA].
+B246 ListBullet IDs de rutas: ROUTE_* según sección 19.14.
+B247 ListBullet Los eventos deberán contener requisitos, bloqueos, fuentes de información, opciones, pesos de resultados, modificadores, efectos inmediatos y semillas futuras.
+B248 ListBullet La interfaz no mostrará deltas numéricos del tipo “+10 lealtad” en decisiones narrativas. Los cambios se expresarán mediante reacciones y estados posteriores.
+B249 ListBullet Las probabilidades se calculan en motor; el contenido solo define pesos y modificadores narrativamente justificados.
+B250 ListBullet Una escena puede tener resultado inmediato conocido y resultado real aún pendiente. Ejemplo: el club acepta hablar; la negociación puede fracasar días después.
+B251 ListBullet El guardado conserva todas las semillas y relaciones relevantes, incluso cuando el personaje desaparece temporalmente del primer plano.
+B1487 Heading2 26.13. Ciclo de vida canónico de una seed
+B1488 TABLE under 26.13. Ciclo de vida canónico de una seed
+Estado | Significado | Transición
+POTENTIAL | Existe en el catálogo, pero la partida no la ha generado. | Nace solo si ocurre el origen y el outcome correspondiente.
+ACTIVE | Está viva y puede modificar weights, diálogo o gates. | Puede consumirse varias veces si su naturaleza lo permite.
+DORMANT | No es relevante en el contexto actual, pero puede volver. | Se reactiva por edad, NPC, club, evento o ventana.
+TRANSFORMED | La memoria cambia de significado. | Ej.: rivalidad juvenil -> respeto adulto; lesión aguda -> historial crónico.
+RESOLVED | La deuda narrativa recibió cierre suficiente. | Puede seguir en epílogo sin modificar decisiones.
+EXPIRED | Ya no tiene consumidor plausible. | Se conserva en historial, pero sale del scheduler.
+B1490  Nunca se borrará una seed activa únicamente para simplificar código. Si deja de ser jugable se marca RESOLVED o EXPIRED con motivo. Las relaciones asociadas pueden seguir existiendo.
+B1491 Heading2 26.14. Continuidad de NPC: recurrencia sin fan service
+B1492  Los 20 NPC base son memoria potencial, no reparto obligatorio. Una carrera normal no debe hacer reaparecer a todos. La sensación buscada es que el mundo siguió viviendo y algunas personas vuelven cuando existe una razón profesional o personal.
+B1493 TABLE under 26.14. Continuidad de NPC: recurrencia sin fan service
+Métrica por partida | Objetivo
+NPC base que reaparecen de forma relevante | 5-9 a lo largo de toda la carrera.
+Arcos relacionales fuertes | 2-4, sin exigir que sean amistades.
+Callbacks después de 5+ años | 1-3 especialmente memorables.
+NPC que desaparecen sin cierre | Permitido y deseable; la vida también pierde contactos.
+Cambio de rol de NPC | Debe respetar edad, trayectoria y seeds; nunca ascenso profesional solo para servir al jugador.
+Reaparición sorpresa | Solo si existe relación o conexión institucional plausible.
+B1495 Heading2 26.15. Corpus de 100 trayectorias: auditoría de uso
+B1496  La biblioteca de 100 futbolistas no define 100 rutas. Su función queda cerrada como catálogo de mecanismos causales. Una escena excepcional debe combinar al menos dos familias de patrón y después pasar por el estado propio de la partida.
+B1497 TABLE under 26.15. Corpus de 100 trayectorias: auditoría de uso
+Familia de patrón | Preguntas que inspira
+Longevidad / profesionalización | ¿Qué sacrificas para seguir arriba? ¿Te hace mejor jugador o solo más disponible?
+Reinvención posicional | ¿Aceptas dejar de ser la versión que te hizo famoso para conservar valor?
+Late bloomer | ¿Qué ocurre cuando la oportunidad grande llega después de que el mercado te haya etiquetado?
+Estrella compartida | ¿Prefieres ganar con menos foco o ser centro de un proyecto menor?
+Fama precoz | ¿Tu entorno crece más rápido que tu fútbol?
+Lesión y recaída | ¿Qué decisiones siguen siendo racionales cuando nadie conoce tu recuperación futura?
+Salto prematuro | ¿Prestigio temprano compensa perder minutos y contexto?
+Club/entrenador incompatible | ¿El problema es tu nivel, el sistema o el momento?
+Contrato-trampa | ¿Seguridad financiera reduce movilidad y rol?
+Entorno/agente | ¿Quién filtra, filtra por ti o por sí mismo?
+One-club / identidad | ¿Cuánto valor tiene pertenecer cuando limita otras metas?
+Trotamundos | ¿La adaptabilidad multiplica oportunidades o impide construir poder?
+Sucesión | ¿Ayudar a quien puede sustituirte cambia tu legado o acelera tu pérdida de rol?
+Presión del precio | ¿Un fichaje caro altera expectativas más rápido que tu rendimiento?
+Rechazo y reconstrucción | ¿Una caída cambia tu techo o solo la ruta para alcanzarlo?
+Salida rica / liga menor | ¿Dinero, nivel y selección pueden separarse sin juicio moral?
+B1499  Prohibición reforzada: no usar nombre, edad, club, lesión, transferencia y desenlace de un mismo futbolista real como secuencia reconocible. La inspiración debe descomponerse y recombinarse.
+B1500 Heading2 26.16. Cuerpo y lesiones: exposición, no karma
+B1501 TABLE under 26.16. Cuerpo y lesiones: exposición, no karma
+Variable | Función
+ACUTE_LOAD | Carga reciente; sube con minutos, viajes, selección y retorno acelerado.
+RECOVERY_MARGIN | Capacidad actual de absorber carga; depende de edad funcional, descanso y historial.
+CHRONIC_BODY | Secuelas y patrones persistentes; no equivale a lesión activa.
+BODY_DEBT | Fatiga no recuperada que puede no dar síntomas inmediatos.
+PAIN_TRUST | Relación entre percepción del jugador, médicos y staff.
+MEDICAL_DISCLOSURE | Qué conoce cada club/agente; afecta mercado y decisiones, no el daño físico por sí mismo.
+RANDOM_INJURY_EXPOSURE | Riesgo residual de contacto o mala suerte incluso con gestión perfecta.
+B1503  Regla de justicia narrativa: una lesión nunca se etiquetará internamente como castigo por haber salido de fiesta, mentido, forzado un fichaje o elegido dinero. Solo variables físicamente plausibles pueden modificar el riesgo corporal. Otros comportamientos pueden afectar disciplina, sueño o carga si existe conexión concreta.
+B1504 Heading2 26.17. Mercado y contratos: jerarquía de información
+B1505 TABLE under 26.17. Mercado y contratos: jerarquía de información
+Nivel | Ejemplo | Qué conoce el jugador
+RUMOR | Un periodista vincula tu nombre. | Fuente y contenido; nada garantiza contacto.
+ENQUIRY | Un club pregunta disponibilidad o condiciones. | Puede conocerlo agente/club antes que el jugador según seeds.
+INTEREST | Hay intención real, pero no términos cerrados. | Destino plausible y algunas condiciones.
+INFORMAL_TERMS | Se discuten salario, rol o duración sin documento vinculante. | El jugador sabe qué es verbal y quién lo prometió.
+FORMAL_OFFER | Oferta escrita o equivalente formal. | Cifras y condiciones visibles; no se ocultan al jugador.
+SIGNED | Contrato ejecutado. | Hecho determinista; futuras promesas informales se separan del texto firmado.
+B1507  El juego puede engañar sobre intenciones, no sobre lo que el protagonista acaba de firmar. La interfaz siempre distinguirá contrato, promesa verbal y rumor.
+B1508 Heading2 26.18. Resultados deportivos y guion: separación obligatoria
+B1509  Las decisiones narrativas pueden modificar preparación, rol, confianza, táctica, minutos o disponibilidad, pero no escribirán directamente que un equipo gana una final o que el protagonista marca. El motor deportivo produce el resultado y el guion reacciona a él.
+B1510 TABLE under 26.18. Resultados deportivos y guion: separación obligatoria
+Ejemplo incorrecto | Versión canónica
+"Elegir A -> marcas el penalti" | Elegir A -> asumes el penalti; el motor resuelve ejecución según habilidad, forma, presión y azar.
+"Descansas -> ganas la semifinal" | Descansas -> cambia disponibilidad/rendimiento esperado; el partido sigue abierto.
+"Fichas por grande -> ganas Champions" | Fichas -> aumenta acceso potencial a determinadas competiciones, no títulos.
+"Eres leal -> la afición te adora" | La lealtad modifica memoria; rendimiento, comunicación y contexto determinan respuesta de afición.
+B1512 Heading2 26.19. Puentes de estado entre edades
+B1513  Los estados de salida son resúmenes, no clases rígidas. Al cruzar una frontera de edad se recalculan a partir del GameState real. Ningún STATE sustituye a las variables que lo produjeron.
+B1514 TABLE under 26.19. Puentes de estado entre edades
+Frontera | Garantía de continuidad
+20 -> 23 | Todo estado tiene al menos mercado/rol/cuerpo/vida como contenido, aunque no haya ascenso.
+23 -> 26 | La selección y Europa son opcionales; las rutas sin ellas mantienen presión de contrato, equipo y desarrollo.
+26 -> 30 | Una élite temprana puede caer; una carrera media puede explotar; una lesión no fija techo irreversible.
+30 -> 34 | Edad no impone declive; rol y cuerpo divergen. Puede haber segundo pico táctico.
+34 -> retirada | Continuar requiere oferta, cuerpo y motivación; querer seguir no crea contrato.
+Retirada -> epílogo | No se juzga por un único STATE final; se reconstruye toda la trayectoria.
+B1516 Heading2 26.20. Finales: combinación, no ranking
+B1517  Las 20 familias de final sobreviven a la auditoría. Se prohíbe elegir una sola etiqueta como ending_id. El epílogo puede asignar entre 2 y 5 etiquetas compatibles y una narrativa específica.
+B1518 TABLE under 26.20. Finales: combinación, no ranking
+Capa final | Ejemplos de combinación
+Deportiva | Leyenda mundial + declive prolongado; gran profesional + late bloomer.
+Institucional | Ídolo de un club + regreso del hijo pródigo; capitán local + carrera modesta.
+Económica | Trotamundos exitoso + seguridad generacional; contrato rico + carrera deportiva discreta.
+Corporal | Carrera rota por lesión + renacimiento; longevidad + especialista tardío.
+Pública | Villano con gran palmarés + respeto de vestuario; mito local + fama global baja.
+Personal | Retirada temprana voluntaria + satisfacción; gran palmarés + desgaste relacional.
+B1520 Heading2 26.21. Selección de hitos para el epílogo
+B1521  El epílogo elegirá 12-20 hitos mediante una puntuación de saliencia que solo sirve para narrar, no para valorar la carrera. Debe mezclar logros, fracasos, relaciones y giros.
+B1522 TABLE under 26.21. Selección de hitos para el epílogo
+Componente de saliencia | Peso conceptual
+Impacto deportivo | Cambio de nivel, título, ascenso/descenso, gran actuación o pérdida de rol.
+Impacto causal | Decisión que cambió contrato, cuerpo, relación o ruta.
+Callback | Semilla originada años antes que finalmente se resolvió.
+Rareza | Evento excepcional o desenlace poco frecuente.
+Intensidad relacional | Traición, favor, reconciliación, mentoría, conflicto.
+Diversidad temporal | Evitar que el resumen final sea solo los últimos cinco años.
+Contraste | Incluir al menos un momento que contradiga la narrativa dominante de la carrera si existió.

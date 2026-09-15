@@ -1,0 +1,12 @@
+{
+  "version": "0.7.0",
+  "seed": 424242,
+  "schemaVersion": 7,
+  "age": 34,
+  "state34": [
+    "STATE34_BODY_MANAGED"
+  ],
+  "historyLength": 133,
+  "microfeeds": 42,
+  "sha256": "7d7feb318602af3ef5181351513707e6a6ad2acb3442963b2efbb6caff4bee24"
+}

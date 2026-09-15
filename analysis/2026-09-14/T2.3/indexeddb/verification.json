@@ -1,0 +1,27 @@
+{
+  "recordedDate": "2026-09-15",
+  "status": "complete",
+  "pass": "T2.3",
+  "earnedPercent": 15.35,
+  "regressionTestsPassed": 57,
+  "browserReport": "browser-report.json",
+  "localUserSave": {
+    "date": "2026-07-06",
+    "decisions": 1,
+    "scene": "Cinco minutos más",
+    "indexedDBLabelVerified": true,
+    "choicesOrResetPerformed": false
+  },
+  "twoTabTest": "Stale writer rejected after the first tab acknowledged the pending result; one decision retained.",
+  "playcanvas": {
+    "updatedToIndexedDB": true,
+    "preparedPackageSha256": "2b25046f75f70d53b2a55264c8a4bba61f0116b9b2d9759b12ca53c432784c24",
+    "launchVerified": true,
+    "reloadVerified": true,
+    "restoredDate": "2026-07-16",
+    "restoredDecisions": 4,
+    "choicesOrResetPerformed": false,
+    "consoleErrorsAndWarnings": [],
+    "url": "https://launch.playcanvas.com/2593315?debug=true"
+  }
+}

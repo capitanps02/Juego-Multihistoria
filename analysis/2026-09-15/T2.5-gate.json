@@ -1,0 +1,152 @@
+{
+  "passed": true,
+  "seeds": 8,
+  "rows": [
+    {
+      "seed": 11,
+      "ages": [
+        20,
+        23,
+        26,
+        30,
+        34
+      ],
+      "signatures": [
+        "STATE20_HOME_ROTATION",
+        "STATE23_LATE_PRO",
+        "STATE26_SECOND_STAR",
+        "STATE30_EARLY_DECLINE_RISK",
+        "STATE34_RETIREMENT_NEAR"
+      ],
+      "date": "2043-09-29"
+    },
+    {
+      "seed": 22,
+      "ages": [
+        20,
+        23,
+        26,
+        30,
+        34
+      ],
+      "signatures": [
+        "STATE20_HOME_ROTATION",
+        "STATE23_LATE_PRO",
+        "STATE26_ABROAD_ESTABLISHED",
+        "STATE30_EARLY_DECLINE_RISK",
+        "STATE34_RETIREMENT_NEAR"
+      ],
+      "date": "2043-09-29"
+    },
+    {
+      "seed": 33,
+      "ages": [
+        20,
+        23,
+        26,
+        30,
+        34
+      ],
+      "signatures": [
+        "STATE20_HOME_ROTATION",
+        "STATE23_LATE_PRO",
+        "STATE26_SECOND_STAR",
+        "STATE30_EARLY_DECLINE_RISK",
+        "STATE34_RETIREMENT_NEAR"
+      ],
+      "date": "2043-09-29"
+    },
+    {
+      "seed": 44,
+      "ages": [
+        20,
+        23,
+        26,
+        30,
+        34
+      ],
+      "signatures": [
+        "STATE20_LOWER_REBUILD",
+        "STATE23_LATE_PRO",
+        "STATE26_CONTRACT_POWER",
+        "STATE30_EARLY_DECLINE_RISK",
+        "STATE34_RETIREMENT_NEAR"
+      ],
+      "date": "2043-09-29"
+    },
+    {
+      "seed": 55,
+      "ages": [
+        20,
+        23,
+        26,
+        30,
+        34
+      ],
+      "signatures": [
+        "STATE20_LOWER_REBUILD",
+        "STATE23_LATE_PRO",
+        "STATE26_CONTRACT_POWER",
+        "STATE30_EARLY_DECLINE_RISK",
+        "STATE34_RETIREMENT_NEAR"
+      ],
+      "date": "2043-09-29"
+    },
+    {
+      "seed": 66,
+      "ages": [
+        20,
+        23,
+        26,
+        30,
+        34
+      ],
+      "signatures": [
+        "STATE20_HOME_ROTATION+STATE20_LOWER_REBUILD",
+        "STATE23_LATE_PRO",
+        "STATE26_CONTRACT_POWER",
+        "STATE30_EARLY_DECLINE_RISK",
+        "STATE34_RETIREMENT_NEAR"
+      ],
+      "date": "2043-09-29"
+    },
+    {
+      "seed": 77,
+      "ages": [
+        20,
+        23,
+        26,
+        30,
+        34
+      ],
+      "signatures": [
+        "STATE20_HOME_ROTATION",
+        "STATE23_LATE_PRO",
+        "STATE26_SECOND_STAR",
+        "STATE30_EARLY_DECLINE_RISK",
+        "STATE34_RETIREMENT_NEAR"
+      ],
+      "date": "2043-09-29"
+    },
+    {
+      "seed": 88,
+      "ages": [
+        20,
+        23,
+        26,
+        30,
+        34
+      ],
+      "signatures": [
+        "STATE20_HOME_ROTATION",
+        "STATE23_LATE_PRO",
+        "STATE26_SECOND_STAR",
+        "STATE30_EARLY_HOME_RETURN",
+        "STATE34_HOME_RETURN_LEADER"
+      ],
+      "date": "2043-09-29"
+    }
+  ],
+  "buildErrors": 0,
+  "error": null
+}

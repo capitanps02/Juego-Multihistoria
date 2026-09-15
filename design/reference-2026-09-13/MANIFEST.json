@@ -1,0 +1,202 @@
+[
+  {
+    "path": "START_HERE.md",
+    "bytes": 1723
+  },
+  {
+    "path": "assets/backgrounds/family_scene.jpg",
+    "bytes": 249977
+  },
+  {
+    "path": "assets/backgrounds/hero_player.jpg",
+    "bytes": 186843
+  },
+  {
+    "path": "assets/backgrounds/injury_scene.jpg",
+    "bytes": 246694
+  },
+  {
+    "path": "assets/backgrounds/match_panel.jpg",
+    "bytes": 108239
+  },
+  {
+    "path": "assets/backgrounds/news_player.jpg",
+    "bytes": 76023
+  },
+  {
+    "path": "assets/backgrounds/prematch_scene.jpg",
+    "bytes": 245439
+  },
+  {
+    "path": "assets/backgrounds/press_scene.jpg",
+    "bytes": 211546
+  },
+  {
+    "path": "assets/backgrounds/stadium_bg.jpg",
+    "bytes": 204753
+  },
+  {
+    "path": "assets/backgrounds/training_bg.jpg",
+    "bytes": 124638
+  },
+  {
+    "path": "assets/backgrounds/transfer_scene.jpg",
+    "bytes": 248415
+  },
+  {
+    "path": "assets/backgrounds/travel.jpg",
+    "bytes": 78667
+  },
+  {
+    "path": "assets/backgrounds/trophy.jpg",
+    "bytes": 66191
+  },
+  {
+    "path": "assets/backgrounds/world_hero.jpg",
+    "bytes": 80827
+  },
+  {
+    "path": "assets/news/news_family.jpg",
+    "bytes": 75705
+  },
+  {
+    "path": "assets/news/news_injury.jpg",
+    "bytes": 71614
+  },
+  {
+    "path": "assets/news/news_press.jpg",
+    "bytes": 68730
+  },
+  {
+    "path": "assets/news/news_transfer.jpg",
+    "bytes": 67059
+  },
+  {
+    "path": "assets/portraits/portrait_agent.jpg",
+    "bytes": 54849
+  },
+  {
+    "path": "assets/portraits/portrait_coach.jpg",
+    "bytes": 41595
+  },
+  {
+    "path": "assets/portraits/portrait_doctor.jpg",
+    "bytes": 55819
+  },
+  {
+    "path": "assets/portraits/portrait_father.jpg",
+    "bytes": 49459
+  },
+  {
+    "path": "assets/portraits/portrait_mother.jpg",
+    "bytes": 61481
+  },
+  {
+    "path": "assets/portraits/portrait_player_press.jpg",
+    "bytes": 57181
+  },
+  {
+    "path": "design_system/CSS_REFERENCE.css",
+    "bytes": 791
+  },
+  {
+    "path": "design_system/SCREEN_MAP.json",
+    "bytes": 2298
+  },
+  {
+    "path": "design_system/TOKENS.json",
+    "bytes": 1733
+  },
+  {
+    "path": "docs/CHANGELOG.md",
+    "bytes": 1054
+  },
+  {
+    "path": "docs/CINEMATICS_UI.md",
+    "bytes": 994
+  },
+  {
+    "path": "docs/COMPONENTS.md",
+    "bytes": 1514
+  },
+  {
+    "path": "docs/CONTINUATION_PROMPT.md",
+    "bytes": 1990
+  },
+  {
+    "path": "docs/DO_NOT_REGRESS.md",
+    "bytes": 1028
+  },
+  {
+    "path": "docs/INTERACTION_SPEC.md",
+    "bytes": 1243
+  },
+  {
+    "path": "docs/SCREEN_SPEC.md",
+    "bytes": 3584
+  },
+  {
+    "path": "docs/UI_CANON.md",
+    "bytes": 4287
+  },
+  {
+    "path": "history/apple_initial.html",
+    "bytes": 6108570
+  },
+  {
+    "path": "history/pass1_layout.html",
+    "bytes": 3535837
+  },
+  {
+    "path": "history/pass2_visual_language.html",
+    "bytes": 3551556
+  },
+  {
+    "path": "history/pass3_assets.html",
+    "bytes": 6038703
+  },
+  {
+    "path": "history/pass4_motion.html",
+    "bytes": 6048131
+  },
+  {
+    "path": "prototype/index.html",
+    "bytes": 6131531
+  },
+  {
+    "path": "references/cinematics/family_decision.png",
+    "bytes": 1792797
+  },
+  {
+    "path": "references/cinematics/injury.png",
+    "bytes": 1750828
+  },
+  {
+    "path": "references/cinematics/pre_match.png",
+    "bytes": 1742443
+  },
+  {
+    "path": "references/cinematics/press_conference.png",
+    "bytes": 1589599
+  },
+  {
+    "path": "references/cinematics/transfer_offer.png",
+    "bytes": 1710330
+  },
+  {
+    "path": "references/concepts/concept_documentary.png",
+    "bytes": 2262549
+  },
+  {
+    "path": "references/concepts/concept_premium_cinematic.png",
+    "bytes": 1961442
+  },
+  {
+    "path": "references/concepts/concept_sports_dashboard.png",
+    "bytes": 1949271
+  },
+  {
+    "path": "references/concepts/concept_ux_screen_set.png",
+    "bytes": 2108829
+  }
+]

@@ -1,0 +1,23 @@
+{
+  "passed": true,
+  "buildErrors": 0,
+  "reproducible": true,
+  "age26Reached": 1000,
+  "principalReached23_26": 40,
+  "expectedPrincipal": 40,
+  "conditionalReached23_26": 20,
+  "expectedConditional": 20,
+  "state26Reached": 14,
+  "expectedState26": 14,
+  "density": {
+    "principal": 21.32,
+    "conditional": 7.48,
+    "conditionalRange": [
+      3,
+      9
+    ]
+  },
+  "uniqueSequences": 1000,
+  "uniqueState26Signatures": 134,
+  "state26EntropyBits": 2.992
+}

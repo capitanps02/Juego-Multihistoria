@@ -1,0 +1,118 @@
+{
+  "scope": "Verificación de artefactos T1; las pruebas funcionales anteriores no se han vuelto a ejecutar porque T1 no modifica el motor.",
+  "passed": true,
+  "checks": [
+    {
+      "name": "68 pasadas únicas y 67 pendientes",
+      "passed": true
+    },
+    {
+      "name": "Pesos de etapas suman 100",
+      "passed": true
+    },
+    {
+      "name": "Pesos de subpasadas suman cada etapa",
+      "passed": true
+    },
+    {
+      "name": "Avance ganado coherente en los tres niveles",
+      "passed": true
+    },
+    {
+      "name": "Acumulado T1",
+      "passed": true
+    },
+    {
+      "name": "Acumulado T2",
+      "passed": true
+    },
+    {
+      "name": "Acumulado T3",
+      "passed": true
+    },
+    {
+      "name": "Acumulado T4",
+      "passed": true
+    },
+    {
+      "name": "Acumulado T5",
+      "passed": true
+    },
+    {
+      "name": "Acumulado T6",
+      "passed": true
+    },
+    {
+      "name": "Acumulado T7",
+      "passed": true
+    },
+    {
+      "name": "Acumulado T8",
+      "passed": true
+    },
+    {
+      "name": "Acumulado T9",
+      "passed": true
+    },
+    {
+      "name": "Dependencias ordenadas sin ciclos",
+      "passed": true
+    },
+    {
+      "name": "Todas las pasadas tienen aceptación",
+      "passed": true
+    },
+    {
+      "name": "Límites y previsión coherentes",
+      "passed": true
+    },
+    {
+      "name": "Solo T1 figura terminada",
+      "passed": true
+    },
+    {
+      "name": "Sin unidades de calendario de trabajo heredadas",
+      "passed": true
+    },
+    {
+      "name": "254 principales únicos",
+      "passed": true
+    },
+    {
+      "name": "167 coincidencias y 87 pendientes literales",
+      "passed": true
+    },
+    {
+      "name": "Doce fichas únicas, dos por tramo",
+      "passed": true
+    },
+    {
+      "name": "Tres candidatos sin alias aplicado",
+      "passed": true
+    },
+    {
+      "name": "Doce reparaciones con criterios y fuente",
+      "passed": true
+    },
+    {
+      "name": "Extracciones actuales coinciden con fichas",
+      "passed": true
+    },
+    {
+      "name": "Ninguna reparación aparece implementada",
+      "passed": true
+    },
+    {
+      "name": "Fuentes del motor coinciden con la base auditada",
+      "passed": true
+    },
+    {
+      "name": "Enlaces locales de entregables existen",
+      "passed": true
+    }
+  ],
+  "changedSourceFiles": [],
+  "brokenLinks": [],
+  "earnedPercent": 6,
+  "nextPass": "T2.1"
+}

@@ -1,0 +1,831 @@
+{
+  "baselineDate": "2026-09-11",
+  "revision": 4,
+  "product": "Carrera de Futbolista Android v1",
+  "authority": "Instrucción del usuario: planificación en pasadas del asistente; ejecutar T1.",
+  "baselineStatus": "engineering_baseline_provisional_until_first_implemented_content_batch",
+  "unit": "Una pasada es un paquete acotado de trabajo del asistente con entregable y comprobación; no una llamada de herramienta, un día ni una cantidad fija de tokens.",
+  "percentageMeaning": "Avance ponderado de entregables T1–T9 desde la auditoría T0; no madurez histórica del motor ni diversión. Los pesos de hito no son proporcionales al número de pasadas.",
+  "baselinePasses": 68,
+  "rangePasses": [
+    55,
+    87
+  ],
+  "contingencyPasses": 14,
+  "completedPasses": 3,
+  "remainingBaselinePasses": 65,
+  "earnedPercent": 10.4,
+  "nextPass": "T3.1",
+  "externalEvidencePolicy": "Esperas de tienda, participación humana y pruebas físicas se registran aparte y no se reemplazan por pasadas. Preparar artefacto no acredita la evidencia externa.",
+  "recalibration": "Tras T2, T3 y primer lote implementado T4; también tras dos pasadas consecutivas sin cerrar su entrega o desviación prevista >20%. Conservar línea base y registrar previsión nueva.",
+  "stages": [
+    {
+      "id": "T1",
+      "title": "Alcance y trazabilidad piloto",
+      "status": "complete",
+      "baselinePasses": 1,
+      "rangePasses": [
+        1,
+        1
+      ],
+      "weightPercent": 6,
+      "cumulativeTargetPercent": 6,
+      "earnedPercent": 6,
+      "dependencies": [],
+      "passes": [
+        {
+          "id": "T1",
+          "title": "Definir alcance, auditar piloto y recalibrar plan",
+          "acceptance": "Alcance y contrato escritos, 12 fichas con reparación, 254 IDs inventariados y plan validado",
+          "externalEvidenceRequired": false,
+          "weightPercent": 6.0,
+          "status": "complete",
+          "earnedPercent": 6
+        }
+      ]
+    },
+    {
+      "id": "T2",
+      "title": "Sesión y guardado",
+      "status": "in_progress",
+      "baselinePasses": 5,
+      "rangePasses": [
+        4,
+        6
+      ],
+      "weightPercent": 11,
+      "cumulativeTargetPercent": 17,
+      "earnedPercent": 4.4,
+      "dependencies": [
+        "T1"
+      ],
+      "passes": [
+        {
+          "id": "T2.1",
+          "title": "Base reproducible y GameSession",
+          "acceptance": "Build identificado; evento pendiente, consultas puras, revisión y comandos protegidos con pruebas",
+          "externalEvidenceRequired": false,
+          "weightPercent": 2.2,
+          "status": "complete",
+          "earnedPercent": 2.2,
+          "completedDate": "2026-09-13",
+          "evidence": "project/T2_1_CIERRE.md"
+        },
+        {
+          "id": "T2.2",
+          "title": "Validación de guardados y migraciones",
+          "acceptance": "Rechazo de corrupción y casos de cada versión declarada compatible",
+          "externalEvidenceRequired": false,
+          "weightPercent": 2.2,
+          "status": "complete",
+          "earnedPercent": 2.2,
+          "completedDate": "2026-09-13",
+          "evidence": "project/T2_2_CIERRE.md"
+        },
+        {
+          "id": "T2.3",
+          "title": "Persistencia transaccional y recuperación",
+          "acceptance": "100 ciclos pendientes, interrupciones antes/después de commit y reintento sin doble efecto",
+          "externalEvidenceRequired": false,
+          "weightPercent": 2.2,
+          "status": "not_started",
+          "earnedPercent": 0
+        },
+        {
+          "id": "T2.4",
+          "title": "Ofertas y autoridad del jugador",
+          "acceptance": "Proponer, aceptar, rechazar o delegar sin firmas silenciosas",
+          "externalEvidenceRequired": false,
+          "weightPercent": 2.2,
+          "status": "not_started",
+          "earnedPercent": 0
+        },
+        {
+          "id": "T2.5",
+          "title": "Hitos de edad y gates fiables",
+          "acceptance": "Instantáneas históricas preservadas, gates con exit code fallido y regresión de integración",
+          "externalEvidenceRequired": false,
+          "weightPercent": 2.2,
+          "status": "not_started",
+          "earnedPercent": 0
+        }
+      ]
+    },
+    {
+      "id": "T3",
+      "title": "Demo PlayCanvas en Android",
+      "status": "in_progress",
+      "baselinePasses": 4,
+      "rangePasses": [
+        3,
+        6
+      ],
+      "weightPercent": 11,
+      "cumulativeTargetPercent": 28,
+      "earnedPercent": 0,
+      "dependencies": [
+        "T2"
+      ],
+      "passes": [
+        {
+          "id": "T3.1",
+          "title": "Adaptador web y escena de decisión",
+          "acceptance": "Escena, estado y resultado muestran solo datos conocidos; equivalencia con motor",
+          "externalEvidenceRequired": false,
+          "weightPercent": 2.75,
+          "status": "in_progress",
+          "earnedPercent": 0,
+          "evidence": "project/T3_1_INTEGRACION_PLAYCANVAS.md",
+          "startedDate": "2026-09-13",
+          "blockingEvidence": "Paquete preparado; Chrome exige permiso de archivos y conexión estable para Upload y Launch.",
+          "dependencyAdjustment": "El autor pide explícitamente integración PlayCanvas con handoff UI antes de terminar T2.3–T2.5; se trabaja sobre T2.1/T2.2, sin acreditar el resto de T2."
+        },
+        {
+          "id": "T3.2",
+          "title": "Presentación y continuidad",
+          "acceptance": "Texto largo, tacto, atrás, pausa y reanudación comprobados en navegador",
+          "externalEvidenceRequired": false,
+          "weightPercent": 2.75,
+          "status": "not_started",
+          "earnedPercent": 0
+        },
+        {
+          "id": "T3.3",
+          "title": "Empaquetado Android offline",
+          "acceptance": "APK compilado con recursos locales y guardado funcional",
+          "externalEvidenceRequired": false,
+          "weightPercent": 2.75,
+          "status": "not_started",
+          "earnedPercent": 0
+        },
+        {
+          "id": "T3.4",
+          "title": "Ensayo en Android y decisión de presentación",
+          "acceptance": "APK instalado, misma historia y medición de latencia/inicio en teléfono; resolver fallos del ensayo",
+          "externalEvidenceRequired": true,
+          "weightPercent": 2.75,
+          "status": "not_started",
+          "earnedPercent": 0
+        }
+      ]
+    },
+    {
+      "id": "T4",
+      "title": "Primer tramo y atractivo",
+      "status": "not_started",
+      "baselinePasses": 8,
+      "rangePasses": [
+        6,
+        10
+      ],
+      "weightPercent": 11,
+      "cumulativeTargetPercent": 39,
+      "earnedPercent": 0,
+      "dependencies": [
+        "T3"
+      ],
+      "passes": [
+        {
+          "id": "T4.1",
+          "title": "Cadena piloto de memoria y consecuencia diferida",
+          "acceptance": "Creación, reaparición y cierre; NPC recuerda información que pudo conocer",
+          "externalEvidenceRequired": false,
+          "weightPercent": 1.38,
+          "status": "not_started",
+          "earnedPercent": 0
+        },
+        {
+          "id": "T4.2",
+          "title": "Lote 18–20 1: 12 escenas",
+          "acceptance": "Fuente, acciones, gates y consecuencias específicos; pruebas dirigidas y continuidad",
+          "externalEvidenceRequired": false,
+          "weightPercent": 1.38,
+          "status": "not_started",
+          "earnedPercent": 0
+        },
+        {
+          "id": "T4.3",
+          "title": "Lote 18–20 2: 12 escenas",
+          "acceptance": "Fuente, acciones, gates y consecuencias específicos; pruebas dirigidas y continuidad",
+          "externalEvidenceRequired": false,
+          "weightPercent": 1.38,
+          "status": "not_started",
+          "earnedPercent": 0
+        },
+        {
+          "id": "T4.4",
+          "title": "Lote 18–20 3: 12 escenas",
+          "acceptance": "Fuente, acciones, gates y consecuencias específicos; pruebas dirigidas y continuidad",
+          "externalEvidenceRequired": false,
+          "weightPercent": 1.38,
+          "status": "not_started",
+          "earnedPercent": 0
+        },
+        {
+          "id": "T4.5",
+          "title": "Lote 18–20 4: 8 escenas",
+          "acceptance": "Fuente, acciones, gates y consecuencias específicos; pruebas dirigidas y continuidad",
+          "externalEvidenceRequired": false,
+          "weightPercent": 1.37,
+          "status": "not_started",
+          "earnedPercent": 0
+        },
+        {
+          "id": "T4.6",
+          "title": "Ciclo de juego y tutorial",
+          "acceptance": "Pantallas esenciales y resumen de partido integrados; sin lectura de códigos internos",
+          "externalEvidenceRequired": false,
+          "weightPercent": 1.37,
+          "status": "not_started",
+          "earnedPercent": 0
+        },
+        {
+          "id": "T4.7",
+          "title": "Observación humana y mejora 1",
+          "acceptance": "Recoger comprensión, deseo de continuar y fricción; implementar correcciones",
+          "externalEvidenceRequired": true,
+          "weightPercent": 1.37,
+          "status": "not_started",
+          "earnedPercent": 0
+        },
+        {
+          "id": "T4.8",
+          "title": "Observación humana y mejora 2",
+          "acceptance": "8–12 participantes entre rondas; contrastar J01/J02 y recalibrar lotes",
+          "externalEvidenceRequired": true,
+          "weightPercent": 1.37,
+          "status": "not_started",
+          "earnedPercent": 0
+        }
+      ]
+    },
+    {
+      "id": "T5",
+      "title": "Carrera completa, memoria y epílogos",
+      "status": "not_started",
+      "baselinePasses": 38,
+      "rangePasses": [
+        32,
+        48
+      ],
+      "weightPercent": 33,
+      "cumulativeTargetPercent": 72,
+      "earnedPercent": 0,
+      "dependencies": [
+        "T4"
+      ],
+      "passes": [
+        {
+          "id": "T5.1",
+          "title": "Reconciliación completa e identidad del contenido",
+          "acceptance": "134 condicionales y 87 IDs discrepantes reconciliados; sin equivalencias silenciosas",
+          "externalEvidenceRequired": false,
+          "weightPercent": 0.87,
+          "status": "not_started",
+          "earnedPercent": 0
+        },
+        {
+          "id": "T5.2",
+          "title": "Ciclo de vida de semillas",
+          "acceptance": "Transiciones y consumidores/cierres con pruebas de repetición y caducidad",
+          "externalEvidenceRequired": false,
+          "weightPercent": 0.87,
+          "status": "not_started",
+          "earnedPercent": 0
+        },
+        {
+          "id": "T5.3",
+          "title": "Personajes y conocimiento",
+          "acceptance": "Agenda, acceso, recuerdos y relaciones coherentes con acontecimientos",
+          "externalEvidenceRequired": false,
+          "weightPercent": 0.87,
+          "status": "not_started",
+          "earnedPercent": 0
+        },
+        {
+          "id": "T5.4",
+          "title": "Consecuencias diferidas entre tramos",
+          "acceptance": "Promesas, cirugía, contratos y decisiones que sobreviven cambios de edad/club",
+          "externalEvidenceRequired": false,
+          "weightPercent": 0.87,
+          "status": "not_started",
+          "earnedPercent": 0
+        },
+        {
+          "id": "T5.5",
+          "title": "Lote 20–23 1: 12 escenas",
+          "acceptance": "Ficha canónica reconciliada, implementación específica, memoria y pruebas de cada escena",
+          "externalEvidenceRequired": false,
+          "weightPercent": 0.87,
+          "status": "not_started",
+          "earnedPercent": 0
+        },
+        {
+          "id": "T5.6",
+          "title": "Lote 20–23 2: 12 escenas",
+          "acceptance": "Ficha canónica reconciliada, implementación específica, memoria y pruebas de cada escena",
+          "externalEvidenceRequired": false,
+          "weightPercent": 0.87,
+          "status": "not_started",
+          "earnedPercent": 0
+        },
+        {
+          "id": "T5.7",
+          "title": "Lote 20–23 3: 12 escenas",
+          "acceptance": "Ficha canónica reconciliada, implementación específica, memoria y pruebas de cada escena",
+          "externalEvidenceRequired": false,
+          "weightPercent": 0.87,
+          "status": "not_started",
+          "earnedPercent": 0
+        },
+        {
+          "id": "T5.8",
+          "title": "Lote 20–23 4: 12 escenas",
+          "acceptance": "Ficha canónica reconciliada, implementación específica, memoria y pruebas de cada escena",
+          "externalEvidenceRequired": false,
+          "weightPercent": 0.87,
+          "status": "not_started",
+          "earnedPercent": 0
+        },
+        {
+          "id": "T5.9",
+          "title": "Lote 20–23 5: 3 escenas",
+          "acceptance": "Ficha canónica reconciliada, implementación específica, memoria y pruebas de cada escena",
+          "externalEvidenceRequired": false,
+          "weightPercent": 0.87,
+          "status": "not_started",
+          "earnedPercent": 0
+        },
+        {
+          "id": "T5.10",
+          "title": "Lote 23–26 1: 12 escenas",
+          "acceptance": "Ficha canónica reconciliada, implementación específica, memoria y pruebas de cada escena",
+          "externalEvidenceRequired": false,
+          "weightPercent": 0.87,
+          "status": "not_started",
+          "earnedPercent": 0
+        },
+        {
+          "id": "T5.11",
+          "title": "Lote 23–26 2: 12 escenas",
+          "acceptance": "Ficha canónica reconciliada, implementación específica, memoria y pruebas de cada escena",
+          "externalEvidenceRequired": false,
+          "weightPercent": 0.87,
+          "status": "not_started",
+          "earnedPercent": 0
+        },
+        {
+          "id": "T5.12",
+          "title": "Lote 23–26 3: 12 escenas",
+          "acceptance": "Ficha canónica reconciliada, implementación específica, memoria y pruebas de cada escena",
+          "externalEvidenceRequired": false,
+          "weightPercent": 0.87,
+          "status": "not_started",
+          "earnedPercent": 0
+        },
+        {
+          "id": "T5.13",
+          "title": "Lote 23–26 4: 12 escenas",
+          "acceptance": "Ficha canónica reconciliada, implementación específica, memoria y pruebas de cada escena",
+          "externalEvidenceRequired": false,
+          "weightPercent": 0.87,
+          "status": "not_started",
+          "earnedPercent": 0
+        },
+        {
+          "id": "T5.14",
+          "title": "Lote 23–26 5: 12 escenas",
+          "acceptance": "Ficha canónica reconciliada, implementación específica, memoria y pruebas de cada escena",
+          "externalEvidenceRequired": false,
+          "weightPercent": 0.87,
+          "status": "not_started",
+          "earnedPercent": 0
+        },
+        {
+          "id": "T5.15",
+          "title": "Lote 26–30 1: 12 escenas",
+          "acceptance": "Ficha canónica reconciliada, implementación específica, memoria y pruebas de cada escena",
+          "externalEvidenceRequired": false,
+          "weightPercent": 0.87,
+          "status": "not_started",
+          "earnedPercent": 0
+        },
+        {
+          "id": "T5.16",
+          "title": "Lote 26–30 2: 12 escenas",
+          "acceptance": "Ficha canónica reconciliada, implementación específica, memoria y pruebas de cada escena",
+          "externalEvidenceRequired": false,
+          "weightPercent": 0.87,
+          "status": "not_started",
+          "earnedPercent": 0
+        },
+        {
+          "id": "T5.17",
+          "title": "Lote 26–30 3: 12 escenas",
+          "acceptance": "Ficha canónica reconciliada, implementación específica, memoria y pruebas de cada escena",
+          "externalEvidenceRequired": false,
+          "weightPercent": 0.87,
+          "status": "not_started",
+          "earnedPercent": 0
+        },
+        {
+          "id": "T5.18",
+          "title": "Lote 26–30 4: 12 escenas",
+          "acceptance": "Ficha canónica reconciliada, implementación específica, memoria y pruebas de cada escena",
+          "externalEvidenceRequired": false,
+          "weightPercent": 0.87,
+          "status": "not_started",
+          "earnedPercent": 0
+        },
+        {
+          "id": "T5.19",
+          "title": "Lote 26–30 5: 12 escenas",
+          "acceptance": "Ficha canónica reconciliada, implementación específica, memoria y pruebas de cada escena",
+          "externalEvidenceRequired": false,
+          "weightPercent": 0.87,
+          "status": "not_started",
+          "earnedPercent": 0
+        },
+        {
+          "id": "T5.20",
+          "title": "Lote 26–30 6: 12 escenas",
+          "acceptance": "Ficha canónica reconciliada, implementación específica, memoria y pruebas de cada escena",
+          "externalEvidenceRequired": false,
+          "weightPercent": 0.87,
+          "status": "not_started",
+          "earnedPercent": 0
+        },
+        {
+          "id": "T5.21",
+          "title": "Lote 26–30 7: 3 escenas",
+          "acceptance": "Ficha canónica reconciliada, implementación específica, memoria y pruebas de cada escena",
+          "externalEvidenceRequired": false,
+          "weightPercent": 0.87,
+          "status": "not_started",
+          "earnedPercent": 0
+        },
+        {
+          "id": "T5.22",
+          "title": "Lote 30–34 1: 12 escenas",
+          "acceptance": "Ficha canónica reconciliada, implementación específica, memoria y pruebas de cada escena",
+          "externalEvidenceRequired": false,
+          "weightPercent": 0.87,
+          "status": "not_started",
+          "earnedPercent": 0
+        },
+        {
+          "id": "T5.23",
+          "title": "Lote 30–34 2: 12 escenas",
+          "acceptance": "Ficha canónica reconciliada, implementación específica, memoria y pruebas de cada escena",
+          "externalEvidenceRequired": false,
+          "weightPercent": 0.87,
+          "status": "not_started",
+          "earnedPercent": 0
+        },
+        {
+          "id": "T5.24",
+          "title": "Lote 30–34 3: 12 escenas",
+          "acceptance": "Ficha canónica reconciliada, implementación específica, memoria y pruebas de cada escena",
+          "externalEvidenceRequired": false,
+          "weightPercent": 0.87,
+          "status": "not_started",
+          "earnedPercent": 0
+        },
+        {
+          "id": "T5.25",
+          "title": "Lote 30–34 4: 12 escenas",
+          "acceptance": "Ficha canónica reconciliada, implementación específica, memoria y pruebas de cada escena",
+          "externalEvidenceRequired": false,
+          "weightPercent": 0.87,
+          "status": "not_started",
+          "earnedPercent": 0
+        },
+        {
+          "id": "T5.26",
+          "title": "Lote 30–34 5: 12 escenas",
+          "acceptance": "Ficha canónica reconciliada, implementación específica, memoria y pruebas de cada escena",
+          "externalEvidenceRequired": false,
+          "weightPercent": 0.87,
+          "status": "not_started",
+          "earnedPercent": 0
+        },
+        {
+          "id": "T5.27",
+          "title": "Lote 30–34 6: 12 escenas",
+          "acceptance": "Ficha canónica reconciliada, implementación específica, memoria y pruebas de cada escena",
+          "externalEvidenceRequired": false,
+          "weightPercent": 0.87,
+          "status": "not_started",
+          "earnedPercent": 0
+        },
+        {
+          "id": "T5.28",
+          "title": "Lote 30–34 7: 4 escenas",
+          "acceptance": "Ficha canónica reconciliada, implementación específica, memoria y pruebas de cada escena",
+          "externalEvidenceRequired": false,
+          "weightPercent": 0.87,
+          "status": "not_started",
+          "earnedPercent": 0
+        },
+        {
+          "id": "T5.29",
+          "title": "Lote 34+ 1: 12 escenas",
+          "acceptance": "Ficha canónica reconciliada, implementación específica, memoria y pruebas de cada escena",
+          "externalEvidenceRequired": false,
+          "weightPercent": 0.87,
+          "status": "not_started",
+          "earnedPercent": 0
+        },
+        {
+          "id": "T5.30",
+          "title": "Lote 34+ 2: 12 escenas",
+          "acceptance": "Ficha canónica reconciliada, implementación específica, memoria y pruebas de cada escena",
+          "externalEvidenceRequired": false,
+          "weightPercent": 0.87,
+          "status": "not_started",
+          "earnedPercent": 0
+        },
+        {
+          "id": "T5.31",
+          "title": "Lote 34+ 3: 12 escenas",
+          "acceptance": "Ficha canónica reconciliada, implementación específica, memoria y pruebas de cada escena",
+          "externalEvidenceRequired": false,
+          "weightPercent": 0.87,
+          "status": "not_started",
+          "earnedPercent": 0
+        },
+        {
+          "id": "T5.32",
+          "title": "Lote 34+ 4: 12 escenas",
+          "acceptance": "Ficha canónica reconciliada, implementación específica, memoria y pruebas de cada escena",
+          "externalEvidenceRequired": false,
+          "weightPercent": 0.87,
+          "status": "not_started",
+          "earnedPercent": 0
+        },
+        {
+          "id": "T5.33",
+          "title": "Lote 34+ 5: 12 escenas",
+          "acceptance": "Ficha canónica reconciliada, implementación específica, memoria y pruebas de cada escena",
+          "externalEvidenceRequired": false,
+          "weightPercent": 0.86,
+          "status": "not_started",
+          "earnedPercent": 0
+        },
+        {
+          "id": "T5.34",
+          "title": "Lote 34+ 6: 12 escenas",
+          "acceptance": "Ficha canónica reconciliada, implementación específica, memoria y pruebas de cada escena",
+          "externalEvidenceRequired": false,
+          "weightPercent": 0.86,
+          "status": "not_started",
+          "earnedPercent": 0
+        },
+        {
+          "id": "T5.35",
+          "title": "Lote 34+ 7: 10 escenas",
+          "acceptance": "Ficha canónica reconciliada, implementación específica, memoria y pruebas de cada escena",
+          "externalEvidenceRequired": false,
+          "weightPercent": 0.86,
+          "status": "not_started",
+          "earnedPercent": 0
+        },
+        {
+          "id": "T5.36",
+          "title": "Retirada y compatibilidad de familias",
+          "acceptance": "Estados de cierre y combinaciones de finales sin contradicción",
+          "externalEvidenceRequired": false,
+          "weightPercent": 0.86,
+          "status": "not_started",
+          "earnedPercent": 0
+        },
+        {
+          "id": "T5.37",
+          "title": "Epílogos con hechos de la carrera",
+          "acceptance": "Hitos relevantes redactados y trazables, con variantes de recuerdos y relaciones",
+          "externalEvidenceRequired": false,
+          "weightPercent": 0.86,
+          "status": "not_started",
+          "earnedPercent": 0
+        },
+        {
+          "id": "T5.38",
+          "title": "Auditoría cruzada de contenido completo",
+          "acceptance": "388 escenas revisadas, 210 semillas con destino y 20 NPC trazables; integración entre tramos",
+          "externalEvidenceRequired": false,
+          "weightPercent": 0.86,
+          "status": "not_started",
+          "earnedPercent": 0
+        }
+      ]
+    },
+    {
+      "id": "T6",
+      "title": "Alfa y balance",
+      "status": "not_started",
+      "baselinePasses": 4,
+      "rangePasses": [
+        3,
+        5
+      ],
+      "weightPercent": 11,
+      "cumulativeTargetPercent": 83,
+      "earnedPercent": 0,
+      "dependencies": [
+        "T5"
+      ],
+      "passes": [
+        {
+          "id": "T6.1",
+          "title": "Perfiles semánticos y cobertura",
+          "acceptance": "15 perfiles seleccionan intención real; casos raros con estados dirigidos",
+          "externalEvidenceRequired": false,
+          "weightPercent": 2.75,
+          "status": "not_started",
+          "earnedPercent": 0
+        },
+        {
+          "id": "T6.2",
+          "title": "Simulación estratificada y diagnóstico",
+          "acceptance": "Lote inicial para medir coste y hasta 10000 carreras en candidata; cobertura y distribución explícitas",
+          "externalEvidenceRequired": false,
+          "weightPercent": 2.75,
+          "status": "not_started",
+          "earnedPercent": 0
+        },
+        {
+          "id": "T6.3",
+          "title": "Corrección de balance y carreras largas",
+          "acceptance": "Eliminar bloqueos, vacíos de oportunidades y estados imposibles reproducibles",
+          "externalEvidenceRequired": false,
+          "weightPercent": 2.75,
+          "status": "not_started",
+          "earnedPercent": 0
+        },
+        {
+          "id": "T6.4",
+          "title": "Validación narrativa de la alfa",
+          "acceptance": "20 epílogos auditados y contraste de rutas, densidad y efectos diferidos",
+          "externalEvidenceRequired": false,
+          "weightPercent": 2.75,
+          "status": "not_started",
+          "earnedPercent": 0
+        }
+      ]
+    },
+    {
+      "id": "T7",
+      "title": "Beta Android",
+      "status": "not_started",
+      "baselinePasses": 3,
+      "rangePasses": [
+        2,
+        4
+      ],
+      "weightPercent": 8,
+      "cumulativeTargetPercent": 91,
+      "earnedPercent": 0,
+      "dependencies": [
+        "T6"
+      ],
+      "passes": [
+        {
+          "id": "T7.1",
+          "title": "Matriz de dispositivos e interrupción",
+          "acceptance": "Tres teléfonos de distinta capacidad; actualización, modo avión y guardado",
+          "externalEvidenceRequired": true,
+          "weightPercent": 2.67,
+          "status": "not_started",
+          "earnedPercent": 0
+        },
+        {
+          "id": "T7.2",
+          "title": "Rendimiento, accesibilidad y correcciones",
+          "acceptance": "Límites medidos, texto ampliado, navegación y problemas detectados corregidos",
+          "externalEvidenceRequired": true,
+          "weightPercent": 2.67,
+          "status": "not_started",
+          "earnedPercent": 0
+        },
+        {
+          "id": "T7.3",
+          "title": "Cierre de beta",
+          "acceptance": "Cinco carreras humanas completas; cero incidencias críticas o altas abiertas",
+          "externalEvidenceRequired": true,
+          "weightPercent": 2.66,
+          "status": "not_started",
+          "earnedPercent": 0
+        }
+      ]
+    },
+    {
+      "id": "T8",
+      "title": "Publicación",
+      "status": "not_started",
+      "baselinePasses": 3,
+      "rangePasses": [
+        2,
+        4
+      ],
+      "weightPercent": 7,
+      "cumulativeTargetPercent": 98,
+      "earnedPercent": 0,
+      "dependencies": [
+        "T7"
+      ],
+      "passes": [
+        {
+          "id": "T8.1",
+          "title": "Candidata y ficha de tienda",
+          "acceptance": "AAB firmado, capturas reales, clasificación y declaraciones coherentes",
+          "externalEvidenceRequired": false,
+          "weightPercent": 2.34,
+          "status": "not_started",
+          "earnedPercent": 0
+        },
+        {
+          "id": "T8.2",
+          "title": "Pruebas y preparación de envío",
+          "acceptance": "Evidencia de pruebas exigibles, cuenta y firma listas; paquete concreto revisable",
+          "externalEvidenceRequired": true,
+          "weightPercent": 2.33,
+          "status": "not_started",
+          "earnedPercent": 0
+        },
+        {
+          "id": "T8.3",
+          "title": "Revisión y disponibilidad",
+          "acceptance": "Resolver observaciones y verificar disponibilidad real para público acordado",
+          "externalEvidenceRequired": true,
+          "weightPercent": 2.33,
+          "status": "not_started",
+          "earnedPercent": 0
+        }
+      ]
+    },
+    {
+      "id": "T9",
+      "title": "Estabilización",
+      "status": "not_started",
+      "baselinePasses": 2,
+      "rangePasses": [
+        2,
+        3
+      ],
+      "weightPercent": 2,
+      "cumulativeTargetPercent": 100,
+      "earnedPercent": 0,
+      "dependencies": [
+        "T8"
+      ],
+      "passes": [
+        {
+          "id": "T9.1",
+          "title": "Diagnóstico de producción",
+          "acceptance": "Revisar evidencia real del periodo de observación de 14 días y resolver incidencias",
+          "externalEvidenceRequired": true,
+          "weightPercent": 1.0,
+          "status": "not_started",
+          "earnedPercent": 0
+        },
+        {
+          "id": "T9.2",
+          "title": "Cierre y mantenimiento",
+          "acceptance": "Actualización con saves preservados, cero fallos graves y guía de producción/recuperación",
+          "externalEvidenceRequired": true,
+          "weightPercent": 1.0,
+          "status": "not_started",
+          "earnedPercent": 0
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2026-09-14",
+  "progressLog": [
+    {
+      "pass": "T1",
+      "earnedPercent": 6,
+      "evidence": "analysis/2026-09-11/t1/verification.json"
+    },
+    {
+      "pass": "T2.1",
+      "earnedPercent": 2.2,
+      "evidence": "project/T2_1_CIERRE.md",
+      "scopeAdjustment": "Visor local de pruebas dentro de T2.1; sin acreditar T3."
+    },
+    {
+      "pass": "T2.2",
+      "earnedPercent": 2.2,
+      "evidence": "project/T2_2_CIERRE.md",
+      "scopeAdjustment": "Cargadores validados y migraciones en T2.2; interfaz de importación recuperable con persistencia transaccional en T2.3, sin añadir pasadas."
+    },
+    {
+      "pass": "T3.1",
+      "earnedPercent": 0,
+      "evidence": "project/T3_1_INTEGRACION_PLAYCANVAS.md",
+      "scopeAdjustment": "El autor pide explícitamente integración PlayCanvas con handoff UI antes de terminar T2.3–T2.5; se trabaja sobre T2.1/T2.2, sin acreditar el resto de T2.",
+      "status": "in_progress"
+    }
+  ],
+  "nextIndependentPass": "T2.3"
+}

@@ -1,0 +1,68 @@
+{
+  "total": 1000,
+  "blocked": 0,
+  "early": 6,
+  "uniqueNarrativeSignatures": 1000,
+  "principalCoverage": {
+    "seen": 50,
+    "expected": 50,
+    "missing": [],
+    "avg": 19.683
+  },
+  "conditionalCoverage": {
+    "seen": 32,
+    "expected": 32,
+    "missing": [],
+    "avg": 10.772
+  },
+  "microfeedCoverage": {
+    "seen": 64,
+    "expected": 64,
+    "missing": [],
+    "avg": 41.418
+  },
+  "endingCoverage": {
+    "seen": 20,
+    "expected": 20,
+    "missing": []
+  },
+  "reversals": 89,
+  "ages": {
+    "33": 6,
+    "34": 114,
+    "35": 34,
+    "36": 14,
+    "37": 10,
+    "38": 7,
+    "39": 22,
+    "40": 61,
+    "41": 73,
+    "42": 354,
+    "43": 69,
+    "44": 60,
+    "45": 51,
+    "46": 39,
+    "47": 32,
+    "48": 30,
+    "49": 14,
+    "50": 6,
+    "51": 3,
+    "52": 1
+  },
+  "reasons": {
+    "retire_on_low": 118,
+    "voluntary": 259,
+    "no_market": 435,
+    "retire_on_high": 145,
+    "early_retirement_30_34": 6,
+    "health": 37
+  },
+  "closures": {
+    "no_last_match": 763,
+    "planned_last_match": 140,
+    "storybook": 91,
+    "early_retirement": 6
+  },
+  "aggregateWorkerMs": 251867,
+  "passed": true
+}

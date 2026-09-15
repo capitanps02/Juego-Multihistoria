@@ -1,0 +1,26 @@
+{
+  "pass": "T3.3",
+  "command": "gradle --offline --no-daemon assembleDebug",
+  "java": {
+    "available": true
+  },
+  "gradle": {
+    "available": true,
+    "exitCode": 0
+  },
+  "androidSdk": {
+    "configured": true,
+    "exists": true,
+    "path": "/Users/capitanps/Downloads/multihistoria-engine-v0.8/.android-tools/sdk"
+  },
+  "status": "pass",
+  "apk": {
+    "path": "android/app/build/outputs/apk/debug/app-debug.apk",
+    "bytes": 8546791,
+    "sha256": "446550a58a82cd4d104634e92aa2fe5f525048589de3bcaf2aa997651bb3f8d5"
+  },
+  "verification": {
+    "androidRuntimeVerified": true,
+    "runtimeEvidence": "analysis/2026-09-15/T3.3-android-runtime.json"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "schema": 8,
+  "buildErrors": 0,
+  "buildWarnings": 0,
+  "reproducible": true,
+  "microfeedIndependent": true,
+  "migrationV7toV8": true,
+  "exampleRetired": true,
+  "exampleAge": 43,
+  "epilogueFamilies": [
+    "END_NATIONAL_CAPTAIN",
+    "END_MARKET_SILENCE",
+    "END_TOO_LONG",
+    "END_GREAT_PRO",
+    "END_CONTRACT_KING"
+  ],
+  "passed": true
+}

@@ -1,0 +1,675 @@
+{
+  "task": "T5.1",
+  "generatedAt": "2026-09-15T16:05:59.533Z",
+  "source": {
+    "traceability": "analysis/2026-09-11/t1/principal-traceability.json",
+    "sourceDocSha256": "9dce3a765c3a7a68f23b81c8b3de267df39d589f6d555ef318fb15739c1bde1e"
+  },
+  "counts": {
+    "canonicalPrincipals": 254,
+    "literalIdMatches": 167,
+    "unresolvedPrincipalIds": 87,
+    "enginePrincipals": 254,
+    "engineConditionals": 134
+  },
+  "conditionalReconciliation": {
+    "status": "count_only_not_semantically_reconciled",
+    "sourceInventory": "No hay inventario canónico de IDs condicionales en la auditoría actual.",
+    "engineCount": 134
+  },
+  "aliases": [],
+  "noSilentAliases": true,
+  "unresolved": [
+    {
+      "canonicalId": "EVT_20_BRIDGE_001",
+      "sourceTitle": "21.6.1. La reunión de los veinte",
+      "phase": "20_23",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_20_MATCH_003",
+      "sourceTitle": "21.7.4. El minuto 65",
+      "phase": "20_23",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_20_JAN_001",
+      "sourceTitle": "21.7.5. Enero: la compra que depende de otro",
+      "phase": "20_23",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_21_MKT_001",
+      "sourceTitle": "21.8.3. El club que te quiere… cedido",
+      "phase": "20_23",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_21_SOC_001",
+      "sourceTitle": "21.9.4. Tu amigo contra tu agente",
+      "phase": "20_23",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_21_PRS_002",
+      "sourceTitle": "21.9.5. La llamada que llega por Clara",
+      "phase": "20_23",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_26_BRIDGE_001",
+      "sourceTitle": "23.8.1. Ya no te pagan por potencial",
+      "phase": "26_30",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_26_MATCH_001",
+      "sourceTitle": "23.9.2. El penalti para un récord",
+      "phase": "26_30",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_26_CAP_001",
+      "sourceTitle": "23.9.3. El capitán te pide que elijas lado",
+      "phase": "26_30",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_26_MED_001",
+      "sourceTitle": "23.9.4. Cada tres días",
+      "phase": "26_30",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_26_DOC_001",
+      "sourceTitle": "23.9.5. Dentro de tu temporada",
+      "phase": "26_30",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_26_RIV_001",
+      "sourceTitle": "23.9.7. Adrián en el otro vestuario",
+      "phase": "26_30",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_26_TEAM_002",
+      "sourceTitle": "23.9.8. El sustituto te pregunta si debe irse",
+      "phase": "26_30",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_26_NAT_002",
+      "sourceTitle": "23.9.9. Titular con el club, suplente con la selección",
+      "phase": "26_30",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_26_FINAL_001",
+      "sourceTitle": "23.9.10. La final y el banquillo",
+      "phase": "26_30",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_27_CON_001",
+      "sourceTitle": "23.10.2. La cláusula que sí puede pagarse",
+      "phase": "26_30",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_27_IMG_001",
+      "sourceTitle": "23.10.5. Tu nombre sin tu club",
+      "phase": "26_30",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_27_HOME_001",
+      "sourceTitle": "23.10.6. ¿Comprar una parte de casa?",
+      "phase": "26_30",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_27_STAR_001",
+      "sourceTitle": "23.10.8. Dos estrellas, un foco",
+      "phase": "26_30",
+      "status": "title_candidate_needs_semantic_review",
+      "candidates": [
+        {
+          "id": "EVT_28_TEAM_001",
+          "title": "Dos estrellas, un foco",
+          "phase": "26_30"
+        }
+      ]
+    },
+    {
+      "canonicalId": "EVT_27_AWARD_001",
+      "sourceTitle": "23.11.2. La gala",
+      "phase": "26_30",
+      "status": "title_candidate_needs_semantic_review",
+      "candidates": [
+        {
+          "id": "EVT_28_GALA_001",
+          "title": "La gala",
+          "phase": "26_30"
+        }
+      ]
+    },
+    {
+      "canonicalId": "EVT_27_EUR_001",
+      "sourceTitle": "23.11.7. La semifinal que exige desaparecer",
+      "phase": "26_30",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_27_MATCH_001",
+      "sourceTitle": "23.11.8. El récord no se celebra",
+      "phase": "26_30",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_27_TEAM_001",
+      "sourceTitle": "23.11.9. Tu protegido juega por ti",
+      "phase": "26_30",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_27_AGT_002",
+      "sourceTitle": "23.11.10. Tu agente negocia dos futuros",
+      "phase": "26_30",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_28_RICH_001",
+      "sourceTitle": "23.12.3. La oferta financieramente absurda",
+      "phase": "26_30",
+      "status": "title_candidate_needs_semantic_review",
+      "candidates": [
+        {
+          "id": "EVT_29_MKT_001",
+          "title": "La oferta financieramente absurda",
+          "phase": "26_30"
+        }
+      ]
+    },
+    {
+      "canonicalId": "EVT_28_MEDIA_001",
+      "sourceTitle": "23.12.5. El documental se estrena cuando ya eres otro",
+      "phase": "26_30",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_28_FORM_001",
+      "sourceTitle": "23.13.1. Tres meses normales",
+      "phase": "26_30",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_28_STAR_001",
+      "sourceTitle": "23.13.2. El chico ya no es promesa",
+      "phase": "26_30",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_28_MED_001",
+      "sourceTitle": "23.13.3. No puedes jugar sesenta partidos",
+      "phase": "26_30",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_28_CLUB_001",
+      "sourceTitle": "23.13.4. El presidente quiere tu apoyo",
+      "phase": "26_30",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_29_TACT_001",
+      "sourceTitle": "23.13.8. Reinventarte de verdad",
+      "phase": "26_30",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_29_NAT_002",
+      "sourceTitle": "23.13.9. ¿Seguir con la selección a cualquier precio?",
+      "phase": "26_30",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_30_BRIDGE_001",
+      "sourceTitle": "24.8.1. La palabra veterano",
+      "phase": "30_34",
+      "status": "title_candidate_needs_semantic_review",
+      "candidates": [
+        {
+          "id": "EVT_30_IDN_001",
+          "title": "La palabra veterano",
+          "phase": "30_34"
+        }
+      ]
+    },
+    {
+      "canonicalId": "EVT_30_STATUS_001",
+      "sourceTitle": "24.8.6. El dorsal",
+      "phase": "30_34",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_30_EUR_001",
+      "sourceTitle": "24.9.1. Semifinal, minuto cero",
+      "phase": "30_34",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_30_CCH_001",
+      "sourceTitle": "24.9.3. Te enteras por la pizarra",
+      "phase": "30_34",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_30_RECORD_001",
+      "sourceTitle": "24.9.5. Partido 500",
+      "phase": "30_34",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_30_PAIN_001",
+      "sourceTitle": "24.9.6. Duele, pero la imagen está limpia",
+      "phase": "30_34",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_30_NANO_001",
+      "sourceTitle": "24.9.7. Nano necesita una llamada",
+      "phase": "30_34",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_30_PRS_001",
+      "sourceTitle": "24.9.8. El ultimátum que nunca diste",
+      "phase": "30_34",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_30_NAT_002",
+      "sourceTitle": "24.9.9. La selección gana sin ti",
+      "phase": "30_34",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_30_JAN_001",
+      "sourceTitle": "24.9.10. Enero: especialista de lujo",
+      "phase": "30_34",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_31_FAM_001",
+      "sourceTitle": "24.10.5. No quiero otra mudanza",
+      "phase": "30_34",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_31_ROLE_001",
+      "sourceTitle": "24.11.3. Tres goles y al banquillo",
+      "phase": "30_34",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_31_SQUAD_001",
+      "sourceTitle": "24.11.5. Dos fichajes de 22",
+      "phase": "30_34",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_31_BIZ_001",
+      "sourceTitle": "24.11.8. El problema es de tu socio",
+      "phase": "30_34",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_32_RICH_001",
+      "sourceTitle": "24.12.2. La oferta que paga el resto de tu vida",
+      "phase": "30_34",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_32_ELITE_001",
+      "sourceTitle": "24.12.3. Doceavo hombre de un candidato",
+      "phase": "30_34",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_32_IMPACT_001",
+      "sourceTitle": "24.13.1. Peores números, mejor equipo",
+      "phase": "30_34",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_32_SUCCESSOR_001",
+      "sourceTitle": "24.13.2. Tres semanas y aparece otro",
+      "phase": "30_34",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_32_LOAD_001",
+      "sourceTitle": "24.13.4. No viajes",
+      "phase": "30_34",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_32_BOSMAN_001",
+      "sourceTitle": "24.13.6. Enero: puedes firmar gratis",
+      "phase": "30_34",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_33_RECORD_001",
+      "sourceTitle": "24.14.2. El récord está a seis partidos",
+      "phase": "30_34",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_33_FIN_001",
+      "sourceTitle": "24.14.6. Cumples 34",
+      "phase": "30_34",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_34_BRIDGE_001",
+      "sourceTitle": "25.6.1. La reunión sin horizonte",
+      "phase": "34_plus",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_34_PAY_001",
+      "sourceTitle": "25.6.2. La cifra que ya no te pagan",
+      "phase": "34_plus",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_34_NT_001",
+      "sourceTitle": "25.6.3. Última ventana de selección",
+      "phase": "34_plus",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_34_AGT_001",
+      "sourceTitle": "25.6.5. El agente dice que esperes",
+      "phase": "34_plus",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_34_LOAD_001",
+      "sourceTitle": "25.6.6. El plan de 28 partidos",
+      "phase": "34_plus",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_34_DORSAL_001",
+      "sourceTitle": "25.6.7. Tu dorsal en la tienda",
+      "phase": "34_plus",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_34_MENTOR_001",
+      "sourceTitle": "25.7.2. El joven te pide tus vídeos",
+      "phase": "34_plus",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_34_MATCH_001",
+      "sourceTitle": "25.7.4. Un gol que rompe el plan",
+      "phase": "34_plus",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_34_NT_002",
+      "sourceTitle": "25.7.5. Te dejan fuera de una convocatoria",
+      "phase": "34_plus",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_34_FAN_001",
+      "sourceTitle": "25.7.6. La grada pide que empieces",
+      "phase": "34_plus",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_34_TRAVEL_001",
+      "sourceTitle": "25.7.7. El viaje que no haces",
+      "phase": "34_plus",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_35_CON_001",
+      "sourceTitle": "25.8.2. Contrato por objetivos físicos",
+      "phase": "34_plus",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_35_FAREWELL_001",
+      "sourceTitle": "25.8.4. El club ofrece homenaje... si te vas",
+      "phase": "34_plus",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_35_DUAL_001",
+      "sourceTitle": "25.8.5. Te ofrecen ser jugador y enlace",
+      "phase": "34_plus",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_35_AGT_001",
+      "sourceTitle": "25.8.7. Sin agente por primera vez",
+      "phase": "34_plus",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_35_TACT_001",
+      "sourceTitle": "25.9.1. El nuevo rol funciona demasiado bien",
+      "phase": "34_plus",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_35_BENCH_001",
+      "sourceTitle": "25.9.2. Un mes sin jugar y sigues entrenando",
+      "phase": "34_plus",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_35_RECORD_001",
+      "sourceTitle": "25.9.3. El canterano rompe tu récord",
+      "phase": "34_plus",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_35_NT_001",
+      "sourceTitle": "25.9.4. Te llaman por una emergencia internacional",
+      "phase": "34_plus",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_35_JAN_001",
+      "sourceTitle": "25.9.5. Una oferta en enero",
+      "phase": "34_plus",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_35_IMG_001",
+      "sourceTitle": "25.9.8. Te ofrecen un último gran patrocinio",
+      "phase": "34_plus",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_36_BODY_001",
+      "sourceTitle": "25.10.2. Ya no puedes jugar domingo-miércoles-domingo",
+      "phase": "34_plus",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_36_CCH_001",
+      "sourceTitle": "25.10.3. Un entrenador más joven que tú",
+      "phase": "34_plus",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_36_RECORD_001",
+      "sourceTitle": "25.10.4. El partido 700",
+      "phase": "34_plus",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_36_PEER_001",
+      "sourceTitle": "25.10.5. El compañero se retira antes que tú",
+      "phase": "34_plus",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_36_LOWER_001",
+      "sourceTitle": "25.10.6. Un año en una liga menor",
+      "phase": "34_plus",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_37_SHORT_001",
+      "sourceTitle": "25.11.1. Contrato de tres meses",
+      "phase": "34_plus",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_37_HOME_001",
+      "sourceTitle": "25.11.2. Valdoria te ofrece diez partidos",
+      "phase": "34_plus",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_37_PEN_001",
+      "sourceTitle": "25.11.4. El penalti de despedida",
+      "phase": "34_plus",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_38_RICH_001",
+      "sourceTitle": "25.11.5. Una última oferta enorme",
+      "phase": "34_plus",
+      "status": "title_candidate_needs_semantic_review",
+      "candidates": [
+        {
+          "id": "EVT_36_RICH_001",
+          "title": "Una última oferta enorme",
+          "phase": "34_plus"
+        }
+      ]
+    },
+    {
+      "canonicalId": "EVT_38_MARKET_001",
+      "sourceTitle": "25.11.6. Nadie llama en julio",
+      "phase": "34_plus",
+      "status": "unresolved_no_title_match",
+      "candidates": []
+    },
+    {
+      "canonicalId": "EVT_RET_FAM_001",
+      "sourceTitle": "25.12.1. La conversación en casa",
+      "phase": "34_plus",
+      "status": "title_candidate_needs_semantic_review",
+      "candidates": [
+        {
+          "id": "EVT_RET_HOME_001",
+          "title": "La conversación en casa",
+          "phase": "34_plus"
+        }
+      ]
+    },
+    {
+      "canonicalId": "EVT_RET_LASTMATCH_001",
+      "sourceTitle": "25.12.6. El último partido no está garantizado",
+      "phase": "34_plus",
+      "status": "title_candidate_needs_semantic_review",
+      "candidates": [
+        {
+          "id": "EVT_RET_LAST_001",
+          "title": "El último partido no está garantizado",
+          "phase": "34_plus"
+        }
+      ]
+    }
+  ]
+}

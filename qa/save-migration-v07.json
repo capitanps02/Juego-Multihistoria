@@ -1,0 +1,25 @@
+{
+  "version": "0.7.0",
+  "sourceSchema": 6,
+  "targetSchema": 7,
+  "currentSchema": 7,
+  "preserved": {
+    "date": true,
+    "age": true,
+    "club": true,
+    "historyLength": true,
+    "seedsLength": true,
+    "narrativeRngSeed": true,
+    "footballRngSeed": true
+  },
+  "addedFields": {
+    "initializedAt30": true,
+    "veteranLeverage": true,
+    "recoveryDebt": true,
+    "explosiveness": true,
+    "tacticalReading": true,
+    "retirementDistance": true,
+    "legacyCapital": true
+  },
+  "passed": true
+}

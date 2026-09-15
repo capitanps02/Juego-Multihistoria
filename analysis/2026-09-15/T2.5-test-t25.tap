@@ -1,0 +1,11 @@
+✔ crossing each age records one immutable historical snapshot (405.441053ms)
+✔ milestones survive JSON save and reject tampering (362.781487ms)
+✔ gate exits non-zero when a required milestone is missing (501.235497ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1392.877488

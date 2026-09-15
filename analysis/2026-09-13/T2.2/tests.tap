@@ -1,0 +1,334 @@
+TAP version 13
+# Subtest: migration qa/fixtures/save-v02-derived.json: frozen baseline, history, seeds and existing RNG preserved
+ok 1 - migration qa/fixtures/save-v02-derived.json: frozen baseline, history, seeds and existing RNG preserved
+  ---
+  duration_ms: 25.358593
+  type: 'test'
+  ...
+# Subtest: migration examples/save-v03-seed-424242.json: frozen baseline, history, seeds and existing RNG preserved
+ok 2 - migration examples/save-v03-seed-424242.json: frozen baseline, history, seeds and existing RNG preserved
+  ---
+  duration_ms: 10.736408
+  type: 'test'
+  ...
+# Subtest: migration examples/save-v04-seed-424242.json: frozen baseline, history, seeds and existing RNG preserved
+ok 3 - migration examples/save-v04-seed-424242.json: frozen baseline, history, seeds and existing RNG preserved
+  ---
+  duration_ms: 17.435916
+  type: 'test'
+  ...
+# Subtest: migration examples/save-v05-seed-424242.json: frozen baseline, history, seeds and existing RNG preserved
+ok 4 - migration examples/save-v05-seed-424242.json: frozen baseline, history, seeds and existing RNG preserved
+  ---
+  duration_ms: 21.962941
+  type: 'test'
+  ...
+# Subtest: migration examples/save-v06-seed-424242.json: frozen baseline, history, seeds and existing RNG preserved
+ok 5 - migration examples/save-v06-seed-424242.json: frozen baseline, history, seeds and existing RNG preserved
+  ---
+  duration_ms: 23.478656
+  type: 'test'
+  ...
+# Subtest: migration examples/save-v07-seed-424242.json: frozen baseline, history, seeds and existing RNG preserved
+ok 6 - migration examples/save-v07-seed-424242.json: frozen baseline, history, seeds and existing RNG preserved
+  ---
+  duration_ms: 26.96668
+  type: 'test'
+  ...
+# Subtest: migration examples/save-v08-seed-424242.json: frozen baseline, history, seeds and existing RNG preserved
+ok 7 - migration examples/save-v08-seed-424242.json: frozen baseline, history, seeds and existing RNG preserved
+  ---
+  duration_ms: 35.538047
+  type: 'test'
+  ...
+# Subtest: reject missing required field history
+ok 8 - reject missing required field history
+  ---
+  duration_ms: 3.046772
+  type: 'test'
+  ...
+# Subtest: reject missing required field retirement
+ok 9 - reject missing required field retirement
+  ---
+  duration_ms: 2.069682
+  type: 'test'
+  ...
+# Subtest: reject missing required field epilogue
+ok 10 - reject missing required field epilogue
+  ---
+  duration_ms: 1.925333
+  type: 'test'
+  ...
+# Subtest: reject missing required field runtime
+ok 11 - reject missing required field runtime
+  ---
+  duration_ms: 1.53142
+  type: 'test'
+  ...
+# Subtest: reject missing required field runtime.day
+ok 12 - reject missing required field runtime.day
+  ---
+  duration_ms: 1.523298
+  type: 'test'
+  ...
+# Subtest: reject missing required field professional
+ok 13 - reject missing required field professional
+  ---
+  duration_ms: 0.958837
+  type: 'test'
+  ...
+# Subtest: reject missing required field professional.technique
+ok 14 - reject missing required field professional.technique
+  ---
+  duration_ms: 1.185832
+  type: 'test'
+  ...
+# Subtest: reject missing required field rngState.football
+ok 15 - reject missing required field rngState.football
+  ---
+  duration_ms: 1.327938
+  type: 'test'
+  ...
+# Subtest: reject missing required field rngState.narrative.state
+ok 16 - reject missing required field rngState.narrative.state
+  ---
+  duration_ms: 1.245175
+  type: 'test'
+  ...
+# Subtest: reject missing required field contract.salaryMonthly
+ok 17 - reject missing required field contract.salaryMonthly
+  ---
+  duration_ms: 1.364644
+  type: 'test'
+  ...
+# Subtest: reject missing required field body.acuteInjury
+ok 18 - reject missing required field body.acuteInjury
+  ---
+  duration_ms: 0.995292
+  type: 'test'
+  ...
+# Subtest: reject missing required field relationships.0.trust
+ok 19 - reject missing required field relationships.0.trust
+  ---
+  duration_ms: 1.584655
+  type: 'test'
+  ...
+# Subtest: reject missing required field npcs.0.knowledge
+ok 20 - reject missing required field npcs.0.knowledge
+  ---
+  duration_ms: 1.437749
+  type: 'test'
+  ...
+# Subtest: reject missing required field flags
+ok 21 - reject missing required field flags
+  ---
+  duration_ms: 1.10608
+  type: 'test'
+  ...
+# Subtest: reject missing required field seeds
+ok 22 - reject missing required field seeds
+  ---
+  duration_ms: 1.627761
+  type: 'test'
+  ...
+# Subtest: rejects invalid JSON, non-object roots and unknown schema before migration
+ok 23 - rejects invalid JSON, non-object roots and unknown schema before migration
+  ---
+  duration_ms: 3.661589
+  type: 'test'
+  ...
+# Subtest: rejects wrong types, non-finite numbers and impossible basic states with a field path
+ok 24 - rejects wrong types, non-finite numbers and impossible basic states with a field path
+  ---
+  duration_ms: 32.675847
+  type: 'test'
+  ...
+# Subtest: legacy validation does not turn invalid existing fields into migration defaults
+ok 25 - legacy validation does not turn invalid existing fields into migration defaults
+  ---
+  duration_ms: 114.431648
+  type: 'test'
+  ...
+# Subtest: rejects malformed nested history, seeds and missing/duplicated NPCs
+ok 26 - rejects malformed nested history, seeds and missing/duplicated NPCs
+  ---
+  duration_ms: 53.618706
+  type: 'test'
+  ...
+# Subtest: rejects prototype keys, extreme depth/size, circular values and sparse arrays
+ok 27 - rejects prototype keys, extreme depth/size, circular values and sparse arrays
+  ---
+  duration_ms: 1.488183
+  type: 'test'
+  ...
+# Subtest: RNG states larger than uint32 are preserved exactly
+ok 28 - RNG states larger than uint32 are preserved exactly
+  ---
+  duration_ms: 15.05795
+  type: 'test'
+  ...
+# Subtest: continuation after migrated save/reload: qa/fixtures/save-v02-derived.json
+ok 29 - continuation after migrated save/reload: qa/fixtures/save-v02-derived.json
+  ---
+  duration_ms: 40.002309
+  type: 'test'
+  ...
+# Subtest: continuation after migrated save/reload: examples/save-v03-seed-424242.json
+ok 30 - continuation after migrated save/reload: examples/save-v03-seed-424242.json
+  ---
+  duration_ms: 25.380244
+  type: 'test'
+  ...
+# Subtest: continuation after migrated save/reload: examples/save-v04-seed-424242.json
+ok 31 - continuation after migrated save/reload: examples/save-v04-seed-424242.json
+  ---
+  duration_ms: 32.632277
+  type: 'test'
+  ...
+# Subtest: continuation after migrated save/reload: examples/save-v05-seed-424242.json
+ok 32 - continuation after migrated save/reload: examples/save-v05-seed-424242.json
+  ---
+  duration_ms: 42.15267
+  type: 'test'
+  ...
+# Subtest: continuation after migrated save/reload: examples/save-v06-seed-424242.json
+ok 33 - continuation after migrated save/reload: examples/save-v06-seed-424242.json
+  ---
+  duration_ms: 55.492417
+  type: 'test'
+  ...
+# Subtest: continuation after migrated save/reload: examples/save-v07-seed-424242.json
+ok 34 - continuation after migrated save/reload: examples/save-v07-seed-424242.json
+  ---
+  duration_ms: 65.157687
+  type: 'test'
+  ...
+# Subtest: T2.1 session migrates without writing, losing pending scene, changing RNG or mutating input
+ok 35 - T2.1 session migrates without writing, losing pending scene, changing RNG or mutating input
+  ---
+  duration_ms: 215.471125
+  type: 'test'
+  ...
+# Subtest: corrupt session receipts/screens/state never call the storage adapter
+ok 36 - corrupt session receipts/screens/state never call the storage adapter
+  ---
+  duration_ms: 832.904768
+  type: 'test'
+  ...
+# Subtest: corrupt result/journal and duplicate receipts are rejected
+ok 37 - corrupt result/journal and duplicate receipts are rejected
+  ---
+  duration_ms: 406.281601
+  type: 'test'
+  ...
+# Subtest: receipt chronology and chosen payload must agree with the actual history
+ok 38 - receipt chronology and chosen payload must agree with the actual history
+  ---
+  duration_ms: 162.44178
+  type: 'test'
+  ...
+# Subtest: 100 view reads and mutations of returned copies do not alter state, scene or RNG
+ok 39 - 100 view reads and mutations of returned copies do not alter state, scene or RNG
+  ---
+  duration_ms: 148.552724
+  type: 'test'
+  ...
+# Subtest: same command concurrently and after resume returns one persisted receipt/effect
+ok 40 - same command concurrently and after resume returns one persisted receipt/effect
+  ---
+  duration_ms: 169.806791
+  type: 'test'
+  ...
+# Subtest: different double-click commands with same revision allow only one effect
+ok 41 - different double-click commands with same revision allow only one effect
+  ---
+  duration_ms: 75.116913
+  type: 'test'
+  ...
+# Subtest: command ID reuse, unknown choice and stale instance are rejected without mutation
+ok 42 - command ID reuse, unknown choice and stale instance are rejected without mutation
+  ---
+  duration_ms: 81.923721
+  type: 'test'
+  ...
+# Subtest: failed save rolls back world, decision, history and RNG; retry matches a clean run
+ok 43 - failed save rolls back world, decision, history and RNG; retry matches a clean run
+  ---
+  duration_ms: 146.092077
+  type: 'test'
+  ...
+# Subtest: failed pending-scene commit does not consume selection RNG
+ok 44 - failed pending-scene commit does not consume selection RNG
+  ---
+  duration_ms: 182.106407
+  type: 'test'
+  ...
+# Subtest: queries observe confirmed state while async persistence is pending
+ok 45 - queries observe confirmed state while async persistence is pending
+  ---
+  duration_ms: 100.585409
+  type: 'test'
+  ...
+# Subtest: 100 JSON save/resume cycles preserve pending scene, options and RNG exactly
+ok 46 - 100 JSON save/resume cycles preserve pending scene, options and RNG exactly
+  ---
+  duration_ms: 6012.654776
+  type: 'test'
+  ...
+# Subtest: pending result survives reload; advancing cannot skip it or choose twice
+ok 47 - pending result survives reload; advancing cannot skip it or choose twice
+  ---
+  duration_ms: 115.291771
+  type: 'test'
+  ...
+# Subtest: catalog mutation and pending-event tampering cannot silently reinterpret a save
+ok 48 - catalog mutation and pending-event tampering cannot silently reinterpret a save
+  ---
+  duration_ms: 170.514583
+  type: 'test'
+  ...
+# Subtest: bounded advance yields without inventing a decision or retirement
+ok 49 - bounded advance yields without inventing a decision or retirement
+  ---
+  duration_ms: 8.238707
+  type: 'test'
+  ...
+# Subtest: error after an immediate effect cannot leak a partial resolution
+ok 50 - error after an immediate effect cannot leak a partial resolution
+  ---
+  duration_ms: 5.355297
+  type: 'test'
+  ...
+# Subtest: queued command and storage callback cannot mutate session-owned objects
+ok 51 - queued command and storage callback cannot mutate session-owned objects
+  ---
+  duration_ms: 66.62867
+  type: 'test'
+  ...
+# Subtest: first 20 player choices match direct motor state and RNG at each decision boundary
+ok 52 - first 20 player choices match direct motor state and RNG at each decision boundary
+  ---
+  duration_ms: 240.664104
+  type: 'test'
+  ...
+# Subtest: complete interactive career matches headless narrative and closes with persistent result
+ok 53 - complete interactive career matches headless narrative and closes with persistent result
+  ---
+  duration_ms: 3944.585794
+  type: 'test'
+  ...
+# Subtest: existing catalog validates and baseline headless behavior is unchanged
+ok 54 - existing catalog validates and baseline headless behavior is unchanged
+  ---
+  duration_ms: 375.764767
+  type: 'test'
+  ...
+1..54
+# tests 54
+# suites 0
+# pass 54
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 12055.231909

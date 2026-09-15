@@ -1,0 +1,37 @@
+{
+  "date": "2026-09-14",
+  "pass": "T3.1",
+  "status": "complete",
+  "targetScene": 2593315,
+  "packageSha256": "1a41f7e5f8956368411e481c775f50164ba27bdcd3be9be6fea0b899554aad08",
+  "tests": {
+    "total": 57,
+    "passed": 57,
+    "failed": 0,
+    "skipped": 0,
+    "evidence": "analysis/2026-09-13/T3.1/tests.tap"
+  },
+  "browserChecks": [
+    "Local user save restored: Cinco minutos más, 2026-07-06, one decision; no choices or reset performed.",
+    "Isolated QA: simulate to first event, double-click one decision, result restored after reload.",
+    "Invalid import rejected without replacing active save.",
+    "Valid import confirmed, previous save preserved and restored to its pending result.",
+    "No error/warn console entries in isolated QA.",
+    "PlayCanvas: fresh game, simulate first event, choose Nano, reload same result with one decision; Carrera records choice; Inicio restored."
+  ],
+  "playcanvas": {
+    "sceneOpened": true,
+    "assetUploaded": true,
+    "componentAdded": true,
+    "launchVerified": true,
+    "url": "https://launch.playcanvas.com/2593315?debug=true",
+    "resultAfterReload": "La lista de 26; Llamar a Nano y contarle exactamente lo que sabes; Nano agradece que se lo cuentes directamente.; 1 decisión",
+    "consoleErrorsAndWarnings": [],
+    "visualReview": "Portada y resultado revisados en captura de escritorio 1208 × 597; imágenes y controles visibles."
+  },
+  "earnedPercent": 13.15,
+  "sourceZip": {
+    "name": "MULTIHISTORIA_UI_HANDOFF_2026-09-13.zip",
+    "sha256": "9cec1d28e82b11cf430263c5c149e7905e0062056f64b9864f6e1e8c2f5e848a"
+  }
+}

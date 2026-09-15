@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#153f32">
+  <title>Historia de un jugador · Prueba del motor</title>
+  <link rel="stylesheet" href="./style.css">
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+  <header class="masthead"><div><span class="eyebrow">HISTORIA DE UN JUGADOR</span><p>Una carrera. Tus decisiones.</p></div><span class="edition">Prueba del motor · T2.2</span></header>
+  <main>
+    <p class="notice">Visor provisional para probar las historias y decisiones. La interfaz definitiva está en preparación.</p>
+    <p id="launch-help">Si la carrera no carga, <a href="http://127.0.0.1:4173">abre el visor de juego aquí</a>. Si ese enlace no responde, ejecuta «Probar juego.command» desde la carpeta del proyecto y vuelve al enlace.</p>
+    <section class="career-strip" aria-label="Tu carrera" id="career-strip"></section>
+    <div class="layout">
+      <section class="story" id="story" aria-busy="true"><p>Cargando tu carrera…</p></section>
+      <aside>
+        <section class="side-card"><span class="eyebrow">TU PARTIDA</span><p id="save-status" role="status">Comprobando guardado…</p><p class="muted">Puedes cerrar y volver a este enlace en el mismo navegador. Guarda una copia antes de borrar los datos del navegador.</p><button id="export" class="quiet" type="button">Descargar copia de partida</button><button id="reload" class="quiet" type="button">Recuperar partida guardada</button></section>
+        <details class="side-card"><summary>Empezar otra carrera</summary><p>La nueva carrera sustituirá a la activa.</p><form id="new-game"><label for="seed">Semilla de la historia</label><input id="seed" type="number" min="0" max="4294967295" value="424242" required><p class="muted">La misma semilla y las mismas decisiones permiten repetir una historia.</p><button type="submit" class="quiet">Crear otra carrera</button></form></details>
+        <section class="side-card"><span class="eyebrow">CÓMO PROBAR</span><p>Lee la situación, elige una acción y observa qué ocurre. Recarga la página antes de decidir y después de ver el resultado: la partida debe seguir donde la dejaste.</p></section>
+      </aside>
+    </div>
+    <p id="error" role="alert" hidden></p>
+    <details class="history-panel"><summary id="history-title">Tu recorrido</summary><ol id="history"></ol></details>
+  </main>
+  <footer>Valdoria es solo el comienzo.<span>Guardado local · Sin cuenta</span></footer>
+  <dialog id="replace-dialog"><h2>¿Empezar otra carrera?</h2><p>Se sustituirá la partida activa. Puedes cancelar y descargar una copia antes.</p><div class="dialog-actions"><button id="cancel-new" class="quiet">Conservar mi partida</button><button id="confirm-new" class="primary">Empezar nueva carrera</button></div></dialog>
+</body>
+</html>

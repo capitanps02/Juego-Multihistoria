@@ -1,0 +1,8 @@
+TAP version 13
+1..3
+ok 1 - PlayCanvas package preserves all states and RNG over 20 interactive choices
+ok 2 - presentation exposes public context without leaking NPC agendas or hidden outcomes
+ok 3 - package is self-contained and requires no localhost or external image/font request
+# tests 3
+# pass 3
+# fail 0

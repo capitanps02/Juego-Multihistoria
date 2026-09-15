@@ -1,0 +1,7 @@
+TAP version 13
+1..2
+ok 1 - T3.2 continuity controls are present in the player UI
+ok 2 - T3.2 long text and touch targets have containment and reduced-motion rules
+# tests 2
+# pass 2
+# fail 0

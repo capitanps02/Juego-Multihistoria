@@ -1,0 +1,33 @@
+{
+  "provenance": "Expected outputs captured from unmodified T0 compiled/save/save.js before T2.2 validation. v2 is synthetic, derived from the authentic v3 example by removing fields introduced by v2to4. v3–v8 are supplied examples.",
+  "cases": [
+    {
+      "source": "qa/fixtures/save-v02-derived.json",
+      "normalizedV8Sha256": "1e2bb4aca6da386895855008b3a2eb5d30268470f5455b46e2ff226f41330d85"
+    },
+    {
+      "source": "examples/save-v03-seed-424242.json",
+      "normalizedV8Sha256": "968af7d3fa55025a59bea6be5870031dea902b13c2976fb1af71e55d69b0dcc7"
+    },
+    {
+      "source": "examples/save-v04-seed-424242.json",
+      "normalizedV8Sha256": "d3aa2eb3288774597ba5191178410ead3ddff7c63d3f64ba09b021765b8fee34"
+    },
+    {
+      "source": "examples/save-v05-seed-424242.json",
+      "normalizedV8Sha256": "7d62eb1a34c4972845a162bb49700c1cbd6929f0bbce88a14bf1b798d24f0e8d"
+    },
+    {
+      "source": "examples/save-v06-seed-424242.json",
+      "normalizedV8Sha256": "494df27cb20928e6ebde63a3f86b522560867ba2fc741f3bf93482dc566acdff"
+    },
+    {
+      "source": "examples/save-v07-seed-424242.json",
+      "normalizedV8Sha256": "a639543a9363a43de2bcae586ef1c25fdd97f5d8f5c58a9ccf9bfbcc5df21f10"
+    },
+    {
+      "source": "examples/save-v08-seed-424242.json",
+      "normalizedV8Sha256": "7136e3239ba5a5c71a85239401e790d8deb9292d4d49f7d4e2cd8d4359f9ca51"
+    }
+  ]
+}

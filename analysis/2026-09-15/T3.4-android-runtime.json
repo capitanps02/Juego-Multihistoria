@@ -1,0 +1,28 @@
+{
+  "pass": "T3.4",
+  "serial": "emulator-5556",
+  "apkSha256": "446550a58a82cd4d104634e92aa2fe5f525048589de3bcaf2aa997651bb3f8d5",
+  "startup": {
+    "coldTotalTimeMs": 3350,
+    "coldOutput": "Starting: Intent { cmp=com.multihistoria/.MainActivity }\nStatus: ok\nLaunchState: COLD\nActivity: com.multihistoria/.MainActivity\nTotalTime: 3350\nWaitTime: 3494\nComplete\n",
+    "warmTotalTimeMs": 0,
+    "warmOutput": "Starting: Intent { cmp=com.multihistoria/.MainActivity }\nWarning: Activity not started, intent has been delivered to currently running top-most instance.\nStatus: ok\nLaunchState: UNKNOWN (0)\nActivity: com.multihistoria/.MainActivity\nTotalTime: 0\nWaitTime: 76\nComplete\n"
+  },
+  "phases": [
+    {
+      "phase": "create",
+      "output": "INSTRUMENTATION_RESULT: startupMs=7317\nINSTRUMENTATION_RESULT: stream=PASS create: secure origin, IndexedDB, UI result and exact save verified; startupMs=7317\n\nINSTRUMENTATION_CODE: -1\n",
+      "startupMs": 7317
+    },
+    {
+      "phase": "resume",
+      "output": "INSTRUMENTATION_RESULT: startupMs=6894\nINSTRUMENTATION_RESULT: stream=PASS resume: secure origin, IndexedDB, UI result and exact save verified; startupMs=6894\n\nINSTRUMENTATION_CODE: -1\n",
+      "startupMs": 6894
+    }
+  ],
+  "passed": true,
+  "physicalDevicePending": true,
+  "device": "google/sdk_gphone64_x86_64/emu64xa:15/AE3A.240806.043/12960925:userdebug/dev-keys",
+  "webview": "Current WebView Update Service state\n  Current WebView package (name, version): (com.google.android.webview, 124.0.6367.219)\n  Minimum targetSdkVersion: 33\n  Minimum WebView version code: 636771938\n  Number of relros started: 1\n  Number of relros finished: 1\n  WebView package dirty: false\n  Any WebView package installed: true\n  Preferred WebView package (name, version): (com.google.android.webview, 124.0.6367.219)\n  WebView packages:\n    Valid package com.google.android.webview (versionName: 124.0.6367.219, versionCode: 636771938, targetSdkVersion: 34) is  installed/enabled for all users\n    com.google.android.webview.beta is NOT installed.\n    com.google.android.webview.dev is NOT installed.\n    com.google.android.webview.canary is NOT installed.\n    com.google.android.webview.debug is NOT installed.\n    com.android.webview is NOT installed.\n",
+  "airplaneMode": "1"
+}

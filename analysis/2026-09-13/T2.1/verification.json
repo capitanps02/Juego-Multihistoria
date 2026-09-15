@@ -1,0 +1,38 @@
+{
+  "evidenceType": "Registro de ejecuciones y observaciones realizadas en esta tarea; no sustituye a los scripts reproducibles.",
+  "buildPassed": true,
+  "automatedTests": {
+    "command": "node --test scripts/test-session.mjs",
+    "passed": 16,
+    "failed": 0,
+    "processExit": 0,
+    "jsonRoundtrips": 100
+  },
+  "browserChecks": [
+    "pending-scene reload",
+    "double-click one decision",
+    "result reload",
+    "advance to next scene",
+    "stale-tab write rejected",
+    "latest save recovered",
+    "server restarted and saved scene recovered on 2026-09-13"
+  ],
+  "originalMotorSourceHashesUnchanged": true,
+  "androidTested": false,
+  "playCanvasIntegrated": false,
+  "externalSaveImportReady": false,
+  "earnedPercent": 8.2,
+  "nextPass": "T2.2",
+  "files": {
+    "src/session/game-session.ts": "aa633532ef4f7f14088e8541d2eca227c470abbfe819083cc9744175a6afc949",
+    "scripts/test-session.mjs": "3b8217b29f8af484051bed5112ee96d13ae8e38dfad19e90b7f455f607e8a21c",
+    "scripts/build.mjs": "52563b8487066486cd43cb34d758908a2df50febb7ddec56ccee3b21803c1793",
+    "scripts/serve-preview.mjs": "ab0ace60658fed94dc508dc76a058d5baffa002936f8b4d08c3af14e84ddea88",
+    "package.json": "973b5f536bdc22d9e46244dde6e3a487a1f1c5e433dc9410cdde0112065e41a2",
+    "package-lock.json": "2c0a58e1b00b04234fdfcee7943586f92c3073f32f14b4f3d4b79fc052381e21",
+    "Probar juego.command": "4d78145ae2321075a41bd8e8bde78a28e5233a1e44846a9f2be5d2c7b234321f",
+    "preview/index.html": "9a84164aa6512f33cc274df34e3ff03f47b64daefd52acd92ead687810fe6c57",
+    "preview/style.css": "5e7ec6acc3cbc25fba40f2f768561c911da2564a5871f487ccaad4ace5f9f7f0",
+    "preview/app.js": "46dade654bcde2a8e1128cbea2e55ffc9497642299a981972458b50265c8169b"
+  }
+}

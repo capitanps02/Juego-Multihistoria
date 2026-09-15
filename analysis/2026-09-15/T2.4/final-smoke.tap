@@ -1,0 +1,20 @@
+✔ 20th birthday proposes terms without changing club or silently renewing (43.606804ms)
+✔ reject retains terms and RNG, records response and unlocks time (13.825012ms)
+✔ acceptance persists once across double click, reload and replay (11.404762ms)
+✔ failed signing commit preserves offer, contract and RNG; retry equals clean run (13.334381ms)
+✔ delegation has deterministic limits and never grants authority to the next offer (2.111387ms)
+✔ transfer acceptance changes registration, owner, contract and context together (1.107786ms)
+✔ corrupt offers, authority records and receipt mismatches are rejected (31.10847ms)
+✔ v1 migration preserves pending narrative, history and RNG and grants no delegation (128.117138ms)
+✔ world renewal, summer moves and loan continuity remain proposals across seeds (209.740221ms)
+✔ PlayCanvas package preserves all states and RNG over 20 interactive choices (450.133831ms)
+✔ presentation exposes public context without leaking NPC agendas or hidden outcomes (57.450542ms)
+✔ package is self-contained and requires no localhost or external image/font request (22.817977ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 12
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 843.093689

@@ -1,0 +1,503 @@
+[
+  {
+    "pilotId": "P01",
+    "canonicalId": "EVT_18_PRE_001",
+    "engineId": "EVT_18_PRE_001",
+    "phase": "18_20",
+    "sourceBlock": "B307",
+    "sourceHeading": "20.5.1. La lista de 26 — EVT_18_PRE_001",
+    "mappingStatus": "literal_id_semantically_reviewed",
+    "implementationStatus": "repair_required",
+    "complexity": "M",
+    "plannedStage": "T4",
+    "finding": "Conserva las tres acciones, personajes y semillas. Los seis resultados usan pesos fijos 55/45, sin modificadores por afinidad o personalidad como pide el canon.",
+    "repair": "Conservar escena y opciones; añadir influencia contextual acotada, memoria que pueda reaparecer y una prioridad de inicio comprobable.",
+    "acceptanceCriteria": [
+      "Inicio nuevo presenta convocatoria una sola vez antes de escenas que la presuponen.",
+      "Cambiar afinidad/reserva modifica los pesos pertinentes, conservando incertidumbre.",
+      "La llamada a Nano y a Rivas dejan recuerdos distintos y recuperables."
+    ],
+    "canonFields": {
+      "Ventana / disparador": "Inicio de partida. Protagonista convocado para pretemporada; Nano no.",
+      "Información que ve el jugador": "La convocatoria es real; no existe promesa de quedarse. Rivas puede aconsejarte después.",
+      "Información imperfecta": "En el club se habla de completar entrenamientos con canteranos baratos. No sabes si eres proyecto o número.",
+      "Estado oculto relevante": "Ferrer valora activos jóvenes; Mena pidió verte; Montalbán aceptó sin comprometer minutos.",
+      "Opciones jugables": "A. Llamar a Nano antes de contestar a nadie y contarle exactamente lo que sabes. B. Llamar a Rivas para preguntar qué espera realmente el primer equipo. C. No llamar a nadie; preparar la maleta y comportarte como si fuese una convocatoria más.",
+      "Resolución interna": "No hay opción “correcta”. Nano puede agradecer la llamada o sentirla condescendiente. Rivas aporta contexto pero refuerza su papel de mentor. La reserva puede gustar al cuerpo técnico o hacerte perder información. Pesos dependen de afinidad y rasgo de reserva/impulsividad.",
+      "Memoria / semillas": "SEED_RIVAS_TRUST; posible primera variación de SEED_NANO_SHADOW.",
+      "Por qué no es obvia": "Amistad, información y autonomía chocan. Compartir una buena noticia no siempre ayuda a quien se ha quedado fuera."
+    },
+    "engineTitle": "La lista de 26",
+    "engineChoices": [
+      "Llamar a Nano y contarle exactamente lo que sabes",
+      "Llamar a Rivas para saber qué espera realmente el primer equipo",
+      "No llamar a nadie y tratarlo como una convocatoria más"
+    ],
+    "engineSource": [
+      {
+        "path": "src/content/events/18_20/canonical-events.ts",
+        "line": 9
+      }
+    ]
+  },
+  {
+    "pilotId": "P02",
+    "canonicalId": "EVT_18_MED_001",
+    "engineId": "EVT_18_MED_001",
+    "phase": "18_20",
+    "sourceBlock": "B353",
+    "sourceHeading": "20.7.2. El aductor — EVT_18_MED_001",
+    "mappingStatus": "literal_id_semantically_reviewed",
+    "implementationStatus": "repair_required",
+    "complexity": "L",
+    "plannedStage": "T4",
+    "finding": "Conserva cuatro acciones y consecuencias específicas. El evento solo exige BODY_WINDOW y meses: no comprueba por sí mismo la oportunidad por sanción. No tiene modificadores de riesgo. Pedir prueba se resuelve inmediatamente y no guarda una cita futura.",
+    "repair": "Modelar oportunidad deportiva y prueba pendiente, separar molestia de lesión efectiva y contextualizar riesgo y confianza médica.",
+    "acceptanceCriteria": [
+      "Sin oportunidad verificada no se afirma que Bruno está sancionado.",
+      "La prueba diferida reaparece en la fecha de juego prevista tras guardar/cargar.",
+      "Arriesgar permite recuperación o empeoramiento según contexto; el mensaje coincide con el cuerpo simulado."
+    ],
+    "canonFields": {
+      "Ventana / disparador": "WIN_BODY + oportunidad deportiva.",
+      "Información que ve el jugador": "Paula recomienda descarga; no ordena baja médica.",
+      "Información imperfecta": "Tu padre recuerda que las oportunidades “no esperan”. Rivas te diría lo contrario si le preguntas.",
+      "Estado oculto relevante": "BODY_RISK, historial de carga, competencia por puesto, confianza de Paula.",
+      "Opciones jugables": "A. Seguir exactamente el plan de Paula y asumir que quizá no estés disponible. B. Pedir una prueba el sábado y decidir entonces. C. Restar importancia a la molestia y entrenar normal. D. Contárselo solo a Montalbán y dejar que él decida.",
+      "Resolución interna": "La prueba diferida maximiza información pero puede llegar tarde para la convocatoria. Entrenar normal puede salir perfectamente o provocar recaída. Delegar al técnico modifica confianza con Paula y entrenador.",
+      "Memoria / semillas": "SEED_PHYSIO_CONFIDENCE; SEED_BODY_PRECEDENT.",
+      "Por qué no es obvia": "Cuidarse y competir no están alineados de forma simple cuando una ventana profesional puede desaparecer."
+    },
+    "engineTitle": "El aductor",
+    "engineChoices": [
+      "Seguir exactamente el plan de Paula",
+      "Pedir una prueba el sábado y decidir entonces",
+      "Quitar importancia y entrenar normal",
+      "Contárselo solo a Montalbán y dejar que él decida"
+    ],
+    "engineSource": [
+      {
+        "path": "src/content/events/18_20/canonical-events.ts",
+        "line": 125
+      }
+    ]
+  },
+  {
+    "pilotId": "P03",
+    "canonicalId": "EVT_20_CCH_001",
+    "engineId": "EVT_20_CCH_001",
+    "phase": "20_23",
+    "sourceBlock": "B509",
+    "sourceHeading": "21.7.1. La promesa de agosto — EVT_20_CCH_001",
+    "mappingStatus": "literal_id_semantically_reviewed",
+    "implementationStatus": "repair_required",
+    "complexity": "L",
+    "plannedStage": "T5",
+    "finding": "El cuerpo identifica promesa y fichaje, pero hay cuatro opciones genéricas, sin gates para esos antecedentes, NPC ni semilla declarada. La opción B no registra esperar tres jornadas.",
+    "repair": "Recuperar hablar con técnico, esperar tres jornadas, acudir a dirección y sondear con agente. Registrar promesa, competencia y vencimiento de mercado.",
+    "acceptanceCriteria": [
+      "Solo aparece con promesa y competidor pertinentes o contexto adaptado explícito.",
+      "Esperar consume tres jornadas y puede cerrar mercado.",
+      "Técnico, dirección y agente recuerdan acciones diferentes sin conocimiento imposible."
+    ],
+    "canonFields": {
+      "Ventana / disparador": "Inicio de temporada; competencia nueva.",
+      "Información que ve el jugador": "El fichaje es real; la promesa no era contractual.",
+      "Información imperfecta": "No sabes si el fichaje fue petición del técnico, oportunidad de mercado o cobertura por lesión.",
+      "Estado oculto relevante": "TRUST_CCH, ROLE, plantilla, CONTRACT_POWER.",
+      "Opciones jugables": "A. Pedir una conversación inmediata. / B. Esperar tres jornadas. / C. Preguntar al director deportivo, no al técnico. / D. Usar a tu agente para sondear salidas sin confrontar.",
+      "Resolución interna": "Confrontar temprano puede aclarar o hacerte parecer inseguro. Esperar ofrece evidencia y puede cerrar mercado. Ir a dirección puede saltarse jerarquía. Sondear crea palanca o ruido.",
+      "Memoria / semillas": "SEED_AGENT_POWER; memoria del técnico.",
+      "Por qué no es obvia": "La paciencia tiene coste temporal y pedir claridad tiene coste político."
+    },
+    "engineTitle": "La promesa de agosto",
+    "engineChoices": [
+      "Tomar la iniciativa",
+      "Esperar y reunir información",
+      "Proteger tu posición",
+      "Buscar una solución intermedia"
+    ],
+    "engineSource": [
+      {
+        "path": "src/content/events/20_23/principal-events.ts",
+        "line": 15
+      }
+    ]
+  },
+  {
+    "pilotId": "P04",
+    "canonicalId": "EVT_21_PRS_001",
+    "engineId": "EVT_21_PRS_001",
+    "phase": "20_23",
+    "sourceBlock": "B547",
+    "sourceHeading": "21.9.2. La cifra publicada — EVT_21_PRS_001",
+    "mappingStatus": "literal_id_semantically_reviewed",
+    "implementationStatus": "repair_required",
+    "complexity": "M",
+    "plannedStage": "T5",
+    "finding": "Mismo ID y etiqueta verified, pero decisiones y mensajes genéricos. El gate es mediaHeat >=20 y meses fijos; solo declara PUBLIC_CONTRACT, sin lectura de FIRST_LEAK ni NPC.",
+    "repair": "Recuperar las cuatro posturas de desmentido, noticia con cifra distinta al salario real, atribución incierta y reacción de club/vestuario.",
+    "acceptanceCriteria": [
+      "Dar cifra exacta y negar sin cifras generan información pública diferente.",
+      "Pedir corrección al club crea respuesta pendiente y no equivale a publicarla personalmente.",
+      "Una filtración previa modifica contexto o recuerdo sin revelar automáticamente al culpable."
+    ],
+    "canonFields": {
+      "Ventana / disparador": "PUBLIC/NATIONAL_HEAT alto.",
+      "Información que ve el jugador": "Sabes tu salario real y que la cifra es incorrecta.",
+      "Información imperfecta": "No sabes quién filtró ni si corregirla perjudica una negociación.",
+      "Estado oculto relevante": "CONTRACT_POWER, prensa, club, agente.",
+      "Opciones jugables": "A. Desmentir con cifra exacta. / B. Negar sin dar números. / C. No corregir. / D. Pedir al club que lo corrija y guardar silencio mientras.",
+      "Resolución interna": "Dar cifra controla relato y expone privacidad. No corregir puede ayudarte en patrocinio o generar resentimiento en vestuario. Pedir al club puede revelar si la filtración le convenía.",
+      "Memoria / semillas": "SEED_PUBLIC_CONTRACT; posible SEED_FIRST_LEAK reactivado.",
+      "Por qué no es obvia": "La verdad factual puede tener un coste contractual y el silencio puede beneficiar sin que hayas creado la mentira."
+    },
+    "engineTitle": "La cifra publicada",
+    "engineChoices": [
+      "Tomar la iniciativa",
+      "Esperar y reunir información",
+      "Proteger tu posición",
+      "Buscar una solución intermedia"
+    ],
+    "engineSource": [
+      {
+        "path": "src/content/events/20_23/principal-events.ts",
+        "line": 28
+      }
+    ]
+  },
+  {
+    "pilotId": "P05",
+    "canonicalId": "EVT_23_AGT_001",
+    "engineId": "EVT_23_AGT_001",
+    "phase": "23_26",
+    "sourceBlock": "B648",
+    "sourceHeading": "22.7.4. La videollamada sin tu agente - EVT_23_AGT_001",
+    "mappingStatus": "literal_id_semantically_reviewed",
+    "implementationStatus": "repair_required",
+    "complexity": "L",
+    "plannedStage": "T5",
+    "finding": "Cambia título, usa cuerpo y opciones genéricos, no exige contacto ni interés de mercado. Escribe DIRECT_RECRUIT; no enlaza AGENT_POWER ni identifica interlocutores.",
+    "repair": "Restituir contacto directo, convocatoria con/sin agente y quién conoce cada conversación. Mantener oportunidad separada de oferta formal.",
+    "acceptanceCriteria": [
+      "Aceptar y avisar después difiere de reenviar antes de contestar.",
+      "El agente no recuerda una conversación que aún desconoce.",
+      "No responder mantiene ausencia de compromiso contractual y puede perder oportunidad."
+    ],
+    "canonFields": {
+      "Ventana / disparador": "Interés de mercado medio+; contacto informal permitido por reglas internas del universo.",
+      "Información que ve el jugador": "Sabes quién llama y qué club representa.",
+      "Información imperfecta": "No sabes si es una iniciativa personal, una táctica de reclutamiento o una conversación sin poder ejecutivo.",
+      "Estado oculto relevante": "CAREER_CONTROL, AGENT_CONTROL, reputación del interlocutor.",
+      "Opciones jugables": "A. Aceptar y avisar al agente después. / B. Reenviar el contacto al agente antes de responder. / C. Aceptar con tu agente presente. / D. No responder hasta que haya oferta formal.",
+      "Resolución interna": "Hablar directo puede darte información única y erosionar control del agente. Incluirlo protege proceso y puede matar espontaneidad. Ignorar reduce ruido y quizá una oportunidad real.",
+      "Memoria / semillas": "SEED_DIRECT_RECRUIT (nueva); SEED_AGENT_POWER.",
+      "Por qué no es obvia": "La transparencia con tu representante puede protegerte o hacerte dependiente de un filtro que también tiene intereses."
+    },
+    "engineTitle": "Ya no llaman solo a tu agente",
+    "engineChoices": [
+      "Tomar la iniciativa",
+      "Esperar y reunir información",
+      "Proteger tu posición",
+      "Buscar una solución intermedia"
+    ],
+    "engineSource": [
+      {
+        "path": "src/content/events/23_26/principal-events.ts",
+        "line": 9
+      }
+    ]
+  },
+  {
+    "pilotId": "P06",
+    "canonicalId": "EVT_24_MATCH_001",
+    "engineId": "EVT_24_MATCH_001",
+    "phase": "23_26",
+    "sourceBlock": "B714",
+    "sourceHeading": "22.10.2. El penalti - EVT_24_MATCH_001",
+    "mappingStatus": "literal_id_semantically_reviewed",
+    "implementationStatus": "repair_required",
+    "complexity": "L",
+    "plannedStage": "T5",
+    "finding": "Las cuatro etiquetas sí corresponden al guion, pero el cuerpo es genérico, faltan gates de partido/en campo y los efectos no ejecutan un penalti. Decir que lo tiras tú lleva intentTag patience y mensaje de espera.",
+    "repair": "Separar decisión de jerarquía, ejecución deportiva con RNG de fútbol e interpretación social con RNG narrativo; corregir intenciones semánticas.",
+    "acceptanceCriteria": [
+      "Solo aparece durante un penalti válido estando en campo.",
+      "Puede marcarse o fallarse; un gol no borra el conflicto de jerarquía.",
+      "El resultado del partido y la memoria de PENALTY_HIERARCHY concuerdan tras recargar."
+    ],
+    "canonFields": {
+      "Ventana / disparador": "Partido alto + protagonista en campo + confianza suficiente.",
+      "Información que ve el jugador": "Orden previa y estado del partido.",
+      "Información imperfecta": "No sabes si el técnico toleraría cambiar lanzador ni cómo responderá el compañero.",
+      "Estado oculto relevante": "LOCKER_POWER, EGO, confianza, SLOT_STAR/CAPTAIN.",
+      "Opciones jugables": "A. Entregarle el balón. / B. Decir que lo tiras tú. / C. Preguntar al capitán/técnico desde el campo. / D. Proponer decidirlo con una regla rápida entre ambos.",
+      "Resolución interna": "El penalti puede marcarse o fallarse según atributos/azar. La jerarquía posterior depende tanto de conducta como del resultado: marcar no borra automáticamente el conflicto y ceder no garantiza gratitud.",
+      "Memoria / semillas": "SEED_PENALTY_HIERARCHY (nueva).",
+      "Por qué no es obvia": "Una acción egoísta puede ganar un partido; una disciplinada puede mantener códigos y costar una oportunidad decisiva."
+    },
+    "engineTitle": "El penalti no tiene dueño",
+    "engineChoices": [
+      "Entregarle el balón",
+      "Decir que lo tiras tú",
+      "Preguntar al capitán o técnico desde el campo",
+      "Proponer decidirlo con una regla rápida entre ambos"
+    ],
+    "engineSource": [
+      {
+        "path": "src/content/events/23_26/principal-events.ts",
+        "line": 30
+      }
+    ]
+  },
+  {
+    "pilotId": "P07",
+    "canonicalId": "EVT_26_BRIDGE_001",
+    "engineId": "EVT_26_IDN_001",
+    "phase": "26_30",
+    "sourceBlock": "B845",
+    "sourceHeading": "23.8.1. Ya no te pagan por potencial - EVT_26_BRIDGE_001",
+    "mappingStatus": "candidate_not_approved",
+    "implementationStatus": "repair_required",
+    "complexity": "M",
+    "plannedStage": "T5",
+    "finding": "Falta el ID canónico. El candidato comparte edad, tema y PEAK_IDENTITY, pero título, cuerpo y opciones difieren. No es un alias confirmado.",
+    "repair": "Resolver correspondencia explícita y recuperar reunión sobre rol, dinero, sucesión y mercado. Conservar historia de saves previos.",
+    "acceptanceCriteria": [
+      "El cruce a 26 ofrece esta reunión una sola vez sin depender de ganar una lotería ordinaria.",
+      "Pedir rol, negociar dinero y preguntar fichajes cambian información o propuesta distinta.",
+      "Migración o conservación del ID antiguo impide repetición de la misma escena."
+    ],
+    "canonFields": {
+      "Ventana / disparador": "Inicio de Pasada 5; cualquier estado a 26.",
+      "Información que ve el jugador": "Contrato, rol anterior, objetivos y comparación económica general.",
+      "Información imperfecta": "No sabes cuánto de la comparación es presión negociadora y cuánto es plan real de sucesión.",
+      "Estado oculto relevante": "PEAK_STATUS, SUCCESSION_PRESSURE, ROLE_SECURITY, INSTITUTIONAL_POWER.",
+      "Opciones jugables": "A. Pedir que definan tu rol, no tu precio. / B. Aceptar el marco y negociar dinero. / C. Preguntar por fichajes previstos en tu posición. / D. No reaccionar y dejar que el mercado hable.",
+      "Resolución interna": "La reunión puede darte claridad o revelar que ni dirección ni entrenador coinciden. Callar preserva margen y puede ser leído como seguridad o desconexión.",
+      "Memoria / semillas": "SEED_PEAK_IDENTITY (nueva); SEED_STAR_COMPETITION.",
+      "Por qué no es obvia": "El club puede valorarte muchísimo y aun estudiar reemplazarte por razones racionales de ciclo y coste."
+    },
+    "engineTitle": "Ahora te compran por lo que ya eres",
+    "engineChoices": [
+      "Apostar por el máximo techo",
+      "Proteger la posición actual",
+      "Ganar control aunque pierdas algo de techo",
+      "Mantener varias puertas abiertas"
+    ],
+    "engineSource": [
+      {
+        "path": "src/content/events/26_30/principal-events.ts",
+        "line": 7
+      }
+    ]
+  },
+  {
+    "pilotId": "P08",
+    "canonicalId": "EVT_26_MKT_001",
+    "engineId": "EVT_26_MKT_001",
+    "phase": "26_30",
+    "sourceBlock": "B848",
+    "sourceHeading": "23.8.2. Campeón aquí, protagonista allí - EVT_26_MKT_001",
+    "mappingStatus": "literal_id_semantically_reviewed",
+    "implementationStatus": "repair_required",
+    "complexity": "L",
+    "plannedStage": "T5",
+    "finding": "Igual ID, pero título del motor Quieren construir alrededor de ti coincide temáticamente con otra escena del guion. Opciones genéricas, gate de mercado >=42 y efectos de atributos sin traspaso concreto. Falta PROJECT_FACE entre semillas escritas.",
+    "repair": "Reconciliar con EVT_27_MKT_001 antes de asignar identidad; crear oferta comparativa, condiciones de refuerzos y espera real.",
+    "acceptanceCriteria": [
+      "Mostrar destino, rol, salario y ambición conocidos sin garantizar títulos.",
+      "Aceptar mueve club/inscripción/contrato de forma coherente; quedarse no lo hace.",
+      "Exigir refuerzos crea condición comprobable; esperar puede caducar la oferta."
+    ],
+    "canonFields": {
+      "Ventana / disparador": "ROLE medio/bajo en gran club o MARKET_HEAT suficiente para proyecto central.",
+      "Información que ve el jugador": "Rol propuesto, salario, plantilla y ambición pública del destino.",
+      "Información imperfecta": "No sabes si el proyecto tendrá paciencia si tarda en ganar ni si tu club actual reducirá competencia el próximo año.",
+      "Estado oculto relevante": "ROLE_SECURITY, TROPHY_HUNGER, PROJECT_FACE fit, MARKET_HEAT.",
+      "Opciones jugables": "A. Ir donde serás el centro. / B. Quedarte donde competirás por todos los títulos. / C. Pedir una salida solo si el destino ficha dos refuerzos concretos. / D. Esperar al final de pretemporada.",
+      "Resolución interna": "El club destino puede cumplir parte del plan, el actual puede vender a tu competidor o fichar otro. Esperar aumenta información y reduce opciones.",
+      "Memoria / semillas": "SEED_SHADOW_ESCAPE (nueva); SEED_PROJECT_FACE (nueva); SEED_ELITE_ROLE_BARGAIN.",
+      "Por qué no es obvia": "Ser protagonista no es automáticamente mejor que ser campeón de rotación; depende de qué carrera quieras construir."
+    },
+    "engineTitle": "Quieren construir alrededor de ti",
+    "engineChoices": [
+      "Apostar por el máximo techo",
+      "Proteger la posición actual",
+      "Ganar control aunque pierdas algo de techo",
+      "Mantener varias puertas abiertas"
+    ],
+    "engineSource": [
+      {
+        "path": "src/content/events/26_30/principal-events.ts",
+        "line": 8
+      }
+    ]
+  },
+  {
+    "pilotId": "P09",
+    "canonicalId": "EVT_30_BRIDGE_001",
+    "engineId": "EVT_30_IDN_001",
+    "phase": "30_34",
+    "sourceBlock": "B1048",
+    "sourceHeading": "24.8.1. La palabra veterano - EVT_30_BRIDGE_001",
+    "mappingStatus": "candidate_not_approved",
+    "implementationStatus": "repair_required",
+    "complexity": "M",
+    "plannedStage": "T5",
+    "finding": "Falta ID canónico; candidato con mismo título y VETERAN_LABEL. Sus opciones genéricas no conservan revisión mensual ni partidos prioritarios; no declara AGE30_PRIORITY.",
+    "repair": "Fijar correspondencia sin reinterpretar historia; representar plan de uso, objeción a etiqueta, petición concreta y observación.",
+    "acceptanceCriteria": [
+      "Al cumplir 30 no se salta el puente por la cuota de eventos ordinarios.",
+      "La revisión mensual se recuerda; el plan puede proteger o reducir rol.",
+      "Los datos del hito a 30 no se reescriben al retirarse."
+    ],
+    "canonFields": {
+      "Ventana / disparador": "Inicio de Pasada 6; cualquier estado a 30.",
+      "Información que ve el jugador": "Plan de minutos orientativo, calendario y discurso del técnico.",
+      "Información imperfecta": "No sabes si \"administrar\" significa protegerte, reducirte o preparar al sucesor.",
+      "Estado oculto relevante": "STATUS_INERTIA, VETERAN_ROLE_FIT, MATCH_SELECTIVITY, SUCCESSION_PRESSURE.",
+      "Opciones jugables": "A. Aceptar la gestión si se revisa cada mes. / B. Rechazar cualquier etiqueta y competir como uno más. / C. Pedir qué partidos concretos considera prioritarios. / D. No discutir el término y observar la pretemporada.",
+      "Resolución interna": "El plan puede proteger el pico o convertirse en una reducción de rol. Competir sin concesiones puede impresionar o acelerar RECOVERY_DEBT.",
+      "Memoria / semillas": "SEED_VETERAN_LABEL (nueva); SEED_AGE30_PRIORITY.",
+      "Por qué no es obvia": "La misma palabra puede significar respeto, protección o principio del reemplazo."
+    },
+    "engineTitle": "La palabra veterano",
+    "engineChoices": [
+      "Proteger el nivel competitivo",
+      "Proteger cuerpo y estabilidad",
+      "Adaptar rol y condiciones",
+      "Esperar más información"
+    ],
+    "engineSource": [
+      {
+        "path": "src/content/events/30_34/principal-events.ts",
+        "line": 5
+      }
+    ]
+  },
+  {
+    "pilotId": "P10",
+    "canonicalId": "EVT_31_RETURN_001",
+    "engineId": "EVT_31_RETURN_001",
+    "phase": "30_34",
+    "sourceBlock": "B1129",
+    "sourceHeading": "24.11.1. Volver sin ritmo - EVT_31_RETURN_001",
+    "mappingStatus": "literal_id_semantically_reviewed",
+    "implementationStatus": "repair_required",
+    "complexity": "L",
+    "plannedStage": "T5",
+    "finding": "Título coincide pero cuerpo y opciones son genéricos. RECOVERING_INJURY no prueba por sí mismo alta médica y preparación. Fija meses y crea COMEBACK_PACING sin lectura de SURGERY_31.",
+    "repair": "Distinguir alta, ritmo, recaída, vuelta progresiva y decisión del staff. Activar por retorno real y ofrecer filial/amistoso solo si existe.",
+    "acceptanceCriteria": [
+      "No se presenta como alta con lesión incompatible con jugar.",
+      "Esperar dos semanas de juego cambia calendario y conserva la decisión pendiente.",
+      "Preparación y carga afectan la vuelta; cirugía previa tiene consecuencia reconocible."
+    ],
+    "canonFields": {
+      "Ventana / disparador": "Retorno de lesión.",
+      "Información que ve el jugador": "Alta, carga reciente y sensaciones.",
+      "Información imperfecta": "Alta médica no equivale a rendimiento ni elimina riesgo de recaída.",
+      "Estado oculto relevante": "COMEBACK_READINESS, RECOVERY_DEBT, STATUS_INERTIA, ROLE_SECURITY.",
+      "Opciones jugables": "A. Pedir entrar ya aunque sea pocos minutos. / B. Jugar primero con filial/amistoso si existe. / C. Esperar dos semanas completas. / D. Dejar al staff decidir sin presión.",
+      "Resolución interna": "Volver pronto puede acelerar ritmo o producir recaída; esperar puede proteger cuerpo y entregar tu rol a otro.",
+      "Memoria / semillas": "SEED_COMEBACK_PACING (nueva); SEED_SURGERY_31.",
+      "Por qué no es obvia": "Estar sano para jugar y estar listo para competir son estados diferentes."
+    },
+    "engineTitle": "Volver sin ritmo",
+    "engineChoices": [
+      "Proteger el nivel competitivo",
+      "Proteger cuerpo y estabilidad",
+      "Adaptar rol y condiciones",
+      "Esperar más información"
+    ],
+    "engineSource": [
+      {
+        "path": "src/content/events/30_34/principal-events.ts",
+        "line": 25
+      }
+    ]
+  },
+  {
+    "pilotId": "P11",
+    "canonicalId": "EVT_34_CON_001",
+    "engineId": "EVT_34_CON_001",
+    "phase": "34_plus",
+    "sourceBlock": "B1267",
+    "sourceHeading": "25.6.8. La cláusula de salida digna - EVT_34_CON_001",
+    "mappingStatus": "literal_id_semantically_reviewed",
+    "implementationStatus": "repair_required",
+    "complexity": "L",
+    "plannedStage": "T5",
+    "finding": "Mismo ID, título Un año o dos, cuerpo genérico y cuatro prioridades. Solo exige seguir jugando. No hay oferta multianual, cláusula, NPC ni semillas y cada elección tiene un resultado determinista genérico.",
+    "repair": "Implementar oferta y cláusula de salida, contraoferta bilateral, alternativa anual y rechazo. Diferenciar firmar condiciones de su desenlace futuro.",
+    "acceptanceCriteria": [
+      "Solo aparece con oferta multianual que contiene cláusula identificable.",
+      "Bilateral y unilateral conceden derechos distintos; rechazar no firma nada.",
+      "Una caída posterior de rol ejecuta o no la cláusula según términos, dejando memoria y epílogo."
+    ],
+    "canonFields": {
+      "Ventana / disparador": "Oferta multianual 34+.",
+      "Información que ve el jugador": "Duración, salario y cláusula.",
+      "Información imperfecta": "No sabes si la cláusula protege al club o también evita que quedes atrapado.",
+      "Estado oculto relevante": "CONTRACT_POWER, ROLE_ACCEPTANCE, VETERAN_LEVERAGE, RETIREMENT_DISTANCE.",
+      "Opciones jugables": "A. Aceptarla. / B. Pedir que sea bilateral. / C. Cambiar a un año sin cláusula. / D. Rechazar y buscar seguridad total.",
+      "Resolución interna": "La cláusula puede liberarte o dejarte fuera antes de quererlo; la seguridad puede convertirse en contrato-trampa.",
+      "Memoria / semillas": "SEED_DIGNIFIED_EXIT_CLAUSE (nueva); SEED_AGE30_CONTRACT.",
+      "Por qué no es obvia": "Seguridad y control dejan de ser sinónimos."
+    },
+    "engineTitle": "Un año o dos",
+    "engineChoices": [
+      "Proteger el rol",
+      "Aceptar una adaptación",
+      "Priorizar el cuerpo",
+      "Explorar el mercado"
+    ],
+    "engineSource": [
+      {
+        "path": "src/content/events/34_plus/principal-events.ts",
+        "line": 21
+      }
+    ]
+  },
+  {
+    "pilotId": "P12",
+    "canonicalId": "EVT_RET_LASTMATCH_001",
+    "engineId": "EVT_RET_LAST_001",
+    "phase": "34_plus",
+    "sourceBlock": "B1405",
+    "sourceHeading": "25.12.6. El último partido no está garantizado - EVT_RET_LASTMATCH_001",
+    "mappingStatus": "candidate_not_approved",
+    "implementationStatus": "repair_required",
+    "complexity": "L",
+    "plannedStage": "T5",
+    "finding": "Falta ID canónico; candidato de mismo título reduce cuatro opciones a dos. PLAY activa LAST_MATCH_PLAYED y cierra carrera directamente sin comprobar disponibilidad o decisión del entrenador en la resolución.",
+    "repair": "Restituir petición condicionada, aceptación técnica, minutos según marcador y renuncia por lesión; separar solicitud, autorización, partido y cierre.",
+    "acceptanceCriteria": [
+      "Pedir jugar estando no apto no garantiza participación ni gol.",
+      "Probar despedida completa, pocos minutos y ninguna participación con sus condiciones.",
+      "Cada cierre permite epílogo coherente, sin perder resultado tras interrupción."
+    ],
+    "canonFields": {
+      "Ventana / disparador": "Retirada anunciada + final de temporada.",
+      "Información que ve el jugador": "Disponibilidad y necesidades del equipo.",
+      "Información imperfecta": "No sabes si forzar la escena perjudicará al equipo ni si habrá otra oportunidad.",
+      "Estado oculto relevante": "FAREWELL_CONTROL, BODY_REDLINE, MANAGER_POWER, LEGACY_CAPITAL.",
+      "Opciones jugables": "A. Pedir jugar si estás médicamente apto. / B. Aceptar decisión técnica. / C. Pedir unos minutos solo si el marcador lo permite. / D. No arriesgar lesión por ceremonia.",
+      "Resolución interna": "Puedes tener despedida perfecta, cinco minutos, no jugar o incluso decidir un partido. El epílogo reconoce cualquier cierre.",
+      "Memoria / semillas": "SEED_LAST_MATCH_SHAPE (nueva); SEED_FAREWELL_CONTROL_FINAL.",
+      "Por qué no es obvia": "Una gran carrera no tiene derecho contractual a una última escena cinematográfica."
+    },
+    "engineTitle": "El último partido no está garantizado",
+    "engineChoices": [
+      "Jugar si el cuerpo y el entrenador lo permiten",
+      "Aceptar que quizá no haya despedida"
+    ],
+    "engineSource": [
+      {
+        "path": "src/content/events/34_plus/principal-events.ts",
+        "line": 103
+      }
+    ]
+  }
+]

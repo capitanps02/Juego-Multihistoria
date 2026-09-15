@@ -1,0 +1,31 @@
+/* Multihistoria key tokens */
+:root {
+  --apple-bg: #000000;
+  --apple-surface: #171719;
+  --apple-surface-2: #202023;
+  --apple-label: #F5F5F7;
+  --apple-secondary: #A1A1A6;
+  --apple-blue: #0A84FF;
+  --apple-blue-hi: #409CFF;
+  --apple-green: #30D158;
+  --apple-orange: #FF9F0A;
+  --apple-red: #FF453A;
+  --gold: #D6B86A;
+
+  --radius-window: 36px;
+  --radius-navigation: 27px;
+  --radius-card: 24px;
+  --radius-button-primary: 14px;
+  --radius-button-secondary: 12px;
+
+  --ui: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+        "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Philosophy:
+   - Glass only for functional floating layers.
+   - Solid materials for content.
+   - Blue = primary action.
+   - Gold = brand/hit accents.
+   - Content must visually dominate interface chrome.
+*/

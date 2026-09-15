@@ -1,0 +1,19 @@
+{
+  "pass": "T3.3",
+  "serial": "emulator-5556",
+  "apkSha256": "af03e31052c2ca3871d021d4fcdba29d19dd0f2fa148aed09988383bce1b3247",
+  "phases": [
+    {
+      "phase": "create",
+      "output": "INSTRUMENTATION_RESULT: stream=PASS create: secure origin, IndexedDB, UI result and exact save verified\n\nINSTRUMENTATION_CODE: -1\n"
+    },
+    {
+      "phase": "resume",
+      "output": "INSTRUMENTATION_RESULT: stream=PASS resume: secure origin, IndexedDB, UI result and exact save verified\n\nINSTRUMENTATION_CODE: -1\n"
+    }
+  ],
+  "passed": true,
+  "device": "google/sdk_gphone64_x86_64/emu64xa:15/AE3A.240806.043/12960925:userdebug/dev-keys",
+  "webview": "Current WebView Update Service state\n  Current WebView package (name, version): (com.google.android.webview, 124.0.6367.219)\n  Minimum targetSdkVersion: 33\n  Minimum WebView version code: 636771938\n  Number of relros started: 1\n  Number of relros finished: 1\n  WebView package dirty: false\n  Any WebView package installed: true\n  Preferred WebView package (name, version): (com.google.android.webview, 124.0.6367.219)\n  WebView packages:\n    Valid package com.google.android.webview (versionName: 124.0.6367.219, versionCode: 636771938, targetSdkVersion: 34) is  installed/enabled for all users\n    com.google.android.webview.beta is NOT installed.\n    com.google.android.webview.dev is NOT installed.\n    com.google.android.webview.canary is NOT installed.\n    com.google.android.webview.debug is NOT installed.\n    com.android.webview is NOT installed.\n",
+  "airplaneMode": "1"
+}

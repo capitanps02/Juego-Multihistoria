@@ -1,0 +1,257 @@
+[
+  {
+    "id": "EVT_20_LIFE_001",
+    "family": "life",
+    "canonStatus": "technical_adaptation"
+  },
+  {
+    "id": "EVT_20_AGT_001",
+    "family": "agent",
+    "canonStatus": "technical_adaptation"
+  },
+  {
+    "id": "EVT_20_ABR_001",
+    "family": "social",
+    "canonStatus": "technical_adaptation"
+  },
+  {
+    "id": "EVT_20_MED_001",
+    "family": "medical",
+    "canonStatus": "technical_adaptation"
+  },
+  {
+    "id": "EVT_20_STATUS_001",
+    "family": "team",
+    "canonStatus": "verified"
+  },
+  {
+    "id": "EVT_20_CCH_001",
+    "family": "tactical",
+    "canonStatus": "verified"
+  },
+  {
+    "id": "EVT_20_LOCK_001",
+    "family": "team",
+    "canonStatus": "verified"
+  },
+  {
+    "id": "EVT_20_LOCK_002",
+    "family": "team",
+    "canonStatus": "technical_adaptation"
+  },
+  {
+    "id": "EVT_20_BRUNO_001",
+    "family": "market",
+    "canonStatus": "verified"
+  },
+  {
+    "id": "EVT_20_MKT_001",
+    "family": "market",
+    "canonStatus": "technical_adaptation"
+  },
+  {
+    "id": "EVT_20_MATCH_001",
+    "family": "sport",
+    "canonStatus": "technical_adaptation"
+  },
+  {
+    "id": "EVT_21_MONEY_001",
+    "family": "money",
+    "canonStatus": "verified"
+  },
+  {
+    "id": "EVT_21_AGT_001",
+    "family": "agent",
+    "canonStatus": "technical_adaptation"
+  },
+  {
+    "id": "EVT_21_AGT_002",
+    "family": "agent",
+    "canonStatus": "technical_adaptation"
+  },
+  {
+    "id": "EVT_21_ABR_001",
+    "family": "social",
+    "canonStatus": "technical_adaptation"
+  },
+  {
+    "id": "EVT_21_IMG_001",
+    "family": "image",
+    "canonStatus": "verified"
+  },
+  {
+    "id": "EVT_21_CAP_001",
+    "family": "captaincy",
+    "canonStatus": "verified"
+  },
+  {
+    "id": "EVT_21_PRS_001",
+    "family": "press",
+    "canonStatus": "verified"
+  },
+  {
+    "id": "EVT_21_NAT_001",
+    "family": "selection",
+    "canonStatus": "technical_adaptation"
+  },
+  {
+    "id": "EVT_21_RIV_001",
+    "family": "legacy",
+    "canonStatus": "technical_adaptation"
+  },
+  {
+    "id": "EVT_21_CCH_001",
+    "family": "tactical",
+    "canonStatus": "technical_adaptation"
+  },
+  {
+    "id": "EVT_21_CCH_002",
+    "family": "tactical",
+    "canonStatus": "verified"
+  },
+  {
+    "id": "EVT_21_MED_001",
+    "family": "medical",
+    "canonStatus": "technical_adaptation"
+  },
+  {
+    "id": "EVT_22_CON_001",
+    "family": "contract",
+    "canonStatus": "verified"
+  },
+  {
+    "id": "EVT_22_CON_002",
+    "family": "contract",
+    "canonStatus": "technical_adaptation"
+  },
+  {
+    "id": "EVT_22_TACT_001",
+    "family": "tactical",
+    "canonStatus": "technical_adaptation"
+  },
+  {
+    "id": "EVT_22_DDL_001",
+    "family": "market",
+    "canonStatus": "technical_adaptation"
+  },
+  {
+    "id": "EVT_22_LOCK_001",
+    "family": "captaincy",
+    "canonStatus": "technical_adaptation"
+  },
+  {
+    "id": "EVT_22_HOME_001",
+    "family": "family",
+    "canonStatus": "technical_adaptation"
+  },
+  {
+    "id": "EVT_22_MED_001",
+    "family": "medical",
+    "canonStatus": "technical_adaptation"
+  },
+  {
+    "id": "EVT_22_MKT_001",
+    "family": "market",
+    "canonStatus": "technical_adaptation"
+  },
+  {
+    "id": "EVT_22_LIFE_001",
+    "family": "life",
+    "canonStatus": "technical_adaptation"
+  },
+  {
+    "id": "EVT_22_END_001",
+    "family": "legacy",
+    "canonStatus": "technical_adaptation"
+  },
+  {
+    "id": "CEVT_20_LOAN_01",
+    "family": "conditional",
+    "canonStatus": "technical_adaptation"
+  },
+  {
+    "id": "CEVT_20_ABR_01",
+    "family": "conditional",
+    "canonStatus": "technical_adaptation"
+  },
+  {
+    "id": "CEVT_20_AGENT_01",
+    "family": "conditional",
+    "canonStatus": "technical_adaptation"
+  },
+  {
+    "id": "CEVT_20_BODY_01",
+    "family": "conditional",
+    "canonStatus": "technical_adaptation"
+  },
+  {
+    "id": "CEVT_20_HOME_01",
+    "family": "conditional",
+    "canonStatus": "technical_adaptation"
+  },
+  {
+    "id": "CEVT_20_BRUNO_01",
+    "family": "conditional",
+    "canonStatus": "technical_adaptation"
+  },
+  {
+    "id": "CEVT_21_CAPTAIN_01",
+    "family": "conditional",
+    "canonStatus": "technical_adaptation"
+  },
+  {
+    "id": "CEVT_21_NAT_01",
+    "family": "conditional",
+    "canonStatus": "technical_adaptation"
+  },
+  {
+    "id": "CEVT_21_MEDIA_01",
+    "family": "conditional",
+    "canonStatus": "technical_adaptation"
+  },
+  {
+    "id": "CEVT_21_CONTRACT_01",
+    "family": "conditional",
+    "canonStatus": "technical_adaptation"
+  },
+  {
+    "id": "CEVT_21_ABR_01",
+    "family": "conditional",
+    "canonStatus": "technical_adaptation"
+  },
+  {
+    "id": "CEVT_21_ADRIAN_01",
+    "family": "conditional",
+    "canonStatus": "technical_adaptation"
+  },
+  {
+    "id": "CEVT_21_FAMILY_01",
+    "family": "conditional",
+    "canonStatus": "technical_adaptation"
+  },
+  {
+    "id": "CEVT_22_DEADLINE_01",
+    "family": "conditional",
+    "canonStatus": "technical_adaptation"
+  },
+  {
+    "id": "CEVT_22_INJ_01",
+    "family": "conditional",
+    "canonStatus": "technical_adaptation"
+  },
+  {
+    "id": "CEVT_22_LOANBUY_01",
+    "family": "conditional",
+    "canonStatus": "technical_adaptation"
+  },
+  {
+    "id": "CEVT_22_RETURN_01",
+    "family": "conditional",
+    "canonStatus": "technical_adaptation"
+  },
+  {
+    "id": "CEVT_22_FREE_01",
+    "family": "conditional",
+    "canonStatus": "technical_adaptation"
+  }
+]

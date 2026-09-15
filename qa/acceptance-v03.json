@@ -1,0 +1,20 @@
+{
+  "passed": true,
+  "checks": {
+    "buildErrors": 0,
+    "principalCoverage": "30/30",
+    "conditionalCoverage": "14/14",
+    "reproducible": true,
+    "age20Reached": 1000,
+    "all44ObservedAtLeastOnceInReferenceBatch": true,
+    "missingEvents": [],
+    "averagePrincipal": 17.33,
+    "averageConditionals": 4.56,
+    "conditionalRange": [
+      1,
+      7
+    ],
+    "primaryStatesObserved": 8,
+    "uniqueState20Combinations": 53
+  }
+}

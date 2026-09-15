@@ -1,0 +1,2449 @@
+{
+  "validateBuild": [],
+  "contentSummary": [
+    {
+      "phase": "18_20",
+      "count": 44,
+      "principal": 30,
+      "verified": 12,
+      "technical": 32,
+      "uniqueBodies": 44,
+      "uniqueChoiceSets": 44,
+      "withNpcRefs": 39,
+      "withModifiers": 3,
+      "singleOutcomeEveryChoice": 0
+    },
+    {
+      "phase": "20_23",
+      "count": 51,
+      "principal": 33,
+      "verified": 10,
+      "technical": 41,
+      "uniqueBodies": 12,
+      "uniqueChoiceSets": 2,
+      "withNpcRefs": 0,
+      "withModifiers": 0,
+      "singleOutcomeEveryChoice": 0
+    },
+    {
+      "phase": "23_26",
+      "count": 60,
+      "principal": 40,
+      "verified": 25,
+      "technical": 35,
+      "uniqueBodies": 26,
+      "uniqueChoiceSets": 28,
+      "withNpcRefs": 0,
+      "withModifiers": 0,
+      "singleOutcomeEveryChoice": 0
+    },
+    {
+      "phase": "26_30",
+      "count": 75,
+      "principal": 51,
+      "verified": 16,
+      "technical": 59,
+      "uniqueBodies": 2,
+      "uniqueChoiceSets": 5,
+      "withNpcRefs": 0,
+      "withModifiers": 0,
+      "singleOutcomeEveryChoice": 0
+    },
+    {
+      "phase": "30_34",
+      "count": 76,
+      "principal": 50,
+      "verified": 6,
+      "technical": 70,
+      "uniqueBodies": 3,
+      "uniqueChoiceSets": 3,
+      "withNpcRefs": 0,
+      "withModifiers": 0,
+      "singleOutcomeEveryChoice": 0
+    },
+    {
+      "phase": "34_plus",
+      "count": 82,
+      "principal": 50,
+      "verified": 9,
+      "technical": 73,
+      "uniqueBodies": 6,
+      "uniqueChoiceSets": 13,
+      "withNpcRefs": 0,
+      "withModifiers": 0,
+      "singleOutcomeEveryChoice": 82
+    }
+  ],
+  "singleCareerMs": 413.430032,
+  "reproducibleFullState": true,
+  "microfeedNarrativeAndEpilogueIndependent": true,
+  "saveRoundtrip": true,
+  "example": {
+    "age": 41,
+    "closed": "closed",
+    "history": 164,
+    "saveBytes": 90076,
+    "microfeeds": 75
+  },
+  "migrations": [
+    {
+      "version": 3,
+      "loaded": 8,
+      "historyPreserved": true,
+      "seedsPreserved": true
+    },
+    {
+      "version": 4,
+      "loaded": 8,
+      "historyPreserved": true,
+      "seedsPreserved": true
+    },
+    {
+      "version": 5,
+      "loaded": 8,
+      "historyPreserved": true,
+      "seedsPreserved": true
+    },
+    {
+      "version": 6,
+      "loaded": 8,
+      "historyPreserved": true,
+      "seedsPreserved": true
+    },
+    {
+      "version": 7,
+      "loaded": 8,
+      "historyPreserved": true,
+      "seedsPreserved": true
+    }
+  ],
+  "corruptSaveAccepted": true,
+  "scheduling": {
+    "mutatesInput": true,
+    "firstId": "EVT_18_PRE_001",
+    "secondId": "EVT_18_PRE_001",
+    "draw1": 1,
+    "draw2": 2,
+    "pendingEventInSave": false
+  },
+  "duplicateChoiceAccepted": true,
+  "invalidCatalogIssues": [],
+  "resumeAtDayBoundary": true,
+  "microbenchMs": {
+    "cloneLateState": {
+      "n": 100,
+      "p50": 0.978530999999748,
+      "p95": 1.3707609999999022,
+      "max": 2.239323999999897
+    },
+    "saveLateState": {
+      "n": 100,
+      "p50": 0.25858400000015536,
+      "p95": 0.42450800000005984,
+      "max": 0.5623249999998734
+    },
+    "immutableAdvanceLate": {
+      "n": 100,
+      "p50": 1.015994000000319,
+      "p95": 1.440016999999898,
+      "max": 7.207237999999961
+    },
+    "mutableAdvanceLate": {
+      "n": 100,
+      "p50": 1.0405890000001818,
+      "p95": 1.5488949999999022,
+      "max": 2.1096660000002885
+    }
+  },
+  "batches": [
+    {
+      "strategy": "random",
+      "count": 30,
+      "ms": 9632.16264,
+      "closed": 30,
+      "avgAge": 42.166666666666664,
+      "avgEvents": 162.46666666666667,
+      "uniqueSignatures": 30,
+      "runs": [
+        {
+          "seed": 910000,
+          "age": 41,
+          "closed": true,
+          "history": 159,
+          "signature": "131347a77f8e9642f30b5d63569d414c213b4ce2dd80664a7b2abaf8b9b11d84",
+          "phaseCounts": {
+            "18_20": 24,
+            "20_23": 24,
+            "23_26": 25,
+            "26_30": 25,
+            "30_34": 26,
+            "34_plus": 35
+          },
+          "lastOrdinaryPrincipalAge": 38,
+          "yearsAfterLastOrdinaryPrincipal": 3,
+          "seedStates": {
+            "dormant": 53,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 90883
+        },
+        {
+          "seed": 910001,
+          "age": 42,
+          "closed": true,
+          "history": 161,
+          "signature": "83e0193c5be2e9b654cb0aefe1f031150bdc207bf966ffde0b1048461ec95d49",
+          "phaseCounts": {
+            "18_20": 23,
+            "20_23": 26,
+            "23_26": 25,
+            "26_30": 28,
+            "30_34": 25,
+            "34_plus": 34
+          },
+          "lastOrdinaryPrincipalAge": 38,
+          "yearsAfterLastOrdinaryPrincipal": 4,
+          "seedStates": {
+            "dormant": 60,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 89955
+        },
+        {
+          "seed": 910002,
+          "age": 46,
+          "closed": true,
+          "history": 170,
+          "signature": "420acb30b7dfbc522e81b946fc4c3184dc142fff589d521e0e9c19e4adcc2683",
+          "phaseCounts": {
+            "18_20": 22,
+            "20_23": 29,
+            "23_26": 26,
+            "26_30": 29,
+            "30_34": 26,
+            "34_plus": 38
+          },
+          "lastOrdinaryPrincipalAge": 38,
+          "yearsAfterLastOrdinaryPrincipal": 8,
+          "seedStates": {
+            "dormant": 62,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 96486
+        },
+        {
+          "seed": 910003,
+          "age": 41,
+          "closed": true,
+          "history": 161,
+          "signature": "d7f79f6a1addc7eafa15360937c1ed389c28ca578b0e63c271ce8273d0a0b8c1",
+          "phaseCounts": {
+            "18_20": 23,
+            "20_23": 27,
+            "23_26": 28,
+            "26_30": 27,
+            "30_34": 26,
+            "34_plus": 30
+          },
+          "lastOrdinaryPrincipalAge": 39,
+          "yearsAfterLastOrdinaryPrincipal": 2,
+          "seedStates": {
+            "dormant": 61,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 89363
+        },
+        {
+          "seed": 910004,
+          "age": 42,
+          "closed": true,
+          "history": 165,
+          "signature": "5cdeb8c44a94af679637d5cba0ab700fe108b79615649776cb09c2f12530f91a",
+          "phaseCounts": {
+            "18_20": 20,
+            "20_23": 26,
+            "23_26": 29,
+            "26_30": 28,
+            "30_34": 27,
+            "34_plus": 35
+          },
+          "lastOrdinaryPrincipalAge": 38,
+          "yearsAfterLastOrdinaryPrincipal": 4,
+          "seedStates": {
+            "dormant": 65,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 93720
+        },
+        {
+          "seed": 910005,
+          "age": 41,
+          "closed": true,
+          "history": 163,
+          "signature": "7960c17891643c29b9c66486f699a877287e424ff7a096c96bcd7f6a28032890",
+          "phaseCounts": {
+            "18_20": 22,
+            "20_23": 28,
+            "23_26": 30,
+            "26_30": 25,
+            "30_34": 25,
+            "34_plus": 33
+          },
+          "lastOrdinaryPrincipalAge": 39,
+          "yearsAfterLastOrdinaryPrincipal": 2,
+          "seedStates": {
+            "dormant": 60,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 89324
+        },
+        {
+          "seed": 910006,
+          "age": 44,
+          "closed": true,
+          "history": 150,
+          "signature": "c41959a38471e7fa2454dfaabcd4968855b73e531a02ea63ce7a74ecb6449f9b",
+          "phaseCounts": {
+            "18_20": 19,
+            "20_23": 27,
+            "23_26": 24,
+            "26_30": 23,
+            "30_34": 22,
+            "34_plus": 35
+          },
+          "lastOrdinaryPrincipalAge": 39,
+          "yearsAfterLastOrdinaryPrincipal": 5,
+          "seedStates": {
+            "dormant": 55,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 87191
+        },
+        {
+          "seed": 910007,
+          "age": 42,
+          "closed": true,
+          "history": 172,
+          "signature": "2aaca1d3e2e02cf337e1eb478d1e2983b32ca80c7112d5adc10c7c3e1dfa8b04",
+          "phaseCounts": {
+            "18_20": 22,
+            "20_23": 28,
+            "23_26": 28,
+            "26_30": 27,
+            "30_34": 27,
+            "34_plus": 40
+          },
+          "lastOrdinaryPrincipalAge": 38,
+          "yearsAfterLastOrdinaryPrincipal": 4,
+          "seedStates": {
+            "dormant": 66,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 94109
+        },
+        {
+          "seed": 910008,
+          "age": 40,
+          "closed": true,
+          "history": 161,
+          "signature": "614c51fc57fd0c8becf59000e2dacb6b67eba0953b81fa737a92d460506b5ce4",
+          "phaseCounts": {
+            "18_20": 21,
+            "20_23": 28,
+            "23_26": 29,
+            "26_30": 24,
+            "30_34": 27,
+            "34_plus": 32
+          },
+          "lastOrdinaryPrincipalAge": 38,
+          "yearsAfterLastOrdinaryPrincipal": 2,
+          "seedStates": {
+            "dormant": 57,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 87786
+        },
+        {
+          "seed": 910009,
+          "age": 42,
+          "closed": true,
+          "history": 180,
+          "signature": "fe530040725c8bd3116d929b11da9f11a97f44352166e9ce91b1163df768ecad",
+          "phaseCounts": {
+            "18_20": 22,
+            "20_23": 29,
+            "23_26": 31,
+            "26_30": 32,
+            "30_34": 26,
+            "34_plus": 40
+          },
+          "lastOrdinaryPrincipalAge": 39,
+          "yearsAfterLastOrdinaryPrincipal": 3,
+          "seedStates": {
+            "dormant": 68,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 97657
+        },
+        {
+          "seed": 910010,
+          "age": 47,
+          "closed": true,
+          "history": 162,
+          "signature": "4c7ac517f175ed7be41ac6f0787e892e2f18b72faf45e2a3c46665ddccd6c6fd",
+          "phaseCounts": {
+            "18_20": 21,
+            "20_23": 24,
+            "23_26": 26,
+            "26_30": 26,
+            "30_34": 25,
+            "34_plus": 40
+          },
+          "lastOrdinaryPrincipalAge": 39,
+          "yearsAfterLastOrdinaryPrincipal": 8,
+          "seedStates": {
+            "dormant": 57,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 90738
+        },
+        {
+          "seed": 910011,
+          "age": 34,
+          "closed": true,
+          "history": 147,
+          "signature": "1f445b4fa093139694c33c479a36c4ada849267c2f09f2aec3f1eb5108c71faf",
+          "phaseCounts": {
+            "18_20": 22,
+            "20_23": 27,
+            "23_26": 34,
+            "26_30": 33,
+            "30_34": 27,
+            "34_plus": 4
+          },
+          "lastOrdinaryPrincipalAge": 34,
+          "yearsAfterLastOrdinaryPrincipal": 0,
+          "seedStates": {
+            "dormant": 69,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 83343
+        },
+        {
+          "seed": 910012,
+          "age": 45,
+          "closed": true,
+          "history": 159,
+          "signature": "f7b6bdc89fc8a98bde4a34fd7b77cbfd44929efdc6f3a84de28bf12e385a00d7",
+          "phaseCounts": {
+            "18_20": 21,
+            "20_23": 26,
+            "23_26": 28,
+            "26_30": 25,
+            "30_34": 26,
+            "34_plus": 33
+          },
+          "lastOrdinaryPrincipalAge": 39,
+          "yearsAfterLastOrdinaryPrincipal": 6,
+          "seedStates": {
+            "dormant": 61,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 93467
+        },
+        {
+          "seed": 910013,
+          "age": 42,
+          "closed": true,
+          "history": 157,
+          "signature": "2ae976a864414d71baf144f208366947acfa3a21cefe64e654fb1b3b3d460f4d",
+          "phaseCounts": {
+            "18_20": 19,
+            "20_23": 26,
+            "23_26": 25,
+            "26_30": 27,
+            "30_34": 25,
+            "34_plus": 35
+          },
+          "lastOrdinaryPrincipalAge": 38,
+          "yearsAfterLastOrdinaryPrincipal": 4,
+          "seedStates": {
+            "dormant": 55,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 87774
+        },
+        {
+          "seed": 910014,
+          "age": 47,
+          "closed": true,
+          "history": 162,
+          "signature": "d501e08872339477084af1b0ead7842c98d43c02317a50e6e340d08f678b51db",
+          "phaseCounts": {
+            "18_20": 20,
+            "20_23": 27,
+            "23_26": 27,
+            "26_30": 27,
+            "30_34": 27,
+            "34_plus": 34
+          },
+          "lastOrdinaryPrincipalAge": 38,
+          "yearsAfterLastOrdinaryPrincipal": 9,
+          "seedStates": {
+            "dormant": 56,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 92633
+        },
+        {
+          "seed": 910015,
+          "age": 40,
+          "closed": true,
+          "history": 178,
+          "signature": "9502371ed5c2418fa86f1e2fbd4a5df9ea59223b7f0ad7ed3484f7a157d2ed69",
+          "phaseCounts": {
+            "18_20": 21,
+            "20_23": 28,
+            "23_26": 33,
+            "26_30": 32,
+            "30_34": 26,
+            "34_plus": 38
+          },
+          "lastOrdinaryPrincipalAge": 39,
+          "yearsAfterLastOrdinaryPrincipal": 1,
+          "seedStates": {
+            "dormant": 66,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 95633
+        },
+        {
+          "seed": 910016,
+          "age": 48,
+          "closed": true,
+          "history": 182,
+          "signature": "1485d6bcc1978c56ab9a5515b03c84ef5587ba850f560f3cd92023ba7295c746",
+          "phaseCounts": {
+            "18_20": 21,
+            "20_23": 27,
+            "23_26": 32,
+            "26_30": 35,
+            "30_34": 29,
+            "34_plus": 38
+          },
+          "lastOrdinaryPrincipalAge": 38,
+          "yearsAfterLastOrdinaryPrincipal": 10,
+          "seedStates": {
+            "dormant": 69,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 101966
+        },
+        {
+          "seed": 910017,
+          "age": 40,
+          "closed": true,
+          "history": 173,
+          "signature": "b5b8d4e0e0a5329ac7642d1400e319ebb7640a433d96f06f0f8dd087819dcaee",
+          "phaseCounts": {
+            "18_20": 24,
+            "20_23": 28,
+            "23_26": 31,
+            "26_30": 31,
+            "30_34": 27,
+            "34_plus": 32
+          },
+          "lastOrdinaryPrincipalAge": 39,
+          "yearsAfterLastOrdinaryPrincipal": 1,
+          "seedStates": {
+            "dormant": 63,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 91748
+        },
+        {
+          "seed": 910018,
+          "age": 47,
+          "closed": true,
+          "history": 175,
+          "signature": "f3b01743c03a509470249cf97f6df361f83ff74ef3c08dd578c0e248053f1052",
+          "phaseCounts": {
+            "18_20": 22,
+            "20_23": 27,
+            "23_26": 32,
+            "26_30": 31,
+            "30_34": 26,
+            "34_plus": 37
+          },
+          "lastOrdinaryPrincipalAge": 38,
+          "yearsAfterLastOrdinaryPrincipal": 9,
+          "seedStates": {
+            "dormant": 63,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 98187
+        },
+        {
+          "seed": 910019,
+          "age": 34,
+          "closed": true,
+          "history": 143,
+          "signature": "6ea2f5cdca1a5e78de204c7c63cd797b09c25241aa6cd9c367481b628099442e",
+          "phaseCounts": {
+            "18_20": 19,
+            "20_23": 27,
+            "23_26": 32,
+            "26_30": 34,
+            "30_34": 27,
+            "34_plus": 4
+          },
+          "lastOrdinaryPrincipalAge": null,
+          "yearsAfterLastOrdinaryPrincipal": null,
+          "seedStates": {
+            "dormant": 64,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 80161
+        },
+        {
+          "seed": 910020,
+          "age": 42,
+          "closed": true,
+          "history": 154,
+          "signature": "0c567dbd5d6da59e2439405692965ee3afdf643ee5a0e60fffab30a548da250c",
+          "phaseCounts": {
+            "18_20": 22,
+            "20_23": 26,
+            "23_26": 27,
+            "26_30": 24,
+            "30_34": 24,
+            "34_plus": 31
+          },
+          "lastOrdinaryPrincipalAge": 38,
+          "yearsAfterLastOrdinaryPrincipal": 4,
+          "seedStates": {
+            "dormant": 60,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 85617
+        },
+        {
+          "seed": 910021,
+          "age": 42,
+          "closed": true,
+          "history": 181,
+          "signature": "d75b889a91fd435c350f5fa900b9e9c83a8ecf53046f62f2547c17c600fae28f",
+          "phaseCounts": {
+            "18_20": 21,
+            "20_23": 29,
+            "23_26": 32,
+            "26_30": 30,
+            "30_34": 28,
+            "34_plus": 41
+          },
+          "lastOrdinaryPrincipalAge": 38,
+          "yearsAfterLastOrdinaryPrincipal": 4,
+          "seedStates": {
+            "dormant": 67,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 97508
+        },
+        {
+          "seed": 910022,
+          "age": 42,
+          "closed": true,
+          "history": 161,
+          "signature": "626674d682b20c165170e85237d6f50e4656633a6036b25d4234e1d3d663e190",
+          "phaseCounts": {
+            "18_20": 22,
+            "20_23": 27,
+            "23_26": 27,
+            "26_30": 25,
+            "30_34": 27,
+            "34_plus": 33
+          },
+          "lastOrdinaryPrincipalAge": 38,
+          "yearsAfterLastOrdinaryPrincipal": 4,
+          "seedStates": {
+            "dormant": 63,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 88122
+        },
+        {
+          "seed": 910023,
+          "age": 40,
+          "closed": true,
+          "history": 150,
+          "signature": "c2cee98ebeb4cc85789b87a508c0580331c662518b8f4c61702dea2fd76acb1f",
+          "phaseCounts": {
+            "18_20": 20,
+            "20_23": 25,
+            "23_26": 25,
+            "26_30": 25,
+            "30_34": 24,
+            "34_plus": 31
+          },
+          "lastOrdinaryPrincipalAge": 39,
+          "yearsAfterLastOrdinaryPrincipal": 1,
+          "seedStates": {
+            "dormant": 56,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 82665
+        },
+        {
+          "seed": 910024,
+          "age": 42,
+          "closed": true,
+          "history": 168,
+          "signature": "84eeba607c7d5b9d1d977061d276159efc589ed4babfa2f033a097f41b3c2d1a",
+          "phaseCounts": {
+            "18_20": 21,
+            "20_23": 29,
+            "23_26": 27,
+            "26_30": 28,
+            "30_34": 26,
+            "34_plus": 37
+          },
+          "lastOrdinaryPrincipalAge": 39,
+          "yearsAfterLastOrdinaryPrincipal": 3,
+          "seedStates": {
+            "dormant": 58,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 90480
+        },
+        {
+          "seed": 910025,
+          "age": 42,
+          "closed": true,
+          "history": 153,
+          "signature": "fc27e2abfc2b76936ebf993cc7fc4c91ea3e2b54f17cac0904fcc77a49242466",
+          "phaseCounts": {
+            "18_20": 21,
+            "20_23": 26,
+            "23_26": 28,
+            "26_30": 23,
+            "30_34": 24,
+            "34_plus": 31
+          },
+          "lastOrdinaryPrincipalAge": 38,
+          "yearsAfterLastOrdinaryPrincipal": 4,
+          "seedStates": {
+            "dormant": 58,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 86297
+        },
+        {
+          "seed": 910026,
+          "age": 40,
+          "closed": true,
+          "history": 150,
+          "signature": "efe02db765988c95c454df30498043ac8d59d6ac1b6b5da0a459249a70d32ffc",
+          "phaseCounts": {
+            "18_20": 20,
+            "20_23": 25,
+            "23_26": 25,
+            "26_30": 23,
+            "30_34": 26,
+            "34_plus": 31
+          },
+          "lastOrdinaryPrincipalAge": 38,
+          "yearsAfterLastOrdinaryPrincipal": 2,
+          "seedStates": {
+            "dormant": 54,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 84163
+        },
+        {
+          "seed": 910027,
+          "age": 44,
+          "closed": true,
+          "history": 151,
+          "signature": "e86616758e2dd67a1397c9dac4f4558bf5742d03228fa2183e22d4a90c7a9fb1",
+          "phaseCounts": {
+            "18_20": 19,
+            "20_23": 29,
+            "23_26": 27,
+            "26_30": 21,
+            "30_34": 24,
+            "34_plus": 31
+          },
+          "lastOrdinaryPrincipalAge": 39,
+          "yearsAfterLastOrdinaryPrincipal": 5,
+          "seedStates": {
+            "dormant": 54,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 86525
+        },
+        {
+          "seed": 910028,
+          "age": 42,
+          "closed": true,
+          "history": 174,
+          "signature": "5938e2f106ba76bf95dfa9582bc474bc6f889873bb6343e4811a3c3c9b893d6e",
+          "phaseCounts": {
+            "18_20": 22,
+            "20_23": 26,
+            "23_26": 33,
+            "26_30": 29,
+            "30_34": 26,
+            "34_plus": 38
+          },
+          "lastOrdinaryPrincipalAge": 38,
+          "yearsAfterLastOrdinaryPrincipal": 4,
+          "seedStates": {
+            "dormant": 61,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 93054
+        },
+        {
+          "seed": 910029,
+          "age": 44,
+          "closed": true,
+          "history": 152,
+          "signature": "79a4ac88674a92c27dd753abeae7f686ded36cc08897119497e456aad3561328",
+          "phaseCounts": {
+            "18_20": 18,
+            "20_23": 26,
+            "23_26": 27,
+            "26_30": 25,
+            "30_34": 25,
+            "34_plus": 31
+          },
+          "lastOrdinaryPrincipalAge": 38,
+          "yearsAfterLastOrdinaryPrincipal": 6,
+          "seedStates": {
+            "dormant": 58,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 88224
+        }
+      ]
+    },
+    {
+      "strategy": "first",
+      "count": 30,
+      "ms": 7544.305577000001,
+      "closed": 30,
+      "avgAge": 40.5,
+      "avgEvents": 151.66666666666666,
+      "uniqueSignatures": 30,
+      "runs": [
+        {
+          "seed": 910000,
+          "age": 43,
+          "closed": true,
+          "history": 155,
+          "signature": "95bae80f66a18221e24e0e225fc7b5433d129f4775bb90b1e9ecc917decc277a",
+          "phaseCounts": {
+            "18_20": 21,
+            "20_23": 26,
+            "23_26": 23,
+            "26_30": 26,
+            "30_34": 25,
+            "34_plus": 34
+          },
+          "lastOrdinaryPrincipalAge": 38,
+          "yearsAfterLastOrdinaryPrincipal": 5,
+          "seedStates": {
+            "dormant": 55,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 90081
+        },
+        {
+          "seed": 910001,
+          "age": 34,
+          "closed": true,
+          "history": 133,
+          "signature": "7a09a5ff12a124c84d1b2c9dc1e31209b38c3cbe4233ab3f00bf80f931c027f4",
+          "phaseCounts": {
+            "18_20": 21,
+            "20_23": 27,
+            "23_26": 25,
+            "26_30": 27,
+            "30_34": 27,
+            "34_plus": 6
+          },
+          "lastOrdinaryPrincipalAge": 34,
+          "yearsAfterLastOrdinaryPrincipal": 0,
+          "seedStates": {
+            "dormant": 63,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 76858
+        },
+        {
+          "seed": 910002,
+          "age": 43,
+          "closed": true,
+          "history": 156,
+          "signature": "65a2e7cbca200701dd468661fa3f812a278826ec09389e7cdcfbc2fc95b11a55",
+          "phaseCounts": {
+            "18_20": 20,
+            "20_23": 28,
+            "23_26": 25,
+            "26_30": 24,
+            "30_34": 26,
+            "34_plus": 33
+          },
+          "lastOrdinaryPrincipalAge": 39,
+          "yearsAfterLastOrdinaryPrincipal": 4,
+          "seedStates": {
+            "dormant": 60,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 89336
+        },
+        {
+          "seed": 910003,
+          "age": 33,
+          "closed": true,
+          "history": 122,
+          "signature": "11d9e60698c4e9ead00032c6121dd9ccaa10e3c227d55d162c4fc5a8a20862f5",
+          "phaseCounts": {
+            "18_20": 21,
+            "20_23": 27,
+            "23_26": 25,
+            "26_30": 24,
+            "30_34": 25,
+            "34_plus": 0
+          },
+          "lastOrdinaryPrincipalAge": null,
+          "yearsAfterLastOrdinaryPrincipal": null,
+          "seedStates": {
+            "dormant": 60,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 71670
+        },
+        {
+          "seed": 910004,
+          "age": 42,
+          "closed": true,
+          "history": 160,
+          "signature": "3991efc2470d38c8d2c670e6134ffc282e16d49e846b57224893fa56d799eb16",
+          "phaseCounts": {
+            "18_20": 23,
+            "20_23": 28,
+            "23_26": 26,
+            "26_30": 26,
+            "30_34": 26,
+            "34_plus": 31
+          },
+          "lastOrdinaryPrincipalAge": 38,
+          "yearsAfterLastOrdinaryPrincipal": 4,
+          "seedStates": {
+            "dormant": 61,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 91375
+        },
+        {
+          "seed": 910005,
+          "age": 33,
+          "closed": true,
+          "history": 134,
+          "signature": "cd28880fcb5a1864ce3643c000c5364e10ed26d92ed963eca1422bd17b015b2d",
+          "phaseCounts": {
+            "18_20": 23,
+            "20_23": 28,
+            "23_26": 29,
+            "26_30": 27,
+            "30_34": 27,
+            "34_plus": 0
+          },
+          "lastOrdinaryPrincipalAge": null,
+          "yearsAfterLastOrdinaryPrincipal": null,
+          "seedStates": {
+            "dormant": 64,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 76451
+        },
+        {
+          "seed": 910006,
+          "age": 40,
+          "closed": true,
+          "history": 154,
+          "signature": "cc76f6053c14ad34d2987b86a69a95d1775540c71653f5edf0e9717be628f810",
+          "phaseCounts": {
+            "18_20": 18,
+            "20_23": 28,
+            "23_26": 27,
+            "26_30": 25,
+            "30_34": 25,
+            "34_plus": 31
+          },
+          "lastOrdinaryPrincipalAge": 39,
+          "yearsAfterLastOrdinaryPrincipal": 1,
+          "seedStates": {
+            "dormant": 62,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 85339
+        },
+        {
+          "seed": 910007,
+          "age": 43,
+          "closed": true,
+          "history": 157,
+          "signature": "f31b4c71b37b3fa0b06065a71feed40b514a29ad5938f5e9233fc4d5248e247d",
+          "phaseCounts": {
+            "18_20": 19,
+            "20_23": 26,
+            "23_26": 28,
+            "26_30": 27,
+            "30_34": 25,
+            "34_plus": 32
+          },
+          "lastOrdinaryPrincipalAge": 38,
+          "yearsAfterLastOrdinaryPrincipal": 5,
+          "seedStates": {
+            "dormant": 61,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 87764
+        },
+        {
+          "seed": 910008,
+          "age": 33,
+          "closed": true,
+          "history": 125,
+          "signature": "8f1f11cf3414f3e89c5536976e1eb63e5b0ac27932dba06dc7c946c98b458d0d",
+          "phaseCounts": {
+            "18_20": 21,
+            "20_23": 27,
+            "23_26": 25,
+            "26_30": 26,
+            "30_34": 26,
+            "34_plus": 0
+          },
+          "lastOrdinaryPrincipalAge": null,
+          "yearsAfterLastOrdinaryPrincipal": null,
+          "seedStates": {
+            "dormant": 59,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 71915
+        },
+        {
+          "seed": 910009,
+          "age": 34,
+          "closed": true,
+          "history": 147,
+          "signature": "a071839d420d355eeaa2e1aaaa0cb6b700cdd79ac1b0acba8eacc99cfa01d9e7",
+          "phaseCounts": {
+            "18_20": 20,
+            "20_23": 28,
+            "23_26": 31,
+            "26_30": 34,
+            "30_34": 28,
+            "34_plus": 6
+          },
+          "lastOrdinaryPrincipalAge": 34,
+          "yearsAfterLastOrdinaryPrincipal": 0,
+          "seedStates": {
+            "dormant": 63,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 81969
+        },
+        {
+          "seed": 910010,
+          "age": 43,
+          "closed": true,
+          "history": 166,
+          "signature": "9dbf586b90d015adbe30cb36e56a1cfdf49a55a666e854358ff13e3b37c63bf9",
+          "phaseCounts": {
+            "18_20": 22,
+            "20_23": 27,
+            "23_26": 24,
+            "26_30": 28,
+            "30_34": 26,
+            "34_plus": 39
+          },
+          "lastOrdinaryPrincipalAge": 38,
+          "yearsAfterLastOrdinaryPrincipal": 5,
+          "seedStates": {
+            "dormant": 56,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 90146
+        },
+        {
+          "seed": 910011,
+          "age": 49,
+          "closed": true,
+          "history": 164,
+          "signature": "e25e6a6d33a0d16b859aec58b7d9fcae8b2db2e2c2c3d0a29a2e08c512a8ace0",
+          "phaseCounts": {
+            "18_20": 21,
+            "20_23": 27,
+            "23_26": 27,
+            "26_30": 24,
+            "30_34": 26,
+            "34_plus": 39
+          },
+          "lastOrdinaryPrincipalAge": 38,
+          "yearsAfterLastOrdinaryPrincipal": 11,
+          "seedStates": {
+            "dormant": 60,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 93367
+        },
+        {
+          "seed": 910012,
+          "age": 33,
+          "closed": true,
+          "history": 119,
+          "signature": "919d382b9628ced53effa732206ae56f09469a62a31543598cc26063b5493520",
+          "phaseCounts": {
+            "18_20": 19,
+            "20_23": 28,
+            "23_26": 22,
+            "26_30": 24,
+            "30_34": 26,
+            "34_plus": 0
+          },
+          "lastOrdinaryPrincipalAge": null,
+          "yearsAfterLastOrdinaryPrincipal": null,
+          "seedStates": {
+            "dormant": 59,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 70268
+        },
+        {
+          "seed": 910013,
+          "age": 41,
+          "closed": true,
+          "history": 158,
+          "signature": "6d81e62d526a9a9f21c47d5e8ed17bc746f19ec95bea9f2687480c47d42e24e8",
+          "phaseCounts": {
+            "18_20": 19,
+            "20_23": 28,
+            "23_26": 25,
+            "26_30": 27,
+            "30_34": 26,
+            "34_plus": 33
+          },
+          "lastOrdinaryPrincipalAge": 38,
+          "yearsAfterLastOrdinaryPrincipal": 3,
+          "seedStates": {
+            "dormant": 63,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 89097
+        },
+        {
+          "seed": 910014,
+          "age": 48,
+          "closed": true,
+          "history": 164,
+          "signature": "e841d114e40823e1c76efc166f917b52a3f42f0afd68c915d0256858338393d0",
+          "phaseCounts": {
+            "18_20": 20,
+            "20_23": 27,
+            "23_26": 26,
+            "26_30": 26,
+            "30_34": 26,
+            "34_plus": 39
+          },
+          "lastOrdinaryPrincipalAge": 38,
+          "yearsAfterLastOrdinaryPrincipal": 10,
+          "seedStates": {
+            "dormant": 57,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 93080
+        },
+        {
+          "seed": 910015,
+          "age": 42,
+          "closed": true,
+          "history": 151,
+          "signature": "3824acd068c53b2f1cb6f038bda7dea761a564b1d59bbc4f64b4e09aa77abe53",
+          "phaseCounts": {
+            "18_20": 20,
+            "20_23": 26,
+            "23_26": 25,
+            "26_30": 24,
+            "30_34": 25,
+            "34_plus": 31
+          },
+          "lastOrdinaryPrincipalAge": 38,
+          "yearsAfterLastOrdinaryPrincipal": 4,
+          "seedStates": {
+            "dormant": 58,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 86308
+        },
+        {
+          "seed": 910016,
+          "age": 34,
+          "closed": true,
+          "history": 142,
+          "signature": "9343ae86187b7fdb72ed03d19edd2ecd8379e28cabee2b0eb23728ccd96cf37f",
+          "phaseCounts": {
+            "18_20": 22,
+            "20_23": 28,
+            "23_26": 28,
+            "26_30": 27,
+            "30_34": 27,
+            "34_plus": 10
+          },
+          "lastOrdinaryPrincipalAge": 34,
+          "yearsAfterLastOrdinaryPrincipal": 0,
+          "seedStates": {
+            "dormant": 61,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 78933
+        },
+        {
+          "seed": 910017,
+          "age": 42,
+          "closed": true,
+          "history": 153,
+          "signature": "0a915919d1911f6e328625fcc6ccfa5a04fad82a9f7ef6831ad1c2f1aa81f4e6",
+          "phaseCounts": {
+            "18_20": 20,
+            "20_23": 25,
+            "23_26": 25,
+            "26_30": 26,
+            "30_34": 24,
+            "34_plus": 33
+          },
+          "lastOrdinaryPrincipalAge": 39,
+          "yearsAfterLastOrdinaryPrincipal": 3,
+          "seedStates": {
+            "dormant": 59,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 84316
+        },
+        {
+          "seed": 910018,
+          "age": 42,
+          "closed": true,
+          "history": 158,
+          "signature": "a35609c2b015db58679ecc840f435286a78413a47d41198565a478acc1961b83",
+          "phaseCounts": {
+            "18_20": 22,
+            "20_23": 28,
+            "23_26": 24,
+            "26_30": 24,
+            "30_34": 24,
+            "34_plus": 36
+          },
+          "lastOrdinaryPrincipalAge": 39,
+          "yearsAfterLastOrdinaryPrincipal": 3,
+          "seedStates": {
+            "dormant": 56,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 89260
+        },
+        {
+          "seed": 910019,
+          "age": 34,
+          "closed": true,
+          "history": 131,
+          "signature": "e4bb5a6ab085f465cb6e91f4e209d2af8b44371f4e16319e71fb73edad105279",
+          "phaseCounts": {
+            "18_20": 19,
+            "20_23": 29,
+            "23_26": 26,
+            "26_30": 27,
+            "30_34": 25,
+            "34_plus": 5
+          },
+          "lastOrdinaryPrincipalAge": null,
+          "yearsAfterLastOrdinaryPrincipal": null,
+          "seedStates": {
+            "dormant": 60,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 75504
+        },
+        {
+          "seed": 910020,
+          "age": 42,
+          "closed": true,
+          "history": 152,
+          "signature": "c4f541550e899ac555d75bdd190e342071412b3858ab9a37a4a50a2ce92ce3f1",
+          "phaseCounts": {
+            "18_20": 21,
+            "20_23": 25,
+            "23_26": 26,
+            "26_30": 24,
+            "30_34": 26,
+            "34_plus": 30
+          },
+          "lastOrdinaryPrincipalAge": 39,
+          "yearsAfterLastOrdinaryPrincipal": 3,
+          "seedStates": {
+            "dormant": 61,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 85741
+        },
+        {
+          "seed": 910021,
+          "age": 43,
+          "closed": true,
+          "history": 159,
+          "signature": "4ff9bc95c919dc4e1de52f758d0a97943954db5ecdc28ae4c8f765be291d163e",
+          "phaseCounts": {
+            "18_20": 19,
+            "20_23": 29,
+            "23_26": 26,
+            "26_30": 24,
+            "30_34": 26,
+            "34_plus": 35
+          },
+          "lastOrdinaryPrincipalAge": 38,
+          "yearsAfterLastOrdinaryPrincipal": 5,
+          "seedStates": {
+            "dormant": 60,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 88167
+        },
+        {
+          "seed": 910022,
+          "age": 49,
+          "closed": true,
+          "history": 159,
+          "signature": "e3c4d7f5d4e2da279b879d86e0470d07c4d7c87c46d9cf47c96ac429c7a9e867",
+          "phaseCounts": {
+            "18_20": 19,
+            "20_23": 27,
+            "23_26": 26,
+            "26_30": 23,
+            "30_34": 26,
+            "34_plus": 38
+          },
+          "lastOrdinaryPrincipalAge": 38,
+          "yearsAfterLastOrdinaryPrincipal": 11,
+          "seedStates": {
+            "dormant": 59,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 90930
+        },
+        {
+          "seed": 910023,
+          "age": 42,
+          "closed": true,
+          "history": 169,
+          "signature": "2c48b18670029af91cd4965298f3d7ce2f89bab33dcb15c4ad682c0347f7c13a",
+          "phaseCounts": {
+            "18_20": 20,
+            "20_23": 28,
+            "23_26": 27,
+            "26_30": 30,
+            "30_34": 26,
+            "34_plus": 38
+          },
+          "lastOrdinaryPrincipalAge": 39,
+          "yearsAfterLastOrdinaryPrincipal": 3,
+          "seedStates": {
+            "dormant": 65,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 93432
+        },
+        {
+          "seed": 910024,
+          "age": 34,
+          "closed": true,
+          "history": 147,
+          "signature": "ea414ecc0d6a61575e986d5f65022d362e545b6ce38f68db4cc9daebf4e71bc7",
+          "phaseCounts": {
+            "18_20": 22,
+            "20_23": 28,
+            "23_26": 31,
+            "26_30": 31,
+            "30_34": 27,
+            "34_plus": 8
+          },
+          "lastOrdinaryPrincipalAge": 34,
+          "yearsAfterLastOrdinaryPrincipal": 0,
+          "seedStates": {
+            "dormant": 61,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 81631
+        },
+        {
+          "seed": 910025,
+          "age": 45,
+          "closed": true,
+          "history": 159,
+          "signature": "e7c443e42e03d72ebd1cd413516da049a785c83cdaadda451875ec9883de5fe4",
+          "phaseCounts": {
+            "18_20": 20,
+            "20_23": 28,
+            "23_26": 26,
+            "26_30": 25,
+            "30_34": 25,
+            "34_plus": 35
+          },
+          "lastOrdinaryPrincipalAge": 38,
+          "yearsAfterLastOrdinaryPrincipal": 7,
+          "seedStates": {
+            "dormant": 58,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 90160
+        },
+        {
+          "seed": 910026,
+          "age": 44,
+          "closed": true,
+          "history": 168,
+          "signature": "1e50bbf8871d9f08b8e91ab69906af27945edfc192b49e9c4ab1c30bd14138c9",
+          "phaseCounts": {
+            "18_20": 23,
+            "20_23": 29,
+            "23_26": 26,
+            "26_30": 24,
+            "30_34": 26,
+            "34_plus": 40
+          },
+          "lastOrdinaryPrincipalAge": 38,
+          "yearsAfterLastOrdinaryPrincipal": 6,
+          "seedStates": {
+            "dormant": 61,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 94830
+        },
+        {
+          "seed": 910027,
+          "age": 44,
+          "closed": true,
+          "history": 163,
+          "signature": "6814f0148062e20f6137dfa25c089a469fe60f41b26410294b2d0d11fb8fce81",
+          "phaseCounts": {
+            "18_20": 21,
+            "20_23": 24,
+            "23_26": 26,
+            "26_30": 27,
+            "30_34": 26,
+            "34_plus": 39
+          },
+          "lastOrdinaryPrincipalAge": 39,
+          "yearsAfterLastOrdinaryPrincipal": 5,
+          "seedStates": {
+            "dormant": 61,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 92083
+        },
+        {
+          "seed": 910028,
+          "age": 41,
+          "closed": true,
+          "history": 166,
+          "signature": "99495db58ef09cdd43f443c4dc1d741bab570d30f4faefa995167fde5590a9e8",
+          "phaseCounts": {
+            "18_20": 20,
+            "20_23": 28,
+            "23_26": 28,
+            "26_30": 26,
+            "30_34": 25,
+            "34_plus": 39
+          },
+          "lastOrdinaryPrincipalAge": 38,
+          "yearsAfterLastOrdinaryPrincipal": 3,
+          "seedStates": {
+            "dormant": 57,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 88490
+        },
+        {
+          "seed": 910029,
+          "age": 45,
+          "closed": true,
+          "history": 159,
+          "signature": "410bbce4c3c02a44f9d4783d4c851a26c78e540b2ffe971955fd6426390b20bc",
+          "phaseCounts": {
+            "18_20": 21,
+            "20_23": 25,
+            "23_26": 26,
+            "26_30": 23,
+            "30_34": 25,
+            "34_plus": 39
+          },
+          "lastOrdinaryPrincipalAge": 38,
+          "yearsAfterLastOrdinaryPrincipal": 7,
+          "seedStates": {
+            "dormant": 60,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 91663
+        }
+      ]
+    },
+    {
+      "strategy": "balanced",
+      "count": 30,
+      "ms": 9191.424745,
+      "closed": 30,
+      "avgAge": 42.46666666666667,
+      "avgEvents": 161.23333333333332,
+      "uniqueSignatures": 30,
+      "runs": [
+        {
+          "seed": 910000,
+          "age": 46,
+          "closed": true,
+          "history": 158,
+          "signature": "c324217432bc5bb76afbd4d3455573599bdb50151dc59440ce2e90213fac3804",
+          "phaseCounts": {
+            "18_20": 20,
+            "20_23": 28,
+            "23_26": 26,
+            "26_30": 26,
+            "30_34": 25,
+            "34_plus": 33
+          },
+          "lastOrdinaryPrincipalAge": 38,
+          "yearsAfterLastOrdinaryPrincipal": 8,
+          "seedStates": {
+            "dormant": 59,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 93560
+        },
+        {
+          "seed": 910001,
+          "age": 34,
+          "closed": true,
+          "history": 136,
+          "signature": "95708afb07e2f43eaa3039649a9495c8c7ed39663f2f0c77d40f54e394ef8bba",
+          "phaseCounts": {
+            "18_20": 24,
+            "20_23": 26,
+            "23_26": 26,
+            "26_30": 28,
+            "30_34": 26,
+            "34_plus": 6
+          },
+          "lastOrdinaryPrincipalAge": 34,
+          "yearsAfterLastOrdinaryPrincipal": 0,
+          "seedStates": {
+            "dormant": 60,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 76303
+        },
+        {
+          "seed": 910002,
+          "age": 41,
+          "closed": true,
+          "history": 164,
+          "signature": "8ee7d67fdde01cd33cb46c072dde0e95aecc72ce599be18e2e66213b191e8fdd",
+          "phaseCounts": {
+            "18_20": 22,
+            "20_23": 27,
+            "23_26": 28,
+            "26_30": 27,
+            "30_34": 27,
+            "34_plus": 33
+          },
+          "lastOrdinaryPrincipalAge": 38,
+          "yearsAfterLastOrdinaryPrincipal": 3,
+          "seedStates": {
+            "dormant": 63,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 92734
+        },
+        {
+          "seed": 910003,
+          "age": 42,
+          "closed": true,
+          "history": 173,
+          "signature": "a59866dcb7b2ec88bc39714aa15b1783dd5928ae7bf07eabe197aef78e4cbdc8",
+          "phaseCounts": {
+            "18_20": 23,
+            "20_23": 24,
+            "23_26": 33,
+            "26_30": 32,
+            "30_34": 27,
+            "34_plus": 34
+          },
+          "lastOrdinaryPrincipalAge": 39,
+          "yearsAfterLastOrdinaryPrincipal": 3,
+          "seedStates": {
+            "dormant": 70,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 95686
+        },
+        {
+          "seed": 910004,
+          "age": 46,
+          "closed": true,
+          "history": 166,
+          "signature": "69e757c619a0b22de86bc4cbc5ce54160f60f2064ff5babe18d4d12ef43a33d8",
+          "phaseCounts": {
+            "18_20": 23,
+            "20_23": 25,
+            "23_26": 25,
+            "26_30": 28,
+            "30_34": 26,
+            "34_plus": 39
+          },
+          "lastOrdinaryPrincipalAge": 38,
+          "yearsAfterLastOrdinaryPrincipal": 8,
+          "seedStates": {
+            "dormant": 61,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 94905
+        },
+        {
+          "seed": 910005,
+          "age": 42,
+          "closed": true,
+          "history": 160,
+          "signature": "e995cef98ac1fe7b2b76e2bddeb75553aeb64e78fbca8ff49c7af907397a870a",
+          "phaseCounts": {
+            "18_20": 23,
+            "20_23": 25,
+            "23_26": 28,
+            "26_30": 25,
+            "30_34": 26,
+            "34_plus": 33
+          },
+          "lastOrdinaryPrincipalAge": 39,
+          "yearsAfterLastOrdinaryPrincipal": 3,
+          "seedStates": {
+            "dormant": 64,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 90314
+        },
+        {
+          "seed": 910006,
+          "age": 42,
+          "closed": true,
+          "history": 158,
+          "signature": "ee68045b46a82dbcd541f9256ee537626a04ace2fc312f6a5bfae19d08ed095b",
+          "phaseCounts": {
+            "18_20": 22,
+            "20_23": 24,
+            "23_26": 28,
+            "26_30": 26,
+            "30_34": 26,
+            "34_plus": 32
+          },
+          "lastOrdinaryPrincipalAge": 38,
+          "yearsAfterLastOrdinaryPrincipal": 4,
+          "seedStates": {
+            "dormant": 62,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 88432
+        },
+        {
+          "seed": 910007,
+          "age": 46,
+          "closed": true,
+          "history": 164,
+          "signature": "fbc15deb45930ec986fca47d0dce108d7245dc217183075ac6eccba7510f028d",
+          "phaseCounts": {
+            "18_20": 23,
+            "20_23": 26,
+            "23_26": 29,
+            "26_30": 28,
+            "30_34": 26,
+            "34_plus": 32
+          },
+          "lastOrdinaryPrincipalAge": 38,
+          "yearsAfterLastOrdinaryPrincipal": 8,
+          "seedStates": {
+            "dormant": 66,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 93183
+        },
+        {
+          "seed": 910008,
+          "age": 45,
+          "closed": true,
+          "history": 170,
+          "signature": "70b6a5d797c7dd200c5c3ba998992a4beb3b9725432b1c3a1dd7fe46e4aa75f8",
+          "phaseCounts": {
+            "18_20": 23,
+            "20_23": 25,
+            "23_26": 29,
+            "26_30": 27,
+            "30_34": 27,
+            "34_plus": 39
+          },
+          "lastOrdinaryPrincipalAge": 38,
+          "yearsAfterLastOrdinaryPrincipal": 7,
+          "seedStates": {
+            "dormant": 63,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 95933
+        },
+        {
+          "seed": 910009,
+          "age": 46,
+          "closed": true,
+          "history": 165,
+          "signature": "29befd5d7ff2eb8ebdc24c553af4599b6101b9c44dab06e44542f9d7d81ca69a",
+          "phaseCounts": {
+            "18_20": 21,
+            "20_23": 26,
+            "23_26": 28,
+            "26_30": 29,
+            "30_34": 26,
+            "34_plus": 35
+          },
+          "lastOrdinaryPrincipalAge": 39,
+          "yearsAfterLastOrdinaryPrincipal": 7,
+          "seedStates": {
+            "dormant": 64,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 94939
+        },
+        {
+          "seed": 910010,
+          "age": 50,
+          "closed": true,
+          "history": 163,
+          "signature": "6755273d13ff10b10181f8397546180ebd186e3c181b8ff82518062858f99c68",
+          "phaseCounts": {
+            "18_20": 23,
+            "20_23": 25,
+            "23_26": 25,
+            "26_30": 28,
+            "30_34": 25,
+            "34_plus": 37
+          },
+          "lastOrdinaryPrincipalAge": 39,
+          "yearsAfterLastOrdinaryPrincipal": 11,
+          "seedStates": {
+            "dormant": 60,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 92023
+        },
+        {
+          "seed": 910011,
+          "age": 42,
+          "closed": true,
+          "history": 171,
+          "signature": "d86f0b5e15798b75212f2a0e858ccefba9b365f99a399db3cf196d88bcf7ec90",
+          "phaseCounts": {
+            "18_20": 24,
+            "20_23": 26,
+            "23_26": 27,
+            "26_30": 29,
+            "30_34": 25,
+            "34_plus": 40
+          },
+          "lastOrdinaryPrincipalAge": 38,
+          "yearsAfterLastOrdinaryPrincipal": 4,
+          "seedStates": {
+            "dormant": 65,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 94634
+        },
+        {
+          "seed": 910012,
+          "age": 43,
+          "closed": true,
+          "history": 168,
+          "signature": "88c78dda72045c630c7c90c92738cdd833f76e230f3c11768d6e068a39f10be8",
+          "phaseCounts": {
+            "18_20": 24,
+            "20_23": 25,
+            "23_26": 28,
+            "26_30": 28,
+            "30_34": 26,
+            "34_plus": 37
+          },
+          "lastOrdinaryPrincipalAge": 39,
+          "yearsAfterLastOrdinaryPrincipal": 4,
+          "seedStates": {
+            "dormant": 61,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 94547
+        },
+        {
+          "seed": 910013,
+          "age": 47,
+          "closed": true,
+          "history": 179,
+          "signature": "1dedd4e36ed921c6cbea15027bc568742896b31bf2385211674f8a3b6d0f0309",
+          "phaseCounts": {
+            "18_20": 24,
+            "20_23": 25,
+            "23_26": 32,
+            "26_30": 32,
+            "30_34": 27,
+            "34_plus": 39
+          },
+          "lastOrdinaryPrincipalAge": 38,
+          "yearsAfterLastOrdinaryPrincipal": 9,
+          "seedStates": {
+            "dormant": 69,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 101782
+        },
+        {
+          "seed": 910014,
+          "age": 39,
+          "closed": true,
+          "history": 157,
+          "signature": "e82601c8479c9766cd6a0321e108ba84da902025aef318ca179cf0aaf7ce7230",
+          "phaseCounts": {
+            "18_20": 22,
+            "20_23": 26,
+            "23_26": 25,
+            "26_30": 26,
+            "30_34": 26,
+            "34_plus": 32
+          },
+          "lastOrdinaryPrincipalAge": 38,
+          "yearsAfterLastOrdinaryPrincipal": 1,
+          "seedStates": {
+            "dormant": 59,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 85103
+        },
+        {
+          "seed": 910015,
+          "age": 42,
+          "closed": true,
+          "history": 172,
+          "signature": "dcf5d905e648772050a40fe954d7f0500d0d47675c10b608b231d7f4f39bbc04",
+          "phaseCounts": {
+            "18_20": 24,
+            "20_23": 27,
+            "23_26": 28,
+            "26_30": 27,
+            "30_34": 26,
+            "34_plus": 40
+          },
+          "lastOrdinaryPrincipalAge": 38,
+          "yearsAfterLastOrdinaryPrincipal": 4,
+          "seedStates": {
+            "dormant": 64,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 95492
+        },
+        {
+          "seed": 910016,
+          "age": 41,
+          "closed": true,
+          "history": 156,
+          "signature": "c59f77836ff7ec7cc778b4045c531ab7973347bce18b2253bf80a6ad74bb3871",
+          "phaseCounts": {
+            "18_20": 22,
+            "20_23": 26,
+            "23_26": 24,
+            "26_30": 26,
+            "30_34": 25,
+            "34_plus": 33
+          },
+          "lastOrdinaryPrincipalAge": 38,
+          "yearsAfterLastOrdinaryPrincipal": 3,
+          "seedStates": {
+            "dormant": 58,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 87503
+        },
+        {
+          "seed": 910017,
+          "age": 39,
+          "closed": true,
+          "history": 155,
+          "signature": "7f1cb2127cac459ebdf0e660a569b53b3c975be18f4e11d6675b409a3a0fe262",
+          "phaseCounts": {
+            "18_20": 23,
+            "20_23": 26,
+            "23_26": 24,
+            "26_30": 24,
+            "30_34": 26,
+            "34_plus": 32
+          },
+          "lastOrdinaryPrincipalAge": 38,
+          "yearsAfterLastOrdinaryPrincipal": 1,
+          "seedStates": {
+            "dormant": 56,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 82695
+        },
+        {
+          "seed": 910018,
+          "age": 41,
+          "closed": true,
+          "history": 168,
+          "signature": "90e1140c5d3ea44c709ca13f7156c070debe174032ad7f6772dea9d7ea790620",
+          "phaseCounts": {
+            "18_20": 22,
+            "20_23": 27,
+            "23_26": 33,
+            "26_30": 28,
+            "30_34": 25,
+            "34_plus": 33
+          },
+          "lastOrdinaryPrincipalAge": 39,
+          "yearsAfterLastOrdinaryPrincipal": 2,
+          "seedStates": {
+            "dormant": 66,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 94485
+        },
+        {
+          "seed": 910019,
+          "age": 43,
+          "closed": true,
+          "history": 171,
+          "signature": "7b4240545b22156ac585c1d3b7eb490d0eca5a64ed2d0f2c04eda14549ca3665",
+          "phaseCounts": {
+            "18_20": 24,
+            "20_23": 24,
+            "23_26": 32,
+            "26_30": 28,
+            "30_34": 26,
+            "34_plus": 37
+          },
+          "lastOrdinaryPrincipalAge": 38,
+          "yearsAfterLastOrdinaryPrincipal": 5,
+          "seedStates": {
+            "dormant": 62,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 97025
+        },
+        {
+          "seed": 910020,
+          "age": 46,
+          "closed": true,
+          "history": 166,
+          "signature": "4e53185f689eda9982614b12a2bb732b15382cbd1e0cf78b3c27389a786d85e4",
+          "phaseCounts": {
+            "18_20": 24,
+            "20_23": 24,
+            "23_26": 28,
+            "26_30": 28,
+            "30_34": 26,
+            "34_plus": 36
+          },
+          "lastOrdinaryPrincipalAge": 39,
+          "yearsAfterLastOrdinaryPrincipal": 7,
+          "seedStates": {
+            "dormant": 64,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 93959
+        },
+        {
+          "seed": 910021,
+          "age": 48,
+          "closed": true,
+          "history": 171,
+          "signature": "e4d495d983b3ee8459f6148af54203883e8d3310844e53bbab88061b455d8fea",
+          "phaseCounts": {
+            "18_20": 23,
+            "20_23": 28,
+            "23_26": 29,
+            "26_30": 26,
+            "30_34": 26,
+            "34_plus": 39
+          },
+          "lastOrdinaryPrincipalAge": 38,
+          "yearsAfterLastOrdinaryPrincipal": 10,
+          "seedStates": {
+            "dormant": 66,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 95905
+        },
+        {
+          "seed": 910022,
+          "age": 41,
+          "closed": true,
+          "history": 151,
+          "signature": "c8de7be1f3c4877bfa4fd54510012378d8bd5ace83377bb6c98c0f388626ff67",
+          "phaseCounts": {
+            "18_20": 22,
+            "20_23": 25,
+            "23_26": 24,
+            "26_30": 24,
+            "30_34": 25,
+            "34_plus": 31
+          },
+          "lastOrdinaryPrincipalAge": 38,
+          "yearsAfterLastOrdinaryPrincipal": 3,
+          "seedStates": {
+            "dormant": 60,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 84442
+        },
+        {
+          "seed": 910023,
+          "age": 44,
+          "closed": true,
+          "history": 167,
+          "signature": "57b7b1e302465ee653de7db16c6f6c79a1a1209c07e087599859e20c73d1778c",
+          "phaseCounts": {
+            "18_20": 23,
+            "20_23": 25,
+            "23_26": 26,
+            "26_30": 30,
+            "30_34": 27,
+            "34_plus": 36
+          },
+          "lastOrdinaryPrincipalAge": 39,
+          "yearsAfterLastOrdinaryPrincipal": 5,
+          "seedStates": {
+            "dormant": 63,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 94017
+        },
+        {
+          "seed": 910024,
+          "age": 34,
+          "closed": true,
+          "history": 135,
+          "signature": "d2cd864375de590d93102a60b145c6b850719658e9a0bae9ad3da84b7cb00e23",
+          "phaseCounts": {
+            "18_20": 21,
+            "20_23": 25,
+            "23_26": 29,
+            "26_30": 28,
+            "30_34": 26,
+            "34_plus": 6
+          },
+          "lastOrdinaryPrincipalAge": null,
+          "yearsAfterLastOrdinaryPrincipal": null,
+          "seedStates": {
+            "dormant": 60,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 75903
+        },
+        {
+          "seed": 910025,
+          "age": 42,
+          "closed": true,
+          "history": 158,
+          "signature": "0386a534c0b9362ce304fc42d6dd15098a005fb4f8e16577e1759f0f540142ca",
+          "phaseCounts": {
+            "18_20": 23,
+            "20_23": 27,
+            "23_26": 25,
+            "26_30": 27,
+            "30_34": 26,
+            "34_plus": 30
+          },
+          "lastOrdinaryPrincipalAge": 38,
+          "yearsAfterLastOrdinaryPrincipal": 4,
+          "seedStates": {
+            "dormant": 61,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 89131
+        },
+        {
+          "seed": 910026,
+          "age": 40,
+          "closed": true,
+          "history": 152,
+          "signature": "0b84ac08746938754c1551a9a79626fdab134f17bfb9c55b585464cc100f50cc",
+          "phaseCounts": {
+            "18_20": 21,
+            "20_23": 24,
+            "23_26": 27,
+            "26_30": 23,
+            "30_34": 27,
+            "34_plus": 30
+          },
+          "lastOrdinaryPrincipalAge": 38,
+          "yearsAfterLastOrdinaryPrincipal": 2,
+          "seedStates": {
+            "dormant": 60,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 85468
+        },
+        {
+          "seed": 910027,
+          "age": 42,
+          "closed": true,
+          "history": 155,
+          "signature": "45fd4de6565f6efd450ae5fdbadbc2c40ee0808c35b219f499f8e0cd73192410",
+          "phaseCounts": {
+            "18_20": 22,
+            "20_23": 27,
+            "23_26": 28,
+            "26_30": 27,
+            "30_34": 24,
+            "34_plus": 27
+          },
+          "lastOrdinaryPrincipalAge": 38,
+          "yearsAfterLastOrdinaryPrincipal": 4,
+          "seedStates": {
+            "dormant": 63,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 88171
+        },
+        {
+          "seed": 910028,
+          "age": 40,
+          "closed": true,
+          "history": 154,
+          "signature": "be04e343e0a92464c8a2e89d50eb7b76f4224786f304d8eb7ae7769fdc262a0c",
+          "phaseCounts": {
+            "18_20": 23,
+            "20_23": 25,
+            "23_26": 27,
+            "26_30": 23,
+            "30_34": 24,
+            "34_plus": 32
+          },
+          "lastOrdinaryPrincipalAge": 38,
+          "yearsAfterLastOrdinaryPrincipal": 2,
+          "seedStates": {
+            "dormant": 56,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 85056
+        },
+        {
+          "seed": 910029,
+          "age": 40,
+          "closed": true,
+          "history": 154,
+          "signature": "9413656fe274d756c54abe0dad26e989cce1d8b155e89d43d24e3108445a7994",
+          "phaseCounts": {
+            "18_20": 20,
+            "20_23": 25,
+            "23_26": 26,
+            "26_30": 26,
+            "30_34": 25,
+            "34_plus": 32
+          },
+          "lastOrdinaryPrincipalAge": 38,
+          "yearsAfterLastOrdinaryPrincipal": 2,
+          "seedStates": {
+            "dormant": 60,
+            "active": 0,
+            "transformed": 0,
+            "resolved": 0,
+            "expired": 0
+          },
+          "saveBytes": 86572
+        }
+      ]
+    }
+  ],
+  "environment": {
+    "node": "v24.19.0",
+    "platform": "darwin",
+    "arch": "x64",
+    "cpu": "Intel(R) Core(TM) i5-1038NG7 CPU @ 2.00GHz"
+  }
+}
