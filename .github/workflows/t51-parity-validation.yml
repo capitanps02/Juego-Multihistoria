@@ -1,0 +1,50 @@
+name: T51 strict parity validation
+on:
+  push:
+    branches: [t51/canon-30-34]
+permissions:
+  contents: write
+jobs:
+  validate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: t51/canon-30-34
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Refresh current handoff prose and parity evidence link
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('project/workstreams/T51_CANON_30_34.md')
+          s=p.read_text()
+          s=s.replace(
+            '- source content identity congelada upstream T5.10: `fee2ff875bac7979d3907f5ee1004ef736efa9a257237c6dee629dd8687fe136`;\n- target runtime real actual: `b7483243816fd4e2e8cf1774a4ece699f47b6a03637de50c31347109512f4446`;',
+            '- source content identity congelada upstream actual: `5d3fd71a8df42ed5b93fdde63ed386e9d776693addd62a30293dbecad7aa56d2`;\n- target runtime real actual: `380d28e0e09995330dbbf72ba958a9822855f0b66a3bdc63a202b30a34bb3989`;'
+          )
+          s=s.replace(
+            'El checker compartido exige además un **target freeze `b7483243…`** en `qa/fixtures/t5.1/post-t51-sources/` antes del registro del edge. Ese freeze y el registro pertenecen a integración, no a este workstream.',
+            'El checker compartido exige además el **target freeze `380d28e0…3989`** en `qa/fixtures/t5.1/post-t51-sources/380d28e0e09995330dbbf72ba958a9822855f0b66a3bdc63a202b30a34bb3989.json` antes del registro del edge. Ese freeze y el registro pertenecen a integración, no a este workstream.'
+          )
+          marker='<!-- T51_CON_001_PARITY_EVIDENCE -->'
+          block=f'''\n{marker}\n## Paridad estricta de `EVT_30_CON_001`\n\n`analysis/T5.1/canon-30-34-parity-evidence.json` contrasta la definición activa con el bloque canónico `B1051`. El trigger, la información visible, la incertidumbre y las cuatro opciones están demostrados; la escena **no** se promociona.\n\nBloqueos demostrados:\n\n- el Documento Maestro referencia `SEED_LAST_PEAK_CONTRACT`, que no existe en el catálogo runtime activo y cuya lifecycle no está definida por T5.2; no se inventa wiring;\n- `VETERAN_LEVERAGE`, `EARNINGS_SECURITY`, `BODY_RISK` y `CONTRACT_POWER` requieren un mapping canónico de estado explícito antes de declarar identidad plena;\n- `ambiguousEvent` usa outcomes 55/45 y deltas numéricos que son adaptaciones técnicas: B1051 especifica consecuencias cualitativas, no probabilidades canónicas;\n- el mismo string ID es una colisión semántica pre/post T5.1 (`distinct_scene`), por lo que continuidad de save sigue bloqueada hasta el freeze y edge de migración registrado.\n\nConclusión: `needs_reimplementation` / `technical_adaptation` continúa siendo el estado correcto.\n'''
+          if marker in s:
+            s=s.split(marker)[0].rstrip()+'\n'+block
+          else:
+            s=s.rstrip()+'\n'+block
+          p.write_text(s)
+          PY
+      - run: npm run test:t51:30-34
+      - name: Commit current parity documentation
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add project/workstreams/T51_CANON_30_34.md
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'docs(t51): record strict renewal parity blockers'
+          git push origin HEAD:t51/canon-30-34
