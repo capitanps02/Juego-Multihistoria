@@ -24,10 +24,17 @@ test('EVT_30_CON_001 preserves the unmodelled club-renewal trigger branch withou
   // remains an approximation rather than a verified canonical identity.
   assert.deepEqual(event.gates, []);
   assert.equal(event.text.title, 'Uno más o tres');
-  assert.deepEqual(event.choices.map(choice => choice.label), [
-    'Un año: libertad',
-    'Tres años: seguridad',
-    'Dos años + cláusula de salida',
-    'No firmar todavía: escuchar mercado'
-  ]);
+
+  // This gate test protects the four canonical decision branches semantically instead
+  // of freezing punctuation/UX copy while the scene is still needs_reimplementation.
+  assert.deepEqual(event.choices.map(choice => choice.id), ['A', 'B', 'C', 'D']);
+  const labels = event.choices.map(choice => choice.label.toLowerCase());
+  assert.match(labels[0], /un año/);
+  assert.match(labels[0], /libertad/);
+  assert.match(labels[1], /tres años/);
+  assert.match(labels[1], /seguridad/);
+  assert.match(labels[2], /dos años/);
+  assert.match(labels[2], /cláusula de salida/);
+  assert.match(labels[3], /no firmar/);
+  assert.match(labels[3], /mercado/);
 });
