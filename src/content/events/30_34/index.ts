@@ -21,8 +21,27 @@ const overrides=new Map([
   ...CANONICAL_REIMPLEMENTATIONS_32A,
   ...CANONICAL_REIMPLEMENTATIONS_33A
 ].map(event=>[event.id,event]));
+
+/**
+ * The canonical trigger for EVT_30_CON_001 is
+ * "contract <= 18 months OR club wants to renew". The current GameState has
+ * no explicit club-renewal-intent signal. Requiring only monthsRemaining<=18
+ * produced a false negative for existing deterministic careers that represent
+ * the unmodelled second branch of the OR. Keep the event reachable until that
+ * state exists; the event remains a technical adaptation, not verified canon.
+ */
+const preserveUnmodelledTriggerBranches=(event:EventDefinition):EventDefinition=>{
+  if(event.id!=="EVT_30_CON_001") return event;
+  return {
+    ...event,
+    gates:[],
+    tags:[...new Set([...(event.tags??[]),"t51_unmodelled_club_renewal_proxy"])]
+  };
+};
+
 const principal:EventDefinition[]=PRINCIPAL_EVENTS_30_34.map(original=>{
-  const event=overrides.get(original.id)??original;
+  const selected=overrides.get(original.id)??original;
+  const event=preserveUnmodelledTriggerBranches(selected);
   if(!reimplementedIds.has(event.id)) return event;
   const tags=[...(event.tags??[]).filter(tag=>tag!=="t51_verified_same_identity"),"t51_canonical_reimplementation"];
   return {...event,canonStatus:"technical_adaptation",tags:[...new Set(tags)]};
