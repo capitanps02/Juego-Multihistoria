@@ -11,8 +11,10 @@ const principals = ['EVT_20_BRIDGE_001','EVT_20_MATCH_003','EVT_20_JAN_001','EVT
 const conditionals = ['CEVT_20_RIVAS_01','CEVT_20_VELA_01','CEVT_20_PAULA_01','CEVT_20_NANO_01','CEVT_20_MONT_01','CEVT_20_ADR_01','CEVT_21_BIGCLUB_01','CEVT_21_LOAN_01','CEVT_21_AGENT_02','CEVT_21_INJ_01','CEVT_22_UDV_01','CEVT_22_BRUNO_02','CEVT_22_ADR_02','CEVT_22_SOC_02','CEVT_22_SHOCK_01'];
 const hardExternal = ['CEVT_20_RIVAS_01','CEVT_20_VELA_01','CEVT_20_NANO_01','CEVT_20_MONT_01','CEVT_20_ADR_01','CEVT_21_BIGCLUB_01','CEVT_22_UDV_01','CEVT_22_ADR_02','CEVT_22_SHOCK_01'];
 
-test('B3 handoff is pinned, audit-only and exactly 6+15 canonical missing IDs', () => {
-  assert.equal(handoff.baselineMainSha, current.latestMainSha);
+test('B3 preserves its semantic analysis baseline while the workstream tracks current main separately', () => {
+  assert.equal(handoff.baselineMainSha, 'ddf46fed010521c5969bac26e29920945793f709');
+  assert.equal(current.latestMainSha, plan.baseline.mainSha);
+  assert.notEqual(handoff.baselineMainSha, current.latestMainSha);
   assert.equal(handoff.runtimeAllowedInPr10, false);
   assert.equal(handoff.summary.principalCanonicalMissing, 6);
   assert.equal(handoff.summary.conditionalCanonicalMissing, 15);
