@@ -7,7 +7,7 @@ import { EVENTS } from '../dist/content/events/index.js';
 import { EVENTS_23_26 } from '../dist/content/events/23_26/index.js';
 import { getNpcKnowledgeRecord, npcKnows } from '../dist/core/npc-knowledge.js';
 import { eventGatesPass } from '../dist/narrative/event-gates.js';
-import { resolveChoiceInPlace } from '../dist/narrative/resolver.js';
+import { expireDueSeedsInPlace, resolveChoiceInPlace } from '../dist/narrative/resolver.js';
 import { GameSession } from '../dist/session/game-session.js';
 import { contentIdentity } from '../dist/session/content-identity.js';
 import {
@@ -92,8 +92,37 @@ test('LOCK23 uses captain/star affinity OR prior teammate-cover seed with thresh
   state.club = 'ATL';
   assert.equal(eventGatesPass(state, event), false, 'old-club captain must fail closed after a club change');
 
+  state.club = 'UDV';
+  relation(state, 'NPC_PLR_10').affinity = 40;
   state.flags.HAS_SEED_TEAMMATE_COVER = true;
   assert.equal(eventGatesPass(state, event), true, 'historical cover seed remains an independent route');
+});
+
+test('LOCK23 teammate-cover route expires when origin-club scope is left', () => {
+  const state = state23(51145);
+  state.date = '2031-10-01';
+  relation(state, 'NPC_PLR_10').affinity = 40;
+  state.seeds.push({
+    id: 'SEED_TEAMMATE_COVER',
+    state: 'active',
+    intensity: 50,
+    originEvent: 'EVT_20_LOCK_002',
+    originSeason: state.season,
+    npcRefs: [],
+    payload: { __t52OriginClub: state.club },
+    lastTouchedDate: state.date
+  });
+  state.flags.HAS_SEED_TEAMMATE_COVER = true;
+
+  assert.equal(eventGatesPass(state, lockEvent()), true, 'the live origin-club memory can enable LOCK23');
+
+  state.club = 'ATL';
+  expireDueSeedsInPlace(state);
+  const seed = state.seeds.find(item => item.id === 'SEED_TEAMMATE_COVER');
+  assert.equal(seed?.state, 'expired');
+  assert.equal(seed?.payload.__t52TerminalReason, 'club_scope');
+  assert.equal(state.flags.HAS_SEED_TEAMMATE_COVER, false);
+  assert.equal(eventGatesPass(state, lockEvent()), false, 'the old dressing-room debt cannot leak into a new club');
 });
 
 test('LOCK23 does not fabricate a crime, contract, offer or new historical seed', () => {
