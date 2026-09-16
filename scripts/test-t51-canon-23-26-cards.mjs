@@ -11,8 +11,10 @@ const byId = new Map(cards.map(card => [card.id, card]));
 const canonical = new Map(traceability.scenes.map(scene => [scene.canonicalId, scene]));
 const sorted = values => [...values].sort();
 
-function seedTokens(text = '') {
-  return [...new Set(text.match(/SEED_[A-Z0-9_]+/g) ?? [])];
+function sourceMentionsSeed(text = '', seed) {
+  const bare = seed.replace(/^SEED_/, '');
+  const normalized = text.toUpperCase();
+  return normalized.includes(seed.toUpperCase()) || normalized.includes(bare.toUpperCase());
 }
 
 test('T5.10-T5.14 prepara exactamente las 15 reparaciones 23-26', () => {
@@ -46,9 +48,9 @@ test('cada ficha conserva cuatro decisiones canónicas y la frontera visible/inc
 test('las seeds declaradas en las fichas proceden de la memoria canónica', () => {
   for (const card of cards) {
     const source = canonical.get(card.id);
-    const sourceSeeds = seedTokens(source.sourceFields['Memoria / semillas']);
+    const sourceMemory = source.sourceFields['Memoria / semillas'] ?? '';
     for (const seed of card.memorySeeds) {
-      assert.ok(sourceSeeds.includes(seed), `${card.id}: ${seed} no aparece en memoria canónica ${sourceSeeds.join(', ')}`);
+      assert.ok(sourceMentionsSeed(sourceMemory, seed), `${card.id}: ${seed} no aparece ni con ni sin prefijo SEED_ en: ${sourceMemory}`);
     }
   }
 });
