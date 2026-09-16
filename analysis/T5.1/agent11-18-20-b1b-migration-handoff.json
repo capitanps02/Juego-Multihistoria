@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "workstream": "T5.1 Agent 11 18-20 B1b migration handoff",
   "generatedAt": "2026-09-16",
   "sourceMainSha": "6cb81b63f03ce55776ca97075012cfaa22ac228d",
@@ -10,7 +10,7 @@
     "workflowRun": 35152954048,
     "workflowJob": 104985499338,
     "source": "Repository Integrity on PR #111 after synchronizing main@6cb81b63f03ce55776ca97075012cfaa22ac228d; freeze-t51-active-source --check reported the exact active catalog identity after build.",
-    "rule": "Recalculate after any further re-ground or composition change. This target is valid only while the active EVENTS catalog remains identical to the catalog validated from Agent 11 head f2638d1733ddc7988891d90ae688064d004816a5 over source main@6cb81b63f03ce55776ca97075012cfaa22ac228d."
+    "rule": "Recalculate after any further re-ground or composition change. Documentation/test-only commits after the observed runtime head do not change EVENTS identity, but any active event-definition change does."
   },
   "focusedValidation": {
     "workflowRun": 35152954039,
@@ -20,7 +20,8 @@
       "Agent 11 EVT_18_PRS_002 focused regressions",
       "Agent 11 EVT_19_SUM_001 acute-injury gate regressions",
       "shared gateAlternatives OR contract"
-    ]
+    ],
+    "followup": "The branch additionally contains a focused hypothetical same_scene migration regression; integration should require its latest workflow run to pass before consuming this handoff."
   },
   "repositoryIntegrity": {
     "workflowRun": 35152954048,
@@ -53,48 +54,55 @@
     "unknownIdentityAccepted": false,
     "legacyHistoryRewrittenAsCanonical": false,
     "legacyPendingReboundToNewDefinition": false,
-    "legacySeenSuppressesNonEquivalentCanonical": false,
-    "legacyCooldownSuppressesNonEquivalentCanonical": false,
     "migrationConsumesRng": false,
     "migrationSchedulesEvents": false,
     "seedHistoricalOriginRewriteAuthorized": false
   },
   "currentBatch": {
-    "description": "Two local 18-20 canonical trigger repairs layered over the frozen source catalog. EVT_18_PRS_002 restores Clara-contact OR sufficient PUBLIC_HEAT reachability. EVT_19_SUM_001 adds the missing absence-of-acute-injury prerequisite while preserving its existing first-full-summer age/time window. Choices, outcomes, effects, seeds, NPC references and narrative text are otherwise preserved.",
+    "description": "Two local 18-20 canonical trigger repairs layered over the frozen source catalog. EVT_18_PRS_002 restores Clara-contact OR sufficient PUBLIC_HEAT reachability. EVT_19_SUM_001 adds the missing absence-of-acute-injury prerequisite while preserving its existing first-full-summer age/time window. Choices, outcomes, effects, seeds, NPC references, titles, labels and journal messages are preserved.",
     "eventIds": [
       "EVT_18_PRS_002",
       "EVT_19_SUM_001"
     ],
-    "sameSceneMappings": [],
-    "exactIdSemanticCollisions": [
+    "definitionFingerprintChanges": [
       "EVT_18_PRS_002",
       "EVT_19_SUM_001"
     ],
-    "schedulerMappingsCandidate": [
+    "journalDecisionSemanticsChanged": [],
+    "sameSceneMappingsCandidate": [
       {
-        "kind": "distinct_scene",
         "legacyEventId": "EVT_18_PRS_002",
         "canonicalEventId": "EVT_18_PRS_002",
-        "clearCanonicalSeen": true,
-        "clearCanonicalCooldown": true
+        "evidence": "Only reachability metadata changes; title, choices, outcomes, effects, seeds, NPC refs and journal messages are byte-equivalent after stripping gates/gateAlternatives. A player who already resolved this decision must not be offered it again."
       },
       {
-        "kind": "distinct_scene",
         "legacyEventId": "EVT_19_SUM_001",
         "canonicalEventId": "EVT_19_SUM_001",
-        "clearCanonicalSeen": true,
-        "clearCanonicalCooldown": true
+        "evidence": "Only the missing acute-injury gate is added; the complete decision and journal semantics are unchanged. A historical resolution remains the same scene and must continue to suppress repetition."
+      }
+    ],
+    "schedulerMappingsCandidate": [
+      {
+        "kind": "same_scene",
+        "legacyEventId": "EVT_18_PRS_002",
+        "canonicalEventId": "EVT_18_PRS_002"
+      },
+      {
+        "kind": "same_scene",
+        "legacyEventId": "EVT_19_SUM_001",
+        "canonicalEventId": "EVT_19_SUM_001"
       }
     ],
     "seedOriginMappingsCandidate": [],
-    "pendingPolicy": "Preserve any already-pending source-88751a definition using its frozen source definition and fingerprint. Do not silently rebound a pending EVT_18_PRS_002 or EVT_19_SUM_001 decision to the repaired active definition. After source-definition resolution, re-apply distinct-scene scheduler semantics so the repaired canonical definition is not suppressed by legacy SEEN/cooldown state.",
-    "historyPolicy": "Existing source-88751a history remains source-88751a provenance. It must not be relabelled as the repaired canonical definition merely because the event string ID is unchanged.",
-    "routeSemantics": "Both source definitions were classified needs_reimplementation rather than verified_same_identity. Exact string-ID equality is therefore not proof of semantic identity; scheduler migration should treat each repaired definition as distinct_scene and clear canonical suppression state when the legacy scene was completed."
+    "pendingPolicy": "Preserve any already-pending source-88751a definition using its frozen source definition and fingerprint. Do not silently rebound a pending EVT_18_PRS_002 or EVT_19_SUM_001 decision to the repaired active definition. After resolving that preserved pending source scene, same_scene scheduler semantics should mark the active ID as SEEN rather than releasing it for a duplicate decision.",
+    "historyPolicy": "Existing source-88751a history remains source-88751a provenance/fingerprint. Scheduler equivalence does not rewrite the historical definition; it only preserves the fact that the player already resolved the same narrative decision.",
+    "routeSemantics": "The event-definition fingerprints change because eligibility changes, but the player-facing decision/journal semantics do not. Exact string-ID equality alone is not the proof: the overlay regressions prove that all non-gate event semantics are unchanged. Therefore same_scene is the safe scheduler candidate; distinct_scene would incorrectly permit duplicate scenes. Final approval remains with coordination/integration."
   },
   "deferredWork": {
     "EVT_18_JAN_001": "Choice eligibility requires authoritative real loan and buyer availability facts. Current main exposes no production fact that proves those age-18 alternatives exist; marketHeat is not a substitute.",
     "EVT_18_SUM_001": "REQUEST_EXIT eligibility requires an authoritative actual-offer fact for the age-18 summer. Current main exposes no demonstrated age-18 offer materialization path suitable for this canonical gate.",
     "CEVT_19_SOCIAL_01": "Canonical OR requires NIGHT_PHOTO or high exposure plus a causal recent-conflict predicate. No exact recent-conflict product state has yet been proven safe to use.",
+    "CEVT_18_EARLY_01": "The current EARLY_BREAKOUT writer adds form>=60 plus a football RNG materialization. Audit explicitly marks those as extra restrictions. Repairing the writer would alter simulation RNG sequencing; bypassing it with an approximate direct gate would not prove goal/assist routes. Keep blocked until a deterministic canonical breakout fact is defined.",
     "other18_20": "Remaining candidates require match context, calendar context, coach-status semantics or seed-driven functions that are not safely represented by an already-authoritative fact. They must not be approximated with unrelated heat/role flags."
   }
 }
