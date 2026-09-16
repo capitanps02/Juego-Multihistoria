@@ -5,25 +5,38 @@ Cadena de trabajo: `t5/deferred-consequences` → `t5/deferred-or-gates` → `t5
 
 ## Objetivo
 
-Comprobar estructuralmente que una seed producida por el runtime puede ejercer sus consecuencias antes de caducar, sin inventar semántica canónica.
+Comprobar estructuralmente que una seed producida por el runtime puede ejercer sus consecuencias positivas antes de caducar, sin inventar semántica canónica.
 
 El audit responde a esta pregunta:
 
-> Si una seed se crea y después afecta una escena, una opción o la propia simulación de carrera, ¿existe al menos una cronología por edad en la que esa consecuencia pueda ocurrir mientras la seed sigue viva?
+> Si una seed se crea y después su presencia afecta una escena, una opción o la propia simulación de carrera, ¿existe al menos una cronología por edad en la que esa consecuencia pueda ocurrir mientras la seed sigue viva?
 
 Esto complementa `seed-lifecycle.json`: el lifecycle inventaría productores/consumidores de forma amplia; este gate demuestra factibilidad temporal necesaria.
 
-## Qué cuenta como consumidor runtime
+## Polaridad: presencia no equivale a cualquier lectura
+
+El contrato integrado `t52-seed-condition-polarity.mjs` distingue tres clases de condición `HAS_SEED_*`:
+
+- **positiva**: la condición necesita que la seed esté presente; sí crea un edge productor→consumidor;
+- **negativa**: la condición necesita que la seed esté ausente; se reporta como dependencia negativa, pero no consume una instancia viva;
+- **neutral**: el comparador no expresa inequívocamente presencia o ausencia; se reporta aparte y no crea edge positivo.
+
+Esto evita falsos cierres: `HAS_SEED_X == false` nunca se usa como prueba de que `SEED_X` tenga una consecuencia viva.
+
+## Qué cuenta como consumidor runtime positivo
 
 ### Narrativa
+
+Solo cuando la polaridad de la condición es positiva:
 
 - `flags.HAS_SEED_*` en `event.gates` y `event.exclusions`;
 - `flags.HAS_SEED_*` en rutas OR de `event.gateAlternatives`;
 - `flags.HAS_SEED_*` en outcomes/modifiers;
-- `flags.HAS_SEED_*` en `choice.eligibility`;
-- transiciones `resolve` y `expire`.
+- `flags.HAS_SEED_*` en `choice.eligibility`.
 
-Un `seedsRead` declarado sin una de esas vías sigue siendo metadata y no demuestra una consecuencia runtime.
+Además, las transiciones `resolve` y `expire` son consumidores terminales positivos.
+
+Un `seedsRead` declarado sin una de esas vías sigue siendo metadata y no demuestra una consecuencia runtime. Las dependencias negativas/neutrales sí evitan que ese reader sea etiquetado como puramente metadata, pero no forman parejas productor→consumidor.
 
 ### Simulación
 
@@ -36,7 +49,7 @@ T5.4 detectó que varias seeds afectan directamente el estado simulado sin pasar
 - `SEED_CHRONIC_BODY` afecta riesgo de lesión madura y clasificaciones 26/30/34;
 - precedentes como `PROJECT_FACE`, `SURGERY_TIMING`, `FIRST_PEAK_DIP`, `WEALTHY_PEAK_EXIT` o `EARLY_HOME_RETURN` afectan tags/estado de carrera en hitos posteriores.
 
-Estas lecturas son consecuencias causales reales y ahora entran en el mismo grafo productor→consumidor.
+Estas lecturas son efectos positivos de presencia: el modificador específico solo se aplica mientras `HAS_SEED_*` es verdadero. Por ello entran en el mismo grafo temporal positivo.
 
 ## Registry de consumidores de simulación
 
@@ -67,18 +80,19 @@ Por tanto, añadir una nueva consecuencia de seed a la simulación exige declara
 
 ## Regla temporal
 
-Para cada pareja productor→consumidor, narrativo o de simulación:
+Para cada pareja productor→consumidor positivo, narrativo o de simulación:
 
 1. el productor debe poder ejecutarse antes o en la edad máxima de la seed;
 2. el consumidor debe poder ejecutarse antes o en esa edad máxima;
 3. debe existir al menos una edad de consumidor igual o posterior a una edad posible del productor.
 
-Si una seed tiene productor y consumidor runtime pero **ninguna** pareja cumple las condiciones, `hardPass=false`.
+Si una seed tiene productor y consumidor positivo runtime pero **ninguna** pareja cumple las condiciones, `hardPass=false`.
 
 Ejemplos:
 
-- productor 18–20, consumidor narrativo 23–26, seed 18–26 → posible;
-- productor 18–20, opción dependiente 21–23, seed 18–20 → imposible;
+- productor 18–20, consumidor narrativo positivo 23–26, seed 18–26 → posible;
+- productor 18–20, opción positiva dependiente 21–23, seed 18–20 → imposible;
+- `HAS_SEED_X == false` a los 23–26 → dependencia negativa, no prueba consumo de `SEED_X`;
 - productor 26, efecto de simulación a 30, seed abierta → consecuencia diferida posible;
 - productor 29, efecto de simulación a 30+, seed 29+ → consecuencia diferida posible;
 - productor 18–20, efecto de simulación únicamente a 21–23, seed 18–20 → imposible.
@@ -103,7 +117,8 @@ Esas fronteras siguen siendo obligaciones separadas.
 `node scripts/audit-t52-deferred.mjs` genera `analysis/T5.2/deferred-consequences.json` con:
 
 - productores runtime;
-- consumidores narrativos;
+- consumidores narrativos positivos;
+- dependencias narrativas negativas y neutrales;
 - consumidores directos de simulación;
 - readers metadata-only;
 - parejas temporalmente factibles y estrictamente diferidas;
@@ -112,14 +127,14 @@ Esas fronteras siguen siendo obligaciones separadas.
 - estado del registry de simulación;
 - cadenas completamente imposibles.
 
-Las métricas distinguen `runtimeEventConsumerSeeds` de `runtimeSimulationConsumerSeeds` y también ofrecen el conjunto combinado `runtimeConsumerSeeds`.
+Las métricas distinguen `runtimeEventConsumerSeeds`, `runtimeSimulationConsumerSeeds`, el conjunto combinado `runtimeConsumerSeeds` y las dependencias negativas/neutrales.
 
 ## Criterio duro
 
 El gate falla si:
 
 1. aparece una referencia a una seed desconocida;
-2. una seed con productor y consumidor runtime no tiene ninguna pareja temporalmente posible; o
+2. una seed con productor y consumidor positivo runtime no tiene ninguna pareja temporalmente posible; o
 3. el registry de consumidores de simulación deja de coincidir exactamente con `src/simulation`.
 
 Los edges individuales inalcanzables se reportan aunque otra pareja de la misma seed sí sea viable.
