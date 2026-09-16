@@ -2,8 +2,14 @@
   "schemaVersion": 1,
   "workstream": "T5.10-T5.14 implementation readiness",
   "phase": "23_26",
-  "base": "main@ec7738adceb2cb3904c88b9c97162a646515be3a",
-  "globalBlocker": "pre_T5_contentIdentity_freeze_and_session_migration_policy",
+  "base": "main@901170c85322d324b19781913cb3705757676f41",
+  "baselineFreeze": {
+    "status": "closed",
+    "contentIdentity": "2e07efd2ea99c4e9ec4c2b20ae89664204f76db2c55a72d567208799c01bccff",
+    "manifest": "qa/fixtures/t5.1/pre-t51-content-manifest.json",
+    "catalogFixture": "qa/fixtures/t5.1/pre-t51-event-catalog.json"
+  },
+  "globalBlocker": "session_migration_policy_from_frozen_contentIdentity",
   "summary": {
     "total": 15,
     "contentReadyWaitingIdentity": 10,
