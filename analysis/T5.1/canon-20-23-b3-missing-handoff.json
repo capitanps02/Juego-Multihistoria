@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-09-16",
+  "workstream": "T51_CANON_18_23",
+  "branch": "t51/canon-18-23",
+  "baselineMainSha": "ddf46fed010521c5969bac26e29920945793f709",
+  "runtimeAllowedInPr10": false,
+  "policy": {
+    "canonicalMissingMeansNoActiveCanonicalDefinition": true,
+    "designLineageIsNotAlias": true,
+    "syntheticCosmeticFlagsForbidden": true,
+    "externalFactsMustHaveRealCausalWriters": true,
+    "newDefinitionsRequireAdjacentContentIdentityMigration": true,
+    "oldHistoryIdsRemainHistoricalTruth": true
+  },
+  "summary": {
+    "principalCanonicalMissing": 6,
+    "conditionalCanonicalMissing": 15,
+    "total": 21,
+    "approved_alias": 0,
+    "requires_manual_review": 0
+  },
+  "principalRows": [
+    {
+      "canonicalId":"EVT_20_BRIDGE_001","status":"canonical_missing","canonicalTitle":"La reunión de los veinte","canonicalTrigger":"Inicio de Pasada 3; cualquier STATE20.",
+      "canonicalOptions":"Plan deportivo escrito | salario/duración primero | preguntar qué oferta aceptarían | escuchar y contrastar fuera.",
+      "canonicalSeeds":"SEED_AGENT_POWER; posible intensificación SEED_EXIT_STYLE_UDV","requiredFacts":"STATE20, contrato, rol, minutos, categoría, ofertas formales, agente/salud.",
+      "readiness":"author_ready_with_integrated_contracts","dependency":"No blocker compartido conocido; debe consumir contrato/ofertas reales y no inventarlos.",
+      "saveRisk":"new_id_changes_contentIdentity","action":"Crear definición canónica nueva y tests de STATE20/visible info/ambigüedad + migración adyacente."
+    },
+    {
+      "canonicalId":"EVT_20_MATCH_003","status":"canonical_missing","canonicalTitle":"El minuto 65","canonicalTrigger":"Partido con ROLE medio+; mercado o rol sensible al rendimiento.",
+      "canonicalOptions":"Cumplir estrictamente | cumplir conservando ataques contextuales | mantener juego y asumir riesgo.",
+      "canonicalSeeds":"SEED_TACTICAL_SACRIFICE potencial; SEED_MENA_EARLY_READ si coincide Mena","requiredFacts":"Marcador, orden táctica, estadísticas recientes, rol y contexto real de partido.",
+      "readiness":"blocked_until_match_context_authority_is_proven","dependency":"No crear un MATCH_SCORE/orden cosmético. La escena necesita estado de partido autoritativo y reproducible.",
+      "saveRisk":"new_id_changes_contentIdentity","action":"Autorizar solo cuando exista/probarse contexto de partido real; después crear escena y tests deterministas."
+    },
+    {
+      "canonicalId":"EVT_20_JAN_001","status":"canonical_missing","canonicalTitle":"Enero: la compra que depende de otro","canonicalTrigger":"WIN_TRANSFER de enero + interés condicionado a una venta de un tercero.",
+      "canonicalOptions":"Renovar | esperar | renovar con salida pactada | tercer destino menos atractivo pero inmediato.",
+      "canonicalSeeds":"SEED_DEADLINE_DAY precursor; SEED_FIRST_LEAK si se usa prensa","requiredFacts":"Interés condicionado real, estado de la venta del otro club, contrato, tiempo y fuentes con credibilidad distinta.",
+      "readiness":"blocked_until_conditional_market_fact_is_proven","dependency":"CareerOffer formal no equivale a interés condicionado; no inventar la venta de un tercero desde la escena.",
+      "saveRisk":"new_id_changes_contentIdentity","action":"Definir primero el hecho de mercado condicional o un contrato causal equivalente; luego crear escena."
+    },
+    {
+      "canonicalId":"EVT_21_MKT_001","status":"canonical_missing","canonicalTitle":"El club que te quiere… cedido","canonicalTrigger":"ROUTE_BIGEARLY disponible + MARKET_HEAT alto + operación real de compra/cesión.",
+      "canonicalOptions":"Firmar/aceptar modelo | exigir destino | cláusula por cesiones encadenadas | rechazar y conservar control.",
+      "canonicalSeeds":"SEED_AGENT_POWER; refuerzo ROUTE_LOAN/BIGEARLY","requiredFacts":"Precio, salario, comprador real, plan de cesión y destino si está cerrado.",
+      "readiness":"requires_offer_and_loan_plan_authority","dependency":"Debe usar CareerOffer/terms y una representación real del plan de cesión; no mutar contrato desde effects paralelos.",
+      "saveRisk":"new_id_changes_contentIdentity","action":"Crear solo consumiendo autoridad de oferta/contrato/cesión y testear destino conocido vs incierto."
+    },
+    {
+      "canonicalId":"EVT_21_SOC_001","status":"canonical_missing","canonicalTitle":"Tu amigo contra tu agente","canonicalTrigger":"SEED_DANI_NORMALITY + AGENT_CONTROL medio/alto.",
+      "canonicalOptions":"Respaldar agente | disculparse con Dani y prohibir contactos | mediar | dejar pasar si no hubo publicación.",
+      "canonicalSeeds":"Reactivación SEED_DANI_NORMALITY; SEED_AGENT_POWER","requiredFacts":"Relación Dani, control del agente, contacto reconocido por ambos y NATIONAL_HEAT contextual.",
+      "readiness":"author_ready_if_contact_provenance_is_explicit","dependency":"La escena puede revelar el conflicto, pero no debe atribuir una instrucción concreta sin provenance coherente.",
+      "saveRisk":"new_id_changes_contentIdentity","action":"Crear con conocimiento/provenance explícito de Dani y agente; testear que terceros no sepan el contacto automáticamente."
+    },
+    {
+      "canonicalId":"EVT_21_PRS_002","status":"canonical_missing","canonicalTitle":"La llamada que llega por Clara","canonicalTrigger":"SEED_CLARA_CHANNEL activo + mercado real.",
+      "canonicalOptions":"Duración exacta | horquilla/incompleta | no darla y preguntar si es publicable | pasar al agente.",
+      "canonicalSeeds":"Reactivación SEED_CLARA_CHANNEL; SEED_PUBLIC_CONTRACT","requiredFacts":"Canal Clara, situación contractual real, agente y dato/fuente de mercado.",
+      "readiness":"author_ready_with_channel_and_market_provenance","dependency":"No convertir una seed en una oferta garantizada; Clara sigue siendo fuente y medio con información imperfecta.",
+      "saveRisk":"new_id_changes_contentIdentity","action":"Crear escena preservando incertidumbre de la fuente y la autoridad contractual."
+    }
+  ],
+  "conditionalRows": [
+    {"canonicalId":"CEVT_20_RIVAS_01","status":"canonical_missing","canonicalTitle":null,"sourceClassification":"no_runtime_counterpart","legacyCandidate":null,"requiredFact":"Rivas adquiere responsabilidad institucional real y la escena lee su confianza/historia.","readiness":"blocked_external_world_fact","dependency":"Rivas institutional role","action":"Crear writer/estado causal real antes del callback; no derivarlo de confianza o seed."},
+    {"canonicalId":"CEVT_20_VELA_01","status":"canonical_missing","canonicalTitle":null,"sourceClassification":"no_runtime_counterpart","legacyCandidate":null,"requiredFact":"Vela deja/entra en staff y reactiva postura previa.","readiness":"blocked_external_world_fact","dependency":"Vela staff transition","action":"Consumir transición de staff real; no crear VELA_STAFF solo para abrir la escena."},
+    {"canonicalId":"CEVT_20_PAULA_01","status":"canonical_missing","canonicalTitle":null,"sourceClassification":"ambiguous_partial_lineage","legacyCandidate":"CEVT_20_BODY_01 / CEVT_22_INJ_01","requiredFact":"Confianza en fisio + transferencia/lesión compatible + contacto médico autorizado.","readiness":"requires_compound_fact_verification","dependency":"medical/contact provenance","action":"Componer hechos médicos existentes solo si tienen writers; no alias BODY/INJ."},
+    {"canonicalId":"CEVT_20_NANO_01","status":"canonical_missing","canonicalTitle":null,"sourceClassification":"no_runtime_counterpart","legacyCandidate":null,"requiredFact":"Nano recibe una oportunidad profesional propia y decide cuánto compartir.","readiness":"blocked_external_world_fact","dependency":"Nano career opportunity","action":"Crear/consumir oportunidad real de Nano antes del callback."},
+    {"canonicalId":"CEVT_20_MONT_01","status":"canonical_missing","canonicalTitle":null,"sourceClassification":"no_runtime_counterpart","legacyCandidate":null,"requiredFact":"Montalbán reaparece como rival/entrenador/asesor con incentivos del rol presente.","readiness":"blocked_external_world_fact","dependency":"Montalbán current role/reappearance","action":"No inferir reaparición desde memoria histórica; requiere rol actual causal."},
+    {"canonicalId":"CEVT_20_ADR_01","status":"canonical_missing","canonicalTitle":null,"sourceClassification":"design_lineage_only","legacyCandidate":"CEVT_21_ADRIAN_01","requiredFact":"Adrián comparte representación o existe relación de agencia con incentivos cruzados.","readiness":"blocked_external_world_fact","dependency":"Adrián agency fact","action":"No renombrar el callback de comparación; requiere hecho real de representación/agencia."},
+    {"canonicalId":"CEVT_21_BIGCLUB_01","status":"canonical_missing","canonicalTitle":null,"sourceClassification":"no_runtime_counterpart","legacyCandidate":null,"requiredFact":"Lesión real de un titular del club grande abre ventana de tres partidos mientras se retrasa una cesión.","readiness":"blocked_external_world_fact","dependency":"third-party starter injury + loan delay","action":"Consumir lesión de tercero y decisión de cesión reales; no sintetizarlas en el callback."},
+    {"canonicalId":"CEVT_21_LOAN_01","status":"canonical_missing","canonicalTitle":null,"sourceClassification":"design_lineage_only","legacyCandidate":"CEVT_22_LOANBUY_01","requiredFact":"Club de cesión quiere comprar y propietario mantiene una valoración/decisión distinta.","readiness":"requires_offer_and_valuation_fact_verification","dependency":"loan ownership + purchase interest + valuation","action":"Usar entidades de oferta/cesión reales; no renombrar LOANBUY legacy."},
+    {"canonicalId":"CEVT_21_AGENT_02","status":"canonical_missing","canonicalTitle":null,"sourceClassification":"design_lineage_only","legacyCandidate":"CEVT_20_AGENT_01","requiredFact":"Memoria de omisión del agente + oportunidad/oferta tardía realmente descubierta.","readiness":"author_ready_if_real_late_offer_exists","dependency":"SEED_AGENT_OMISSION + CareerOffer/market provenance","action":"No convertir control genérico del agente en omisión; consumir una oportunidad real."},
+    {"canonicalId":"CEVT_21_INJ_01","status":"canonical_missing","canonicalTitle":null,"sourceClassification":"ambiguous_partial_lineage","legacyCandidate":"CEVT_20_BODY_01 / CEVT_22_INJ_01","requiredFact":"BODY_RISK alto + retorno reciente + recaída plausible.","readiness":"requires_compound_fact_verification","dependency":"body risk + recent return + relapse provenance","action":"Componer causalidad de lesión real; no fusionar dos shells legacy por semejanza."},
+    {"canonicalId":"CEVT_22_UDV_01","status":"canonical_missing","canonicalTitle":null,"sourceClassification":"ambiguous_partial_lineage","legacyCandidate":"CEVT_20_HOME_01 / CEVT_22_RETURN_01","requiredFact":"Crisis real de UDV + estilo de salida previo + mercado compatible.","readiness":"blocked_external_world_fact","dependency":"UDV crisis","action":"Crisis institucional necesita writer propio; no derivarla de HOME/RETURN o de una seed."},
+    {"canonicalId":"CEVT_22_BRUNO_02","status":"canonical_missing","canonicalTitle":null,"sourceClassification":"design_lineage_only","legacyCandidate":"CEVT_20_BRUNO_01","requiredFact":"Bruno necesita ayuda y la deuda/favor previo se invierte.","readiness":"requires_external_opportunity_provenance","dependency":"Bruno current need + prior favor/debt","action":"No renombrar BRUNO_01; crear necesidad presente y resolver deuda en sentido inverso."},
+    {"canonicalId":"CEVT_22_ADR_02","status":"canonical_missing","canonicalTitle":null,"sourceClassification":"design_lineage_only","legacyCandidate":"CEVT_21_ADRIAN_01","requiredFact":"Adrián sube de nivel y cambia incentivos de agencia/mercado.","readiness":"blocked_external_world_fact","dependency":"Adrián trajectory/agency transition","action":"Consumir trayectoria real; no usar solo comparación/ego como sustituto."},
+    {"canonicalId":"CEVT_22_SOC_02","status":"canonical_missing","canonicalTitle":null,"sourceClassification":"no_runtime_counterpart","legacyCandidate":null,"requiredFact":"Dani presenta una pequeña propuesta de inversión y SEED_DANI_NORMALITY sigue relevante.","readiness":"requires_external_proposal_provenance","dependency":"Dani investment proposal","action":"No reutilizar family-money; modelar propuesta de Dani con actor/provenance correctos."},
+    {"canonicalId":"CEVT_22_SHOCK_01","status":"canonical_missing","canonicalTitle":null,"sourceClassification":"no_runtime_counterpart","legacyCandidate":null,"requiredFact":"Cambio real de propiedad del club actual.","readiness":"blocked_external_world_fact","dependency":"ownership change","action":"Hard block: no callback hasta que world state tenga writer autoritativo de ownership change."}
+  ],
+  "externalWorldFactRule": {
+    "source":"project/t5_1/T5_1_05B_CODEX_PROMPT_DRAFT.md + semantic review on chore/chatgpt-codex-workflow",
+    "explicitFacts":["Rivas institutional role","Vela staff transition","Nano career opportunity","Montalbán reappearance","Adrián agency/trajectory","big-club third-party injury","UDV crisis","ownership shock"],
+    "rule":"If a required world fact does not exist with a stable causal writer, implementation must stop/report the dependency instead of inventing a cosmetic flag."
+  }
+}
