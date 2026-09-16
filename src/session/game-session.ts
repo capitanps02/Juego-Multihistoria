@@ -16,8 +16,19 @@ import { ENGINE_BUILD } from "../core/build.js";
 import { assertGameState, parseSaveJson, record, validateData } from "../save/validation.js";
 import { assertSessionSnapshot } from "./validate-session.js";
 import { NPC_CATALOG } from "../catalog/npcs.js";
+import { contentIdentity } from "./content-identity.js";
+import {
+  applyMigrationRouteInPlace,
+  applyPostLegacyResolutionRouteInPlace,
+  buildActiveEventEvidence,
+  CONTENT_MIGRATION_ROUTES,
+  findMigrationRoute,
+  legacyContentSource,
+  type ContentMigrationRoute
+} from "./content-migration.js";
+import type { LegacyEventEvidence } from "./pre-t51-legacy-registry.js";
 
-export const SESSION_VERSION = 2;
+export const SESSION_VERSION = 3;
 export const SESSION_BUILD = ENGINE_BUILD;
 
 interface CommandBase { commandId: string; expectedRevision: number; }
@@ -33,16 +44,25 @@ export interface CommandReceipt {
   revision: number;
   type: SessionCommand["type"];
 }
-export interface PendingDecision { instanceId: string; event: EventDefinition; }
+export interface DecisionContentProvenance {
+  sourceContentIdentity: string;
+  eventFingerprint: string;
+}
+export interface PendingDecision {
+  instanceId: string;
+  event: EventDefinition;
+  provenance: DecisionContentProvenance;
+}
 export interface PendingResult {
   title: string;
   choiceLabel: string;
   messages: string[];
 }
+export interface JournalEntry { date: string; title: string; choiceLabel: string; messages: string[]; }
 export interface SessionSnapshot {
   sessionVersion: number;
   build: string;
-  /** SHA-256 of serialized definitions; content changes require explicit migration. */
+  /** Identity of the active catalog used for future scheduling. */
   contentIdentity: string;
   sessionId: string;
   revision: number;
@@ -52,14 +72,20 @@ export interface SessionSnapshot {
   pendingResult: PendingResult | null;
   receipts: CommandReceipt[];
   /** Human-readable actions actually shown, independent of later label changes. */
-  journal: Array<{ date: string; title: string; choiceLabel: string; messages: string[] }>;
+  journal: JournalEntry[];
+  /** Immutable source identity + exact definition hash for every resolved decision. */
+  decisionProvenance: DecisionContentProvenance[];
   /** Match the existing simulator's advance after resolving a decision. */
   needsWorldAdvance: boolean;
 }
 export interface CommitExpectation { sessionId: string; revision: number; }
 /** Must either persist the complete snapshot or reject without confirming it. */
 export type CommitSnapshot = (snapshot: SessionSnapshot, previous: CommitExpectation | null) => Promise<void>;
-export interface SessionOptions { events?: EventDefinition[]; commit?: CommitSnapshot; }
+export interface SessionOptions {
+  events?: EventDefinition[];
+  commit?: CommitSnapshot;
+  migrationRoutes?: readonly ContentMigrationRoute[];
+}
 type PublicTerms = Pick<CareerOffer["terms"], "club" | "ownerClub" | "registrationClub" | "leagueTier" | "months" | "salary" | "releaseClause" | "loan">;
 type PublicOffer = Omit<CareerOffer,"before" | "terms"> & {before:PublicTerms;terms:PublicTerms};
 type PublicOfferDecision = Omit<OfferDecision,"offer"> & {offer:PublicOffer};
@@ -102,11 +128,6 @@ function requireThat(condition: unknown, code: string, message: string): asserts
   if (!condition) throw new SessionError(code, message);
 }
 function validId(value: unknown): value is string { return typeof value === "string" && value.length > 0 && value.length <= 200; }
-async function contentIdentity(events: EventDefinition[]): Promise<string> {
-  const bytes = new TextEncoder().encode(JSON.stringify(events));
-  const hash = await globalThis.crypto.subtle.digest("SHA-256", bytes);
-  return Array.from(new Uint8Array(hash), b => b.toString(16).padStart(2, "0")).join("");
-}
 function commandFingerprint(c: SessionCommand): string {
   requireThat(c && validId(c.commandId) && Number.isSafeInteger(c.expectedRevision) && c.expectedRevision >= 0,
     "INVALID_COMMAND", "Comando o revisión no válidos.");
@@ -127,6 +148,39 @@ function commandFingerprint(c: SessionCommand): string {
   return JSON.stringify([c.type, c.expectedRevision]);
 }
 
+function requireEvidence(
+  evidence: Readonly<Record<string, LegacyEventEvidence>>,
+  eventId: string,
+  code = "INVALID_SAVE"
+): LegacyEventEvidence {
+  const row = evidence[eventId];
+  requireThat(row, code, `No existe evidencia de contenido para ${eventId}.`);
+  return row;
+}
+
+function upgradeToV3(
+  snapshot: SessionSnapshot,
+  sourceContentIdentity: string,
+  sourceEvidence: Readonly<Record<string, LegacyEventEvidence>>
+): SessionSnapshot {
+  if (snapshot.sessionVersion === 3) return snapshot;
+  const next = snapshot as SessionSnapshot;
+  next.decisionProvenance = next.state.history.map(entry => ({
+    sourceContentIdentity,
+    eventFingerprint: requireEvidence(sourceEvidence, entry.eventId).fingerprint
+  }));
+  if (next.pendingDecision) {
+    const eventEvidence = requireEvidence(sourceEvidence, next.pendingDecision.event.id);
+    next.pendingDecision = {
+      instanceId: next.pendingDecision.instanceId,
+      event: next.pendingDecision.event,
+      provenance: { sourceContentIdentity, eventFingerprint: eventEvidence.fingerprint }
+    };
+  }
+  next.sessionVersion = SESSION_VERSION;
+  return next;
+}
+
 /**
  * Interactive single-writer boundary. Reads never schedule, resolve or draw RNG.
  * The low-level simulator remains available for headless QA.
@@ -134,12 +188,22 @@ function commandFingerprint(c: SessionCommand): string {
 export class GameSession {
   #snapshot: SessionSnapshot;
   #index: EventIndex;
+  #activeEvidence: Readonly<Record<string, LegacyEventEvidence>>;
+  #migrationRoutes: readonly ContentMigrationRoute[];
   #commit: CommitSnapshot;
   #queue: Promise<void> = Promise.resolve();
 
-  private constructor(snapshot: SessionSnapshot, events: EventDefinition[], commit?: CommitSnapshot) {
+  private constructor(
+    snapshot: SessionSnapshot,
+    events: EventDefinition[],
+    activeEvidence: Readonly<Record<string, LegacyEventEvidence>>,
+    commit?: CommitSnapshot,
+    migrationRoutes: readonly ContentMigrationRoute[] = CONTENT_MIGRATION_ROUTES
+  ) {
     this.#snapshot = structuredClone(snapshot);
     this.#index = new EventIndex(structuredClone(events));
+    this.#activeEvidence = activeEvidence;
+    this.#migrationRoutes = migrationRoutes;
     this.#commit = commit ?? (async () => {});
   }
 
@@ -148,13 +212,15 @@ export class GameSession {
     const sessionId = options.sessionId ?? globalThis.crypto.randomUUID();
     requireThat(validId(sessionId), "INVALID_SESSION", "Identificador de partida no válido.");
     const events = structuredClone(options.events ?? EVENTS);
+    const activeContentIdentity = await contentIdentity(events);
+    const activeEvidence = await buildActiveEventEvidence(events);
     const snapshot: SessionSnapshot = {
-      sessionVersion: SESSION_VERSION, build: SESSION_BUILD, contentIdentity: await contentIdentity(events),
+      sessionVersion: SESSION_VERSION, build: SESSION_BUILD, contentIdentity: activeContentIdentity,
       sessionId, revision: 0, microfeeds: options.microfeeds ?? true, state: createInitialState(seed),
-      pendingDecision: null, pendingResult: null, receipts: [], journal: [], needsWorldAdvance: false
+      pendingDecision: null, pendingResult: null, receipts: [], journal: [], decisionProvenance: [], needsWorldAdvance: false
     };
     marketState(snapshot.state);
-    const session = new GameSession(snapshot, events, options.commit);
+    const session = new GameSession(snapshot, events, activeEvidence, options.commit, options.migrationRoutes ?? CONTENT_MIGRATION_ROUTES);
     await session.#commit(structuredClone(snapshot), null);
     return session;
   }
@@ -164,18 +230,57 @@ export class GameSession {
     validateData(snapshot);
     snapshot = structuredClone(snapshot);
     const events = structuredClone(options.events ?? EVENTS);
+    const activeContentIdentity = await contentIdentity(events);
+    const activeEvidence = await buildActiveEventEvidence(events);
     const header=record(snapshot,"session");
     requireThat(typeof header.contentIdentity === "string", "INVALID_SAVE", "Falta la identidad del contenido.");
-    requireThat(header.contentIdentity === await contentIdentity(events), "CONTENT_CHANGED", "El contenido cambió; conserva la partida para migrarla antes de continuar.");
-    assertSessionSnapshot(snapshot,events);
-    snapshot.sessionVersion=SESSION_VERSION;
-    marketState(snapshot.state);
-    snapshot.build=SESSION_BUILD; // Existing narrative and RNG are preserved; new offers require explicit consent.
-    return new GameSession(snapshot, events, options.commit);
+    requireThat(header.contentIdentity === activeContentIdentity, "CONTENT_CHANGED", "El contenido cambió; conserva la partida para migrarla antes de continuar.");
+    await assertSessionSnapshot(snapshot, { events, activeContentIdentity, activeEvidence });
+    const next = upgradeToV3(snapshot as SessionSnapshot, activeContentIdentity, activeEvidence);
+    marketState(next.state);
+    next.build=SESSION_BUILD; // Existing narrative and RNG are preserved; new offers require explicit consent.
+    await assertSessionSnapshot(next, { events, activeContentIdentity, activeEvidence });
+    return new GameSession(next, events, activeEvidence, options.commit, options.migrationRoutes ?? CONTENT_MIGRATION_ROUTES);
+  }
+
+  /**
+   * Explicit content migration path. Normal resume remains strict.
+   * Migration validates the source first, consumes no RNG/scheduling, and does not persist by itself.
+   */
+  static async migrateAndResume(snapshot: unknown, options: SessionOptions = {}): Promise<GameSession> {
+    validateData(snapshot);
+    snapshot = structuredClone(snapshot);
+    const events = structuredClone(options.events ?? EVENTS);
+    const activeContentIdentity = await contentIdentity(events);
+    const activeEvidence = await buildActiveEventEvidence(events);
+    const routes = options.migrationRoutes ?? CONTENT_MIGRATION_ROUTES;
+    const header = record(snapshot, "session");
+    requireThat(typeof header.contentIdentity === "string", "INVALID_SAVE", "Falta la identidad del contenido.");
+    const sourceContentIdentity = header.contentIdentity;
+    if (sourceContentIdentity === activeContentIdentity) return GameSession.resume(snapshot, options);
+
+    const route = findMigrationRoute(sourceContentIdentity, activeContentIdentity, routes);
+    requireThat(route, "CONTENT_MIGRATION_UNSUPPORTED", "Esta versión del contenido no tiene una ruta de migración aprobada.");
+    const source = legacyContentSource(sourceContentIdentity);
+    requireThat(source, "CONTENT_MIGRATION_UNSUPPORTED", "No existe evidencia registrada para el catálogo de origen.");
+
+    await assertSessionSnapshot(snapshot, { events, activeContentIdentity, activeEvidence });
+    const next = upgradeToV3(snapshot as SessionSnapshot, sourceContentIdentity, source.events);
+    applyMigrationRouteInPlace(next.state, route);
+    marketState(next.state);
+    next.contentIdentity = activeContentIdentity;
+    next.sessionVersion = SESSION_VERSION;
+    next.build = SESSION_BUILD;
+    await assertSessionSnapshot(next, { events, activeContentIdentity, activeEvidence });
+    return new GameSession(next, events, activeEvidence, options.commit, routes);
   }
 
   static async fromSave(raw: string, options: SessionOptions = {}): Promise<GameSession> {
     return GameSession.resume(parseSaveJson(raw),options);
+  }
+
+  static async migrateFromSave(raw: string, options: SessionOptions = {}): Promise<GameSession> {
+    return GameSession.migrateAndResume(parseSaveJson(raw), options);
   }
 
   /** Full snapshot for persistence/QA, never feed this object to the player UI. */
@@ -237,8 +342,14 @@ export class GameSession {
       const result = resolveChoiceInPlace(next.state, pending.event, choice.id);
       next.pendingResult = { title: pending.event.text.title, choiceLabel: choice.label, messages: result.messages };
       next.journal.push({ date: next.state.date, ...structuredClone(next.pendingResult) });
+      next.decisionProvenance.push(structuredClone(pending.provenance));
       next.pendingDecision = null;
       next.needsWorldAdvance = true;
+      if (pending.provenance.sourceContentIdentity !== next.contentIdentity) {
+        const route = findMigrationRoute(pending.provenance.sourceContentIdentity, next.contentIdentity, this.#migrationRoutes);
+        requireThat(route, "CONTENT_MIGRATION_UNSUPPORTED", "La escena legacy pendiente ya no tiene una ruta de compatibilidad aprobada.");
+        applyPostLegacyResolutionRouteInPlace(next.state, pending.event.id, route);
+      }
       generateEpilogue(next.state);
     } else {
       requireThat(next.pendingResult, "NO_RESULT", "No hay resultado pendiente.");
@@ -273,7 +384,12 @@ export class GameSession {
       if(next.state.market?.pending)return;
       const scheduled = scheduleEvent(next.state, this.#index);
       if (scheduled) {
-        next.pendingDecision = { instanceId: `${next.sessionId}:${next.revision + 1}`, event: structuredClone(scheduled.event) };
+        const evidence = requireEvidence(this.#activeEvidence, scheduled.event.id, "CONTENT_CHANGED");
+        next.pendingDecision = {
+          instanceId: `${next.sessionId}:${next.revision + 1}`,
+          event: structuredClone(scheduled.event),
+          provenance: { sourceContentIdentity: next.contentIdentity, eventFingerprint: evidence.fingerprint }
+        };
         return;
       }
       if (days >= maxDays) return;
