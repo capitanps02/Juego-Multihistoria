@@ -4,7 +4,7 @@ This file is maintained by ChatGPT as the ordered handoff queue for implementati
 
 Codex must not be launched on two tasks that mutate the same subsystem unless their dependency relationship has been resolved first.
 
-## Current queue
+## Current executable queue
 
 ### 1. READY — PR #3 — T5.1 Batch 01 · ages 20–23
 
@@ -62,8 +62,81 @@ Before launch:
 2. refresh the T5.1 audit baseline;
 3. then launch Codex using the prompt in PR #5.
 
+## Planned T5.1 batches — not executable yet
+
+These entries define the dependency chain only. **Do not launch Codex for a DRAFT item.** Create/re-ground its task branch and PR only when predecessors have been reviewed and integrated into the intended base.
+
+### 4. DRAFT — Batch 02C · canonical age 27
+Dependencies: reviewed/integrated PR #7 and PR #5. Re-audit age 27 after both branches are reconciled.
+
+### 5. DRAFT — Batch 02D · canonical age 28
+Dependencies: Batch 02C reviewed/integrated.
+
+### 6. DRAFT — Batch 02E · canonical age 29
+Dependencies: Batch 02D reviewed/integrated.
+
+### 7. DRAFT — Batch 03A · canonical age 30
+Dependencies: Batch 02E reviewed/integrated.
+
+### 8. DRAFT — Batch 03B · canonical ages 31–33
+Dependencies: Batch 03A reviewed/integrated.
+
+### 9. DRAFT — Batch 04A · canonical age 34
+Dependencies: Batch 03B reviewed/integrated.
+
+### 10. DRAFT — Batch 04B · canonical age 35
+Dependencies: Batch 04A reviewed/integrated.
+
+### 11. DRAFT — Batch 04C · canonical ages 36–38
+Dependencies: Batch 04B reviewed/integrated.
+
+### 12. DRAFT — Batch 04D · retirement state machine
+Dependencies: Batch 04C reviewed/integrated. Must preserve `playing -> decided -> announced -> closed`; no epilogue before `closed`.
+
+### 13. DRAFT — Batch 05A · exact-ID conditional semantic foundation
+Scope: semantic certification foundation for exact-ID conditionals (especially 18–20 and 23–26), without treating exact ID as proof of full fidelity.
+Dependencies: current principal PRs (#3, #7, #5) reviewed/integrated so shared seeds and phase boundaries are stable.
+
+### 14. DRAFT — Batch 05B · conditional ages 20–23
+Scope: 18 canonical callbacks; 3 exact IDs / 15 identity drifts in P1.
+Dependencies: Batch 05A plus principal Batch 01.
+
+### 15. DRAFT — Batch 05C · conditional ages 26–30
+Scope: 24 canonical callbacks; 5 exact IDs / 19 identity drifts in P1.
+Dependencies: Batch 05B and principal Batches 02A–02E including seed chronology.
+
+### 16. DRAFT — Batch 05D · conditional ages 30–34
+Scope: 26 canonical callbacks; P1 had 0/26 exact IDs. Identity must be established from condition + scene + function/memory, never fuzzy/title matching.
+Dependencies for runtime implementation: Batch 05C and principal Batch 03B.
+Planning note: semantic dissection/crosswalk evidence may be authored now on the workflow branch without changing runtime content.
+
+### 17. DRAFT — Batch 05E · conditional ages 34+
+Scope: 32 canonical callbacks; 5 exact IDs / 27 identity drifts in P1, including retirement callbacks.
+Dependencies: Batch 05D and principal Batch 04D. Must preserve retirement-state and closure-shape invariants.
+
+### 18. DRAFT — Batch 04E · epilogue + terminal QA
+Dependencies: Batch 05E plus retirement Batch 04D. Epilogue may read terminal facts only after `closed`; run final 388-event identity/semantic/migration/causal/deterministic gates here.
+
+## Dependency summary
+
+Principal chain after the active PRs:
+`#3 -> #7 -> #5 -> 02C -> 02D -> 02E -> 03A -> 03B -> 04A -> 04B -> 04C -> 04D`
+
+Conditional chain:
+`05A -> 05B -> 05C -> 05D -> 05E`
+
+Cross-chain gates:
+- 05B requires principal Batch 01;
+- 05C requires principal 02A–02E;
+- 05D runtime implementation requires principal 03B;
+- 05E requires principal 04D;
+- 04E runs only after 05E and 04D.
+
+This ordering prevents overlapping semantic/runtime work from being executed in parallel and keeps seed/save migration decisions reviewable.
+
 ## State vocabulary
 
+- `DRAFT`: specified/planned, but not executable because branch/PR and/or dependencies are not ready.
 - `READY`: sufficiently specified and dependencies satisfied.
 - `BLOCKED-BY-#N`: do not launch until the named PR is integrated/rebased.
 - `RUNNING`: Codex has been invoked and implementation is in progress.
@@ -75,6 +148,8 @@ Before launch:
 ## Safety rules
 
 - Never auto-merge.
-- Never launch a blocked item just because its prompt exists.
+- Never launch a blocked or DRAFT item just because its prompt exists.
+- `ejecuta Codex` launches only the first READY item unless Pedro explicitly names another ready task.
+- Never run overlapping write sets in parallel.
 - Never mark tests passed from an old QA artifact; use results from the task implementation run.
 - Preserve branch/PR-specific context in the PR itself so a future chat can reconstruct the handoff from GitHub.
