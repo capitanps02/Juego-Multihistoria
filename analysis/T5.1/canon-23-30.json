@@ -1,9 +1,9 @@
 {
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "workstream": "T5.1 canon 23-30",
   "repository": "capitanps02/Juego-Multihistoria",
   "branch": "t51/canon-23-30",
-  "baseMainSha": "4d547ea9c070d9879d812861ed0abb6493ff1d75",
+  "baseMainSha": "fb545cd18c6828b1f8d636435d91e296e92eaab6",
   "generatedAt": "2026-09-16",
   "authority": {
     "principals": "analysis/2026-09-11/t1/principal-traceability.json",
@@ -17,29 +17,206 @@
     "canonicalPrincipals": 91,
     "enginePrincipals": 91,
     "engineConditionals": 44,
-    "canonicalPrincipalStatuses": {"verified_same_identity":25,"approved_alias":0,"needs_reimplementation":40,"canonical_missing":22,"requires_manual_review":4},
-    "engineOnlyPrincipalStatuses": {"engine_only_noncanonical":22,"requires_manual_review":4},
-    "conditionalPlanning": {"canonical":44,"reviewed":44,"runtimeCertifiedFull":0,"rewriteOrImplementationRequired":44}
+    "canonicalPrincipalStatuses": {
+      "verified_same_identity": 28,
+      "approved_alias": 0,
+      "needs_reimplementation": 37,
+      "canonical_missing": 22,
+      "requires_manual_review": 4
+    },
+    "engineOnlyPrincipalStatuses": {
+      "engine_only_noncanonical": 22,
+      "requires_manual_review": 4
+    },
+    "conditionalPlanning": {
+      "canonical": 44,
+      "reviewed": 44,
+      "runtimeCertifiedFull": 0,
+      "rewriteOrImplementationRequired": 44
+    }
   },
   "blocks": {
     "23_26": {
-      "inventory": {"canonicalPrincipals":40,"enginePrincipals":40,"engineConditionals":20},
-      "verified_same_identity": ["EVT_23_CAP_001","EVT_23_JAN_001","EVT_23_MATCH_001","EVT_23_MED_001","EVT_23_NAT_001","EVT_24_ABR_001","EVT_24_AGT_001","EVT_24_CCH_001","EVT_24_CON_001","EVT_24_EUR_001","EVT_24_FREE_001","EVT_24_IMG_001","EVT_24_JAN_001","EVT_24_LIFE_001","EVT_24_LOCK_001","EVT_24_MED_001","EVT_24_MKT_001","EVT_24_NAT_001","EVT_24_PRS_001","EVT_25_CAP_001","EVT_25_END_001","EVT_25_FAM_001","EVT_25_MED_001","EVT_25_TACT_001","EVT_25_TEAM_001"],
-      "needs_reimplementation": ["EVT_23_AGT_001","EVT_23_BODY_001","EVT_23_BRIDGE_001","EVT_23_CON_001","EVT_23_EUR_001","EVT_23_HOME_001","EVT_23_LOCK_001","EVT_23_MKT_001","EVT_23_MONEY_001","EVT_23_PRS_001","EVT_24_MATCH_001","EVT_25_AGT_001","EVT_25_CON_001","EVT_25_MKT_001","EVT_25_NAT_001"],
-      "conditionalPlanning": {"canonical":20,"exactIds":20,"runtimeOnlyIds":0,"planningReviewed":20,"runtimeCertifiedFull":0,"semanticRewriteRequired":20,"conditionContradiction":["CEVT_24_TOURN_02"]}
+      "inventory": {
+        "canonicalPrincipals": 40,
+        "enginePrincipals": 40,
+        "engineConditionals": 20
+      },
+      "verified_same_identity": [
+        "EVT_23_AGT_001",
+        "EVT_23_BODY_001",
+        "EVT_23_BRIDGE_001",
+        "EVT_23_CAP_001",
+        "EVT_23_JAN_001",
+        "EVT_23_MATCH_001",
+        "EVT_23_MED_001",
+        "EVT_23_NAT_001",
+        "EVT_24_ABR_001",
+        "EVT_24_AGT_001",
+        "EVT_24_CCH_001",
+        "EVT_24_CON_001",
+        "EVT_24_EUR_001",
+        "EVT_24_FREE_001",
+        "EVT_24_IMG_001",
+        "EVT_24_JAN_001",
+        "EVT_24_LIFE_001",
+        "EVT_24_LOCK_001",
+        "EVT_24_MED_001",
+        "EVT_24_MKT_001",
+        "EVT_24_NAT_001",
+        "EVT_24_PRS_001",
+        "EVT_25_CAP_001",
+        "EVT_25_END_001",
+        "EVT_25_FAM_001",
+        "EVT_25_MED_001",
+        "EVT_25_TACT_001",
+        "EVT_25_TEAM_001"
+      ],
+      "needs_reimplementation": [
+        "EVT_23_CON_001",
+        "EVT_23_EUR_001",
+        "EVT_23_HOME_001",
+        "EVT_23_LOCK_001",
+        "EVT_23_MKT_001",
+        "EVT_23_MONEY_001",
+        "EVT_23_PRS_001",
+        "EVT_24_MATCH_001",
+        "EVT_25_AGT_001",
+        "EVT_25_CON_001",
+        "EVT_25_MKT_001",
+        "EVT_25_NAT_001"
+      ],
+      "conditionalPlanning": {
+        "canonical": 20,
+        "exactIds": 20,
+        "runtimeOnlyIds": 0,
+        "planningReviewed": 20,
+        "runtimeCertifiedFull": 0,
+        "semanticRewriteRequired": 20,
+        "conditionContradiction": ["CEVT_24_TOURN_02"]
+      }
     },
     "26_30": {
-      "inventory": {"canonicalPrincipals":51,"enginePrincipals":51,"literalIdMatches":25,"canonicalMissingIds":26,"engineOnlyIds":26,"engineConditionals":24},
-      "needs_reimplementation": ["EVT_26_AGT_001","EVT_26_BODY_001","EVT_26_CON_001","EVT_26_EUR_001","EVT_26_HOME_001","EVT_26_IMG_001","EVT_26_MKT_001","EVT_26_NAT_001","EVT_26_TEAM_001","EVT_27_AGT_001","EVT_27_BODY_001","EVT_27_LOCK_001","EVT_27_MED_001","EVT_27_MKT_001","EVT_27_MONEY_001","EVT_27_NAT_001","EVT_27_PRS_001","EVT_27_TACT_001","EVT_28_CON_001","EVT_28_HOME_001","EVT_28_MKT_001","EVT_28_NAT_001","EVT_29_CON_001","EVT_29_FIN_001","EVT_29_PRS_001"],
-      "canonical_missing": ["EVT_26_CAP_001","EVT_26_DOC_001","EVT_26_FINAL_001","EVT_26_MATCH_001","EVT_26_MED_001","EVT_26_NAT_002","EVT_26_RIV_001","EVT_26_TEAM_002","EVT_27_AGT_002","EVT_27_CON_001","EVT_27_EUR_001","EVT_27_HOME_001","EVT_27_IMG_001","EVT_27_MATCH_001","EVT_27_TEAM_001","EVT_28_CLUB_001","EVT_28_FORM_001","EVT_28_MEDIA_001","EVT_28_MED_001","EVT_28_STAR_001","EVT_29_NAT_002","EVT_29_TACT_001"],
-      "requires_manual_review_candidates": [
-        {"canonicalId":"EVT_26_BRIDGE_001","engineId":"EVT_26_IDN_001"},
-        {"canonicalId":"EVT_27_STAR_001","engineId":"EVT_28_TEAM_001"},
-        {"canonicalId":"EVT_27_AWARD_001","engineId":"EVT_28_GALA_001"},
-        {"canonicalId":"EVT_28_RICH_001","engineId":"EVT_29_MKT_001"}
+      "inventory": {
+        "canonicalPrincipals": 51,
+        "enginePrincipals": 51,
+        "literalIdMatches": 25,
+        "canonicalMissingIds": 26,
+        "engineOnlyIds": 26,
+        "engineConditionals": 24
+      },
+      "needs_reimplementation": [
+        "EVT_26_AGT_001",
+        "EVT_26_BODY_001",
+        "EVT_26_CON_001",
+        "EVT_26_EUR_001",
+        "EVT_26_HOME_001",
+        "EVT_26_IMG_001",
+        "EVT_26_MKT_001",
+        "EVT_26_NAT_001",
+        "EVT_26_TEAM_001",
+        "EVT_27_AGT_001",
+        "EVT_27_BODY_001",
+        "EVT_27_LOCK_001",
+        "EVT_27_MED_001",
+        "EVT_27_MKT_001",
+        "EVT_27_MONEY_001",
+        "EVT_27_NAT_001",
+        "EVT_27_PRS_001",
+        "EVT_27_TACT_001",
+        "EVT_28_CON_001",
+        "EVT_28_HOME_001",
+        "EVT_28_MKT_001",
+        "EVT_28_NAT_001",
+        "EVT_29_CON_001",
+        "EVT_29_FIN_001",
+        "EVT_29_PRS_001"
       ],
-      "engine_only_noncanonical": ["EVT_26_CLB_001","EVT_26_JAN_001","EVT_26_PRS_001","EVT_27_FINAL_001","EVT_27_MENT_001","EVT_27_REC_001","EVT_27_RIV_001","EVT_28_BODY_001","EVT_28_FINAL_001","EVT_28_IMG_001","EVT_28_JAN_001","EVT_28_MONEY_001","EVT_28_PRS_001","EVT_28_TACT_001","EVT_29_CCH_001","EVT_29_EUR_001","EVT_29_FAN_001","EVT_29_FORM_001","EVT_29_HOME_001","EVT_29_MED_001","EVT_29_NAT_001","EVT_29_REC_001"],
-      "conditionalPlanning": {"canonical":24,"exactIds":5,"runtimeOnlyIds":19,"planningReviewed":24,"runtimeCertifiedFull":0,"semanticRewriteOrImplementationRequired":24,"safeDirectSameSceneIdMigrations":0}
+      "canonical_missing": [
+        "EVT_26_CAP_001",
+        "EVT_26_DOC_001",
+        "EVT_26_FINAL_001",
+        "EVT_26_MATCH_001",
+        "EVT_26_MED_001",
+        "EVT_26_NAT_002",
+        "EVT_26_RIV_001",
+        "EVT_26_TEAM_002",
+        "EVT_27_AGT_002",
+        "EVT_27_CON_001",
+        "EVT_27_EUR_001",
+        "EVT_27_HOME_001",
+        "EVT_27_IMG_001",
+        "EVT_27_MATCH_001",
+        "EVT_27_TEAM_001",
+        "EVT_28_CLUB_001",
+        "EVT_28_FORM_001",
+        "EVT_28_MEDIA_001",
+        "EVT_28_MED_001",
+        "EVT_28_STAR_001",
+        "EVT_29_NAT_002",
+        "EVT_29_TACT_001"
+      ],
+      "requires_manual_review_candidates": [
+        {"canonicalId": "EVT_26_BRIDGE_001", "engineId": "EVT_26_IDN_001"},
+        {"canonicalId": "EVT_27_STAR_001", "engineId": "EVT_28_TEAM_001"},
+        {"canonicalId": "EVT_27_AWARD_001", "engineId": "EVT_28_GALA_001"},
+        {"canonicalId": "EVT_28_RICH_001", "engineId": "EVT_29_MKT_001"}
+      ],
+      "engine_only_noncanonical": [
+        "EVT_26_CLB_001",
+        "EVT_26_JAN_001",
+        "EVT_26_PRS_001",
+        "EVT_27_FINAL_001",
+        "EVT_27_MENT_001",
+        "EVT_27_REC_001",
+        "EVT_27_RIV_001",
+        "EVT_28_BODY_001",
+        "EVT_28_FINAL_001",
+        "EVT_28_IMG_001",
+        "EVT_28_JAN_001",
+        "EVT_28_MONEY_001",
+        "EVT_28_PRS_001",
+        "EVT_28_TACT_001",
+        "EVT_29_CCH_001",
+        "EVT_29_EUR_001",
+        "EVT_29_FAN_001",
+        "EVT_29_FORM_001",
+        "EVT_29_HOME_001",
+        "EVT_29_MED_001",
+        "EVT_29_NAT_001",
+        "EVT_29_REC_001"
+      ],
+      "conditionalPlanning": {
+        "canonical": 24,
+        "exactIds": 5,
+        "runtimeOnlyIds": 19,
+        "planningReviewed": 24,
+        "runtimeCertifiedFull": 0,
+        "semanticRewriteOrImplementationRequired": 24,
+        "safeDirectSameSceneIdMigrations": 0
+      }
+    }
+  },
+  "implementationBatches": {
+    "T5.10": {
+      "status": "implemented_and_regression_green_pending_pr",
+      "events": ["EVT_23_BRIDGE_001", "EVT_23_AGT_001", "EVT_23_BODY_001"],
+      "sourceContentIdentity": "2e07efd2ea99c4e9ec4c2b20ae89664204f76db2c55a72d567208799c01bccff",
+      "targetContentIdentity": "5f6a871e4124498aab29903327739037a52b50e6505026bd95824d275d92eaae",
+      "schedulerMappings": 3,
+      "migrationKind": "distinct_scene",
+      "clearCanonicalSeen": true,
+      "clearCanonicalCooldown": true,
+      "seedOriginMappings": 0,
+      "directedTests": "7/7 PASS",
+      "fullRegression": "PASS",
+      "notes": [
+        "EVT_23_BRIDGE_001 no firma ni modifica contrato.",
+        "EVT_23_AGT_001 no crea oferta formal mediante efectos narrativos.",
+        "EVT_23_BODY_001 usa OR causal real: bodyLoad alto o SEED_BODY_PRECEDENT.",
+        "La migración preserva history/provenance y libera la supresión legacy SEEN/cooldown para las tres escenas.",
+        "No se inventa conocimiento del agente activo: la deuda epistemológica queda fail-closed para T5.3."
+      ]
     }
   },
   "conditionalReconciliation": {
@@ -48,19 +225,61 @@
     "runtimeCertifiedFull": 0,
     "artifact": "analysis/T5.1/canon-23-30-conditionals.json",
     "upstreamState": "project/t5_1/T5_1_CONDITIONAL_RECONCILIATION_STATE.json",
-    "upstreamReviews": ["project/t5_1/T5_1_05A_REVIEW_23_26.md","project/t5_1/T5_1_05C_SEMANTIC_REVIEW_26_30.md"],
+    "upstreamReviews": [
+      "project/t5_1/T5_1_05A_REVIEW_23_26.md",
+      "project/t5_1/T5_1_05C_SEMANTIC_REVIEW_26_30.md"
+    ],
     "implementationRule": "Planning review does not certify runtime. All 44 callbacks require scene-specific semantic implementation/certification and pending-save compatibility."
   },
   "highRiskFindings": [
-    {"id":"EVT_27_MED_001","canonical":"La cirugía puede esperar; SEED_SURGERY_TIMING","engine":"La final y el isquio; FINAL_CONTEXT + SEED_BIG_MATCH_BODY","status":"needs_reimplementation"},
-    {"id":"EVT_26_MKT_001","canonical":"Campeón aquí, protagonista allí","engine":"Quieren construir alrededor de ti + plantilla genérica; T1=pilot_repair_required","status":"needs_reimplementation"},
-    {"id":"EVT_26_BRIDGE_001","canonical":"Ya no te pagan por potencial","engineCandidate":"EVT_26_IDN_001","candidateState":"not_approved","status":"requires_manual_review"},
-    {"id":"CEVT_24_TOURN_02","finding":"runtime NATIONAL_CALLED=true contradice la escena canónica de quedar fuera de la lista final","status":"condition_contradiction"},
-    {"id":"CEVT_29_BODY_04","finding":"same ID: bodyLoad runtime no equivale a recuperación positiva tras cirugía/cuerpo crónico","status":"exact_id_semantic_collision"}
+    {
+      "id": "EVT_27_MED_001",
+      "canonical": "La cirugía puede esperar; SEED_SURGERY_TIMING",
+      "engine": "La final y el isquio; FINAL_CONTEXT + SEED_BIG_MATCH_BODY",
+      "status": "needs_reimplementation"
+    },
+    {
+      "id": "EVT_26_MKT_001",
+      "canonical": "Campeón aquí, protagonista allí",
+      "engine": "Quieren construir alrededor de ti + plantilla genérica; T1=pilot_repair_required",
+      "status": "needs_reimplementation"
+    },
+    {
+      "id": "EVT_26_BRIDGE_001",
+      "canonical": "Ya no te pagan por potencial",
+      "engineCandidate": "EVT_26_IDN_001",
+      "candidateState": "not_approved",
+      "status": "requires_manual_review"
+    },
+    {
+      "id": "CEVT_24_TOURN_02",
+      "finding": "runtime NATIONAL_CALLED=true contradice la escena canónica de quedar fuera de la lista final",
+      "status": "condition_contradiction"
+    },
+    {
+      "id": "CEVT_29_BODY_04",
+      "finding": "same ID: bodyLoad runtime no equivale a recuperación positiva tras cirugía/cuerpo crónico",
+      "status": "exact_id_semantic_collision"
+    }
   ],
   "approvedAliases": [],
   "noSilentAliases": true,
-  "protectedFiles": ["project/PLAN_PASADAS.md","analysis/2026-09-11/plan-seguimiento.json"],
-  "changedFilesPlanned": ["analysis/T5.1/canon-23-30.json","analysis/T5.1/canon-23-30-conditionals.json","project/workstreams/T51_CANON_23_30.md","scripts/test-t51-canon-23-30.mjs","scripts/test-t51-canon-23-30-conditionals.mjs"],
-  "nextImplementationBatches": {"23_26":"T5.10-T5.14","26_30":"T5.15-T5.21"}
+  "protectedFiles": [
+    "project/PLAN_PASADAS.md",
+    "analysis/2026-09-11/plan-seguimiento.json"
+  ],
+  "currentBatchFiles": [
+    "analysis/T5.1/canon-23-30.json",
+    "project/workstreams/T51_CANON_23_30.md",
+    "scripts/test-t51-content-migration.mjs",
+    "scripts/test-t51-t510-23-26.mjs",
+    "src/content/events/23_26/index.ts",
+    "src/content/events/23_26/t510-principal-events.ts",
+    "src/session/content-migration.ts"
+  ],
+  "temporaryWorkflowExcluded": ".github/workflows/t510-content-probe.yml",
+  "nextImplementationBatches": {
+    "23_26": "T5.11-T5.14",
+    "26_30": "T5.15-T5.21"
+  }
 }
