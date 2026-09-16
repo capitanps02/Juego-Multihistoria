@@ -53,6 +53,17 @@ function fixture({ producerStatus = 'verified', consumerStatus = 'verified', con
   return { lifecycle, handoff, deferred, events };
 }
 
+function classification(disposition, extra = {}) {
+  return {
+    seedId: 'SEED_FIXTURE_CLOSURE',
+    owner: 't51/fixture',
+    disposition,
+    rationale: 'Canonical owner explicitly approved this disposition with sufficient evidence.',
+    evidenceRefs: ['owner-audit.md#seed-fixture'],
+    ...extra
+  };
+}
+
 test('closure readiness: verified producer and verified event consumer produce verified feasible evidence without auto-closing canon', () => {
   const report = buildClosureReadinessReport(fixture());
   const row = report.rows[0];
@@ -64,6 +75,68 @@ test('closure readiness: verified producer and verified event consumer produce v
   assert.equal(row.nextAction, 'owner_classify_final_canonical_disposition');
   assert.equal(report.rules.structuralPass, true);
   assert.equal(report.rules.canonicalClosureComplete, false);
+});
+
+test('closure classification: verified canonical chain is accepted only through explicit owner entry', () => {
+  const report = buildClosureReadinessReport({
+    ...fixture(),
+    classifications: [classification('canonical_chain', {
+      producerEventId: 'EVT_PRODUCER',
+      consumerEventId: 'EVT_CONSUMER'
+    })]
+  });
+  const row = report.rows[0];
+  assert.equal(report.rules.classificationRegistryValid, true);
+  assert.equal(report.summary.canonicalClosureClassified, 1);
+  assert.equal(report.summary.canonicalClosurePending, 0);
+  assert.equal(report.rules.canonicalClosureComplete, true);
+  assert.equal(row.canonicalClosure, 'canonical_chain');
+  assert.equal(row.nextAction, 'canonical_closure_classified');
+  assert.equal(row.canonicalClosureEvidence.producerEventId, 'EVT_PRODUCER');
+});
+
+test('closure classification: technical-adaptation endpoint cannot be certified as canonical chain', () => {
+  const report = buildClosureReadinessReport({
+    ...fixture({ consumerStatus: 'technical_adaptation' }),
+    classifications: [classification('canonical_chain', {
+      producerEventId: 'EVT_PRODUCER',
+      consumerEventId: 'EVT_CONSUMER'
+    })]
+  });
+  assert.equal(report.rules.classificationRegistryValid, false);
+  assert.equal(report.rules.structuralPass, false);
+  assert.equal(report.summary.canonicalClosureClassified, 0);
+  assert.equal(report.classificationRegistry.errors[0].code, 'canonical_chain_not_verified');
+});
+
+test('closure classification: owner mismatch fails closed', () => {
+  const bad = classification('canonical_chain', {
+    owner: 't51/wrong-owner',
+    producerEventId: 'EVT_PRODUCER',
+    consumerEventId: 'EVT_CONSUMER'
+  });
+  const report = buildClosureReadinessReport({ ...fixture(), classifications: [bad] });
+  assert.equal(report.rules.structuralPass, false);
+  assert.equal(report.classificationRegistry.errors[0].code, 'owner_mismatch');
+});
+
+test('closure classification: finite age expiry can be owner-classified when runtime evidence supports the basis', () => {
+  const report = buildClosureReadinessReport({
+    ...fixture(),
+    classifications: [classification('canonical_expiry', { expiryBasis: 'age' })]
+  });
+  assert.equal(report.rules.classificationRegistryValid, true);
+  assert.equal(report.rows[0].canonicalClosure, 'canonical_expiry');
+  assert.equal(report.rows[0].canonicalClosureEvidence.expiryBasis, 'age');
+});
+
+test('closure classification: unsupported expiry basis fails closed', () => {
+  const report = buildClosureReadinessReport({
+    ...fixture(),
+    classifications: [classification('canonical_expiry', { expiryBasis: 'club' })]
+  });
+  assert.equal(report.rules.classificationRegistryValid, false);
+  assert.equal(report.classificationRegistry.errors[0].code, 'canonical_expiry_basis_not_supported_by_runtime_evidence');
 });
 
 test('closure readiness: technical adaptation endpoint is not promoted to verified canonical evidence', () => {
@@ -93,11 +166,13 @@ test('closure readiness: real catalog is covered 210/210 without structurally im
   assert.equal(report.rules.noUnknownOwners, true);
   assert.equal(report.rules.noMissingDeferredRows, true);
   assert.equal(report.rules.noImpossibleRuntimeChains, true, JSON.stringify(report.impossibleRuntimeChains));
+  assert.equal(report.rules.classificationRegistryValid, true, JSON.stringify(report.classificationRegistry.errors));
   assert.equal(report.rules.structuralPass, true);
-  assert.equal(report.rules.canonicalClosureComplete, false);
-  assert.equal(report.summary.canonicalClosureClassified, 0);
-  assert.equal(report.summary.canonicalClosurePending, 210);
+  assert.equal(report.summary.canonicalClosureClassified, report.classificationRegistry.accepted);
+  assert.equal(report.summary.canonicalClosureClassified + report.summary.canonicalClosurePending, 210);
+  assert.equal(report.rules.canonicalClosureComplete, report.summary.canonicalClosurePending === 0);
   assert.equal(report.summary.simulationConsumerSeeds, 15);
   assert.equal(Object.values(report.summary.topologyCounts).reduce((sum, value) => sum + value, 0), 210);
   assert.equal(Object.values(report.ownerSummary).reduce((sum, value) => sum + value.total, 0), 210);
+  assert.equal(Object.values(report.ownerSummary).reduce((sum, value) => sum + value.closureClassified, 0), report.summary.canonicalClosureClassified);
 });
