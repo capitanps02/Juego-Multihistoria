@@ -9,6 +9,7 @@ import {
   rememberNpcFactInPlace
 } from '../dist/core/npc-knowledge.js';
 import { resolveChoiceInPlace } from '../dist/narrative/resolver.js';
+import './test-t53-dynamic-targets.mjs';
 
 const byId = id => {
   const event = EVENTS.find(candidate => candidate.id === id);

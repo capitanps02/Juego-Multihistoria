@@ -1,4 +1,4 @@
-import { knowledgeRulesFor } from "../catalog/npc-knowledge-rules.js";
+import { knowledgeRulesFor, type NpcEventKnowledgeRule } from "../catalog/npc-knowledge-rules.js";
 import { SEED_CATALOG } from "../catalog/seeds.js";
 import { getSeedScopePolicy } from "../catalog/seed-scope.js";
 import { conditionsPass } from "../core/conditions.js";
@@ -7,6 +7,11 @@ import { getPath, setPath } from "../core/path.js";
 import { DeterministicRng } from "../core/rng.js";
 import type { ChoiceDefinition, Effect, EventDefinition, GameState, OutcomeDefinition, ResolutionResult, SeedInstance, SeedTransition } from "../core/types.js";
 import { syncRetirementState } from "../simulation/late-career-engine.js";
+import {
+  captureNpcKnowledgeTargetContext,
+  resolveNpcKnowledgeTargets,
+  type NpcKnowledgeTargetContext
+} from "./npc-knowledge-targets.js";
 
 const TERMINAL_SEED_STATES = new Set(["resolved", "expired"]);
 const SEED_DEFINITIONS = new Map(SEED_CATALOG.map(seed => [seed.id, seed]));
@@ -166,10 +171,34 @@ function outcomeWeight(state: GameState, outcome: OutcomeDefinition): { weight: 
   return { weight: Math.max(0, weight), modifiers: reasons };
 }
 
-function recordResolvedNpcKnowledge(state: GameState, event: EventDefinition, choiceId: string, outcomeId: string, eventClub: string): void {
+interface ResolvedNpcKnowledgeWrite {
+  rule: NpcEventKnowledgeRule;
+  npcIds: string[];
+}
+
+function resolvedNpcKnowledgeWrites(
+  event: EventDefinition,
+  choiceId: string,
+  outcomeId: string,
+  targetContext: NpcKnowledgeTargetContext
+): ResolvedNpcKnowledgeWrite[] {
+  return knowledgeRulesFor(event.id, choiceId, outcomeId).map(rule => ({
+    rule,
+    npcIds: resolveNpcKnowledgeTargets(rule, targetContext)
+  }));
+}
+
+function recordResolvedNpcKnowledge(
+  state: GameState,
+  event: EventDefinition,
+  choiceId: string,
+  outcomeId: string,
+  eventClub: string,
+  writes: readonly ResolvedNpcKnowledgeWrite[]
+): void {
   forgetExpiredNpcKnowledgeInPlace(state);
-  for (const rule of knowledgeRulesFor(event.id, choiceId, outcomeId)) {
-    for (const npcId of rule.npcIds) {
+  for (const { rule, npcIds } of writes) {
+    for (const npcId of npcIds) {
       rememberNpcFactInPlace(state, npcId, {
         factId: rule.factId ?? event.id,
         eventId: event.id,
@@ -189,6 +218,9 @@ function recordResolvedNpcKnowledge(state: GameState, event: EventDefinition, ch
 function resolveChoiceCore(next: GameState, event: EventDefinition, choiceId: string, qa = false): ResolutionResult {
   const previousClub=next.club;
   const previousRetirementStatus = next.retirement?.status ?? "playing";
+  // Role-based knowledge recipients belong to the scene-entry context. Capture
+  // them before any immediate/outcome effect can move the player or an NPC.
+  const knowledgeTargetContext = captureNpcKnowledgeTargetContext(next);
   const choice: ChoiceDefinition | undefined = event.choices.find(c => c.id === choiceId);
   if (!choice) throw new Error(`Unknown choice ${choiceId} for ${event.id}`);
 
@@ -220,6 +252,12 @@ function resolveChoiceCore(next: GameState, event: EventDefinition, choiceId: st
     expireDueSeedsInPlace(next);
   }
 
+  const knowledgeWrites = resolvedNpcKnowledgeWrites(event, choiceId, selected.id, knowledgeTargetContext);
+  const historyNpcRefs = [...new Set([
+    ...(event.npcRefs ?? []),
+    ...knowledgeWrites.flatMap(write => write.npcIds)
+  ])];
+
   next.eventCooldowns[event.id] = event.cooldown;
   next.flags[`SEEN_${event.id}`] = true;
   next.familyLastSeen[event.family] = next.runtime.day;
@@ -229,10 +267,10 @@ function resolveChoiceCore(next: GameState, event: EventDefinition, choiceId: st
   next.history.push({
     eventId: event.id, date: next.date, season: next.season, choiceId,
     outcomeId: selected.id, club: next.club,
-    snapshot: { family: event.family, npcRefs: event.npcRefs ?? [], tags: event.tags ?? [], age: next.age },
+    snapshot: { family: event.family, npcRefs: historyNpcRefs, tags: event.tags ?? [], age: next.age },
     salience: 70, visibility: "private"
   });
-  recordResolvedNpcKnowledge(next, event, choiceId, selected.id, previousClub);
+  recordResolvedNpcKnowledge(next, event, choiceId, selected.id, previousClub, knowledgeWrites);
 
   return {
     state: next, eventId: event.id, choiceId, outcomeId: selected.id,
