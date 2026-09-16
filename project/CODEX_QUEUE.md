@@ -66,6 +66,13 @@ Before launch:
 
 These entries define the dependency chain only. **Do not launch Codex for a DRAFT item.** Create/re-ground its task branch and PR only when predecessors have been reviewed and integrated into the intended base.
 
+### Audit/planning snapshot
+
+- Conditional semantic planning review is now **134/134** across phases 18–20, 20–23, 23–26, 26–30, 30–34 and 34+.
+- This is planning/review evidence only; runtime canonical reconciliation remains pending.
+- DRAFT implementation prompts are prepared for 05A, 05B, 05C, 05D, 05E, 04D and 04E under `project/t5_1/`.
+- Current runtime completion status remains `NOT_READY`; see `project/t5_1/T5_1_COMPLETION_STATUS_2026-09-16.md`.
+
 ### 4. DRAFT — Batch 02C · canonical age 27
 Dependencies: reviewed/integrated PR #7 and PR #5. Re-audit age 27 after both branches are reconciled.
 
@@ -91,8 +98,10 @@ Dependencies: Batch 04A reviewed/integrated.
 Dependencies: Batch 04B reviewed/integrated.
 
 ### 12. DRAFT — Batch 04D · retirement state machine
-Dependencies: Batch 04C reviewed/integrated. Must preserve `playing -> decided -> announced -> closed`; no epilogue before `closed`.
-Canonical decision needed before implementation of late reversal: conditional matrix contains `CEVT_38_RETIREMENT_REVERSAL`, while the semantic map calls the FSM monotonic and prohibits `closed -> *`.
+Dependencies: Batch 04C reviewed/integrated.
+Audit status: runtime/FSM audit complete in `T5_1_04D_RETIREMENT_RUNTIME_AUDIT.md`; DRAFT implementation prompt prepared in `T5_1_04D_CODEX_PROMPT_DRAFT.md`.
+Current canonical blocker: `CEVT_38_RETIREMENT_REVERSAL` conflicts with the semantic map’s monotonic `playing -> decided -> announced -> closed` model / `closed -> *` prohibition. Decision is tracked in `T5_1_CANON_DECISION_REQUIRED_RETIREMENT_REVERSAL.md`.
+Do not implement reversal semantics by inference.
 
 ### 13. DRAFT — Batch 05A · exact-ID conditional semantic foundation
 Scope: semantic certification foundation for exact-ID conditionals, without treating exact ID or runtime `canonStatus` as proof of full fidelity.
@@ -102,9 +111,12 @@ Audit work completed on workflow branch:
 - 47-entry machine-readable disposition map;
 - field review of all 14 exact-ID callbacks in 18–20;
 - upstream flag/causal provenance review for the strongest 18–20 candidates;
+- field review of all 20 exact-ID/title callbacks in 23–26;
+- confirmed `CEVT_24_TOURN_02` condition mismatch after tracing `NATIONAL_CALLED` provenance;
 - targeted semantic/save/RNG test specification;
 - confirmed that generic exact-ID shells in 20–23, 23–26 and 26–30 cannot be auto-certified;
-- confirmed that some late exact-ID/`verified` retirement callbacks still have semantic mismatches.
+- confirmed that some late exact-ID/`verified` retirement callbacks still have semantic mismatches;
+- DRAFT auditor implementation prompt prepared in `T5_1_05A_CODEX_PROMPT_DRAFT.md`.
 
 Audit result: **0 exact-ID callback is automatically `canonical_verified_full`.**
 
@@ -112,26 +124,32 @@ Runtime status remains DRAFT. Dependencies for runtime implementation: current p
 
 ### 14. DRAFT — Batch 05B · conditional ages 20–23
 Scope: 18 canonical callbacks; 3 exact IDs / 15 identity drifts in P1.
-Audit/planning status: **semantic review complete** on workflow branch. All 18 canonical/runtime rows reviewed; exact-ID semantic collisions identified for `CEVT_21_MEDIA_01` and `CEVT_22_FREE_01`; 0 direct pending-scene substitutions approved.
+Audit/planning status: **semantic review complete**. All 18 canonical/runtime rows reviewed; exact-ID semantic collisions identified for `CEVT_21_MEDIA_01` and `CEVT_22_FREE_01`; 0 direct pending-scene substitutions approved.
+DRAFT prompt: `T5_1_05B_CODEX_PROMPT_DRAFT.md`.
 Dependencies for runtime implementation: Batch 05A runtime foundation plus principal Batch 01.
 
 ### 15. DRAFT — Batch 05C · conditional ages 26–30
 Scope: 24 canonical callbacks; 5 exact IDs / 19 identity drifts in P1.
-Audit/planning status: **semantic review complete** on workflow branch. All 24 canonical/runtime rows reviewed; the five age-29 exact IDs require semantic certification/repair despite runtime `verified` metadata.
+Audit/planning status: **semantic review complete**. All 24 canonical/runtime rows reviewed; the five age-29 exact IDs require semantic certification/repair despite runtime `verified` metadata.
+DRAFT prompt: `T5_1_05C_CODEX_PROMPT_DRAFT.md`.
 Dependencies for runtime implementation: Batch 05B and principal Batches 02A–02E including seed chronology.
 
 ### 16. DRAFT — Batch 05D · conditional ages 30–34
 Scope: 26 canonical callbacks; P1 had 0/26 exact IDs. Identity must be established from condition + scene + function/memory, never fuzzy/title matching.
+Audit/planning status: **semantic review complete** — 26/26 legacy/runtime shells reviewed and 0/26 approved as direct same-scene migration.
+DRAFT prompt: `T5_1_05D_CODEX_PROMPT_DRAFT.md`.
 Dependencies for runtime implementation: Batch 05C and principal Batch 03B.
-Audit/planning status: **semantic review complete** on workflow branch — 26/26 legacy/runtime shells reviewed and 0/26 approved as direct same-scene migration.
 
 ### 17. DRAFT — Batch 05E · conditional ages 34+
 Scope: 32 canonical callbacks; 5 exact IDs / 27 identity drifts in P1, including retirement callbacks.
-Audit/planning status: **semantic review complete** on workflow branch. All 32 canonical/runtime rows reviewed; 0/5 exact IDs auto-certifiable. Open canonical/FSM tension: `CEVT_38_RETIREMENT_REVERSAL` vs monotonic terminal model. Runtime `CEVT_RET_RECONSIDER` currently performs `announced -> playing` and cannot be accepted without explicit canonical resolution.
-Dependencies for runtime implementation: Batch 05D and principal Batch 04D. Must preserve retirement-state and closure-shape invariants.
+Audit/planning status: **semantic review complete**. All 32 canonical/runtime rows reviewed; 0/5 exact IDs auto-certifiable.
+DRAFT prompt: `T5_1_05E_CODEX_PROMPT_DRAFT.md`.
+Hard blocker: same retirement-reversal canonical decision as 04D. Runtime `CEVT_RET_RECONSIDER` currently performs `announced -> playing` and is not canonically approved.
+Dependencies for runtime implementation: Batch 05D and principal Batch 04D.
 
 ### 18. DRAFT — Batch 04E · epilogue + terminal QA
-Dependencies: Batch 05E plus retirement Batch 04D. Epilogue may read terminal facts only after `closed`; run final 388-event identity/semantic/migration/causal/deterministic gates here.
+Audit status: current epilogue truthfulness audited in `T5_1_04E_EPILOGUE_RUNTIME_AUDIT.md`; DRAFT final-task prompt prepared in `T5_1_04E_CODEX_PROMPT_DRAFT.md`.
+Dependencies: Batch 05E plus retirement Batch 04D and all prior canonical reconciliation. Epilogue may read terminal facts only after `closed`; final task runs the 388-event identity/semantic/migration/causal/deterministic gates and acceptance evidence.
 
 ## Dependency summary
 
