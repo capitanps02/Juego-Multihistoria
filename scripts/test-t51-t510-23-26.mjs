@@ -22,6 +22,7 @@ const TARGET_IDENTITY = 'fee2ff875bac7979d3907f5ee1004ef736efa9a257237c6dee629dd
 const T510_IDS = ['EVT_23_BRIDGE_001', 'EVT_23_AGT_001', 'EVT_23_BODY_001'];
 const PRE_T51_EVENTS = JSON.parse(fs.readFileSync('qa/fixtures/t5.1/pre-t51-event-catalog.json', 'utf8'));
 const B1A_FIXTURE = JSON.parse(fs.readFileSync(`qa/fixtures/t5.1/post-t51-sources/${T51_B1A_CONTENT_IDENTITY}.json`, 'utf8'));
+const T510_FIXTURE = JSON.parse(fs.readFileSync(`qa/fixtures/t5.1/post-t51-sources/${T51_T510_CONTENT_IDENTITY}.json`, 'utf8'));
 
 const byId = id => {
   const rows = EVENTS_23_26.filter(event => event.id === id);
@@ -148,22 +149,22 @@ test('GPS resolution records load-management memory without rewriting the old bo
   assert.equal(newSeed?.payload.plan, 'weekly_prevention');
 });
 
-test('T5.10 extends the lineage PRE -> B1a -> T5.10 with no direct shortcut', async () => {
-  const actualIdentity = await contentIdentity(EVENTS);
-  assert.equal(actualIdentity, TARGET_IDENTITY);
-  assert.equal(actualIdentity, T51_T510_CONTENT_IDENTITY);
+test('T5.10 frozen catalog preserves PRE -> B1a -> T5.10 lineage with no direct shortcut', async () => {
+  const frozenIdentity = await contentIdentity(T510_FIXTURE.events);
+  assert.equal(frozenIdentity, TARGET_IDENTITY);
+  assert.equal(frozenIdentity, T51_T510_CONTENT_IDENTITY);
 
-  assert.equal(findMigrationRoute(PRE_T51_CONTENT_IDENTITY, actualIdentity, CONTENT_MIGRATION_ROUTES), undefined,
+  assert.equal(findMigrationRoute(PRE_T51_CONTENT_IDENTITY, frozenIdentity, CONTENT_MIGRATION_ROUTES), undefined,
     'multigeneration lineage must not add a PRE -> T5.10 shortcut');
 
-  const fromPre = findMigrationPath(PRE_T51_CONTENT_IDENTITY, actualIdentity, CONTENT_MIGRATION_ROUTES);
+  const fromPre = findMigrationPath(PRE_T51_CONTENT_IDENTITY, frozenIdentity, CONTENT_MIGRATION_ROUTES);
   assert.ok(fromPre);
   assert.deepEqual(fromPre.map(route => [route.sourceContentIdentity, route.targetContentIdentity]), [
     [PRE_T51_CONTENT_IDENTITY, T51_B1A_CONTENT_IDENTITY],
-    [T51_B1A_CONTENT_IDENTITY, actualIdentity]
+    [T51_B1A_CONTENT_IDENTITY, frozenIdentity]
   ]);
 
-  const fromB1a = findMigrationPath(T51_B1A_CONTENT_IDENTITY, actualIdentity, CONTENT_MIGRATION_ROUTES);
+  const fromB1a = findMigrationPath(T51_B1A_CONTENT_IDENTITY, frozenIdentity, CONTENT_MIGRATION_ROUTES);
   assert.ok(fromB1a);
   assert.equal(fromB1a.length, 1);
   const route = fromB1a[0];
@@ -219,15 +220,20 @@ test('B1a -> T5.10 preserves legacy history/seeds while releasing exact-ID sched
   }
 });
 
-test('real B1a and pre-T5.1 Session v3 snapshots both migrate to T5.10 without RNG drift', async () => {
+test('real B1a and pre-T5.1 Session v3 snapshots migrate through T5.10 to active content without RNG drift', async () => {
+  const activeIdentity = await contentIdentity(EVENTS);
   for (const [name, events] of [['b1a', B1A_FIXTURE.events], ['pre', PRE_T51_EVENTS]]) {
     const session = await GameSession.create(name === 'b1a' ? 51001 : 51002, { sessionId: `t510-${name}`, events });
     const before = session.exportSnapshot();
     const beforeState = structuredClone(before.state);
     const beforeRng = structuredClone(before.state.rngState);
+    const path = findMigrationPath(before.contentIdentity, activeIdentity, CONTENT_MIGRATION_ROUTES);
+    assert.ok(path, `${name}: missing migration path to active content`);
+    assert.ok(path.some(route => route.targetContentIdentity === T51_T510_CONTENT_IDENTITY), `${name}: lineage skipped T5.10`);
+
     const migrated = await GameSession.migrateAndResume(before);
     const after = migrated.exportSnapshot();
-    assert.equal(after.contentIdentity, TARGET_IDENTITY, `${name}: wrong target identity`);
+    assert.equal(after.contentIdentity, activeIdentity, `${name}: wrong active target identity`);
     assert.deepEqual(after.state, beforeState, `${name}: migration changed game state without resolved history`);
     assert.deepEqual(after.state.rngState, beforeRng, `${name}: migration consumed RNG`);
   }
