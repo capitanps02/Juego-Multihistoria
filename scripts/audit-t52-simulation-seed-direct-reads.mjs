@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { SIMULATION_SEED_CONSUMERS } from './t52-simulation-seed-consumers.mjs';
+import { HISTORICAL_SEED_CONSUMERS } from './t52-historical-seed-consumers.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -16,11 +17,12 @@ function walkTsFiles(dir) {
 }
 
 /**
- * Extract positive direct seed-presence checks that bypass HAS_SEED_* flags.
+ * Extract positive direct seed-identity checks that bypass HAS_SEED_* flags.
  *
  * Deliberately narrow: equality against an object `.id` / `?.id` or a variable
- * named `seedId` / ending in `SeedId` is treated as a positive presence read.
- * Inequality is not, because it does not prove dependence on the named seed being present.
+ * named `seedId` / ending in `SeedId` is treated as a dependency on the named seed.
+ * The registry decides whether that dependency means live presence or persisted history.
+ * Inequality is not treated as a positive dependency.
  */
 export function directSeedIdentityReadsFromSource(source) {
   const ids = new Set();
@@ -36,9 +38,23 @@ export function directSeedIdentityReadsFromSource(source) {
   return [...ids].sort();
 }
 
+function validHistoricalRegistration(row) {
+  return (
+    typeof row?.file === 'string' && row.file.length > 0 &&
+    typeof row?.seedId === 'string' && /^SEED_[A-Z0-9_]+$/.test(row.seedId) &&
+    Array.isArray(row?.ageWindow) && row.ageWindow.length === 2 &&
+    typeof row.ageWindow[0] === 'number' &&
+    (row.ageWindow[1] === null || typeof row.ageWindow[1] === 'number') &&
+    (row.ageWindow[1] === null || row.ageWindow[0] <= row.ageWindow[1]) &&
+    typeof row?.surface === 'string' && row.surface.length > 0 &&
+    typeof row?.rationale === 'string' && row.rationale.length > 0
+  );
+}
+
 export function auditDirectSimulationSeedReads(
-  registry = SIMULATION_SEED_CONSUMERS,
-  simulationDir = path.join(root, 'src/simulation')
+  liveRegistry = SIMULATION_SEED_CONSUMERS,
+  simulationDir = path.join(root, 'src/simulation'),
+  historicalRegistry = HISTORICAL_SEED_CONSUMERS
 ) {
   const observedUses = [];
   for (const file of walkTsFiles(simulationDir)) {
@@ -50,13 +66,57 @@ export function auditDirectSimulationSeedReads(
   }
 
   const key = row => `${row.file}:${row.seedId}`;
-  const registeredKeys = new Set(registry.map(key));
+  const observedKeys = new Set(observedUses.map(key));
+  const liveKeys = new Set(liveRegistry.map(key));
+  const historicalKeys = new Set(historicalRegistry.map(key));
+  const registeredKeys = new Set([...liveKeys, ...historicalKeys]);
+
+  const ambiguousRegistrations = [...liveKeys]
+    .filter(value => historicalKeys.has(value))
+    .sort();
+  const staleHistoricalRegistrations = historicalRegistry
+    .filter(row => !observedKeys.has(key(row)))
+    .map(row => ({ file: row.file, seedId: row.seedId, surface: row.surface }));
+  const invalidHistoricalRegistrations = historicalRegistry
+    .filter(row => !validHistoricalRegistration(row))
+    .map(row => ({
+      file: row?.file ?? null,
+      seedId: row?.seedId ?? null,
+      ageWindow: row?.ageWindow ?? null,
+      surface: row?.surface ?? null
+    }));
+  const duplicateHistoricalRegistrations = [...historicalRegistry.reduce((counts, row) => {
+    const value = key(row);
+    counts.set(value, (counts.get(value) ?? 0) + 1);
+    return counts;
+  }, new Map()).entries()]
+    .filter(([, count]) => count > 1)
+    .map(([value, count]) => ({ key: value, count }));
   const unregisteredUses = observedUses.filter(row => !registeredKeys.has(key(row)));
+
+  const pass = (
+    unregisteredUses.length === 0 &&
+    ambiguousRegistrations.length === 0 &&
+    staleHistoricalRegistrations.length === 0 &&
+    invalidHistoricalRegistrations.length === 0 &&
+    duplicateHistoricalRegistrations.length === 0
+  );
 
   return {
     observedUses,
+    liveRegisteredDirectUses: observedUses.filter(row => liveKeys.has(key(row))),
+    historicalRegisteredUses: historicalRegistry.map(row => ({
+      file: row.file,
+      seedId: row.seedId,
+      ageWindow: row.ageWindow,
+      surface: row.surface
+    })),
     unregisteredUses,
-    pass: unregisteredUses.length === 0
+    ambiguousRegistrations,
+    staleHistoricalRegistrations,
+    invalidHistoricalRegistrations,
+    duplicateHistoricalRegistrations,
+    pass
   };
 }
 
@@ -65,7 +125,13 @@ function main() {
   console.log(JSON.stringify({
     task: 'T5.2 direct simulation seed identity read ratchet',
     observedDirectIdentityReads: report.observedUses.length,
+    liveRegisteredDirectIdentityReads: report.liveRegisteredDirectUses.length,
+    historicalRegisteredIdentityReads: report.historicalRegisteredUses.length,
     unregisteredDirectIdentityReads: report.unregisteredUses,
+    ambiguousRegistrations: report.ambiguousRegistrations,
+    staleHistoricalRegistrations: report.staleHistoricalRegistrations,
+    invalidHistoricalRegistrations: report.invalidHistoricalRegistrations,
+    duplicateHistoricalRegistrations: report.duplicateHistoricalRegistrations,
     pass: report.pass
   }, null, 2));
   if (!report.pass) process.exitCode = 1;
