@@ -1,0 +1,135 @@
+{
+  "contract": "T5.1 session content migration",
+  "version": 1,
+  "generatedAt": "2026-09-16",
+  "status": "planning_contract_not_runtime_implemented",
+  "currentRuntime": {
+    "gameStateSchemaVersion": 8,
+    "sessionVersion": 2,
+    "contentIdentityAlgorithm": "sha256(JSON.stringify(events))",
+    "resumeRejectsChangedContent": true,
+    "pendingDecisionStoresFullEventDefinition": true,
+    "pendingDecisionRequiresExactCurrentCatalogDefinition": true,
+    "journalValidationDependsOnCurrentCatalog": true,
+    "gameStateMigrationIncludesCatalogMigration": false
+  },
+  "recommendedTarget": {
+    "sessionVersion": 3,
+    "gameStateSchemaVersion": "bump_only_if_provenance_is_stored_inside_GameState",
+    "unknownSourceContentIdentity": "reject_explicitly",
+    "migrationConsumesRng": false,
+    "migrationSchedulesEvents": false,
+    "migrationResolvesChoices": false,
+    "legacyCatalogParticipatesInScheduling": false,
+    "legacyCatalogPurpose": [
+      "validate_completed_legacy_decisions",
+      "validate_pending_legacy_event_definition",
+      "resolve_already_presented_pending_legacy_choice"
+    ]
+  },
+  "migrationPipeline": [
+    "structural_envelope_validation",
+    "read_source_content_identity",
+    "current_identity_fast_path_or_registered_route_lookup",
+    "validate_source_snapshot_against_source_catalog_compatibility",
+    "attach_or_migrate_per_decision_provenance",
+    "preserve_pending_legacy_definition_when_not_rewritten_by_proven_same_scene_mapping",
+    "preserve_history_and_seed_truth",
+    "set_current_content_identity_only_after_successful_migration",
+    "strict_compatibility_aware_snapshot_validation",
+    "publish_only_after_full_validation"
+  ],
+  "perDecisionProvenance": {
+    "requiredForMixedCatalogHistory": true,
+    "minimumLogicalFields": [
+      "sourceContentIdentity",
+      "eventFingerprint",
+      "eventId",
+      "choiceId",
+      "outcomeId"
+    ],
+    "eventFingerprint": "sha256(exact serialized event definition or equivalently collision-resistant deterministic definition hash)",
+    "reason": "eventId alone cannot distinguish exact-ID semantic collisions or mixed pre/post-migration history"
+  },
+  "historyRules": {
+    "defaultLegacyIdAction": "preserve",
+    "rewriteLegacyHistoryIdWithoutSameSceneProof": false,
+    "manufactureCanonicalSeenWithoutSameSceneProof": false,
+    "journalMustPreserveDisplayedText": true,
+    "completedLegacyEventsMayBeAbsentFromActiveScheduler": true,
+    "validationUsesLegacyCompatibilityEvidence": true
+  },
+  "pendingRules": {
+    "defaultAction": "preserve_and_resolve_stored_legacy_definition",
+    "directCanonicalSubstitutionWithoutSameSceneProof": false,
+    "preserveInstanceId": true,
+    "preserveChoiceIds": true,
+    "preserveChoiceLabels": true,
+    "preserveOutcomeSemantics": true,
+    "consumeSchedulingRng": false,
+    "unknownOrTamperedLegacyDefinition": "reject_explicitly",
+    "afterResolution": "resume_scheduling_from_active_canonical_catalog"
+  },
+  "sameSceneMappingRules": {
+    "allowedCrosswalkDecision": "same_scene_rewrite_and_id_migration",
+    "requires": [
+      "trigger_context_compatible",
+      "visible_uncertain_information_compatible",
+      "choice_decision_semantics_compatible",
+      "outcome_intent_compatible",
+      "seed_npc_responsibility_compatible",
+      "age_phase_movement_reviewed"
+    ],
+    "mayEstablishCanonicalSeenEquivalence": true,
+    "mustStillPreserveHistoricalTruth": true
+  },
+  "retireTechnicalRules": {
+    "crosswalkDecision": "retire_technical_keep_history_only",
+    "canonicalSeenEquivalence": false,
+    "canonicalReplacementMayAppearLater": true,
+    "legacyHistoryReadable": true,
+    "legacyPendingResolvableIfSourceDefinitionValidated": true
+  },
+  "seedRules": {
+    "preserveLiveSeedWhenSemanticStateValid": true,
+    "rewriteOriginEventWithoutSameSceneProof": false,
+    "rewriteConsumedByWithoutSameSceneProof": false,
+    "legacyOriginLabelAllowed": true,
+    "seedStateAndOriginLabelAreSeparateTruthQuestions": true
+  },
+  "mustPreserve": [
+    "state.history",
+    "journal_displayed_text",
+    "seed_state",
+    "unproven_legacy_seed_origin_labels",
+    "all_rng_stream_states_and_draw_counts",
+    "pending_decision_definition",
+    "pending_result",
+    "command_receipts_and_fingerprints",
+    "revision",
+    "needsWorldAdvance",
+    "market_pending_and_history",
+    "retirement_factual_state",
+    "epilogue_factual_state"
+  ],
+  "requiredTests": [
+    "current_identity_noop_resume",
+    "unknown_identity_rejected_without_write",
+    "legacy_pending_scene_preserved_exactly",
+    "same_id_changed_semantics_pending_not_substituted",
+    "approved_same_scene_pending_mapping",
+    "retired_technical_completed_history_remains_valid",
+    "exact_id_changed_history_validates_against_legacy_provenance",
+    "mixed_legacy_and_canonical_history_resume",
+    "legacy_seed_origin_preserved",
+    "approved_seed_origin_migration_only_with_evidence",
+    "legacy_seen_does_not_manufacture_canonical_seen",
+    "approved_same_scene_seen_equivalence",
+    "receipts_revision_idempotency_preserved",
+    "pending_result_preserved",
+    "commit_failure_rolls_back",
+    "rng_streams_unchanged_by_migration",
+    "double_migration_is_noop",
+    "legacy_pending_or_journal_tampering_rejected"
+  ]
+}
