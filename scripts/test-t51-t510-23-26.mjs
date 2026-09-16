@@ -8,12 +8,14 @@ import { resolveChoice } from '../dist/narrative/resolver.js';
 import { contentIdentity } from '../dist/session/content-identity.js';
 import {
   CONTENT_MIGRATION_ROUTES,
-  applyMigrationRouteInPlace,
+  T51_B1A_CONTENT_IDENTITY,
+  T510_CONTENT_IDENTITY,
+  applyMigrationPathInPlace,
+  findMigrationPath,
   findMigrationRoute
 } from '../dist/session/content-migration.js';
 import { PRE_T51_CONTENT_IDENTITY } from '../dist/session/pre-t51-legacy-registry.js';
 
-const TARGET_IDENTITY = '5f6a871e4124498aab29903327739037a52b50e6505026bd95824d275d92eaae';
 const T510_IDS = ['EVT_23_BRIDGE_001', 'EVT_23_AGT_001', 'EVT_23_BODY_001'];
 
 const byId = id => {
@@ -143,11 +145,13 @@ test('GPS resolution records load-management memory without rewriting the old bo
   assert.equal(newSeed?.payload.plan, 'weekly_prevention');
 });
 
-test('T5.10 migration route targets the exact active content identity', async () => {
+test('T5.10 extends lineage only through B1a -> C and targets the exact active catalog', async () => {
   const actualIdentity = await contentIdentity(EVENTS);
-  assert.equal(actualIdentity, TARGET_IDENTITY);
-  const route = findMigrationRoute(PRE_T51_CONTENT_IDENTITY, actualIdentity, CONTENT_MIGRATION_ROUTES);
-  assert.ok(route, 'pre-T5.1 saves need an explicit route to this exact catalog');
+  assert.equal(actualIdentity, T510_CONTENT_IDENTITY);
+  assert.equal(findMigrationRoute(PRE_T51_CONTENT_IDENTITY, actualIdentity, CONTENT_MIGRATION_ROUTES), undefined, 'PRE -> C shortcut would make lineage ambiguous');
+
+  const route = findMigrationRoute(T51_B1A_CONTENT_IDENTITY, actualIdentity, CONTENT_MIGRATION_ROUTES);
+  assert.ok(route, 'B1a saves need a direct edge to the T5.10 catalog');
   assert.deepEqual(route.seedOriginMappings ?? [], []);
   assert.deepEqual((route.schedulerMappings ?? []).map(mapping => mapping.legacyEventId), T510_IDS);
   for (const mapping of route.schedulerMappings ?? []) {
@@ -156,11 +160,19 @@ test('T5.10 migration route targets the exact active content identity', async ()
     assert.equal(mapping.clearCanonicalSeen, true);
     assert.equal(mapping.clearCanonicalCooldown, true);
   }
+
+  const path = findMigrationPath(PRE_T51_CONTENT_IDENTITY, actualIdentity, CONTENT_MIGRATION_ROUTES);
+  assert.ok(path);
+  assert.equal(path.length, 2);
+  assert.deepEqual(path.map(edge => [edge.sourceContentIdentity, edge.targetContentIdentity]), [
+    [PRE_T51_CONTENT_IDENTITY, T51_B1A_CONTENT_IDENTITY],
+    [T51_B1A_CONTENT_IDENTITY, T510_CONTENT_IDENTITY]
+  ]);
 });
 
-test('legacy exact-ID history is preserved while canonical scheduler suppression is cleared', () => {
-  const route = findMigrationRoute(PRE_T51_CONTENT_IDENTITY, TARGET_IDENTITY, CONTENT_MIGRATION_ROUTES);
-  assert.ok(route);
+test('PRE -> B1a -> C preserves history and seeds while clearing legacy suppression for rewritten exact IDs', () => {
+  const path = findMigrationPath(PRE_T51_CONTENT_IDENTITY, T510_CONTENT_IDENTITY, CONTENT_MIGRATION_ROUTES);
+  assert.ok(path);
   const state = createInitialState(20260916);
   state.age = 23;
   state.phase = '23_26';
@@ -192,7 +204,7 @@ test('legacy exact-ID history is preserved while canonical scheduler suppression
   const historyBefore = structuredClone(state.history);
   const seedBefore = structuredClone(state.seeds);
 
-  applyMigrationRouteInPlace(state, route);
+  applyMigrationPathInPlace(state, path);
 
   assert.deepEqual(state.history, historyBefore, 'migration must not relabel historical journal entries');
   assert.deepEqual(state.seeds, seedBefore, 'T5.10 authorizes no historical seed-origin rewrite');
