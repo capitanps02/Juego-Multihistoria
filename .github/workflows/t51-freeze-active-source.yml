@@ -1,0 +1,41 @@
+name: T51 freeze active post source
+
+on:
+  push:
+    branches:
+      - integration/t51-post-source-evidence
+
+permissions:
+  contents: write
+
+jobs:
+  freeze:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: integration/t51-post-source-evidence
+          fetch-depth: 0
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Freeze active source
+        run: node scripts/freeze-t51-active-source.mjs
+      - name: Generate post-T5.1 registry
+        run: node scripts/generate-t51-post-legacy-registry.mjs
+      - name: Commit generated evidence
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add qa/fixtures/t5.1/post-t51-sources src/session/post-t51-legacy-registry.ts
+          git diff --cached --quiet && exit 0
+          git commit -m "T5.1: freeze active post-content source evidence"
+          git push origin HEAD:integration/t51-post-source-evidence
