@@ -29,7 +29,7 @@
     "test:t25": "npm run build && node --test scripts/test-t25.mjs",
     "qa:t25": "npm run build && node scripts/t25-gate.mjs",
     "test:t32": "npm run build && node --test scripts/test-t32.mjs",
-    "test:t41": "npm run build && node --test scripts/test41.mjs",
+    "test:t41": "npm run build && node --test scripts/test-t41.mjs",
     "test:t42": "npm run build && node --test scripts/test-t42.mjs",
     "test:t43": "npm run build && node --test scripts/test-t43.mjs",
     "test:t44": "npm run build && node --test scripts/test-t44.mjs",
