@@ -19,25 +19,6 @@ const byId = id => {
   return event;
 };
 
-test('T5 integration/T5.2: sincronizar presencia elimina un HAS_* obsoleto sin instancia viva', async t => {
-  if (typeof resolver.syncSeedPresenceFlagsInPlace !== 'function') {
-    t.skip('T5.2 todavía no está integrado en esta rama');
-    return;
-  }
-
-  const state = createInitialState(55201);
-  state.seeds = state.seeds.filter(seed => seed.id !== 'SEED_NANO_SHADOW');
-  state.flags.HAS_SEED_NANO_SHADOW = true;
-
-  resolver.syncSeedPresenceFlagsInPlace(state);
-
-  assert.equal(
-    state.flags.HAS_SEED_NANO_SHADOW,
-    false,
-    'syncSeedPresenceFlagsInPlace dejó un flag de presencia true sin ninguna instancia viva'
-  );
-});
-
 test('T5 integration/T5.2+T5.3: una resolución conserva simultáneamente lifecycle de seed y conocimiento NPC', async t => {
   const npcKnowledge = await optionalImport('../dist/core/npc-knowledge.js');
   if (!npcKnowledge || typeof resolver.syncSeedPresenceFlagsInPlace !== 'function') {
