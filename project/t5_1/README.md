@@ -25,6 +25,12 @@ Large source artifacts from the handoff are preserved byte-for-byte as determini
 - `source_archives/T5_1_CONDITIONAL_REVIEW_MATRIX.csv.gz`
 - `source_archives/T5_1_SEMANTIC_MAP_26_RETIREMENT.md.gz`
 
+## Current gate snapshot
+
+- `T5_1_COMPLETION_STATUS_2026-09-16.md`
+
+Overall runtime status remains **NOT_READY**. Planning evidence is much further ahead than implementation; no planning review is treated as a runtime PASS.
+
 ## Conditional semantic review — 134/134 planning complete
 
 Master summary:
@@ -38,6 +44,7 @@ Master summary:
 - `T5_1_05A_TARGETED_TEST_SPEC.md`
 - `T5_1_05A_REVIEW_23_26.md`
 - `T5_1_05A_23_26_PROVENANCE_ADDENDUM.md`
+- `T5_1_05A_CODEX_PROMPT_DRAFT.md`
 
 Key result:
 - 47/134 canonical conditionals have exact IDs in the P1/runtime baseline;
@@ -48,6 +55,7 @@ Key result:
 
 ### Batch 05B — 20–23
 - `T5_1_05B_SEMANTIC_REVIEW_20_23.md`
+- `T5_1_05B_CODEX_PROMPT_DRAFT.md`
 
 Result:
 - 18/18 canonical/runtime callbacks reviewed;
@@ -57,6 +65,7 @@ Result:
 
 ### Batch 05C — 26–30
 - `T5_1_05C_SEMANTIC_REVIEW_26_30.md`
+- `T5_1_05C_CODEX_PROMPT_DRAFT.md`
 
 Result:
 - 24/24 canonical/runtime callbacks reviewed;
@@ -65,6 +74,7 @@ Result:
 ### Batch 05D — 30–34
 - `T5_1_05D_SEMANTIC_REVIEW.md`
 - `T5_1_05D_SEMANTIC_REVIEW.json`
+- `T5_1_05D_CODEX_PROMPT_DRAFT.md`
 
 Result:
 - 26/26 legacy/runtime shells reviewed;
@@ -73,12 +83,28 @@ Result:
 
 ### Batch 05E — 34+
 - `T5_1_05E_SEMANTIC_REVIEW_34_PLUS.md`
+- `T5_1_05E_CODEX_PROMPT_DRAFT.md`
 
 Result:
 - 32/32 canonical/runtime callbacks reviewed;
 - 0/5 exact IDs are auto-certifiable;
 - retirement callbacks expose state-machine/closure mismatches;
 - open canonical source tension: `CEVT_38_RETIREMENT_REVERSAL` vs monotonic `playing -> decided -> announced -> closed` model and `closed -> *` prohibition.
+
+## Terminal / epilogue work prepared
+
+### Batch 04D — retirement FSM
+- `T5_1_04D_RETIREMENT_RUNTIME_AUDIT.md`
+- `T5_1_CANON_DECISION_REQUIRED_RETIREMENT_REVERSAL.md`
+- `T5_1_04D_CODEX_PROMPT_DRAFT.md`
+
+Current audit finds automatic no-market decision, timer-based announcement, administrative no-last-match close, direct early-retirement close, non-monotonic reversal, compressed terminal choices and non-fact-driven last-match behavior. 04D remains DRAFT and depends on principal 04C plus the canonical reversal decision.
+
+### Batch 04E — epilogue + final QA
+- `T5_1_04E_EPILOGUE_RUNTIME_AUDIT.md`
+- `T5_1_04E_CODEX_PROMPT_DRAFT.md`
+
+The current generator correctly guards epilogue generation behind `closed`, but final truthfulness depends on canonical terminal facts from 04D/05E. 04E is the final T5.1 task and remains blocked until all prior reconciliation is integrated.
 
 ## Canonical closure targets
 
