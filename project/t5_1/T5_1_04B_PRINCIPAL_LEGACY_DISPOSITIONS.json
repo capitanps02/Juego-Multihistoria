@@ -1,0 +1,44 @@
+{
+  "task": "T5.1 Batch 04B principal legacy semantic dispositions",
+  "generatedAt": "2026-09-16",
+  "batch": "04B",
+  "phase": "34_plus",
+  "age": 35,
+  "reviewed": 10,
+  "approvedSameSceneMigrations": 0,
+  "defaultDisposition": "retire_technical_keep_history_only",
+  "evidence": {
+    "runtime": "src/content/events/34_plus/principal-events.ts",
+    "canonical": "analysis/2026-09-11/t1/principal-traceability.json",
+    "structuralFinding": "All ten age-35 runtime-only IDs use the shared generic() late-career adapter with identical body/intel/A-B-C-D choices and no canonical scene-specific seed contract. Canonical age-35 targets have concrete gates, information and decisions."
+  },
+  "entries": [
+    {"legacyId":"EVT_35_PRE_001","decision":"retire_technical_keep_history_only","lineageCanonicalId":null,"reason":"Generic preseason adaptation; no unique canonical same-scene counterpart."},
+    {"legacyId":"EVT_35_OPT_001","decision":"retire_technical_keep_history_only","lineageCanonicalId":"EVT_35_CON_001","reason":"Broad contract lineage only; canonical physical-objectives contract exposes fixed/collective/guarantee/reject choices and SEED_AVAILABILITY_CONTRACT."},
+    {"legacyId":"EVT_35_ROLE_001","decision":"retire_technical_keep_history_only","lineageCanonicalId":"EVT_35_BENCH_001","reason":"Broad reduced-role lineage only; canonical bench scene requires five consecutive unused matches and specific stay/rescind/press/mentor choices."},
+    {"legacyId":"EVT_35_NAT_001","decision":"retire_technical_keep_history_only","lineageCanonicalId":"EVT_35_NT_001","reason":"National-team theme only; legacy generic last-cycle row is not the canonical emergency international call scene."},
+    {"legacyId":"EVT_35_MENT_001","decision":"retire_technical_keep_history_only","lineageCanonicalId":"EVT_35_DUAL_001","reason":"Mentor/transition theme only; canonical dual-role scene has explicit institutional-role conflict and SEED_PLAYER_LIAISON_ROLE."},
+    {"legacyId":"EVT_35_MED_001","decision":"retire_technical_keep_history_only","lineageCanonicalId":"EVT_35_CON_001","reason":"Physical-risk lineage only; generic medical row is not the canonical incentive contract and has no scene-specific contract choices."},
+    {"legacyId":"EVT_35_PRS_001","decision":"retire_technical_keep_history_only","lineageCanonicalId":"EVT_35_FAREWELL_001","reason":"Farewell/public narrative lineage only; canonical homage-as-leverage scene is contract-expiry specific and has four farewell/renewal choices."},
+    {"legacyId":"EVT_35_END_001","decision":"retire_technical_keep_history_only","lineageCanonicalId":null,"reason":"Generic June continuation scene; no unique canonical same-scene target and cannot stand in for a retirement decision."},
+    {"legacyId":"EVT_35_BUS_001","decision":"retire_technical_keep_history_only","lineageCanonicalId":"EVT_35_IMG_001","reason":"Commercial/image lineage only; generic wealth row is not the canonical last-major-sponsorship dilemma."},
+    {"legacyId":"EVT_35_CAP_001","decision":"retire_technical_keep_history_only","lineageCanonicalId":null,"reason":"Generic captaincy/role adaptation; no unique canonical same-scene proof among age-35 missing scenes."}
+  ],
+  "representativeCanonicalContrasts": [
+    "EVT_35_CON_001: veteran market + physical doubts, explicit availability-pay formula, SEED_AVAILABILITY_CONTRACT",
+    "EVT_35_FAREWELL_001: institutional legend + expiring contract, homage/renew/leave/independent-homage choices, SEED_FAREWELL_AS_LEVERAGE",
+    "EVT_35_DUAL_001: high legacy + reduced market/return, player-versus-institutional role choices, SEED_PLAYER_LIAISON_ROLE",
+    "EVT_35_TACT_001: ROLE_REINVENTION + positive performance, specialization/old skills/market/renewal choices, SEED_FINAL_REINVENTION",
+    "EVT_35_BENCH_001: five unused matches, wait/rescind/press/mentor choices, SEED_FIVE_MATCHES_UNUSED",
+    "EVT_35_JAN_001: January offer under low/medium role, move/stay/loan/conditional-exit choices, SEED_LAST_JANUARY_MOVE"
+  ],
+  "migrationRules": {
+    "rewriteCompletedHistoryIds": false,
+    "rewritePendingIdsDirectly": false,
+    "manufactureCanonicalSeenFlags": false,
+    "rewriteHistoricalSeedOriginAutomatically": false,
+    "legacyCompatibilityMayResolvePendingOldChoiceContract": true,
+    "legacyCompatibilityDefinitionsMaySchedule": false
+  },
+  "status": "04B_LEGACY_REVIEW_COMPLETE"
+}
