@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "workstream": "T5.15-T5.21 canonical 26-30",
+  "capturedAt": "2026-09-16",
+  "baseMain": "6866ed7710bf317e8633b67a78d477a5be952349",
+  "branch": "t51/canon-26-30",
+  "authority": {
+    "narrative": "Documento Maestro Carrera Futbolista v0.9, sections 23.7-23.x",
+    "technical": "main@6866ed7710bf317e8633b67a78d477a5be952349",
+    "principalPlanning": "analysis/T5.1/canon-23-30.json",
+    "conditionalPlanning": "analysis/T5.1/canon-23-30-conditionals.json",
+    "historicalWorkstream": "project/workstreams/T51_CANON_23_30.md"
+  },
+  "principalInventory": {
+    "canonical": 51,
+    "runtime": 51,
+    "exactIdReimplementations": 25,
+    "canonicalFresh": 26,
+    "canonicalMissingWithoutCandidate": 22,
+    "unapprovedSemanticCandidates": 4,
+    "legacyHistoryOnly": 26,
+    "approvedAliases": 0,
+    "exactIdReimplementationIds": [
+      "EVT_26_AGT_001", "EVT_26_BODY_001", "EVT_26_CON_001", "EVT_26_EUR_001", "EVT_26_HOME_001",
+      "EVT_26_IMG_001", "EVT_26_MKT_001", "EVT_26_NAT_001", "EVT_26_TEAM_001", "EVT_27_AGT_001",
+      "EVT_27_BODY_001", "EVT_27_LOCK_001", "EVT_27_MED_001", "EVT_27_MKT_001", "EVT_27_MONEY_001",
+      "EVT_27_NAT_001", "EVT_27_PRS_001", "EVT_27_TACT_001", "EVT_28_CON_001", "EVT_28_HOME_001",
+      "EVT_28_MKT_001", "EVT_28_NAT_001", "EVT_29_CON_001", "EVT_29_FIN_001", "EVT_29_PRS_001"
+    ],
+    "canonicalMissingWithoutCandidateIds": [
+      "EVT_26_CAP_001", "EVT_26_DOC_001", "EVT_26_FINAL_001", "EVT_26_MATCH_001", "EVT_26_MED_001",
+      "EVT_26_NAT_002", "EVT_26_RIV_001", "EVT_26_TEAM_002", "EVT_27_AGT_002", "EVT_27_CON_001",
+      "EVT_27_EUR_001", "EVT_27_HOME_001", "EVT_27_IMG_001", "EVT_27_MATCH_001", "EVT_27_TEAM_001",
+      "EVT_28_CLUB_001", "EVT_28_FORM_001", "EVT_28_MEDIA_001", "EVT_28_MED_001", "EVT_28_STAR_001",
+      "EVT_29_NAT_002", "EVT_29_TACT_001"
+    ],
+    "unapprovedCandidates": [
+      {"canonicalId":"EVT_26_BRIDGE_001","legacyId":"EVT_26_IDN_001","disposition":"distinct_scene_until_proven_otherwise"},
+      {"canonicalId":"EVT_27_STAR_001","legacyId":"EVT_28_TEAM_001","disposition":"distinct_scene_until_proven_otherwise"},
+      {"canonicalId":"EVT_27_AWARD_001","legacyId":"EVT_28_GALA_001","disposition":"distinct_scene_until_proven_otherwise"},
+      {"canonicalId":"EVT_28_RICH_001","legacyId":"EVT_29_MKT_001","disposition":"distinct_scene_until_proven_otherwise"}
+    ]
+  },
+  "conditionalInventory": {
+    "canonical": 24,
+    "runtime": 24,
+    "exactIds": 5,
+    "runtimeOnlyIds": 19,
+    "semanticRewriteOrImplementationRequired": 24,
+    "safeDirectSameSceneMigrations": 0,
+    "canonicalIds": [
+      "CEVT_26_RIVAS_03", "CEVT_26_MENA_03", "CEVT_26_VELA_03", "CEVT_26_BRUNO_04", "CEVT_26_NANO_03",
+      "CEVT_26_CLARA_04", "CEVT_26_AGENT_05", "CEVT_26_FAMILY_03", "CEVT_27_OWNER_03", "CEVT_27_STAR_02",
+      "CEVT_27_BODY_03", "CEVT_27_AWARD_02", "CEVT_27_FINAL_02", "CEVT_28_MEDIA_02", "CEVT_28_TRANSFER_02",
+      "CEVT_28_DDL_02", "CEVT_28_MANAGER_02", "CEVT_28_MANAGER_03", "CEVT_29_YOUTH_02", "CEVT_29_NAT_02",
+      "CEVT_29_HOME_03", "CEVT_29_BODY_04", "CEVT_29_RECORD_02", "CEVT_29_PROJECT_02"
+    ]
+  },
+  "authorizedPre26ContinuityFamilies": [
+    "RIVAS/MENA/VELA", "BRUNO/NANO/ADRIAN", "CLARA/FIRST_LEAK/PRIVATE_CHAT",
+    "FIRST_AGENT/AGENT_POWER/AGENT_PROOF", "LOAD_MANAGEMENT/CHRONIC_BODY/BIG_MATCH_BODY",
+    "IMAGE_RIGHTS/SPONSOR_IMAGE/PUBLIC_PROMISE", "CAPTAINCY_STYLE/PRIVATE_CHAT/LOCKER_VOTE",
+    "YOUNG_MENTOR/STAR_COMPETITION", "FAMILY_BUSINESS/PERSONAL_STAFF",
+    "WEALTHY_EXIT/AGE26_PRIORITY", "HOME_SYMBOL/EXIT_STYLE_UDV"
+  ],
+  "knownCriticalChains": [
+    "EVT_26_EUR_001 -> SEED_BIG_GAME_BENCH -> EVT_26_FINAL_001 -> SEED_FINAL_BENCH",
+    "EVT_26_MATCH_001 -> SEED_RECORD_CHASE -> EVT_27_MATCH_001 -> SEED_RECORD_PUBLIC_TONE",
+    "young-successor context -> EVT_27_TEAM_001 -> SEED_SUCCESSOR_PEAK -> EVT_28_STAR_001 -> SEED_SUCCESSION_DECISION",
+    "SEED_AGENT_CONFLICT_PEAK -> EVT_27_AGT_002 -> SEED_PARALLEL_NEGOTIATION -> EVT_32_BOSMAN_001",
+    "locker/captaincy memory -> EVT_27_LOCK_001 -> SEED_MANAGER_POWER -> EVT_28_CLUB_001",
+    "EVT_27_TACT_001 -> SEED_POSITIONAL_REINVENTION -> EVT_29_TACT_001",
+    "EVT_27_MONEY_001 -> SEED_WEALTH_STRUCTURE -> later home/business consequences",
+    "EVT_26_DOC_001 -> SEED_DOCUMENTARY_ACCESS -> EVT_28_MEDIA_001 -> SEED_DOCUMENTARY_FALLOUT"
+  ],
+  "backlog": {
+    "T5.15": "Age-26 phase boundary and peak-identity/control foundation. Start with EVT_26_BRIDGE_001, then reconcile market/contract/image/body/team scenes without illegal contract mutation.",
+    "T5.16": "Remaining age-26 sport, locker, medical, documentary, rival, national-team, Europe/final scenes plus age-26 conditional callbacks.",
+    "T5.17": "Age-27 contract/agent/market/body/medical/tactical/wealth foundation and causal seed corrections.",
+    "T5.18": "Remaining age-27 rivalry/awards/Europe/record/successor/national/locker arcs plus age-27 callbacks.",
+    "T5.19": "Age-28 transfer/media/form/load/succession/club-power canon plus age-28 callbacks.",
+    "T5.20": "Age-29 reinvention/national availability/contract/press/final-priority canon plus age-29 callbacks and transition-to-30 state audit.",
+    "T5.21": "Block closure: legacy history-only treatment, conditional closure, successive save lineage handoff, long-range chain tests, stable age-30 handoff and Repository Integrity candidate."
+  },
+  "crossWorkstreamDependencies": [
+    {"id":"DEP_26_30_CONTENT_LINEAGE","owner":"coordinator/integration","reason":"Activating any staged T5.15 event changes EVENTS/contentIdentity and requires the next adjacent migration generation plus frozen evidence."},
+    {"id":"DEP_26_30_SEED_ORIGIN_PEAK_IDENTITY","owner":"T5.2/coordinator","reason":"Current catalog still records SEED_PEAK_IDENTITY origin at legacy EVT_26_IDN_001; canonical origin is EVT_26_BRIDGE_001. Do not silently rewrite historical SeedInstance.originEvent."},
+    {"id":"DEP_26_30_OFFER_AUTHORITY","owner":"shared contracts/coordinator","reason":"Market/contract scenes must use CareerOffer authority and explicit player response; narrative effects cannot transfer/sign silently."},
+    {"id":"DEP_26_30_FOOTBALL_FACTS","owner":"simulation/shared","reason":"Match/final callbacks require authoritative sports facts rather than narrative pseudo-RNG."},
+    {"id":"DEP_26_30_NPC_KNOWLEDGE","owner":"T5.3/shared","reason":"Named NPC callbacks need explicit epistemic routes; history/seed presence alone is not knowledge."}
+  ],
+  "firstSafeBatch": {
+    "id": "T5.15-A",
+    "canonicalEvent": "EVT_26_BRIDGE_001",
+    "legacyEvidence": "EVT_26_IDN_001",
+    "identityDisposition": "distinct_scene",
+    "activationPolicy": "stage implementation and directed tests; do not add to active EVENTS until adjacent migration + seed-origin handoff is integrated"
+  }
+}
