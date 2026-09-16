@@ -1,0 +1,63 @@
+{
+  "generated": "2026-09-16",
+  "scope": "Four 30+/retirement principal exact-title candidates outside PR #5",
+  "reviewed": 4,
+  "sameSceneMigrationsApproved": 0,
+  "defaultDisposition": "retire_technical_keep_history_only",
+  "rows": [
+    {
+      "batch": "03A",
+      "canonicalId": "EVT_30_BRIDGE_001",
+      "legacyId": "EVT_30_IDN_001",
+      "sharedTitle": "La palabra veterano",
+      "classification": "strong_title_seed_lineage_not_same_scene",
+      "decision": "retire_technical_keep_history_only",
+      "sameSceneMigrationAllowed": false,
+      "historyEventIdRewriteAllowed": false,
+      "pendingEventIdDirectRewriteAllowed": false,
+      "canonicalReplacementRequired": true,
+      "reason": "Title/age/SEED_VETERAN_LABEL align, but runtime uses generic maturity body/intel/choices rather than the canonical age-30 bridge dilemma and decision intents."
+    },
+    {
+      "batch": "04C",
+      "canonicalId": "EVT_38_RICH_001",
+      "legacyId": "EVT_36_RICH_001",
+      "sharedTitle": "Una última oferta enorme",
+      "classification": "title_lineage_not_same_scene",
+      "decision": "retire_technical_keep_history_only",
+      "sameSceneMigrationAllowed": false,
+      "historyEventIdRewriteAllowed": false,
+      "pendingEventIdDirectRewriteAllowed": false,
+      "canonicalReplacementRequired": true,
+      "reason": "Runtime starts age 36 with generic late-career market choices; canon is age 37+ huge-offer/retirement dilemma with explicit terms, minimum sporting role and six-month route."
+    },
+    {
+      "batch": "04D",
+      "canonicalId": "EVT_RET_FAM_001",
+      "legacyId": "EVT_RET_HOME_001",
+      "sharedTitle": "La conversación en casa",
+      "classification": "title_trigger_lineage_terminal_function_mismatch",
+      "decision": "retire_technical_keep_history_only",
+      "sameSceneMigrationAllowed": false,
+      "historyEventIdRewriteAllowed": false,
+      "pendingEventIdDirectRewriteAllowed": false,
+      "canonicalReplacementRequired": true,
+      "reason": "Canon is a four-way family/priorities conversation that adjusts motivation without dictating the ending; runtime is a binary KEEP/DECIDE scene whose DECIDE choice directly enters retirement.decided."
+    },
+    {
+      "batch": "04D",
+      "canonicalId": "EVT_RET_LASTMATCH_001",
+      "legacyId": "EVT_RET_LAST_001",
+      "sharedTitle": "El último partido no está garantizado",
+      "classification": "title_trigger_lineage_terminal_outcome_mismatch",
+      "decision": "retire_technical_keep_history_only",
+      "sameSceneMigrationAllowed": false,
+      "historyEventIdRewriteAllowed": false,
+      "pendingEventIdDirectRewriteAllowed": false,
+      "canonicalReplacementRequired": true,
+      "reason": "Canon has four intents and fact-driven uncertain last-match shape; runtime binary PLAY/NO_MATCH directly manufactures played/no-match facts and immediately closes the career."
+    }
+  ],
+  "migrationRule": "Legacy completed history remains under legacy ID. Pending legacy definitions resolve through content-version compatibility only. No canonical SEEN flag may be manufactured from title equality.",
+  "status": "review_complete"
+}
