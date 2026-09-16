@@ -51,31 +51,31 @@
     {"canonicalId":"EVT_31_AGT_001","engineId":"EVT_31_AGT_001","status":"needs_reimplementation","title":"Es el último gran contrato","implementation":"canonical override; important-negotiation trigger approximated"},
     {"canonicalId":"EVT_31_FAM_001","engineId":"EVT_30_LIFE_001","status":"needs_reimplementation","title":"No quiero otra mudanza"},
     {"canonicalId":"EVT_31_TEAM_001","engineId":"EVT_31_MENT_001","status":"needs_reimplementation","title":"Mentor oficial"},
-    {"canonicalId":"EVT_31_LEGACY_001","engineId":"EVT_31_LEGACY_001","status":"needs_reimplementation","title":"Tu nombre en una academia","implementation":"canonical override; GLOBAL_IMAGE/HOME_INSTITUTION OR trigger approximated by represented legacy/wealth state"},
-    {"canonicalId":"EVT_31_RETURN_001","engineId":"EVT_31_RETURN_001","status":"needs_reimplementation","title":"Volver sin ritmo","implementation":"canonical override; injury-return gate represented, readiness semantics remain probabilistic"},
+    {"canonicalId":"EVT_31_LEGACY_001","engineId":"EVT_31_LEGACY_001","status":"needs_reimplementation","title":"Tu nombre en una academia","implementation":"canonical override; GLOBAL_IMAGE/HOME_INSTITUTION trigger approximated"},
+    {"canonicalId":"EVT_31_RETURN_001","engineId":"EVT_31_RETURN_001","status":"needs_reimplementation","title":"Volver sin ritmo","implementation":"canonical override; return gate represented, readiness semantics remain uncertain"},
     {"canonicalId":"EVT_31_TACT_001","engineId":"EVT_31_TACT_001","status":"needs_reimplementation","title":"Ya no eres extremo","implementation":"canonical override; mature-reinvention/explosiveness trigger not explicitly represented"},
     {"canonicalId":"EVT_31_ROLE_001","engineId":null,"status":"canonical_missing","title":"Tres goles y al banquillo"},
     {"canonicalId":"EVT_31_CCH_001","engineId":"EVT_31_CCH_001","status":"needs_reimplementation","title":"El nuevo entrenador no te debe nada","implementation":"canonical override; coach-change trigger not explicitly represented"},
     {"canonicalId":"EVT_31_SQUAD_001","engineId":"EVT_31_TEAM_001","status":"needs_reimplementation","title":"Dos fichajes de 22"},
-    {"canonicalId":"EVT_31_NAT_001","engineId":"EVT_31_NAT_001","status":"needs_reimplementation","title":"Club contra selección, otra vez","implementation":"canonical override; international standing + recovery debt approximate canonical veteran/load trigger"},
+    {"canonicalId":"EVT_31_NAT_001","engineId":"EVT_31_NAT_001","status":"needs_reimplementation","title":"Club contra selección, otra vez","implementation":"canonical override; international standing + recovery debt approximate canonical trigger"},
     {"canonicalId":"EVT_31_FINAL_001","engineId":"EVT_31_FINAL_001","status":"needs_reimplementation","title":"La final de 70 minutos","implementation":"canonical override; FINAL_CONTEXT + roleScore approximate plausible-final/ROLE_FIT trigger"},
     {"canonicalId":"EVT_31_BIZ_001","engineId":"EVT_32_IMG_001","status":"needs_reimplementation","title":"El problema es de tu socio"},
-    {"canonicalId":"EVT_32_CON_001","engineId":"EVT_32_CON_001","status":"needs_reimplementation","title":"Contrato de un año renovable"},
+    {"canonicalId":"EVT_32_CON_001","engineId":"EVT_32_CON_001","status":"needs_reimplementation","title":"Contrato de un año renovable","implementation":"canonical override; renewal context approximated by contract horizon"},
     {"canonicalId":"EVT_32_RICH_001","engineId":"EVT_32_MKT_001","status":"needs_reimplementation","title":"La oferta que paga el resto de tu vida"},
     {"canonicalId":"EVT_32_ELITE_001","engineId":"EVT_32_CLB_001","status":"needs_reimplementation","title":"Doceavo hombre de un candidato"},
-    {"canonicalId":"EVT_32_HOME_001","engineId":"EVT_32_HOME_001","status":"needs_reimplementation","title":"Valdoria te ofrece el brazalete"},
-    {"canonicalId":"EVT_32_AGT_001","engineId":"EVT_32_AGT_001","status":"needs_reimplementation","title":"¿Necesitas agente?"},
+    {"canonicalId":"EVT_32_HOME_001","engineId":"EVT_32_HOME_001","status":"needs_reimplementation","title":"Valdoria te ofrece el brazalete","implementation":"canonical override; UDV compatibility part of trigger not fully represented"},
+    {"canonicalId":"EVT_32_AGT_001","engineId":"EVT_32_AGT_001","status":"needs_reimplementation","title":"¿Necesitas agente?","implementation":"canonical override; accumulated AGENT_CONFLICT not explicitly represented"},
     {"canonicalId":"EVT_32_IMPACT_001","engineId":"EVT_32_TACT_001","status":"needs_reimplementation","title":"Peores números, mejor equipo"},
     {"canonicalId":"EVT_32_SUCCESSOR_001","engineId":"EVT_32_TEAM_001","status":"needs_reimplementation","title":"Tres semanas y aparece otro"},
-    {"canonicalId":"EVT_32_FAN_001","engineId":"EVT_32_FAN_001","status":"needs_reimplementation","title":"Te cantan después de jugar mal"},
+    {"canonicalId":"EVT_32_FAN_001","engineId":"EVT_32_FAN_001","status":"needs_reimplementation","title":"Te cantan después de jugar mal","implementation":"canonical override; legacyCapital + current form approximate high legacy + bad-match trigger"},
     {"canonicalId":"EVT_32_LOAD_001","engineId":"EVT_32_BODY_001","status":"needs_reimplementation","title":"No viajes"},
-    {"canonicalId":"EVT_32_NAT_001","engineId":"EVT_32_NAT_001","status":"needs_reimplementation","title":"La lista final"},
+    {"canonicalId":"EVT_32_NAT_001","engineId":"EVT_32_NAT_001","status":"needs_reimplementation","title":"La lista final","implementation":"canonical override; tournament context not explicitly represented, nationalStanding is available"},
     {"canonicalId":"EVT_32_BOSMAN_001","engineId":"EVT_32_BOS_001","status":"needs_reimplementation","title":"Enero: puedes firmar gratis"},
-    {"canonicalId":"EVT_33_BODY_001","engineId":"EVT_33_BODY_001","status":"needs_reimplementation","title":"Dos partidos en 72 horas"},
+    {"canonicalId":"EVT_33_BODY_001","engineId":"EVT_33_BODY_001","status":"needs_reimplementation","title":"Dos partidos en 72 horas","implementation":"canonical override; reduced recovery approximated by recoveryMargin"},
     {"canonicalId":"EVT_33_RECORD_001","engineId":"EVT_33_REC_001","status":"needs_reimplementation","title":"El récord está a seis partidos"},
-    {"canonicalId":"EVT_33_CAP_001","engineId":"EVT_33_CAP_001","status":"needs_reimplementation","title":"Entregar el brazalete"},
-    {"canonicalId":"EVT_33_MKT_001","engineId":"EVT_33_MKT_001","status":"needs_reimplementation","title":"Cuatro futuros"},
-    {"canonicalId":"EVT_33_PRS_001","engineId":"EVT_33_PRS_001","status":"needs_reimplementation","title":"¿Estás pensando en retirarte?"},
+    {"canonicalId":"EVT_33_CAP_001","engineId":"EVT_33_CAP_001","status":"needs_reimplementation","title":"Entregar el brazalete","implementation":"canonical override; captaincy+succession approximated through successionPressure"},
+    {"canonicalId":"EVT_33_MKT_001","engineId":"EVT_33_MKT_001","status":"needs_reimplementation","title":"Cuatro futuros","implementation":"canonical five-option market scene implemented; open-market trigger approximated with marketHeat"},
+    {"canonicalId":"EVT_33_PRS_001","engineId":"EVT_33_PRS_001","status":"needs_reimplementation","title":"¿Estás pensando en retirarte?","implementation":"canonical public-tone options implemented; media-profile trigger approximated; no option auto-retires club career"},
     {"canonicalId":"EVT_33_FIN_001","engineId":"EVT_33_END_001","status":"needs_reimplementation","title":"Cumples 34"}
   ],
   "engineOnly": [
@@ -105,9 +105,12 @@
   "implementationProgress": {
     "stableIdReimplemented": [
       "EVT_30_CON_001","EVT_30_BODY_001","EVT_30_MKT_001","EVT_30_NAT_001","EVT_30_FAM_001","EVT_30_MED_001","EVT_30_FORM_001","EVT_30_CAP_001",
-      "EVT_31_MED_001","EVT_31_MKT_001","EVT_31_HOME_001","EVT_31_AGT_001","EVT_31_LEGACY_001","EVT_31_RETURN_001","EVT_31_TACT_001","EVT_31_CCH_001","EVT_31_NAT_001","EVT_31_FINAL_001"
+      "EVT_31_MED_001","EVT_31_MKT_001","EVT_31_HOME_001","EVT_31_AGT_001","EVT_31_LEGACY_001","EVT_31_RETURN_001","EVT_31_TACT_001","EVT_31_CCH_001","EVT_31_NAT_001","EVT_31_FINAL_001",
+      "EVT_32_CON_001","EVT_32_HOME_001","EVT_32_AGT_001","EVT_32_FAN_001","EVT_32_NAT_001",
+      "EVT_33_BODY_001","EVT_33_CAP_001","EVT_33_MKT_001","EVT_33_PRS_001"
     ],
-    "count": 18,
+    "count": 27,
+    "safeStableIdSetComplete": true,
     "runtimeCanonStatus": "technical_adaptation",
     "reasonNotVerified": "Strict identity requires exact trigger, choices, knowledge, consequences, seeds/NPC and continuity. These scenes now carry canonical decision semantics but at least one trigger/state or downstream-continuity element remains approximate or unproved."
   },
@@ -119,6 +122,7 @@
     ],
     "deferred": [
       "Do not rename shifted IDs until save-continuity migration/alias behavior is approved.",
+      "Do not add missing canonical IDs in a way that changes global principal counts before integration coordination approves the inventory change.",
       "Do not edit aging, retirement machine, scheduler, save schema, NPC core or UI from this workstream."
     ]
   }
