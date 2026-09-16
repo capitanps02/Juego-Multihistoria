@@ -2,10 +2,10 @@ import type { Condition, Effect, EventDefinition, EventFamily } from "../../../c
 import { ambiguousEvent, flag, n, seedCreate, set } from "../18_20/helpers.js";
 type Row={id:string;title:string;age:30|31|32|33;family:EventFamily;months:number[];seed?:string;gates?:Condition[];verified?:boolean;tags?:string[]};
 const rows:Row[]=[
-  {id:"EVT_30_IDN_001",title:"La palabra veterano",age:30,family:"legacy" as EventFamily,months:[7, 8],seed:"SEED_VETERAN_LABEL",gates:[],verified:true,tags:["maturity"]},
-  {id:"EVT_30_CON_001",title:"Uno más o tres",age:30,family:"contract" as EventFamily,months:[7, 8],seed:"SEED_AGE30_CONTRACT",gates:[],verified:true,tags:["maturity"]},
-  {id:"EVT_30_BODY_001",title:"El plan de 45 partidos",age:30,family:"medical" as EventFamily,months:[8, 9],seed:"SEED_MATCH_SELECTIVITY",gates:[],verified:true,tags:["maturity"]},
-  {id:"EVT_30_MKT_001",title:"¿El último mercado grande?",age:30,family:"market" as EventFamily,months:[7, 8, 1],seed:"SEED_LAST_BIG_MOVE_WINDOW",gates:[],verified:true,tags:["maturity"]},
+  {id:"EVT_30_IDN_001",title:"La palabra veterano",age:30,family:"legacy" as EventFamily,months:[7, 8],seed:"SEED_VETERAN_LABEL",gates:[],verified:false,tags:["maturity"]},
+  {id:"EVT_30_CON_001",title:"Uno más o tres",age:30,family:"contract" as EventFamily,months:[7, 8],seed:"SEED_AGE30_CONTRACT",gates:[],verified:false,tags:["maturity"]},
+  {id:"EVT_30_BODY_001",title:"El plan de 45 partidos",age:30,family:"medical" as EventFamily,months:[8, 9],seed:"SEED_MATCH_SELECTIVITY",gates:[],verified:false,tags:["maturity"]},
+  {id:"EVT_30_MKT_001",title:"¿El último mercado grande?",age:30,family:"market" as EventFamily,months:[7, 8, 1],seed:"SEED_LAST_BIG_MOVE_WINDOW",gates:[],verified:false,tags:["maturity"]},
   {id:"EVT_30_AGT_001",title:"El incentivo del último gran contrato",age:30,family:"agent" as EventFamily,months:[8, 9, 1],seed:"SEED_AGENT_LAST_CONTRACT",gates:[],verified:false,tags:["maturity"]},
   {id:"EVT_30_NAT_001",title:"La selección empieza a mirar al siguiente",age:30,family:"selection" as EventFamily,months:[9, 10, 3, 4],seed:"SEED_NATIONAL_PHASEDOWN",gates:[{"path": "professional.nationalStanding", "op": "gte", "value": 20}],verified:false,tags:["maturity"]},
   {id:"EVT_30_TEAM_001",title:"Tu dorsal ya tiene heredero",age:30,family:"team" as EventFamily,months:[9, 10],seed:"SEED_DORSAL_SUCCESSION",gates:[],verified:false,tags:["maturity"]},
@@ -21,8 +21,8 @@ const rows:Row[]=[
   {id:"EVT_31_HOME_001",title:"Volver para competir",age:31,family:"family" as EventFamily,months:[7, 8, 1],seed:"SEED_HOME_RETURN_31",gates:[],verified:false,tags:["maturity"]},
   {id:"EVT_31_AGT_001",title:"Negociar sin intermediario",age:31,family:"agent" as EventFamily,months:[8, 9, 1],seed:"SEED_SELF_REPRESENTATION_PREP",gates:[],verified:false,tags:["maturity"]},
   {id:"EVT_31_MENT_001",title:"Mentor por contrato",age:31,family:"team" as EventFamily,months:[9, 10],seed:"SEED_FORMAL_MENTOR",gates:[],verified:false,tags:["maturity"]},
-  {id:"EVT_31_LEGACY_001",title:"Tu nombre en una academia",age:31,family:"legacy" as EventFamily,months:[9, 10, 11],seed:"SEED_LEGACY_ACADEMY",gates:[],verified:true,tags:["maturity"]},
-  {id:"EVT_31_RETURN_001",title:"Volver sin ritmo",age:31,family:"medical" as EventFamily,months:[9, 10, 11, 2, 3],seed:"SEED_COMEBACK_PACING",gates:[{"path": "flags.RECOVERING_INJURY", "op": "eq", "value": true}],verified:true,tags:["maturity"]},
+  {id:"EVT_31_LEGACY_001",title:"Tu nombre en una academia",age:31,family:"legacy" as EventFamily,months:[9, 10, 11],seed:"SEED_LEGACY_ACADEMY",gates:[],verified:false,tags:["maturity"]},
+  {id:"EVT_31_RETURN_001",title:"Volver sin ritmo",age:31,family:"medical" as EventFamily,months:[9, 10, 11, 2, 3],seed:"SEED_COMEBACK_PACING",gates:[{"path": "flags.RECOVERING_INJURY", "op": "eq", "value": true}],verified:false,tags:["maturity"]},
   {id:"EVT_31_TACT_001",title:"El mediapunta que no eras",age:31,family:"tactical" as EventFamily,months:[10, 11, 12],seed:"SEED_ROLE_REINVENTION_32",gates:[],verified:false,tags:["maturity"]},
   {id:"EVT_31_CCH_001",title:"Entrenador nuevo, privilegios cero",age:31,family:"captaincy" as EventFamily,months:[7, 8, 9],seed:"SEED_NEW_COACH_RESET",gates:[],verified:false,tags:["maturity"]},
   {id:"EVT_31_TEAM_001",title:"Llegan tres de 21",age:31,family:"team" as EventFamily,months:[7, 8, 9, 10],seed:"SEED_SQUAD_YOUTH_WAVE",gates:[],verified:false,tags:["maturity"]},
