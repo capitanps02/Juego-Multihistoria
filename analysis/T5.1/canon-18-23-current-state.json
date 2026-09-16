@@ -2,9 +2,9 @@
   "workstream": "T51_CANON_18_23",
   "generatedAt": "2026-09-16",
   "branch": "t51/canon-18-23",
-  "latestMainSha": "e48a6c85d0a9e61d88eca121f683dcd308c188c1",
-  "cleanRegroundBaseSha": "e48a6c85d0a9e61d88eca121f683dcd308c188c1",
-  "cleanRegroundCommit": "342f7c22239058ff63543eb0fbb2a1628d973420",
+  "latestMainSha": "ddf46fed010521c5969bac26e29920945793f709",
+  "cleanRegroundBaseSha": "ddf46fed010521c5969bac26e29920945793f709",
+  "cleanRegroundCommit": "878f2d27e0c1779252187df45027a6ee5dc3d877",
   "scope": {
     "owned": ["inicio", "18_20", "20_23"],
     "excluded": ["23_26"],
