@@ -46,14 +46,7 @@ export interface ContentMigrationRoute {
   seedOriginMappings?: readonly SeedOriginMigrationMapping[];
 }
 
-/**
- * Compatibility evidence is validation-only. None of these event definitions are
- * inserted into EventIndex or used for future scheduling.
- *
- * Future canonical batches may register additional immutable source identities
- * here (normally through generated per-batch evidence modules) once those
- * identities can exist in persisted saves.
- */
+/** Validation-only historical catalogs. They never join EventIndex or scheduling. */
 export const LEGACY_CONTENT_SOURCES: Readonly<Record<string, ContentEvidenceSource>> = {
   [PRE_T51_CONTENT_IDENTITY]: {
     contentIdentity: PRE_T51_CONTENT_IDENTITY,
@@ -63,11 +56,23 @@ export const LEGACY_CONTENT_SOURCES: Readonly<Record<string, ContentEvidenceSour
   }
 };
 
+export const T51_B1A_CONTENT_IDENTITY = "1a8a5e2006fe7160f4fbc02060568d3abec99df038fe3a1a7799c8a0e802eac7";
+
 /**
- * Target-specific routes are appended by canonical content batches. Successive
- * batches may form a lineage A -> B -> C; callers must resolve a unique path.
+ * Explicit identity-bound edges. Successive canonical batches extend this as a
+ * lineage (A -> B -> C), not as a matrix of shortcuts from every old version.
  */
-export const CONTENT_MIGRATION_ROUTES: readonly ContentMigrationRoute[] = [];
+export const CONTENT_MIGRATION_ROUTES: readonly ContentMigrationRoute[] = [
+  {
+    sourceContentIdentity: PRE_T51_CONTENT_IDENTITY,
+    targetContentIdentity: T51_B1A_CONTENT_IDENTITY,
+    schedulerMappings: [
+      { kind: "same_scene", legacyEventId: "EVT_18_MED_001", canonicalEventId: "EVT_18_MED_001" },
+      { kind: "same_scene", legacyEventId: "EVT_18_TEAM_001", canonicalEventId: "EVT_18_TEAM_001" },
+      { kind: "same_scene", legacyEventId: "EVT_18_MATCH_002", canonicalEventId: "EVT_18_MATCH_002" }
+    ]
+  }
+];
 
 const activeEvidenceCache = new Map<string, Readonly<Record<string, LegacyEventEvidence>>>();
 activeEvidenceCache.set(PRE_T51_CONTENT_IDENTITY, PRE_T51_EVENT_EVIDENCE);
@@ -82,8 +87,7 @@ export function findMigrationRoute(
 
 /**
  * Resolve exactly one acyclic migration path. Missing or ambiguous paths fail
- * closed by returning undefined. Route declaration order never decides between
- * competing histories.
+ * closed. Declaration order never silently chooses between competing histories.
  */
 export function findMigrationPath(
   sourceContentIdentity: string,
