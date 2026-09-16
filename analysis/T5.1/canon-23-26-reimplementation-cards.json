@@ -52,7 +52,7 @@
       "id": "EVT_23_AGT_001",
       "sourceBlock": "B648",
       "canonicalTitle": "La videollamada sin tu agente",
-      "trigger": "Interés de mercado medio+; contacto informal permitido por las reglas internas del universo.",
+      "trigger": "Interés de mercado medio+; contacto informal permitido por reglas internas del universo.",
       "premise": "Un entrenador o director de otro club te escribe directamente para una videollamada de fútbol, no de contrato; tu agente aún no sabe nada.",
       "visible": "Sabes quién llama y qué club representa.",
       "uncertain": "No sabes si es iniciativa personal, táctica de reclutamiento o conversación sin poder ejecutivo.",
