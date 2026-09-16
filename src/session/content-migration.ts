@@ -1,5 +1,5 @@
 import type { EventDefinition, GameState } from "../core/types.js";
-import { eventFingerprintMap } from "./content-identity.js";
+import { contentIdentity, eventFingerprintMap, journalSemanticsFingerprint } from "./content-identity.js";
 import {
   PRE_T51_CONTENT_IDENTITY,
   PRE_T51_EVENT_EVIDENCE,
@@ -61,6 +61,9 @@ export const LEGACY_CONTENT_SOURCES: Readonly<Record<string, ContentEvidenceSour
  */
 export const CONTENT_MIGRATION_ROUTES: readonly ContentMigrationRoute[] = [];
 
+const activeEvidenceCache = new Map<string, Readonly<Record<string, LegacyEventEvidence>>>();
+activeEvidenceCache.set(PRE_T51_CONTENT_IDENTITY, PRE_T51_EVENT_EVIDENCE);
+
 export function findMigrationRoute(
   sourceContentIdentity: string,
   targetContentIdentity: string,
@@ -73,18 +76,33 @@ export function legacyContentSource(contentIdentity: string): ContentEvidenceSou
   return LEGACY_CONTENT_SOURCES[contentIdentity];
 }
 
-export async function buildActiveEventEvidence(events: readonly EventDefinition[]): Promise<Readonly<Record<string, LegacyEventEvidence>>> {
+export async function buildActiveEventEvidence(
+  events: readonly EventDefinition[],
+  knownContentIdentity?: string
+): Promise<Readonly<Record<string, LegacyEventEvidence>>> {
+  const identity = knownContentIdentity ?? await contentIdentity(events);
+  const cached = activeEvidenceCache.get(identity);
+  if (cached) return cached;
+
   const fingerprints = await eventFingerprintMap(events);
-  const evidence: Record<string, LegacyEventEvidence> = {};
-  for (const event of events) {
+  const rows = await Promise.all(events.map(async event => {
     const fingerprint = fingerprints.get(event.id);
     if (!fingerprint) throw new Error(`Missing fingerprint for active event ${event.id}`);
-    const choices: Record<string, { label: string; outcomeIds: readonly string[] }> = {};
-    for (const choice of event.choices) choices[choice.id] = { label: choice.label, outcomeIds: [...choice.outcomeIds] };
-    const outcomes: Record<string, { messages: readonly string[] }> = {};
-    for (const outcome of event.outcomes) outcomes[outcome.id] = { messages: [...outcome.messages] };
-    evidence[event.id] = { id: event.id, fingerprint, title: event.text.title, choices, outcomes };
-  }
+    const journalDigests: Record<string, Record<string, string>> = {};
+    const outcomes = new Map(event.outcomes.map(outcome => [outcome.id, outcome]));
+    for (const choice of event.choices) {
+      const byOutcome: Record<string, string> = {};
+      for (const outcomeId of choice.outcomeIds) {
+        const outcome = outcomes.get(outcomeId);
+        if (!outcome) throw new Error(`Missing outcome ${outcomeId} for ${event.id}/${choice.id}`);
+        byOutcome[outcomeId] = await journalSemanticsFingerprint(event.text.title, choice.label, outcome.messages);
+      }
+      journalDigests[choice.id] = byOutcome;
+    }
+    return [event.id, { fingerprint, journalDigests } satisfies LegacyEventEvidence] as const;
+  }));
+  const evidence = Object.fromEntries(rows) as Readonly<Record<string, LegacyEventEvidence>>;
+  activeEvidenceCache.set(identity, evidence);
   return evidence;
 }
 
