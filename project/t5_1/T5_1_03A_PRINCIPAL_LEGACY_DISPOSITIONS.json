@@ -1,0 +1,24 @@
+{
+  "task": "T5.1 Batch 03A principal legacy dispositions",
+  "generatedAt": "2026-09-16",
+  "phase": "30_34",
+  "canonicalAge": 30,
+  "reviewedLegacyCount": 5,
+  "approvedSameSceneMigrations": 0,
+  "defaultDisposition": "retire_technical_keep_history_only",
+  "entries": [
+    {"legacyId":"EVT_30_IDN_001","decision":"retire_technical_keep_history_only","sameSceneMigrationAllowed":false,"canonicalCandidate":"EVT_30_BRIDGE_001","seed":"SEED_VETERAN_LABEL"},
+    {"legacyId":"EVT_30_AGT_001","decision":"retire_technical_keep_history_only","sameSceneMigrationAllowed":false,"causalOwner":"EVT_30_MKT_001","seed":"SEED_AGENT_LAST_CONTRACT"},
+    {"legacyId":"EVT_30_TEAM_001","decision":"retire_technical_keep_history_only","sameSceneMigrationAllowed":false,"causalOwner":"EVT_30_STATUS_001","seed":"SEED_DORSAL_SUCCESSION"},
+    {"legacyId":"EVT_30_LIFE_001","decision":"retire_technical_keep_history_only","sameSceneMigrationAllowed":false,"causalOwner":"EVT_30_FAM_001","seed":"SEED_RELOCATION_LIMIT"},
+    {"legacyId":"EVT_30_FINAL_001","decision":"retire_technical_keep_history_only","sameSceneMigrationAllowed":false,"causalOwner":"EVT_30_EUR_001","seed":"SEED_BIG_GAME_ROTATION_30"}
+  ],
+  "rules": {
+    "historyIdRewriteAllowed": false,
+    "pendingIdDirectRewriteAllowed": false,
+    "canonicalSeenSynthesisAllowed": false,
+    "historicalSeedOriginRewriteAutomatic": false,
+    "legacyCompatibilityDefinitionMaySchedule": false
+  },
+  "status": "review_complete_planning_only"
+}
