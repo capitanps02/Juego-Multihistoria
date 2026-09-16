@@ -11,7 +11,7 @@
     "functionalImplementationTarget": "separate downstream functional batches using integrated Session v3 multigeneration migration, choice eligibility and event gate alternatives"
   },
   "baseline": {
-    "mainSha": "e48a6c85d0a9e61d88eca121f683dcd308c188c1",
+    "mainSha": "ddf46fed010521c5969bac26e29920945793f709",
     "preT51FreezeCommit": "9773104440615611f059a4f45c69c25d280a26aa",
     "preT51ContentIdentity": "2e07efd2ea99c4e9ec4c2b20ae89664204f76db2c55a72d567208799c01bccff",
     "freezeStatus": "resolved",
