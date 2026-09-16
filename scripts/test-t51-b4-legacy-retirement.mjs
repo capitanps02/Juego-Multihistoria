@@ -13,7 +13,7 @@ const EXPECTED_CONDITIONAL = [
   'CEVT_21_CAPTAIN_01','CEVT_21_NAT_01','CEVT_21_CONTRACT_01','CEVT_21_ADRIAN_01','CEVT_21_FAMILY_01',
   'CEVT_22_DEADLINE_01','CEVT_22_INJ_01','CEVT_22_LOANBUY_01','CEVT_22_RETURN_01'
 ];
-const HARD = ['EVT_20_MATCH_001','EVT_21_ABR_001','EVT_21_AGT_002','EVT_22_END_001'];
+const HARD = ['EVT_21_ABR_001','EVT_21_AGT_002','EVT_22_END_001'];
 
 function sorted(xs) { return [...xs].sort(); }
 
@@ -43,19 +43,23 @@ test('B4 is fail-safe for history, pending, seen and seed-origin truth', async (
   assert.match(rules, /seed\.originEvent/);
 });
 
-test('the four principal hard couplings remain explicit until a functional batch removes them', async () => {
+test('the three real principal hard couplings remain explicit until a functional batch removes them', async () => {
   const b4 = await json('analysis/T5.1/canon-18-23-b4-legacy-retirement.json');
   const hard = b4.principalLegacy.filter(x => x.hardDecouplingRequired).map(x => x.id);
   assert.deepEqual(sorted(hard), sorted(HARD));
-  assert.equal(b4.summary.principalHardDecouplingRequired, 4);
+  assert.equal(b4.summary.principalHardDecouplingRequired, 3);
 
   const seeds = await text('src/catalog/seeds.ts');
   assert.match(seeds, /SEED_FOREIGN_ADAPT[^\n]*EVT_21_ABR_001/);
   assert.match(seeds, /SEED_AGENT_POWER[^\n]*EVT_21_AGT_002/);
 
   const scheduler = await text('src/narrative/scheduler.ts');
-  assert.match(scheduler, /EVT_20_MATCH_001/);
   assert.match(scheduler, /EVT_22_END_001/);
+  assert.doesNotMatch(scheduler, /EVT_20_MATCH_001/);
+
+  const matchLegacy = b4.principalLegacy.find(x => x.id === 'EVT_20_MATCH_001');
+  assert.ok(matchLegacy);
+  assert.equal(matchLegacy.hardDecouplingRequired, false);
 });
 
 test('legacy rows are still active today because PR #10 is audit-only, and migration must retire them later', async () => {
@@ -82,7 +86,7 @@ test('current migration runtime provides legacy validation without scheduling le
   }
 });
 
-test('repair plan B4 points to the exact retirement handoff and four hard decouplings', async () => {
+test('repair plan B4 points to the exact retirement handoff and three hard decouplings', async () => {
   const plan = await json('analysis/T5.1/canon-18-23-repair-plan.json');
   const b4 = plan.implementationBatches.find(x => x.id === 'B4_LEGACY_RETIREMENT');
   assert.ok(b4);
