@@ -1,0 +1,41 @@
+name: T51 content migration
+
+on:
+  push:
+    branches: [integration/content-migration-t51]
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/session/**'
+      - 'scripts/generate-t51-legacy-registry.mjs'
+      - 'scripts/test-t51-content-migration.mjs'
+      - 'qa/fixtures/t5.1/**'
+      - 'project/t5_1/T5_1_*MIGRATION*'
+      - 'project/workstreams/T51_CONTENT_MIGRATION.md'
+      - '.github/workflows/t51-content-migration.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  migration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Frozen legacy registry is reproducible
+        run: node scripts/generate-t51-legacy-registry.mjs --check
+      - name: Directed migration tests
+        shell: bash
+        run: |
+          if [ -f scripts/test-t51-content-migration.mjs ]; then
+            node --test scripts/test-t51-content-migration.mjs
+          else
+            echo 'Migration test file not added yet; build/registry gate only.'
+          fi
