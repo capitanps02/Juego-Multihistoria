@@ -16,7 +16,8 @@
     "noArtificialClosures": true,
     "onlyProvenConsumers": true,
     "legacySeedsRemainCompatible": true,
-    "crossBlockReadersAreDependenciesNotInventedLinks": true
+    "crossBlockReadersAreDependenciesNotInventedLinks": true,
+    "frozenSaveBaselinesAreNotSilentlyRewritten": true
   },
   "stableIdReimplementations": 27,
   "confirmedChains": [
@@ -71,6 +72,12 @@
       "note": "Writer belongs outside the owned 30-34 canonical block; this workstream does not fabricate it."
     },
     {
+      "seed": "SEED_CHRONIC_BODY",
+      "reader": "EVT_31_MED_001",
+      "status": "cross_block_dependency",
+      "note": "The explicit HAS_SEED_CHRONIC_BODY gate is mirrored in seedsRead so T5.2 lifecycle accounting sees the dependency without fabricating its writer."
+    },
+    {
       "seed": "SEED_EARLY_HOME_RETURN",
       "reader": "EVT_31_HOME_001",
       "status": "cross_block_dependency",
@@ -109,5 +116,13 @@
     "terminalFlag": "EARLY_RETIRED_30_34",
     "rule": "Creating or reading retirement-related memory must not set the terminal club-retirement flag unless the player explicitly chooses the terminal retirement action."
   },
-  "integrationStatus": "compatible_pending_full_topology_audit"
+  "compatibilityDiagnostics": {
+    "seed424242": {
+      "finding": "final-gate-v08 regenerates examples/save-v08-seed-424242.json before the frozen save test; canonical content changes therefore mutate the generated golden career even when schema migration is unchanged.",
+      "firstObservedDivergenceBeforeTriggerFix": "EVT_30_CON_001 was excluded by an incomplete <=18-month gate while the canonical trigger is <=18 months OR club wants renewal; EVT_30_IDN_001 occupied the deterministic slot instead.",
+      "localAction": "Preserve the unmodelled OR branch by keeping EVT_30_CON_001 reachable and tagging the approximation until club-renewal intent exists in state.",
+      "globalDependency": "Frozen golden-career fixture policy must distinguish save-schema compatibility from intentional canonical simulation changes; this workstream will not silently update the expected hash."
+    }
+  },
+  "integrationStatus": "compatible_pending_full_topology_and_golden_baseline_policy"
 }
