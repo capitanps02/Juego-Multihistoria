@@ -118,6 +118,17 @@ La resolución narrativa puede usar su RNG normal para escoger un outcome si la 
 - ofertas ordinarias siguen usando el flujo histórico;
 - no hay cambios de contenido activo en esta pasada, por lo que no se requiere una nueva ruta de `contentIdentity` por este contrato aislado.
 
+### Compatibilidad con lineage multigeneración
+
+El bridge fue re-groundeado sobre `main@49e195d07d064e0532ea9109d9544b91df52bf0e`, que ya contiene:
+
+- migración multigeneración por `findMigrationPath`;
+- `ContentEvidenceSource` para identidades históricas;
+- preservación de `pendingDecision` legacy a través de varias generaciones;
+- evidencia congelada del catálogo B1a post-contenido.
+
+S5 no sustituye ese contrato. Sus cambios en `GameSession` y `validate-session` se componen encima de él y conservan `contentSources`, paths de migración y procedencia legacy.
+
 ## Criterio de cierre
 
 S5 puede cerrarse cuando:
@@ -125,6 +136,6 @@ S5 puede cerrarse cuando:
 1. build TypeScript verde;
 2. tests dirigidos prueben promoción sin RNG, save/reload, aceptación idempotente, counter/defer sin firma, autoridad contractual, tampering y ambigüedad;
 3. `scripts/test-offers.mjs` siga verde;
-4. `qa:t5:saves` y `Repository integrity` estén verdes sobre el HEAD exacto re-groundeado en `main`.
+4. `qa:t5:saves`, content migration/lineage y `Repository integrity` estén verdes sobre el HEAD exacto re-groundeado en `main`.
 
 Después de S5, T5.13 puede implementar sus tres escenas canónicas usando ofertas reales, sin introducir setters contractuales narrativos.
