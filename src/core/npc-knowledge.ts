@@ -129,8 +129,16 @@ function latestHistoryEntry(state: GameState, eventId: string): HistoryEntry | u
 export function informNpcOfEventInPlace(state: GameState, npcId: string, eventId: string, options: InformNpcOptions = {}): NpcKnowledgeRecord {
   const entry = latestHistoryEntry(state, eventId);
   if (!entry) throw new Error(`Cannot inform ${npcId} about unknown world fact ${eventId}`);
+  const factId = options.factId ?? eventId;
+  if (
+    options.sourceNpcId &&
+    !npcKnows(state, options.sourceNpcId, factId) &&
+    (factId === eventId || !npcKnows(state, options.sourceNpcId, eventId))
+  ) {
+    throw new Error(`Cannot inform ${npcId} about ${factId} from uninformed NPC source ${options.sourceNpcId}`);
+  }
   return rememberNpcFactInPlace(state, npcId, {
-    factId: options.factId ?? eventId,
+    factId,
     eventId,
     choiceId: entry.choiceId,
     outcomeId: entry.outcomeId,
