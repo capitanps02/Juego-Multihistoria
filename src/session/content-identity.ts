@@ -14,6 +14,11 @@ export async function eventFingerprint(event: EventDefinition): Promise<string> 
   return sha256Text(serializeEventDefinition(event));
 }
 
-export async function contentIdentity(events: EventDefinition[]): Promise<string> {
+export async function eventFingerprintMap(events: readonly EventDefinition[]): Promise<Map<string, string>> {
+  const rows = await Promise.all(events.map(async event => [event.id, await eventFingerprint(event)] as const));
+  return new Map(rows);
+}
+
+export async function contentIdentity(events: readonly EventDefinition[]): Promise<string> {
   return sha256Text(JSON.stringify(events));
 }
