@@ -1,0 +1,18 @@
+name: T5.1 30-34 migration handoff validation
+
+on:
+  push:
+    branches:
+      - t51/canon-30-34
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run test:t51
