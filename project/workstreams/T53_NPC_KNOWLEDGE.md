@@ -1,6 +1,6 @@
 # T5.3 — NPC, relaciones, memoria y conocimiento
 
-Estado: técnicamente preparado para revisión/integración.
+Estado: técnicamente preparado para revisión/integración; `Repository integrity` completo en verde sobre el merge candidate actual.
 
 Rama de trabajo: `t5/npc-memory`.
 
@@ -187,6 +187,9 @@ Corrección:
 - el invariante se aplica en `rememberNpcFactInPlace`, el punto real de escritura, por lo que no puede eludirse llamando directamente a la API de bajo nivel;
 - una fuente cuyo conocimiento ya ha caducado tampoco puede seguir transmitiéndolo como conocimiento válido;
 - una fuente inexistente o el propio destinatario como fuente se rechazan antes de mutar estado;
+- `public` y `witnessed` no admiten `sourceNpcId`;
+- la certeza del receptor no puede superar la certeza de la fuente;
+- la versión transmitida (`eventId`, `choiceId`, `outcomeId`) es la que conoce la fuente, no la verdad omnisciente de `history`;
 - una transmisión legítima Nano → Rivas continúa funcionando y no consume RNG;
 - un rumor/claim no verificado no se modela como `knowledge`; si se añade en el futuro deberá ser un estado separado que no satisfaga gates `know.*`.
 
@@ -220,12 +223,34 @@ Catorce están marcados `technical_adaptation`; `CEVT_29_RECORD_02` está `verif
 
 Corrección:
 
-- mientras `npcKnows(...)` siga siendo verdadero para el `factId`, reaprenderlo es **refuerzo**, no sustitución;
+- mientras `npcKnows(...)` siga siendo verdadero para el `factId`, reaprender **la misma versión epistemológica** es refuerzo, no sustitución;
 - la certeza solo puede mantenerse o aumentar;
 - la clase de memoria solo puede mantenerse o subir (`practical < temporary < strong`);
 - una caducidad no puede acortarse y una memoria `strong` no recupera caducidad;
 - se conserva la procedencia del primer aprendizaje vigente (`learnedAt`, `source`, `club`);
 - si el recuerdo ya caducó, un aprendizaje posterior sí crea un registro fresco con nueva fecha, fuente y contexto.
+
+### D14 — una versión contradictoria podía reforzar una creencia distinta
+
+Un `factId` activo podía recibir una nueva fila con `choiceId/outcomeId` incompatibles y, aun así, usar esa nueva certeza o durabilidad para reforzar el registro anterior. Eso mezclaba dos versiones subjetivas distintas.
+
+Corrección:
+
+- el refuerzo activo exige coincidencia de `eventId`, `choiceId` y `outcomeId`;
+- una versión B contradictoria no aumenta certeza, no sube la clase de memoria y no amplía la caducidad de la versión A;
+- mientras no exista un modelo explícito de claims/rumores contradictorios, la creencia activa se conserva intacta;
+- una regresión separa este caso del refuerzo legítimo de la misma versión.
+
+### D15 — T5-QA-008: `knowledge` persistido semánticamente inválido podía parecer conocimiento
+
+La validación general de save garantiza que `knowledge` sea un objeto serializable, pero eso no implica que cada fila interna cumpla el contrato epistemológico. El probe QA independiente demostró que una fila con, por ejemplo, `source: "telepathy"` podía atravesar el load estructural.
+
+Corrección sin cambiar schema 8 ni migraciones:
+
+- `getNpcKnowledgeRecord(...)` valida la semántica de la fila antes de exponerla;
+- `npcKnows(...)` nunca acepta una fila inválida;
+- se validan source/memory, certeza 0–100, fechas ISO, `factId` coherente con la clave, expiración y procedencia `sourceNpcId`;
+- una fila bruta inválida puede seguir existiendo en un save compatible, pero no concede conocimiento ni satisface gates `know.*`.
 
 ## 8. Trazabilidad y cobertura real
 
@@ -269,14 +294,48 @@ La suite dirigida cubre el contrato pedido y regresiones adicionales:
 14. un retry del mismo `commandId` no reaprende, no reescribe `learnedAt` y no altera RNG/estado;
 15. la API de escritura directa tampoco admite una fuente NPC ignorante;
 16. una fuente cuyo conocimiento ha caducado no puede seguir propagándolo;
-17. un hecho vigente reaprendido solo puede reforzar certeza/durabilidad, nunca degradarlas;
+17. reaprender la misma versión vigente solo puede reforzar certeza/durabilidad, nunca degradarlas;
 18. un hecho ya caducado sí puede reaprenderse con un contexto nuevo;
 19. diez descubrimientos/memorias explícitos de contenido crean memoria únicamente en el outcome revelador, nunca en el alternativo;
-20. una escena que cambia de club conserva en la memoria del NPC el club donde el hecho fue aprendido.
+20. una escena que cambia de club conserva en la memoria del NPC el club donde el hecho fue aprendido;
+21. una cadena NPC→NPC no amplifica la certeza de la fuente;
+22. una transmisión NPC→NPC conserva la versión subjetiva de la fuente y no consulta `history` para corregirla;
+23. una versión contradictoria activa no refuerza la creencia vigente;
+24. `knowledge` persistido malformado no satisface `npcKnows`.
 
-`npm test` ejecuta conjuntamente los gates T5.2 ya integrados en `main` y la auditoría y suites T5.3. El workflow `Repository integrity` ejecuta además el QA T5: determinismo/RNG, límites de edad, referencias, carreras largas, lifecycle y simulación estratificada.
+`npm test` ejecuta conjuntamente los gates T5.2 ya integrados en `main` y la auditoría y suites T5.3. El workflow `Repository integrity` ejecuta además freeze pre-T5.1, determinismo/RNG, límites de edad, referencias, carreras largas, lifecycle, probes cross-workstream y simulación estratificada.
 
-## 10. Estado de cierre técnico
+### Evidencia de CI
+
+Head de código validado antes de esta actualización documental: `bd067e06c825894fbbce387b2701f0e54ed4a988`.
+
+`Repository integrity` run **#475** (`35112323953`): **SUCCESS**.
+
+Pasaron conjuntamente:
+
+- `npm test`, incluidas las suites T5.2, save compatibility y T5.3;
+- auditoría T5.3;
+- T5-QA-008 de conocimiento persistido malformado;
+- freeze pre-T5.1;
+- determinismo y aislamiento RNG;
+- límites de edad;
+- referencias de contenido;
+- carreras largas;
+- lifecycle audit;
+- probes de integración cross-workstream;
+- simulación estratificada.
+
+El `main` vigente en esa validación es `cd39dfc387713ee43cd5b80c34a0e32a0cc996c0`, que hace el gate v8 de solo lectura y bloquea la huella exacta del fixture. La rama figura por detrás en historial, pero `compare main...t5/npc-memory` muestra que las únicas diferencias efectivas de árbol son los 11 archivos del workstream T5.3; no falta contenido efectivo de `main`.
+
+PR #19 sigue abierto y no es ya un bloqueo técnico para que #9 valide contra el `main` actual: #9 pasa también los probes cross-workstream sin #19 integrado. Cuando #19 se integre, el integrador deberá preservar simultáneamente el hardening de seeds y estas invariantes epistemológicas; no se debe asumir que una seed viva, `HAS_SEED_*` o `npcRefs` equivalen a conocimiento NPC.
+
+## 10. Frontera con presentación
+
+`PlayerView.contacts` publica actualmente las 20 identidades básicas `{id,name,role}` y un test compartido exige esas 20 entradas. T5.3 garantiza que no se exponen `knowledge`, `memories`, agendas privadas ni ejes internos.
+
+T5.3 no redefine unilateralmente “contacto conocido por el protagonista”: esa política necesita una señal canónica/presentación explícita y no debe inferirse desde `npcRefs`, relación o conocimiento.
+
+## 11. Estado de cierre técnico
 
 T5.3 queda **técnicamente preparado para revisión/integración**, con estas precisiones:
 
@@ -285,11 +344,13 @@ T5.3 queda **técnicamente preparado para revisión/integración**, con estas pr
 - `NPCState.access` permanece metadata legado y no se usa como probabilidad implícita de conocimiento;
 - el contenido sin vía explícita no concede conocimiento;
 - un `sourceNpcId` solo puede transmitir un `factId` que conozca y que siga vigente;
-- el reaprendizaje de un hecho vigente es monótono: nunca reduce certeza ni durabilidad;
+- la certeza transmitida nunca supera la de la fuente y se conserva la versión subjetiva del informante;
+- el reaprendizaje de la misma versión vigente es monótono: nunca reduce certeza ni durabilidad;
+- una versión contradictoria activa no refuerza ni reescribe la versión vigente;
+- conocimiento persistido semánticamente inválido no satisface `npcKnows`;
 - los 15 callbacks con NPC nombrado pero sin `npcRefs` quedan explícitamente derivados para reconciliación canónica, sin tocar contenido desde T5.3;
 - no se ha añadido contenido canónico para Mamadou ni Mara;
 - la cobertura futura puede declarar nuevas vías de conocimiento cuando el canon demuestre testigo, comunicación o publicación;
-- la rama integra explícitamente el lifecycle T5.2 sin alterar su semántica;
 - no se ha modificado `project/PLAN_PASADAS.md` ni `analysis/2026-09-11/plan-seguimiento.json`.
 
 El PR debe ser revisado por el integrador y **no debe auto-mergearse**.
