@@ -13,7 +13,16 @@ Esto complementa `seed-lifecycle.json`: el lifecycle indica que existen producto
 
 ## Composición actual
 
-La rama está re-groundeada sobre `main@edfda9e2cd8b70a421491b8be31507745da0f59b`, donde T5.3 ya está integrado sobre el lifecycle corregido de T5.2. El gate diferido no modifica conocimiento NPC; se limita a inspeccionar catálogo/eventos compilados y convive con los tests epistemológicos en `npm test`.
+La rama está re-groundeada sobre `main@76699f93e19e1ac9e17b42ccfaea011d92630fb6`. Esa base ya integra:
+
+- lifecycle corregido de T5.2;
+- conocimiento NPC causal de T5.3;
+- migración explícita de Session/contentIdentity;
+- contrato compartido de elegibilidad por opción.
+
+El gate diferido no modifica esos contratos: inspecciona catálogo/eventos compilados y se compone con sus suites en `npm test`.
+
+Además, T5.2 añade una regresión específica de `seedOriginMappings` para fijar que `rewriteExisting:false` preserve las instancias históricas y que `rewriteExisting:true` solo pueda cambiar `originEvent` en coincidencias exactas de `seedId + fromEventId`, sin alterar estado, payload, fechas, `consumedBy`, flags, history, cooldowns ni RNG.
 
 ## Qué cuenta como consumidor runtime
 
@@ -85,6 +94,6 @@ Los edges individuales inalcanzables se reportan para auditoría, aunque otra ru
 
 Este gate **no autoriza wiring**. La regla sigue siendo `canon first, wiring second`.
 
-Tras integrar #24/#25 y empezar a reparar #13/#15, el audit debe ejecutarse después de cada lote. Si una nueva escena crea una seed cuya única consecuencia cae fuera de su ventana temporal, el error se detectará antes de convertir esa cadena en contenido integrado.
+Con la migración compartida ya integrada, los bloques canónicos pueden empezar a introducir wiring real por lotes. El audit debe ejecutarse después de cada lote: si una escena crea una seed cuya única consecuencia cae fuera de su ventana temporal, el error se detecta antes de integrar esa cadena.
 
-`SeedInstance.originEvent`, history, pending legacy, `contentIdentity`, RNG y conocimiento NPC no se modifican por este audit.
+`SeedInstance.originEvent`, history, pending legacy, `contentIdentity`, RNG y conocimiento NPC no son modificados por el audit.
