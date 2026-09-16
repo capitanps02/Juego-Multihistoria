@@ -286,8 +286,7 @@
   "changedFilesPlanned": [
     "analysis/T5.1/canon-23-30.json",
     "project/workstreams/T51_CANON_23_30.md",
-    "scripts/test-t51-canon-23-30.mjs",
-    "package.json"
+    "scripts/test-t51-canon-23-30.mjs"
   ],
   "nextImplementationBatches": {
     "23_26": "T5.10-T5.14",
