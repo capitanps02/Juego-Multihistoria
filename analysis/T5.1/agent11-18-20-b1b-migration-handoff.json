@@ -1,25 +1,43 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "workstream": "T5.1 Agent 11 18-20 B1b migration handoff",
   "generatedAt": "2026-09-16",
-  "sourceMainSha": "ddf46fed010521c5969bac26e29920945793f709",
-  "sourceContentIdentity": "5d3fd71a8df42ed5b93fdde63ed386e9d776693addd62a30293dbecad7aa56d2",
-  "observedTargetContentIdentity": "619bfee7bbe70a143f764515fd974df1b7bcc6aa978874c7bf19fa4ead7ea5fe",
+  "sourceMainSha": "6cb81b63f03ce55776ca97075012cfaa22ac228d",
+  "sourceContentIdentity": "88751a2107c035826162968991e3a1808b2f4573afa3a3a20a3efa376fa8af1f",
+  "observedRuntimeHead": "f2638d1733ddc7988891d90ae688064d004816a5",
+  "observedTargetContentIdentity": "f64a32e02cf3746b83a7d084e999ed987f1a27951bc1dc60d8b252b463c90d52",
   "targetIdentityEvidence": {
-    "workflowRun": 35147505231,
-    "workflowJob": 104967198242,
-    "source": "Repository Integrity npm test on PR #111 after build; freeze-t51-active-source --check reported the exact active catalog identity",
-    "rule": "Recalculate after any re-ground or composition change. This target is valid only for the exact PR #111 catalog based on main@ddf46fed010521c5969bac26e29920945793f709."
+    "workflowRun": 35152954048,
+    "workflowJob": 104985499338,
+    "source": "Repository Integrity on PR #111 after synchronizing main@6cb81b63f03ce55776ca97075012cfaa22ac228d; freeze-t51-active-source --check reported the exact active catalog identity after build.",
+    "rule": "Recalculate after any further re-ground or composition change. This target is valid only while the active EVENTS catalog remains identical to the catalog validated from Agent 11 head f2638d1733ddc7988891d90ae688064d004816a5 over source main@6cb81b63f03ce55776ca97075012cfaa22ac228d."
   },
   "focusedValidation": {
-    "workflowRun": 35147505284,
-    "workflowJob": 104967197672,
+    "workflowRun": 35152954039,
     "result": "success",
     "coverage": [
       "TypeScript build",
       "Agent 11 EVT_18_PRS_002 focused regressions",
+      "Agent 11 EVT_19_SUM_001 acute-injury gate regressions",
       "shared gateAlternatives OR contract"
     ]
+  },
+  "repositoryIntegrity": {
+    "workflowRun": 35152954048,
+    "workflowJob": 104985499338,
+    "result": "expected_content_freeze_failure",
+    "passedBeforeSentinel": [
+      "TypeScript build",
+      "final gate v0.8",
+      "T5.2 audits and tests",
+      "save migration tests",
+      "T5.3 audits and tests",
+      "pre-T5.1 legacy registry check",
+      "post-T5.1 legacy registry check",
+      "frozen offer-bridge evidence check"
+    ],
+    "failure": "Active post-T5.1 catalog f64a32e02cf3746b83a7d084e999ed987f1a27951bc1dc60d8b252b463c90d52 is not frozen yet.",
+    "notClaimedValidated": "All Repository Integrity steps after the freeze sentinel were skipped."
   },
   "consumer": {
     "implementationOwner": "coordination/integration",
@@ -27,7 +45,7 @@
     "routeRegistry": "CONTENT_MIGRATION_ROUTES",
     "workstreamMayRegisterRoute": false,
     "targetFreezeRequiredBeforeRouteRegistration": true,
-    "targetFreezeFixture": "qa/fixtures/t5.1/post-t51-sources/619bfee7bbe70a143f764515fd974df1b7bcc6aa978874c7bf19fa4ead7ea5fe.json"
+    "targetFreezeFixture": "qa/fixtures/t5.1/post-t51-sources/f64a32e02cf3746b83a7d084e999ed987f1a27951bc1dc60d8b252b463c90d52.json"
   },
   "invariants": {
     "approvedAliases": [],
@@ -42,13 +60,15 @@
     "seedHistoricalOriginRewriteAuthorized": false
   },
   "currentBatch": {
-    "description": "One 18-20 canonical reachability repair: EVT_18_PRS_002 changes from Clara-contact-only reachability to Clara-contact OR sufficient PUBLIC_HEAT. All non-reachability event semantics are preserved.",
+    "description": "Two local 18-20 canonical trigger repairs layered over the frozen source catalog. EVT_18_PRS_002 restores Clara-contact OR sufficient PUBLIC_HEAT reachability. EVT_19_SUM_001 adds the missing absence-of-acute-injury prerequisite while preserving its existing first-full-summer age/time window. Choices, outcomes, effects, seeds, NPC references and narrative text are otherwise preserved.",
     "eventIds": [
-      "EVT_18_PRS_002"
+      "EVT_18_PRS_002",
+      "EVT_19_SUM_001"
     ],
     "sameSceneMappings": [],
     "exactIdSemanticCollisions": [
-      "EVT_18_PRS_002"
+      "EVT_18_PRS_002",
+      "EVT_19_SUM_001"
     ],
     "schedulerMappingsCandidate": [
       {
@@ -57,16 +77,24 @@
         "canonicalEventId": "EVT_18_PRS_002",
         "clearCanonicalSeen": true,
         "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_19_SUM_001",
+        "canonicalEventId": "EVT_19_SUM_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
       }
     ],
     "seedOriginMappingsCandidate": [],
-    "pendingPolicy": "Preserve an already-pending source-D EVT_18_PRS_002 as its frozen source definition/fingerprint. Do not silently rebound that pending decision to the new definition. After source-definition resolution, re-apply the distinct-scene scheduler semantics so the canonical repaired scene is not suppressed.",
-    "historyPolicy": "Existing source-D history remains source-D provenance. It must not be relabelled as the repaired canonical definition merely because the string event ID is unchanged.",
-    "routeSemantics": "The source-D EVT_18_PRS_002 was classified needs_reimplementation, not verified_same_identity. Treat the exact-ID definition change as a distinct semantic scene for scheduler suppression purposes."
+    "pendingPolicy": "Preserve any already-pending source-88751a definition using its frozen source definition and fingerprint. Do not silently rebound a pending EVT_18_PRS_002 or EVT_19_SUM_001 decision to the repaired active definition. After source-definition resolution, re-apply distinct-scene scheduler semantics so the repaired canonical definition is not suppressed by legacy SEEN/cooldown state.",
+    "historyPolicy": "Existing source-88751a history remains source-88751a provenance. It must not be relabelled as the repaired canonical definition merely because the event string ID is unchanged.",
+    "routeSemantics": "Both source definitions were classified needs_reimplementation rather than verified_same_identity. Exact string-ID equality is therefore not proof of semantic identity; scheduler migration should treat each repaired definition as distinct_scene and clear canonical suppression state when the legacy scene was completed."
   },
   "deferredWork": {
-    "EVT_18_JAN_001": "Choice eligibility requires an authoritative real loan/buyer availability fact; current main does not expose one for product content.",
-    "EVT_18_SUM_001": "REQUEST_EXIT eligibility requires an authoritative actual-offer availability fact; current main does not expose one for product content.",
-    "CEVT_19_SOCIAL_01": "Canonical OR requires a causal recent-conflict predicate; no exact product state has yet been proven safe to use."
+    "EVT_18_JAN_001": "Choice eligibility requires authoritative real loan and buyer availability facts. Current main exposes no production fact that proves those age-18 alternatives exist; marketHeat is not a substitute.",
+    "EVT_18_SUM_001": "REQUEST_EXIT eligibility requires an authoritative actual-offer fact for the age-18 summer. Current main exposes no demonstrated age-18 offer materialization path suitable for this canonical gate.",
+    "CEVT_19_SOCIAL_01": "Canonical OR requires NIGHT_PHOTO or high exposure plus a causal recent-conflict predicate. No exact recent-conflict product state has yet been proven safe to use.",
+    "other18_20": "Remaining candidates require match context, calendar context, coach-status semantics or seed-driven functions that are not safely represented by an already-authoritative fact. They must not be approximated with unrelated heat/role flags."
   }
 }
