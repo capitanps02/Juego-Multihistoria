@@ -49,7 +49,7 @@ También aparecen numerosos gates reales `HAS_SEED_*` que no están reflejados e
 
 Los `originEventsMissing` incluyen además identificadores de procedencia editorial como `PASADA_6_30_34` y `PASADA_7_34_PLUS`. Se reportan para reconciliación canónica, pero no se interpretan automáticamente como fallo runtime.
 
-Conclusión técnica de T5.2: **el hueco dominante está en la conexión del contenido, no en la capacidad del mecanismo**. El runtime dispone ahora de creación, persistencia, reapertura, cierre, caducidad, scope, restore e idempotencia verificables; los equipos de contenido deben decidir qué hilos abiertos deben realmente reaparecer, transformarse o cerrarse.
+Conclusión técnica de T5.2: **el hueco dominante está en la conexión del contenido, no en la capacidad del mecanismo**. El runtime dispone ahora de creación, persistencia, reapertura, cierre, caducidad, scope y restore verificables; la idempotencia de comandos interactivos se conserva en la frontera `GameSession`, y las transiciones terminales son idempotentes por sí mismas. Los equipos de contenido deben decidir qué hilos abiertos deben realmente reaparecer, transformarse o cerrarse.
 
 ## Modelo adoptado
 
@@ -122,19 +122,19 @@ No se requiere migración destructiva ni regeneración de baselines de saves.
 
 ## Idempotencia
 
-El motor ya evitaba crear una segunda instancia viva al repetir `create`, pero eso no protegía efectos numéricos, RNG o historia.
+La idempotencia de **comandos del usuario** no se implementa deduplicando `eventId + choiceId + date` en el resolver. Ese criterio sería demasiado amplio: un evento repetible puede aparecer legítimamente dos veces el mismo día y debe poder resolverse dos veces si son dos instancias distintas.
 
-Ahora `resolveChoice` / `resolveChoiceInPlace` consideran una repetición de `eventId + choiceId + date` como replay de la misma transacción:
+La frontera transaccional correcta ya existe en `GameSession`:
 
-- no vuelve a aplicar efectos;
-- no consume RNG;
-- no añade otra entrada de historia;
-- no vuelve a aplicar transiciones de seed;
-- devuelve el outcome ya registrado.
+- cada comando lleva `commandId` y `expectedRevision`;
+- `GameSession` persiste un `CommandReceipt` con fingerprint;
+- repetir el mismo `commandId` + fingerprint devuelve `replayed: true` sin mutar estado, RNG, historia ni seeds;
+- reutilizar un `commandId` para otra acción falla;
+- los receipts sobreviven save/restore, por lo que un retry después de recuperar una escritura tampoco duplica la consecuencia.
 
-Una repetición legítima del mismo evento en otro día sigue permitida.
+T5.2 añade un test dirigido de doble `choose` concurrente y replay tras restore usando esa frontera real. `resolveChoice` / `resolveChoiceInPlace` permanecen como primitivas de simulación y **no deduplican escenas por identidad narrativa**.
 
-Las transiciones terminales sobre una seed ya terminal son no-op, por lo que un segundo `resolve`/`expire` no puede consumirla otra vez.
+A nivel de lifecycle, las transiciones terminales sobre una seed ya terminal son no-op, por lo que un segundo `resolve`/`expire` no puede consumirla otra vez.
 
 ## Determinismo
 
@@ -208,7 +208,7 @@ Para seeds con `ageWindow` finito existe ahora cierre técnico por edad si nunca
 - save antes del consumo;
 - restore;
 - consumo tras restore;
-- doble comando;
+- doble comando mediante `GameSession.commandId`, incluido replay tras restore;
 - ausencia de draws RNG en el lifecycle;
 - seed desconocida presente en un save;
 - intento de crear una seed inexistente desde contenido nuevo.
