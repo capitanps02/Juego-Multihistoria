@@ -15,9 +15,11 @@ const conditionalIds = ['CEVT_21_ABR_01','CEVT_21_MEDIA_01','CEVT_22_FREE_01'];
 const dimensions = ['identity','trigger','context','playerKnowledge','uncertainty','options','cost','immediateConsequences','deferredConsequences','seeds','npcs','futureContinuity','saveCompatibility'];
 const sorted = xs => [...xs].sort();
 
-test('B2 handoff is audit-only and pinned to the current main observed by the workstream', () => {
+test('B2 handoff preserves its semantic analysis baseline while the workstream tracks current main separately', () => {
   assert.equal(handoff.runtimeAllowedInPr10, false);
-  assert.equal(handoff.baselineMainSha, current.latestMainSha);
+  assert.equal(handoff.baselineMainSha, 'ddf46fed010521c5969bac26e29920945793f709');
+  assert.equal(current.latestMainSha, plan.baseline.mainSha);
+  assert.notEqual(handoff.baselineMainSha, current.latestMainSha);
   assert.equal(handoff.summary.principalNeedsReimplementation, 27);
   assert.equal(handoff.summary.conditionalNeedsReimplementation, 3);
   assert.equal(handoff.summary.total, 30);
