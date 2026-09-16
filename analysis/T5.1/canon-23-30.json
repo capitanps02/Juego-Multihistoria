@@ -3,7 +3,7 @@
   "workstream": "T5.1 canon 23-30",
   "repository": "capitanps02/Juego-Multihistoria",
   "branch": "t51/canon-23-30",
-  "baseMainSha": "fb545cd18c6828b1f8d636435d91e296e92eaab6",
+  "baseMainSha": "5ecb9c2b5ad67fc1c4a144c5335d7796b975c909",
   "generatedAt": "2026-09-16",
   "authority": {
     "principals": "analysis/2026-09-11/t1/principal-traceability.json",
@@ -199,7 +199,8 @@
   },
   "implementationBatches": {
     "T5.10": {
-      "status": "implemented_and_regression_green_pending_pr",
+      "status": "implemented_pr_open_ci_pending",
+      "pullRequest": 62,
       "events": ["EVT_23_BRIDGE_001", "EVT_23_AGT_001", "EVT_23_BODY_001"],
       "sourceContentIdentity": "2e07efd2ea99c4e9ec4c2b20ae89664204f76db2c55a72d567208799c01bccff",
       "targetContentIdentity": "5f6a871e4124498aab29903327739037a52b50e6505026bd95824d275d92eaae",
@@ -209,7 +210,7 @@
       "clearCanonicalCooldown": true,
       "seedOriginMappings": 0,
       "directedTests": "7/7 PASS",
-      "fullRegression": "PASS",
+      "fullRegressionBeforeFinalReground": "PASS",
       "notes": [
         "EVT_23_BRIDGE_001 no firma ni modifica contrato.",
         "EVT_23_AGT_001 no crea oferta formal mediante efectos narrativos.",
