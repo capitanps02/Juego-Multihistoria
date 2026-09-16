@@ -5,6 +5,7 @@ import {
   PRE_T51_EVENT_EVIDENCE,
   type LegacyEventEvidence
 } from "./pre-t51-legacy-registry.js";
+import { POST_T51_CONTENT_SOURCES } from "./post-t51-legacy-registry.js";
 
 export interface ContentEvidenceSource {
   contentIdentity: string;
@@ -53,7 +54,8 @@ export const LEGACY_CONTENT_SOURCES: Readonly<Record<string, ContentEvidenceSour
     engineBuild: "0.8.0-t2.5",
     sessionVersions: [1, 2, 3],
     events: PRE_T51_EVENT_EVIDENCE
-  }
+  },
+  ...POST_T51_CONTENT_SOURCES
 };
 
 export const T51_B1A_CONTENT_IDENTITY = "1a8a5e2006fe7160f4fbc02060568d3abec99df038fe3a1a7799c8a0e802eac7";
@@ -76,6 +78,9 @@ export const CONTENT_MIGRATION_ROUTES: readonly ContentMigrationRoute[] = [
 
 const activeEvidenceCache = new Map<string, Readonly<Record<string, LegacyEventEvidence>>>();
 activeEvidenceCache.set(PRE_T51_CONTENT_IDENTITY, PRE_T51_EVENT_EVIDENCE);
+for (const source of Object.values(POST_T51_CONTENT_SOURCES)) {
+  activeEvidenceCache.set(source.contentIdentity, source.events);
+}
 
 export function findMigrationRoute(
   sourceContentIdentity: string,
