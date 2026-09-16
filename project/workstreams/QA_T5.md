@@ -1,181 +1,205 @@
 # QA T5 — regresión, simulación y auditoría independiente
 
 Rama propietaria: `qa/t5-regression`  
-Base inicial inspeccionada: `main@c28d1194d7a6cce8aef9759bbb96875a710cb945`  
+Baseline inicial: `main@c28d1194d7a6cce8aef9759bbb96875a710cb945`  
+Main observado en esta pasada: `cee76dc47e22d12a9e06523d8e941f46caba5883`  
 Owner: QA independiente  
 Objetivo: aumentar la probabilidad de detectar regresiones importantes antes de `main`, no demostrar que el juego funciona.
 
 ## Principios
 
-1. Un test de QA no convierte una distribución observada en regla de diseño.
-2. Los bugs existentes se reproducen y se asignan; no se arregla silenciosamente producción ajena.
-3. `npm test` sigue siendo el gate histórico corto. T5 añade gates separados.
-4. Las simulaciones caras nunca forman parte de `npm test`.
-5. Determinismo significa misma seed + mismas decisiones + misma configuración => mismo estado relevante, no solo un resumen parecido.
-6. Microfeeds pueden consumir su stream propio, pero no pueden contaminar narrativa, fútbol, decisiones, retirada ni epílogo.
-
-## Matriz de cobertura
-
-| Área | Cobertura previa observada | Gate T5 | Estado |
-|---|---|---|---|
-| Determinismo | `final-gate-v08.mjs` usa esencialmente seed 424242; `test-session.mjs` compara sesión/headless | matriz de seeds × estrategias; igualdad de estado completa | cubierta |
-| RNG isolation | comparación microfeeds on/off sobre seed 424242 | matriz multi-seed/multi-strategy y proyección de estado fuerte | cubierta |
-| Save/restore | `test-saves.mjs`, `test-session.mjs`, `test-persistence.mjs` son fuertes | se mantiene como dependencia de integración; no se duplica | cubierta histórica |
-| Idempotencia | commandId, double click, rollback, resume ya probados en `test-session.mjs` | se vigila por regresión de CI | cubierta histórica |
-| Scheduler | tests de lotes y selección puntual | no repetibles <= 1, cierre acotado, simulación estratificada | ampliada |
-| Edad | clasificadores/adaptadores probados por etapas | recorrido diario 18→20→23→26→30→34 con fase/adaptadores | cubierta |
-| Seeds | auditor estático T5.2 existente | refs cerradas, una instancia viva, HAS_* coherente, no doble consumo, métricas de huérfanas/eternas | ampliada |
-| NPC | relaciones numéricas aparecen en contenido; save valida `knowledge` | cierre de refs + reproducción de memoria inerte | bug abierto |
-| Mercado | tests específicos de ofertas | invariantes before/terms, owner/registration, salario/meses y aceptación | ampliada |
-| Retirada | gate v0.8 y motor tardío | cierre multi-seed/perfil; no oferta pendiente terminal | ampliada |
-| Epílogo | generación y familias | 2–5 familias únicas; todo milestone debe existir en history | ampliada |
-| Carreras largas | QA histórico 1.000 carreras | perfiles estratégicos y comando expensive separado | infraestructura lista |
+1. QA intenta falsar invariantes, no validar de forma optimista.
+2. Un bug de producción se reproduce y asigna; QA no lo corrige silenciosamente si pertenece a otro workstream.
+3. Un defecto inequívoco del harness/fixture QA sí se corrige aquí y se documenta.
+4. Determinismo = misma seed + mismas decisiones + misma configuración => mismo estado relevante.
+5. Microfeeds pueden consumir su stream propio, pero no contaminar narrativa fuerte, fútbol, retirada ni epílogo.
+6. Una distribución observada no se convierte en regla de diseño.
+7. Una decisión canónica no resuelta no se convierte en contrato técnico porque un PR tenga CI verde.
+8. QA no edita directamente `project/PLAN_PASADAS.md`, `analysis/2026-09-11/plan-seguimiento.json` ni contenido canónico.
 
 ## Gates
 
-### Fast regression
-
 ```bash
 npm run qa:t5:fast
-```
-
-Incluye propiedades transversales de determinismo, RNG isolation, cruces de edad, cierre de referencias y carreras largas acotadas.
-
-### Content checks
-
-```bash
 npm run qa:t5:content
-```
-
-Falla por errores estructurales nuevos (IDs duplicados, refs a seed/NPC inexistentes, acciones desconocidas). Además registra deuda sin convertirla todavía en regla de diseño: seeds sin reader, writer o consumidor terminal y orígenes fuera del inventario de eventos.
-
-Para persistir un informe:
-
-```bash
-T5_QA_OUTPUT=qa/t5-content.json npm run qa:t5:content
-```
-
-### Simulation checks
-
-```bash
+npm run qa:t5:freeze
+npm run qa:t5:saves
+npm run qa:t5:integration
 npm run qa:t5:simulation
-```
-
-Ejecuta una carrera por perfil estratégico y falla ante carrera bloqueada o estado imposible básico.
-
-Perfiles de cobertura: `ambitious`, `conservative`, `loyal`, `mercenary`, `risky`, `health-first`, `fame-first`, `stability`, `contradictory`.
-
-No representan futbolistas reales ni una distribución esperada de usuarios. Son sondas de cobertura. El selector puntúa `intentTags`/label y usa fallback determinista cuando el contenido no ofrece una señal semántica suficiente.
-
-### Expensive simulation
-
-```bash
 npm run qa:t5:expensive
-```
-
-25 carreras por perfil (225 en total por ejecución actual). Es deliberadamente separado de CI normal y de `npm test`. Se puede variar con `T5_RUNS_PER_PROFILE` y `T5_BASE_SEED` ejecutando directamente `scripts/qa-t5-sim.mjs` tras build.
-
-### Reproducciones de bugs conocidos
-
-```bash
 npm run qa:t5:known-bugs
 ```
 
-Este comando es **rojo por diseño mientras los owners no corrijan los bugs**. No forma parte del gate normal.
+Cobertura actual: determinismo multi-seed, RNG isolation, save/restore, command idempotency, scheduler, cruces 18→20→23→26→30→34, lifecycle de seeds, conocimiento NPC, mercado, retirada, epílogos, content identity y carreras largas.
+
+`qa:t5:expensive` = 25 carreras × 9 perfiles = 225 y sigue fuera del CI normal. Todavía no se ha usado como evidencia de esta pasada.
+
+`qa:t5:known-bugs` queda separado del gate normal. Cuando un fix está verificado, su reproducción se promueve a regresión verde.
+
+## Save/restore
+
+Issue #22 demostró que el baseline congelado del ejemplo schema 8 no correspondía al fixture realmente importado. El diagnóstico quedó confirmado y **PR #23 ya fue integrado en `main`** como `cee76dc47e22d12a9e06523d8e941f46caba5883`; issue #22 está cerrado.
+
+Baseline integrado:
+
+```text
+v8 antiguo: 7136e3239ba5a5c71a85239401e790d8deb9292d4d49f7d4e2cd8d4359f9ca51
+v8 correcto: 973721941c79d61ee4a08045778c604641fc87db7d8423533505f8d13fe3db1b
+```
+
+`main` ejecuta ahora `scripts/test-saves.mjs` dentro de `npm test`. QA mantiene además `scripts/test-t5-save-compat.mjs`, que exige deep-equal del schema 8 original, hash reproducible, round-trip exacto y preservación de `history`, `seeds` y todos los streams RNG. No se modificó `src/save/*`.
 
 ## Registro de defectos
 
-| ID | Severidad | Reproducción mínima | Owner probable | Estado | Test |
-|---|---|---|---|---|---|
-| T5-QA-001 | alta | jugar ~3000 días con seed fija; hay escenas con `npcRefs`, pero los `NPCState.knowledge`/`memories` de los NPC referenciados quedan idénticos al estado inicial | T5.3 NPC/memoria/conocimiento | abierto en base inspeccionada | `scripts/test-t5-known-bugs.mjs` |
-| T5-QA-002 | alta | recorrer `outcome.seedTransitions`; la base inspeccionada no expone consumidores terminales `resolve`/`expire` suficientes para cerrar el grafo de memoria | T5.2 seed lifecycle | abierto en base inspeccionada | `scripts/test-t5-known-bugs.mjs`, `scripts/qa-t5-content.mjs` |
-| T5-QA-003 | media | el gate v0.8 validaba determinismo/RNG isolation de forma estrecha alrededor de una seed principal | QA T5 | mitigado en esta rama | `scripts/test-t5-regression.mjs` |
+| ID | Severidad | Owner | Estado actual | Evidencia |
+|---|---|---|---|---|
+| T5-QA-001 | alta | T5.3 | baseline histórico afectado; PR #9 implementa frontera real, pendiente integración | `test-t5-known-bugs.mjs` |
+| T5-QA-002 | deuda | contenido/T5.4 | backlog cuantificado, no bug binario | `qa-t5-content.mjs` + handoff #19 |
+| T5-QA-003 | media | QA | mitigado | `test-t5-regression.mjs` |
+| T5-QA-004 | alta | T5.3 | fix verificado en #9; pendiente integración | `test-t5-integration-probes.mjs` |
+| T5-QA-005 | alta | T5.2 | bug presente en `main`; fix verificado en #19; pendiente integración | `test-t5-known-bugs.mjs` + test #19 |
+| T5-QA-006 | alta integración | integrador/T5.2/T5.3 | riesgo de perder hardening al reconciliar #19/#9 | `test-t5-integration-probes.mjs` |
+| T5-QA-007 | media QA | QA | **cerrado e integrado en main vía #23** | `test-t5-save-compat.mjs`, issue #22 |
+| T5-QA-008 | alta | T5.3 + persistencia | abierto en #9: knowledge persistido malformado puede satisfacer `npcKnows` | probe latente de integración |
 
-### T5-QA-001 — evidencia y riesgo
+## T5-QA-002 — deuda canónica de seeds
 
-`NPCState` ya declara `knowledge`, `memories`, `reliability` y `access`, y el save exige esos campos. Sin embargo, en la base inspeccionada las rutas de producción encontradas leen relaciones o validan NPCs, pero no convierten eventos vividos en conocimiento/memoria persistente del NPC. Resultado: el NPC puede estar referenciado narrativamente sin aprender nada del hecho. Esto impide demostrar no-omnisciencia porque todavía no existe una frontera de conocimiento operativa que auditar.
+Con T5.2 ya existen cierres reales, así que el antiguo test “debe existir al menos un terminal” dejó de ser un buen bug test y fue retirado de `known-bugs`. La deuda se mide por bloque sin imponer una distribución de diseño.
 
-Criterio de cierre QA: la reproducción debe pasar porque al menos un NPC que participa en un hecho aprende/recuerda solo lo que recibe por una vía válida; después se añadirán pruebas negativas de NPC no informado.
+Handoff #19:
 
-### T5-QA-002 — evidencia y riesgo
+| Workstream | Seeds | Sin productor | Sin consumidor | Terminal explícito | Open-ended sin terminal |
+|---|---:|---:|---:|---:|---:|
+| 18–23 | 31 | 0 | 10 | 1 | 7 |
+| 23–30 | 59 | 0 | 30 | 0 | 35 |
+| 30–34 | 52 | 4 | 45 | 0 | 52 |
+| 34+ | 68 | 68 | 68 | 0 | 68 |
 
-El motor soporta estados terminales (`resolved`, `expired`), `consumedBy` y expiración explícita, pero el grafo de contenido debe demostrar consumidores reales. Un lifecycle que solo crea/activa/intensifica deja memoria eterna aunque la infraestructura permita cerrarla.
+La auditoría de #19 reparte 210/210 seeds exactamente una vez según el bloque de catálogo. No se inventan consumidores para reducir deuda.
 
-Criterio de cierre QA: existencia de consumidores terminales reales + simulaciones sin doble consumo + política explícita para recreación de una seed terminal.
+## T5-QA-004 — procedencia NPC
 
-## PRs/workstreams inspeccionados
+PR #9 corrigió la frontera en el escritor de bajo nivel: una fuente desconocida, self-source, fuente ignorante o cuyo conocimiento caducó se rechaza antes de mutar. La reproducción se promovió a gate de integración.
 
-En la inspección inicial:
+Head más reciente inspeccionado: `956943485cb2355308297809db831a884a4aeb5b`; `Repository integrity` run #373: SUCCESS.
 
-- `t5/seed-lifecycle` existía pero era idéntica a `main`.
-- `t5/npc-memory` existía pero era idéntica a `main`.
-- PR #3 (`20–23`), #5 (`26–30` semántica) y #7 (`edad 26 / cronología seeds`) eran borradores de preparación/documentación, sin implementación funcional que ejecutar todavía.
+## T5-QA-005 — flag de seed fantasma
 
-Riesgos a revalidar cuando cambien esos heads:
+El `main` actual todavía recorre solo IDs presentes en `state.seeds`; QA reprodujo `HAS_SEED_X=true` sin instancia viva.
 
-1. migración de IDs sin reinterpretar historial antiguo;
-2. seeds activas que sobreviven save/restore con el mismo significado;
-3. consumidores de seeds que no disparan antes de su causa;
-4. cambio de canon que no altera determinismo para saves/elecciones equivalentes salvo migración explícita;
-5. NPC que no recibe información privada por mera presencia global del flag/seed.
+PR #19 corrige el sync usando:
 
-## Métricas de simulación registradas
+```text
+SEED_DEFINITIONS.keys() ∪ state.seeds.ids
+```
 
-`qa-t5-sim.mjs` registra por carrera:
+Head `1de78857331b264e0095e24b082f18e8110765b6`; run #313: SUCCESS. Tras el merge de #23, GitHub reporta #19 como no mergeable contra el nuevo `main`; debe re-groundearse antes de integrar y volver a ejecutar QA.
 
-- cierre/no cierre;
-- edad de retirada y tipo de cierre;
-- eventos por tramo;
-- decisiones/historial;
-- seeds abiertas;
-- familias de epílogo;
-- decisiones de mercado;
-- estados imposibles detectados.
+## T5-QA-006 — integración #19 ↔ #9
 
-Estas métricas son telemetría QA. No son objetivos de balance.
+El head inspeccionado de #9 combina T5.2 + T5.3, pero conserva la versión anterior de `syncSeedPresenceFlagsInPlace()`. Tras moverse `main`, tanto #19 como #9 necesitan reconciliación antes de integración.
 
-## Evidencia del primer PR
+El merge final debe conservar simultáneamente:
 
-PR: `#11` — `QA T5: regression gates and stratified simulation harness`.
+- lifecycle/scope de seeds;
+- flags de presencia;
+- adquisición NPC;
+- club del aprendizaje durante transferencias;
+- determinismo;
+- rechazo de fuente NPC ignorante.
 
-Validación limpia sobre `01dd195094b147c70743de64bea84ca70ee9d629`:
+`EVT_18_PRE_001/CALL_NANO` es el probe conjunto: conocimiento de Nano + `SEED_NANO_SHADOW` viva + `HAS_SEED_NANO_SHADOW=true`.
 
-- GitHub Actions `Repository integrity` run `#111`: **success**.
-- `npm test`: success.
-- determinismo + RNG isolation: success.
-- cruces de edad y adaptadores: success.
-- referencias de contenido: success.
-- carreras largas: success.
-- auditoría de lifecycle: success.
-- simulación estratificada de 9 perfiles: success.
+## T5-QA-008 — knowledge inválido desde save
 
-El primer intento del gate T5 detectó un defecto del propio harness: el test de edades llamaba directamente a `advanceWorldDayInPlace()` sin resolver una oferta pendiente, por lo que el reloj quedaba correctamente bloqueado por la autoridad de mercado. Se corrigió **solo QA** haciendo que el fixture rechace la oferta pendiente antes de avanzar. No se tocó producción.
+El schema 8 integrado valida `npcs[i].knowledge` como objeto. En el head inspeccionado de #9, `parseRecord()` comprueba tipos básicos pero no exige enums de `source`/`memory`, rango de `certainty` ni fecha ISO válida antes de que `npcKnows()` pueda devolver `true`.
 
-CI separa las propiedades T5 en pasos individuales para que una regresión futura indique inmediatamente qué familia de invariantes se rompió. La simulación expensive sigue fuera de CI.
+Reproducción QA inyecta:
 
-## Política ante nuevos bugs
+```text
+source = telepathy
+memory = eternal
+certainty = -1
+learnedAt = not-a-date
+```
 
-1. aislar la seed/perfil/estado mínimo;
-2. añadir reproducción automatizada;
-3. dejar el test rojo en `qa:t5:known-bugs` si el fix pertenece a otro workstream;
-4. registrar owner y severidad aquí;
-5. añadir el caso al gate normal únicamente cuando el comportamiento esperado sea estable y el owner haya corregido producción.
+Contrato aceptado por QA:
 
-## Archivos que este workstream no debe tocar
+1. save validation rechaza el estado; o
+2. el lector epistemológico ignora el registro y `npcKnows()` devuelve `false`.
 
-- `project/PLAN_PASADAS.md`
-- `analysis/2026-09-11/plan-seguimiento.json`
-- contenido canónico de eventos
+Lo único prohibido es que metadata persistida inválida habilite `know.*`.
 
-## Criterio del primer PR
+## Smoke gate de reimplementaciones T5.1 30–34
 
-El PR inicial es revisable cuando:
+`scripts/test-t5-integration-probes.mjs` contiene ahora un probe latente para eventos con:
 
-- los gates están versionados;
-- CI ejecuta `npm test` y después los gates T5 normales como pasos diagnósticos separados;
-- las reproducciones de bugs conocidos están separadas;
-- la simulación expensive queda fuera de CI;
-- no hay cambios en producción/canon;
-- se inspecciona el resultado real de GitHub Actions antes de recomendar integración.
+```text
+phase = 30_34
+tag = t51_canonical_reimplementation
+```
 
-Estado: **cumplido para el primer PR de QA; no implica que T5 esté cerrado ni que los bugs T5-QA-001/002 estén resueltos.**
+Cuando esas escenas existan en `main`, QA ejecutará **cada elección** sobre un estado sintético compatible y exigirá:
+
+- que la resolución no lance;
+- que devuelva `ResolutionResult` coherente;
+- que seeds/effects no apunten a rutas inválidas;
+- que `assertGameState()` acepte el estado posterior.
+
+Este test **no valida el canon narrativo** ni decide si trigger/opciones/copy son correctos. Solo garantiza que una reimplementación declarada como activa no rompa el contrato técnico al jugarla.
+
+## Freeze pre-T5.1 y `contentIdentity`
+
+Baseline congelado: `2e07efd2ea99c4e9ec4c2b20ae89664204f76db2c55a72d567208799c01bccff`.
+
+`GameSession.resume()` rechaza contenido distinto con `CONTENT_CHANGED`. `freeze-t51-baseline.mjs --check` protege el paso anterior.
+
+**Importante:** el sentinel está activo en la rama/PR #17, pero todavía no está integrado en el workflow de `main`. Por eso un PR T5.1 de contenido puede mostrar `Repository integrity` verde aunque cambie el catálogo. Ese verde no acredita compatibilidad de `contentIdentity`.
+
+## Retirada 34+ / PR #15
+
+#15 mejora técnicamente no-market, probabilidad de ofertas, terminalidad y epílogos. Aun así, QA no convierte una decisión canónica no resuelta en contrato técnico: la semántica post-anuncio sigue requiriendo decisión de coordinación antes de aceptar `announced -> playing` como comportamiento canónico.
+
+Además #15 modifica contenido activo y sigue sujeto a estrategia explícita de `contentIdentity`/sesiones antes de integración.
+
+## Estado de PRs relevantes
+
+- **#17 QA:** abierta; probes T5.2/T5.3, save-compat adicional, freeze sentinel y smoke T5.1; no merge automático.
+- **#23 save baseline:** **mergeado en main**; issue #22 cerrado.
+- **#19 T5.2 hardening:** T5-QA-005 corregido en su head; necesita re-ground contra `main@cee76dc…` antes de integrar.
+- **#9 T5.3:** head inspeccionado `95694348…`; T5-QA-004 corregido, T5-QA-008 abierto y resolver aún no contiene el hardening #19; necesita re-ground.
+- **#13 30–34:** contiene `canonical-reimplementations-*`; tratar como contenido activo. El smoke QA se activará cuando llegue a `main`.
+- **#15 34+:** mejoras técnicas, pero mantiene bloqueos de canon/content identity.
+- **#14 presentación:** #22 ya no es bloqueo del `main`; debe re-groundearse y volver a validar. T3.4 físico sigue fuera de QA T5.
+
+## Correcciones al propio harness QA
+
+1. test de edad bloqueado por oferta pendiente;
+2. suposición de una sola generación terminal por seed;
+3. intento descartado de imponer dedupe narrativo en resolver;
+4. acoplamiento literal al formato de milestones;
+5. baseline hash schema 8 desfasado (T5-QA-007), ya corregido en `main`;
+6. T5-QA-002 reclasificado de test binario a deuda medible tras evolucionar T5.2.
+
+## Política
+
+1. aislar reproducción mínima;
+2. fijar owner y severidad;
+3. mantener bug de producción fuera del gate normal hasta que exista fix;
+4. verificar el fix en el SHA exacto del owner;
+5. promover la reproducción a gate verde;
+6. volver a probar el merge real cuando dos PR comparten archivos;
+7. no reinterpretar canon ni history para hacer verde un gate.
+
+## Estado operativo
+
+- `main` = `cee76dc47e22d12a9e06523d8e941f46caba5883`; #23 integrado.
+- T5-QA-007 cerrado en `main`.
+- T5-QA-005 sigue en `main`, con fix verificado pero no integrado en #19.
+- T5-QA-004 tiene fix verificado y regresión armada.
+- T5-QA-006 exige re-ground real #19/#9 antes de integración.
+- T5-QA-008 sigue abierto sobre persistencia epistemológica de #9.
+- Smoke T5.1 30–34 preparado y latente hasta que esas reimplementaciones lleguen a `main`.
+- Freeze sentinel funciona en #17, aún no en CI de `main`.
+- `qa:t5:expensive` todavía no se ha usado como evidencia.
+- PR #17 permanece abierto y no debe mergearse automáticamente desde este workstream.
