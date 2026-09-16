@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 8,
+  "schemaVersion": 9,
   "generatedAt": "2026-09-16",
   "workstream": "T51_CANON_18_23",
   "branch": "t51/canon-18-23",
@@ -11,21 +11,15 @@
     "functionalImplementationTarget": "separate downstream functional batches using integrated Session v3 multigeneration migration, choice eligibility and event gate alternatives"
   },
   "baseline": {
-    "mainSha": "ddf46fed010521c5969bac26e29920945793f709",
+    "mainSha": "6cb81b63f03ce55776ca97075012cfaa22ac228d",
+    "cleanRegroundCommit": "86ee71a8d15484c571e840c0cf877feeb97a65c5",
     "preT51FreezeCommit": "9773104440615611f059a4f45c69c25d280a26aa",
     "preT51ContentIdentity": "2e07efd2ea99c4e9ec4c2b20ae89664204f76db2c55a72d567208799c01bccff",
     "freezeStatus": "resolved",
-    "sessionContentMigration": {
-      "status": "integrated_and_multigeneration",
-      "commit": "a4a4c8df98bb1a3e88d9a7e0a19b48571af99074",
-      "multigenerationCommit": "fe06a5c9d61632ea4491dc6df95788154884177a",
-      "latestObservedLineageExtension": "922b9ecc6be26df68879461cdef885ea53bd69ee",
-      "sessionVersion": 3,
-      "batchRouteRequiredWhenEventsChange": true
-    },
+    "sessionContentMigration": {"status":"integrated_and_multigeneration","commit":"a4a4c8df98bb1a3e88d9a7e0a19b48571af99074","multigenerationCommit":"fe06a5c9d61632ea4491dc6df95788154884177a","latestObservedLineageExtension":"922b9ecc6be26df68879461cdef885ea53bd69ee","sessionVersion":3,"batchRouteRequiredWhenEventsChange":true},
     "choiceEligibility": {"status":"integrated","commit":"76699f93e19e1ac9e17b42ccfaea011d92630fb6"},
     "eventGateAlternatives": {"status":"integrated","commit":"291e34bfd8bb7c529182a2664564c63ff33eee19"},
-    "seedLifecycle": {"status":"integrated_and_hardened","baseCommit":"14e55bb0e7f2c7582889c7b4ebbbccfd0b792345","deferredGuardsObservedBy":"f36443969995e85fef89eff0bd1776f384f19e09"},
+    "seedLifecycle": {"status":"integrated_and_hardened","baseCommit":"14e55bb0e7f2c7582889c7b4ebbbccfd0b792345","deferredGuardsObservedBy":"f36443969995e85fef89eff0bd1776f384f19e09","canonicalOriginIdentityCommit":"1d7e51ef821cbcb7b3bbe84ca8cac013ac3f8751"},
     "b1aPrincipalIntelRepairs": {"status":"integrated_and_certified","sourceCommit":"ddfbc08e158a1dc49afccc29ff0680da8f887ccd","mergeCommit":"f05667453a1e40d5a4af635e8b9b787bbecdb726","ids":["EVT_18_MED_001","EVT_18_TEAM_001","EVT_18_MATCH_002"]}
   },
   "principalStatus": {"canonicalTotal":63,"verified_same_identity":21,"needs_reimplementation":36,"canonical_missing":6,"requires_manual_review":0,"approved_alias":0,"engine_only_noncanonical":6},
@@ -44,13 +38,7 @@
   "conditionalCanonicalMissing": {"count":15,"ids":["CEVT_20_RIVAS_01","CEVT_20_VELA_01","CEVT_20_PAULA_01","CEVT_20_NANO_01","CEVT_20_MONT_01","CEVT_20_ADR_01","CEVT_21_BIGCLUB_01","CEVT_21_LOAN_01","CEVT_21_AGENT_02","CEVT_21_INJ_01","CEVT_22_UDV_01","CEVT_22_BRUNO_02","CEVT_22_ADR_02","CEVT_22_SOC_02","CEVT_22_SHOCK_01"]},
   "conditionalManualCertification": {"count":0,"ids":[],"resolvedBy":"analysis/T5.1/canon-18-20-conditional-certification.json"},
   "implementationBatches": [
-    {
-      "id":"B0_SHARED_CONTRACTS",
-      "runtimeAllowedInPr10":false,
-      "integrated":["SESSION_CONTENT_MIGRATION","CHOICE_ELIGIBILITY","EVENT_GATE_OR_OR_DERIVED_FACT"],
-      "openDependencies":[],
-      "exitCriteria":"All shared contracts currently known to block 18-23 are integrated; content still requires explicit canonical wiring."
-    },
+    {"id":"B0_SHARED_CONTRACTS","runtimeAllowedInPr10":false,"integrated":["SESSION_CONTENT_MIGRATION","CHOICE_ELIGIBILITY","EVENT_GATE_OR_OR_DERIVED_FACT"],"openDependencies":[],"exitCriteria":"All shared contracts currently known to block 18-23 are integrated; content still requires explicit canonical wiring."},
     {
       "id":"B1_18_20_LOCAL_REPAIRS",
       "runtimeAllowedInPr10":false,
@@ -93,7 +81,7 @@
       "principalIds":["EVT_20_MATCH_001","EVT_21_ABR_001","EVT_21_AGT_002","EVT_21_CCH_001","EVT_22_END_001","EVT_22_LIFE_001"],
       "conditionalLegacyIds":15,
       "conditionalIds":["CEVT_20_LOAN_01","CEVT_20_ABR_01","CEVT_20_AGENT_01","CEVT_20_BODY_01","CEVT_20_HOME_01","CEVT_20_BRUNO_01","CEVT_21_CAPTAIN_01","CEVT_21_NAT_01","CEVT_21_CONTRACT_01","CEVT_21_ADRIAN_01","CEVT_21_FAMILY_01","CEVT_22_DEADLINE_01","CEVT_22_INJ_01","CEVT_22_LOANBUY_01","CEVT_22_RETURN_01"],
-      "hardDecouplingIds":["EVT_21_ABR_001","EVT_21_AGT_002","EVT_22_END_001"],
+      "hardDecouplingIds":["EVT_20_MATCH_001","EVT_21_ABR_001","EVT_21_AGT_002","EVT_22_END_001"],
       "acceptanceEvidence":"analysis/T5.1/canon-18-23-b4-legacy-retirement.json",
       "migrationRequirement":"retire from active scheduling while retaining frozen legacy definitions/history/pending provenance; no direct ID alias or automatic SEEN/seed-origin rewrite",
       "tests":["active_catalog_retirement","legacy_registry","history_immutability","pending_legacy","seed_origin_decoupling","scheduler_decoupling","save_restore","determinism","repository_integrity"]
@@ -106,7 +94,7 @@
     "All shared architecture contracts currently known to block 18-23 are integrated.",
     "Every repaired scene still proves its own canonical trigger/options/effects instead of inheriting correctness from the shared contract.",
     "Every active EVENTS-changing batch extends the exact migration lineage from every supported persisted source.",
-    "Legacy retirement preserves history/pending truth and removes hard seed/scheduler couplings before dropping active rows.",
+    "Legacy retirement preserves history/pending truth and removes all four hard seed/scheduler couplings before dropping active rows.",
     "Determinism and relevant T5 QA gates pass on the exact functional SHA.",
     "PR #10 remains audit-only; runtime is delivered by separately authorized functional batches."
   ]
