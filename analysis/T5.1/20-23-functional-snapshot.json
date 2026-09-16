@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-09-16",
+  "workstream": "T51_CANON_20_23",
+  "branch": "t51/canon-20-23",
+  "baselineMainSha": "6cb81b63f03ce55776ca97075012cfaa22ac228d",
+  "sources": [
+    "Documento Maestro v0.9 via analysis/2026-09-11/t1/principal-traceability.json",
+    "t51/canon-18-23:analysis/T5.1/canon-20-23-b2-handoff.json",
+    "t51/canon-18-23:analysis/T5.1/canon-20-23-b3-missing-handoff.json",
+    "t51/canon-18-23:analysis/T5.1/canon-18-23-b4-legacy-retirement.json",
+    "main@6cb81b63f03ce55776ca97075012cfaa22ac228d runtime catalogs"
+  ],
+  "revalidation": {
+    "principalFactoryStillGeneric": true,
+    "conditionalFactoryStillGeneric": true,
+    "sameIdDoesNotImplySameScene": true,
+    "criticalCollisionEVT_21_RIV_001StillPresent": true,
+    "notes": [
+      "All 27 same-ID principal cards still flow through src/content/events/20_23/principal-events.ts make(row) with generic A/B/C/D semantics.",
+      "CEVT_21_ABR_01, CEVT_21_MEDIA_01 and CEVT_22_FREE_01 still flow through the generic conditional factory.",
+      "EVT_21_RIV_001 runtime still means Rivas/HAS_SEED_RIVAS_TRUST while canon means Adrián/SEED_ADRIAN_MIRROR/media comparison."
+    ]
+  },
+  "inventory": {
+    "canonicalTotal": 51,
+    "principals": 33,
+    "conditionals": 18,
+    "verifiedFunctional": 0,
+    "needsReimplementation": 30,
+    "canonicalMissing": 21,
+    "legacyOnly": 21,
+    "legacyOnlyPrincipals": 6,
+    "legacyOnlyConditionals": 15
+  },
+  "principalNeedsReimplementation": [
+    "EVT_20_LIFE_001","EVT_20_MKT_001","EVT_20_MED_001","EVT_20_AGT_001","EVT_20_ABR_001","EVT_20_STATUS_001","EVT_20_CCH_001","EVT_20_LOCK_001","EVT_20_LOCK_002","EVT_20_BRUNO_001",
+    "EVT_21_MONEY_001","EVT_21_AGT_001","EVT_21_NAT_001","EVT_21_IMG_001","EVT_21_CAP_001","EVT_21_PRS_001","EVT_21_MED_001","EVT_21_RIV_001","EVT_21_CCH_002",
+    "EVT_22_CON_001","EVT_22_LOCK_001","EVT_22_HOME_001","EVT_22_MKT_001","EVT_22_MED_001","EVT_22_TACT_001","EVT_22_DDL_001","EVT_22_CON_002"
+  ],
+  "conditionalNeedsReimplementation": ["CEVT_21_ABR_01","CEVT_21_MEDIA_01","CEVT_22_FREE_01"],
+  "principalCanonicalMissing": ["EVT_20_BRIDGE_001","EVT_20_MATCH_003","EVT_20_JAN_001","EVT_21_MKT_001","EVT_21_SOC_001","EVT_21_PRS_002"],
+  "conditionalCanonicalMissing": [
+    "CEVT_20_RIVAS_01","CEVT_20_VELA_01","CEVT_20_PAULA_01","CEVT_20_NANO_01","CEVT_20_MONT_01","CEVT_20_ADR_01",
+    "CEVT_21_BIGCLUB_01","CEVT_21_LOAN_01","CEVT_21_AGENT_02","CEVT_21_INJ_01",
+    "CEVT_22_UDV_01","CEVT_22_BRUNO_02","CEVT_22_ADR_02","CEVT_22_SOC_02","CEVT_22_SHOCK_01"
+  ],
+  "legacyOnly": [
+    "EVT_20_MATCH_001","EVT_21_ABR_001","EVT_21_AGT_002","EVT_21_CCH_001","EVT_22_LIFE_001","EVT_22_END_001",
+    "CEVT_20_LOAN_01","CEVT_20_ABR_01","CEVT_20_AGENT_01","CEVT_20_BODY_01","CEVT_20_HOME_01","CEVT_20_BRUNO_01","CEVT_21_CAPTAIN_01","CEVT_21_NAT_01","CEVT_21_CONTRACT_01","CEVT_21_ADRIAN_01","CEVT_21_FAMILY_01","CEVT_22_DEADLINE_01","CEVT_22_INJ_01","CEVT_22_LOANBUY_01","CEVT_22_RETURN_01"
+  ],
+  "priorityBlockers": {
+    "matchAuthority": ["EVT_20_MATCH_003"],
+    "conditionalMarketFact": ["EVT_20_JAN_001"],
+    "offerAndLoanPlanAuthority": ["EVT_21_MKT_001","CEVT_21_LOAN_01"],
+    "externalWorldFacts": ["CEVT_20_RIVAS_01","CEVT_20_VELA_01","CEVT_20_NANO_01","CEVT_20_MONT_01","CEVT_20_ADR_01","CEVT_21_BIGCLUB_01","CEVT_22_UDV_01","CEVT_22_ADR_02","CEVT_22_SOC_02","CEVT_22_SHOCK_01"],
+    "compoundMedicalFacts": ["CEVT_20_PAULA_01","CEVT_21_INJ_01"],
+    "marketProvenance": ["CEVT_21_AGENT_02","CEVT_22_BRUNO_02"]
+  },
+  "seedsInScope": [
+    "SEED_FIRST_BIG_MONEY","SEED_AGENT_POWER","SEED_FOREIGN_ADAPT","SEED_MEDICAL_DISCLOSURE","SEED_TEAMMATE_COVER","SEED_BRUNO_FAVOR","SEED_FAMILY_MONEY","SEED_SELECTION_SNUB","SEED_SPONSOR_IMAGE","SEED_FIRST_CAPTAIN_ROOM","SEED_PUBLIC_CONTRACT","SEED_ADRIAN_MIRROR","SEED_TACTICAL_SACRIFICE","SEED_FIRST_FREE_AGENCY","SEED_LOCKER_VOTE","SEED_HOME_DISTANCE","SEED_DEADLINE_DAY","SEED_CONTRACT_HARDLINE","SEED_CLARA_CHANNEL","SEED_DANI_NORMALITY","SEED_AGENT_OMISSION","SEED_EXIT_STYLE_UDV","SEED_BODY_PRECEDENT"
+  ],
+  "npcDependencies": ["NPC_PLR_12","NPC_PLR_15","NPC_PRS_01","NPC_AGT_01","NPC_AGT_02","NPC_FAM_01","NPC_FAM_02","NPC_MED_01","NPC_SOC_01","NPC_PLR_10","NPC_PLR_11","NPC_CCH_02","NPC_DIR_02","NPC_ACA_01"],
+  "officialPassBacklog": {
+    "T5.5": ["EVT_20_ABR_001","EVT_20_BRUNO_001","EVT_21_RIV_001","CEVT_21_ABR_01","CEVT_21_MEDIA_01","EVT_22_CON_001","EVT_22_CON_002","EVT_20_LIFE_001","EVT_20_AGT_001","EVT_21_CAP_001","EVT_21_PRS_001","EVT_21_SOC_001"],
+    "T5.6": ["EVT_20_MED_001","EVT_20_STATUS_001","EVT_20_CCH_001","EVT_20_LOCK_001","EVT_20_LOCK_002","EVT_21_MONEY_001","EVT_21_AGT_001","EVT_21_NAT_001","EVT_21_IMG_001","EVT_21_MED_001","EVT_21_CCH_002","EVT_21_PRS_002"],
+    "T5.7": ["EVT_20_MKT_001","EVT_22_LOCK_001","EVT_22_HOME_001","EVT_22_MKT_001","EVT_22_MED_001","EVT_22_TACT_001","EVT_22_DDL_001","CEVT_22_FREE_01","EVT_20_BRIDGE_001","EVT_21_MKT_001","CEVT_21_AGENT_02","CEVT_21_LOAN_01"],
+    "T5.8": ["EVT_20_MATCH_003","EVT_20_JAN_001","CEVT_20_RIVAS_01","CEVT_20_VELA_01","CEVT_20_PAULA_01","CEVT_20_NANO_01","CEVT_20_MONT_01","CEVT_20_ADR_01","CEVT_21_BIGCLUB_01","CEVT_21_INJ_01","CEVT_22_UDV_01","CEVT_22_BRUNO_02"],
+    "T5.9": ["CEVT_22_ADR_02","CEVT_22_SOC_02","CEVT_22_SHOCK_01"]
+  },
+  "firstMicrobatch": {
+    "id": "T5.5-A",
+    "scenes": ["EVT_20_ABR_001","EVT_20_BRUNO_001","EVT_21_RIV_001","CEVT_21_ABR_01","CEVT_21_MEDIA_01"],
+    "rationale": "Existing seeds/gates/NPCs support scene-specific semantics without new global architecture; includes one critical exact-ID collision and two conditionals so callbacks are not deferred.",
+    "migrationPolicy": "Every exact-ID rewrite is distinct_scene. Preserve legacy history/pending by sourceContentIdentity/fingerprint; clear canonical SEEN/cooldown only on the adjacent coordinator-owned migration edge."
+  }
+}
