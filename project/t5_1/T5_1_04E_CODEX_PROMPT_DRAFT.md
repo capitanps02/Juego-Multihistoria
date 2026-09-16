@@ -1,4 +1,4 @@
-# DRAFT Codex task — T5.1 Batch 04E epilogue + terminal QA
+# DRAFT Codex task — T5.1 Batch 04E epilogue + terminal QA + final content migration
 
 **DO NOT EXECUTE while Batch 04E is DRAFT in `project/CODEX_QUEUE.md`.**
 
@@ -8,14 +8,23 @@ Do not launch until:
 - principal 04D retirement FSM is reviewed/integrated;
 - conditional 05E 34+ reconciliation is reviewed/integrated;
 - retirement-reversal canon decision is resolved and reflected in runtime/state migration;
-- full canonical event set is ready for terminal/final QA.
+- all principal/conditional canonical reconciliation is integrated;
+- the full active canonical event set is stable enough to compute its final `contentIdentity`;
+- the pre-T5.1 supported source catalog/identity has been frozen according to `T5_1_PREIMPLEMENTATION_CONTENT_FREEZE.md`.
 
 ## Objective
 
-Make epilogue generation a truthful deterministic projection of immutable canonical terminal facts and run the final T5.1 terminal/388-event QA.
+1. Make epilogue generation a truthful deterministic projection of immutable canonical terminal facts.
+2. Implement/register the **final T5.1 session content migration** from deliberately supported frozen release identity/identities to the stable final canonical catalog.
+3. Run the final T5.1 terminal/388-event/migration QA.
 
 Primary authority:
 - `project/t5_1/T5_1_04E_EPILOGUE_RUNTIME_AUDIT.md`
+- `project/t5_1/T5_1_SAVE_SESSION_MIGRATION_RUNTIME_AUDIT.md`
+- `project/t5_1/T5_1_SESSION_CONTENT_MIGRATION_CONTRACT.json`
+- `project/t5_1/T5_1_SESSION_MIGRATION_TEST_ADDENDUM.json`
+- `project/t5_1/T5_1_CONTENT_MIGRATION_DELIVERY_PLAN.md`
+- `project/t5_1/T5_1_MIGRATION_TEST_MATRIX.json`
 - `project/t5_1/T5_1_COMPLETION_GATE.md`
 - `project/t5_1/T5_1_COMPLETION_STATUS_2026-09-16.md`
 - `project/t5_1/T5_1_AUDITOR_IMPLEMENTATION_SPEC.md`
@@ -61,7 +70,7 @@ Keep separate:
 Do not use one field as the other.
 
 ### Early retirement
-Do not trust legacy direct-close `early_retirement` closure labels after 04D. Use canonical decision origin/reason.
+Do not trust legacy direct-close `early_retirement` closure labels as if they represented the repaired future FSM. Historical closed saves remain historical facts; future canonical flow uses 04D semantics.
 
 ### Reversal/comeback
 Only score reversal/comeback endings from the explicitly approved canonical state model and truthful history. Do not keep legacy `reversals` flags as sufficient proof if 04D migrates/changes semantics.
@@ -82,9 +91,68 @@ Only score storybook farewell when 05E/04D establish a real played last match an
 9. marketing/farewell language is not proof of retirement;
 10. milestones preserve actual historical event/choice IDs, including legacy IDs where appropriate.
 
+## Final session content migration
+
+The final active canonical catalog identity must be stable before registering the target migration.
+
+### Do not weaken `contentIdentity`
+
+Current strict rejection of changed content is intentional. Replace unsupported old-content failure only for **explicitly registered source identities**.
+
+Unknown identities must continue to fail transparently.
+
+### Compatibility-aware session version
+
+Implement an explicit new session persistence version if required by the approved design. Do not silently redefine session-v2 semantics.
+
+The final format must support mixed history:
+- pre-T5.1 legacy decisions;
+- post-migration canonical decisions.
+
+Each resolved decision needs immutable provenance sufficient to identify the exact definition that produced it, including exact-ID semantic-collision cases. Follow `T5_1_SESSION_CONTENT_MIGRATION_CONTRACT.json`.
+
+### Legacy compatibility catalog
+
+Use the frozen pre-T5.1 catalog only for validation/compatibility:
+- validate old completed decisions/journal;
+- validate an embedded pending old EventDefinition;
+- resolve a decision that had already been shown to the player.
+
+It must never enter the active `EventIndex` or scheduler candidate set.
+
+### Pending legacy decisions
+
+For a recognized valid legacy pending scene:
+- preserve `instanceId`;
+- preserve the exact stored event definition and player-visible choices;
+- do not schedule a replacement;
+- do not draw narrative RNG merely to reconstruct it;
+- allow the player to resolve that stored legacy decision;
+- keep truthful legacy history unless an approved same-scene mapping explicitly permits equivalence;
+- continue afterward on canonical active content.
+
+A same string ID is not proof of equivalence.
+
+### Completed history and journal
+
+Do not force old journal text to equal the new canonical event definition.
+
+Validate legacy entries using per-decision provenance and compatibility evidence. Preserve old IDs for non-equivalent scenes.
+
+### Seeds and seen-state
+
+- preserve semantically valid seed state;
+- do not rewrite legacy `originEvent`/`consumedBy` without same-scene proof;
+- do not manufacture canonical `SEEN_*` for thematic similarity;
+- reviewed same-scene mappings may establish canonical scheduler equivalence without falsifying historical event IDs.
+
+### Development identities
+
+Do not register migration routes for every intermediate T5.1 task branch. Register deliberately supported release source identity/identities and the final stable target only.
+
 ## Final 388-event QA
 
-After epilogue truthfulness is repaired, execute the final T5.1 gates.
+After epilogue truthfulness and final content migration are implemented, execute the final T5.1 gates.
 
 ### Identity
 Require:
@@ -102,23 +170,33 @@ Require every active canonical event to have full verification evidence or expli
 No exact ID/title/runtime legacy `verified` status may substitute for semantic evidence.
 
 ### Migration/save
+Run both:
+- `T5_1_MIGRATION_TEST_MATRIX.json`;
+- `T5_1_SESSION_MIGRATION_TEST_ADDENDUM.json`.
+
 Require:
+- supported source content identities migrate explicitly;
+- unknown identity fails;
 - historical truth preserved;
 - pending scene truth preserved;
+- mixed legacy/canonical history survives repeated resume;
 - compatible seeds preserved;
 - no silent canonical SEEN/history laundering;
-- save/resume deterministic at phase and terminal boundaries.
+- receipts/revisions/idempotency remain intact;
+- migration deterministic/idempotent and zero-RNG;
+- compatibility definitions never schedule.
 
 ### Causal chains
 Run all mandatory long-range seed/NPC chains from the completion gate and semantic map, before and after save/resume.
 
 ### Retirement
-Run all 04D/05E state/closure/reversal tests.
+Run all 04D/05E state/closure/reversal tests, including migrated legacy retirement fixtures without rewriting historical terminal facts.
 
 ### Determinism/RNG
 Require:
 - same seed + same commands/choices -> same strong narrative and terminal outcome;
 - reads/UI render consume no RNG;
+- migration consumes no RNG;
 - microfeeds do not perturb strong narrative/retirement/epilogue outcome;
 - RNG streams remain separated.
 
@@ -141,11 +219,12 @@ Do not use the large acceptance run as a substitute for targeted semantic tests.
 
 Primary:
 - `src/epilogue/generator.ts` and narrowly necessary epilogue validation/helpers;
+- session/content migration + compatibility validation modules;
 - final T5.1 audit/test scripts;
-- terminal/epilogue fixtures;
+- migration/terminal/epilogue fixtures;
 - final analysis/audit artifacts.
 
-Do not reopen canonical event content casually in 04E. If final audit reveals an event semantic failure, report/request a scoped correction rather than hiding it in epilogue code.
+Do not reopen canonical event content casually in 04E. If final audit reveals an event semantic failure, report/request a scoped correction rather than hiding it in epilogue or migration code.
 
 ## Required commands
 
@@ -169,6 +248,8 @@ Plus all explicit T5.1 identity/semantic/migration/causal/retirement/full lanes 
 - contradictions are impossible or explicitly rejected;
 - generation remains closed-only and deterministic;
 - final 388-event canonical audit is green;
+- final supported-release session migration is implemented without weakening content identity;
+- mixed legacy/canonical history and pending legacy decisions pass compatibility tests;
 - migration/save/causal/retirement/RNG gates are green;
 - acceptance distribution has no retirement deadlocks;
 - final evidence artifacts are regenerated from current implementation;
