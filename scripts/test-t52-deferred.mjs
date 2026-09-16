@@ -258,3 +258,75 @@ test('current catalog deferred audit has no structurally impossible runtime chai
   assert.equal(report.summary.runtimeSimulationConsumerSeeds, 15);
   assert.equal(report.impossibleRuntimeChains.length, 0);
 });
+
+test('scope proof registry covers every deferred origin scope obligation exactly', async () => {
+  const { SEED_SCOPE_PROOFS } = await import('./t52-seed-scope-proofs.mjs');
+  const report = JSON.parse(fs.readFileSync('analysis/T5.2/deferred-consequences.json', 'utf8'));
+  const requiredIds = report.scopeProofRequired.map(row => row.id).sort();
+  const registeredIds = [...new Set(SEED_SCOPE_PROOFS.map(row => row.seedId))].sort();
+  assert.deepEqual(registeredIds, requiredIds, 'cada obligación de scope debe tener una prueba registrada y no puede haber pruebas stale');
+  assert.equal(
+    new Set(SEED_SCOPE_PROOFS.map(row => `${row.seedId}:${row.producerEventId}:${row.consumerEventId}`)).size,
+    SEED_SCOPE_PROOFS.length,
+    'no se admiten pruebas de scope duplicadas'
+  );
+
+  for (const proof of SEED_SCOPE_PROOFS) {
+    const row = report.rows.find(item => item.id === proof.seedId);
+    assert.ok(row, `seed ausente del audit: ${proof.seedId}`);
+    if (proof.scope === 'origin_club') assert.equal(row.scope.club, 'origin_club');
+    else if (proof.scope === 'origin_season') assert.equal(row.scope.season, 'origin_season');
+    else assert.fail(`scope de prueba no soportado: ${proof.scope}`);
+    assert.ok(row.producers.some(item => item.eventId === proof.producerEventId), `productor no acreditado: ${proof.producerEventId}`);
+    assert.ok(row.runtimeEventConsumers.some(item => item.eventId === proof.consumerEventId), `consumidor no acreditado: ${proof.consumerEventId}`);
+    assert.equal(proof.proofType, 'scope_expiry_blocks_consumer');
+  }
+});
+
+test('origin-club proof: private chat callback becomes unreachable after transfer scope expiry', async () => {
+  const { EVENTS } = await import('../dist/content/events/index.js');
+  const { createInitialState } = await import('../dist/content/initial-state.js');
+  const { expireDueSeedsInPlace } = await import('../dist/narrative/resolver.js');
+  const { eventGatesPass } = await import('../dist/narrative/event-gates.js');
+  const { SEED_SCOPE_PROOFS } = await import('./t52-seed-scope-proofs.mjs');
+
+  const proof = SEED_SCOPE_PROOFS.find(row => row.seedId === 'SEED_PRIVATE_CHAT');
+  assert.ok(proof);
+  const producer = EVENTS.find(event => event.id === proof.producerEventId);
+  const consumer = EVENTS.find(event => event.id === proof.consumerEventId);
+  assert.ok(producer, 'falta el productor canónico del chat privado');
+  assert.ok(consumer, 'falta el callback canónico del chat privado');
+  assert.ok(
+    producer.outcomes.some(outcome => (outcome.seedTransitions ?? []).some(transition => transition.seedId === proof.seedId && transition.action === 'create')),
+    'el productor acreditado debe crear SEED_PRIVATE_CHAT'
+  );
+
+  const state = createInitialState(5263);
+  state.age = 24;
+  state.date = '2032-10-01';
+  state.club = 'ORIGIN_SCOPE_CLUB';
+  state.professional.ownerClub = state.club;
+  state.professional.registrationClub = state.club;
+  state.world.ownerClub = state.club;
+  state.seeds.push({
+    id: proof.seedId,
+    state: 'active',
+    intensity: 50,
+    originEvent: proof.producerEventId,
+    originSeason: state.season,
+    npcRefs: [],
+    payload: { __t52OriginClub: state.club },
+    lastTouchedDate: state.date
+  });
+  state.flags.HAS_SEED_PRIVATE_CHAT = true;
+
+  assert.equal(eventGatesPass(state, consumer), true, 'mientras sigue en el club de origen la memoria puede habilitar el callback');
+
+  state.club = 'TRANSFER_DESTINATION';
+  expireDueSeedsInPlace(state);
+  const seed = state.seeds.find(item => item.id === proof.seedId);
+  assert.equal(seed?.state, 'expired');
+  assert.equal(seed?.payload.__t52TerminalReason, 'club_scope');
+  assert.equal(state.flags.HAS_SEED_PRIVATE_CHAT, false);
+  assert.equal(eventGatesPass(state, consumer), false, 'tras cambiar de club la consecuencia local no puede filtrarse al nuevo vestuario');
+});
