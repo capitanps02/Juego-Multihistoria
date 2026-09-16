@@ -2,58 +2,119 @@ import assert from 'node:assert/strict';
 import { EVENTS } from '../dist/content/events/index.js';
 import { contentIdentity } from '../dist/session/content-identity.js';
 import {
+  buildActiveEventEvidence,
   CONTENT_MIGRATION_ROUTES,
-  findMigrationRoute
+  findMigrationPath,
+  LEGACY_CONTENT_SOURCES,
+  legacyContentSource
 } from '../dist/session/content-migration.js';
-import {
-  PRE_T51_CONTENT_IDENTITY,
-  PRE_T51_EVENT_EVIDENCE
-} from '../dist/session/pre-t51-legacy-registry.js';
+import { PRE_T51_CONTENT_IDENTITY } from '../dist/session/pre-t51-legacy-registry.js';
+import { migrationSourceCoverage } from './t51-migration-source-policy.mjs';
 
 const currentIdentity = await contentIdentity(EVENTS);
-const activeIds = new Set(EVENTS.map(event => event.id));
+const activeEvidence = await buildActiveEventEvidence(EVENTS, currentIdentity);
+const sourceIdentities = Object.keys(LEGACY_CONTENT_SOURCES);
 
 if (currentIdentity === PRE_T51_CONTENT_IDENTITY) {
   console.log(JSON.stringify({
     ok: true,
     mode: 'pre-t51-content-still-active',
     currentIdentity,
-    routeRequired: false
+    routeRequired: false,
+    registeredSources: sourceIdentities.sort()
   }));
   process.exit(0);
 }
 
-const route = findMigrationRoute(PRE_T51_CONTENT_IDENTITY, currentIdentity, CONTENT_MIGRATION_ROUTES);
-assert.ok(route, `Active content identity ${currentIdentity} changed without a registered pre-T5.1 migration route`);
+const coverage = migrationSourceCoverage({
+  currentIdentity,
+  preIdentity: PRE_T51_CONTENT_IDENTITY,
+  sourceIdentities,
+  routes: CONTENT_MIGRATION_ROUTES
+});
+assert.deepEqual(
+  coverage.missingCurrentSource,
+  [],
+  `Active post-T5.1 catalog ${currentIdentity} has no frozen source evidence`
+);
+assert.deepEqual(
+  coverage.missingPaths,
+  [],
+  `Active content ${currentIdentity} is unreachable from registered source(s): ${coverage.missingPaths.join(', ')}`
+);
+assert.deepEqual(
+  coverage.ambiguousPaths,
+  [],
+  `Active content ${currentIdentity} has ambiguous migration paths from: ${coverage.ambiguousPaths.join(', ')}`
+);
+assert.deepEqual(
+  coverage.unknownRouteEndpoints,
+  [],
+  `Migration routes reference identities without frozen evidence: ${coverage.unknownRouteEndpoints.join(', ')}`
+);
 
-const schedulerKeys = new Set();
-for (const mapping of route.schedulerMappings ?? []) {
-  assert.ok(PRE_T51_EVENT_EVIDENCE[mapping.legacyEventId], `Unknown legacy event in migration route: ${mapping.legacyEventId}`);
-  assert.ok(activeIds.has(mapping.canonicalEventId), `Unknown active canonical event in migration route: ${mapping.canonicalEventId}`);
-  const key = `${mapping.kind}:${mapping.legacyEventId}:${mapping.canonicalEventId}`;
-  assert.equal(schedulerKeys.has(key), false, `Duplicate scheduler migration mapping: ${key}`);
-  schedulerKeys.add(key);
-  if (mapping.kind === 'distinct_scene' && mapping.legacyEventId === mapping.canonicalEventId) {
-    assert.equal(mapping.clearCanonicalSeen, true, `Exact-ID distinct scene ${mapping.legacyEventId} must clear canonical SEEN state`);
-    assert.equal(mapping.clearCanonicalCooldown, true, `Exact-ID distinct scene ${mapping.legacyEventId} must clear canonical cooldown`);
+const activeSource = legacyContentSource(currentIdentity);
+assert.ok(activeSource, `Active catalog ${currentIdentity} must be frozen as future legacy evidence before merge`);
+assert.deepEqual(Object.keys(activeSource.events).sort(), EVENTS.map(event => event.id).sort(), 'Active frozen source must contain the exact active event-id set');
+
+const validatedEdges = new Set();
+const routeSummaries = [];
+for (const sourceIdentity of coverage.requiredSources) {
+  const path = findMigrationPath(sourceIdentity, currentIdentity, CONTENT_MIGRATION_ROUTES);
+  assert.ok(path, `Missing unique migration path ${sourceIdentity} -> ${currentIdentity}`);
+  assert.ok(path.length > 0, `Historical source ${sourceIdentity} must use a non-empty path`);
+
+  for (let i = 1; i < path.length; i++) {
+    assert.equal(path[i - 1].targetContentIdentity, path[i].sourceContentIdentity, `Non-contiguous path from ${sourceIdentity}`);
   }
-}
 
-const seedKeys = new Set();
-for (const mapping of route.seedOriginMappings ?? []) {
-  assert.ok(PRE_T51_EVENT_EVIDENCE[mapping.fromEventId], `Unknown legacy seed origin: ${mapping.fromEventId}`);
-  assert.ok(activeIds.has(mapping.toEventId), `Unknown canonical seed origin: ${mapping.toEventId}`);
-  const key = `${mapping.seedId}:${mapping.fromEventId}:${mapping.toEventId}`;
-  assert.equal(seedKeys.has(key), false, `Duplicate seed origin migration mapping: ${key}`);
-  seedKeys.add(key);
-  assert.equal(typeof mapping.rewriteExisting, 'boolean', `Seed origin mapping ${key} must state rewriteExisting explicitly`);
+  for (const route of path) {
+    const edgeKey = `${route.sourceContentIdentity}->${route.targetContentIdentity}`;
+    if (validatedEdges.has(edgeKey)) continue;
+    validatedEdges.add(edgeKey);
+
+    const source = legacyContentSource(route.sourceContentIdentity);
+    const target = legacyContentSource(route.targetContentIdentity);
+    assert.ok(source, `Missing frozen evidence for migration source ${route.sourceContentIdentity}`);
+    assert.ok(target, `Missing frozen evidence for migration target ${route.targetContentIdentity}`);
+
+    const schedulerKeys = new Set();
+    for (const mapping of route.schedulerMappings ?? []) {
+      assert.ok(source.events[mapping.legacyEventId], `Unknown source event ${mapping.legacyEventId} in ${edgeKey}`);
+      assert.ok(target.events[mapping.canonicalEventId], `Unknown target event ${mapping.canonicalEventId} in ${edgeKey}`);
+      const key = `${mapping.kind}:${mapping.legacyEventId}:${mapping.canonicalEventId}`;
+      assert.equal(schedulerKeys.has(key), false, `Duplicate scheduler migration mapping in ${edgeKey}: ${key}`);
+      schedulerKeys.add(key);
+      if (mapping.kind === 'distinct_scene' && mapping.legacyEventId === mapping.canonicalEventId) {
+        assert.equal(mapping.clearCanonicalSeen, true, `Exact-ID distinct scene ${mapping.legacyEventId} must clear canonical SEEN state`);
+        assert.equal(mapping.clearCanonicalCooldown, true, `Exact-ID distinct scene ${mapping.legacyEventId} must clear canonical cooldown`);
+      }
+    }
+
+    const seedKeys = new Set();
+    for (const mapping of route.seedOriginMappings ?? []) {
+      assert.ok(source.events[mapping.fromEventId], `Unknown source seed origin ${mapping.fromEventId} in ${edgeKey}`);
+      assert.ok(target.events[mapping.toEventId], `Unknown target seed origin ${mapping.toEventId} in ${edgeKey}`);
+      const key = `${mapping.seedId}:${mapping.fromEventId}:${mapping.toEventId}`;
+      assert.equal(seedKeys.has(key), false, `Duplicate seed origin migration mapping in ${edgeKey}: ${key}`);
+      seedKeys.add(key);
+      assert.equal(typeof mapping.rewriteExisting, 'boolean', `Seed origin mapping ${key} must state rewriteExisting explicitly`);
+    }
+
+    routeSummaries.push({
+      sourceIdentity: route.sourceContentIdentity,
+      targetIdentity: route.targetContentIdentity,
+      schedulerMappings: schedulerKeys.size,
+      seedOriginMappings: seedKeys.size
+    });
+  }
 }
 
 console.log(JSON.stringify({
   ok: true,
-  mode: 'post-t51-content-route-registered',
-  sourceIdentity: PRE_T51_CONTENT_IDENTITY,
+  mode: 'post-t51-lineage-with-frozen-source-evidence',
   currentIdentity,
-  schedulerMappings: schedulerKeys.size,
-  seedOriginMappings: seedKeys.size
-}));
+  registeredSources: coverage.registeredSources,
+  requiredSources: coverage.requiredSources,
+  routeSummaries
+}, null, 2));

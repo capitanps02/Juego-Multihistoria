@@ -5,6 +5,7 @@ import {
   PRE_T51_EVENT_EVIDENCE,
   type LegacyEventEvidence
 } from "./pre-t51-legacy-registry.js";
+import { POST_T51_CONTENT_SOURCES } from "./post-t51-legacy-registry.js";
 
 export interface ContentEvidenceSource {
   contentIdentity: string;
@@ -46,21 +47,22 @@ export interface ContentMigrationRoute {
   seedOriginMappings?: readonly SeedOriginMigrationMapping[];
 }
 
+/** Validation-only historical catalogs. They never join EventIndex or scheduling. */
 export const LEGACY_CONTENT_SOURCES: Readonly<Record<string, ContentEvidenceSource>> = {
   [PRE_T51_CONTENT_IDENTITY]: {
     contentIdentity: PRE_T51_CONTENT_IDENTITY,
     engineBuild: "0.8.0-t2.5",
     sessionVersions: [1, 2, 3],
     events: PRE_T51_EVENT_EVIDENCE
-  }
+  },
+  ...POST_T51_CONTENT_SOURCES
 };
 
 export const T51_B1A_CONTENT_IDENTITY = "1a8a5e2006fe7160f4fbc02060568d3abec99df038fe3a1a7799c8a0e802eac7";
 
 /**
- * Target-specific routes are explicit and identity-bound. B1a only repairs the
- * information presented by three stable-ID scenes; they remain the same scene
- * for history, SEEN state, cooldown and pending-decision continuity.
+ * Explicit identity-bound edges. Successive canonical batches extend this as a
+ * lineage (A -> B -> C), not as a matrix of shortcuts from every old version.
  */
 export const CONTENT_MIGRATION_ROUTES: readonly ContentMigrationRoute[] = [
   {
@@ -76,6 +78,9 @@ export const CONTENT_MIGRATION_ROUTES: readonly ContentMigrationRoute[] = [
 
 const activeEvidenceCache = new Map<string, Readonly<Record<string, LegacyEventEvidence>>>();
 activeEvidenceCache.set(PRE_T51_CONTENT_IDENTITY, PRE_T51_EVENT_EVIDENCE);
+for (const source of Object.values(POST_T51_CONTENT_SOURCES)) {
+  activeEvidenceCache.set(source.contentIdentity, source.events);
+}
 
 export function findMigrationRoute(
   sourceContentIdentity: string,
@@ -85,8 +90,52 @@ export function findMigrationRoute(
   return routes.find(route => route.sourceContentIdentity === sourceContentIdentity && route.targetContentIdentity === targetContentIdentity);
 }
 
-export function legacyContentSource(contentIdentity: string): ContentEvidenceSource | undefined {
-  return LEGACY_CONTENT_SOURCES[contentIdentity];
+/**
+ * Resolve exactly one acyclic migration path. Missing or ambiguous paths fail
+ * closed. Declaration order never silently chooses between competing histories.
+ */
+export function findMigrationPath(
+  sourceContentIdentity: string,
+  targetContentIdentity: string,
+  routes: readonly ContentMigrationRoute[] = CONTENT_MIGRATION_ROUTES
+): readonly ContentMigrationRoute[] | undefined {
+  if (sourceContentIdentity === targetContentIdentity) return [];
+
+  const outgoing = new Map<string, ContentMigrationRoute[]>();
+  for (const route of routes) {
+    const list = outgoing.get(route.sourceContentIdentity) ?? [];
+    list.push(route);
+    outgoing.set(route.sourceContentIdentity, list);
+  }
+
+  const found: ContentMigrationRoute[][] = [];
+  const walk = (current: string, path: ContentMigrationRoute[], visited: ReadonlySet<string>): void => {
+    if (found.length > 1) return;
+    for (const route of outgoing.get(current) ?? []) {
+      const nextIdentity = route.targetContentIdentity;
+      if (visited.has(nextIdentity)) continue;
+      const nextPath = [...path, route];
+      if (nextIdentity === targetContentIdentity) {
+        found.push(nextPath);
+        if (found.length > 1) return;
+        continue;
+      }
+      const nextVisited = new Set(visited);
+      nextVisited.add(nextIdentity);
+      walk(nextIdentity, nextPath, nextVisited);
+      if (found.length > 1) return;
+    }
+  };
+
+  walk(sourceContentIdentity, [], new Set([sourceContentIdentity]));
+  return found.length === 1 ? found[0] : undefined;
+}
+
+export function legacyContentSource(
+  contentIdentityValue: string,
+  sources: Readonly<Record<string, ContentEvidenceSource>> = LEGACY_CONTENT_SOURCES
+): ContentEvidenceSource | undefined {
+  return sources[contentIdentityValue];
 }
 
 export async function buildActiveEventEvidence(
@@ -147,6 +196,10 @@ export function applyMigrationRouteInPlace(state: GameState, route: ContentMigra
   }
 }
 
+export function applyMigrationPathInPlace(state: GameState, path: readonly ContentMigrationRoute[]): void {
+  for (const route of path) applyMigrationRouteInPlace(state, route);
+}
+
 /** Re-apply only scheduler semantics after resolving a preserved legacy pending scene. */
 export function applyPostLegacyResolutionRouteInPlace(state: GameState, eventId: string, route: ContentMigrationRoute): void {
   for (const mapping of route.schedulerMappings ?? []) {
@@ -162,4 +215,12 @@ export function applyPostLegacyResolutionRouteInPlace(state: GameState, eventId:
       if (mapping.clearCanonicalCooldown) delete state.eventCooldowns[mapping.canonicalEventId];
     }
   }
+}
+
+export function applyPostLegacyResolutionPathInPlace(
+  state: GameState,
+  eventId: string,
+  path: readonly ContentMigrationRoute[]
+): void {
+  for (const route of path) applyPostLegacyResolutionRouteInPlace(state, eventId, route);
 }
