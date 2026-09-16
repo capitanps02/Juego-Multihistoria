@@ -12,8 +12,8 @@
     "exactIdSemanticCollisionsHandledByContentVersioningNotThisIdCrosswalk": true
   },
   "summary": {
-    "retireTechnicalKeepHistoryOnly": 86,
-    "unresolved": 1,
+    "retireTechnicalKeepHistoryOnly": 87,
+    "unresolved": 0,
     "sameSceneRewriteAndIdMigration": 0,
     "retainNoncanonicalOutsideCanonicalSet": 0,
     "noMapping": 0,
@@ -112,20 +112,26 @@
       "CEVT_37_HOME_CROWD",
       "CEVT_37_PRIVATE_DOUBT",
       "CEVT_38_MEDIA_FAREWELL",
-      "CEVT_38_FAMILY_REVERSAL"
+      "CEVT_38_FAMILY_REVERSAL",
+      "CEVT_RET_RECONSIDER"
     ]
   },
-  "unresolved": [
-    {
-      "legacyId": "CEVT_RET_RECONSIDER",
-      "phase": "34_plus",
-      "candidateCanonicalId": "CEVT_38_RETIREMENT_REVERSAL",
-      "reason": "Runtime performs announced/decided -> playing, while canonical matrix describes retirement reversal and semantic-map authority defines monotonic playing -> decided -> announced -> closed with closed -> * prohibited. Same-scene/state responsibility cannot be approved until the canonical source tension is resolved.",
-      "historyEventIdRewriteAllowed": false,
-      "pendingDirectRewriteAllowed": false,
-      "canonicalSeenEquivalenceAllowed": false
-    }
-  ],
+  "identityClosure": {
+    "legacyId": "CEVT_RET_RECONSIDER",
+    "candidateCanonicalId": "CEVT_38_RETIREMENT_REVERSAL",
+    "decision": "retire_technical_keep_history_only",
+    "sameSceneMigrationAllowed": false,
+    "historyEventIdRewriteAllowed": false,
+    "pendingDirectRewriteAllowed": false,
+    "canonicalSeenEquivalenceAllowed": false,
+    "reason": "Legacy behavior returns announced retirement to playing and clears announcement state. That cannot be treated as the same canonical scene while announcement history must remain immutable and closed remains terminal. This identity decision is independent from the still-open design choice for the future canonical retirement-reversal mechanic."
+  },
+  "futureCanonicalDesignStillOpen": {
+    "canonicalId": "CEVT_38_RETIREMENT_REVERSAL",
+    "status": "canonical_behavior_requires_explicit_decision",
+    "recommendedSourceFit": "Preserve retirement.status=announced, record a bounded post-announcement extension/reconsideration, preserve original announcement history, and close later through terminal logic without announced->playing or closed->playing.",
+    "notApprovedByThisCrosswalk": true
+  },
   "exactIdSemanticCompatibilityOutsideThisOverlay": {
     "reason": "These IDs are not runtime-only, but their legacy definition may differ materially from the future canonical definition and therefore still require source-content provenance for old history/pending saves.",
     "knownHighRiskIds": [
