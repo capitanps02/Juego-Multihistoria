@@ -3,6 +3,7 @@ import test from 'node:test';
 import { createInitialState } from '../dist/content/initial-state.js';
 import { ambiguousEvent } from '../dist/content/events/18_20/helpers.js';
 import { scheduleEvent } from '../dist/narrative/scheduler.js';
+import { GameSession } from '../dist/session/game-session.js';
 
 function baseEvent() {
   return {
@@ -72,6 +73,41 @@ test('historical choices without eligibility remain fully backwards compatible',
   assert.ok(scheduled);
   assert.equal(scheduled.event.choices.length, 1);
   assert.equal(scheduled.event.choices[0].id, 'STAY');
+});
+
+test('Session v3 persists the full canonical decision while exposing only eligible choices across resume', async () => {
+  const event = baseEvent();
+  const session = await GameSession.create(424242, { events: [event], sessionId: 't51-choice-session' });
+  await session.dispatch({ type: 'continue', commandId: 'advance', expectedRevision: 0, maxDays: 1 });
+
+  const view = session.getView();
+  assert.equal(view.screen, 'decision');
+  assert.deepEqual(view.decision.choices.map(choice => choice.id), ['STAY']);
+
+  const snapshot = session.exportSnapshot();
+  assert.deepEqual(
+    snapshot.pendingDecision.event.choices.map(choice => choice.id),
+    ['STAY', 'LOAN'],
+    'pending snapshot must preserve the canonical definition for Session v3 fingerprint validation'
+  );
+
+  const before = structuredClone(snapshot);
+  const restored = await GameSession.resume(snapshot, { events: [event] });
+  assert.deepEqual(restored.getView().decision.choices.map(choice => choice.id), ['STAY']);
+  assert.deepEqual(restored.exportSnapshot(), before);
+
+  const restoredView = restored.getView();
+  await assert.rejects(
+    restored.dispatch({
+      type: 'choose',
+      commandId: 'hidden-choice',
+      expectedRevision: restoredView.revision,
+      pendingInstanceId: restoredView.decision.instanceId,
+      choiceId: 'LOAN'
+    }),
+    error => error?.code === 'INVALID_CHOICE'
+  );
+  assert.deepEqual(restored.exportSnapshot(), before, 'hidden command must not mutate state');
 });
 
 test('ambiguousEvent preserves per-choice eligibility for canonical 18-20 content', () => {
