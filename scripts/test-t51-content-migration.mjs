@@ -250,7 +250,6 @@ test('mixed legacy and current history remains valid across migration, command c
   synthetic.phase = legacy.state.phase;
   synthetic.ageWindow = [legacy.state.age, null];
   synthetic.gates = [];
-  synthetic.gateAlternatives = [];
   synthetic.exclusions = [];
   delete synthetic.timeWindow;
   synthetic.cooldown = 0;
