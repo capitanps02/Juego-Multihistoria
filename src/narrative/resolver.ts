@@ -100,7 +100,10 @@ function applySeedTransition(state: GameState, t: SeedTransition, event: EventDe
 }
 
 export function syncSeedPresenceFlagsInPlace(state: GameState): void {
-  const ids = new Set(state.seeds.map(seed => seed.id));
+  // Known catalog IDs must be authoritative even when no SeedInstance exists: this
+  // clears stale HAS_SEED_* flags restored from an inconsistent/older snapshot.
+  // Unknown saved seed instances are still preserved and synchronized forward-compatibly.
+  const ids = new Set([...SEED_DEFINITIONS.keys(), ...state.seeds.map(seed => seed.id)]);
   for (const seedId of ids) state.flags[`HAS_${seedId}`] = isLiveSeed(state, seedId);
 }
 
