@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 6,
+  "schemaVersion": 7,
   "generatedAt": "2026-09-16",
   "workstream": "T51_CANON_18_23",
   "branch": "t51/canon-18-23",
@@ -21,43 +21,13 @@
     "seedLifecycle": {"status":"integrated_and_hardened","baseCommit":"14e55bb0e7f2c7582889c7b4ebbbccfd0b792345","deferredGuardsObservedBy":"f36443969995e85fef89eff0bd1776f384f19e09"},
     "b1aPrincipalIntelRepairs": {"status":"integrated_and_certified","sourceCommit":"ddfbc08e158a1dc49afccc29ff0680da8f887ccd","mergeCommit":"f05667453a1e40d5a4af635e8b9b787bbecdb726","ids":["EVT_18_MED_001","EVT_18_TEAM_001","EVT_18_MATCH_002"]}
   },
-  "principalStatus": {
-    "canonicalTotal": 63,
-    "verified_same_identity": 21,
-    "needs_reimplementation": 36,
-    "canonical_missing": 6,
-    "requires_manual_review": 0,
-    "approved_alias": 0,
-    "engine_only_noncanonical": 6
-  },
-  "principalKnownSharedContractBlockers": {
-    "choiceEligibility": [],
-    "eventGateOrOrDerivedFact": [],
-    "count": 0,
-    "resolvedContractContentStillNeedsWiring": ["EVT_18_JAN_001", "EVT_18_SUM_001", "EVT_18_PRS_002"]
-  },
-  "principalVerifiedByIntegratedB1a": {
-    "count": 3,
-    "ids": ["EVT_18_MED_001","EVT_18_TEAM_001","EVT_18_MATCH_002"]
-  },
-  "principalReimplementationCandidatesAfterIntegratedContracts": {
-    "count": 36,
-    "ids": [
-      "EVT_18_MATCH_001","EVT_18_PRS_001","EVT_18_SOC_001","EVT_18_PRS_002","EVT_18_JAN_001","EVT_18_END_001","EVT_18_END_002","EVT_18_SUM_001","EVT_19_SUM_001",
-      "EVT_20_LIFE_001","EVT_20_MKT_001","EVT_20_MED_001","EVT_20_AGT_001","EVT_20_ABR_001","EVT_20_STATUS_001","EVT_20_CCH_001","EVT_20_LOCK_001","EVT_20_LOCK_002","EVT_20_BRUNO_001","EVT_21_MONEY_001","EVT_21_AGT_001","EVT_21_NAT_001","EVT_21_IMG_001","EVT_21_CAP_001","EVT_21_PRS_001","EVT_21_MED_001","EVT_21_RIV_001","EVT_21_CCH_002","EVT_22_CON_001","EVT_22_LOCK_001","EVT_22_HOME_001","EVT_22_MKT_001","EVT_22_MED_001","EVT_22_TACT_001","EVT_22_DDL_001","EVT_22_CON_002"
-    ]
-  },
+  "principalStatus": {"canonicalTotal":63,"verified_same_identity":21,"needs_reimplementation":36,"canonical_missing":6,"requires_manual_review":0,"approved_alias":0,"engine_only_noncanonical":6},
+  "principalKnownSharedContractBlockers": {"choiceEligibility":[],"eventGateOrOrDerivedFact":[],"count":0,"resolvedContractContentStillNeedsWiring":["EVT_18_JAN_001","EVT_18_SUM_001","EVT_18_PRS_002"]},
+  "principalVerifiedByIntegratedB1a": {"count":3,"ids":["EVT_18_MED_001","EVT_18_TEAM_001","EVT_18_MATCH_002"]},
+  "principalReimplementationCandidatesAfterIntegratedContracts": {"count":36,"ids":["EVT_18_MATCH_001","EVT_18_PRS_001","EVT_18_SOC_001","EVT_18_PRS_002","EVT_18_JAN_001","EVT_18_END_001","EVT_18_END_002","EVT_18_SUM_001","EVT_19_SUM_001","EVT_20_LIFE_001","EVT_20_MKT_001","EVT_20_MED_001","EVT_20_AGT_001","EVT_20_ABR_001","EVT_20_STATUS_001","EVT_20_CCH_001","EVT_20_LOCK_001","EVT_20_LOCK_002","EVT_20_BRUNO_001","EVT_21_MONEY_001","EVT_21_AGT_001","EVT_21_NAT_001","EVT_21_IMG_001","EVT_21_CAP_001","EVT_21_PRS_001","EVT_21_MED_001","EVT_21_RIV_001","EVT_21_CCH_002","EVT_22_CON_001","EVT_22_LOCK_001","EVT_22_HOME_001","EVT_22_MKT_001","EVT_22_MED_001","EVT_22_TACT_001","EVT_22_DDL_001","EVT_22_CON_002"]},
   "principalCanonicalMissing": {"count":6,"ids":["EVT_20_BRIDGE_001","EVT_20_MATCH_003","EVT_20_JAN_001","EVT_21_MKT_001","EVT_21_SOC_001","EVT_21_PRS_002"]},
   "principalEngineOnlyLegacy": {"count":6,"ids":["EVT_20_MATCH_001","EVT_21_ABR_001","EVT_21_AGT_002","EVT_21_CCH_001","EVT_22_END_001","EVT_22_LIFE_001"]},
-  "conditionalStatus": {
-    "canonicalTotal": 32,
-    "verified_same_identity": 5,
-    "needs_reimplementation": 12,
-    "canonical_missing": 15,
-    "requires_manual_review": 0,
-    "approved_alias": 0,
-    "engine_only_noncanonical": 15
-  },
+  "conditionalStatus": {"canonicalTotal":32,"verified_same_identity":5,"needs_reimplementation":12,"canonical_missing":15,"requires_manual_review":0,"approved_alias":0,"engine_only_noncanonical":15},
   "conditionalVerifiedAfterCertification": {"count":5,"ids":["CEVT_18_NODEBUT_01","CEVT_18_VELA_01","CEVT_19_BIG_01","CEVT_19_ABROAD_01","CEVT_19_NANO_01"]},
   "conditionalKnownSharedContractBlockers": {"eventGateOrOrDerivedFact":[],"count":0,"resolvedContractContentStillNeedsWiring":["CEVT_19_SOCIAL_01","CEVT_21_MEDIA_01"]},
   "conditionalReimplementationCandidatesAfterIntegratedContracts": {"count":12,"ids":["CEVT_18_EARLY_01","CEVT_18_BRUNO_01","CEVT_18_CCH_01","CEVT_18_RELEG_01","CEVT_18_PLAYOFF_01","CEVT_19_AGENT_01","CEVT_19_INJ_01","CEVT_19_SOCIAL_01","CEVT_19_RETURN_01","CEVT_21_ABR_01","CEVT_21_MEDIA_01","CEVT_22_FREE_01"]},
@@ -65,40 +35,10 @@
   "conditionalManualCertification": {"count":0,"ids":[],"resolvedBy":"analysis/T5.1/canon-18-20-conditional-certification.json"},
   "implementationBatches": [
     {"id":"B0_SHARED_CONTRACTS","runtimeAllowedInPr10":false,"integrated":["SESSION_CONTENT_MIGRATION","CHOICE_ELIGIBILITY","EVENT_GATE_OR_OR_DERIVED_FACT"],"openDependencies":[],"exitCriteria":"All shared contracts currently known to block 18-23 are integrated; content still requires explicit canonical wiring."},
-    {
-      "id":"B1_18_20_LOCAL_REPAIRS",
-      "runtimeAllowedInPr10":false,
-      "alreadyIntegratedPrincipals":["EVT_18_MED_001","EVT_18_TEAM_001","EVT_18_MATCH_002"],
-      "principalCandidates":9,
-      "principalIds":["EVT_18_MATCH_001","EVT_18_PRS_001","EVT_18_SOC_001","EVT_18_PRS_002","EVT_18_JAN_001","EVT_18_END_001","EVT_18_END_002","EVT_18_SUM_001","EVT_19_SUM_001"],
-      "conditionalCandidates":9,
-      "conditionalIds":["CEVT_18_EARLY_01","CEVT_18_BRUNO_01","CEVT_18_CCH_01","CEVT_18_RELEG_01","CEVT_18_PLAYOFF_01","CEVT_19_AGENT_01","CEVT_19_INJ_01","CEVT_19_SOCIAL_01","CEVT_19_RETURN_01"],
-      "acceptanceEvidence":{"principals":"analysis/T5.1/canon-18-20-cards.json","conditionals":["analysis/T5.1/canon-18-23-conditionals.json","analysis/T5.1/canon-18-20-conditional-certification.json"]},
-      "migrationRequirement":"every EVENTS-changing batch extends the exact acyclic content migration lineage",
-      "tests":["reachability","gates","gate_alternatives","choice_eligibility","options","effects","seeds","save_restore","determinism"]
-    },
-    {
-      "id":"B2_20_23_SCENE_SPECIFIC_REWRITES",
-      "runtimeAllowedInPr10":false,
-      "principalCandidates":27,
-      "principalIds":["EVT_20_LIFE_001","EVT_20_MKT_001","EVT_20_MED_001","EVT_20_AGT_001","EVT_20_ABR_001","EVT_20_STATUS_001","EVT_20_CCH_001","EVT_20_LOCK_001","EVT_20_LOCK_002","EVT_20_BRUNO_001","EVT_21_MONEY_001","EVT_21_AGT_001","EVT_21_NAT_001","EVT_21_IMG_001","EVT_21_CAP_001","EVT_21_PRS_001","EVT_21_MED_001","EVT_21_RIV_001","EVT_21_CCH_002","EVT_22_CON_001","EVT_22_LOCK_001","EVT_22_HOME_001","EVT_22_MKT_001","EVT_22_MED_001","EVT_22_TACT_001","EVT_22_DDL_001","EVT_22_CON_002"],
-      "conditionalCandidates":3,
-      "conditionalIds":["CEVT_21_ABR_01","CEVT_21_MEDIA_01","CEVT_22_FREE_01"],
-      "acceptanceEvidence":"analysis/T5.1/canon-20-23-b2-handoff.json",
-      "migrationRequirement":"all 30 are same-string-ID rewrites; exact ID is not same-scene proof, legacy pending/history must retain its original definition/fingerprint, and each EVENTS-changing generation must extend the adjacent acyclic contentIdentity lineage",
-      "tests":["semantic_reachability","canonical_options","scene_specific_effects","seeds","pending_legacy","save_restore","determinism","repository_integrity"]
-    },
-    {"id":"B3_CANONICAL_MISSING","runtimeAllowedInPr10":false,"principalNewDefinitions":6,"conditionalNewDefinitions":15},
+    {"id":"B1_18_20_LOCAL_REPAIRS","runtimeAllowedInPr10":false,"alreadyIntegratedPrincipals":["EVT_18_MED_001","EVT_18_TEAM_001","EVT_18_MATCH_002"],"principalCandidates":9,"principalIds":["EVT_18_MATCH_001","EVT_18_PRS_001","EVT_18_SOC_001","EVT_18_PRS_002","EVT_18_JAN_001","EVT_18_END_001","EVT_18_END_002","EVT_18_SUM_001","EVT_19_SUM_001"],"conditionalCandidates":9,"conditionalIds":["CEVT_18_EARLY_01","CEVT_18_BRUNO_01","CEVT_18_CCH_01","CEVT_18_RELEG_01","CEVT_18_PLAYOFF_01","CEVT_19_AGENT_01","CEVT_19_INJ_01","CEVT_19_SOCIAL_01","CEVT_19_RETURN_01"],"acceptanceEvidence":{"principals":"analysis/T5.1/canon-18-20-cards.json","conditionals":["analysis/T5.1/canon-18-23-conditionals.json","analysis/T5.1/canon-18-20-conditional-certification.json"]},"migrationRequirement":"every EVENTS-changing batch extends the exact acyclic content migration lineage","tests":["reachability","gates","gate_alternatives","choice_eligibility","options","effects","seeds","save_restore","determinism"]},
+    {"id":"B2_20_23_SCENE_SPECIFIC_REWRITES","runtimeAllowedInPr10":false,"principalCandidates":27,"principalIds":["EVT_20_LIFE_001","EVT_20_MKT_001","EVT_20_MED_001","EVT_20_AGT_001","EVT_20_ABR_001","EVT_20_STATUS_001","EVT_20_CCH_001","EVT_20_LOCK_001","EVT_20_LOCK_002","EVT_20_BRUNO_001","EVT_21_MONEY_001","EVT_21_AGT_001","EVT_21_NAT_001","EVT_21_IMG_001","EVT_21_CAP_001","EVT_21_PRS_001","EVT_21_MED_001","EVT_21_RIV_001","EVT_21_CCH_002","EVT_22_CON_001","EVT_22_LOCK_001","EVT_22_HOME_001","EVT_22_MKT_001","EVT_22_MED_001","EVT_22_TACT_001","EVT_22_DDL_001","EVT_22_CON_002"],"conditionalCandidates":3,"conditionalIds":["CEVT_21_ABR_01","CEVT_21_MEDIA_01","CEVT_22_FREE_01"],"acceptanceEvidence":"analysis/T5.1/canon-20-23-b2-handoff.json","migrationRequirement":"all 30 are same-string-ID rewrites; exact ID is not same-scene proof, legacy pending/history must retain its original definition/fingerprint, and each EVENTS-changing generation must extend the adjacent acyclic contentIdentity lineage","tests":["semantic_reachability","canonical_options","scene_specific_effects","seeds","pending_legacy","save_restore","determinism","repository_integrity"]},
+    {"id":"B3_CANONICAL_MISSING","runtimeAllowedInPr10":false,"principalNewDefinitions":6,"principalIds":["EVT_20_BRIDGE_001","EVT_20_MATCH_003","EVT_20_JAN_001","EVT_21_MKT_001","EVT_21_SOC_001","EVT_21_PRS_002"],"conditionalNewDefinitions":15,"conditionalIds":["CEVT_20_RIVAS_01","CEVT_20_VELA_01","CEVT_20_PAULA_01","CEVT_20_NANO_01","CEVT_20_MONT_01","CEVT_20_ADR_01","CEVT_21_BIGCLUB_01","CEVT_21_LOAN_01","CEVT_21_AGENT_02","CEVT_21_INJ_01","CEVT_22_UDV_01","CEVT_22_BRUNO_02","CEVT_22_ADR_02","CEVT_22_SOC_02","CEVT_22_SHOCK_01"],"acceptanceEvidence":"analysis/T5.1/canon-20-23-b3-missing-handoff.json","worldFactPolicy":"external developments require real causal writers; no synthetic cosmetic flags","migrationRequirement":"all new active definitions change contentIdentity and require the next adjacent lineage edge plus frozen legacy evidence","tests":["canonical_positive_negative_eligibility","external_fact_fail_closed","npc_knowledge_provenance","offer_contract_authority","save_restore","determinism","repository_integrity"]},
     {"id":"B4_LEGACY_RETIREMENT","runtimeAllowedInPr10":false,"principalLegacyIds":6,"conditionalLegacyIds":15}
   ],
-  "globalExitCriteria": [
-    "All canonical principal and conditional IDs in scope have an allowed final reconciliation state.",
-    "No silent aliases exist.",
-    "All former manual conditional rows are closed by certification or reimplementation state.",
-    "All shared architecture contracts currently known to block 18-23 are integrated.",
-    "Every repaired scene still proves its own canonical trigger/options/effects instead of inheriting correctness from the shared contract.",
-    "Every active EVENTS-changing batch extends the exact migration lineage from every supported persisted source.",
-    "Determinism and relevant T5 QA gates pass on the exact functional SHA.",
-    "PR #10 remains audit-only; runtime is delivered by separately authorized functional batches."
-  ]
+  "globalExitCriteria": ["All canonical principal and conditional IDs in scope have an allowed final reconciliation state.","No silent aliases exist.","All former manual conditional rows are closed by certification or reimplementation state.","All shared architecture contracts currently known to block 18-23 are integrated.","Every repaired scene still proves its own canonical trigger/options/effects instead of inheriting correctness from the shared contract.","Every active EVENTS-changing batch extends the exact migration lineage from every supported persisted source.","Determinism and relevant T5 QA gates pass on the exact functional SHA.","PR #10 remains audit-only; runtime is delivered by separately authorized functional batches."]
 }
