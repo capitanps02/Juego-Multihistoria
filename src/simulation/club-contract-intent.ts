@@ -1,12 +1,14 @@
 import type { GameState } from "../core/types.js";
 
 export const CLUB_WANTS_RENEWAL_FACT = "facts.clubWantsRenewal" as const;
+export const ROLE_DROP_SINCE_23_FACT = "facts.roleDropSince23" as const;
+export const ROLE_GUARANTEE_AT_23_FACT = "facts.roleGuaranteeAt23" as const;
 export const CLUB_RENEWAL_INTENT_MAX_MONTHS = 24;
 export const CLUB_RENEWAL_INTENT_THRESHOLD = 0.50;
 export const FORMAL_RENEWAL_REASON = "Renovación de contrato";
 
 const clamp = (x: number, min = 0, max = 1) => Math.min(max, Math.max(min, x));
-const num = (x: unknown, fallback = 0) => typeof x === "number" ? x : fallback;
+const num = (x: unknown, fallback = 0) => typeof x === "number" && Number.isFinite(x) ? x : fallback;
 
 /**
  * Club-side renewal propensity already used by the world simulation when a formal
@@ -53,12 +55,49 @@ export function clubWantsRenewal(state: GameState): boolean {
   return clubRenewalPropensity(state) >= CLUB_RENEWAL_INTENT_THRESHOLD;
 }
 
+/**
+ * Raw factual drop from the role snapshot captured on entering age 23.
+ *
+ * This intentionally does not decide whether the drop is narratively "material".
+ * Canonical content owns that policy/threshold. Before the age-23 snapshot exists,
+ * the fact fails closed at zero rather than comparing against constructor defaults.
+ */
+export function roleDropSince23(state: GameState): number {
+  if (state.age < 23 || !state.professional.initializedAt23) return 0;
+  const baseline = num(state.professional.roleScoreAt23);
+  const current = num(state.sport.roleScore);
+  return Math.max(0, baseline - current);
+}
+
+/**
+ * Exact historical evidence that the age-23 bridge conversation established a
+ * concrete role expectation. A generic SEED_ELITE_ROLE_BARGAIN is insufficient:
+ * the original event and its `role_guarantees` stance must both match.
+ *
+ * Terminal seed state does not erase the historical fact; the seed remains evidence
+ * of what was actually discussed even if its lifecycle is later resolved/consumed.
+ */
+export function hasRoleGuaranteeAt23(state: GameState): boolean {
+  if (state.age < 23) return false;
+  return state.seeds.some(seed =>
+    seed.id === "SEED_ELITE_ROLE_BARGAIN"
+    && seed.originEvent === "EVT_23_BRIDGE_001"
+    && seed.payload.stance === "role_guarantees"
+  );
+}
+
 export interface NarrativeCausalFacts {
   clubWantsRenewal: boolean;
+  roleDropSince23: number;
+  roleGuaranteeAt23: boolean;
 }
 
 export function narrativeCausalFacts(state: GameState): NarrativeCausalFacts {
-  return { clubWantsRenewal: clubWantsRenewal(state) };
+  return {
+    clubWantsRenewal: clubWantsRenewal(state),
+    roleDropSince23: roleDropSince23(state),
+    roleGuaranteeAt23: hasRoleGuaranteeAt23(state)
+  };
 }
 
 /**
