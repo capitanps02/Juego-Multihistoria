@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { buildDeferredConsequenceReport, temporalFeasibility } from './audit-t52-deferred.mjs';
+import { seedPresencePolarity } from './t52-seed-condition-polarity.mjs';
 
 test('deferred chain: later consumer before finite seed expiry is feasible', () => {
   const result = temporalFeasibility([18, 26], [18, 20], [23, 26]);
@@ -173,6 +174,87 @@ test('event gateAlternatives detect a seed route that exists only after seed exp
   assert.equal(report.rules.hardPass, false);
   assert.equal(report.rows[0].runtimeConsumers[0].context, 'gateAlternative:0');
   assert.equal(report.rows[0].unreachableEdges[0].reason, 'consumer_after_seed_expiry');
+});
+
+test('HAS_SEED boolean comparators are classified by actual presence semantics', () => {
+  const positive = [
+    { op: 'eq', value: true },
+    { op: 'neq', value: false },
+    { op: 'in', value: [true] },
+    { op: 'notIn', value: [false] }
+  ];
+  const negative = [
+    { op: 'eq', value: false },
+    { op: 'neq', value: true },
+    { op: 'in', value: [false] },
+    { op: 'notIn', value: [true] }
+  ];
+
+  for (const condition of positive) assert.equal(seedPresencePolarity(condition), 'positive', JSON.stringify(condition));
+  for (const condition of negative) assert.equal(seedPresencePolarity(condition), 'negative', JSON.stringify(condition));
+  assert.equal(seedPresencePolarity({ op: 'exists' }), 'neutral');
+  assert.equal(seedPresencePolarity({ op: 'gte', value: 1 }), 'neutral');
+});
+
+test('absence/suppression predicates do not create positive producer→consumer edges', () => {
+  const seed = { id: 'SEED_SYNTHETIC_ABSENCE', ageWindow: [18, 26] };
+  const producer = {
+    id: 'EVT_SYNTH_ABSENCE_PRODUCER',
+    phase: '18_20',
+    family: 'career',
+    ageWindow: [18, 18],
+    choices: [],
+    outcomes: [{ id: 'CREATE', seedTransitions: [{ seedId: seed.id, action: 'create' }] }]
+  };
+  const consumer = {
+    id: 'EVT_SYNTH_ABSENCE_CONSUMER',
+    phase: '18_20',
+    family: 'career',
+    ageWindow: [19, 19],
+    seedsRead: [seed.id],
+    choices: [{
+      id: 'ONLY_WHEN_ABSENT',
+      eligibility: [{ path: `flags.HAS_${seed.id}`, op: 'eq', value: false }]
+    }],
+    outcomes: []
+  };
+
+  const report = buildDeferredConsequenceReport([producer, consumer], [seed]);
+  const row = report.rows[0];
+  assert.equal(row.runtimeConsumerCount, 0);
+  assert.equal(row.feasiblePairCount, 0);
+  assert.equal(row.negativeDependencyCount, 1);
+  assert.equal(row.negativeDependencies[0].context, 'choice:ONLY_WHEN_ABSENT');
+  assert.deepEqual(row.metadataOnlyReaders, []);
+  assert.equal(row.impossibleRuntimeChain, false);
+});
+
+test('negative HAS_SEED polarity is preserved inside gateAlternatives', () => {
+  const seed = { id: 'SEED_SYNTHETIC_OR_ABSENCE', ageWindow: [18, 26] };
+  const producer = {
+    id: 'EVT_SYNTH_OR_ABSENCE_PRODUCER',
+    phase: '18_20',
+    family: 'team',
+    ageWindow: [18, 18],
+    choices: [],
+    outcomes: [{ id: 'CREATE', seedTransitions: [{ seedId: seed.id, action: 'create' }] }]
+  };
+  const consumer = {
+    id: 'EVT_SYNTH_OR_ABSENCE_CONSUMER',
+    phase: '18_20',
+    family: 'team',
+    ageWindow: [19, 19],
+    gateAlternatives: [[{ path: `flags.HAS_${seed.id}`, op: 'neq', value: true }]],
+    choices: [],
+    outcomes: []
+  };
+
+  const report = buildDeferredConsequenceReport([producer, consumer], [seed]);
+  const row = report.rows[0];
+  assert.equal(row.runtimeConsumerCount, 0);
+  assert.equal(row.negativeDependencyCount, 1);
+  assert.equal(row.negativeDependencies[0].context, 'gateAlternative:0');
+  assert.equal(report.rules.hardPass, true);
 });
 
 test('current catalog deferred audit has no structurally impossible runtime chain', () => {
