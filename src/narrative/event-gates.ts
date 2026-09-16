@@ -1,5 +1,6 @@
 import { conditionsPass } from "../core/conditions.js";
 import type { Condition, EventDefinition, GameState } from "../core/types.js";
+import { narrativeConditionRoot } from "../simulation/club-contract-intent.js";
 
 /**
  * Optional event-level OR contract.
@@ -23,7 +24,8 @@ export function gateAlternatives(event: EventDefinition): Condition[][] | undefi
 }
 
 export function eventGatesPass(state: GameState, event: EventDefinition): boolean {
-  if (!conditionsPass(state, event.gates)) return false;
+  const root = narrativeConditionRoot(state);
+  if (!conditionsPass(root, event.gates)) return false;
 
   const alternatives = gateAlternatives(event);
   if (alternatives === undefined) return true;
@@ -33,6 +35,6 @@ export function eventGatesPass(state: GameState, event: EventDefinition): boolea
   if (!Array.isArray(alternatives) || alternatives.length === 0) return false;
 
   return alternatives.some(group =>
-    Array.isArray(group) && group.length > 0 && conditionsPass(state, group)
+    Array.isArray(group) && group.length > 0 && conditionsPass(root, group)
   );
 }
