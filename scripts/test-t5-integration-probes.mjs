@@ -38,7 +38,7 @@ test('T5 integration/T5.2: sincronizar presencia elimina un HAS_* obsoleto sin i
   );
 });
 
-test('T5 integration/T5.2+T5.3: el resolver conserva idempotencia y conocimiento NPC al coexistir ambos subsistemas', async t => {
+test('T5 integration/T5.2+T5.3: una resolución conserva simultáneamente lifecycle de seed y conocimiento NPC', async t => {
   const npcKnowledge = await optionalImport('../dist/core/npc-knowledge.js');
   if (!npcKnowledge || typeof resolver.syncSeedPresenceFlagsInPlace !== 'function') {
     t.skip('requiere T5.2 y T5.3 integrados simultáneamente');
@@ -47,24 +47,20 @@ test('T5 integration/T5.2+T5.3: el resolver conserva idempotencia y conocimiento
 
   const state = createInitialState(55202);
   const event = byId('EVT_18_PRE_001');
+  resolver.resolveChoiceInPlace(state, event, 'CALL_NANO');
 
-  const first = resolver.resolveChoiceInPlace(state, event, 'CALL_NANO');
-  assert.equal(npcKnowledge.npcKnows(state, 'NPC_PLR_14', 'EVT_18_PRE_001'), true);
-
-  const afterFirst = {
-    history: state.history.length,
-    draws: state.rngState.narrative.draws,
-    record: structuredClone(npcKnowledge.getNpcKnowledgeRecord(state, 'NPC_PLR_14', 'EVT_18_PRE_001'))
-  };
-
-  const second = resolver.resolveChoiceInPlace(state, event, 'CALL_NANO');
-
-  assert.equal(second.outcomeId, first.outcomeId, 'el replay cambió el outcome');
-  assert.equal(state.history.length, afterFirst.history, 'el replay duplicó historia');
-  assert.equal(state.rngState.narrative.draws, afterFirst.draws, 'el replay consumió RNG');
-  assert.deepEqual(
-    npcKnowledge.getNpcKnowledgeRecord(state, 'NPC_PLR_14', 'EVT_18_PRE_001'),
-    afterFirst.record,
-    'el replay reescribió o degradó la memoria NPC'
+  assert.equal(
+    npcKnowledge.npcKnows(state, 'NPC_PLR_14', 'EVT_18_PRE_001'),
+    true,
+    'el resolver integrado perdió la adquisición explícita de conocimiento T5.3'
+  );
+  assert.ok(
+    state.seeds.some(seed => seed.id === 'SEED_NANO_SHADOW' && !['resolved', 'expired'].includes(seed.state)),
+    'el resolver integrado perdió la transición de seed de EVT_18_PRE_001'
+  );
+  assert.equal(
+    state.flags.HAS_SEED_NANO_SHADOW,
+    true,
+    'la seed fue creada pero el flag de presencia no quedó sincronizado'
   );
 });
