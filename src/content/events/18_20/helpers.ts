@@ -28,6 +28,8 @@ export interface AmbiguousEventSpec {
   uncertain: string[];
   choices: AmbiguousChoiceSpec[];
   gates?: EventDefinition["gates"];
+  /** Alternative causal routes. Each inner list is AND; the lists are OR. */
+  gateAny?: EventDefinition["gates"][];
   exclusions?: EventDefinition["exclusions"];
   timeWindow?: EventDefinition["timeWindow"];
   weight?: number;
@@ -41,12 +43,13 @@ export interface AmbiguousEventSpec {
 }
 
 export function ambiguousEvent(spec: AmbiguousEventSpec): EventDefinition {
-  return {
+  const event: EventDefinition & { gateAny?: EventDefinition["gates"][] } = {
     id: spec.id,
     ageWindow: spec.ageWindow,
     phase: spec.phase ?? "18_20",
     family: spec.family,
     gates: spec.gates ?? [],
+    ...(spec.gateAny !== undefined ? { gateAny: spec.gateAny } : {}),
     exclusions: spec.exclusions,
     timeWindow: spec.timeWindow,
     cooldown: spec.cooldown ?? 99999,
@@ -93,6 +96,7 @@ export function ambiguousEvent(spec: AmbiguousEventSpec): EventDefinition {
     },
     canonStatus: spec.canonStatus ?? "technical_adaptation"
   };
+  return event;
 }
 
 export const n = (path: string, delta: number, min = 0, max = 100): Effect => ({ kind: "numeric", path, delta, min, max });
