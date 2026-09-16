@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { GameSession } from '../dist/session/game-session.js';
+import { GameSession, SESSION_VERSION } from '../dist/session/game-session.js';
 import { createInitialState } from '../dist/content/initial-state.js';
 import { careerTerms,proposeCareerChange,respondToOffer } from '../dist/simulation/offers.js';
 import { advanceWorldDayInPlace } from '../dist/simulation/world-simulator.js';
@@ -75,7 +75,7 @@ test('v1 migration preserves pending narrative, history and RNG and grants no de
  const s=await GameSession.create(424242);await s.dispatch(command(s,'continue'));
  const old=s.exportSnapshot();old.sessionVersion=1;old.build='0.8.0-t2.2';delete old.state.market;
  const raw=JSON.stringify(old),restored=await GameSession.fromSave(raw),next=restored.exportSnapshot();
- assert.equal(next.sessionVersion,2);assert.equal(JSON.stringify(next.pendingDecision),JSON.stringify(old.pendingDecision));assert.deepEqual(next.state.rngState,old.state.rngState);assert.deepEqual(next.journal,old.journal);
+ assert.equal(next.sessionVersion,SESSION_VERSION);assert.equal(JSON.stringify(next.pendingDecision),JSON.stringify(old.pendingDecision));assert.deepEqual(next.state.rngState,old.state.rngState);assert.deepEqual(next.journal,old.journal);
  assert.deepEqual(next.state.market,{version:1,sequence:0,pending:null,history:[]});assert.equal(JSON.stringify(old),raw);
 });
 test('world renewal, summer moves and loan continuity remain proposals across seeds',()=>{
