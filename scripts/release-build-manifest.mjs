@@ -18,8 +18,9 @@ function git(args) {
   return result.status === 0 ? result.stdout.trim() : '';
 }
 function read(file) { return fs.readFileSync(path.join(root, file), 'utf8'); }
-function match(source, regexp, label) {
-  const value = source.match(regexp)?.[1];
+function firstMatch(source, regexp, label) {
+  const groups = source.match(regexp)?.slice(1).filter(value => value !== undefined);
+  const value = groups?.[0];
   if (!value) throw new Error(`No se pudo resolver ${label}.`);
   return value;
 }
@@ -34,23 +35,25 @@ function treeIdentity(files) {
   const rows = files.map(file => [path.relative(root, file).replaceAll(path.sep, '/'), sha256(fs.readFileSync(file))]);
   return { identity: sha256(stableJson(rows)), files: rows.length };
 }
+function fileHash(file) { return fs.existsSync(path.join(root, file)) ? sha256(fs.readFileSync(path.join(root, file))) : null; }
 
 const gitSha = process.env.BUILD_GIT_SHA || process.env.GITHUB_SHA || git(['rev-parse', 'HEAD']);
 const sourceBranch = process.env.BUILD_SOURCE_BRANCH || process.env.GITHUB_HEAD_REF || process.env.GITHUB_REF_NAME || git(['rev-parse', '--abbrev-ref', 'HEAD']);
 if (requireGit && !/^[0-9a-f]{40}$/i.test(gitSha)) throw new Error('Release build requiere un Git SHA exacto de 40 caracteres.');
 
 const pkg = JSON.parse(read('package.json'));
-const gradle = read('android/app/build.gradle');
+const appGradle = read('android/app/build.gradle');
+const rootGradle = read('android/build.gradle');
 const manifestXml = read('android/app/src/main/AndroidManifest.xml');
-const applicationId = match(gradle, /applicationId\s+['"]([^'"]+)['"]/, 'applicationId');
-const defaultVersionCode = Number(match(gradle, /MULTIHISTORIA_VERSION_CODE[^\n]*?['"](\d+)['"]|versionCode\s+(\d+)/, 'versionCode').replace(/^.*$/, m => m));
-const fallbackVersionCode = Number(gradle.match(/versionCode\s+(\d+)/)?.[1] ?? 1);
-const fallbackVersionName = gradle.match(/versionName\s+['"]([^'"]+)['"]/)?.[1] ?? pkg.version;
-const versionCode = Number(process.env.MULTIHISTORIA_VERSION_CODE || (Number.isFinite(defaultVersionCode) ? defaultVersionCode : fallbackVersionCode));
+const applicationId = firstMatch(appGradle, /applicationId\s+['"]([^'"]+)['"]/, 'applicationId');
+const fallbackVersionCode = Number(firstMatch(appGradle, /MULTIHISTORIA_VERSION_CODE[^\n]*?['"](\d+)['"]|versionCode\s+(\d+)/, 'versionCode'));
+const fallbackVersionName = appGradle.match(/versionName\s+['"]([^'"]+)['"]/)?.[1] ?? pkg.version;
+const versionCode = Number(process.env.MULTIHISTORIA_VERSION_CODE || fallbackVersionCode);
 const versionName = process.env.MULTIHISTORIA_VERSION_NAME || fallbackVersionName;
-const minSdk = Number(match(gradle, /minSdk\s+(\d+)/, 'minSdk'));
-const targetSdk = Number(match(gradle, /targetSdk\s+(\d+)/, 'targetSdk'));
-const compileSdk = Number(match(gradle, /compileSdk\s+(\d+)/, 'compileSdk'));
+const minSdk = Number(firstMatch(appGradle, /minSdk\s+(\d+)/, 'minSdk'));
+const targetSdk = Number(firstMatch(appGradle, /targetSdk\s+(\d+)/, 'targetSdk'));
+const compileSdk = Number(firstMatch(appGradle, /compileSdk\s+(\d+)/, 'compileSdk'));
+const androidGradlePlugin = firstMatch(rootGradle, /com\.android\.application['"]?\s+version\s+['"]([^'"]+)['"]/, 'Android Gradle Plugin');
 const activeContentIdentity = await contentIdentity(EVENTS);
 const web = treeIdentity([
   ...walk(path.join(root, 'dist'), file => file.endsWith('.js')),
@@ -79,6 +82,21 @@ const core = {
   buildTimestamp,
   timestampPolicy,
   buildVariant: process.env.MULTIHISTORIA_BUILD_VARIANT || 'release-candidate',
+  toolchain: {
+    node: process.version,
+    typescript: pkg.devDependencies?.typescript ?? null,
+    jdk: '17',
+    gradle: '8.11.1',
+    androidGradlePlugin,
+    androidBuildTools: '35.0.0'
+  },
+  configSha256: {
+    packageLock: fileHash('package-lock.json'),
+    tsconfig: fileHash('tsconfig.json'),
+    androidRootGradle: fileHash('android/build.gradle'),
+    androidAppGradle: fileHash('android/app/build.gradle'),
+    androidManifest: fileHash('android/app/src/main/AndroidManifest.xml')
+  },
   android: {
     applicationId,
     versionCode,

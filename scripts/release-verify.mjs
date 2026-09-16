@@ -13,10 +13,8 @@ const signedRequired = process.argv.includes('--require-signed');
 const checks = [];
 function check(name, pass, detail = null) { checks.push({ name, pass: Boolean(pass), detail }); }
 function readJson(file) { return JSON.parse(fs.readFileSync(file, 'utf8')); }
-function gitFiles() {
-  const result = spawnSync('git', ['ls-files'], { cwd: root, encoding: 'utf8' });
-  return result.status === 0 ? result.stdout.split(/\r?\n/).filter(Boolean) : [];
-}
+const gitResult = spawnSync('git', ['ls-files'], { cwd: root, encoding: 'utf8' });
+const tracked = gitResult.status === 0 ? gitResult.stdout.split(/\r?\n/).filter(Boolean) : [];
 
 if (!fs.existsSync(manifestFile)) throw new Error('Falta build-manifest.json.');
 const manifest = readJson(manifestFile);
@@ -30,9 +28,11 @@ check('session schema', Number.isInteger(manifest.sessionSchema) && manifest.ses
 check('application id', manifest.android?.applicationId === 'com.multihistoria', manifest.android?.applicationId);
 check('version code positive', Number.isInteger(manifest.android?.versionCode) && manifest.android.versionCode > 0, manifest.android?.versionCode);
 check('version name non-empty', typeof manifest.android?.versionName === 'string' && manifest.android.versionName.length > 0, manifest.android?.versionName);
+check('target sdk current Play baseline', manifest.android?.targetSdk >= 36, manifest.android?.targetSdk);
+check('compile sdk supports target', manifest.android?.compileSdk >= manifest.android?.targetSdk, manifest.android?.compileSdk);
+check('AGP API 36 toolchain', manifest.toolchain?.androidGradlePlugin === '8.10.0' && manifest.toolchain?.gradle === '8.11.1', manifest.toolchain);
 check('no internet permission', manifest.android?.internetPermission === false);
-
-const tracked = gitFiles();
+check('git tracked-files inspection', gitResult.status === 0, gitResult.error?.message || gitResult.stderr || null);
 const trackedSecrets = tracked.filter(file => /(^|\/)(?:\.env(?:\..*)?|.*\.(?:jks|keystore))$/i.test(file));
 check('no tracked signing secrets', trackedSecrets.length === 0, trackedSecrets);
 const gradle = fs.readFileSync(path.join(root, 'android', 'app', 'build.gradle'), 'utf8');
