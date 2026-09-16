@@ -166,7 +166,6 @@ test('T5.2 temporadas largas: no existe reset implícito de seeds career-scoped'
 
 test('T5.2 save/restore: una seed pendiente sobrevive y se consume después de restaurar', () => {
   const state = createInitialState(5208);
-  state.age = 24;
   const create = fixtureEvent('T52_SAVE_CREATE', 'SEED_PRIVATE_CHAT', { action: 'create', payload: { clue: 'locker' } });
   resolveChoiceInPlace(state, create, 'A');
   const restored = loadSave(serializeSave(state));
