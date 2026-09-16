@@ -59,6 +59,7 @@ export const LEGACY_CONTENT_SOURCES: Readonly<Record<string, ContentEvidenceSour
 };
 
 export const T51_B1A_CONTENT_IDENTITY = "1a8a5e2006fe7160f4fbc02060568d3abec99df038fe3a1a7799c8a0e802eac7";
+export const T51_T510_CONTENT_IDENTITY = "fee2ff875bac7979d3907f5ee1004ef736efa9a257237c6dee629dd8687fe136";
 
 /**
  * Explicit identity-bound edges. Successive canonical batches extend this as a
@@ -73,6 +74,34 @@ export const CONTENT_MIGRATION_ROUTES: readonly ContentMigrationRoute[] = [
       { kind: "same_scene", legacyEventId: "EVT_18_TEAM_001", canonicalEventId: "EVT_18_TEAM_001" },
       { kind: "same_scene", legacyEventId: "EVT_18_MATCH_002", canonicalEventId: "EVT_18_MATCH_002" }
     ]
+  },
+  {
+    sourceContentIdentity: T51_B1A_CONTENT_IDENTITY,
+    targetContentIdentity: T51_T510_CONTENT_IDENTITY,
+    schedulerMappings: [
+      {
+        kind: "distinct_scene",
+        legacyEventId: "EVT_23_BRIDGE_001",
+        canonicalEventId: "EVT_23_BRIDGE_001",
+        clearCanonicalSeen: true,
+        clearCanonicalCooldown: true
+      },
+      {
+        kind: "distinct_scene",
+        legacyEventId: "EVT_23_AGT_001",
+        canonicalEventId: "EVT_23_AGT_001",
+        clearCanonicalSeen: true,
+        clearCanonicalCooldown: true
+      },
+      {
+        kind: "distinct_scene",
+        legacyEventId: "EVT_23_BODY_001",
+        canonicalEventId: "EVT_23_BODY_001",
+        clearCanonicalSeen: true,
+        clearCanonicalCooldown: true
+      }
+    ],
+    seedOriginMappings: []
   }
 ];
 
