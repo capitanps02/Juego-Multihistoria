@@ -11,9 +11,9 @@ Read and obey:
 - `project/CHATGPT_CODEX_WORKFLOW.md`
 - `project/t5_1/T5_1_PRINCIPAL_BATCH_IMPLEMENTATION_RULES.md`
 - `project/t5_1/T5_1_PRINCIPAL_87_BATCH_MANIFEST.json`
-- `project/t5_1/T5_1_PRINCIPAL_LEGACY_EXTRA_87_INVENTORY.json`
+- `project/t5_1/T5_1_03A_PRINCIPAL_LEGACY_REVIEW.md`
+- `project/t5_1/T5_1_03A_PRINCIPAL_LEGACY_DISPOSITIONS.json`
 - `project/t5_1/T5_1_PRINCIPAL_TITLE_CANDIDATES_30_PLUS_REVIEW.md`
-- `project/t5_1/T5_1_PRINCIPAL_TITLE_CANDIDATES_30_PLUS_DISPOSITIONS.json`
 - canonical rows in `analysis/2026-09-11/t1/principal-traceability.json`
 
 ## Goal
@@ -31,37 +31,34 @@ Reconcile the ten baseline-unresolved canonical principal scenes at age 30:
 9. `EVT_30_NAT_002` — La selección gana sin ti
 10. `EVT_30_JAN_001` — Enero: especialista de lujo
 
-## Reviewed identity decision — do not reopen from title alone
+## Legacy dispositions are already decided
 
-Baseline runtime `EVT_30_IDN_001` shares the title **La palabra veterano** with canonical `EVT_30_BRIDGE_001`.
+All five runtime-only IDs assigned to 03A have completed semantic review. Approved same-scene migrations: **0/5**. Final disposition for all: `retire_technical_keep_history_only`.
 
-This pair has already received field-level semantic review.
+- `EVT_30_IDN_001` — title/seed lineage with `EVT_30_BRIDGE_001`, but generic runtime semantics differ; no alias/history/pending migration.
+- `EVT_30_AGT_001` — displaced generic writer of `SEED_AGENT_LAST_CONTRACT`; canonical age-30 market owner is `EVT_30_MKT_001` (with later continuation in `EVT_31_AGT_001`).
+- `EVT_30_TEAM_001` — displaced writer of `SEED_DORSAL_SUCCESSION`; canonical owner is missing `EVT_30_STATUS_001`.
+- `EVT_30_LIFE_001` — displaced writer of `SEED_RELOCATION_LIMIT`; canonical owner is exact-ID `EVT_30_FAM_001`.
+- `EVT_30_FINAL_001` — displaced writer of `SEED_BIG_GAME_ROTATION_30`; canonical owner is missing `EVT_30_EUR_001`.
 
-Approved disposition:
-- `EVT_30_IDN_001`: `retire_technical_keep_history_only`;
-- same-scene migration: **not allowed**;
-- old history ID rewrite: **not allowed**;
-- old pending ID direct substitution: **not allowed**;
-- canonical `EVT_30_BRIDGE_001`: implement as a separate canonical scene.
-
-Reason: title, age and `SEED_VETERAN_LABEL` show strong lineage, but the runtime event uses the generic 30–34 maturity body/intel/choice set instead of the canonical age-30 bridge dilemma.
-
-Do not spend task scope attempting to re-approve this pair from title equality. If implementation evidence genuinely contradicts the reviewed source fields, report it to ChatGPT rather than silently changing the disposition.
+Do not reopen these identity decisions from theme/title similarity. Retire each technical ID from active scheduling only when its canonical causal responsibility exists; preserve legacy completed/pending truth through the supported migration architecture.
 
 ## Required work
 
-For every target:
+For every canonical target:
 - read complete canonical `sourceFields`;
 - implement the canonical scene, not a generic maturity template;
 - preserve exact age/time/gate responsibility;
 - implement visible vs uncertain information;
 - preserve distinct choice intent and ambiguous outcomes;
 - reconcile seeds and NPC references;
-- disposition every other technical predecessor assigned to 03A explicitly.
+- apply the reviewed legacy dispositions above.
+
+Do not mark an event `verified` merely because body/labels look similar. Trigger/gates, information, choices, resolution, seed reads/writes/origin, NPC references, transition responsibility and save compatibility must all be reviewed.
 
 ### Bridge responsibility
 
-`EVT_30_BRIDGE_001` must consume the actual age-29 priority/history where the canonical source requires it. It must not generate a fresh substitute for `SEED_AGE30_PRIORITY`/`world.age30Priority`.
+`EVT_30_BRIDGE_001` must consume the actual age-29 priority/history where canon requires it. It must not generate a fresh substitute for `SEED_AGE30_PRIORITY`/`world.age30Priority`.
 
 ### Long-range causal anchors
 
@@ -70,14 +67,18 @@ This batch establishes memories used later:
 - big-game/European role → later veteran rotation/late-career role;
 - record milestone → age-33 record/body tension;
 - pain/body context → late-career recovery/body decisions;
-- Nano relationship callback must preserve prior relationship history, not generic affinity only;
+- Nano callback must preserve relationship/history/knowledge rather than generic affinity only;
 - national-team absence must remain distinguishable from voluntary NT withdrawal.
+
+## Coordination with concurrent workstreams
+
+PR #13 (`t51/canon-30-34`) contains useful audit/body/choice work but is not an alternate authority. Consume any validated implementation ideas only after comparing against central T5.1 source fields and this disposition map.
+
+T5.2/T5.3 may change seed lifecycle and NPC knowledge infrastructure before this batch becomes executable. Re-ground 03A on the then-current integrated main and preserve those APIs rather than restoring an older resolver/content model.
 
 ## Retirement boundary
 
-Age 30 may create retirement distance/context, but this batch must not decide, announce or close retirement unless the canonical principal row explicitly owns a non-terminal context flag. Final FSM responsibility belongs to 04D.
-
-Do not retain or introduce automatic early closure from an age-30 narrative decision.
+Age 30 may create retirement distance/context, but this batch must not decide, announce or close retirement from age/theme alone. Final FSM responsibility belongs to 04D.
 
 ## Expected runtime area
 
@@ -87,34 +88,38 @@ Primary:
 Potentially:
 - 29→30 adapter/classifier
 - `src/catalog/seeds.ts`
-- relationship/NPC memory support
-- save/migration compatibility
+- relationship/NPC knowledge support already integrated by T5.3
+- save/session migration compatibility
 - targeted T5.1 tests/audit artifacts
 
 ## Migration rules
 
-- Keep completed `EVT_30_IDN_001` history as legacy historical truth.
-- A pending `EVT_30_IDN_001` must resolve through supported legacy-content compatibility, not become `EVT_30_BRIDGE_001`.
-- Do not manufacture `SEEN_EVT_30_BRIDGE_001` from the title match.
-- Preserve compatible seed state only under explicit migration rules; seed compatibility is not scene identity.
+The pre-T5.1 catalog is frozen in main.
+
+- Keep completed legacy history as historical truth.
+- Pending legacy rows must keep their old choice contracts via supported compatibility or fail resume explicitly.
+- Do not manufacture canonical `SEEN_*`.
+- Future seed catalog origin may move to the canonical owner without rewriting historical `seed.originEvent` automatically.
 - Pending scene choice sets cannot be silently replaced.
 - Do not manufacture later canonical memories from approximate predecessor events.
+- Do not weaken `contentIdentity`.
 
 ## Tests
 
 Add targeted tests for:
-- all ten target IDs;
-- canonical `EVT_30_BRIDGE_001` and retired active scheduling of legacy `EVT_30_IDN_001`;
-- legacy completed/pending `EVT_30_IDN_001` migration truthfulness;
+- all ten target IDs and complete canonical gates/choices/intel/seeds;
+- all five reviewed legacy IDs absent from active scheduling after ownership transfer;
+- legacy completed/pending compatibility truthfulness;
 - 29 priority → canonical 30 bridge across save/resume;
-- dorsal/status memory → age 34 consumer fixture;
-- record 30 → record/body age 33 fixture;
+- dorsal/status memory → age-34 consumer fixture;
+- record 30 → record/body age-33 fixture;
 - body/pain continuity into maturity;
 - national-team absence semantics;
 - no retirement status transition caused by non-terminal age-30 contexts;
-- deterministic strong narrative with microfeeds on/off.
+- deterministic strong narrative with microfeeds on/off;
+- T5.2 seed lifecycle and T5.3 knowledge invariants if those workstreams are integrated by execution time.
 
-Run the common required commands.
+Run the common required commands plus targeted migration/causal tests.
 
 ## Non-goals
 
@@ -125,4 +130,4 @@ Run the common required commands.
 
 ## Deliverable
 
-Focused age-30 canonical reconciliation with reviewed legacy dispositions, causal tests and current validation evidence for ChatGPT review.
+Focused age-30 canonical reconciliation applying the reviewed 5/5 legacy dispositions, causal/migration tests and current validation evidence for ChatGPT review.
