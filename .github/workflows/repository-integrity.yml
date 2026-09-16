@@ -43,5 +43,26 @@ jobs:
       - name: Run project validation
         run: npm test
 
+      - name: Build T5 QA target
+        run: npm run build
+
+      - name: T5 determinism and RNG isolation
+        run: node --test --test-name-pattern="T5 determinism" scripts/test-t5-regression.mjs
+
+      - name: T5 age boundaries
+        run: node --test --test-name-pattern="T5 age boundaries" scripts/test-t5-regression.mjs
+
+      - name: T5 content references
+        run: node --test --test-name-pattern="T5 content references" scripts/test-t5-regression.mjs
+
+      - name: T5 long careers
+        run: node --test --test-name-pattern="T5 long careers" scripts/test-t5-regression.mjs
+
+      - name: T5 content lifecycle audit
+        run: node scripts/qa-t5-content.mjs
+
+      - name: T5 stratified simulation
+        run: node scripts/qa-t5-sim.mjs
+
       - name: Run presentation, PlayCanvas and offline Android regression
         run: npm run qa:presentation
