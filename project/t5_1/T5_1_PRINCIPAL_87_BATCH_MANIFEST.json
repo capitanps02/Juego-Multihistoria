@@ -1,0 +1,227 @@
+{
+  "task": "T5.1 principal reconciliation batch manifest",
+  "generatedAt": "2026-09-16",
+  "source": "analysis/2026-09-15/T5.1-reconciliation.json",
+  "canonicalPrincipalCount": 254,
+  "baselineLiteralMatches": 167,
+  "baselineUnresolvedPrincipalIds": 87,
+  "rules": {
+    "exactTitleIsNotIdentityProof": true,
+    "noSilentAliases": true,
+    "runtimeSourceAuthority": "src/",
+    "historyRewriteRequiresSameSceneProof": true,
+    "pendingEventMigrationRequiresSameSceneProof": true
+  },
+  "batches": [
+    {
+      "batch": "PR#3",
+      "queuePosition": 1,
+      "state": "READY",
+      "phase": "20_23",
+      "count": 6,
+      "ids": [
+        {"id":"EVT_20_BRIDGE_001","title":"La reunión de los veinte"},
+        {"id":"EVT_20_MATCH_003","title":"El minuto 65"},
+        {"id":"EVT_20_JAN_001","title":"Enero: la compra que depende de otro"},
+        {"id":"EVT_21_MKT_001","title":"El club que te quiere… cedido"},
+        {"id":"EVT_21_SOC_001","title":"Tu amigo contra tu agente"},
+        {"id":"EVT_21_PRS_002","title":"La llamada que llega por Clara"}
+      ]
+    },
+    {
+      "batch": "PR#7",
+      "queuePosition": 2,
+      "state": "READY",
+      "phase": "26_30",
+      "count": 9,
+      "ids": [
+        {"id":"EVT_26_BRIDGE_001","title":"Ya no te pagan por potencial"},
+        {"id":"EVT_26_MATCH_001","title":"El penalti para un récord"},
+        {"id":"EVT_26_CAP_001","title":"El capitán te pide que elijas lado"},
+        {"id":"EVT_26_MED_001","title":"Cada tres días"},
+        {"id":"EVT_26_DOC_001","title":"Dentro de tu temporada"},
+        {"id":"EVT_26_RIV_001","title":"Adrián en el otro vestuario"},
+        {"id":"EVT_26_TEAM_002","title":"El sustituto te pregunta si debe irse"},
+        {"id":"EVT_26_NAT_002","title":"Titular con el club, suplente con la selección"},
+        {"id":"EVT_26_FINAL_001","title":"La final y el banquillo"}
+      ]
+    },
+    {
+      "batch": "PR#5",
+      "queuePosition": 3,
+      "state": "BLOCKED-BY-#7",
+      "phase": "26_30",
+      "count": 3,
+      "ids": [
+        {"id":"EVT_27_STAR_001","title":"Dos estrellas, un foco","baselineTitleCandidate":"EVT_28_TEAM_001"},
+        {"id":"EVT_27_AWARD_001","title":"La gala","baselineTitleCandidate":"EVT_28_GALA_001"},
+        {"id":"EVT_28_RICH_001","title":"La oferta financieramente absurda","baselineTitleCandidate":"EVT_29_MKT_001"}
+      ]
+    },
+    {
+      "batch": "02C",
+      "queuePosition": 4,
+      "state": "DRAFT",
+      "phase": "26_30",
+      "age": 27,
+      "count": 7,
+      "ids": [
+        {"id":"EVT_27_CON_001","title":"La cláusula que sí puede pagarse"},
+        {"id":"EVT_27_IMG_001","title":"Tu nombre sin tu club"},
+        {"id":"EVT_27_HOME_001","title":"¿Comprar una parte de casa?"},
+        {"id":"EVT_27_EUR_001","title":"La semifinal que exige desaparecer"},
+        {"id":"EVT_27_MATCH_001","title":"El récord no se celebra"},
+        {"id":"EVT_27_TEAM_001","title":"Tu protegido juega por ti"},
+        {"id":"EVT_27_AGT_002","title":"Tu agente negocia dos futuros"}
+      ]
+    },
+    {
+      "batch": "02D",
+      "queuePosition": 5,
+      "state": "DRAFT",
+      "phase": "26_30",
+      "age": 28,
+      "count": 5,
+      "ids": [
+        {"id":"EVT_28_MEDIA_001","title":"El documental se estrena cuando ya eres otro"},
+        {"id":"EVT_28_FORM_001","title":"Tres meses normales"},
+        {"id":"EVT_28_STAR_001","title":"El chico ya no es promesa"},
+        {"id":"EVT_28_MED_001","title":"No puedes jugar sesenta partidos"},
+        {"id":"EVT_28_CLUB_001","title":"El presidente quiere tu apoyo"}
+      ]
+    },
+    {
+      "batch": "02E",
+      "queuePosition": 6,
+      "state": "DRAFT",
+      "phase": "26_30",
+      "age": 29,
+      "count": 2,
+      "ids": [
+        {"id":"EVT_29_TACT_001","title":"Reinventarte de verdad"},
+        {"id":"EVT_29_NAT_002","title":"¿Seguir con la selección a cualquier precio?"}
+      ]
+    },
+    {
+      "batch": "03A",
+      "queuePosition": 7,
+      "state": "DRAFT",
+      "phase": "30_34",
+      "age": 30,
+      "count": 10,
+      "ids": [
+        {"id":"EVT_30_BRIDGE_001","title":"La palabra veterano","baselineTitleCandidate":"EVT_30_IDN_001"},
+        {"id":"EVT_30_STATUS_001","title":"El dorsal"},
+        {"id":"EVT_30_EUR_001","title":"Semifinal, minuto cero"},
+        {"id":"EVT_30_CCH_001","title":"Te enteras por la pizarra"},
+        {"id":"EVT_30_RECORD_001","title":"Partido 500"},
+        {"id":"EVT_30_PAIN_001","title":"Duele, pero la imagen está limpia"},
+        {"id":"EVT_30_NANO_001","title":"Nano necesita una llamada"},
+        {"id":"EVT_30_PRS_001","title":"El ultimátum que nunca diste"},
+        {"id":"EVT_30_NAT_002","title":"La selección gana sin ti"},
+        {"id":"EVT_30_JAN_001","title":"Enero: especialista de lujo"}
+      ]
+    },
+    {
+      "batch": "03B",
+      "queuePosition": 8,
+      "state": "DRAFT",
+      "phase": "30_34",
+      "ages": [31,32,33],
+      "count": 12,
+      "ids": [
+        {"id":"EVT_31_FAM_001","title":"No quiero otra mudanza"},
+        {"id":"EVT_31_ROLE_001","title":"Tres goles y al banquillo"},
+        {"id":"EVT_31_SQUAD_001","title":"Dos fichajes de 22"},
+        {"id":"EVT_31_BIZ_001","title":"El problema es de tu socio"},
+        {"id":"EVT_32_RICH_001","title":"La oferta que paga el resto de tu vida"},
+        {"id":"EVT_32_ELITE_001","title":"Doceavo hombre de un candidato"},
+        {"id":"EVT_32_IMPACT_001","title":"Peores números, mejor equipo"},
+        {"id":"EVT_32_SUCCESSOR_001","title":"Tres semanas y aparece otro"},
+        {"id":"EVT_32_LOAD_001","title":"No viajes"},
+        {"id":"EVT_32_BOSMAN_001","title":"Enero: puedes firmar gratis"},
+        {"id":"EVT_33_RECORD_001","title":"El récord está a seis partidos"},
+        {"id":"EVT_33_FIN_001","title":"Cumples 34"}
+      ]
+    },
+    {
+      "batch": "04A",
+      "queuePosition": 9,
+      "state": "DRAFT",
+      "phase": "34_plus",
+      "age": 34,
+      "count": 11,
+      "ids": [
+        {"id":"EVT_34_BRIDGE_001","title":"La reunión sin horizonte"},
+        {"id":"EVT_34_PAY_001","title":"La cifra que ya no te pagan"},
+        {"id":"EVT_34_NT_001","title":"Última ventana de selección"},
+        {"id":"EVT_34_AGT_001","title":"El agente dice que esperes"},
+        {"id":"EVT_34_LOAD_001","title":"El plan de 28 partidos"},
+        {"id":"EVT_34_DORSAL_001","title":"Tu dorsal en la tienda"},
+        {"id":"EVT_34_MENTOR_001","title":"El joven te pide tus vídeos"},
+        {"id":"EVT_34_MATCH_001","title":"Un gol que rompe el plan"},
+        {"id":"EVT_34_NT_002","title":"Te dejan fuera de una convocatoria"},
+        {"id":"EVT_34_FAN_001","title":"La grada pide que empieces"},
+        {"id":"EVT_34_TRAVEL_001","title":"El viaje que no haces"}
+      ]
+    },
+    {
+      "batch": "04B",
+      "queuePosition": 10,
+      "state": "DRAFT",
+      "phase": "34_plus",
+      "age": 35,
+      "count": 10,
+      "ids": [
+        {"id":"EVT_35_CON_001","title":"Contrato por objetivos físicos"},
+        {"id":"EVT_35_FAREWELL_001","title":"El club ofrece homenaje... si te vas"},
+        {"id":"EVT_35_DUAL_001","title":"Te ofrecen ser jugador y enlace"},
+        {"id":"EVT_35_AGT_001","title":"Sin agente por primera vez"},
+        {"id":"EVT_35_TACT_001","title":"El nuevo rol funciona demasiado bien"},
+        {"id":"EVT_35_BENCH_001","title":"Un mes sin jugar y sigues entrenando"},
+        {"id":"EVT_35_RECORD_001","title":"El canterano rompe tu récord"},
+        {"id":"EVT_35_NT_001","title":"Te llaman por una emergencia internacional"},
+        {"id":"EVT_35_JAN_001","title":"Una oferta en enero"},
+        {"id":"EVT_35_IMG_001","title":"Te ofrecen un último gran patrocinio"}
+      ]
+    },
+    {
+      "batch": "04C",
+      "queuePosition": 11,
+      "state": "DRAFT",
+      "phase": "34_plus",
+      "ages": [36,37,38],
+      "count": 10,
+      "ids": [
+        {"id":"EVT_36_BODY_001","title":"Ya no puedes jugar domingo-miércoles-domingo"},
+        {"id":"EVT_36_CCH_001","title":"Un entrenador más joven que tú"},
+        {"id":"EVT_36_RECORD_001","title":"El partido 700"},
+        {"id":"EVT_36_PEER_001","title":"El compañero se retira antes que tú"},
+        {"id":"EVT_36_LOWER_001","title":"Un año en una liga menor"},
+        {"id":"EVT_37_SHORT_001","title":"Contrato de tres meses"},
+        {"id":"EVT_37_HOME_001","title":"Valdoria te ofrece diez partidos"},
+        {"id":"EVT_37_PEN_001","title":"El penalti de despedida"},
+        {"id":"EVT_38_RICH_001","title":"Una última oferta enorme","baselineTitleCandidate":"EVT_36_RICH_001"},
+        {"id":"EVT_38_MARKET_001","title":"Nadie llama en julio"}
+      ]
+    },
+    {
+      "batch": "04D",
+      "queuePosition": 12,
+      "state": "DRAFT",
+      "phase": "34_plus",
+      "kind": "retirement",
+      "count": 2,
+      "ids": [
+        {"id":"EVT_RET_FAM_001","title":"La conversación en casa","baselineTitleCandidate":"EVT_RET_HOME_001"},
+        {"id":"EVT_RET_LASTMATCH_001","title":"El último partido no está garantizado","baselineTitleCandidate":"EVT_RET_LAST_001"}
+      ]
+    }
+  ],
+  "totals": {
+    "activePrCoverage": 18,
+    "futureDraftCoverage": 69,
+    "allUnresolvedAssigned": 87,
+    "expectedUnique": 87
+  }
+}
