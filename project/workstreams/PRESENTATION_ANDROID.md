@@ -11,9 +11,11 @@ Estado PR: **DRAFT / software verde; T3.4 pendiente de evidencia en teléfono f�
 - T3.3: cerrada técnicamente; paquete Android offline y candidato APK verificable disponibles.
 - T3.4: **pendiente de evidencia en teléfono Android físico**. CI/emulador no la cierran.
 - T4.6: flujo Inicio → Carrera → Mundo → Relaciones → Perfil → Tu partida revisado.
-- Base integrada: `main@49e195d07d064e0532ea9109d9544b91df52bf0e`.
-- HEAD de código validado: `257014433f0bdfaf56bad3aa3c1049b45f21f0ab`.
-- Reconciliación previa al push: `behind_by: 0`; diff contra main: **22 archivos**, todos del perímetro presentación/Android/CI/documentación propia.
+- Base funcional integrada y validada: `main@de2af6b698d22343a1b7dadf63fb857ddeef5aec` (T5.10 primer lote canónico 23–26).
+- `main@30ae3f27ddcb846f59f049e3a4536276f3e9a97e` añade únicamente historia de coordinación y conserva exactamente el mismo árbol `f531c1845ad49120e1864737229bf68a3d1fa09e`.
+- HEAD de código validado: `16489907e068aaa0817548c8420a59e01dc12967`.
+- HEAD sincronizado tras absorber el commit de coordinación sin cambios de árbol: `ae770f037a915f170ac58f5f04c1eae4d7428b07`.
+- Reconciliación: `behind_by: 0`; diff contra main: **22 archivos**, todos del perímetro presentación/Android/CI/documentación propia.
 - No se modifican desde este workstream `src/session/*`, canon narrativo, `project/PLAN_PASADAS.md` ni `analysis/2026-09-11/plan-seguimiento.json`.
 - Contrato público de contactos de Relaciones: **resuelto e integrado**.
 
@@ -26,7 +28,17 @@ Estado PR: **DRAFT / software verde; T3.4 pendiente de evidencia en teléfono f�
 - `fromSave()` sigue siendo estricto.
 - Solo ante `CONTENT_CHANGED` se delega en la API pública `GameSession.migrateFromSave()`.
 - La presentación no reimplementa lineage, provenance, historial, RNG, seeds ni migraciones.
-- La base actual incorpora migración de contenido multigeneración fail-closed y preservación de fuentes post-B1a; ambos mecanismos son propiedad de T5.1 y se consumen sin duplicarlos.
+- La base actual incorpora migración de contenido multigeneración fail-closed, preservación de fuentes post-B1a y la ruta PRE → B1a → T5.10.
+
+## Oferta / contrato / autoridad de sesión
+
+La base actual integra el puente narrativo T5.1 oferta/contrato/sesión.
+
+- La UI no calcula ni muta términos de contrato.
+- Si `GameSession` convierte una oferta pendiente en escena narrativa, presentación recibe `screen: "decision"` y responde mediante el comando `choose`.
+- Si no existe bridge narrativo aplicable, recibe `screen: "offer"` y responde mediante el comando `offer`.
+- No se duplica `respondToOffer`, elegibilidad, bridge metadata ni autoridad contractual en web/PlayCanvas/Android.
+- El workflow dedicado `T5.1 offer session bridge` y las regresiones existentes pasan sobre la rama de presentación.
 
 ## Relaciones / T5.3
 
@@ -66,15 +78,17 @@ Se mantiene:
 - Storage Access Framework para importar/exportar;
 - versión instalada obtenida mediante `PackageManager`.
 
-## CI exacto del HEAD `25701443...`
+## CI exacto del árbol validado T5.10
 
 ### Repository integrity
 
-Run **#776** (`35126858075`): **SUCCESS**.
+Run **#816** (`35128214447`): **SUCCESS** sobre `16489907...`.
 
 Incluye:
 
-- `npm test` con T5.1 lineage multigeneración, registro post-B1a/source-policy, T5.2 lifecycle/deferred y T5.3 epistemic/transmission/contact contract;
+- `npm test` con T5.1 lineage multigeneración, registro post-B1a/source-policy, offer/session bridge y primer lote T5.10 23–26;
+- T5.2 lifecycle/deferred;
+- T5.3 epistemic/transmission/contact contract;
 - freeze/source sentinels;
 - determinismo y aislamiento RNG;
 - límites de edad y referencias de contenido;
@@ -85,24 +99,28 @@ Incluye:
 
 ### T5.1 choice eligibility
 
-Run **#142** (`35126858152`): **SUCCESS**.
+Run **#158** (`35128214461`): **SUCCESS**.
+
+### T5.1 offer/session bridge
+
+Run **#23** (`35128214465`): **SUCCESS**.
 
 ### Android presentation candidate
 
-Run **#61** (`35126858151`): **SUCCESS**.
+Run **#63** (`35128214450`): **SUCCESS** sobre el mismo árbol de código.
 
 Pasan regresión de presentación, paquete Android offline, compilación Java 17 / Gradle 8.9 / API 35, informe T3.3, verificación de huellas y publicación de artefactos.
 
-## APK candidato #61
+## APK candidato #63
 
 Versión `0.8.0`, versionCode `1`.
 
-- tamaño: **8.825.777 bytes**;
-- SHA-256 exacto del APK firmado: `73eb549833d1725dcf0f5caae07ecbe4f25bc49db0a44c9c9e29f4b1394c2c56`;
-- `payloadSha256`: `bb3218f91548d70486b591e3c76f0b3990f889264b61f93545b7ccad98261a8b`;
-- entradas incluidas en payload: **218**;
+- tamaño: **8.964.787 bytes**;
+- SHA-256 exacto del APK firmado: `12ecccc0897f27f9eb93c75adf59f71700dcc100b1c86a3d3483c5fa16303500`;
+- `payloadSha256`: `2611690e439968b8761833f5eb6dfd1357c31d870d8d1f1ba4ec6933039cd6eb`;
+- entradas incluidas en payload: **222**;
 - contenedor de firma excluido: `META-INF/CERT.RSA`;
-- digest del ZIP de artefacto GitHub: `sha256:535d21076405b795c11c82dc52a5676c68af0835a2efc88f767d70680a2a555d`.
+- digest del ZIP de artefacto GitHub: `sha256:02823196f9992b7b19c8ce26c5bebb5fc1ae9fc736092589ba9d88ca55f125b1`.
 
 El SHA exacto, tamaño, número de entradas y `payloadSha256` fueron recalculados independientemente tras descargar el artefacto y coinciden con `analysis/2026-09-15/T3.3-apk-build.json`.
 
@@ -129,12 +147,14 @@ El recolector:
 - escribe `analysis/2026-09-15/T3.4-physical-evidence.json`;
 - mantiene `t34Closed: false` y checks manuales a `false` hasta completar la prueba real.
 
-Para cerrar T3.4 faltan en hardware real: modo avión/offline, creación y avance, decisión, cierre/reanudación, Android Back, export guardada/cancelada, import válida, rechazo de JSON corrupto sin pérdida, recuperación de copia, safe areas/textos largos/scroll/selectores, runtime metadata y evidencias de esa misma ejecución.
+Para cerrar T3.4 faltan en hardware real: modo avión/offline, creación y avance, decisión, oferta/bridge cuando aparezca, cierre/reanudación, Android Back, export guardada/cancelada, import válida, rechazo de JSON corrupto sin pérdida, recuperación de copia, safe areas/textos largos/scroll/selectores, runtime metadata y evidencias de esa misma ejecución.
 
 ## Límites y estado de PR
 
 - Save QA #22: **resuelto**.
 - T5.1 Session/content migration + lineage/source evidence: **integrado y verde**.
+- T5.1 offer/session authority bridge: **integrado y verde**.
+- T5.10 primer lote canónico 23–26 + migración: **integrado y verde**.
 - T5.2 lifecycle/deferred/OR auditing: **integrado y verde**.
 - T5.3 contactos públicos conocidos: **integrado y verde**.
 - Web / PlayCanvas / Android software gates: **verdes**.
