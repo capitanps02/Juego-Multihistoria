@@ -73,7 +73,7 @@ test('T5 shared locker/2 resolver returns only a current-club active certified l
   assert.equal(resolveLockerSlot(state, 'captain'), null, 'inactive leader must fail closed');
 });
 
-test('T5 shared locker/3 relationship access is slot-bound, read-only and consumes zero RNG', () => {
+test('T5 shared locker/3 relationship access owns only its causal-fact subset and consumes zero RNG', () => {
   const state = state23();
   relation(state, 'NPC_PLR_10').affinity = 67;
   relation(state, 'NPC_PLR_10').trust = 71;
@@ -82,11 +82,12 @@ test('T5 shared locker/3 relationship access is slot-bound, read-only and consum
   assert.equal(lockerSlotAffinity(state, 'captain'), 67);
   assert.equal(lockerSlotRelationship(state, 'captain', 'trust'), 71);
   assert.equal(lockerSlotAffinity(state, 'star'), null);
-  assert.deepEqual(narrativeCausalFacts(state), {
-    clubWantsRenewal: narrativeCausalFacts(state).clubWantsRenewal,
-    lockerCaptainAffinity: 67,
-    lockerStarAffinity: null
-  });
+
+  const facts = narrativeCausalFacts(state);
+  assert.equal(typeof facts.clubWantsRenewal, 'boolean');
+  assert.equal(facts.lockerCaptainAffinity, 67);
+  assert.equal(facts.lockerStarAffinity, null);
+
   assert.equal(JSON.stringify(state), before, 'leadership reads must not mutate state or RNG');
 });
 
