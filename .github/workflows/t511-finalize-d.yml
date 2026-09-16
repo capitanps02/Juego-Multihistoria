@@ -30,24 +30,21 @@ jobs:
 
           migration = Path('src/session/content-migration.ts')
           body = migration.read_text()
-          eur = '''      {
-                  kind: "distinct_scene",
-                  legacyEventId: "EVT_23_EUR_001",
-                  canonicalEventId: "EVT_23_EUR_001",
-                  clearCanonicalSeen: true,
-                  clearCanonicalCooldown: true
-                }'''.replace('        ', '')
-          prs = eur + ''',
-              {
-                kind: "distinct_scene",
-                legacyEventId: "EVT_23_PRS_001",
-                canonicalEventId: "EVT_23_PRS_001",
-                clearCanonicalSeen: true,
-                clearCanonicalCooldown: true
-              }'''.replace('        ', '')
-          if eur not in body:
-              raise SystemExit('multiline EUR migration mapping not found')
-          migration.write_text(body.replace(eur, prs, 1))
+          needle = 'legacyEventId: "EVT_23_EUR_001"'
+          idx = body.find(needle)
+          if idx < 0:
+              raise SystemExit('EUR migration mapping id not found')
+          start = body.rfind('      {', 0, idx)
+          end_marker = '\n      }'
+          end = body.find(end_marker, idx)
+          if start < 0 or end < 0:
+              raise SystemExit('EUR migration mapping boundaries not found')
+          end += len(end_marker)
+          eur_block = body[start:end]
+          if 'canonicalEventId: "EVT_23_EUR_001"' not in eur_block:
+              raise SystemExit('EUR canonical mapping boundary mismatch')
+          prs_block = eur_block.replace('EVT_23_EUR_001', 'EVT_23_PRS_001')
+          migration.write_text(body[:end] + ',\n' + prs_block + body[end:])
 
           finalizer = Path('scripts/finalize-t511-d.mjs')
           script = finalizer.read_text()
