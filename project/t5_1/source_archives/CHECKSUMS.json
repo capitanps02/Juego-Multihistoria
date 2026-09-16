@@ -1,0 +1,53 @@
+{
+  "generated": "2026-09-16",
+  "purpose": "Byte-exact preservation evidence for the four large original T5.1 handoff artifacts.",
+  "compression": {
+    "format": "gzip",
+    "compresslevel": 9,
+    "mtime": 0,
+    "note": "Git blob SHA-1 is SHA1('blob ' + byte_length + NUL + gzip_bytes)."
+  },
+  "artifacts": [
+    {
+      "original": "T5_1_CANONICAL_IDENTITY_MANIFEST_388.json",
+      "archive": "T5_1_CANONICAL_IDENTITY_MANIFEST_388.full.json.gz",
+      "originalBytes": 139375,
+      "originalSha256": "d240cb6876609648be6eeb887d8c6a3a54107395ca4fcf1433e465e82839f2fe",
+      "archiveBytes": 18807,
+      "archiveSha256": "fb21ac280e948851162dad295fa9c0a631fb92dd1fc4cff2654e6c508c6114de",
+      "gitBlobSha1": "c0728cb8934084ed80b9c7c443a701388321d93b",
+      "verifiedAgainstGitHub": true
+    },
+    {
+      "original": "T5_1_CONDITIONAL_REVIEW_MATRIX.csv",
+      "archive": "T5_1_CONDITIONAL_REVIEW_MATRIX.csv.gz",
+      "originalBytes": 38971,
+      "originalSha256": "b7f38f822db14724a405de03b07a31704e3c8ca2871762691cb74e40e7ae32cd",
+      "archiveBytes": 13661,
+      "archiveSha256": "0c2ac37c14a6c72fcd5a875c2c86402b484dd3b8a32535ed577fa077a83fb912",
+      "gitBlobSha1": "7a328d9d4cd28ca07a0355df9396dd908e2aba12",
+      "verifiedAgainstGitHub": true
+    },
+    {
+      "original": "T5_1_LEGACY_ID_CROSSWALK_TEMPLATE.json",
+      "archive": "T5_1_LEGACY_ID_CROSSWALK_TEMPLATE.json.gz",
+      "originalBytes": 119536,
+      "originalSha256": "f1415b16eceb1d47a4b9c5a709ce091fba3936d2efe8d4a438a94c84aff4b68e",
+      "archiveBytes": 6080,
+      "archiveSha256": "cfa9cf3ee0248041f7bad30384c5223c818e0ab7fd248199b60c1c7d8736a231",
+      "gitBlobSha1": "8de453e7c6dc88a0411adfbe13eb5ae2f8df488e",
+      "verifiedAgainstGitHub": true
+    },
+    {
+      "original": "T5_1_SEMANTIC_MAP_26_RETIREMENT.md",
+      "archive": "T5_1_SEMANTIC_MAP_26_RETIREMENT.md.gz",
+      "originalBytes": 33152,
+      "originalSha256": "b9580ecbc9a6be90bf7bc3346a0febfab6b30e2a3dc78ad183cefb16d3be27f9",
+      "archiveBytes": 11932,
+      "archiveSha256": "ce4913afc967b39bd0aca68d2f36fbddbce5b42a6ada20988e06662857ce23c7",
+      "gitBlobSha1": "25523e75ded054a9dbb91938679c033f635ea9b3",
+      "verifiedAgainstGitHub": true
+    }
+  ],
+  "allFourVerified": true
+}
