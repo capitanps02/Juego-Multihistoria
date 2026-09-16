@@ -2,9 +2,9 @@
   "workstream": "T51_CANON_18_23",
   "generatedAt": "2026-09-16",
   "branch": "t51/canon-18-23",
-  "latestMainSha": "ddf46fed010521c5969bac26e29920945793f709",
-  "cleanRegroundBaseSha": "ddf46fed010521c5969bac26e29920945793f709",
-  "cleanRegroundCommit": "878f2d27e0c1779252187df45027a6ee5dc3d877",
+  "latestMainSha": "6cb81b63f03ce55776ca97075012cfaa22ac228d",
+  "cleanRegroundBaseSha": "6cb81b63f03ce55776ca97075012cfaa22ac228d",
+  "cleanRegroundCommit": "86ee71a8d15484c571e840c0cf877feeb97a65c5",
   "scope": {
     "owned": ["inicio", "18_20", "20_23"],
     "excluded": ["23_26"],
@@ -92,8 +92,9 @@
     "status": "integrated_and_hardened",
     "baseCommit": "14e55bb0e7f2c7582889c7b4ebbbccfd0b792345",
     "deferredGuardsObservedBy": "f36443969995e85fef89eff0bd1776f384f19e09",
-    "relevantSeedsInThisScope": ["SEED_AGENT_OMISSION", "SEED_BODY_PRECEDENT", "SEED_EXIT_STYLE_UDV", "SEED_COACH_PUBLIC"],
-    "semanticEffect": "infrastructure evidence only; it does not certify callbacks whose canonical trigger/function/consumer is missing or incorrect"
+    "canonicalSeedOriginIdentityCommit": "1d7e51ef821cbcb7b3bbe84ca8cac013ac3f8751",
+    "relevantSeedsInThisScope": ["SEED_AGENT_OMISSION", "SEED_BODY_PRECEDENT", "SEED_EXIT_STYLE_UDV", "SEED_COACH_PUBLIC", "SEED_FOREIGN_ADAPT", "SEED_AGENT_POWER"],
+    "semanticEffect": "infrastructure evidence only; it does not certify callbacks whose canonical trigger/function/consumer is missing or incorrect; B4 must preserve historical seed origin while removing retired IDs from future active origin metadata"
   },
   "repairPlan": {
     "artifact": "analysis/T5.1/canon-18-23-repair-plan.json",
@@ -106,17 +107,18 @@
     "conditionalManualCertification": 0,
     "conditionalVerifiedAfterCertification": 5,
     "conditionalEngineOnlyLegacy": 15,
+    "b4PrincipalHardDecouplings": 4,
     "runtimeAllowedInPr10": false
   },
   "openDependencies": [
     {"id":"CONTENT_BATCH_MIGRATION_ROUTES","status":"per_functional_batch","reason":"Every future EVENTS change must extend the exact migration lineage and classify semantic collisions explicitly."},
-    {"id":"ENGINE_ONLY_RUNTIME_COUPLINGS","status":"per_functional_batch","reason":"Migration preserves legacy history/pending truth, but seed-origin metadata and scheduler couplings need explicit owner-side cleanup before technical IDs leave the active catalog."},
+    {"id":"ENGINE_ONLY_RUNTIME_COUPLINGS","status":"per_functional_batch","reason":"Four principal legacy couplings require owner-side cleanup before technical IDs leave the active catalog: EVT_20_MATCH_001 and EVT_22_END_001 in scheduler budget exemptions; EVT_21_ABR_001 and EVT_21_AGT_002 in active seed-origin metadata."},
     {"id":"ACTIVE_CANONICAL_IMPLEMENTATION","status":"not_authorized_in_pr10","reason":"PR #10 remains audit-only; repaired/new scenes belong in separately authorized functional batches."}
   ],
   "resolvedDependencies": [
     {"id":"PRE_T51_CONTENT_IDENTITY_FREEZE","resolvedBy":"9773104440615611f059a4f45c69c25d280a26aa"},
     {"id":"COND_CANON_SOURCE","resolvedBy":"T5.1 canonical 388-ID manifest plus semantic review"},
-    {"id":"SEED_LIFECYCLE_INFRASTRUCTURE","resolvedBy":"14e55bb0e7f2c7582889c7b4ebbbccfd0b792345 + deferred guards f36443969995e85fef89eff0bd1776f384f19e09"},
+    {"id":"SEED_LIFECYCLE_INFRASTRUCTURE","resolvedBy":"14e55bb0e7f2c7582889c7b4ebbbccfd0b792345 + deferred guards f36443969995e85fef89eff0bd1776f384f19e09 + canonical origin identity 1d7e51ef821cbcb7b3bbe84ca8cac013ac3f8751"},
     {"id":"SESSION_CONTENT_MIGRATION","resolvedBy":"a4a4c8df98bb1a3e88d9a7e0a19b48571af99074 + multigeneration fe06a5c9d61632ea4491dc6df95788154884177a"},
     {"id":"CHOICE_ELIGIBILITY","resolvedBy":"76699f93e19e1ac9e17b42ccfaea011d92630fb6"},
     {"id":"EVENT_GATE_OR_OR_DERIVED_FACT","resolvedBy":"291e34bfd8bb7c529182a2664564c63ff33eee19"},
