@@ -53,7 +53,10 @@
     "test:android:t34": "node scripts/test-android-t34.mjs",
     "test:t51:offer-bridge": "npm run build && node scripts/generate-t51-offer-bridge-evidence.mjs --check && node --test scripts/test-t51-offer-bridge.mjs scripts/test-t51-offer-bridge-provenance.mjs",
     "test:t51:transition-priority": "npm run build && node --test scripts/test-t51-transition-priority.mjs",
-    "test:t51:renewal-intent": "npm run build && node --test scripts/test-t51-renewal-intent.mjs"
+    "test:t51:renewal-intent": "npm run build && node --test scripts/test-t51-renewal-intent.mjs",
+    "android:physical:evidence": "node scripts/collect-android-physical-evidence.mjs",
+    "test:presentation": "npm run build && node --test scripts/test-t46.mjs scripts/test-presentation-platform.mjs scripts/test-player-session-api.mjs",
+    "qa:presentation": "npm run test:presentation && npm run test:playcanvas && npm run test:android:offline"
   },
   "devDependencies": {
     "typescript": "5.8.3"

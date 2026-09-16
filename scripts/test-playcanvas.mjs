@@ -29,5 +29,8 @@ test('presentation exposes public context without leaking NPC agendas or hidden 
 });
 test('package is self-contained and requires no localhost or external image/font request',()=>{
   assert.ok(!source.includes('127.0.0.1'));assert.ok(!source.includes('localhost:'));assert.ok(source.includes('data:image/jpeg;base64,'));assert.ok(!source.includes('new Function('));
+  assert.ok(source.includes('createPlayerSessionApi'));
+  assert.ok(source.includes('GameSession:PlayerSession'));
   const manifest=JSON.parse(fs.readFileSync('playcanvas/manifest.json'));assert.equal(manifest.targetScene,2593315);assert.equal(manifest.bundleBytes,Buffer.byteLength(source));
+  assert.ok(manifest.inputs['web/player-session-api.js']);
 });
