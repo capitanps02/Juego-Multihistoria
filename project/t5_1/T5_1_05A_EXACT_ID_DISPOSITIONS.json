@@ -1,0 +1,63 @@
+{
+  "generated": "2026-09-16",
+  "scope": "T5.1 Batch 05A exact-ID conditional semantic foundation",
+  "summary": {
+    "canonical_conditionals": 134,
+    "exact_id_present": 47,
+    "automatic_canonical_verified_full": 0,
+    "rule": "Exact ID proves identity only. Runtime canonStatus is not an audit certificate."
+  },
+  "dispositions": [
+    {"phase":"18_20","id":"CEVT_18_EARLY_01","status":"strong_match_requires_final_certification","action":"verify save/resume and outcome semantics; upstream EARLY_BREAKOUT provenance reviewed"},
+    {"phase":"18_20","id":"CEVT_18_NODEBUT_01","status":"strong_match_requires_final_certification","action":"verify save/resume; JAN_NO_DEBUT provenance matches age18 January no-debut low-role path"},
+    {"phase":"18_20","id":"CEVT_18_BRUNO_01","status":"function_gap","action":"SEED_BRUNO_FAVOR must actually modify farewell/future recommendation; seedsRead metadata alone is insufficient"},
+    {"phase":"18_20","id":"CEVT_18_VELA_01","status":"strong_match_requires_final_certification","action":"verify escalation provenance and save/resume; explicit seed transitions and relationship effects exist"},
+    {"phase":"18_20","id":"CEVT_18_CCH_01","status":"function_gap","action":"SEED_COACH_PUBLIC must alter reception through real logic, not only seedsRead metadata"},
+    {"phase":"18_20","id":"CEVT_18_RELEG_01","status":"function_gap","action":"canonical route strength must depend on contract/route state explicitly"},
+    {"phase":"18_20","id":"CEVT_18_PLAYOFF_01","status":"function_gap","action":"prove or implement canonical retention-vs-market causal effect"},
+    {"phase":"18_20","id":"CEVT_19_BIG_01","status":"strong_match_requires_final_certification","action":"verify save/resume; age19 + market heat + big-club-interest provenance reviewed"},
+    {"phase":"18_20","id":"CEVT_19_AGENT_01","status":"function_gap","action":"canonical hidden information quality must not be reduced to choice-driven interpretation"},
+    {"phase":"18_20","id":"CEVT_19_INJ_01","status":"causal_proof_partial","action":"LONG_INJURY is generated from high risk plus RNG, but treatment/history contribution to the complication still needs proof"},
+    {"phase":"18_20","id":"CEVT_19_ABROAD_01","status":"strong_match_requires_final_certification","action":"verify save/resume; FOREIGN_DEV_INTEREST provenance includes market plus agent/first-agent contact"},
+    {"phase":"18_20","id":"CEVT_19_SOCIAL_01","status":"condition_mismatch","action":"repair canonical OR route: NIGHT_PHOTO OR high exposure + recent conflict; runtime currently requires photo AND media heat and omits recent conflict"},
+    {"phase":"18_20","id":"CEVT_19_NANO_01","status":"strong_match_requires_final_certification","action":"verify save/resume; unsolicited-help flag is produced by prior MOVE_CONTACT outcome and seed path"},
+    {"phase":"18_20","id":"CEVT_19_RETURN_01","status":"function_gap","action":"implement/prove hierarchy and relationship recalculation; current seedsRead is metadata only"},
+
+    {"phase":"20_23","id":"CEVT_21_ABR_01","status":"generic_scene_fail","action":"rewrite/certify scene-specific body intel choices and function in Batch 05B"},
+    {"phase":"20_23","id":"CEVT_21_MEDIA_01","status":"generic_scene_fail","action":"rewrite/certify scene-specific body intel choices and function in Batch 05B"},
+    {"phase":"20_23","id":"CEVT_22_FREE_01","status":"generic_scene_fail","action":"rewrite/certify scene-specific body intel choices and function in Batch 05B"},
+
+    {"phase":"23_26","id":"CEVT_23_RIVAS_02","status":"generic_scene_fail","action":"semantic rewrite/certification required"},
+    {"phase":"23_26","id":"CEVT_23_MENA_02","status":"generic_scene_fail","action":"semantic rewrite/certification required"},
+    {"phase":"23_26","id":"CEVT_23_VELA_02","status":"generic_scene_fail","action":"semantic rewrite/certification required"},
+    {"phase":"23_26","id":"CEVT_23_BRUNO_03","status":"generic_scene_fail","action":"semantic rewrite/certification required"},
+    {"phase":"23_26","id":"CEVT_23_ADR_03","status":"generic_scene_fail","action":"semantic rewrite/certification required"},
+    {"phase":"23_26","id":"CEVT_23_NANO_02","status":"generic_scene_fail","action":"semantic rewrite/certification required"},
+    {"phase":"23_26","id":"CEVT_23_CLARA_03","status":"generic_scene_fail","action":"semantic rewrite/certification required"},
+    {"phase":"23_26","id":"CEVT_23_AGENT_03","status":"generic_scene_fail","action":"semantic rewrite/certification required"},
+    {"phase":"23_26","id":"CEVT_23_MED_02","status":"generic_scene_fail","action":"semantic rewrite/certification required"},
+    {"phase":"23_26","id":"CEVT_23_UDV_02","status":"generic_scene_fail","action":"semantic rewrite/certification required"},
+    {"phase":"23_26","id":"CEVT_24_CHAT_01","status":"generic_scene_fail","action":"semantic rewrite/certification required"},
+    {"phase":"23_26","id":"CEVT_24_TOURN_01","status":"generic_scene_fail","action":"semantic rewrite/certification required"},
+    {"phase":"23_26","id":"CEVT_24_TOURN_02","status":"generic_scene_fail","action":"semantic rewrite/certification required"},
+    {"phase":"23_26","id":"CEVT_24_OWNER_02","status":"generic_scene_fail","action":"semantic rewrite/certification required"},
+    {"phase":"23_26","id":"CEVT_24_SPONSOR_02","status":"generic_scene_fail","action":"semantic rewrite/certification required"},
+    {"phase":"23_26","id":"CEVT_24_FAM_02","status":"generic_scene_fail","action":"semantic rewrite/certification required"},
+    {"phase":"23_26","id":"CEVT_25_STAR_01","status":"generic_scene_fail","action":"semantic rewrite/certification required"},
+    {"phase":"23_26","id":"CEVT_25_AGENT_04","status":"generic_scene_fail","action":"semantic rewrite/certification required"},
+    {"phase":"23_26","id":"CEVT_25_BODY_02","status":"generic_scene_fail","action":"semantic rewrite/certification required"},
+    {"phase":"23_26","id":"CEVT_25_SHOCK_02","status":"generic_scene_fail","action":"semantic rewrite/certification required"},
+
+    {"phase":"26_30","id":"CEVT_29_NAT_02","status":"runtime_verified_but_generic_fail","action":"do not trust runtime canonStatus=verified; semantic rewrite/certification required"},
+    {"phase":"26_30","id":"CEVT_29_HOME_03","status":"runtime_verified_but_generic_fail","action":"do not trust runtime canonStatus=verified; semantic rewrite/certification required"},
+    {"phase":"26_30","id":"CEVT_29_BODY_04","status":"runtime_verified_but_generic_fail","action":"do not trust runtime canonStatus=verified; semantic rewrite/certification required"},
+    {"phase":"26_30","id":"CEVT_29_RECORD_02","status":"runtime_verified_but_generic_fail","action":"do not trust runtime canonStatus=verified; semantic rewrite/certification required"},
+    {"phase":"26_30","id":"CEVT_29_PROJECT_02","status":"runtime_verified_but_generic_fail","action":"do not trust runtime canonStatus=verified; semantic rewrite/certification required"},
+
+    {"phase":"34_plus","id":"CEVT_34_MAJOR_COMEBACK","status":"generic_scene_fail","action":"rewrite against canonical severe-injury successful-rehab comeback scene"},
+    {"phase":"34_plus","id":"CEVT_36_NO_MEDICAL_CLEARANCE","status":"generic_scene_fail","action":"rewrite against external medical-failure market scene"},
+    {"phase":"34_plus","id":"CEVT_38_OFFER_AFTER_RETIREMENT_ANNOUNCED","status":"partial_customization_not_full","action":"custom choices exist, but body/intel/function still need canonical certification"},
+    {"phase":"34_plus","id":"CEVT_RET_NO_LAST_MATCH","status":"condition_mismatch_despite_verified","action":"canonical trigger requires retirement plus injury/suspension; runtime uses announced plus daysInStatus>=60"},
+    {"phase":"34_plus","id":"CEVT_RET_STORYBOOK_LAST_GOAL","status":"outcome_semantics_mismatch_despite_verified","action":"canonical storybook goal may occur but must never be forced; runtime TAKE directly sets STORYBOOK_LAST_GOAL"}
+  ]
+}
