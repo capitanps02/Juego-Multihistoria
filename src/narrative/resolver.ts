@@ -154,30 +154,11 @@ function outcomeWeight(state: GameState, outcome: OutcomeDefinition): { weight: 
   return { weight: Math.max(0, weight), modifiers: reasons };
 }
 
-function findSameDayResolution(state: GameState, event: EventDefinition, choiceId: string) {
-  for (let i = state.history.length - 1; i >= 0; i -= 1) {
-    const entry = state.history[i];
-    if (entry.date !== state.date) break;
-    if (entry.eventId === event.id && entry.choiceId === choiceId) return entry;
-  }
-  return undefined;
-}
-
 function resolveChoiceCore(next: GameState, event: EventDefinition, choiceId: string, qa = false): ResolutionResult {
   const previousClub=next.club;
   const previousRetirementStatus = next.retirement?.status ?? "playing";
   const choice: ChoiceDefinition | undefined = event.choices.find(c => c.id === choiceId);
   if (!choice) throw new Error(`Unknown choice ${choiceId} for ${event.id}`);
-
-  // UI double-submit / recovery replay: the same event+choice on the same game day is one transaction.
-  const replay = findSameDayResolution(next, event, choiceId);
-  if (replay) {
-    const priorOutcome = event.outcomes.find(outcome => outcome.id === replay.outcomeId);
-    return {
-      state: next, eventId: event.id, choiceId, outcomeId: replay.outcomeId,
-      messages: priorOutcome?.messages ?? [], presentation: event.presentation
-    };
-  }
 
   for (const e of choice.immediateEffects ?? []) applyEffect(next, e);
 
