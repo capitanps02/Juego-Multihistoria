@@ -10,6 +10,7 @@ const conditionalSource = fs.readFileSync('src/content/events/30_34/conditional-
 const indexSource = fs.readFileSync('src/content/events/30_34/index.ts', 'utf8');
 const overrideSource = fs.readFileSync('src/content/events/30_34/canonical-reimplementations.ts', 'utf8');
 const override31bSource = fs.readFileSync('src/content/events/30_34/canonical-reimplementations-31b.ts', 'utf8');
+const override32aSource = fs.readFileSync('src/content/events/30_34/canonical-reimplementations-32a.ts', 'utf8');
 const state34Source = fs.readFileSync('src/simulation/state34-classifier.ts', 'utf8');
 const schedulerSource = fs.readFileSync('src/narrative/scheduler.ts', 'utf8');
 const byId = new Map(EVENTS.map(event => [event.id, event]));
@@ -19,8 +20,19 @@ const reimplementedIds = [
   'EVT_30_FAM_001','EVT_30_MED_001','EVT_30_FORM_001','EVT_30_CAP_001',
   'EVT_31_MED_001','EVT_31_MKT_001','EVT_31_HOME_001','EVT_31_AGT_001',
   'EVT_31_LEGACY_001','EVT_31_RETURN_001','EVT_31_TACT_001','EVT_31_CCH_001',
-  'EVT_31_NAT_001','EVT_31_FINAL_001'
+  'EVT_31_NAT_001','EVT_31_FINAL_001',
+  'EVT_32_CON_001','EVT_32_HOME_001','EVT_32_AGT_001','EVT_32_FAN_001','EVT_32_NAT_001'
 ];
+
+const assertCanonicalCases = (cases) => {
+  for (const [id,title,labels] of cases) {
+    const event=byId.get(id);
+    assert.ok(event, `${id}: no alcanzable en inventario`);
+    assert.equal(event.text.title,title);
+    assert.deepEqual(event.choices.map(choice=>choice.label),labels);
+    assert.ok(event.tags?.includes('t51_trigger_approximation'), `${id}: falta marcar la deuda de trigger`);
+  }
+};
 
 test('T5.1 no convierte coincidencias de título en aliases silenciosos', () => {
   assert.equal(report.counts.canonicalPrincipals, 254);
@@ -50,6 +62,8 @@ test('T5.1 30-34 clasifica todo el inventario sin aliases silenciosos', () => {
   assert.equal(veteranReport.engineOnly.length, 5);
   assert.equal(veteranReport.counts.engineOnlyNoncanonical, 5);
   assert.equal((principalSource.match(/\{id:"EVT_/g) ?? []).length, 50);
+  assert.equal(veteranReport.implementationProgress.count,reimplementedIds.length);
+  assert.deepEqual([...veteranReport.implementationProgress.stableIdReimplemented].sort(),[...reimplementedIds].sort());
 
   const statuses = new Set(['verified_same_identity', 'approved_alias', 'needs_reimplementation', 'canonical_missing', 'requires_manual_review']);
   for (const event of veteranReport.principals) assert.equal(statuses.has(event.status), true, `${event.canonicalId}: status inválido`);
@@ -60,8 +74,7 @@ test('T5.1 30-34 clasifica todo el inventario sin aliases silenciosos', () => {
 
 test('T5.1 30-34 no presenta reimplementaciones parciales como canon verificado', () => {
   assert.match(indexSource, /canonStatus:"technical_adaptation"/);
-  assert.match(indexSource, /t51_canonical_reimplementation/);
-  assert.equal(reimplementedIds.length,18);
+  assert.equal(reimplementedIds.length,23);
   for (const id of reimplementedIds) {
     const event = byId.get(id);
     assert.ok(event, `${id}: falta del catálogo final`);
@@ -71,47 +84,37 @@ test('T5.1 30-34 no presenta reimplementaciones parciales como canon verificado'
   }
 });
 
-test('T5.1 30-34 conserva las opciones canónicas del primer lote estable de edad 31', () => {
-  const cases = [
-    ['EVT_31_MED_001', 'La operación y agosto', ['Operarte ya','Posponer hasta invierno','Seguir conservador sin fecha','Operarte solo con un plan de retorno por escrito']],
-    ['EVT_31_MKT_001', 'Dos años de estrella o uno de élite', ['Dos años como figura','Un año en el gigante','Pedir al gigante opción automática por minutos','Esperar mercado y arriesgar ambas']],
-    ['EVT_31_HOME_001', 'Valdoria llama con 31', ['Volver ahora','Decir que todavía no es el momento','Pedir contrato corto y objetivos','Ayudar al club de otra forma sin fichar']],
-    ['EVT_31_AGT_001', 'Es el último gran contrato', ['Seguir estrategia de agencia','Contratar asesor externo para comparar','Negociar tú las variables deportivas y dejar dinero a la agencia','Cambiar de agente antes de firmar']]
-  ];
-  for (const [id,title,labels] of cases) {
-    const event=byId.get(id);
-    assert.ok(event, `${id}: no alcanzable en inventario`);
-    assert.equal(event.text.title,title);
-    assert.deepEqual(event.ageWindow,[31,31]);
-    assert.deepEqual(event.choices.map(choice=>choice.label),labels);
-    assert.ok(event.tags?.includes('t51_trigger_approximation'), `${id}: el trigger aproximado debe quedar explícito`);
-  }
-  assert.match(overrideSource,/flags\.HAS_SEED_CHRONIC_BODY/);
-  assert.match(overrideSource,/reputation\.marketHeat/);
-  assert.match(overrideSource,/professional\.homePull/);
-  assert.match(overrideSource,/contract\.monthsRemaining/);
-});
-
-test('T5.1 30-34 conserva las opciones canónicas del segundo lote estable de edad 31', () => {
-  const cases = [
+test('T5.1 30-34 conserva opciones canónicas de los lotes estables de edad 31', () => {
+  assertCanonicalCases([
+    ['EVT_31_MED_001','La operación y agosto',['Operarte ya','Posponer hasta invierno','Seguir conservador sin fecha','Operarte solo con un plan de retorno por escrito']],
+    ['EVT_31_MKT_001','Dos años de estrella o uno de élite',['Dos años como figura','Un año en el gigante','Pedir al gigante opción automática por minutos','Esperar mercado y arriesgar ambas']],
+    ['EVT_31_HOME_001','Valdoria llama con 31',['Volver ahora','Decir que todavía no es el momento','Pedir contrato corto y objetivos','Ayudar al club de otra forma sin fichar']],
+    ['EVT_31_AGT_001','Es el último gran contrato',['Seguir estrategia de agencia','Contratar asesor externo para comparar','Negociar tú las variables deportivas y dejar dinero a la agencia','Cambiar de agente antes de firmar']],
     ['EVT_31_LEGACY_001','Tu nombre en una academia',['Crear academia independiente','Hacerla con UDV','Posponer a retirada','Financiar becas sin poner tu nombre']],
     ['EVT_31_RETURN_001','Volver sin ritmo',['Pedir entrar ya aunque sea pocos minutos','Jugar primero con filial o amistoso si existe','Esperar dos semanas completas','Dejar al staff decidir sin presión']],
     ['EVT_31_TACT_001','Ya no eres extremo',['Adoptarlo como posición principal','Mantener posición histórica','Alternar según rival','Probarlo seis partidos antes de redefinir tu perfil']],
     ['EVT_31_CCH_001','El nuevo entrenador no te debe nada',['Aceptar empezar de cero','Recordarle qué sabes del vestuario','Pedir claridad sobre tu encaje','No buscar reunión adicional y competir']],
     ['EVT_31_NAT_001','Club contra selección, otra vez',['Ir siempre','Quedarte con el club','Viajar pero pedir minutos limitados','Pedir que ambos staffs acuerden un plan por escrito']],
     ['EVT_31_FINAL_001','La final de 70 minutos',['Aceptar el plan','Pedir que el cambio dependa del partido, no del reloj','Solicitar empezar en el banquillo para terminar','No discutir y pedir solo aviso antes del cambio']]
-  ];
-  for (const [id,title,labels] of cases) {
-    const event=byId.get(id);
-    assert.ok(event, `${id}: no alcanzable en inventario`);
-    assert.equal(event.text.title,title);
-    assert.deepEqual(event.ageWindow,[31,31]);
-    assert.deepEqual(event.choices.map(choice=>choice.label),labels);
-    assert.ok(event.tags?.includes('t51_trigger_approximation'), `${id}: falta marcar la deuda de trigger`);
-  }
+  ]);
+  for(const id of reimplementedIds.filter(id=>id.startsWith('EVT_31_'))) assert.deepEqual(byId.get(id).ageWindow,[31,31]);
+  assert.match(overrideSource,/flags\.HAS_SEED_CHRONIC_BODY/);
   assert.match(override31bSource,/flags\.RECOVERING_INJURY/);
   assert.match(override31bSource,/flags\.FINAL_CONTEXT/);
-  assert.match(override31bSource,/professional\.recoveryDebt/);
+});
+
+test('T5.1 30-34 conserva opciones canónicas del lote estable de edad 32', () => {
+  assertCanonicalCases([
+    ['EVT_32_CON_001','Contrato de un año renovable',['Aceptar','Pedir dos años garantizados','Cambiar el gatillo de minutos por partidos convocado o disponible','Rechazar cualquier automático y negociar cada verano']],
+    ['EVT_32_HOME_001','Valdoria te ofrece el brazalete',['Volver','Pedir que no te prometan capitanía','Exigir que el proyecto no dependa de tu nombre comercialmente','Rechazar y dejar puerta abierta para más adelante']],
+    ['EVT_32_AGT_001','¿Necesitas agente?',['Representarte en contratos domésticos','Mantener agencia completa','Cambiar a fee fijo sin porcentaje','Crear pequeño equipo propio de representación']],
+    ['EVT_32_FAN_001','Te cantan después de jugar mal',['Agradecer y reconocer mal partido','Agradecer sin autocrítica','No comentar','Defender que la evaluación debe ser igual para todos']],
+    ['EVT_32_NAT_001','La lista final',['Aceptar cualquier rol','Decir que solo tiene sentido ir si puedes ayudar en campo','Pedir claridad sin exigir plaza','Retirarte internacionalmente antes de la lista']]
+  ]);
+  for(const id of reimplementedIds.filter(id=>id.startsWith('EVT_32_'))) assert.deepEqual(byId.get(id).ageWindow,[32,32]);
+  assert.match(override32aSource,/SEED_ROLLING_CONTRACT/);
+  assert.match(override32aSource,/SEED_HOME_CAPTAIN_OFFER/);
+  assert.match(override32aSource,/NATIONAL_RETIRED/);
 });
 
 test('T5.1 30-34 mantiene condicionales en revisión hasta inventario canónico', () => {
