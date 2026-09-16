@@ -51,6 +51,10 @@ function offerSignature(offer) {
   return fingerprint({ reason: offer.reason, before: offer.before, terms: offer.terms });
 }
 
+function negotiationSignature(offer) {
+  return fingerprint({ reason: offer.reason, before: offer.before });
+}
+
 function dayNumber(iso) {
   return Math.floor(Date.parse(`${iso}T00:00:00Z`) / 86400000);
 }
@@ -64,6 +68,36 @@ function seasonFor(date) {
 
 function increment(map, key, amount = 1) {
   map[key] = (map[key] ?? 0) + amount;
+}
+
+function summarizeGroups(rows, keyOf) {
+  const groups = new Map();
+  for (const row of rows) {
+    const key = keyOf(row);
+    const group = groups.get(key) ?? [];
+    group.push(row);
+    groups.set(key, group);
+  }
+  return [...groups.entries()]
+    .filter(([, group]) => group.length > 1)
+    .map(([key, group]) => {
+      const gaps = [];
+      for (let i = 1; i < group.length; i++) gaps.push(dayNumber(group[i].date) - dayNumber(group[i - 1].date));
+      return {
+        key,
+        count: group.length,
+        reason: group[0].reason,
+        beforeMonths: group[0].before?.months ?? group[0].beforeMonths ?? null,
+        firstDate: group[0].date,
+        lastDate: group.at(-1).date,
+        ages: [...new Set(group.map(row => row.age))],
+        minGapDays: gaps.length ? Math.min(...gaps) : null,
+        maxGapDays: gaps.length ? Math.max(...gaps) : null,
+        withinWeekRetries: gaps.filter(gap => gap >= 1 && gap <= 7).length,
+        offerIds: group.map(row => row.id)
+      };
+    })
+    .sort((a, b) => b.count - a.count);
 }
 
 function run(seed = 512000, maxAge = 55) {
@@ -87,6 +121,7 @@ function run(seed = 512000, maxAge = 55) {
       season: seasonFor(state.date),
       reason: offer.reason,
       signature: offerSignature(offer),
+      negotiationSignature: negotiationSignature(offer),
       beforeFingerprint: fingerprint(offer.before),
       termsFingerprint: fingerprint(offer.terms),
       before: structuredClone(offer.before),
@@ -111,7 +146,9 @@ function run(seed = 512000, maxAge = 55) {
         action: decision.action,
         accepted: decision.accepted,
         signature: offerSignature(offer),
+        negotiationSignature: negotiationSignature(offer),
         beforeFingerprint: fingerprint(offer.before),
+        beforeMonths: offer.before.months,
         currentTermsMatchedBefore: fingerprint(currentBefore) === fingerprint(offer.before)
       });
     }
@@ -140,44 +177,38 @@ function run(seed = 512000, maxAge = 55) {
   const decisionsBySeason = {};
   const decisionsByReason = {};
   const creationsByCheckpoint = {};
+  const zeroMonthRenewalsByAge = {};
   for (const row of decisions) {
     increment(decisionsByAge, String(row.age));
     increment(decisionsBySeason, row.season);
     increment(decisionsByReason, row.reason);
+    if (row.reason === 'Renovación de contrato' && row.beforeMonths === 0) increment(zeroMonthRenewalsByAge, String(row.age));
   }
   for (const row of creations) increment(creationsByCheckpoint, row.checkpoint);
 
-  const bySignature = new Map();
-  for (const row of creations) {
-    const group = bySignature.get(row.signature) ?? [];
-    group.push(row);
-    bySignature.set(row.signature, group);
-  }
-  const repeatedSignatureGroups = [...bySignature.entries()]
-    .filter(([, rows]) => rows.length > 1)
-    .map(([signature, rows]) => {
-      const gaps = [];
-      for (let i = 1; i < rows.length; i++) gaps.push(dayNumber(rows[i].date) - dayNumber(rows[i - 1].date));
-      return {
-        signature,
-        count: rows.length,
-        reason: rows[0].reason,
-        firstDate: rows[0].date,
-        lastDate: rows.at(-1).date,
-        ages: [...new Set(rows.map(row => row.age))],
-        minGapDays: gaps.length ? Math.min(...gaps) : null,
-        maxGapDays: gaps.length ? Math.max(...gaps) : null,
-        consecutiveDayRecreations: gaps.filter(gap => gap === 1).length,
-        withinWeekRecreations: gaps.filter(gap => gap >= 1 && gap <= 7).length,
-        offerIds: rows.map(row => row.id)
-      };
-    })
-    .sort((a, b) => b.count - a.count);
-
+  const repeatedSignatureGroups = summarizeGroups(creations, row => row.signature);
+  const repeatedNegotiationGroups = summarizeGroups(creations, row => row.negotiationSignature);
   const exactRecreationCount = repeatedSignatureGroups.reduce((sum, row) => sum + row.count - 1, 0);
+  const negotiationRetryCount = repeatedNegotiationGroups.reduce((sum, row) => sum + row.count - 1, 0);
   const renewalDecisions = decisions.filter(row => row.reason === 'Renovación de contrato');
   const uniqueOfferIds = new Set(decisions.map(row => row.id));
   const duplicateDecisionIds = decisions.length - uniqueOfferIds.size;
+
+  let consecutiveRenewalRetries = 0;
+  let sameBeforeConsecutiveRenewalRetries = 0;
+  const renewalGaps = [];
+  for (let i = 1; i < renewalDecisions.length; i++) {
+    const previous = renewalDecisions[i - 1];
+    const current = renewalDecisions[i];
+    const gap = dayNumber(current.date) - dayNumber(previous.date);
+    renewalGaps.push(gap);
+    if (gap >= 1 && gap <= 7) consecutiveRenewalRetries += 1;
+    if (gap >= 1 && gap <= 7 && current.beforeFingerprint === previous.beforeFingerprint) {
+      sameBeforeConsecutiveRenewalRetries += 1;
+    }
+  }
+
+  const zeroMonthRenewals = renewalDecisions.filter(row => row.beforeMonths === 0).length;
 
   return {
     gate: 'T5-market-cadence-diagnostic',
@@ -200,16 +231,45 @@ function run(seed = 512000, maxAge = 55) {
       uniqueOfferIds: uniqueOfferIds.size,
       duplicateDecisionIds,
       renewalDecisions: renewalDecisions.length,
+      zeroMonthRenewals,
       exactRecreationCount,
+      negotiationRetryCount,
       repeatedSignatureGroups: repeatedSignatureGroups.length,
+      repeatedNegotiationGroups: repeatedNegotiationGroups.length,
       maxExactRepetitions: repeatedSignatureGroups[0]?.count ?? 1,
+      maxNegotiationStateRepetitions: repeatedNegotiationGroups[0]?.count ?? 1,
+      renewalRetriesWithin7Days: consecutiveRenewalRetries,
+      sameBeforeRenewalRetriesWithin7Days: sameBeforeConsecutiveRenewalRetries,
+      minRenewalGapDays: renewalGaps.length ? Math.min(...renewalGaps) : null,
+      maxRenewalGapDays: renewalGaps.length ? Math.max(...renewalGaps) : null,
       allResponsesMatchedOfferBeforeTerms: decisions.every(row => row.currentTermsMatchedBefore)
     },
     decisionsByAge,
     decisionsBySeason,
     decisionsByReason,
+    zeroMonthRenewalsByAge,
     creationsByCheckpoint,
-    topRepeatedSignatures: repeatedSignatureGroups.slice(0, 12),
+    topRepeatedNegotiationStates: repeatedNegotiationGroups.slice(0, 12).map(row => ({
+      count: row.count,
+      reason: row.reason,
+      beforeMonths: row.beforeMonths,
+      firstDate: row.firstDate,
+      lastDate: row.lastDate,
+      ages: row.ages,
+      minGapDays: row.minGapDays,
+      maxGapDays: row.maxGapDays,
+      withinWeekRetries: row.withinWeekRetries,
+      offerIds: row.offerIds.slice(0, 20)
+    })),
+    topRepeatedExactOffers: repeatedSignatureGroups.slice(0, 5).map(row => ({
+      count: row.count,
+      reason: row.reason,
+      firstDate: row.firstDate,
+      lastDate: row.lastDate,
+      ages: row.ages,
+      minGapDays: row.minGapDays,
+      maxGapDays: row.maxGapDays
+    })),
     firstDecisions: decisions.slice(0, 15),
     lastDecisions: decisions.slice(-15),
     trace: { creations, decisions }
