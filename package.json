@@ -37,7 +37,7 @@
     "test:t46": "npm run build && node --test scripts/test-t46.mjs",
     "test:t47": "npm run build && node --test scripts/test-t47.mjs",
     "audit:t51": "npm run build && node scripts/audit-t51.mjs",
-    "test:t51": "npm run audit:t51 && node --test scripts/test-t51.mjs scripts/test-t51-b1a-intel.mjs",
+    "test:t51": "npm run audit:t51 && node --test scripts/test-t51.mjs scripts/test-t51-b1a-intel.mjs scripts/test-t51-30-34-trigger.mjs scripts/test-t51-30-34-readiness.mjs scripts/test-t51-30-34-migration-handoff.mjs",
     "test:t51:migration": "npm run build && node scripts/generate-t51-legacy-registry.mjs --check && node scripts/check-t51-content-migration-route.mjs && node --test scripts/test-t51-content-migration.mjs scripts/test-t51-content-lineage.mjs scripts/test-t51-freeze-transition.mjs",
     "test:t51:shared": "npm run build && node --test scripts/test-t51-shared-contracts.mjs scripts/test-t51-event-gates.mjs",
     "audit:t52": "npm run build && node scripts/audit-t52.mjs && node scripts/audit-t52-handoff.mjs && node scripts/audit-t52-deferred.mjs",
