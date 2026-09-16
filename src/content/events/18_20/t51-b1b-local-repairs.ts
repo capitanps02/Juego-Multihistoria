@@ -1,4 +1,4 @@
-import type { EventDefinition } from "../../../core/types.js";
+import type { Condition, EventDefinition } from "../../../core/types.js";
 import type { EventWithGateAlternatives } from "../../../narrative/event-gates.js";
 
 /**
@@ -25,7 +25,7 @@ const REPAIR_IDS = ["EVT_18_PRS_002", "EVT_19_SUM_001"] as const;
 export function applyT51B1bLocalRepairs(events: EventDefinition[]): EventDefinition[] {
   const found = new Set<string>();
 
-  const repaired = events.map(event => {
+  const repaired: EventDefinition[] = events.map(event => {
     if (event.id === "EVT_18_PRS_002") {
       found.add(event.id);
       const gateAlternatives: NonNullable<EventWithGateAlternatives["gateAlternatives"]> = [
@@ -44,12 +44,10 @@ export function applyT51B1bLocalRepairs(events: EventDefinition[]): EventDefinit
 
     if (event.id === "EVT_19_SUM_001") {
       found.add(event.id);
+      const noAcuteInjury: Condition = { path: "body.acuteInjury", op: "neq", value: true };
       return {
         ...event,
-        gates: [
-          ...event.gates,
-          { path: "body.acuteInjury", op: "neq", value: true }
-        ]
+        gates: [...event.gates, noAcuteInjury]
       };
     }
 
