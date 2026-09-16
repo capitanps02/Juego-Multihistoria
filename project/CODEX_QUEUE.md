@@ -1,211 +1,137 @@
 # Codex execution queue
 
-This file is maintained by ChatGPT as the ordered handoff queue for implementation tasks.
+Maintained by ChatGPT coordinator. Operational truth is current GitHub code + exact-head CI.
 
-Codex must not be launched on two tasks that mutate the same subsystem unless their dependency relationship has been resolved first.
+`ejecuta Codex` launches **only the first READY item** unless Pedro explicitly names another READY item. Never launch DRAFT/BLOCKED items and never run overlapping write sets in parallel.
+
+## Current context
+
+The former PR #3/#7/#5 implementation queue is obsolete: those PRs were archived/superseded by the integrated canonical audits, current QA and the explicit content-migration critical path. Do not execute those historical tasks.
+
+Coordinator reconciliation state:
+- 388 canonical events = 254 principal + 134 conditional;
+- 174/174 runtime-only legacy IDs have final disposition;
+- all 174 = `retire_technical_keep_history_only`;
+- 0 approved direct same-scene ID migrations;
+- active catalog rewrites remain blocked until supported content/session migration exists.
 
 ## Current executable queue
 
-### 1. READY — PR #3 — T5.1 Batch 01 · ages 20–23
+### 1. READY — T5-MIG-01 · supported contentIdentity/session migration
 
-Branch: `task/t5.1-batch-01`
+PR: #30  
+Branch: `integration/content-migration-t51-v2`  
+Implementation prompt: `project/workstreams/T51_CONTENT_MIGRATION_CODEX_PROMPT.md`  
+Contract: `project/workstreams/T51_CONTENT_MIGRATION.md`
 
 Scope:
-- implement 6 missing canonical principal events in `20_23`;
-- reconcile 6 technical-only events;
-- repair 22→23 transition responsibility;
-- save/contentIdentity strategy and targeted tests.
+- implement an explicit migration registry from frozen pre-T5.1 content identity;
+- preserve historical IDs/journal/receipts/RNG/seeds/NPC/market/retirement facts;
+- preserve pending legacy scene definition/choices through compatibility-only frozen definitions;
+- keep compatibility definitions outside active scheduler;
+- reject unknown identities;
+- make migration deterministic/idempotent and consume zero RNG/scheduling;
+- add dedicated migration tests and run T5 save/freeze/integration/determinism gates.
 
-Dependencies: none beyond `AGENTS.md` / workflow branch.
+Dependencies satisfied for starting implementation:
+- frozen pre-T5.1 catalog exists in main;
+- save baseline/test gate #23 integrated;
+- QA cross-workstream gates integrated;
+- legacy-only crosswalk is 174/174 reviewed;
+- PR #27 supplies 23–30 migration handoff evidence.
 
-Execution command in chat: **`ejecuta Codex`** defaults to this first READY item unless the user names another PR/task.
+Important: this task does **not** implement canonical scenes and does not merge to main.
 
-After Codex finishes: ChatGPT reviews diff/tests before any merge.
+After Codex finishes: ChatGPT must review diff, migration invariants and exact-head CI before state can advance to `READY_TO_MERGE`.
 
 ---
 
-### 2. READY — PR #7 — T5.1 Batch 02B · canonical age 26 + seed chronology
+## Active non-Codex workstreams — do not duplicate
 
-Branch: `task/t5.1-batch-02b`
+### T5.2 seed lifecycle — PR #19
 
-Scope:
-- 9 missing age-26 canonical scenes;
-- semantic repair of `EVT_26_EUR_001`;
-- restore 10 seed origins/age windows;
-- repair false seed writers in later events;
-- test 26→27 causal continuity.
+Owner branch: `t5/seed-lifecycle`.
+Current exact reviewed head: `ed46c92e7fda62946e6dc4c0b3b32994f81241d5` with Repository Integrity success.
 
-Dependencies:
-- logically independent of PR #3 content;
-- should run before PR #5 because both PR #7 and PR #5 are expected to touch `src/content/events/26_30/principal-events.ts` and `src/catalog/seeds.ts`.
+Do not launch a parallel Codex task against resolver/seed lifecycle while #19 is active. Canonical producer/consumer wiring is intentionally deferred to content batches.
 
-Recommended execution: after PR #3 review, or explicitly by name if user wants to prioritize it.
+### T5.3 NPC knowledge — PR #9
+
+Owner branch: `t5/npc-memory`.
+Must re-ground after accepted T5.2 hardening and preserve combined resolver behavior. Do not launch overlapping NPC/resolver work until that integration point is resolved.
+
+### Presentation/Android — PR #14
+
+Independent presentation owner. Do not modify narrative canon from this queue.
 
 ---
 
-### 3. BLOCKED-BY-#7 — PR #5 — T5.1 Batch 02A · exact-title semantic repairs
+## Future canonical runtime queue — BLOCKED by T5-MIG-01
 
-Branch: `task/t5.1-batch-02a`
+These batches may be prepared/re-grounded, but must not change the active catalog in main before supported migration is reviewed and integrated.
 
-Scope:
-- canonical `EVT_27_STAR_001` from technical `EVT_28_TEAM_001`;
-- canonical `EVT_27_AWARD_001` from technical `EVT_28_GALA_001`;
-- canonical `EVT_28_RICH_001` from technical `EVT_29_MKT_001`;
-- move corresponding seed origins and preserve downstream behavior.
+### 2. BLOCKED-BY-T5-MIG-01 — canonical runtime 20–23
 
-Why blocked:
-- overlaps files with PR #7;
-- canon of these scenes depends on causal memories (`SEED_PENALTY_HIERARCHY`, `SEED_RECORD_CHASE`, etc.) whose chronology is repaired by PR #7.
+Scope: T5.5–T5.9 principals/conditionals, exact canonical IDs, legacy scheduler retirement, choice eligibility/OR gates where required, seed/NPC causal wiring.
 
-Before launch:
-1. integrate/rebase the reviewed PR #7 result into this branch;
-2. refresh the T5.1 audit baseline;
-3. then launch Codex using the prompt in PR #5.
+Source audit: PR #10 / integrated central T5.1 evidence.
 
-## Planned T5.1 batches — not executable yet
+### 3. BLOCKED-BY-20-23 — canonical runtime 23–26
 
-These entries define the dependency chain only. **Do not launch Codex for a DRAFT item.** Create/re-ground its task branch and PR only when predecessors have been reviewed and integrated into the intended base.
+Scope: T5.10–T5.14. Use integrated PR #12 audit/readiness cards and PR #27 migration handoff. Exact-ID semantic collisions require provenance-aware migration.
 
-### Audit/planning snapshot
+### 4. BLOCKED-BY-23-26 — canonical runtime 26–30
 
-- Baseline unresolved principal IDs are assigned **87/87** to exactly one active/DRAFT batch in `project/t5_1/T5_1_PRINCIPAL_87_BATCH_MANIFEST.json`.
-- Active PR principal coverage: 18 IDs. Future principal DRAFT coverage: 69 IDs.
-- DRAFT principal prompts are prepared for 02C, 02D, 02E, 03A, 03B, 04A, 04B, 04C, 04D and 04E.
-- Common principal implementation contract: `project/t5_1/T5_1_PRINCIPAL_BATCH_IMPLEMENTATION_RULES.md`.
-- Principal planning summary: `project/t5_1/T5_1_PRINCIPAL_PLANNING_SUMMARY.md`.
-- Conditional semantic planning review is **134/134** across all phases.
-- DRAFT conditional prompts are prepared for 05A–05E.
-- Planning completeness is not runtime completion. Current runtime status remains `NOT_READY`; see `project/t5_1/T5_1_COMPLETION_STATUS_2026-09-16.md`.
+Scope: T5.15–T5.21. Preserve age-26 seed chronology, documentary/successor/record chains and historical `seed.originEvent` truth.
 
-### 4. DRAFT — Batch 02C · canonical age 27
-Scope: 7 remaining baseline-unresolved age-27 canonical principal IDs after PR #5.
-DRAFT prompt: `project/t5_1/T5_1_02C_CODEX_PROMPT_DRAFT.md`.
-Dependencies: reviewed/integrated PR #7 and PR #5; refresh audit after both are reconciled.
+### 5. BLOCKED-BY-26-30 — canonical runtime 30–34
 
-### 5. DRAFT — Batch 02D · canonical age 28
-Scope: 5 remaining baseline-unresolved age-28 canonical principal IDs after PR #5 handles `EVT_28_RICH_001`.
-DRAFT prompt: `project/t5_1/T5_1_02D_CODEX_PROMPT_DRAFT.md`.
-Dependencies: Batch 02C reviewed/integrated.
+Scope: T5.22–T5.28. Replace/certify 50 principals and 26 conditionals according to central semantic review. No generic shells may be called canonical solely from IDs/titles.
 
-### 6. DRAFT — Batch 02E · canonical age 29
-Scope: 2 remaining baseline-unresolved age-29 principal IDs plus focused 29→30 hard-deadline integrity.
-DRAFT prompt: `project/t5_1/T5_1_02E_CODEX_PROMPT_DRAFT.md`.
-Dependencies: Batch 02D reviewed/integrated.
+### 6. BLOCKED-BY-30-34 — canonical runtime 34+
 
-### 7. DRAFT — Batch 03A · canonical age 30
-Scope: 10 baseline-unresolved age-30 principal IDs, including semantic review of `EVT_30_BRIDGE_001` vs title candidate `EVT_30_IDN_001`.
-DRAFT prompt: `project/t5_1/T5_1_03A_CODEX_PROMPT_DRAFT.md`.
-Dependencies: Batch 02E reviewed/integrated.
+Scope: T5.29–T5.35. Exact canonical IDs required; do not retain legacy IDs as aliases for different scenes. Late-career facts such as no-market, medical failure, derby/farewell outcomes must be causal.
 
-### 8. DRAFT — Batch 03B · canonical ages 31–33
-Scope: 12 baseline-unresolved principal IDs; protects successor, wealth/business, Bosman, travel/load, record and 33→34 priority chains.
-DRAFT prompt: `project/t5_1/T5_1_03B_CODEX_PROMPT_DRAFT.md`.
-Dependencies: Batch 03A reviewed/integrated.
+### 7. BLOCKED-BY-34PLUS — retirement + epilogue
 
-### 9. DRAFT — Batch 04A · canonical age 34
-Scope: 11 baseline-unresolved age-34 principal IDs; late-career scenes remain non-terminal unless canonical retirement task owns a transition.
-DRAFT prompt: `project/t5_1/T5_1_04A_CODEX_PROMPT_DRAFT.md`.
-Dependencies: Batch 03B reviewed/integrated.
+Scope: T5.36–T5.37.
 
-### 10. DRAFT — Batch 04B · canonical age 35
-Scope: 10 baseline-unresolved age-35 principal IDs; farewell/dual-role/agent/January/sponsor contexts must not imply retirement.
-DRAFT prompt: `project/t5_1/T5_1_04B_CODEX_PROMPT_DRAFT.md`.
-Dependencies: Batch 04A reviewed/integrated.
+Requirements:
+- preserve `playing -> decided -> announced -> closed` terminal authority unless Pedro explicitly approves an amendment;
+- `closed` remains terminal;
+- last match/storybook/no-last-match must be fact-driven;
+- legacy `CEVT_RET_RECONSIDER` is history-only and is not an alias for canonical reversal;
+- future canonical `CEVT_38_RETIREMENT_REVERSAL` behavior still requires explicit product decision. Current source-fit recommendation is a bounded extension while remaining `announced`, preserving announcement history.
 
-### 11. DRAFT — Batch 04C · canonical ages 36–38
-Scope: 10 baseline-unresolved principal IDs; preserves agency for lower league, short contract, home, rich offer and no-market paths.
-DRAFT prompt: `project/t5_1/T5_1_04C_CODEX_PROMPT_DRAFT.md`.
-Special identity review: canonical `EVT_38_RICH_001` vs runtime title candidate `EVT_36_RICH_001`.
-Dependencies: Batch 04B reviewed/integrated.
+### 8. BLOCKED-BY-ALL-CONTENT — T5.38 final audit
 
-### 12. DRAFT — Batch 04D · retirement state machine
-Scope includes the 2 remaining baseline-unresolved retirement principal IDs (`EVT_RET_FAM_001`, `EVT_RET_LASTMATCH_001`) plus terminal FSM repair.
-Dependencies: Batch 04C reviewed/integrated.
-Audit status: runtime/FSM audit complete in `project/t5_1/T5_1_04D_RETIREMENT_RUNTIME_AUDIT.md`; DRAFT implementation prompt prepared in `project/t5_1/T5_1_04D_CODEX_PROMPT_DRAFT.md`.
-Current canonical blocker: `CEVT_38_RETIREMENT_REVERSAL` conflicts with the semantic map’s monotonic `playing -> decided -> announced -> closed` model / `closed -> *` prohibition. Decision is tracked in `project/t5_1/T5_1_CANON_DECISION_REQUIRED_RETIREMENT_REVERSAL.md`.
-Do not implement reversal semantics by inference.
-
-### 13. DRAFT — Batch 05A · exact-ID conditional semantic foundation
-Scope: semantic certification foundation for exact-ID conditionals, without treating exact ID or runtime `canonStatus` as proof of full fidelity.
-
-Audit work completed on workflow branch:
-- exact-ID inventory: 47/134 conditional IDs exact in P1;
-- 47-entry machine-readable disposition map;
-- field review of all 14 exact-ID callbacks in 18–20;
-- upstream flag/causal provenance review for the strongest 18–20 candidates;
-- field review of all 20 exact-ID/title callbacks in 23–26;
-- confirmed `CEVT_24_TOURN_02` condition mismatch after tracing `NATIONAL_CALLED` provenance;
-- targeted semantic/save/RNG test specification;
-- confirmed that generic exact-ID shells in 20–23, 23–26 and 26–30 cannot be auto-certified;
-- confirmed that some late exact-ID/`verified` retirement callbacks still have semantic mismatches;
-- DRAFT auditor implementation prompt prepared in `project/t5_1/T5_1_05A_CODEX_PROMPT_DRAFT.md`.
-
-Audit result: **0 exact-ID callback is automatically `canonical_verified_full`.**
-
-Runtime status remains DRAFT. Dependencies for runtime implementation: current principal PRs (#3, #7, #5) reviewed/integrated so shared seeds and phase boundaries are stable.
-
-### 14. DRAFT — Batch 05B · conditional ages 20–23
-Scope: 18 canonical callbacks; 3 exact IDs / 15 identity drifts in P1.
-Audit/planning status: **semantic review complete**. All 18 canonical/runtime rows reviewed; exact-ID semantic collisions identified for `CEVT_21_MEDIA_01` and `CEVT_22_FREE_01`; 0 direct pending-scene substitutions approved.
-DRAFT prompt: `project/t5_1/T5_1_05B_CODEX_PROMPT_DRAFT.md`.
-Dependencies for runtime implementation: Batch 05A runtime foundation plus principal Batch 01.
-
-### 15. DRAFT — Batch 05C · conditional ages 26–30
-Scope: 24 canonical callbacks; 5 exact IDs / 19 identity drifts in P1.
-Audit/planning status: **semantic review complete**. All 24 canonical/runtime rows reviewed; the five age-29 exact IDs require semantic certification/repair despite runtime `verified` metadata.
-DRAFT prompt: `project/t5_1/T5_1_05C_CODEX_PROMPT_DRAFT.md`.
-Dependencies for runtime implementation: Batch 05B and principal Batches 02A–02E including seed chronology.
-
-### 16. DRAFT — Batch 05D · conditional ages 30–34
-Scope: 26 canonical callbacks; P1 had 0/26 exact IDs. Identity must be established from condition + scene + function/memory, never fuzzy/title matching.
-Audit/planning status: **semantic review complete** — 26/26 legacy/runtime shells reviewed and 0/26 approved as direct same-scene migration.
-DRAFT prompt: `project/t5_1/T5_1_05D_CODEX_PROMPT_DRAFT.md`.
-Dependencies for runtime implementation: Batch 05C and principal Batch 03B.
-
-### 17. DRAFT — Batch 05E · conditional ages 34+
-Scope: 32 canonical callbacks; 5 exact IDs / 27 identity drifts in P1, including retirement callbacks.
-Audit/planning status: **semantic review complete**. All 32 canonical/runtime rows reviewed; 0/5 exact IDs auto-certifiable.
-DRAFT prompt: `project/t5_1/T5_1_05E_CODEX_PROMPT_DRAFT.md`.
-Hard blocker: same retirement-reversal canonical decision as 04D. Runtime `CEVT_RET_RECONSIDER` currently performs `announced -> playing` and is not canonically approved.
-Dependencies for runtime implementation: Batch 05D and principal Batch 04D.
-
-### 18. DRAFT — Batch 04E · epilogue + terminal QA
-Audit status: current epilogue truthfulness audited in `project/t5_1/T5_1_04E_EPILOGUE_RUNTIME_AUDIT.md`; DRAFT final-task prompt prepared in `project/t5_1/T5_1_04E_CODEX_PROMPT_DRAFT.md`.
-Dependencies: Batch 05E plus retirement Batch 04D and all prior canonical reconciliation. Epilogue may read terminal facts only after `closed`; final task runs the 388-event identity/semantic/migration/causal/deterministic gates and acceptance evidence.
-
-## Dependency summary
-
-Principal chain after the active PRs:
-`#3 -> #7 -> #5 -> 02C -> 02D -> 02E -> 03A -> 03B -> 04A -> 04B -> 04C -> 04D`
-
-Conditional chain:
-`05A -> 05B -> 05C -> 05D -> 05E`
-
-Cross-chain gates:
-- 05B requires principal Batch 01;
-- 05C requires principal 02A–02E;
-- 05D runtime implementation requires principal 03B;
-- 05E requires principal 04D;
-- 04E runs only after 05E and 04D.
-
-This ordering prevents overlapping semantic/runtime work from being executed in parallel and keeps seed/save migration decisions reviewable.
+Run final consolidated evidence:
+- exact active 388 canonical identities;
+- semantic/causal certification;
+- 210-seed lifecycle classification;
+- 20-NPC knowledge/relationship traceability;
+- migration/save compatibility;
+- RNG/determinism isolation;
+- long-career and retirement/epilogue closure;
+- no impossible states or blocked careers in required simulation profiles.
 
 ## State vocabulary
 
-- `DRAFT`: specified/planned, but not executable because branch/PR and/or dependencies are not ready.
-- `READY`: sufficiently specified and dependencies satisfied.
-- `BLOCKED-BY-#N`: do not launch until the named PR is integrated/rebased.
-- `RUNNING`: Codex has been invoked and implementation is in progress.
-- `REVIEW`: Codex returned changes; ChatGPT must inspect diff/tests.
-- `CHANGES_REQUESTED`: review found actionable problems; send corrections to Codex.
-- `READY_TO_MERGE`: review passed; still requires Pedro's explicit merge instruction.
-- `DONE`: merged/closed according to explicit user instruction.
+- `DRAFT`: specified but not executable.
+- `READY`: dependencies satisfied; may be launched only on explicit `ejecuta Codex`.
+- `BLOCKED-BY-X`: do not launch until dependency X is reviewed/integrated.
+- `RUNNING`: Codex implementation active.
+- `REVIEW`: implementation returned; ChatGPT inspecting diff/tests.
+- `CHANGES_REQUESTED`: review found defects.
+- `READY_TO_MERGE`: reviewed and green; still requires Pedro's explicit `fusiona`.
+- `DONE`: merged/closed only under explicit merge instruction/confirmed integration.
 
 ## Safety rules
 
 - Never auto-merge.
-- Never launch a blocked or DRAFT item just because its prompt exists.
-- `ejecuta Codex` launches only the first READY item unless Pedro explicitly names another ready task.
-- Never run overlapping write sets in parallel.
-- Never mark tests passed from an old QA artifact; use results from the task implementation run.
-- Preserve branch/PR-specific context in the PR itself so a future chat can reconstruct the handoff from GitHub.
+- Never launch Codex without explicit user request.
+- Never launch two overlapping write sets.
+- Never use green CI from an older HEAD as evidence for a newer one.
+- Never weaken `contentIdentity`, save baselines or QA gates to make a task pass.
+- Never rewrite old history/pending choices from title/theme similarity.
+- Every future content batch must re-ground on the then-current integrated main immediately before implementation/review.
