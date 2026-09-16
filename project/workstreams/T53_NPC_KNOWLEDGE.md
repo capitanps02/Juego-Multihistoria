@@ -159,7 +159,12 @@ La primera pasada estricta detectó nueve candidatos. Tras revisión semántica:
 - ocho eran conocimiento real del NPC y ahora tienen regla explícita de fuente/memoria;
 - uno (`EVT_19_AGENT_001/AUDIT__SECONDARY`) era un falso positivo: «la revisión descubre más lagunas» describe conocimiento nuevo del protagonista, no del agente. La excepción queda declarada con motivo y el auditor falla si deja de corresponder a contenido real.
 
-Los ocho casos reparados cubren Vela, Paula, Clara, Bruno, Montalbán y Ferrer. Las reglas son outcome-specific: el resultado alternativo no concede el hecho.
+Una segunda pasada amplió el vocabulario a `memoria` y `olvida` y añadió un lint específico de callbacks condicionales con un único NPC identificable. Detectó dos defectos adicionales, ambos reales:
+
+- `CEVT_18_VELA_01/DISTANCE__SECONDARY`: el propio copy dice que Vela guarda la distancia como memoria de vestuario;
+- `EVT_19_JAN_001/FORCE_EXIT__SECONDARY`: la salida forzada deja memoria institucional y penaliza la relación con Ferrer.
+
+Los diez casos outcome-specific reparados registran conocimiento únicamente cuando el texto demuestra que el NPC conoce o conserva el hecho; el resultado alternativo no concede esa memoria. El lint de callbacks no deja gaps pendientes.
 
 ## 8. Trazabilidad y cobertura real
 
@@ -171,7 +176,9 @@ Los ocho casos reparados cubren Vela, Paula, Clara, Bruno, Montalbán y Ferrer. 
 - referencias NPC desconocidas: 0;
 - reglas de conocimiento inválidas: 0;
 - requisitos de conocimiento inválidos: 0;
-- gaps epistemológicos explícitos conocidos tras revisión: 0.
+- gaps epistemológicos de outcomes tras revisión: 0;
+- gaps epistemológicos de callbacks con NPC identificable: 0;
+- excepciones semánticas revisadas: 1, con control contra excepciones obsoletas.
 
 Inconsistencia canónica/contenido preservada como hallazgo, no reparada inventando escenas:
 
@@ -196,9 +203,9 @@ La suite dirigida cubre el contrato pedido y regresiones adicionales:
 10. `PlayerView` no filtra estado interno;
 11. Nano solo aprende la ayuda no solicitada en el outcome donde realmente se entera;
 12. flags + seed no bastan para su callback sin conocimiento personal;
-13. ocho descubrimientos explícitos de contenido crean memoria únicamente en el outcome revelador, nunca en el alternativo.
+13. diez descubrimientos/memorias explícitos de contenido crean memoria únicamente en el outcome revelador, nunca en el alternativo.
 
-`npm test` ejecuta la auditoría y ambas suites T5.3. El workflow `Repository integrity` del PR ejecuta además el QA T5 integrado en `main`: determinismo/RNG, límites de edad, referencias, carreras largas, lifecycle y simulación estratificada.
+`npm test` ejecuta conjuntamente los gates T5.2 ya integrados en `main` y la auditoría y suites T5.3. El workflow `Repository integrity` ejecuta además el QA T5: determinismo/RNG, límites de edad, referencias, carreras largas, lifecycle y simulación estratificada.
 
 ## 10. Estado de cierre técnico
 
@@ -206,9 +213,11 @@ T5.3 queda **técnicamente preparado para revisión/integración**, con estas pr
 
 - la arquitectura continúa siendo `deny-by-default`;
 - no se infiere conocimiento desde `npcRefs`;
+- `NPCState.access` permanece metadata legado y no se usa como probabilidad implícita de conocimiento;
 - el contenido sin vía explícita no concede conocimiento;
 - no se ha añadido contenido canónico para Mamadou ni Mara;
 - la cobertura futura puede declarar nuevas vías de conocimiento cuando el canon demuestre testigo, comunicación o publicación;
+- la rama integra explícitamente el lifecycle T5.2 sin alterar su semántica;
 - no se ha modificado `project/PLAN_PASADAS.md` ni `analysis/2026-09-11/plan-seguimiento.json`.
 
 El PR debe ser revisado por el integrador y **no debe auto-mergearse**.
