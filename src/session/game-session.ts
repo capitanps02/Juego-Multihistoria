@@ -19,12 +19,14 @@ import { assertSessionSnapshot } from "./validate-session.js";
 import { NPC_CATALOG } from "../catalog/npcs.js";
 import { contentIdentity } from "./content-identity.js";
 import {
-  applyMigrationRouteInPlace,
-  applyPostLegacyResolutionRouteInPlace,
+  applyMigrationPathInPlace,
+  applyPostLegacyResolutionPathInPlace,
   buildActiveEventEvidence,
   CONTENT_MIGRATION_ROUTES,
-  findMigrationRoute,
+  findMigrationPath,
+  LEGACY_CONTENT_SOURCES,
   legacyContentSource,
+  type ContentEvidenceSource,
   type ContentMigrationRoute
 } from "./content-migration.js";
 import type { LegacyEventEvidence } from "./pre-t51-legacy-registry.js";
@@ -86,6 +88,8 @@ export interface SessionOptions {
   events?: EventDefinition[];
   commit?: CommitSnapshot;
   migrationRoutes?: readonly ContentMigrationRoute[];
+  /** Validation-only evidence for historical catalog identities. Never scheduled. */
+  contentSources?: Readonly<Record<string, ContentEvidenceSource>>;
 }
 type PublicTerms = Pick<CareerOffer["terms"], "club" | "ownerClub" | "registrationClub" | "leagueTier" | "months" | "salary" | "releaseClause" | "loan">;
 type PublicOffer = Omit<CareerOffer,"before" | "terms"> & {before:PublicTerms;terms:PublicTerms};
@@ -191,6 +195,7 @@ export class GameSession {
   #index: EventIndex;
   #activeEvidence: Readonly<Record<string, LegacyEventEvidence>>;
   #migrationRoutes: readonly ContentMigrationRoute[];
+  #contentSources: Readonly<Record<string, ContentEvidenceSource>>;
   #commit: CommitSnapshot;
   #queue: Promise<void> = Promise.resolve();
 
@@ -199,12 +204,14 @@ export class GameSession {
     events: EventDefinition[],
     activeEvidence: Readonly<Record<string, LegacyEventEvidence>>,
     commit?: CommitSnapshot,
-    migrationRoutes: readonly ContentMigrationRoute[] = CONTENT_MIGRATION_ROUTES
+    migrationRoutes: readonly ContentMigrationRoute[] = CONTENT_MIGRATION_ROUTES,
+    contentSources: Readonly<Record<string, ContentEvidenceSource>> = LEGACY_CONTENT_SOURCES
   ) {
     this.#snapshot = structuredClone(snapshot);
     this.#index = new EventIndex(structuredClone(events));
     this.#activeEvidence = activeEvidence;
     this.#migrationRoutes = migrationRoutes;
+    this.#contentSources = contentSources;
     this.#commit = commit ?? (async () => {});
   }
 
@@ -221,7 +228,14 @@ export class GameSession {
       pendingDecision: null, pendingResult: null, receipts: [], journal: [], decisionProvenance: [], needsWorldAdvance: false
     };
     marketState(snapshot.state);
-    const session = new GameSession(snapshot, events, activeEvidence, options.commit, options.migrationRoutes ?? CONTENT_MIGRATION_ROUTES);
+    const session = new GameSession(
+      snapshot,
+      events,
+      activeEvidence,
+      options.commit,
+      options.migrationRoutes ?? CONTENT_MIGRATION_ROUTES,
+      options.contentSources ?? LEGACY_CONTENT_SOURCES
+    );
     await session.#commit(structuredClone(snapshot), null);
     return session;
   }
@@ -233,15 +247,16 @@ export class GameSession {
     const events = structuredClone(options.events ?? EVENTS);
     const activeContentIdentity = await contentIdentity(events);
     const activeEvidence = await buildActiveEventEvidence(events);
+    const contentSources = options.contentSources ?? LEGACY_CONTENT_SOURCES;
     const header=record(snapshot,"session");
     requireThat(typeof header.contentIdentity === "string", "INVALID_SAVE", "Falta la identidad del contenido.");
     requireThat(header.contentIdentity === activeContentIdentity, "CONTENT_CHANGED", "El contenido cambió; conserva la partida para migrarla antes de continuar.");
-    await assertSessionSnapshot(snapshot, { events, activeContentIdentity, activeEvidence });
+    await assertSessionSnapshot(snapshot, { events, activeContentIdentity, activeEvidence, contentSources });
     const next = upgradeToV3(snapshot as SessionSnapshot, activeContentIdentity, activeEvidence);
     marketState(next.state);
     next.build=SESSION_BUILD; // Existing narrative and RNG are preserved; new offers require explicit consent.
-    await assertSessionSnapshot(next, { events, activeContentIdentity, activeEvidence });
-    return new GameSession(next, events, activeEvidence, options.commit, options.migrationRoutes ?? CONTENT_MIGRATION_ROUTES);
+    await assertSessionSnapshot(next, { events, activeContentIdentity, activeEvidence, contentSources });
+    return new GameSession(next, events, activeEvidence, options.commit, options.migrationRoutes ?? CONTENT_MIGRATION_ROUTES, contentSources);
   }
 
   /**
@@ -255,25 +270,26 @@ export class GameSession {
     const activeContentIdentity = await contentIdentity(events);
     const activeEvidence = await buildActiveEventEvidence(events);
     const routes = options.migrationRoutes ?? CONTENT_MIGRATION_ROUTES;
+    const contentSources = options.contentSources ?? LEGACY_CONTENT_SOURCES;
     const header = record(snapshot, "session");
     requireThat(typeof header.contentIdentity === "string", "INVALID_SAVE", "Falta la identidad del contenido.");
     const sourceContentIdentity = header.contentIdentity;
     if (sourceContentIdentity === activeContentIdentity) return GameSession.resume(snapshot, options);
 
-    const route = findMigrationRoute(sourceContentIdentity, activeContentIdentity, routes);
-    requireThat(route, "CONTENT_MIGRATION_UNSUPPORTED", "Esta versión del contenido no tiene una ruta de migración aprobada.");
-    const source = legacyContentSource(sourceContentIdentity);
+    const path = findMigrationPath(sourceContentIdentity, activeContentIdentity, routes);
+    requireThat(path, "CONTENT_MIGRATION_UNSUPPORTED", "Esta versión del contenido no tiene una ruta de migración única y aprobada.");
+    const source = legacyContentSource(sourceContentIdentity, contentSources);
     requireThat(source, "CONTENT_MIGRATION_UNSUPPORTED", "No existe evidencia registrada para el catálogo de origen.");
 
-    await assertSessionSnapshot(snapshot, { events, activeContentIdentity, activeEvidence });
+    await assertSessionSnapshot(snapshot, { events, activeContentIdentity, activeEvidence, contentSources });
     const next = upgradeToV3(snapshot as SessionSnapshot, sourceContentIdentity, source.events);
-    applyMigrationRouteInPlace(next.state, route);
+    applyMigrationPathInPlace(next.state, path);
     marketState(next.state);
     next.contentIdentity = activeContentIdentity;
     next.sessionVersion = SESSION_VERSION;
     next.build = SESSION_BUILD;
-    await assertSessionSnapshot(next, { events, activeContentIdentity, activeEvidence });
-    return new GameSession(next, events, activeEvidence, options.commit, routes);
+    await assertSessionSnapshot(next, { events, activeContentIdentity, activeEvidence, contentSources });
+    return new GameSession(next, events, activeEvidence, options.commit, routes, contentSources);
   }
 
   static async fromSave(raw: string, options: SessionOptions = {}): Promise<GameSession> {
@@ -347,9 +363,9 @@ export class GameSession {
       next.pendingDecision = null;
       next.needsWorldAdvance = true;
       if (pending.provenance.sourceContentIdentity !== next.contentIdentity) {
-        const route = findMigrationRoute(pending.provenance.sourceContentIdentity, next.contentIdentity, this.#migrationRoutes);
-        requireThat(route, "CONTENT_MIGRATION_UNSUPPORTED", "La escena legacy pendiente ya no tiene una ruta de compatibilidad aprobada.");
-        applyPostLegacyResolutionRouteInPlace(next.state, pending.event.id, route);
+        const path = findMigrationPath(pending.provenance.sourceContentIdentity, next.contentIdentity, this.#migrationRoutes);
+        requireThat(path, "CONTENT_MIGRATION_UNSUPPORTED", "La escena legacy pendiente ya no tiene una ruta de compatibilidad única y aprobada.");
+        applyPostLegacyResolutionPathInPlace(next.state, pending.event.id, path);
       }
       generateEpilogue(next.state);
     } else {
