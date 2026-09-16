@@ -48,17 +48,19 @@ test('T5.3/2 NPC sin acceso no reacciona: npcRefs no concede omnisciencia', () =
   assert.equal(getPath(state, 'know.NPC_ACA_01.EVT_18_PRE_001'), false);
 });
 
-test('T5.3/3 NPC informado posteriormente aprende desde ese momento', () => {
+test('T5.3/3 NPC informado posteriormente aprende desde ese momento sin consumir RNG', () => {
   const state = createInitialState(103);
   resolveChoiceInPlace(state, origin(), 'CALL_NANO');
   assert.equal(npcKnows(state, 'NPC_ACA_01', 'EVT_18_PRE_001'), false);
   state.date = '2026-07-10';
+  const rngBefore = structuredClone(state.rngState);
   const record = informNpcOfEventInPlace(state, 'NPC_ACA_01', 'EVT_18_PRE_001', {
     source: 'reported', certainty: 65, sourceNpcId: 'NPC_PLR_14', memory: 'strong'
   });
   assert.equal(record.learnedAt, '2026-07-10');
   assert.equal(record.sourceNpcId, 'NPC_PLR_14');
   assert.equal(npcKnows(state, 'NPC_ACA_01', 'EVT_18_PRE_001'), true);
+  assert.deepEqual(state.rngState, rngBefore, 'informar/recordar conocimiento no consume RNG');
 });
 
 test('T5.3/4 cambiar de club no reinicia relaciones', () => {
@@ -216,4 +218,27 @@ test('T5.3/13 un NPC no puede reportar un hecho que no conoce', () => {
     /uninformed NPC source NPC_ACA_01/
   );
   assert.equal(npcKnows(state, 'NPC_CCH_01', 'EVT_18_PRE_001'), false);
+});
+
+test('T5.3/14 un retry de commandId no reaprende ni altera conocimiento', async () => {
+  const event = structuredClone(origin());
+  const session = await GameSession.create(114, { events: [event], microfeeds: false, sessionId: 't53-replay' });
+  await session.dispatch({ type: 'continue', maxDays: 1, commandId: 't53-replay-advance', expectedRevision: 0 });
+  const decision = session.getView();
+  assert.equal(decision.screen, 'decision');
+  assert.ok(decision.decision);
+  const command = {
+    type: 'choose', commandId: 't53-replay-choice', expectedRevision: decision.revision,
+    pendingInstanceId: decision.decision.instanceId, choiceId: 'CALL_NANO'
+  };
+
+  const first = await session.dispatch(command);
+  assert.equal(first.replayed, false);
+  const afterFirst = session.exportSnapshot();
+  const record = getNpcKnowledgeRecord(afterFirst.state, 'NPC_PLR_14', 'EVT_18_PRE_001');
+  assert.ok(record);
+
+  const replay = await session.dispatch(command);
+  assert.equal(replay.replayed, true);
+  assert.deepEqual(session.exportSnapshot(), afterFirst, 'el retry no reescribe learnedAt, estado ni RNG');
 });
