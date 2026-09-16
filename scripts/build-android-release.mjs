@@ -25,7 +25,7 @@ const localJava = path.join(toolsDir, 'jdk', 'Contents', 'Home');
 if (fs.existsSync(localJava)) process.env.JAVA_HOME = localJava;
 if (process.env.JAVA_HOME) process.env.PATH = path.join(process.env.JAVA_HOME, 'bin') + path.delimiter + process.env.PATH;
 process.env.GRADLE_USER_HOME ||= path.join(toolsDir, 'gradle-cache');
-const bundledGradle = path.join(toolsDir, 'gradle-8.9', 'bin', 'gradle');
+const bundledGradle = path.join(toolsDir, 'gradle-8.11.1', 'bin', 'gradle');
 const gradleTool = fs.existsSync(bundledGradle) ? bundledGradle : (process.platform === 'win32' ? 'gradle.bat' : 'gradle');
 const localProperties = fs.existsSync(path.join(android, 'local.properties')) ? fs.readFileSync(path.join(android, 'local.properties'), 'utf8') : '';
 const localSdk = localProperties.match(/^sdk\.dir=(.+)$/m)?.[1]?.trim() || '';
@@ -73,7 +73,7 @@ const report = {
 };
 
 try {
-  if (!javaProbe.available || !gradleProbe.available || !report.tools.androidSdkExists) throw new Error('JDK, Gradle 8.9 o Android SDK no están disponibles.');
+  if (!javaProbe.available || !gradleProbe.available || !report.tools.androidSdkExists) throw new Error('JDK, Gradle 8.11.1 o Android SDK no están disponibles.');
   run(process.execPath, [path.join(root, 'scripts', 'build-android-offline.mjs')]);
   const packagedIdentityDir = path.join(android, 'app', 'src', 'main', 'assets', 'release');
   fs.mkdirSync(packagedIdentityDir, { recursive: true });

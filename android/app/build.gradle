@@ -9,8 +9,8 @@ def releaseSigningReady = signingKeys.every { key -> signingValues[key] != null 
 def partialSigning = signingKeys.any { key -> signingValues[key] != null && !signingValues[key].trim().isEmpty() } && !releaseSigningReady
 if (partialSigning) throw new GradleException('Release signing configuration is incomplete. Provide all MULTIHISTORIA_KEYSTORE_* variables or none of them.')
 
-android { namespace 'com.multihistoria'; compileSdk 35
-    defaultConfig { applicationId 'com.multihistoria'; minSdk 23; targetSdk 35; versionCode releaseVersionCode; versionName releaseVersionName; testInstrumentationRunner 'com.multihistoria.OfflineProbe' }
+android { namespace 'com.multihistoria'; compileSdk 36
+    defaultConfig { applicationId 'com.multihistoria'; minSdk 23; targetSdk 36; versionCode releaseVersionCode; versionName releaseVersionName; testInstrumentationRunner 'com.multihistoria.OfflineProbe' }
     signingConfigs {
         if (releaseSigningReady) {
             release {
