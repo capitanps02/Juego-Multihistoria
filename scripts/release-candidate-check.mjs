@@ -25,7 +25,7 @@ const env = {
 
 run(process.platform === 'win32' ? 'npm.cmd' : 'npm', ['test'], env);
 run(process.execPath, ['scripts/release-build-manifest.mjs', '--require-git'], env);
-run(process.execPath, ['--test', 'scripts/test-release-diagnostics.mjs'], env);
+run(process.execPath, ['--test', 'scripts/test-release-diagnostics.mjs', 'scripts/test-release-runtime-diagnostics.mjs'], env);
 run(process.execPath, ['scripts/release-upgrade-check.mjs'], env);
 if (android) run(process.execPath, ['scripts/build-android-release.mjs', ...(requireSigned ? ['--require-signed'] : [])], env);
 run(process.execPath, ['scripts/release-verify.mjs', ...(android ? ['--android'] : []), ...(requireSigned ? ['--require-signed'] : [])], env);

@@ -13,6 +13,7 @@ const testFiles = [
   'scripts/test-t51-content-lineage.mjs',
   'scripts/test-t51-offer-bridge.mjs',
   'scripts/test-t51-offer-bridge-provenance.mjs',
+  'scripts/test-t51-t511b-eur.mjs',
   'scripts/test-t52-seed-origin-migration.mjs',
   'scripts/test-t53-reconciliation.mjs'
 ];
