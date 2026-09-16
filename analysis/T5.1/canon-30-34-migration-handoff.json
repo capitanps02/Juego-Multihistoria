@@ -2,13 +2,13 @@
   "schemaVersion": 1,
   "workstream": "T5.1 canon 30-34 migration handoff",
   "generatedAt": "2026-09-16",
-  "sourceMainSha": "fb545cd18c6828b1f8d636435d91e296e92eaab6",
-  "sourceContentIdentity": "2e07efd2ea99c4e9ec4c2b20ae89664204f76db2c55a72d567208799c01bccff",
-  "observedTargetContentIdentity": "bfcc1422bb696e8c3887b1805024532967473bc27a29a6d6989472dd56aefa8d",
+  "sourceMainSha": "49e195d07d064e0532ea9109d9544b91df52bf0e",
+  "sourceContentIdentity": "1a8a5e2006fe7160f4fbc02060568d3abec99df038fe3a1a7799c8a0e802eac7",
+  "observedTargetContentIdentity": "163b582315bb8d08ac4a03f13719b89c0d76c130a2b33f3e32fa53af5474d8dc",
   "targetIdentityEvidence": {
-    "workflowRun": 35118530486,
-    "source": "Repository Integrity / check-t51-content-migration-route.mjs",
-    "rule": "Integration must still calculate target contentIdentity from runtime EVENTS and must not trust this copied value blindly."
+    "workflowRun": 35127605089,
+    "source": "T5.1 30-34 focused lineage validation / runtime contentIdentity(EVENTS)",
+    "rule": "Target must equal contentIdentity(EVENTS) on this branch after inheriting current main; copied historical target identities are invalid."
   },
   "consumer": {
     "implementationOwner": "coordination/integration",
@@ -69,76 +69,324 @@
       "EVT_33_PRS_001"
     ],
     "schedulerMappingsCandidate": [
-      {"kind":"distinct_scene","legacyEventId":"EVT_30_CON_001","canonicalEventId":"EVT_30_CON_001","clearCanonicalSeen":true,"clearCanonicalCooldown":true},
-      {"kind":"distinct_scene","legacyEventId":"EVT_30_BODY_001","canonicalEventId":"EVT_30_BODY_001","clearCanonicalSeen":true,"clearCanonicalCooldown":true},
-      {"kind":"distinct_scene","legacyEventId":"EVT_30_MKT_001","canonicalEventId":"EVT_30_MKT_001","clearCanonicalSeen":true,"clearCanonicalCooldown":true},
-      {"kind":"distinct_scene","legacyEventId":"EVT_30_NAT_001","canonicalEventId":"EVT_30_NAT_001","clearCanonicalSeen":true,"clearCanonicalCooldown":true},
-      {"kind":"distinct_scene","legacyEventId":"EVT_30_FAM_001","canonicalEventId":"EVT_30_FAM_001","clearCanonicalSeen":true,"clearCanonicalCooldown":true},
-      {"kind":"distinct_scene","legacyEventId":"EVT_30_MED_001","canonicalEventId":"EVT_30_MED_001","clearCanonicalSeen":true,"clearCanonicalCooldown":true},
-      {"kind":"distinct_scene","legacyEventId":"EVT_30_FORM_001","canonicalEventId":"EVT_30_FORM_001","clearCanonicalSeen":true,"clearCanonicalCooldown":true},
-      {"kind":"distinct_scene","legacyEventId":"EVT_30_CAP_001","canonicalEventId":"EVT_30_CAP_001","clearCanonicalSeen":true,"clearCanonicalCooldown":true},
-      {"kind":"distinct_scene","legacyEventId":"EVT_31_MED_001","canonicalEventId":"EVT_31_MED_001","clearCanonicalSeen":true,"clearCanonicalCooldown":true},
-      {"kind":"distinct_scene","legacyEventId":"EVT_31_MKT_001","canonicalEventId":"EVT_31_MKT_001","clearCanonicalSeen":true,"clearCanonicalCooldown":true},
-      {"kind":"distinct_scene","legacyEventId":"EVT_31_HOME_001","canonicalEventId":"EVT_31_HOME_001","clearCanonicalSeen":true,"clearCanonicalCooldown":true},
-      {"kind":"distinct_scene","legacyEventId":"EVT_31_AGT_001","canonicalEventId":"EVT_31_AGT_001","clearCanonicalSeen":true,"clearCanonicalCooldown":true},
-      {"kind":"distinct_scene","legacyEventId":"EVT_31_LEGACY_001","canonicalEventId":"EVT_31_LEGACY_001","clearCanonicalSeen":true,"clearCanonicalCooldown":true},
-      {"kind":"distinct_scene","legacyEventId":"EVT_31_RETURN_001","canonicalEventId":"EVT_31_RETURN_001","clearCanonicalSeen":true,"clearCanonicalCooldown":true},
-      {"kind":"distinct_scene","legacyEventId":"EVT_31_TACT_001","canonicalEventId":"EVT_31_TACT_001","clearCanonicalSeen":true,"clearCanonicalCooldown":true},
-      {"kind":"distinct_scene","legacyEventId":"EVT_31_CCH_001","canonicalEventId":"EVT_31_CCH_001","clearCanonicalSeen":true,"clearCanonicalCooldown":true},
-      {"kind":"distinct_scene","legacyEventId":"EVT_31_NAT_001","canonicalEventId":"EVT_31_NAT_001","clearCanonicalSeen":true,"clearCanonicalCooldown":true},
-      {"kind":"distinct_scene","legacyEventId":"EVT_31_FINAL_001","canonicalEventId":"EVT_31_FINAL_001","clearCanonicalSeen":true,"clearCanonicalCooldown":true},
-      {"kind":"distinct_scene","legacyEventId":"EVT_32_CON_001","canonicalEventId":"EVT_32_CON_001","clearCanonicalSeen":true,"clearCanonicalCooldown":true},
-      {"kind":"distinct_scene","legacyEventId":"EVT_32_HOME_001","canonicalEventId":"EVT_32_HOME_001","clearCanonicalSeen":true,"clearCanonicalCooldown":true},
-      {"kind":"distinct_scene","legacyEventId":"EVT_32_AGT_001","canonicalEventId":"EVT_32_AGT_001","clearCanonicalSeen":true,"clearCanonicalCooldown":true},
-      {"kind":"distinct_scene","legacyEventId":"EVT_32_FAN_001","canonicalEventId":"EVT_32_FAN_001","clearCanonicalSeen":true,"clearCanonicalCooldown":true},
-      {"kind":"distinct_scene","legacyEventId":"EVT_32_NAT_001","canonicalEventId":"EVT_32_NAT_001","clearCanonicalSeen":true,"clearCanonicalCooldown":true},
-      {"kind":"distinct_scene","legacyEventId":"EVT_33_BODY_001","canonicalEventId":"EVT_33_BODY_001","clearCanonicalSeen":true,"clearCanonicalCooldown":true},
-      {"kind":"distinct_scene","legacyEventId":"EVT_33_CAP_001","canonicalEventId":"EVT_33_CAP_001","clearCanonicalSeen":true,"clearCanonicalCooldown":true},
-      {"kind":"distinct_scene","legacyEventId":"EVT_33_MKT_001","canonicalEventId":"EVT_33_MKT_001","clearCanonicalSeen":true,"clearCanonicalCooldown":true},
-      {"kind":"distinct_scene","legacyEventId":"EVT_33_PRS_001","canonicalEventId":"EVT_33_PRS_001","clearCanonicalSeen":true,"clearCanonicalCooldown":true}
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_30_CON_001",
+        "canonicalEventId": "EVT_30_CON_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_30_BODY_001",
+        "canonicalEventId": "EVT_30_BODY_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_30_MKT_001",
+        "canonicalEventId": "EVT_30_MKT_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_30_NAT_001",
+        "canonicalEventId": "EVT_30_NAT_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_30_FAM_001",
+        "canonicalEventId": "EVT_30_FAM_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_30_MED_001",
+        "canonicalEventId": "EVT_30_MED_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_30_FORM_001",
+        "canonicalEventId": "EVT_30_FORM_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_30_CAP_001",
+        "canonicalEventId": "EVT_30_CAP_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_31_MED_001",
+        "canonicalEventId": "EVT_31_MED_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_31_MKT_001",
+        "canonicalEventId": "EVT_31_MKT_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_31_HOME_001",
+        "canonicalEventId": "EVT_31_HOME_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_31_AGT_001",
+        "canonicalEventId": "EVT_31_AGT_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_31_LEGACY_001",
+        "canonicalEventId": "EVT_31_LEGACY_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_31_RETURN_001",
+        "canonicalEventId": "EVT_31_RETURN_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_31_TACT_001",
+        "canonicalEventId": "EVT_31_TACT_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_31_CCH_001",
+        "canonicalEventId": "EVT_31_CCH_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_31_NAT_001",
+        "canonicalEventId": "EVT_31_NAT_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_31_FINAL_001",
+        "canonicalEventId": "EVT_31_FINAL_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_32_CON_001",
+        "canonicalEventId": "EVT_32_CON_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_32_HOME_001",
+        "canonicalEventId": "EVT_32_HOME_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_32_AGT_001",
+        "canonicalEventId": "EVT_32_AGT_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_32_FAN_001",
+        "canonicalEventId": "EVT_32_FAN_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_32_NAT_001",
+        "canonicalEventId": "EVT_32_NAT_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_33_BODY_001",
+        "canonicalEventId": "EVT_33_BODY_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_33_CAP_001",
+        "canonicalEventId": "EVT_33_CAP_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_33_MKT_001",
+        "canonicalEventId": "EVT_33_MKT_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_33_PRS_001",
+        "canonicalEventId": "EVT_33_PRS_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      }
     ],
     "seedOriginMappingsCandidate": [],
-    "routeSemantics": "A completed or pending pre-T5.1 event with one of these same string IDs remains legacy provenance. Because no identity is verified same-scene, legacy SEEN/cooldown must not suppress the repaired canonical definition."
+    "routeSemantics": "A completed or pending T51_B1A source event with one of these same string IDs remains source provenance. Because no identity is verified same-scene, source SEEN/cooldown must not suppress the repaired canonical definition."
   },
   "futureShiftedIdentityWork": {
     "status": "not_in_current_route",
     "sameSceneMappingsApproved": [],
     "rule": "These pairs are lineage/design candidates only. No history, pending, SEEN, cooldown or seed-origin alias may be created until a later canonical batch implements the target identity and explicitly approves a mapping.",
     "pairs": [
-      {"canonicalId":"EVT_30_BRIDGE_001","legacyCandidateId":"EVT_30_IDN_001","sameSceneMigrationAllowed":false,"extraDependency":"BRIDGE_PRIORITY"},
-      {"canonicalId":"EVT_30_STATUS_001","legacyCandidateId":"EVT_30_TEAM_001","sameSceneMigrationAllowed":false},
-      {"canonicalId":"EVT_30_EUR_001","legacyCandidateId":"EVT_30_FINAL_001","sameSceneMigrationAllowed":false},
-      {"canonicalId":"EVT_30_RECORD_001","legacyCandidateId":"EVT_31_REC_001","sameSceneMigrationAllowed":false},
-      {"canonicalId":"EVT_30_PAIN_001","legacyCandidateId":"EVT_33_MED_001","sameSceneMigrationAllowed":false},
-      {"canonicalId":"EVT_30_NANO_001","legacyCandidateId":"EVT_33_NET_001","sameSceneMigrationAllowed":false},
-      {"canonicalId":"EVT_31_FAM_001","legacyCandidateId":"EVT_30_LIFE_001","sameSceneMigrationAllowed":false},
-      {"canonicalId":"EVT_31_TEAM_001","legacyCandidateId":"EVT_31_MENT_001","sameSceneMigrationAllowed":false,"specialCase":"The canonical target string EVT_31_TEAM_001 is already occupied in the legacy catalog by the different youth-wave identity. A future implementation must treat that exact-ID legacy occurrence as distinct_scene as well as refusing any alias from EVT_31_MENT_001."},
-      {"canonicalId":"EVT_31_SQUAD_001","legacyCandidateId":"EVT_31_TEAM_001","sameSceneMigrationAllowed":false},
-      {"canonicalId":"EVT_31_BIZ_001","legacyCandidateId":"EVT_32_IMG_001","sameSceneMigrationAllowed":false},
-      {"canonicalId":"EVT_32_RICH_001","legacyCandidateId":"EVT_32_MKT_001","sameSceneMigrationAllowed":false},
-      {"canonicalId":"EVT_32_ELITE_001","legacyCandidateId":"EVT_32_CLB_001","sameSceneMigrationAllowed":false},
-      {"canonicalId":"EVT_32_IMPACT_001","legacyCandidateId":"EVT_32_TACT_001","sameSceneMigrationAllowed":false},
-      {"canonicalId":"EVT_32_SUCCESSOR_001","legacyCandidateId":"EVT_32_TEAM_001","sameSceneMigrationAllowed":false},
-      {"canonicalId":"EVT_32_LOAD_001","legacyCandidateId":"EVT_32_BODY_001","sameSceneMigrationAllowed":false},
-      {"canonicalId":"EVT_32_BOSMAN_001","legacyCandidateId":"EVT_32_BOS_001","sameSceneMigrationAllowed":false},
-      {"canonicalId":"EVT_33_RECORD_001","legacyCandidateId":"EVT_33_REC_001","sameSceneMigrationAllowed":false},
-      {"canonicalId":"EVT_33_FIN_001","legacyCandidateId":"EVT_33_END_001","sameSceneMigrationAllowed":false}
+      {
+        "canonicalId": "EVT_30_BRIDGE_001",
+        "legacyCandidateId": "EVT_30_IDN_001",
+        "sameSceneMigrationAllowed": false,
+        "extraDependency": "BRIDGE_PRIORITY"
+      },
+      {
+        "canonicalId": "EVT_30_STATUS_001",
+        "legacyCandidateId": "EVT_30_TEAM_001",
+        "sameSceneMigrationAllowed": false
+      },
+      {
+        "canonicalId": "EVT_30_EUR_001",
+        "legacyCandidateId": "EVT_30_FINAL_001",
+        "sameSceneMigrationAllowed": false
+      },
+      {
+        "canonicalId": "EVT_30_RECORD_001",
+        "legacyCandidateId": "EVT_31_REC_001",
+        "sameSceneMigrationAllowed": false
+      },
+      {
+        "canonicalId": "EVT_30_PAIN_001",
+        "legacyCandidateId": "EVT_33_MED_001",
+        "sameSceneMigrationAllowed": false
+      },
+      {
+        "canonicalId": "EVT_30_NANO_001",
+        "legacyCandidateId": "EVT_33_NET_001",
+        "sameSceneMigrationAllowed": false
+      },
+      {
+        "canonicalId": "EVT_31_FAM_001",
+        "legacyCandidateId": "EVT_30_LIFE_001",
+        "sameSceneMigrationAllowed": false
+      },
+      {
+        "canonicalId": "EVT_31_TEAM_001",
+        "legacyCandidateId": "EVT_31_MENT_001",
+        "sameSceneMigrationAllowed": false,
+        "specialCase": "The canonical target string EVT_31_TEAM_001 is already occupied in the legacy catalog by the different youth-wave identity. A future implementation must treat that exact-ID legacy occurrence as distinct_scene as well as refusing any alias from EVT_31_MENT_001."
+      },
+      {
+        "canonicalId": "EVT_31_SQUAD_001",
+        "legacyCandidateId": "EVT_31_TEAM_001",
+        "sameSceneMigrationAllowed": false
+      },
+      {
+        "canonicalId": "EVT_31_BIZ_001",
+        "legacyCandidateId": "EVT_32_IMG_001",
+        "sameSceneMigrationAllowed": false
+      },
+      {
+        "canonicalId": "EVT_32_RICH_001",
+        "legacyCandidateId": "EVT_32_MKT_001",
+        "sameSceneMigrationAllowed": false
+      },
+      {
+        "canonicalId": "EVT_32_ELITE_001",
+        "legacyCandidateId": "EVT_32_CLB_001",
+        "sameSceneMigrationAllowed": false
+      },
+      {
+        "canonicalId": "EVT_32_IMPACT_001",
+        "legacyCandidateId": "EVT_32_TACT_001",
+        "sameSceneMigrationAllowed": false
+      },
+      {
+        "canonicalId": "EVT_32_SUCCESSOR_001",
+        "legacyCandidateId": "EVT_32_TEAM_001",
+        "sameSceneMigrationAllowed": false
+      },
+      {
+        "canonicalId": "EVT_32_LOAD_001",
+        "legacyCandidateId": "EVT_32_BODY_001",
+        "sameSceneMigrationAllowed": false
+      },
+      {
+        "canonicalId": "EVT_32_BOSMAN_001",
+        "legacyCandidateId": "EVT_32_BOS_001",
+        "sameSceneMigrationAllowed": false
+      },
+      {
+        "canonicalId": "EVT_33_RECORD_001",
+        "legacyCandidateId": "EVT_33_REC_001",
+        "sameSceneMigrationAllowed": false
+      },
+      {
+        "canonicalId": "EVT_33_FIN_001",
+        "legacyCandidateId": "EVT_33_END_001",
+        "sameSceneMigrationAllowed": false
+      }
     ]
   },
   "futureCanonicalMissingWork": {
     "status": "not_in_current_route",
-    "ids": ["EVT_30_CCH_001","EVT_30_PRS_001","EVT_30_NAT_002","EVT_30_JAN_001","EVT_31_ROLE_001"],
+    "ids": [
+      "EVT_30_CCH_001",
+      "EVT_30_PRS_001",
+      "EVT_30_NAT_002",
+      "EVT_30_JAN_001",
+      "EVT_31_ROLE_001"
+    ],
     "migrationRule": "When added, each starts unseen with no inherited cooldown and no synthesized history unless an independently approved mapping exists. Same-title conditional evidence is never enough."
   },
   "engineOnlyCurrentBatch": {
     "status": "keep_active_pending_canonical_decision",
-    "ids": ["EVT_30_AGT_001","EVT_33_NAT_001","EVT_33_HOME_001","EVT_33_CON_001","EVT_33_RET_001"],
+    "ids": [
+      "EVT_30_AGT_001",
+      "EVT_33_NAT_001",
+      "EVT_33_HOME_001",
+      "EVT_33_CON_001",
+      "EVT_33_RET_001"
+    ],
     "migrationRule": "Do not remove these in the current route. ENGINE_ONLY_HISTORY proves they can later become source-only legacy evidence without remaining schedulable, but retirement/removal requires an explicit owner decision in the batch that actually removes them from EVENTS.",
     "earlyRetirementException": "EVT_33_RET_001 is a technical voluntary early-retirement adaptation; engine_only_noncanonical does not by itself mean it should be deleted."
   },
   "requiredCurrentRouteAssertions": [
     "runtime target contentIdentity equals the target identity used by the registered route",
-    "source identity is the frozen pre-T5.1 identity",
+    "source identity is the frozen post-T5.1 B1a identity",
     "there are exactly 27 current-batch scheduler mappings",
     "all 27 current-batch mappings are exact-ID distinct_scene mappings",
     "all 27 clear canonical SEEN state",
@@ -152,6 +400,12 @@
     "double migration is a no-op",
     "18 shifted pairs receive no mapping in the current route",
     "5 canonical-missing IDs receive no synthesized history/SEEN/cooldown in the current route",
-    "5 engine-only IDs remain schedulable in this current batch because this PR has not removed them from EVENTS"
-  ]
+    "5 engine-only IDs remain schedulable in this current batch because this PR has not removed them from EVENTS",
+    "registered edge extends the existing PRE_T51 -> T51_B1A lineage without shortcut or ambiguity"
+  ],
+  "sourceIdentityEvidence": {
+    "source": "src/session/content-migration.ts#T51_B1A_CONTENT_IDENTITY",
+    "fixture": "qa/fixtures/t5.1/post-t51-sources/1a8a5e2006fe7160f4fbc02060568d3abec99df038fe3a1a7799c8a0e802eac7.json",
+    "policy": "This batch extends the frozen post-T5.1 B1a lineage; it must not add a PRE_T51 shortcut."
+  }
 }
