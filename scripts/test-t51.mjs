@@ -5,6 +5,7 @@ import { EVENTS } from '../dist/content/events/index.js';
 
 const report = JSON.parse(fs.readFileSync('analysis/2026-09-15/T5.1-reconciliation.json', 'utf8'));
 const veteranReport = JSON.parse(fs.readFileSync('analysis/T5.1/canon-30-34.json', 'utf8'));
+const seedLifecycleReport = JSON.parse(fs.readFileSync('analysis/T5.1/canon-30-34-seed-lifecycle.json', 'utf8'));
 const principalSource = fs.readFileSync('src/content/events/30_34/principal-events.ts', 'utf8');
 const conditionalSource = fs.readFileSync('src/content/events/30_34/conditional-events.ts', 'utf8');
 const indexSource = fs.readFileSync('src/content/events/30_34/index.ts', 'utf8');
@@ -133,6 +134,33 @@ test('T5.1 30-34 conserva opciones canónicas del lote estable de edad 33 sin au
   assert.match(override33aSource,/SEED_AGE34_PRIORITY/);
   assert.match(override33aSource,/professional\.retirementDistance/);
   assert.doesNotMatch(override33aSource,/EARLY_RETIRED_30_34/);
+});
+
+test('T5.1/T5.2 30-34 conserva las cadenas de seed demostrables sin cierres artificiales', () => {
+  assert.equal(seedLifecycleReport.scope, '30_34');
+  assert.equal(seedLifecycleReport.policy.noArtificialClosures, true);
+  assert.equal(seedLifecycleReport.stableIdReimplementations, reimplementedIds.length);
+  assert.equal(seedLifecycleReport.confirmedChains.length, 7);
+
+  for (const chain of seedLifecycleReport.confirmedChains) {
+    const writer = byId.get(chain.writer);
+    assert.ok(writer, `${chain.seed}: falta writer ${chain.writer}`);
+    assert.ok(writer.seedsWrite?.includes(chain.seed), `${chain.writer}: no declara ${chain.seed} en seedsWrite`);
+    for (const readerId of chain.readers) {
+      const reader = byId.get(readerId);
+      assert.ok(reader, `${chain.seed}: falta reader ${readerId}`);
+      assert.ok(reader.seedsRead?.includes(chain.seed), `${readerId}: no lee ${chain.seed}`);
+    }
+  }
+
+  for (const seedId of seedLifecycleReport.openWithinStableSet) {
+    const readers = reimplementedIds.filter(id => byId.get(id)?.seedsRead?.includes(seedId));
+    assert.deepEqual(readers, [], `${seedId}: ya tiene consumidor estable y el informe debe actualizarse`);
+  }
+
+  const pressRetirement = byId.get('EVT_33_PRS_001');
+  assert.ok(pressRetirement);
+  assert.equal(JSON.stringify(pressRetirement).includes('EARLY_RETIRED_30_34'), false);
 });
 
 test('T5.1 30-34 mantiene condicionales en revisión hasta inventario canónico', () => {
