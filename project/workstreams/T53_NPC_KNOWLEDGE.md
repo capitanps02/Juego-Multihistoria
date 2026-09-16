@@ -183,9 +183,11 @@ La API de información posterior aceptaba `sourceNpcId` como trazabilidad, pero 
 
 Corrección:
 
-- si `sourceNpcId` está presente, la fuente debe satisfacer `npcKnows` para el `factId` transmitido o para el `eventId` subyacente cuando se usa un alias;
-- una fuente desconocedora provoca error antes de escribir conocimiento o memoria en el destinatario;
-- una transmisión legítima Nano → Rivas continúa funcionando;
+- `sourceNpcId` deja de ser una etiqueta pasiva: cuando existe, el NPC fuente debe satisfacer `npcKnows(state, sourceNpcId, factId)` en la fecha de transmisión;
+- el invariante se aplica en `rememberNpcFactInPlace`, el punto real de escritura, por lo que no puede eludirse llamando directamente a la API de bajo nivel;
+- una fuente cuyo conocimiento ya ha caducado tampoco puede seguir transmitiéndolo como conocimiento válido;
+- una fuente inexistente o el propio destinatario como fuente se rechazan antes de mutar estado;
+- una transmisión legítima Nano → Rivas continúa funcionando y no consume RNG;
 - un rumor/claim no verificado no se modela como `knowledge`; si se añade en el futuro deberá ser un estado separado que no satisfaga gates `know.*`.
 
 ## 8. Trazabilidad y cobertura real
@@ -215,7 +217,7 @@ La suite dirigida cubre el contrato pedido y regresiones adicionales:
 
 1. NPC presencia un hecho → puede recordarlo;
 2. NPC sin acceso → no sabe ni reacciona;
-3. información posterior → aprende desde ese momento;
+3. información posterior → aprende desde ese momento y no consume RNG;
 4. relación persiste tras cambio de club;
 5. recuerdo fuerte sigue disponible años después;
 6. save/restore conserva conocimiento y relación;
@@ -226,8 +228,11 @@ La suite dirigida cubre el contrato pedido y regresiones adicionales:
 11. Nano solo aprende la ayuda no solicitada en el outcome donde realmente se entera;
 12. flags + seed no bastan para su callback sin conocimiento personal;
 13. una cadena reportada exige que el NPC fuente conozca el hecho;
-14. diez descubrimientos/memorias explícitos de contenido crean memoria únicamente en el outcome revelador, nunca en el alternativo;
-15. una escena que cambia de club conserva en la memoria del NPC el club donde el hecho fue aprendido.
+14. un retry del mismo `commandId` no reaprende, no reescribe `learnedAt` y no altera RNG/estado;
+15. la API de escritura directa tampoco admite una fuente NPC ignorante;
+16. una fuente cuyo conocimiento ha caducado no puede seguir propagándolo;
+17. diez descubrimientos/memorias explícitos de contenido crean memoria únicamente en el outcome revelador, nunca en el alternativo;
+18. una escena que cambia de club conserva en la memoria del NPC el club donde el hecho fue aprendido.
 
 `npm test` ejecuta conjuntamente los gates T5.2 ya integrados en `main` y la auditoría y suites T5.3. El workflow `Repository integrity` ejecuta además el QA T5: determinismo/RNG, límites de edad, referencias, carreras largas, lifecycle y simulación estratificada.
 
@@ -239,7 +244,7 @@ T5.3 queda **técnicamente preparado para revisión/integración**, con estas pr
 - no se infiere conocimiento desde `npcRefs`;
 - `NPCState.access` permanece metadata legado y no se usa como probabilidad implícita de conocimiento;
 - el contenido sin vía explícita no concede conocimiento;
-- un `sourceNpcId` no puede transmitir un hecho que desconoce;
+- un `sourceNpcId` solo puede transmitir un `factId` que conozca y que siga vigente;
 - no se ha añadido contenido canónico para Mamadou ni Mara;
 - la cobertura futura puede declarar nuevas vías de conocimiento cuando el canon demuestre testigo, comunicación o publicación;
 - la rama integra explícitamente el lifecycle T5.2 sin alterar su semántica;
