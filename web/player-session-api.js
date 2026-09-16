@@ -12,9 +12,18 @@ export function createPlayerSessionApi(GameSession, cryptoApi = globalThis.crypt
 
   const present = session => {
     if (!session || typeof getKnownPlayerContacts !== 'function') return session;
+    const presentView = view => view && typeof view === 'object'
+      ? { ...view, contacts: getKnownPlayerContacts(session) }
+      : view;
+    const presentDispatchResult = result => {
+      const project = value => value && typeof value === 'object' && value.view
+        ? { ...value, view: presentView(value.view) }
+        : value;
+      return result && typeof result.then === 'function' ? result.then(project) : project(result);
+    };
     return Object.freeze({
-      getView: (...args) => ({ ...session.getView(...args), contacts: getKnownPlayerContacts(session) }),
-      dispatch: (...args) => session.dispatch(...args),
+      getView: (...args) => presentView(session.getView(...args)),
+      dispatch: (...args) => presentDispatchResult(session.dispatch(...args)),
       exportSnapshot: (...args) => session.exportSnapshot(...args)
     });
   };
