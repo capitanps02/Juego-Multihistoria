@@ -3,8 +3,11 @@ package com.multihistoria;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.Intent;
-import android.os.Bundle;
+import android.content.pm.PackageInfo;
 import android.net.Uri;
+import android.os.Build;
+import android.os.Bundle;
+import android.util.Log;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
@@ -16,9 +19,11 @@ import androidx.webkit.WebViewAssetLoader;
 import java.io.ByteArrayInputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import org.json.JSONObject;
 
 /** Minimal offline shell: every game byte is packaged under android_asset. */
 public final class MainActivity extends Activity {
+    private static final String TAG = "Multihistoria";
     private static final String ASSET_ORIGIN = "https://appassets.androidplatform.net/assets/";
     private static final int FILE_REQUEST = 4311;
     private static final int SAVE_REQUEST = 4312;
@@ -29,6 +34,7 @@ public final class MainActivity extends Activity {
 
     @Override public void onCreate(Bundle state) {
         super.onCreate(state);
+        Log.i(TAG, "Launching offline shell version=" + BuildConfig.VERSION_NAME);
         game = new WebView(this);
         game.getSettings().setJavaScriptEnabled(true);
         game.getSettings().setDomStorageEnabled(true);
@@ -71,8 +77,10 @@ public final class MainActivity extends Activity {
                     intent.setType(type);
                     intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE,
                         params.getMode() == FileChooserParams.MODE_OPEN_MULTIPLE);
+                    Log.i(TAG, "Opening import document selector type=" + type);
                     startActivityForResult(intent, FILE_REQUEST);
                 } catch (Exception error) {
+                    Log.e(TAG, "Could not open import document selector", error);
                     fileCallback = null;
                     callback.onReceiveValue(null);
                     return false;
@@ -96,13 +104,45 @@ public final class MainActivity extends Activity {
                 intent.setType("application/json");
                 intent.putExtra(Intent.EXTRA_TITLE, pendingDownloadName);
                 try {
+                    Log.i(TAG, "Opening export document selector name=" + pendingDownloadName);
                     startActivityForResult(intent, SAVE_REQUEST);
                 } catch (Exception error) {
+                    Log.e(TAG, "Could not open export document selector", error);
                     pendingDownloadName = null;
                     pendingDownloadText = null;
+                    notifyFileResult("export", "error", "No se pudo abrir el selector de archivos.");
                 }
             });
         }
+
+        @JavascriptInterface public String getRuntimeInfo() {
+            String webViewVersion = null;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                PackageInfo webViewPackage = WebView.getCurrentWebViewPackage();
+                if (webViewPackage != null) webViewVersion = webViewPackage.versionName;
+            }
+            try {
+                JSONObject info = new JSONObject();
+                info.put("versionName", BuildConfig.VERSION_NAME);
+                info.put("versionCode", BuildConfig.VERSION_CODE);
+                info.put("androidRelease", Build.VERSION.RELEASE);
+                info.put("androidSdk", Build.VERSION.SDK_INT);
+                info.put("webViewVersion", webViewVersion == null ? JSONObject.NULL : webViewVersion);
+                info.put("offline", true);
+                return info.toString();
+            } catch (Exception error) {
+                Log.e(TAG, "Could not create runtime diagnostics", error);
+                return "{}";
+            }
+        }
+    }
+
+    private void notifyFileResult(String operation, String status, String detail) {
+        if (game == null) return;
+        String script = "window.dispatchEvent(new CustomEvent('mh:android-file-result',{detail:{operation:"
+            + JSONObject.quote(operation) + ",status:" + JSONObject.quote(status) + ",message:"
+            + JSONObject.quote(detail == null ? "" : detail) + "}}));";
+        game.evaluateJavascript(script, null);
     }
 
     @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -121,16 +161,26 @@ public final class MainActivity extends Activity {
                     result = new Uri[] { data.getData() };
                 }
             }
+            Log.i(TAG, result == null ? "Import selector cancelled" : "Import selector returned " + result.length + " file(s)");
             callback.onReceiveValue(result);
         } else if (requestCode == SAVE_REQUEST) {
             String text = pendingDownloadText;
             pendingDownloadName = null;
             pendingDownloadText = null;
-            if (resultCode != RESULT_OK || data == null || data.getData() == null) return;
+            if (resultCode != RESULT_OK || data == null || data.getData() == null) {
+                Log.i(TAG, "Export selector cancelled");
+                notifyFileResult("export", "cancelled", "");
+                return;
+            }
             try (OutputStream output = getContentResolver().openOutputStream(data.getData())) {
-                if (output != null) output.write(text == null ? new byte[0] : text.getBytes(StandardCharsets.UTF_8));
-            } catch (Exception ignored) {
-                // The browser fallback still allows a subsequent download attempt.
+                if (output == null) throw new IllegalStateException("No output stream for selected document");
+                output.write(text == null ? new byte[0] : text.getBytes(StandardCharsets.UTF_8));
+                output.flush();
+                Log.i(TAG, "Export completed");
+                notifyFileResult("export", "saved", "");
+            } catch (Exception error) {
+                Log.e(TAG, "Export failed", error);
+                notifyFileResult("export", "error", "El sistema no pudo escribir el archivo seleccionado.");
             }
         }
     }
