@@ -94,12 +94,24 @@ Dependencies: Batch 04B reviewed/integrated.
 Dependencies: Batch 04C reviewed/integrated. Must preserve `playing -> decided -> announced -> closed`; no epilogue before `closed`.
 
 ### 13. DRAFT — Batch 05A · exact-ID conditional semantic foundation
-Scope: semantic certification foundation for exact-ID conditionals (especially 18–20 and 23–26), without treating exact ID as proof of full fidelity.
-Dependencies: current principal PRs (#3, #7, #5) reviewed/integrated so shared seeds and phase boundaries are stable.
+Scope: semantic certification foundation for exact-ID conditionals, without treating exact ID or runtime `canonStatus` as proof of full fidelity.
+
+Audit work completed on workflow branch:
+- exact-ID inventory: 47/134 conditional IDs exact in P1;
+- 47-entry machine-readable disposition map;
+- field review of all 14 exact-ID callbacks in 18–20;
+- upstream flag/causal provenance review for the strongest 18–20 candidates;
+- targeted semantic/save/RNG test specification;
+- confirmed that generic exact-ID shells in 20–23, 23–26 and 26–30 cannot be auto-certified;
+- confirmed that some late exact-ID/`verified` retirement callbacks still have semantic mismatches.
+
+Audit result: **0 exact-ID callback is automatically `canonical_verified_full`.**
+
+Runtime status remains DRAFT. Dependencies for runtime implementation: current principal PRs (#3, #7, #5) reviewed/integrated so shared seeds and phase boundaries are stable.
 
 ### 14. DRAFT — Batch 05B · conditional ages 20–23
 Scope: 18 canonical callbacks; 3 exact IDs / 15 identity drifts in P1.
-Dependencies: Batch 05A plus principal Batch 01.
+Dependencies: Batch 05A runtime foundation plus principal Batch 01.
 
 ### 15. DRAFT — Batch 05C · conditional ages 26–30
 Scope: 24 canonical callbacks; 5 exact IDs / 19 identity drifts in P1.
@@ -108,7 +120,7 @@ Dependencies: Batch 05B and principal Batches 02A–02E including seed chronolog
 ### 16. DRAFT — Batch 05D · conditional ages 30–34
 Scope: 26 canonical callbacks; P1 had 0/26 exact IDs. Identity must be established from condition + scene + function/memory, never fuzzy/title matching.
 Dependencies for runtime implementation: Batch 05C and principal Batch 03B.
-Planning note: semantic dissection/crosswalk evidence may be authored now on the workflow branch without changing runtime content.
+Planning/audit status: semantic review complete on workflow branch — 26/26 legacy/runtime shells reviewed and 0/26 approved as direct same-scene migration. Runtime implementation remains blocked by dependencies.
 
 ### 17. DRAFT — Batch 05E · conditional ages 34+
 Scope: 32 canonical callbacks; 5 exact IDs / 27 identity drifts in P1, including retirement callbacks.
