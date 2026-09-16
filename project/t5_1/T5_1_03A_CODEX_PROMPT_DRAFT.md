@@ -11,6 +11,9 @@ Read and obey:
 - `project/CHATGPT_CODEX_WORKFLOW.md`
 - `project/t5_1/T5_1_PRINCIPAL_BATCH_IMPLEMENTATION_RULES.md`
 - `project/t5_1/T5_1_PRINCIPAL_87_BATCH_MANIFEST.json`
+- `project/t5_1/T5_1_PRINCIPAL_LEGACY_EXTRA_87_INVENTORY.json`
+- `project/t5_1/T5_1_PRINCIPAL_TITLE_CANDIDATES_30_PLUS_REVIEW.md`
+- `project/t5_1/T5_1_PRINCIPAL_TITLE_CANDIDATES_30_PLUS_DISPOSITIONS.json`
 - canonical rows in `analysis/2026-09-11/t1/principal-traceability.json`
 
 ## Goal
@@ -28,11 +31,22 @@ Reconcile the ten baseline-unresolved canonical principal scenes at age 30:
 9. `EVT_30_NAT_002` — La selección gana sin ti
 10. `EVT_30_JAN_001` — Enero: especialista de lujo
 
-## Special identity warning
+## Reviewed identity decision — do not reopen from title alone
 
-Baseline runtime contains `EVT_30_IDN_001` with the same title as canonical `EVT_30_BRIDGE_001`.
+Baseline runtime `EVT_30_IDN_001` shares the title **La palabra veterano** with canonical `EVT_30_BRIDGE_001`.
 
-Do **not** rename it solely from title equality. Compare the full canonical row against the runtime scene: trigger, visible/uncertain information, choices, resolution, seed responsibility and transition role. Only use a same-scene migration if all relevant semantics are proven compatible.
+This pair has already received field-level semantic review.
+
+Approved disposition:
+- `EVT_30_IDN_001`: `retire_technical_keep_history_only`;
+- same-scene migration: **not allowed**;
+- old history ID rewrite: **not allowed**;
+- old pending ID direct substitution: **not allowed**;
+- canonical `EVT_30_BRIDGE_001`: implement as a separate canonical scene.
+
+Reason: title, age and `SEED_VETERAN_LABEL` show strong lineage, but the runtime event uses the generic 30–34 maturity body/intel/choice set instead of the canonical age-30 bridge dilemma.
+
+Do not spend task scope attempting to re-approve this pair from title equality. If implementation evidence genuinely contradicts the reviewed source fields, report it to ChatGPT rather than silently changing the disposition.
 
 ## Required work
 
@@ -43,7 +57,7 @@ For every target:
 - implement visible vs uncertain information;
 - preserve distinct choice intent and ambiguous outcomes;
 - reconcile seeds and NPC references;
-- disposition any technical predecessor explicitly.
+- disposition every other technical predecessor assigned to 03A explicitly.
 
 ### Bridge responsibility
 
@@ -79,8 +93,10 @@ Potentially:
 
 ## Migration rules
 
-- `EVT_30_IDN_001` history/pending data is not automatically `EVT_30_BRIDGE_001`.
-- Preserve historical technical IDs when same-scene proof fails.
+- Keep completed `EVT_30_IDN_001` history as legacy historical truth.
+- A pending `EVT_30_IDN_001` must resolve through supported legacy-content compatibility, not become `EVT_30_BRIDGE_001`.
+- Do not manufacture `SEEN_EVT_30_BRIDGE_001` from the title match.
+- Preserve compatible seed state only under explicit migration rules; seed compatibility is not scene identity.
 - Pending scene choice sets cannot be silently replaced.
 - Do not manufacture later canonical memories from approximate predecessor events.
 
@@ -88,6 +104,8 @@ Potentially:
 
 Add targeted tests for:
 - all ten target IDs;
+- canonical `EVT_30_BRIDGE_001` and retired active scheduling of legacy `EVT_30_IDN_001`;
+- legacy completed/pending `EVT_30_IDN_001` migration truthfulness;
 - 29 priority → canonical 30 bridge across save/resume;
 - dorsal/status memory → age 34 consumer fixture;
 - record 30 → record/body age 33 fixture;
@@ -107,4 +125,4 @@ Run the common required commands.
 
 ## Deliverable
 
-Focused age-30 canonical reconciliation with explicit alias/migration decisions, causal tests and current validation evidence for ChatGPT review.
+Focused age-30 canonical reconciliation with reviewed legacy dispositions, causal tests and current validation evidence for ChatGPT review.
