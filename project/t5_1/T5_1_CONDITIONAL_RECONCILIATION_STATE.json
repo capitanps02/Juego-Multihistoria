@@ -1,0 +1,89 @@
+{
+  "task": "T5.1 conditional reconciliation planning state",
+  "generatedAt": "2026-09-16",
+  "status": "planning_complete_runtime_not_reconciled",
+  "counts": {
+    "canonical": 134,
+    "runtimeBaseline": 134,
+    "exactCanonicalIdsInRuntimeBaseline": 47,
+    "canonicalIdsMissingInRuntimeBaseline": 87,
+    "runtimeOnlyLegacyIds": 87,
+    "canonicalSemanticRowsReviewed": 134,
+    "runtimeOnlyDispositionReviewed": 87,
+    "runtimeOnlyRetireTechnicalKeepHistoryOnly": 86,
+    "runtimeOnlyUnresolved": 1,
+    "exactIdAutomaticallyCanonicalVerifiedFull": 0
+  },
+  "phaseReview": [
+    {"phase":"18_20","canonical":14,"exactIds":14,"semanticPlanningReviewed":14,"runtimeOnlyIds":0},
+    {"phase":"20_23","canonical":18,"exactIds":3,"semanticPlanningReviewed":18,"runtimeOnlyIds":15},
+    {"phase":"23_26","canonical":20,"exactIds":20,"semanticPlanningReviewed":20,"runtimeOnlyIds":0},
+    {"phase":"26_30","canonical":24,"exactIds":5,"semanticPlanningReviewed":24,"runtimeOnlyIds":19},
+    {"phase":"30_34","canonical":26,"exactIds":0,"semanticPlanningReviewed":26,"runtimeOnlyIds":26},
+    {"phase":"34_plus","canonical":32,"exactIds":5,"semanticPlanningReviewed":32,"runtimeOnlyIds":27}
+  ],
+  "identityRules": {
+    "exactIdMeansIdentityOnly": true,
+    "exactIdMeansSemanticPass": false,
+    "runtimeVerifiedMeansSemanticPass": false,
+    "titleMatchMeansAlias": false,
+    "genericFactoryCanBeCanonicalWithoutSceneReview": false
+  },
+  "runtimeOnlyDispositionSource": "project/t5_1/T5_1_CONDITIONAL_LEGACY_DISPOSITION_OVERLAY_87.json",
+  "runtimeOnlyDisposition": {
+    "retire_technical_keep_history_only": 86,
+    "unresolved": ["CEVT_RET_RECONSIDER"],
+    "same_scene_rewrite_and_id_migration": 0,
+    "retain_noncanonical_outside_canonical_set": 0,
+    "no_mapping": 0
+  },
+  "unresolvedReason": {
+    "CEVT_RET_RECONSIDER": "Candidate lineage to CEVT_38_RETIREMENT_REVERSAL is blocked by source-level state-model tension: runtime announced/decided -> playing versus monotonic playing -> decided -> announced -> closed authority / closed -> * prohibition."
+  },
+  "exactIdCompatibility": {
+    "rule": "Same string ID does not make old pending/history content compatible after semantic rewrite. Validate/migrate by source content identity and exact event-definition provenance.",
+    "knownHighRisk": [
+      "CEVT_21_ABR_01",
+      "CEVT_21_MEDIA_01",
+      "CEVT_22_FREE_01",
+      "CEVT_29_NAT_02",
+      "CEVT_29_HOME_03",
+      "CEVT_29_BODY_04",
+      "CEVT_29_RECORD_02",
+      "CEVT_29_PROJECT_02",
+      "CEVT_34_MAJOR_COMEBACK",
+      "CEVT_36_NO_MEDICAL_CLEARANCE",
+      "CEVT_38_OFFER_AFTER_RETIREMENT_ANNOUNCED",
+      "CEVT_RET_NO_LAST_MATCH",
+      "CEVT_RET_STORYBOOK_LAST_GOAL"
+    ]
+  },
+  "semanticFindings": {
+    "20_23": "All 18 runtime callbacks use one generic factory; 3 exact IDs require semantic rewrite, including two clear same-ID collisions.",
+    "23_26": "20/20 IDs and titles are exact, but all 20 use one generic body/decision factory; CEVT_24_TOURN_02 has a confirmed condition mismatch.",
+    "26_30": "All 24 use generic factory semantics; five age-29 exact IDs remain uncertified despite runtime verified metadata.",
+    "30_34": "0/26 exact IDs; 26 generic legacy shells reviewed and none approved as direct same-scene migration.",
+    "34_plus": "Generic late-career callbacks and retirement callbacks require scene/FSM repair; no exact ID auto-certifies."
+  },
+  "migrationContract": [
+    "project/t5_1/T5_1_SAVE_SESSION_MIGRATION_RUNTIME_AUDIT.md",
+    "project/t5_1/T5_1_SESSION_CONTENT_MIGRATION_CONTRACT.json",
+    "project/t5_1/T5_1_SESSION_V3_DESIGN_SPEC.md",
+    "project/t5_1/T5_1_SESSION_MIGRATION_TEST_ADDENDUM.json"
+  ],
+  "reviewEvidence": [
+    "project/t5_1/T5_1_05A_REVIEW_18_20.md",
+    "project/t5_1/T5_1_05A_REVIEW_23_26.md",
+    "project/t5_1/T5_1_05B_SEMANTIC_REVIEW_20_23.md",
+    "project/t5_1/T5_1_05C_SEMANTIC_REVIEW_26_30.md",
+    "project/t5_1/T5_1_05D_SEMANTIC_REVIEW.json",
+    "project/t5_1/T5_1_05E_SEMANTIC_REVIEW_34_PLUS.md"
+  ],
+  "remainingBeforeRuntimeCompletion": [
+    "implement/certify all 134 canonical callbacks",
+    "remove runtime-only conditional IDs from active canonical scheduling",
+    "resolve CEVT_RET_RECONSIDER / CEVT_38_RETIREMENT_REVERSAL state authority",
+    "implement final supported-release session content migration",
+    "run identity/semantic/migration/causal/retirement/RNG gates"
+  ]
+}
