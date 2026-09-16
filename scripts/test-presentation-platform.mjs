@@ -9,6 +9,7 @@ const mobile = read('web/product-mobile.css');
 const index = read('web/index.html');
 const local = read('web/local.js');
 const androidBuild = read('scripts/build-android-offline.mjs');
+const androidApkBuild = read('scripts/build-android-apk.mjs');
 const playcanvasBuild = read('scripts/build-playcanvas.mjs');
 const physicalEvidence = read('scripts/collect-android-physical-evidence.mjs');
 const activity = read('android/app/src/main/java/com/multihistoria/MainActivity.java');
@@ -81,6 +82,14 @@ test('Android bridge reports version and export outcomes without enabling networ
   assert.match(activity, /Log\.(?:i|e)\(TAG/);
   assert.doesNotMatch(manifest, /android\.permission\.INTERNET/);
   assert.match(manifest, /usesCleartextTraffic="false"/);
+});
+
+test('Android APK evidence separates exact signed artifact hash from stable payload fingerprint', () => {
+  assert.match(androidApkBuild, /payloadSha256/);
+  assert.match(androidApkBuild, /excludedSigningEntries/);
+  assert.match(androidApkBuild, /META-INF/);
+  assert.match(androidApkBuild, /RSA\|DSA\|EC/);
+  assert.match(androidApkBuild, /CERT\.SF and MANIFEST\.MF remain included/);
 });
 
 test('physical T3.4 evidence collection is hardware-only and non-destructive', () => {
