@@ -1,0 +1,341 @@
+name: T5.11 finalize canonical D
+
+on:
+  push:
+    branches:
+      - integration/t511-23-26
+    paths:
+      - .github/workflows/t511-finalize-d.yml
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: integration/t511-23-26
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Patch four-scene T5.11 catalog and permanent gates
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import json
+
+          p = Path('src/content/events/23_26/t511-principal-events.ts')
+          s = p.read_text()
+          old_gates = '''  gates: [
+              { path: "flags.CONTINENTAL_CONTEXT", op: "eq", value: true },
+              { path: "professional.roleSecurity", op: "lte", value: 70 }
+            ],'''.replace('          ', '')
+          new_gates = '''  gates: [
+              { path: "flags.CONTINENTAL_CONTEXT", op: "eq", value: true },
+              { path: "flags.CONTINENTAL_REGISTERED", op: "eq", value: false },
+              { path: "professional.roleSecurity", op: "lte", value: 70 }
+            ],'''.replace('          ', '')
+          if old_gates not in s:
+              raise SystemExit('EUR gate block not found')
+          s = s.replace(old_gates, new_gates, 1)
+
+          marker = 'export const T511_PRINCIPAL_EVENTS_23: EventDefinition[] = [MONEY, HOME, EUROPE];'
+          if marker not in s:
+              raise SystemExit('T5.11 export marker not found')
+          press = r'''
+
+          const PRESS = ambiguousEvent({
+            id: "EVT_23_PRS_001",
+            ageWindow: [23, 23],
+            phase: "23_26",
+            family: "press",
+            title: "Decisión técnica",
+            body: "Tras varias suplencias, el club comunica que estás disponible y que tu ausencia es una decisión técnica. Tu agente propone filtrar que existía una expectativa de minutos incumplida, pero esa versión no forma parte de tu contrato.",
+            visible: [
+              "Conoces tus minutos reales, las declaraciones oficiales del club y lo que figura —y lo que no figura— en tu contrato."
+            ],
+            uncertain: [
+              "No sabes si el entrenador planea recuperarte ni si la dirección comparte su criterio sobre tu rol."
+            ],
+            choices: [
+              {
+                id: "A",
+                label: "Autorizar la filtración",
+                intentTags: ["media_pressure", "agent_leverage"],
+                primaryMessage: "Autorizas que tu entorno traslade la versión de que esperabas más minutos. La presión puede forzar una conversación, pero no convierte esa expectativa en una promesa contractual.",
+                secondaryMessage: "La filtración gana espacio público y el cuerpo técnico la interpreta como una escalada. Sigues sin saber si eso acelerará una solución o cerrará más la puerta.",
+                primaryEffects: [n("reputation.mediaHeat", 5), n("professional.careerControl", 2), n("professional.institutionalTrust", -2)],
+                secondaryEffects: [n("reputation.mediaHeat", 8), n("professional.institutionalTrust", -4), n("professional.environmentStability", -2)],
+                primarySeedTransitions: [seedCreate("SEED_FIRST_LEAK", 62, { strategy: "authorized_leak", claim: "minutes_expectation", contractualPromise: false })],
+                secondarySeedTransitions: [seedCreate("SEED_FIRST_LEAK", 70, { strategy: "authorized_leak", claim: "minutes_expectation", contractualPromise: false })]
+              },
+              {
+                id: "B",
+                label: "Pedir una reunión interna primero",
+                intentTags: ["internal_process", "clarity"],
+                primaryMessage: "Pides una conversación directa antes de mover el conflicto fuera. Obtienes más información sobre cómo te ve el club sin fabricar ninguna garantía.",
+                secondaryMessage: "La reunión confirma que dentro del club no todos leen tu situación igual. Tienes más contexto, pero ninguna certeza sobre los próximos partidos.",
+                primaryEffects: [n("professional.careerControl", 4), n("professional.institutionalTrust", 2), n("reputation.mediaHeat", -1)],
+                secondaryEffects: [n("professional.careerControl", 3), n("professional.environmentStability", -1)]
+              },
+              {
+                id: "C",
+                label: "Declarar públicamente que competirás sin entrar en detalles",
+                intentTags: ["public_composure", "competition"],
+                primaryMessage: "Dices que competirás por recuperar sitio y evitas atribuir al club promesas que no están documentadas.",
+                secondaryMessage: "El mensaje contiene el ruido, aunque parte de la prensa lo interpreta como una respuesta indirecta a tu pérdida de rol.",
+                primaryEffects: [n("professional.careerControl", 2), n("professional.publicMyth", 2), n("professional.institutionalTrust", 1)],
+                secondaryEffects: [n("reputation.mediaHeat", 2), n("professional.publicPolarization", 1)]
+              },
+              {
+                id: "D",
+                label: "Guardar silencio y esperar tres partidos",
+                intentTags: ["patience", "evidence_first"],
+                primaryMessage: "Dejas que los siguientes partidos aporten información antes de convertir el desacuerdo en un conflicto público.",
+                secondaryMessage: "El silencio evita una escalada inmediata, pero también cede al club el control del relato mientras tu rol sigue sin estar asegurado.",
+                primaryEffects: [n("professional.institutionalTrust", 2), n("reputation.mediaHeat", -2)],
+                secondaryEffects: [n("professional.careerControl", -2), n("professional.environmentStability", -1)]
+              }
+            ],
+            gates: [
+              { path: "professional.roleSecurity", op: "lte", value: 48 },
+              { path: "flags.HAS_SEED_ELITE_ROLE_BARGAIN", op: "eq", value: true }
+            ],
+            timeWindow: { months: [10, 11, 12, 1, 2] },
+            weight: 18,
+            cooldown: 99999,
+            seedsRead: ["SEED_ELITE_ROLE_BARGAIN", "SEED_FIRST_LEAK"],
+            seedsWrite: ["SEED_FIRST_LEAK"],
+            tags: ["press", "role_decline", "agent", "adult_consolidation", "t5_11"],
+            canonStatus: "verified"
+          });
+          '''.replace('\n          ', '\n').rstrip()
+          s = s.replace(marker, press + '\n\nexport const T511_PRINCIPAL_EVENTS_23: EventDefinition[] = [MONEY, HOME, EUROPE, PRESS];')
+          p.write_text(s)
+
+          p = Path('src/session/content-migration.ts')
+          s = p.read_text()
+          eur_mapping = '''    { legacyEventId: "EVT_23_EUR_001", canonicalEventId: "EVT_23_EUR_001", kind: "distinct_scene", clearCanonicalSeen: true, clearCanonicalCooldown: true }'''
+          if eur_mapping not in s:
+              raise SystemExit('EUR migration mapping not found')
+          prs_mapping = eur_mapping + ',\n    { legacyEventId: "EVT_23_PRS_001", canonicalEventId: "EVT_23_PRS_001", kind: "distinct_scene", clearCanonicalSeen: true, clearCanonicalCooldown: true }'
+          s = s.replace(eur_mapping, prs_mapping, 1)
+          p.write_text(s)
+
+          p = Path('scripts/test-t51-t511-23-26.mjs')
+          s = p.read_text()
+          s = s.replace("const IDS = ['EVT_23_MONEY_001', 'EVT_23_HOME_001', 'EVT_23_EUR_001'];", "const IDS = ['EVT_23_MONEY_001', 'EVT_23_HOME_001', 'EVT_23_EUR_001', 'EVT_23_PRS_001'];")
+          s = s.replace("const europe = () => byId('EVT_23_EUR_001');", "const europe = () => byId('EVT_23_EUR_001');\nconst press = () => byId('EVT_23_PRS_001');")
+          label_anchor = """  assert.deepEqual(labels(europe()), [
+    'Pedir respuesta antes del cierre',
+    'No presionar y confiar',
+    'Si quedas fuera, pedir salida o cesión inmediata',
+    'Aceptar quedar fuera si prometen rol doméstico alto'
+  ]);
+
+  for (const id of IDS) assert.equal(byId(id).canonStatus, 'verified');"""
+          label_repl = """  assert.deepEqual(labels(europe()), [
+    'Pedir respuesta antes del cierre',
+    'No presionar y confiar',
+    'Si quedas fuera, pedir salida o cesión inmediata',
+    'Aceptar quedar fuera si prometen rol doméstico alto'
+  ]);
+
+  assert.equal(press().text.title, 'Decisión técnica');
+  assert.deepEqual(labels(press()), [
+    'Autorizar la filtración',
+    'Pedir una reunión interna primero',
+    'Declarar públicamente que competirás sin entrar en detalles',
+    'Guardar silencio y esperar tres partidos'
+  ]);
+
+  for (const id of IDS) assert.equal(byId(id).canonStatus, 'verified');"""
+          if label_anchor not in s:
+              raise SystemExit('T5.11 label test anchor not found')
+          s = s.replace(label_anchor, label_repl, 1)
+          old_eur_assert = """  assert.deepEqual(event.gates, [
+    { path: 'flags.CONTINENTAL_CONTEXT', op: 'eq', value: true },
+    { path: 'professional.roleSecurity', op: 'lte', value: 70 }
+  ]);"""
+          new_eur_assert = """  assert.deepEqual(event.gates, [
+    { path: 'flags.CONTINENTAL_CONTEXT', op: 'eq', value: true },
+    { path: 'flags.CONTINENTAL_REGISTERED', op: 'eq', value: false },
+    { path: 'professional.roleSecurity', op: 'lte', value: 70 }
+  ]);"""
+          if old_eur_assert not in s:
+              raise SystemExit('EUR test gate anchor not found')
+          s = s.replace(old_eur_assert, new_eur_assert, 1)
+          old_eur_reach = """  assert.equal(eventGatesPass(state, event), true);
+  const beforeRegistration = state.flags.CONTINENTAL_REGISTERED;"""
+          new_eur_reach = """  assert.equal(eventGatesPass(state, event), true);
+  state.flags.CONTINENTAL_REGISTERED = true;
+  assert.equal(eventGatesPass(state, event), false, 'already-registered players must not receive an unresolved registration scene');
+  state.flags.CONTINENTAL_REGISTERED = false;
+  const beforeRegistration = state.flags.CONTINENTAL_REGISTERED;"""
+          if old_eur_reach not in s:
+              raise SystemExit('EUR reachability anchor not found')
+          s = s.replace(old_eur_reach, new_eur_reach, 1)
+          insert_before = "\ntest('T5.11 extends only the T5.10 -> T5.11 lineage edge', async () => {"
+          if insert_before not in s:
+              raise SystemExit('Lineage test anchor not found')
+          press_test = r'''
+
+test('press scene requires a real role decline after the prior high-role expectation and never fabricates a contract promise', () => {
+  const event = press();
+  assert.deepEqual(event.gates, [
+    { path: 'professional.roleSecurity', op: 'lte', value: 48 },
+    { path: 'flags.HAS_SEED_ELITE_ROLE_BARGAIN', op: 'eq', value: true }
+  ]);
+  assert.deepEqual(event.seedsRead, ['SEED_ELITE_ROLE_BARGAIN', 'SEED_FIRST_LEAK']);
+  assert.deepEqual(event.seedsWrite, ['SEED_FIRST_LEAK']);
+  assert.ok(effectPaths(event).every(path => !path.startsWith('contract.') && path !== 'club' && !path.startsWith('market.')));
+  assert.ok(event.outcomes.every(outcome => outcome.messages.every(message => !/promesa contractual incumplida|garantía contractual incumplida/i.test(message))));
+
+  const state = createInitialState(51108);
+  state.age = 23;
+  state.phase = '23_26';
+  state.date = '2026-10-20';
+  state.professional.roleSecurity = 60;
+  state.flags.HAS_SEED_ELITE_ROLE_BARGAIN = true;
+  assert.equal(eventGatesPass(state, event), false);
+  state.professional.roleSecurity = 40;
+  state.flags.HAS_SEED_ELITE_ROLE_BARGAIN = false;
+  assert.equal(eventGatesPass(state, event), false);
+  state.flags.HAS_SEED_ELITE_ROLE_BARGAIN = true;
+  assert.equal(eventGatesPass(state, event), true);
+
+  const leaked = resolveChoice(state, event, 'A').state.seeds.find(seed => seed.id === 'SEED_FIRST_LEAK');
+  assert.equal(leaked?.originEvent, 'EVT_23_PRS_001');
+  assert.equal(leaked?.payload.contractualPromise, false);
+  assert.equal(leaked?.payload.claim, 'minutes_expectation');
+});
+'''
+          s = s.replace(insert_before, press_test + insert_before, 1)
+          p.write_text(s)
+
+          p = Path('package.json')
+          data = json.loads(p.read_text())
+          scripts = data['scripts']
+          def add_once(key, old, new):
+              if 'test-t53-reconciliation.mjs' in scripts[key]:
+                  return
+              if old not in scripts[key]:
+                  raise SystemExit(f'package anchor missing in {key}')
+              scripts[key] = scripts[key].replace(old, new, 1)
+          add_once('test', 'scripts/test-t53-contacts.mjs', 'scripts/test-t53-contacts.mjs scripts/test-t53-reconciliation.mjs')
+          add_once('qa:t5:saves', 'scripts/test-t52-seed-origin-migration.mjs', 'scripts/test-t52-seed-origin-migration.mjs scripts/test-t53-reconciliation.mjs')
+          add_once('qa:t5', 'scripts/test-t52-seed-origin-migration.mjs', 'scripts/test-t52-seed-origin-migration.mjs scripts/test-t53-reconciliation.mjs')
+          add_once('test:t53', 'scripts/test-t53-contacts.mjs', 'scripts/test-t53-contacts.mjs scripts/test-t53-reconciliation.mjs')
+          p.write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n')
+          PY
+
+      - name: Replace intermediate D freeze with exact four-scene D
+        shell: bash
+        run: |
+          rm -f qa/fixtures/t5.1/post-t51-sources/5d3fd71a8df42ed5b93fdde63ed386e9d776693addd62a30293dbecad7aa56d2.json
+          npm run build
+          FINAL_ID=$(node --input-type=module - <<'NODE'
+          import { EVENTS } from './dist/content/events/index.js';
+          import { contentIdentity } from './dist/session/content-identity.js';
+          process.stdout.write(await contentIdentity(EVENTS));
+          NODE
+          )
+          echo "T511_FINAL_IDENTITY=$FINAL_ID"
+          python3 - "$FINAL_ID" <<'PY'
+          from pathlib import Path
+          import sys
+          final_id = sys.argv[1]
+          old_id = '5d3fd71a8df42ed5b93fdde63ed386e9d776693addd62a30293dbecad7aa56d2'
+          for name in ['src/session/content-migration.ts', 'scripts/test-t51-t511-23-26.mjs']:
+              p = Path(name)
+              s = p.read_text()
+              if old_id not in s:
+                  raise SystemExit(f'intermediate identity not found in {name}')
+              p.write_text(s.replace(old_id, final_id))
+          PY
+          node scripts/freeze-t51-active-source.mjs
+          node scripts/generate-t51-post-legacy-registry.mjs
+          node scripts/generate-t51-offer-bridge-evidence.mjs
+          printf '%s\n' "$FINAL_ID" > /tmp/t511-final-id
+
+      - name: Document final D candidate
+        shell: bash
+        run: |
+          FINAL_ID=$(cat /tmp/t511-final-id)
+          cat > project/workstreams/T51_T511_23_26.md <<EOF
+          # T5.11 — lote canónico D 23–26
+
+          Rama: \`integration/t511-23-26\`  
+          Base re-ground: \`main@42c32b655473ab2bf420cd95b39412ef28880078\`  
+          Fecha: 16/09/2026
+
+          ## Alcance
+
+          T5.11 sustituye exactamente cuatro shells same-ID por escenas canónicas verificadas:
+
+          - \`EVT_23_MONEY_001\` — **El asesor de tu padre**;
+          - \`EVT_23_HOME_001\` — **Tu nombre en Cerro Alto**;
+          - \`EVT_23_EUR_001\` — **La lista continental**;
+          - \`EVT_23_PRS_001\` — **Decisión técnica**.
+
+          El anterior catálogo intermedio de tres escenas \`5d3fd71a…\` queda superseded y no es una generación publicable ni una fuente legacy registrada.
+
+          ## Adaptaciones técnicas de reachability
+
+          Las cifras no son canon; implementan señales cualitativas ya aprobadas:
+
+          - MONEY: \`moneyComfort >= 36\` OR \`HAS_SEED_FIRST_BIG_MONEY\`;
+          - HOME: \`publicMyth >= 28\` OR \`homePull >= 32\` OR \`HAS_SEED_HOME_DISTANCE\`;
+          - EUR: contexto continental, \`CONTINENTAL_REGISTERED == false\` y \`roleSecurity <= 70\`;
+          - PRS: \`roleSecurity <= 48\` AND antecedente \`HAS_SEED_ELITE_ROLE_BARGAIN\`.
+
+          EUR solo registra postura: no decide inscripción, no crea oferta y no firma contrato. PRS distingue filtración, reunión interna, declaración pública y espera; la filtración se guarda como alegación de expectativa de minutos con \`contractualPromise:false\`, nunca como promesa contractual factual.
+
+          ## Memoria y continuidad
+
+          - MONEY lee \`SEED_FIRST_BIG_MONEY\` / \`SEED_FAMILY_MONEY\` y escribe \`SEED_FAMILY_BUSINESS\`;
+          - HOME lee \`SEED_HOME_DISTANCE\` y escribe \`SEED_HOME_SYMBOL\`;
+          - EUR lee \`SEED_ELITE_ROLE_BARGAIN\` y escribe \`SEED_EURO_REGISTRATION\` con resultado de inscripción desconocido;
+          - PRS lee \`SEED_ELITE_ROLE_BARGAIN\` / \`SEED_FIRST_LEAK\` y solo crea/intensifica \`SEED_FIRST_LEAK\` si el jugador autoriza la filtración.
+
+          ## Session v3 / lineage
+
+          Fuente C: \`fee2ff875bac7979d3907f5ee1004ef736efa9a257237c6dee629dd8687fe136\`  
+          D final: \`$FINAL_ID\`
+
+          Existe una única arista C→D con cuatro \`distinct_scene\` exact-ID. Cada mapping limpia únicamente \`SEEN\` y cooldown de la identidad canónica revisada. No hay \`seedOriginMappings\`, shortcuts PRE/B1a→D ni rewrite de history, journal, decisionProvenance, seed origins o pending legacy.
+
+          La fixture D se genera con \`freeze-t51-active-source.mjs\`; \`post-t51-legacy-registry.ts\` y \`frozen-offer-bridge-evidence.ts\` se regeneran con los scripts oficiales. T5-QA-018 y la reconciliación T5.3 del main se conservan.
+
+          ## QA
+
+          \`scripts/test-t51-t511-23-26.mjs\` cubre las cuatro identidades, copy/opciones, causalidad de gates, ausencia de mutación contractual, memoria, C→D exacta, path PRE→B1a→C→D, migración real y no drift de RNG. El gate queda conectado a \`npm test\`, \`qa:t5:saves\`, \`qa:t5\`, \`test:t51\` y \`test:t51:migration\`.
+
+          No auto-mergear. La PR solo queda lista tras CI exact-head y revalidación contra el \`main\` vigente.
+          EOF
+          sed -i 's/^          //' project/workstreams/T51_T511_23_26.md
+
+      - name: Directed validation
+        shell: bash
+        run: |
+          npm run build
+          npm run test:t51:t511
+          npm run test:t51:migration
+          npm run test:t51:offer-bridge
+          npm run test:t53
+
+      - name: Commit generated D and remove temporary workflow
+        shell: bash
+        run: |
+          git rm .github/workflows/t511-finalize-d.yml
+          git config user.name "multihistoria-t511-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add package.json project/workstreams/T51_T511_23_26.md scripts/test-t51-t511-23-26.mjs src/content/events/23_26/t511-principal-events.ts src/session/content-migration.ts src/session/post-t51-legacy-registry.ts src/session/frozen-offer-bridge-evidence.ts qa/fixtures/t5.1/post-t51-sources
+          git commit -m "feat(t511): finalize four-scene canonical D"
+          git push origin HEAD:integration/t511-23-26
