@@ -84,7 +84,7 @@ jobs:
             analysis/2026-09-15/T3.3-apk-build.json
 
       - name: Verify APK build report
-        run: node -e "const fs=require('fs');const file='analysis/2026-09-15/T3.3-apk-build.json';if(!fs.existsSync(file))process.exit(1);const r=JSON.parse(fs.readFileSync(file,'utf8'));if(r.status!=='pass'||!r.apk?.sha256)process.exit(1);console.log(JSON.stringify(r.apk));"
+        run: node -e "const fs=require('fs');const file='analysis/2026-09-15/T3.3-apk-build.json';if(!fs.existsSync(file))process.exit(1);const r=JSON.parse(fs.readFileSync(file,'utf8'));if(r.status!=='pass'||!r.apk?.sha256||!r.apk?.payloadSha256)process.exit(1);console.log(JSON.stringify(r.apk));"
 
       - name: Upload Android candidate
         if: success()
