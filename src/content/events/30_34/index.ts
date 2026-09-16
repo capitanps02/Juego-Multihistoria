@@ -35,7 +35,11 @@ const preserveUnmodelledTriggerBranches=(event:EventDefinition):EventDefinition=
   return {
     ...event,
     gates:[],
-    tags:[...new Set([...(event.tags??[]),"t51_unmodelled_club_renewal_proxy"])]
+    tags:[...new Set([
+      ...(event.tags??[]),
+      "t51_trigger_approximation",
+      "t51_unmodelled_club_renewal_proxy"
+    ])]
   };
 };
 
