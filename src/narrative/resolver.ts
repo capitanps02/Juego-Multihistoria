@@ -1,4 +1,6 @@
+import { knowledgeRulesFor } from "../catalog/npc-knowledge-rules.js";
 import { conditionsPass } from "../core/conditions.js";
+import { forgetExpiredNpcKnowledgeInPlace, rememberNpcFactInPlace } from "../core/npc-knowledge.js";
 import { getPath, setPath } from "../core/path.js";
 import { DeterministicRng } from "../core/rng.js";
 import type { ChoiceDefinition, Effect, EventDefinition, GameState, OutcomeDefinition, ResolutionResult, SeedTransition } from "../core/types.js";
@@ -75,6 +77,25 @@ function outcomeWeight(state: GameState, outcome: OutcomeDefinition): { weight: 
   return { weight: Math.max(0, weight), modifiers: reasons };
 }
 
+function recordResolvedNpcKnowledge(state: GameState, event: EventDefinition, choiceId: string, outcomeId: string): void {
+  forgetExpiredNpcKnowledgeInPlace(state);
+  for (const rule of knowledgeRulesFor(event.id, choiceId, outcomeId)) {
+    for (const npcId of rule.npcIds) {
+      rememberNpcFactInPlace(state, npcId, {
+        factId: rule.factId ?? event.id,
+        eventId: event.id,
+        choiceId,
+        outcomeId,
+        source: rule.source,
+        certainty: rule.certainty,
+        memory: rule.memory,
+        expiresAfterDays: rule.expiresAfterDays,
+        relationshipMemory: rule.relationshipMemory
+      });
+    }
+  }
+}
+
 function resolveChoiceCore(next: GameState, event: EventDefinition, choiceId: string, qa = false): ResolutionResult {
   const previousClub=next.club;
   const previousRetirementStatus = next.retirement?.status ?? "playing";
@@ -120,6 +141,7 @@ function resolveChoiceCore(next: GameState, event: EventDefinition, choiceId: st
     snapshot: { family: event.family, npcRefs: event.npcRefs ?? [], tags: event.tags ?? [], age: next.age },
     salience: 70, visibility: "private"
   });
+  recordResolvedNpcKnowledge(next, event, choiceId, selected.id);
 
   return {
     state: next, eventId: event.id, choiceId, outcomeId: selected.id,
