@@ -21,9 +21,13 @@ Operational rule: do not execute Codex and do not merge PRs automatically. Runti
 - `T5_1_IDENTITY_AUDIT_P1_REPRO.json`
 
 Large source artifacts from the handoff are preserved byte-for-byte as deterministic gzip files under `source_archives/`:
+- `source_archives/T5_1_CANONICAL_IDENTITY_MANIFEST_388.full.json.gz`
 - `source_archives/T5_1_LEGACY_ID_CROSSWALK_TEMPLATE.json.gz`
 - `source_archives/T5_1_CONDITIONAL_REVIEW_MATRIX.csv.gz`
 - `source_archives/T5_1_SEMANTIC_MAP_26_RETIREMENT.md.gz`
+- `source_archives/CHECKSUMS.json` records original SHA-256, archive SHA-256, byte counts and Git blob SHA-1 for all four archives.
+
+The four source archives were reproduced locally with deterministic gzip (`compresslevel=9`, `mtime=0`) from the original handoff files and their resulting Git blob SHA-1 values match the blobs stored on this branch. This is preservation evidence only; the normalized operational files elsewhere in `project/t5_1/` remain the working audit inputs.
 
 ## Current gate snapshot
 
