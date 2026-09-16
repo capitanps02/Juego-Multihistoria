@@ -47,7 +47,7 @@ Current `main` exposes the eligibility contract through production scheduling:
 2. a scheduled event is returned with `scheduled.event.choices` filtered to the currently eligible subset;
 3. `t6-sim.mjs` passes that exact `scheduled.event` to `chooseForProfile()`.
 
-No T6 runtime patch is needed. `scripts/test-t6-choice-eligibility.mjs` adds a directed regression where a blocked `money/salary/contract` choice would beat the remaining choice for `money-first` if it leaked through. With the gate false the selector can only see/select `STAY`; with the gate true it selects `CASH`. The canonical fixture is also asserted unchanged.
+No T6 runtime patch is needed. `scripts/test-t6-choice-eligibility.mjs` adds a directed regression with a synthetic `eligibility-probe` profile: the gated `BLOCKED_HIGH_SCORE` choice carries `elite + ambition` and would beat the low-score `SAFE` choice if it leaked through. With the gate false the scheduler materializes only `SAFE`, so T6 can only select `SAFE`; with the gate true both choices are exposed and T6 selects `BLOCKED_HIGH_SCORE`. The canonical event fixture is also asserted unchanged when the blocked option is hidden.
 
 ## Paired sampling contract
 
