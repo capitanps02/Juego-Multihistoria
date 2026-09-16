@@ -7,8 +7,6 @@ import { getSeedScopePolicy } from '../dist/catalog/seed-scope.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const outputPath = path.join(root, 'analysis/T5.2/deferred-consequences.json');
-const seedIds = new Set(SEED_CATALOG.map(seed => seed.id));
-const seedById = new Map(SEED_CATALOG.map(seed => [seed.id, seed]));
 
 function finiteMax(value) {
   return value === null || value === undefined ? Infinity : value;
@@ -46,46 +44,19 @@ export function temporalFeasibility(seedAgeWindow, producerAgeWindow, consumerAg
   };
 }
 
-function seedFromPresencePath(value) {
-  return typeof value === 'string' && value.startsWith('flags.HAS_SEED_')
-    ? value.slice('flags.HAS_'.length)
-    : null;
-}
-
-function walkConditions(event, conditions, context, out, unknownRefs) {
-  for (const condition of conditions ?? []) {
-    const seedId = seedFromPresencePath(condition.path);
-    if (!seedId) continue;
-    if (!seedIds.has(seedId)) {
-      unknownRefs.push({ seedId, eventId: event.id, kind: 'condition', context });
-      continue;
-    }
-    out.push({
-      seedId,
-      eventId: event.id,
-      kind: 'condition',
-      context,
-      ageWindow: event.ageWindow,
-      phase: event.phase,
-      family: event.family
-    });
-  }
-}
-
 function dedupeRows(rows, keyFn) {
   return [...new Map(rows.map(row => [keyFn(row), row])).values()];
 }
 
 export function buildDeferredConsequenceReport(events = EVENTS, seeds = SEED_CATALOG) {
   const localSeedIds = new Set(seeds.map(seed => seed.id));
-  const localSeedById = new Map(seeds.map(seed => [seed.id, seed]));
   const unknownRefs = [];
   const producers = [];
   const consumers = [];
   const declaredReaders = [];
   const sameOutcomeCreateTerminal = [];
 
-  const localSeedFromPresencePath = value => (
+  const seedFromPresencePath = value => (
     typeof value === 'string' && value.startsWith('flags.HAS_SEED_')
       ? value.slice('flags.HAS_'.length)
       : null
@@ -93,7 +64,7 @@ export function buildDeferredConsequenceReport(events = EVENTS, seeds = SEED_CAT
 
   const collectConditions = (event, conditions, context) => {
     for (const condition of conditions ?? []) {
-      const seedId = localSeedFromPresencePath(condition.path);
+      const seedId = seedFromPresencePath(condition.path);
       if (!seedId) continue;
       if (!localSeedIds.has(seedId)) {
         unknownRefs.push({ seedId, eventId: event.id, kind: 'condition', context });
