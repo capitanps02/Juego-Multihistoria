@@ -57,6 +57,8 @@ El audit real consume por defecto `SEED_SCOPE_PROOFS` desde `scripts/t52-seed-sc
 
 La API del validator conserva `scopeProofs` inyectables para tests y futuras composiciones; pasar una lista vacía demuestra que el simple scope metadata sigue siendo insuficiente.
 
+La suite mantiene ambos lados del contrato: una clasificación `club` sin proof explícito falla cerrado, mientras que `SEED_PRIVATE_CHAT` puede validar técnicamente ese basis cuando `buildClosureReadinessReport()` consume el registry integrado por defecto. Ninguna de esas pruebas crea una clasificación real en `seed-closure-classifications.json`.
+
 ### `retired_compatible`
 
 La identidad se retira/depreca preservando compatibilidad con saves/history/provenance.
