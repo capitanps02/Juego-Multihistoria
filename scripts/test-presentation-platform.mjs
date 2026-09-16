@@ -35,12 +35,17 @@ test('web, PlayCanvas and Android all consume the same mobile presentation layer
   assert.match(androidBuild, /appVersion/);
 });
 
-test('player-facing entry points share the same session adapter', () => {
+test('player-facing entry points share the same session adapter and public contact projection', () => {
   assert.match(local, /createPlayerSessionApi/);
+  assert.match(local, /getKnownPlayerContacts/);
   assert.match(local, /GameSession:PlayerSession/);
   assert.match(playcanvasBuild, /web\/player-session-api\.js/);
+  assert.match(playcanvasBuild, /src\/session\/player-contacts\.ts/);
+  assert.match(playcanvasBuild, /getKnownPlayerContacts/);
   assert.match(playcanvasBuild, /GameSession:PlayerSession/);
   assert.match(androidBuild, /player-session-api\.js/);
+  assert.match(androidBuild, /player-contacts\.js/);
+  assert.match(androidBuild, /getKnownPlayerContacts/);
   assert.match(androidBuild, /GameSession:PlayerSession/);
 });
 
@@ -92,7 +97,7 @@ test('Android APK evidence separates exact signed artifact hash from stable payl
   assert.match(androidApkBuild, /CERT\.SF and MANIFEST\.MF remain included/);
 });
 
-test('physical T3.4 evidence collection is hardware-only and non-destructive', () => {
+test('physical T3.4 evidence collection is hardware-only, non-destructive and can verify installed APK identity', () => {
   assert.match(physicalEvidence, /serial\.startsWith\('emulator-'\)/);
   assert.match(physicalEvidence, /ro\.kernel\.qemu/);
   assert.match(physicalEvidence, /ro\.boot\.qemu/);
@@ -100,5 +105,9 @@ test('physical T3.4 evidence collection is hardware-only and non-destructive', (
   assert.match(physicalEvidence, /t34Closed:\s*false/);
   assert.match(physicalEvidence, /destructiveActionsPerformed:\s*false/);
   assert.match(physicalEvidence, /T3\.4-physical-evidence\.json/);
+  assert.match(physicalEvidence, /sha256sum/);
+  assert.match(physicalEvidence, /matchesLocalCandidate/);
+  assert.match(physicalEvidence, /identityCheckAvailable/);
+  assert.match(physicalEvidence, /process\.argv\[3\]/);
   assert.doesNotMatch(physicalEvidence, /'install'|"install"|pm', 'clear|pm\", \"clear/);
 });
