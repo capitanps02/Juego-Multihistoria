@@ -1,0 +1,57 @@
+{
+  "task": "T5.1 legacy crosswalk planning state",
+  "generatedAt": "2026-09-16",
+  "baselineLegacyRuntimeOnlyIds": 174,
+  "status": "partially_dispositioned_planning_only",
+  "counts": {
+    "principalLegacyExtras": 87,
+    "conditionalLegacyExtras": 87,
+    "principalAssignedToBatch": 87,
+    "principalFinalDispositionReviewed": 0,
+    "conditionalDispositionReviewed": 87,
+    "conditionalRetireTechnicalKeepHistoryOnly": 86,
+    "conditionalUnresolved": 1,
+    "approvedSameSceneMigrationsAcrossAllLegacyExtras": 0,
+    "totalLegacyExtrasWithFinalReviewedDisposition": 86,
+    "totalStillBlockingFinalCrosswalk": 88
+  },
+  "principal": {
+    "inventory": "project/t5_1/T5_1_PRINCIPAL_LEGACY_EXTRA_87_INVENTORY.json",
+    "canonicalCounterpartBatchManifest": "project/t5_1/T5_1_PRINCIPAL_87_BATCH_MANIFEST.json",
+    "state": "all_assigned_to_responsible_batch_but_semantic_disposition_pending",
+    "exactTitleCandidates": 7,
+    "exactTitleCandidateRule": "review candidate only; not an approved same-scene migration",
+    "blockingCount": 87
+  },
+  "conditional": {
+    "inventoryAndDisposition": "project/t5_1/T5_1_CONDITIONAL_LEGACY_DISPOSITION_OVERLAY_87.json",
+    "reconciliationState": "project/t5_1/T5_1_CONDITIONAL_RECONCILIATION_STATE.json",
+    "state": "86 retired-history-only planning decisions; one unresolved state-model conflict",
+    "blockingIds": ["CEVT_RET_RECONSIDER"],
+    "blockingCount": 1
+  },
+  "crosswalkDecisionVocabulary": [
+    "same_scene_rewrite_and_id_migration",
+    "retire_technical_keep_history_only",
+    "retain_noncanonical_outside_canonical_set",
+    "no_mapping",
+    "unresolved"
+  ],
+  "globalRules": {
+    "oldHistoryIsAppendOnlyTruth": true,
+    "pendingSceneRequiresSameSceneProofForDirectSubstitution": true,
+    "sameStringIdDoesNotProveContentCompatibility": true,
+    "titleMatchDoesNotProveIdentity": true,
+    "canonicalSeenRequiresReviewedEquivalence": true,
+    "seedOriginRewriteRequiresReviewedEquivalence": true,
+    "legacyCompatibilityDefinitionsNeverSchedule": true
+  },
+  "migrationArchitecture": [
+    "project/t5_1/T5_1_SAVE_SESSION_MIGRATION_RUNTIME_AUDIT.md",
+    "project/t5_1/T5_1_SESSION_CONTENT_MIGRATION_CONTRACT.json",
+    "project/t5_1/T5_1_SESSION_V3_DESIGN_SPEC.md",
+    "project/t5_1/T5_1_CONTENT_MIGRATION_DELIVERY_PLAN.md"
+  ],
+  "sourceArchive": "project/t5_1/source_archives/T5_1_LEGACY_ID_CROSSWALK_TEMPLATE.json.gz",
+  "warning": "This file is a reviewed planning overlay/state summary. It does not mutate the original crosswalk source and does not authorize runtime ID rewrites."
+}
