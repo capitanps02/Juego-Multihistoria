@@ -1,0 +1,37 @@
+name: Roadmap sync one-shot
+
+on:
+  push:
+    branches: [integration/roadmap-sync]
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Apply tracking synchronization
+        run: node scripts/sync-roadmap-2026-09-16.mjs
+      - name: Verify JSON and expected states
+        shell: bash
+        run: |
+          node -e "const p=require('./analysis/2026-09-11/plan-seguimiento.json'); if(p.earnedPercent!==33.51||p.completedPasses!==15||p.omittedPasses!==2||p.remainingBaselinePasses!==51||p.nextPass!=='T5.1') process.exit(1)"
+          grep -F 'T4.7/T4.8 quedan omitidas por alcance' project/PLAN_PASADAS.md
+      - name: Commit synchronized tracking
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add project/PLAN_PASADAS.md analysis/2026-09-11/plan-seguimiento.json
+          git commit -m "docs(tracking): sync omissions and active T5 work"
+          git push origin HEAD:integration/roadmap-sync
