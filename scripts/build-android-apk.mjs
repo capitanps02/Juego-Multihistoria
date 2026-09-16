@@ -25,6 +25,40 @@ let androidRuntimeVerified = false;
 if (fs.existsSync(runtimeReportFile)) {
   try { androidRuntimeVerified = JSON.parse(fs.readFileSync(runtimeReportFile, 'utf8')).passed === true; } catch {}
 }
+
+function fingerprintApkPayload(apkPath) {
+  // Fresh CI runners generate a new Android debug certificate, so the exact APK
+  // SHA legitimately changes even when every player-visible/runtime payload byte
+  // is unchanged. Fingerprint sorted ZIP entry contents while excluding only the
+  // signer certificate container; CERT.SF and MANIFEST.MF remain included.
+  const list = spawnSync('unzip', ['-Z1', apkPath], { encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 });
+  if (list.error || list.status !== 0) {
+    return { sha256: null, error: list.error?.message || `unzip list exit ${list.status}` };
+  }
+  const signingEntry = /^META-INF\/[^/]+\.(?:RSA|DSA|EC)$/i;
+  const allEntries = list.stdout.split(/\r?\n/).filter(Boolean).filter(entry => !entry.endsWith('/'));
+  const excluded = allEntries.filter(entry => signingEntry.test(entry)).sort();
+  const entries = allEntries.filter(entry => !signingEntry.test(entry)).sort();
+  const aggregate = createHash('sha256');
+  for (const entry of entries) {
+    const extracted = spawnSync('unzip', ['-p', apkPath, entry], { encoding: null, maxBuffer: 64 * 1024 * 1024 });
+    if (extracted.error || extracted.status !== 0) {
+      return { sha256: null, error: extracted.error?.message || `unzip ${entry} exit ${extracted.status}` };
+    }
+    const entrySha = createHash('sha256').update(extracted.stdout).digest('hex');
+    aggregate.update(entry, 'utf8');
+    aggregate.update(Buffer.from([0]));
+    aggregate.update(entrySha, 'utf8');
+    aggregate.update('\n', 'utf8');
+  }
+  return {
+    sha256: aggregate.digest('hex'),
+    entries: entries.length,
+    excludedSigningEntries: excluded,
+    policy: 'sorted ZIP entry content hashes excluding META-INF signer certificate containers (*.RSA/*.DSA/*.EC)'
+  };
+}
+
 const report = {
   pass: 'T3.3',
   command: `gradle ${args.join(' ')}`,
@@ -46,9 +80,18 @@ if (java.error || java.status !== 0 || gradle.error || gradle.status !== 0 || !r
   const build = spawnSync(tool, args, { cwd: android, encoding: 'utf8', stdio: 'inherit' });
   report.gradle.exitCode = build.status;
   if (build.status === 0 && fs.existsSync(output)) {
-    report.status = 'pass';
-    report.apk = { path: path.relative(root, output), bytes: fs.statSync(output).size,
-      sha256: createHash('sha256').update(fs.readFileSync(output)).digest('hex') };
+    const payload = fingerprintApkPayload(output);
+    report.apk = {
+      path: path.relative(root, output),
+      bytes: fs.statSync(output).size,
+      sha256: createHash('sha256').update(fs.readFileSync(output)).digest('hex'),
+      payloadSha256: payload.sha256,
+      payloadEntries: payload.entries ?? null,
+      excludedSigningEntries: payload.excludedSigningEntries ?? [],
+      payloadFingerprintPolicy: payload.policy ?? null,
+      payloadFingerprintError: payload.error ?? null
+    };
+    report.status = payload.sha256 ? 'pass' : 'blocked';
   } else {
     report.gradle.error = build.error?.message || 'assembleDebug did not produce an APK';
   }
