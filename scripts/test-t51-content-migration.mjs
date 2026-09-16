@@ -1,11 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import { GameSession, SESSION_VERSION } from '../dist/session/game-session.js';
 import { EVENTS } from '../dist/content/events/index.js';
 import { EventIndex } from '../dist/narrative/event-index.js';
-import { contentIdentity, eventFingerprintMap } from '../dist/session/content-identity.js';
-import { PRE_T51_CONTENT_IDENTITY, PRE_T51_EVENT_EVIDENCE } from '../dist/session/pre-t51-legacy-registry.js';
+import { contentIdentity } from '../dist/session/content-identity.js';
+import { PRE_T51_CONTENT_IDENTITY } from '../dist/session/pre-t51-legacy-registry.js';
 
+const PRE_T51_EVENTS = JSON.parse(fs.readFileSync('qa/fixtures/t5.1/pre-t51-event-catalog.json', 'utf8'));
 const clone = value => structuredClone(value);
 let commandSeq = 0;
 const command = (s, type, extra = {}) => ({
@@ -15,7 +17,6 @@ const command = (s, type, extra = {}) => ({
   ...extra
 });
 const errorCode = code => error => error?.code === code;
-const LEGACY_FIXTURE_EVENT_ID = 'EVT_18_PRE_001';
 
 async function pending(session) {
   for (let i = 0; i < 200; i++) {
@@ -43,38 +44,12 @@ function downgradeToV2(snapshot) {
   return next;
 }
 
-function markAsPreT51Source(snapshot) {
-  const next = clone(snapshot);
-  next.contentIdentity = PRE_T51_CONTENT_IDENTITY;
-  return next;
-}
-
-async function frozenCompatibleFixtureEvents() {
-  const event = EVENTS.find(row => row.id === LEGACY_FIXTURE_EVENT_ID);
-  assert.ok(event, `legacy fixture event ${LEGACY_FIXTURE_EVENT_ID} missing`);
-  const fingerprints = await eventFingerprintMap([event]);
-  assert.equal(
-    fingerprints.get(LEGACY_FIXTURE_EVENT_ID),
-    PRE_T51_EVENT_EVIDENCE[LEGACY_FIXTURE_EVENT_ID]?.fingerprint,
-    `legacy fixture ${LEGACY_FIXTURE_EVENT_ID} drifted from the frozen pre-T5.1 definition`
-  );
-  return [clone(event)];
-}
-
-async function currentWithPending(seed = 700) {
-  const session = await GameSession.create(seed, { sessionId: `migration-current-${seed}` });
-  const decision = await pending(session);
-  return { session, decision, snapshot: session.exportSnapshot() };
-}
-
 async function sourceWithPending(seed = 701) {
-  const session = await GameSession.create(seed, {
-    sessionId: `migration-legacy-${seed}`,
-    events: await frozenCompatibleFixtureEvents()
-  });
+  const session = await GameSession.create(seed, { sessionId: `migration-${seed}`, events: PRE_T51_EVENTS });
   const decision = await pending(session);
-  assert.equal(decision.title, EVENTS.find(row => row.id === LEGACY_FIXTURE_EVENT_ID)?.text.title);
-  return { session, decision, snapshot: markAsPreT51Source(session.exportSnapshot()) };
+  const snapshot = session.exportSnapshot();
+  assert.equal(snapshot.contentIdentity, PRE_T51_CONTENT_IDENTITY, 'frozen source catalog no longer matches PRE_T51_CONTENT_IDENTITY');
+  return { session, decision, snapshot };
 }
 
 async function sourceWithResolved(seed = 702, acknowledge = true) {
@@ -82,7 +57,7 @@ async function sourceWithResolved(seed = 702, acknowledge = true) {
   const choose = command(session, 'choose', { pendingInstanceId: decision.instanceId, choiceId: decision.choices[0].id });
   await session.dispatch(choose);
   if (acknowledge) await session.dispatch(command(session, 'acknowledge'));
-  return { session, snapshot: markAsPreT51Source(session.exportSnapshot()), choose };
+  return { session, snapshot: session.exportSnapshot(), choose };
 }
 
 async function targetWithMutation(eventId, mutate) {
@@ -98,20 +73,16 @@ function route(sourceIdentity, targetIdentity, extra = {}) {
 }
 
 test('current v2 snapshot upgrades to Session v3 provenance without changing game/RNG truth', async () => {
-  const { session, decision } = await currentWithPending(710);
-  await session.dispatch(command(session, 'choose', { pendingInstanceId: decision.instanceId, choiceId: decision.choices[0].id }));
-  await session.dispatch(command(session, 'acknowledge'));
-  const snapshot = session.exportSnapshot();
+  const { snapshot } = await sourceWithResolved(710);
   const old = downgradeToV2(snapshot);
   const beforeState = clone(old.state);
-  const resumed = await GameSession.resume(old);
+  const resumed = await GameSession.resume(old, { events: PRE_T51_EVENTS });
   const after = resumed.exportSnapshot();
   assert.equal(after.sessionVersion, SESSION_VERSION);
   assert.equal(after.sessionVersion, 3);
-  assert.equal(after.contentIdentity, snapshot.contentIdentity);
-  assert.equal(after.contentIdentity, await contentIdentity(EVENTS));
+  assert.equal(after.contentIdentity, PRE_T51_CONTENT_IDENTITY);
   assert.equal(after.decisionProvenance.length, after.state.history.length);
-  assert.ok(after.decisionProvenance.every(row => row.sourceContentIdentity === snapshot.contentIdentity));
+  assert.ok(after.decisionProvenance.every(row => row.sourceContentIdentity === PRE_T51_CONTENT_IDENTITY));
   assert.deepEqual(after.state, beforeState);
 });
 
@@ -255,7 +226,6 @@ test('mixed legacy and current history remains valid across migration, command c
   synthetic.cooldown = 0;
   synthetic.repeatable = false;
   synthetic.weight = 1_000_000;
-  synthetic.tags = ['hard_deadline'];
   synthetic.text = { title: 'Current catalog marker', body: 'Synthetic directed migration test event.' };
   synthetic.choices = [{ id: 'CONTINUE', label: 'Continue', intentTags: [], outcomeIds: ['DONE'] }];
   synthetic.outcomes = [{ id: 'DONE', baseWeight: 1, effects: [], messages: ['Current event resolved.'] }];
@@ -310,7 +280,7 @@ test('legacy committed command receipt still replays without duplicate effect af
   const { session, decision } = await sourceWithPending(718);
   const choose = { type: 'choose', commandId: 'stable-choice-receipt', expectedRevision: session.getView().revision, pendingInstanceId: decision.instanceId, choiceId: decision.choices[0].id };
   await session.dispatch(choose);
-  const source = markAsPreT51Source(session.exportSnapshot());
+  const source = session.exportSnapshot();
   const legacy = downgradeToV2(source);
   const eventId = legacy.state.history[0].eventId;
   const { events, identity } = await targetWithMutation(EVENTS.find(e => e.id !== eventId).id, event => { event.text.body += ' · target identity'; });
