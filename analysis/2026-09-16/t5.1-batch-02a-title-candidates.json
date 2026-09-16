@@ -4,21 +4,27 @@
   "issue": 4,
   "status": "prepared_for_implementation",
   "rule": "Exact title matches are not aliases unless trigger, intel, choices, consequences, memory and save continuity are semantically equivalent.",
+  "crosswalkVocabularyNormalized": true,
   "cases": [
     {
       "canonicalId": "EVT_27_STAR_001",
       "technicalId": "EVT_28_TEAM_001",
       "title": "Dos estrellas, un foco",
-      "decision": "same_scene_concept_requires_semantic_rewrite_and_id_migration",
+      "conceptRelation": "same_scene_concept_requires_semantic_rewrite",
+      "legacyDisposition": "retire_technical_keep_history_only",
       "directAliasApproved": false,
+      "sameSceneMigrationAllowed": false,
+      "historyEventIdRewriteAllowed": false,
+      "pendingEventIdDirectRewriteAllowed": false,
       "canonicalAge": 27,
       "technicalAge": 28,
-      "seedMigration": {
+      "seedCatalogMigration": {
         "seedId": "SEED_SECOND_STAR",
-        "oldOrigin": "EVT_28_TEAM_001",
-        "newOrigin": "EVT_27_STAR_001",
+        "oldCatalogOrigin": "EVT_28_TEAM_001",
+        "newCanonicalCatalogOrigin": "EVT_27_STAR_001",
         "oldAgeWindow": [28,36],
-        "newAgeWindow": [27,36]
+        "newAgeWindow": [27,36],
+        "historicalOriginRewriteAuthorized": false
       },
       "additionalMemory": ["SEED_PENALTY_HIERARCHY"]
     },
@@ -26,17 +32,22 @@
       "canonicalId": "EVT_27_AWARD_001",
       "technicalId": "EVT_28_GALA_001",
       "title": "La gala",
-      "decision": "same_scene_concept_requires_semantic_rewrite_and_id_migration",
+      "conceptRelation": "same_scene_concept_requires_semantic_rewrite",
+      "legacyDisposition": "retire_technical_keep_history_only",
       "directAliasApproved": false,
+      "sameSceneMigrationAllowed": false,
+      "historyEventIdRewriteAllowed": false,
+      "pendingEventIdDirectRewriteAllowed": false,
       "technicalVerifiedFlagIsSufficient": false,
       "canonicalAge": 27,
       "technicalAge": 28,
-      "seedMigration": {
+      "seedCatalogMigration": {
         "seedId": "SEED_GLOBAL_AWARD_BEHAVIOR",
-        "oldOrigin": "EVT_28_GALA_001",
-        "newOrigin": "EVT_27_AWARD_001",
+        "oldCatalogOrigin": "EVT_28_GALA_001",
+        "newCanonicalCatalogOrigin": "EVT_27_AWARD_001",
         "oldAgeWindow": [28,null],
-        "newAgeWindow": [27,null]
+        "newAgeWindow": [27,null],
+        "historicalOriginRewriteAuthorized": false
       },
       "additionalMemory": ["SEED_RECORD_CHASE"]
     },
@@ -44,17 +55,22 @@
       "canonicalId": "EVT_28_RICH_001",
       "technicalId": "EVT_29_MKT_001",
       "title": "La oferta financieramente absurda",
-      "decision": "close_semantic_precursor_requires_rewrite_and_id_migration",
+      "conceptRelation": "close_semantic_precursor_requires_rewrite",
+      "legacyDisposition": "retire_technical_keep_history_only",
       "directAliasApproved": false,
+      "sameSceneMigrationAllowed": false,
+      "historyEventIdRewriteAllowed": false,
+      "pendingEventIdDirectRewriteAllowed": false,
       "technicalVerifiedFlagIsSufficient": false,
       "canonicalAge": 28,
       "technicalAge": 29,
-      "seedMigration": {
+      "seedCatalogMigration": {
         "seedId": "SEED_WEALTHY_PEAK_EXIT",
-        "oldOrigin": "EVT_29_MKT_001",
-        "newOrigin": "EVT_28_RICH_001",
+        "oldCatalogOrigin": "EVT_29_MKT_001",
+        "newCanonicalCatalogOrigin": "EVT_28_RICH_001",
         "oldAgeWindow": [29,null],
-        "newAgeWindow": [28,null]
+        "newAgeWindow": [28,null],
+        "historicalOriginRewriteAuthorized": false
       },
       "additionalMemory": ["SEED_WEALTHY_EXIT"],
       "downstreamDependencies": [
@@ -63,7 +79,8 @@
       ]
     }
   ],
-  "saveRule": "Preserve old event IDs in historical saves/history; do not translate SEEN_old to SEEN_new because direct semantic equivalence was not approved.",
+  "saveRule": "Preserve old event IDs in historical saves/history; do not translate SEEN_old to SEEN_new; pending technical scenes are not directly substituted because same-scene semantic equivalence was not approved.",
+  "seedRule": "Move future seed catalog origin/age metadata to the canonical creator, but do not rewrite a historical seed originEvent solely from concept/title lineage.",
   "verifiedRule": "A technical event with a noncanonical ID cannot be treated as canonically verified solely because title/concept matches the source.",
   "implementationBrief": "project/tasks/T5_1_BATCH_02A_TITLE_CANDIDATES.md"
 }
