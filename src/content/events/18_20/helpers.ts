@@ -1,4 +1,5 @@
 import type { Effect, EventDefinition, EventFamily, NarrativePhase, OutcomeModifier, PresentationSpec, SeedTransition } from "../../../core/types.js";
+import type { EventWithGateAlternatives } from "../../../narrative/event-gates.js";
 
 export interface AmbiguousChoiceSpec {
   id: string;
@@ -28,6 +29,8 @@ export interface AmbiguousEventSpec {
   uncertain: string[];
   choices: AmbiguousChoiceSpec[];
   gates?: EventDefinition["gates"];
+  /** Alternative causal routes. Each inner group is AND; groups are OR. */
+  gateAlternatives?: EventDefinition["gates"][];
   exclusions?: EventDefinition["exclusions"];
   timeWindow?: EventDefinition["timeWindow"];
   weight?: number;
@@ -40,13 +43,14 @@ export interface AmbiguousEventSpec {
   canonStatus?: EventDefinition["canonStatus"];
 }
 
-export function ambiguousEvent(spec: AmbiguousEventSpec): EventDefinition {
+export function ambiguousEvent(spec: AmbiguousEventSpec): EventWithGateAlternatives {
   return {
     id: spec.id,
     ageWindow: spec.ageWindow,
     phase: spec.phase ?? "18_20",
     family: spec.family,
     gates: spec.gates ?? [],
+    ...(spec.gateAlternatives !== undefined ? { gateAlternatives: spec.gateAlternatives } : {}),
     exclusions: spec.exclusions,
     timeWindow: spec.timeWindow,
     cooldown: spec.cooldown ?? 99999,
