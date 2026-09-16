@@ -1,0 +1,34 @@
+name: T5.1 choice eligibility
+
+on:
+  push:
+    branches:
+      - integration/t51-shared-contracts
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'src/narrative/choice-eligibility.ts'
+      - 'src/narrative/scheduler.ts'
+      - 'src/content/events/18_20/helpers.ts'
+      - 'scripts/test-t51-shared-contracts.mjs'
+      - 'package.json'
+      - '.github/workflows/t51-shared-contracts.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  choice-eligibility:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Choice eligibility
+        run: node --test scripts/test-t51-shared-contracts.mjs
