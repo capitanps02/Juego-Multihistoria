@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-09-16",
+  "workstream": "T51_CANON_18_23",
+  "batch": "B4_LEGACY_RETIREMENT",
+  "runtimeAllowedInPr10": false,
+  "summary": {
+    "principalLegacyIds": 6,
+    "conditionalLegacyIds": 15,
+    "totalLegacyIds": 21,
+    "retireTechnicalKeepHistoryOnly": 21,
+    "approvedAliases": 0,
+    "historyRewriteAllowed": false,
+    "pendingDirectRewriteAllowed": false,
+    "canonicalSeenManufactureAllowed": false,
+    "principalHardDecouplingRequired": 3,
+    "conditionalHardDecouplingObserved": 0
+  },
+  "globalRules": [
+    "Removing a legacy row from the active EVENTS catalog never rewrites history.eventId.",
+    "A legacy pending decision must resolve against its frozen sourceContentIdentity/eventFingerprint definition, never against a new canonical scene chosen by ID or theme similarity.",
+    "Legacy validation evidence remains available through the Session v3 legacy content registry and is never scheduled.",
+    "Do not manufacture SEEN_<canonicalId> from a retired technical event unless an independently approved same_scene scheduler mapping exists.",
+    "Do not rewrite existing seed.originEvent values unless an explicit seedOriginMapping with rewriteExisting=true is separately justified; no such rewrite is approved by this audit.",
+    "Every EVENTS-changing retirement generation must extend the unique acyclic contentIdentity migration lineage and pass repository integrity."
+  ],
+  "principalLegacy": [
+    {
+      "id": "EVT_20_MATCH_001",
+      "disposition": "retire_technical_keep_history_only",
+      "hardDecouplingRequired": false,
+      "observedCouplings": ["active principal catalog", "qa/event-ids-20-23.json", "historical QA frequency artifacts", "SEEN_EVT_20_MATCH_001 in historical example saves"],
+      "retirementRequirements": ["remove from active canonical scheduling only in a migration-backed functional batch", "retain frozen legacy definition for pending/history validation", "preserve historical SEEN/history truth without mapping it to EVT_20_MATCH_003 or any other canonical ID"]
+    },
+    {
+      "id": "EVT_21_ABR_001",
+      "disposition": "retire_technical_keep_history_only",
+      "hardDecouplingRequired": true,
+      "hardCoupling": "src/catalog/seeds.ts -> SEED_FOREIGN_ADAPT.originEvents",
+      "observedCouplings": ["active principal catalog", "SEED_FOREIGN_ADAPT origin metadata", "historical QA frequency artifacts"],
+      "retirementRequirements": ["remove legacy ID from future active SEED_FOREIGN_ADAPT origin metadata when the active row is retired", "do not rewrite existing seed.originEvent=EVT_21_ABR_001 in old saves", "retain frozen legacy event evidence", "do not alias to canonical CEVT_21_ABR_01 or EVT_20_ABR_001"]
+    },
+    {
+      "id": "EVT_21_AGT_002",
+      "disposition": "retire_technical_keep_history_only",
+      "hardDecouplingRequired": true,
+      "hardCoupling": "src/catalog/seeds.ts -> SEED_AGENT_POWER.originEvents",
+      "observedCouplings": ["active principal catalog", "SEED_AGENT_POWER origin metadata", "SEEN_EVT_21_AGT_002 in historical example saves", "historical QA frequency artifacts"],
+      "retirementRequirements": ["remove legacy ID from future active SEED_AGENT_POWER origin metadata when the active row is retired", "do not rewrite existing seed.originEvent=EVT_21_AGT_002 in old saves", "retain frozen legacy definition for pending/history", "do not alias to canonical EVT_21_AGT_001 or CEVT_21_AGENT_02"]
+    },
+    {
+      "id": "EVT_21_CCH_001",
+      "disposition": "retire_technical_keep_history_only",
+      "hardDecouplingRequired": false,
+      "observedCouplings": ["active principal catalog", "SEEN_EVT_21_CCH_001 in historical example saves", "historical QA frequency artifacts"],
+      "retirementRequirements": ["remove only from active catalog with migration generation", "retain frozen legacy definition and historical ID", "do not alias to EVT_20_CCH_001 or EVT_21_CCH_002"]
+    },
+    {
+      "id": "EVT_22_LIFE_001",
+      "disposition": "retire_technical_keep_history_only",
+      "hardDecouplingRequired": false,
+      "observedCouplings": ["active principal catalog", "SEEN_EVT_22_LIFE_001 in historical example saves", "historical QA frequency artifacts"],
+      "retirementRequirements": ["remove only from active catalog with migration generation", "retain frozen legacy definition and historical ID", "do not manufacture a canonical replacement from theme similarity"]
+    },
+    {
+      "id": "EVT_22_END_001",
+      "disposition": "retire_technical_keep_history_only",
+      "hardDecouplingRequired": true,
+      "hardCoupling": "src/narrative/scheduler.ts budgetExempt explicit ID",
+      "observedCouplings": ["active principal catalog", "scheduler budget exemption", "SEEN_EVT_22_END_001 in historical example saves", "historical QA frequency artifacts"],
+      "retirementRequirements": ["remove/replace the explicit scheduler dependency before or atomically with active-catalog retirement", "prove age-22/23 transition and principal budgets remain correct without this technical event", "retain frozen legacy definition and historical ID", "do not map its completion to an unrelated canonical event"]
+    }
+  ],
+  "conditionalLegacy": [
+    {"id":"CEVT_20_LOAN_01","disposition":"retire_technical_keep_history_only","hardDecouplingRequired":false,"lineageOnlyCandidates":["CEVT_21_LOAN_01"],"requirements":["no alias","retain legacy pending/history definition"]},
+    {"id":"CEVT_20_ABR_01","disposition":"retire_technical_keep_history_only","hardDecouplingRequired":false,"lineageOnlyCandidates":[],"requirements":["no alias","retain legacy pending/history definition"]},
+    {"id":"CEVT_20_AGENT_01","disposition":"retire_technical_keep_history_only","hardDecouplingRequired":false,"lineageOnlyCandidates":["CEVT_21_AGENT_02"],"requirements":["no alias","retain legacy pending/history definition"]},
+    {"id":"CEVT_20_BODY_01","disposition":"retire_technical_keep_history_only","hardDecouplingRequired":false,"lineageOnlyCandidates":["CEVT_20_PAULA_01","CEVT_21_INJ_01"],"requirements":["no alias","retain legacy pending/history definition"]},
+    {"id":"CEVT_20_HOME_01","disposition":"retire_technical_keep_history_only","hardDecouplingRequired":false,"lineageOnlyCandidates":["CEVT_22_UDV_01"],"requirements":["no alias","retain legacy pending/history definition"]},
+    {"id":"CEVT_20_BRUNO_01","disposition":"retire_technical_keep_history_only","hardDecouplingRequired":false,"lineageOnlyCandidates":["CEVT_22_BRUNO_02"],"requirements":["no alias","retain legacy pending/history definition"]},
+    {"id":"CEVT_21_CAPTAIN_01","disposition":"retire_technical_keep_history_only","hardDecouplingRequired":false,"lineageOnlyCandidates":[],"requirements":["no alias","retain legacy pending/history definition"]},
+    {"id":"CEVT_21_NAT_01","disposition":"retire_technical_keep_history_only","hardDecouplingRequired":false,"lineageOnlyCandidates":[],"requirements":["no alias","retain legacy pending/history definition"]},
+    {"id":"CEVT_21_CONTRACT_01","disposition":"retire_technical_keep_history_only","hardDecouplingRequired":false,"lineageOnlyCandidates":[],"requirements":["no alias","retain legacy pending/history definition"]},
+    {"id":"CEVT_21_ADRIAN_01","disposition":"retire_technical_keep_history_only","hardDecouplingRequired":false,"lineageOnlyCandidates":["CEVT_20_ADR_01","CEVT_22_ADR_02"],"requirements":["no alias","retain SEEN/history truth such as historical example saves","retain legacy pending definition"]},
+    {"id":"CEVT_21_FAMILY_01","disposition":"retire_technical_keep_history_only","hardDecouplingRequired":false,"lineageOnlyCandidates":[],"requirements":["no alias","retain legacy pending/history definition"]},
+    {"id":"CEVT_22_DEADLINE_01","disposition":"retire_technical_keep_history_only","hardDecouplingRequired":false,"lineageOnlyCandidates":[],"requirements":["no alias to EVT_22_DDL_001","retain historical SEEN/history truth","retain legacy pending definition"]},
+    {"id":"CEVT_22_INJ_01","disposition":"retire_technical_keep_history_only","hardDecouplingRequired":false,"lineageOnlyCandidates":["CEVT_20_PAULA_01","CEVT_21_INJ_01"],"requirements":["no alias","retain legacy pending/history definition"]},
+    {"id":"CEVT_22_LOANBUY_01","disposition":"retire_technical_keep_history_only","hardDecouplingRequired":false,"lineageOnlyCandidates":["CEVT_21_LOAN_01"],"requirements":["no alias","retain legacy pending/history definition"]},
+    {"id":"CEVT_22_RETURN_01","disposition":"retire_technical_keep_history_only","hardDecouplingRequired":false,"lineageOnlyCandidates":["CEVT_22_UDV_01"],"requirements":["no alias","retain legacy pending/history definition"]}
+  ],
+  "evidence": {
+    "conditionalDispositionAuthority": "project/t5_1/T5_1_CONDITIONAL_LEGACY_DISPOSITION_OVERLAY_87.json on chore/chatgpt-codex-workflow",
+    "activePrincipalCatalog": "src/content/events/20_23/principal-events.ts",
+    "activeConditionalCatalog": "src/content/events/20_23/conditional-events.ts",
+    "seedCatalog": "src/catalog/seeds.ts",
+    "scheduler": "src/narrative/scheduler.ts",
+    "migrationRuntime": "src/session/content-migration.ts",
+    "historicalExamples": "examples/save-v04..v08-seed-424242.json",
+    "notes": [
+      "Targeted source searches found the hard principal couplings listed above.",
+      "Targeted conditional searches showed active-catalog/QA/historical-save usage and no ID-specific seed/scheduler hard coupling comparable to the principal cases.",
+      "The global conditional overlay explicitly approves retire_technical_keep_history_only for all 15 phase-20_23 runtime-only callback IDs and forbids direct pending/history rewrite."
+    ]
+  },
+  "functionalExitCriteria": [
+    "All 21 legacy IDs are absent from the active canonical catalog after the authorized retirement generation.",
+    "All 21 frozen legacy definitions remain validation-addressable for every supported source content identity that can contain them.",
+    "Historical history.eventId values remain byte-for-byte unchanged by migration.",
+    "Legacy pending decisions still resolve their stored legacy definition/fingerprint or fail closed; they are never substituted by a new canonical scene.",
+    "EVT_21_ABR_001 and EVT_21_AGT_002 no longer act as future active seed origins, while existing saved seed.originEvent values are not rewritten.",
+    "The scheduler contains no active semantic dependency on EVT_22_END_001 and age transition/budget tests prove equivalent engine correctness without the retired technical row.",
+    "No legacy ID creates SEEN state for a canonical scene without an independently approved same_scene mapping.",
+    "The retirement generation extends the unique acyclic contentIdentity migration lineage and passes save/session/determinism/repository-integrity gates."
+  ]
+}
