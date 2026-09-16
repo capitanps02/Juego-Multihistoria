@@ -1,5 +1,5 @@
 {
-  "provenance": "Expected outputs captured from the imported T0/T2 save fixtures. v2 is synthetic, derived from the authentic v3 example by removing fields introduced by v2to4. v3-v7 are supplied migration examples. v8 is a current-schema no-op fixture: after issue #22 proved the imported baseline hash was stale, its hash was recomputed from JSON.stringify(loadSave(examples/save-v08-seed-424242.json)) while preserving the fixture byte-semantics, history, seeds, RNG and round-trip state.",
+  "provenance": "Expected outputs for v2-v7 were captured from the unmodified T0 compiled/save/save.js before T2.2 validation. v2 is synthetic, derived from the authentic v3 example by removing fields introduced by v2to4. v3-v7 are supplied examples. The supplied schema-v8 fixture is already at the current schema and loadSave validates/returns it without migration; its baseline was recalculated on 2026-09-16 from JSON.stringify(loadSave(examples/save-v08-seed-424242.json)) after repository QA exposed that the imported expected hash did not match the imported fixture.",
   "cases": [
     {
       "source": "qa/fixtures/save-v02-derived.json",
