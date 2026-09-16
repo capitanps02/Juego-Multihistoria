@@ -25,27 +25,60 @@ Large source artifacts from the handoff are preserved byte-for-byte as determini
 - `source_archives/T5_1_CONDITIONAL_REVIEW_MATRIX.csv.gz`
 - `source_archives/T5_1_SEMANTIC_MAP_26_RETIREMENT.md.gz`
 
-## Audit work added on the workflow branch
+## Conditional semantic review — 134/134 planning complete
 
-### Batch 05D — conditional ages 30–34
-- `T5_1_05D_SEMANTIC_REVIEW.md`
-- `T5_1_05D_SEMANTIC_REVIEW.json`
+Master summary:
+- `T5_1_CONDITIONAL_SEMANTIC_REVIEW_SUMMARY.md`
 
-Result: 26/26 legacy/runtime shells reviewed; 0/26 approved as same-scene direct migrations. Runtime implementation remains blocked by its dependency chain.
-
-### Batch 05A — exact-ID conditional foundation
+### Batch 05A — exact-ID foundation / 18–20 / 23–26
 - `T5_1_05A_EXACT_ID_FOUNDATION.md`
 - `T5_1_05A_EXACT_ID_DISPOSITIONS.json`
 - `T5_1_05A_REVIEW_18_20.md`
 - `T5_1_05A_FLAG_PROVENANCE_18_20.md`
 - `T5_1_05A_TARGETED_TEST_SPEC.md`
+- `T5_1_05A_REVIEW_23_26.md`
+- `T5_1_05A_23_26_PROVENANCE_ADDENDUM.md`
+
+Key result:
+- 47/134 canonical conditionals have exact IDs in the P1/runtime baseline;
+- 0/47 are auto-promoted to `canonical_verified_full` merely from ID/runtime status;
+- 18–20 contains individually-authored callbacks with several strong causal candidates but remaining certification gaps;
+- 23–26 has 20/20 exact IDs/titles but all 20 still use generic runtime scene/choice semantics;
+- `CEVT_24_TOURN_02` has a confirmed condition mismatch around `NATIONAL_CALLED`.
+
+### Batch 05B — 20–23
+- `T5_1_05B_SEMANTIC_REVIEW_20_23.md`
 
 Result:
-- 47 canonical conditional IDs are exact in the P1/runtime baseline;
-- 0/47 are auto-promoted to `canonical_verified_full` merely from ID/status;
-- 18–20 has 14 individually authored exact-ID callbacks and has received field-level review;
-- later exact-ID groups expose generic factory semantics that require rewrite/certification;
-- runtime `canonStatus:"verified"` is advisory legacy metadata, not an audit certificate.
+- 18/18 canonical/runtime callbacks reviewed;
+- generic callback factory requires semantic rewrite;
+- exact-ID semantic collisions identified for `CEVT_21_MEDIA_01` and `CEVT_22_FREE_01`;
+- 0 direct pending-scene substitutions approved.
+
+### Batch 05C — 26–30
+- `T5_1_05C_SEMANTIC_REVIEW_26_30.md`
+
+Result:
+- 24/24 canonical/runtime callbacks reviewed;
+- five age-29 exact IDs still require semantic repair/certification despite runtime `verified` metadata.
+
+### Batch 05D — 30–34
+- `T5_1_05D_SEMANTIC_REVIEW.md`
+- `T5_1_05D_SEMANTIC_REVIEW.json`
+
+Result:
+- 26/26 legacy/runtime shells reviewed;
+- 0/26 approved as same-scene direct migrations;
+- runtime implementation remains blocked by dependency chain.
+
+### Batch 05E — 34+
+- `T5_1_05E_SEMANTIC_REVIEW_34_PLUS.md`
+
+Result:
+- 32/32 canonical/runtime callbacks reviewed;
+- 0/5 exact IDs are auto-certifiable;
+- retirement callbacks expose state-machine/closure mismatches;
+- open canonical source tension: `CEVT_38_RETIREMENT_REVERSAL` vs monotonic `playing -> decided -> announced -> closed` model and `closed -> *` prohibition.
 
 ## Canonical closure targets
 
@@ -54,6 +87,12 @@ Result:
 - total unique canonical IDs: 388
 
 T5.1 completion requires identity, semantic, migration, causal, save/resume, retirement and deterministic/RNG gates — not only zero ID drift.
+
+## Auditor debt now explicitly known
+
+Current `scripts/audit-t51.mjs` / `scripts/test-t51.mjs` still use the obsolete assumption that conditionals are `count_only_not_semantically_reconciled` because no canonical conditional inventory existed.
+
+That assumption must be replaced during 05A runtime work with the 134-row semantic/identity audit; it must not be preserved merely to keep old tests green.
 
 ## Current execution safety
 
