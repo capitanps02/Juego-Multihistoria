@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import { createPlayerSessionApi } from '../web/player-session-api.js';
 
 const read = file => fs.readFileSync(file, 'utf8');
 const ui = read('web/game-ui.js');
@@ -31,6 +32,31 @@ test('web, PlayCanvas and Android all consume the same mobile presentation layer
   assert.match(playcanvasBuild, /appVersion/);
   assert.match(androidBuild, /web', 'product-mobile\.css/);
   assert.match(androidBuild, /appVersion/);
+});
+
+test('player-facing entry points share the same session adapter', () => {
+  assert.match(local, /createPlayerSessionApi/);
+  assert.match(local, /GameSession:PlayerSession/);
+  assert.match(playcanvasBuild, /web\/player-session-api\.js/);
+  assert.match(playcanvasBuild, /GameSession:PlayerSession/);
+  assert.match(androidBuild, /player-session-api\.js/);
+  assert.match(androidBuild, /GameSession:PlayerSession/);
+});
+
+test('player-facing initial career replaces the legacy placeholder without changing explicit seeds', () => {
+  const calls = [];
+  const FakeSession = {
+    fromSave: (...args) => ({ kind: 'restore', args }),
+    create: (seed, options) => { calls.push({ seed, options }); return { seed, options }; }
+  };
+  const cryptoApi = { getRandomValues(value) { value[0] = 0xdeadbeef; return value; } };
+  const api = createPlayerSessionApi(FakeSession, cryptoApi);
+  const first = api.create(424242, { source: 'initial' });
+  const explicit = api.create(123456789, { source: 'new-career' });
+  assert.equal(first.seed, 0xdeadbeef);
+  assert.notEqual(first.seed, 424242);
+  assert.equal(explicit.seed, 123456789);
+  assert.deepEqual(calls.map(call => call.seed), [0xdeadbeef, 123456789]);
 });
 
 test('player UI hides seed mechanics, technical storage and milestone state codes', () => {
