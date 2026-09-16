@@ -1,0 +1,28 @@
+name: T51 Agent 11 18-20
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/content/events/18_20/t51-b1b-local-repairs.ts'
+      - 'src/content/events/index.ts'
+      - 'scripts/test-t51-agent11-18-20.mjs'
+      - '.github/workflows/t51-agent11-18-20.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  b1b-clara-reachability:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - name: Install and build
+        run: npm ci && npm run build
+      - name: Run Agent 11 B1b regressions and shared OR contract
+        run: node --test scripts/test-t51-agent11-18-20.mjs scripts/test-t51-event-gates.mjs
