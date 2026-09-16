@@ -95,17 +95,28 @@ export function npcKnows(state: GameState, npcId: string, factId: string, asOfDa
   return !record.expiresAfter || record.expiresAfter > asOfDate;
 }
 
-function assertKnowledgeSourceCanTransmit(state: GameState, targetNpcId: string, factId: string, sourceNpcId?: string): void {
-  if (!sourceNpcId) return;
+function knowledgeSourceForTransmission(
+  state: GameState,
+  targetNpcId: string,
+  factId: string,
+  source: NpcKnowledgeSource,
+  sourceNpcId?: string
+): NpcKnowledgeRecord | undefined {
+  if (!sourceNpcId) return undefined;
+  if (source === "witnessed" || source === "public") {
+    throw new Error(`NPC source ${sourceNpcId} is incompatible with knowledge source ${source}`);
+  }
   if (!state.npcs.some(candidate => candidate.id === sourceNpcId)) {
     throw new Error(`Unknown NPC knowledge source: ${sourceNpcId}`);
   }
   if (sourceNpcId === targetNpcId) {
     throw new Error(`NPC ${targetNpcId} cannot be its own knowledge source for ${factId}`);
   }
-  if (!npcKnows(state, sourceNpcId, factId)) {
+  const sourceRecord = getNpcKnowledgeRecord(state, sourceNpcId, factId);
+  if (!sourceRecord || !npcKnows(state, sourceNpcId, factId)) {
     throw new Error(`Cannot transmit ${factId} from uninformed NPC source ${sourceNpcId}`);
   }
+  return sourceRecord;
 }
 
 function laterExpiry(first?: string, second?: string): string | undefined {
@@ -139,9 +150,11 @@ function reinforceActiveRecord(existing: NpcKnowledgeRecord, candidate: NpcKnowl
 
 export function rememberNpcFactInPlace(state: GameState, npcId: string, options: RememberNpcFactOptions): NpcKnowledgeRecord {
   const npc = npcFor(state, npcId);
-  assertKnowledgeSourceCanTransmit(state, npcId, options.factId, options.sourceNpcId);
+  const sourceRecord = knowledgeSourceForTransmission(state, npcId, options.factId, options.source, options.sourceNpcId);
   const memory = options.memory ?? "temporary";
   const expiryDays = options.expiresAfterDays ?? defaultExpiryDays(memory);
+  const requestedCertainty = clamp(options.certainty ?? 100);
+  const certainty = sourceRecord ? Math.min(requestedCertainty, sourceRecord.certainty) : requestedCertainty;
   const candidate: NpcKnowledgeRecord = {
     factId: options.factId,
     eventId: options.eventId,
@@ -149,7 +162,7 @@ export function rememberNpcFactInPlace(state: GameState, npcId: string, options:
     outcomeId: options.outcomeId,
     learnedAt: state.date,
     source: options.source,
-    certainty: clamp(options.certainty ?? 100),
+    certainty,
     memory,
     club: options.club ?? state.club
   };
