@@ -200,8 +200,8 @@ Después de integrar #25:
 
 - PR #17: QA transversal/save/contentIdentity integrado.
 - PR #27: migration handoff 23–30 integrado.
-- PR #19: hardening T5.2 sigue siendo workstream independiente.
-- PR #9: T5.3 knowledge/memory debe re-groundearse y preservar Session v3.
+- T5.2: hardening corregido integrado mediante #36 en `main@73f59ffc5d404b976a210825f9e9aaf141b5b037`; Session v3 debe componerse con ese lifecycle sin reescribir seeds históricas.
+- PR #9: T5.3 knowledge/memory debe re-groundearse sobre T5.2 + Session v3 y preservar ambos contratos.
 - #13/#15: cambios activos de catálogo bloqueados hasta que este framework esté integrado y cada uno aporte su ruta concreta.
 
 ## Artefactos
