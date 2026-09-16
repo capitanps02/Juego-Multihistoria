@@ -11,6 +11,7 @@ import {
 } from '../dist/core/npc-knowledge.js';
 import { getPath } from '../dist/core/path.js';
 import { resolveChoiceInPlace } from '../dist/narrative/resolver.js';
+import { scheduleEvent } from '../dist/narrative/scheduler.js';
 import { loadSave, serializeSave } from '../dist/save/save.js';
 import { GameSession } from '../dist/session/game-session.js';
 
@@ -153,4 +154,50 @@ test('T5.3/10 PlayerView no filtra conocimiento interno del NPC', async () => {
   for (const hidden of ['"knowledge"', '"memories"', '"privateAgenda"', '"reliability"', '"access"', '"trustAxes"']) {
     assert.equal(publicJson.includes(hidden), false, `ViewModel filtra ${hidden}`);
   }
+});
+
+test('T5.3/11 Nano solo aprende la ayuda no solicitada cuando realmente se entera', () => {
+  const event = byId('EVT_19_TEAM_001');
+  let primary;
+  let secondary;
+  for (let seed = 0; seed < 2000 && (!primary || !secondary); seed++) {
+    const state = createInitialState(seed);
+    resolveChoiceInPlace(state, event, 'MOVE_CONTACT');
+    const outcome = state.history.at(-1)?.outcomeId;
+    if (outcome === 'MOVE_CONTACT__PRIMARY' && !primary) primary = state;
+    if (outcome === 'MOVE_CONTACT__SECONDARY' && !secondary) secondary = state;
+  }
+  assert.ok(primary, 'No se encontró resultado primario MOVE_CONTACT');
+  assert.ok(secondary, 'No se encontró resultado secundario MOVE_CONTACT');
+  assert.equal(npcKnows(primary, 'NPC_PLR_14', 'EVT_19_TEAM_001'), false);
+  assert.equal(npcKnows(secondary, 'NPC_PLR_14', 'EVT_19_TEAM_001'), true);
+  assert.equal(getNpcKnowledgeRecord(secondary, 'NPC_PLR_14', 'EVT_19_TEAM_001')?.source, 'reported');
+});
+
+test('T5.3/12 flags y seed no bastan: el callback de Nano exige conocimiento personal', () => {
+  const event = byId('EVT_19_TEAM_001');
+  const callback = byId('CEVT_19_NANO_01');
+  let informed;
+  for (let seed = 0; seed < 2000 && !informed; seed++) {
+    const state = createInitialState(seed);
+    resolveChoiceInPlace(state, event, 'MOVE_CONTACT');
+    if (state.history.at(-1)?.outcomeId === 'MOVE_CONTACT__SECONDARY') informed = state;
+  }
+  assert.ok(informed, 'No se encontró estado donde Nano descubre el contacto');
+  Object.assign(informed, { age: 19, phase: '18_20', date: '2027-07-01' });
+  informed.runtime.day = 365;
+  informed.runtime.seasonDay = 0;
+  informed.runtime.daysSinceNarrative = 999;
+  informed.runtime.eventsThisSeason = 0;
+  assert.equal(scheduleEvent(informed, [callback], { ignoreRhythmGate: true })?.event.id, callback.id);
+
+  const omniscient = structuredClone(informed);
+  const nano = omniscient.npcs.find(npc => npc.id === 'NPC_PLR_14');
+  assert.ok(nano);
+  delete nano.knowledge.EVT_19_TEAM_001;
+  nano.memories = nano.memories.filter(id => id !== 'EVT_19_TEAM_001');
+  relation(omniscient, 'NPC_PLR_14').memories = relation(omniscient, 'NPC_PLR_14').memories.filter(id => id !== 'EVT_19_TEAM_001');
+  assert.equal(omniscient.flags.UNSOLICITED_NANO_HELP, true);
+  assert.equal(omniscient.flags.HAS_SEED_NANO_SHADOW, true);
+  assert.equal(scheduleEvent(omniscient, [callback], { ignoreRhythmGate: true }), null);
 });
