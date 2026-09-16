@@ -24,6 +24,10 @@ function set(object,path,value) {
 for(const f of fixtures) test(`migration ${f.source}: frozen baseline, history, seeds and existing RNG preserved`,()=>{
   const raw=fs.readFileSync(f.source,'utf8'), original=JSON.parse(raw), migrated=loadSave(raw);
   assert.equal(migrated.schemaVersion,8);
+  if (original.schemaVersion === 8) {
+    assert.deepEqual(migrated, original, 'schema 8 is validation-only: loadSave must not normalize or migrate the fixture');
+    assert.equal(f.normalizedV8Sha256, hash(original), 'schema-8 baseline must be the hash of the exact committed JSON object');
+  }
   assert.equal(hash(migrated),f.normalizedV8Sha256);
   assert.deepEqual(migrated.history,original.history);
   assert.deepEqual(migrated.seeds,original.seeds);
