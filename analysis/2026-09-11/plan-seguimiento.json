@@ -1,6 +1,6 @@
 {
   "baselineDate": "2026-09-11",
-  "revision": 17,
+  "revision": 18,
   "product": "Carrera de Futbolista Android v1",
   "authority": "Instrucción del usuario: planificación en pasadas del asistente; ejecutar T1.",
   "baselineStatus": "engineering_baseline_provisional_until_first_implemented_content_batch",
@@ -13,9 +13,9 @@
   ],
   "contingencyPasses": 14,
   "completedPasses": 15,
-  "remainingBaselinePasses": 53,
+  "remainingBaselinePasses": 51,
   "earnedPercent": 33.51,
-  "nextPass": "T4.7",
+  "nextPass": "T5.1",
   "externalEvidencePolicy": "Esperas de tienda, participación humana y pruebas físicas se registran aparte y no se reemplazan por pasadas. Preparar artefacto no acredita la evidencia externa.",
   "recalibration": "Tras T2, T3 y primer lote implementado T4; también tras dos pasadas consecutivas sin cerrar su entrega o desviación prevista >20%. Conservar línea base y registrar previsión nueva.",
   "stages": [
@@ -38,7 +38,7 @@
           "title": "Definir alcance, auditar piloto y recalibrar plan",
           "acceptance": "Alcance y contrato escritos, 12 fichas con reparación, 254 IDs inventariados y plan validado",
           "externalEvidenceRequired": false,
-          "weightPercent": 6.0,
+          "weightPercent": 6,
           "status": "complete",
           "earnedPercent": 6
         }
@@ -196,7 +196,7 @@
     {
       "id": "T4",
       "title": "Primer tramo y atractivo",
-      "status": "in_progress",
+      "status": "closed_with_omissions",
       "baselinePasses": 8,
       "rangePasses": [
         6,
@@ -293,8 +293,10 @@
           "acceptance": "Recoger comprensión, deseo de continuar y fricción; implementar correcciones",
           "externalEvidenceRequired": true,
           "weightPercent": 1.37,
-          "status": "not_started",
-          "earnedPercent": 0
+          "status": "omitted",
+          "earnedPercent": 0,
+          "omittedDate": "2026-09-15",
+          "omittedReason": "Decisión de alcance: no se sustituye evidencia humana por pruebas automáticas."
         },
         {
           "id": "T4.8",
@@ -302,15 +304,17 @@
           "acceptance": "8–12 participantes entre rondas; contrastar J01/J02 y recalibrar lotes",
           "externalEvidenceRequired": true,
           "weightPercent": 1.37,
-          "status": "not_started",
-          "earnedPercent": 0
+          "status": "omitted",
+          "earnedPercent": 0,
+          "omittedDate": "2026-09-15",
+          "omittedReason": "Decisión de alcance: no se sustituye evidencia humana por pruebas automáticas."
         }
       ]
     },
     {
       "id": "T5",
       "title": "Carrera completa, memoria y epílogos",
-      "status": "not_started",
+      "status": "in_progress",
       "baselinePasses": 38,
       "rangePasses": [
         32,
@@ -329,8 +333,11 @@
           "acceptance": "134 condicionales y 87 IDs discrepantes reconciliados; sin equivalencias silenciosas",
           "externalEvidenceRequired": false,
           "weightPercent": 0.87,
-          "status": "not_started",
-          "earnedPercent": 0
+          "status": "in_progress",
+          "earnedPercent": 0,
+          "startedDate": "2026-09-15",
+          "evidence": "project/T5_1_AUDITORIA_RECONCILIACION.md; qa/fixtures/t5.1/pre-t51-content-manifest.json; project/workstreams/COORDINATION.md",
+          "note": "Baseline pre-T5.1 congelado; reconciliación funcional/migración todavía no cerradas."
         },
         {
           "id": "T5.2",
@@ -338,8 +345,12 @@
           "acceptance": "Transiciones y consumidores/cierres con pruebas de repetición y caducidad",
           "externalEvidenceRequired": false,
           "weightPercent": 0.87,
-          "status": "not_started",
-          "earnedPercent": 0
+          "status": "in_progress",
+          "earnedPercent": 0,
+          "startedDate": "2026-09-16",
+          "technicalInfrastructureIntegrated": true,
+          "evidence": "project/workstreams/T52_SEED_LIFECYCLE.md; scripts/audit-t52.mjs; scripts/test-t52.mjs",
+          "note": "Infraestructura lifecycle integrada; consumidores/cierres canónicos completos siguen pendientes."
         },
         {
           "id": "T5.3",
@@ -832,7 +843,7 @@
           "title": "Diagnóstico de producción",
           "acceptance": "Revisar evidencia real del periodo de observación de 14 días y resolver incidencias",
           "externalEvidenceRequired": true,
-          "weightPercent": 1.0,
+          "weightPercent": 1,
           "status": "not_started",
           "earnedPercent": 0
         },
@@ -841,14 +852,14 @@
           "title": "Cierre y mantenimiento",
           "acceptance": "Actualización con saves preservados, cero fallos graves y guía de producción/recuperación",
           "externalEvidenceRequired": true,
-          "weightPercent": 1.0,
+          "weightPercent": 1,
           "status": "not_started",
           "earnedPercent": 0
         }
       ]
     }
   ],
-  "lastUpdated": "2026-09-15",
+  "lastUpdated": "2026-09-16",
   "progressLog": [
     {
       "pass": "T1",
@@ -960,7 +971,41 @@
       "technicalAcceptancePassed": true,
       "completedDate": "2026-09-15",
       "evidence": "project/T4_6_CIERRE.md; scripts/test-t46.mjs"
+    },
+    {
+      "pass": "T4.7",
+      "earnedPercent": 0,
+      "status": "omitted",
+      "completedDate": "2026-09-15",
+      "evidence": "project/PLAN_PASADAS.md",
+      "scopeAdjustment": "Omitida por decisión de alcance; no se acredita observación humana."
+    },
+    {
+      "pass": "T4.8",
+      "earnedPercent": 0,
+      "status": "omitted",
+      "completedDate": "2026-09-15",
+      "evidence": "project/PLAN_PASADAS.md",
+      "scopeAdjustment": "Omitida por decisión de alcance; no se acredita ronda de participantes."
+    },
+    {
+      "pass": "T5.1",
+      "earnedPercent": 0,
+      "status": "in_progress",
+      "startedDate": "2026-09-15",
+      "evidence": "project/T5_1_AUDITORIA_RECONCILIACION.md; qa/fixtures/t5.1/pre-t51-content-manifest.json"
+    },
+    {
+      "pass": "T5.2",
+      "earnedPercent": 0,
+      "status": "in_progress",
+      "startedDate": "2026-09-16",
+      "evidence": "project/workstreams/T52_SEED_LIFECYCLE.md",
+      "scopeAdjustment": "Mecanismo/auditoría integrados; la pasada no se acredita aún como completa."
     }
   ],
-  "nextIndependentPass": "T4.7"
+  "nextIndependentPass": "T5.1",
+  "omittedPasses": 2,
+  "coordinationSource": "project/workstreams/COORDINATION.md",
+  "progressNote": "T4.7/T4.8 omitted by scope with zero earned weight. T5.1 is active. T5.2 infrastructure is integrated but not credited as complete until its acceptance boundary is closed."
 }

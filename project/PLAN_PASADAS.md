@@ -4,7 +4,7 @@
 
 Esta revisión sustituye la estimación anterior basada en disponibilidad humana. T1–T9 identifican etapas; T2.1, T2.2, etc. identifican mis pasadas ejecutables. Cada una contiene trabajo, comprobación y registro. Una pasada difícil se divide si lo exige la evidencia; no se cierra por haber consumido una respuesta.
 
-Previsión inicial: **68 pasadas en total**, quince completadas; quedan **53**. Rango de trabajo previsto: **55–87**; reserva adicional de **14** pasadas para correcciones del alcance previsto. La base más reserva es 82; el rango y la reserva describen incertidumbre y no se suman automáticamente entre sí. No hay un máximo garantizado. Demo Android: diez pasadas contando T1, sujeta a acceso al dispositivo y herramientas.
+Previsión inicial: **68 pasadas en total**, quince completadas; quedan **51 ejecutables** y **2 omitidas por alcance**. Rango de trabajo previsto: **55–87**; reserva adicional de **14** pasadas para correcciones del alcance previsto. La base más reserva es 82; el rango y la reserva describen incertidumbre y no se suman automáticamente entre sí. No hay un máximo garantizado. Demo Android: diez pasadas contando T1, sujeta a acceso al dispositivo y herramientas.
 
 La previsión tiene confianza limitada hasta implementar el primer lote. El dato observado hoy es una pasada de alcance con doce comparaciones, no doce escenas reparadas. La base divide las 388 escenas en cuatro lotes de 18–20 y 31 lotes posteriores, de hasta doce escenas. Añade trabajo separado para sesión, presentación, memoria, personajes, epílogos y verificación. Compartir infraestructura puede reducir lotes; dependencias nuevas o reescrituras pueden aumentarlos.
 
@@ -13,8 +13,8 @@ La previsión tiene confianza limitada hasta implementar el primer lote. El dato
 | T1 · Alcance y trazabilidad piloto | 1 | 1–1 | 6 % | 6 % | Completada |
 | T2 · Sesión y guardado | 5 | 4–6 | 11 % | 17 % | Completada |
 | T3 · Demo PlayCanvas en Android | 4 | 3–6 | 11 % | 28 % | En curso: 3 de 4; 8,25 % ganado |
-| T4 · Primer tramo y atractivo | 8 | 6–10 | 11 % | 39 % | En curso: 6 de 8; 8,26 % ganado |
-| T5 · Carrera completa, memoria y epílogos | 38 | 32–48 | 33 % | 72 % | Pendiente |
+| T4 · Primer tramo y atractivo | 8 | 6–10 | 11 % | 39 % | Cerrada con 6 completadas + 2 omitidas; 8,26 % ganado |
+| T5 · Carrera completa, memoria y epílogos | 38 | 32–48 | 33 % | 72 % | En curso: T5.1; 0 % ganado |
 | T6 · Alfa y balance | 4 | 3–5 | 11 % | 83 % | Pendiente |
 | T7 · Beta Android | 3 | 2–4 | 8 % | 91 % | Pendiente |
 | T8 · Publicación | 3 | 2–4 | 7 % | 98 % | Pendiente |
@@ -55,9 +55,9 @@ La previsión tiene confianza limitada hasta implementar el primer lote. El dato
 
 ### T4 · Primer tramo y atractivo
 
-- **T4.1 — Cadena piloto de memoria y consecuencia diferida.** Creación, reaparición y cierre; NPC recuerda información que pudo conocer.
-- **T4.2 — Lote 18–20 1: 12 escenas.** Fuente, acciones, gates y consecuencias específicos; pruebas dirigidas y continuidad.
-- **T4.3 — Lote 18–20 2: 12 escenas.** Fuente, acciones, gates y consecuencias específicos; pruebas dirigidas y continuidad.
+- **T4.1 — Cadena piloto de memoria y consecuencia diferida. COMPLETADA (+1,38 %).** Creación, reaparición y cierre; NPC recuerda información que pudo conocer.
+- **T4.2 — Lote 18–20 1: 12 escenas. COMPLETADA (+1,38 %).** Fuente, acciones, gates y consecuencias específicos; pruebas dirigidas y continuidad.
+- **T4.3 — Lote 18–20 2: 12 escenas. COMPLETADA (+1,38 %).** Fuente, acciones, gates y consecuencias específicos; pruebas dirigidas y continuidad.
 - **T4.4 — Lote 18–20 3: 12 escenas. COMPLETADA (+1,38 %).** Fuente, acciones, gates y consecuencias específicos; pruebas dirigidas y continuidad.
 - **T4.5 — Lote 18–20 4: 8 escenas. COMPLETADA (+1,37 %).** Fuente, acciones, gates y consecuencias específicos; pruebas dirigidas y continuidad.
 - **T4.6 — Ciclo de juego y tutorial. COMPLETADA (+1,37 %).** Pantallas esenciales y resumen de partido integrados; sin lectura de códigos internos.
@@ -239,4 +239,4 @@ El ciclo visible queda conectado entre las seis vistas principales. Inicio incor
 
 Regresión: 63/63 pruebas y gate v0.8 correctos. Evidencia: [cierre T4.6](T4_6_CIERRE.md), [prueba dirigida](../scripts/test-t46.mjs).
 
-Avance: 33,51 %. Siguiente: T4.7, observación humana y mejora 1.
+Avance: 33,51 %. T4.7/T4.8 quedan omitidas por alcance. Siguiente prioridad integrada: T5.1, reconciliación completa e identidad del contenido.
