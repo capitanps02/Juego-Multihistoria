@@ -69,6 +69,14 @@ test('T5.1 30-34 readiness reconoce que OR gates ya existe y aísla el hecho cau
   assert.ok(contract.dependencies.includes('RENEWAL_INTENT_FACT'));
   assert.equal(contract.dependencies.includes('OR_GATES'), false);
   assert.match(indexSource, /t51_unmodelled_club_renewal_proxy/);
+
+  const dependencyIds = audit.globalDependencies.map(dependency => dependency.id);
+  assert.ok(dependencyIds.includes('DEP_T51_RENEWAL_INTENT_FACT'));
+  assert.equal(dependencyIds.includes('DEP_T51_OR_GATES'), false);
+  assert.equal(audit.integrationStatus.sharedOrGateContract, 'available_in_main');
+  const serializedAudit = JSON.stringify(audit);
+  assert.doesNotMatch(serializedAudit, /pending_shared/);
+  assert.doesNotMatch(serializedAudit, /shared OR-gate contract is still pending/);
 });
 
 test('T5.1 30-34 readiness no convierte deuda en canon verificado ni alias aprobado', () => {
