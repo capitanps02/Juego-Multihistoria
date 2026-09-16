@@ -242,3 +242,43 @@ test('T5.3/14 un retry de commandId no reaprende ni altera conocimiento', async 
   assert.equal(replay.replayed, true);
   assert.deepEqual(session.exportSnapshot(), afterFirst, 'el retry no reescribe learnedAt, estado ni RNG');
 });
+
+test('T5.3/15 la escritura directa tampoco permite una fuente NPC ignorante', () => {
+  const state = createInitialState(115);
+  resolveChoiceInPlace(state, origin(), 'CALL_NANO');
+  const entry = state.history.at(-1);
+  assert.ok(entry);
+
+  assert.throws(
+    () => rememberNpcFactInPlace(state, 'NPC_CCH_01', {
+      factId: 'EVT_18_PRE_001', eventId: 'EVT_18_PRE_001',
+      choiceId: entry.choiceId, outcomeId: entry.outcomeId,
+      source: 'reported', sourceNpcId: 'NPC_ACA_01', memory: 'strong'
+    }),
+    /Cannot transmit EVT_18_PRE_001 from uninformed NPC source NPC_ACA_01/
+  );
+  assert.equal(npcKnows(state, 'NPC_CCH_01', 'EVT_18_PRE_001'), false);
+});
+
+test('T5.3/16 un NPC cuyo conocimiento caducó no puede seguir transmitiéndolo', () => {
+  const state = createInitialState(116);
+  resolveChoiceInPlace(state, origin(), 'CALL_NANO');
+  const entry = state.history.at(-1);
+  assert.ok(entry);
+  rememberNpcFactInPlace(state, 'NPC_ACA_01', {
+    factId: 'EVT_18_PRE_001', eventId: 'EVT_18_PRE_001',
+    choiceId: entry.choiceId, outcomeId: entry.outcomeId,
+    source: 'reported', certainty: 60, memory: 'practical', expiresAfterDays: 1
+  });
+  assert.equal(npcKnows(state, 'NPC_ACA_01', 'EVT_18_PRE_001'), true);
+  state.date = '2026-07-03';
+  assert.equal(npcKnows(state, 'NPC_ACA_01', 'EVT_18_PRE_001'), false);
+
+  assert.throws(
+    () => informNpcOfEventInPlace(state, 'NPC_CCH_01', 'EVT_18_PRE_001', {
+      source: 'reported', sourceNpcId: 'NPC_ACA_01', memory: 'strong'
+    }),
+    /uninformed NPC source NPC_ACA_01/
+  );
+  assert.equal(npcKnows(state, 'NPC_CCH_01', 'EVT_18_PRE_001'), false);
+});
