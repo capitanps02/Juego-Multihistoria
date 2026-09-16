@@ -53,7 +53,8 @@ public class OfflineProbe extends Instrumentation {
             long startupMs = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startedAt);
             report.putLong("startupMs", startupMs);
             if(!"true".equals(js("isSecureContext && !!crypto.subtle && !!indexedDB"))) throw new Exception("Missing web APIs");
-            if(!"true".equals(js("typeof AndroidBridge==='object' && typeof AndroidBridge.saveTextFile==='function'"))) throw new Exception("Missing Android file bridge");
+            if(!"true".equals(js("typeof AndroidBridge==='object' && typeof AndroidBridge.saveTextFile==='function' && typeof AndroidBridge.getRuntimeInfo==='function'"))) throw new Exception("Missing Android bridge");
+            if(!"true".equals(js("(()=>{const d=JSON.parse(AndroidBridge.getRuntimeInfo());return d.offline===true && !!d.versionName && !!d.androidSdk})()"))) throw new Exception("Invalid runtime diagnostics");
             android.content.SharedPreferences prefs=getTargetContext().getSharedPreferences("offline-probe",0);
             if("create".equals(phase)) {
                 js("[..."+ROOT+".querySelectorAll('button')].find(b=>b.textContent.includes('Simular semana')).click()");
@@ -63,12 +64,20 @@ public class OfflineProbe extends Instrumentation {
                 String raw=snapshot(); JSONObject save=new JSONObject(raw);
                 if(save.isNull("pendingResult") || save.getJSONArray("journal").length()!=1) throw new Exception("Result not committed");
                 if(!prefs.edit().putString("expected",raw).commit()) throw new Exception("Probe commit failed");
+
+                runOnMainSync(activity::onBackPressed);
+                until(ROOT+"?.querySelector('.nav-button.active')?.textContent.includes('Inicio')");
+                if(!raw.equals(snapshot())) throw new Exception("Android Back changed persisted game state");
+
+                runOnMainSync(() -> { callActivityOnPause(activity); callActivityOnResume(activity); });
+                until(ROOT+"?.querySelector('.save-status')?.textContent.includes('Guardado automático')");
+                if(!raw.equals(snapshot())) throw new Exception("Pause/resume changed persisted game state");
             } else {
                 String expected=prefs.getString("expected",null);
                 if(expected==null || !expected.equals(snapshot())) throw new Exception("Save changed after process restart");
                 until(ROOT+"?.querySelector('.chosen')");
             }
-            report.putString("stream", "PASS " + phase + ": secure origin, IndexedDB, UI result and exact save verified; startupMs=" + startupMs + "\n");
+            report.putString("stream", "PASS " + phase + ": secure origin, runtime diagnostics, IndexedDB, Android Back/focus flow and exact save verified; startupMs=" + startupMs + "\n");
             finish(Activity.RESULT_OK, report);
         } catch(Exception e) {
             report.putString("stream", "FAIL " + phase + ": " + e.toString()+"\n");
