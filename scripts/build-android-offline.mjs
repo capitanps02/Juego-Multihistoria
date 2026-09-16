@@ -37,11 +37,12 @@ const css = [
   fs.readFileSync(path.join(root, 'web', 'product-mobile.css'), 'utf8')
 ].join('\n');
 const local = `import { GameSession } from '../dist/session/game-session.js';
+import { getKnownPlayerContacts } from '../dist/session/player-contacts.js';
 import { mountGame } from './game-ui.js';
 import { createPlayerSessionApi } from './player-session-api.js';
 const assets=${JSON.stringify(assets)};
 const css=${JSON.stringify(css)};
-const PlayerSession=createPlayerSessionApi(GameSession);
+const PlayerSession=createPlayerSessionApi(GameSession,globalThis.crypto,getKnownPlayerContacts);
 mountGame({root:document.querySelector('#game').attachShadow({mode:'open'}),GameSession:PlayerSession,assets,css,storageKey:'historia-jugador.android.offline.session.v1',appVersion:${JSON.stringify(appVersion)}});
 `;
 write(path.join(assetsRoot, 'web', 'local.js'), local);
@@ -80,7 +81,7 @@ const manifest = {
   storage: { type: 'IndexedDB', key: 'historia-jugador.android.offline.session.v1', legacyMigration: 'localStorage', androidRuntimeVerified },
   origin: 'https://appassets.androidplatform.net/assets/',
   networkPolicy: { internetPermission: false, connectSrc: 'none', externalUrls: [] },
-  resources: { images: 'data-uri-in-local.js', fonts: 'system-only', mobileCss: 'web/product-mobile.css', playerSessionApi: 'web/player-session-api.js' },
+  resources: { images: 'data-uri-in-local.js', fonts: 'system-only', mobileCss: 'web/product-mobile.css', playerSessionApi: 'web/player-session-api.js', playerContactsApi: 'dist/session/player-contacts.js' },
   files,
   generatedAt: '2026-09-16'
 };
