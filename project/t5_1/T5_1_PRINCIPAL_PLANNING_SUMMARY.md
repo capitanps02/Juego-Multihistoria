@@ -6,7 +6,8 @@ Generated: 2026-09-16
 
 Canonical principal scenes: **254**  
 Literal principal IDs in P1 baseline: **167**  
-Baseline unresolved principal IDs: **87**
+Baseline missing canonical principal IDs: **87**  
+Baseline runtime-only principal IDs: **87**
 
 Source evidence:
 - `analysis/2026-09-11/t1/principal-traceability.json`
@@ -14,10 +15,11 @@ Source evidence:
 
 Machine-readable assignment:
 - `project/t5_1/T5_1_PRINCIPAL_87_BATCH_MANIFEST.json`
+- `project/t5_1/T5_1_PRINCIPAL_LEGACY_EXTRA_87_INVENTORY.json`
 
-## Complete 87-ID assignment
+## Complete 87-ID canonical-side assignment
 
-Every baseline unresolved principal ID is assigned to exactly one planned/active batch:
+Every baseline missing canonical principal ID is assigned to exactly one planned/active batch:
 
 | Batch | Status | Scope | IDs |
 |---|---|---:|---:|
@@ -39,6 +41,8 @@ Active PR coverage: **18**
 Future DRAFT coverage: **69**  
 Total: **87**
 
+The complementary 87 runtime-only principal IDs are also assigned to the batch responsible for deciding their semantic disposition. Assignment is not proof of same-scene identity.
+
 ## Prepared implementation contracts
 
 Common principal rules:
@@ -58,18 +62,51 @@ DRAFT task prompts:
 
 Conditional DRAFT prompts are separately prepared for 05A–05E.
 
-## Important identity candidates
+## Exact-title candidate review state
 
-Title equality remains non-authoritative. Baseline title candidates that require semantic proof include:
-- `EVT_27_STAR_001` ← runtime `EVT_28_TEAM_001` (PR #5)
-- `EVT_27_AWARD_001` ← runtime `EVT_28_GALA_001` (PR #5)
-- `EVT_28_RICH_001` ← runtime `EVT_29_MKT_001` (PR #5)
-- `EVT_30_BRIDGE_001` ← runtime `EVT_30_IDN_001` (03A)
-- `EVT_38_RICH_001` ← runtime `EVT_36_RICH_001` (04C)
-- `EVT_RET_FAM_001` ← runtime `EVT_RET_HOME_001` (04D)
-- `EVT_RET_LASTMATCH_001` ← runtime `EVT_RET_LAST_001` (04D)
+Baseline exact-title candidates: **7**.
 
-None may be migrated from title equality alone.
+### 30+/retirement candidates — review complete
+
+Detailed review:
+- `T5_1_PRINCIPAL_TITLE_CANDIDATES_30_PLUS_REVIEW.md`
+- `T5_1_PRINCIPAL_TITLE_CANDIDATES_30_PLUS_DISPOSITIONS.json`
+
+Reviewed: **4/4**  
+Approved same-scene migrations: **0/4**.
+
+Final planning disposition for all four legacy IDs is `retire_technical_keep_history_only`:
+- canonical `EVT_30_BRIDGE_001` vs runtime `EVT_30_IDN_001` — strong title/seed lineage, but generic runtime scene/choices differ from the canonical age-30 bridge;
+- canonical `EVT_38_RICH_001` vs runtime `EVT_36_RICH_001` — title only; age, trigger, information and huge-offer/retirement choices differ;
+- canonical `EVT_RET_FAM_001` vs runtime `EVT_RET_HOME_001` — runtime converts a four-way family/priorities conversation into a binary retirement decision;
+- canonical `EVT_RET_LASTMATCH_001` vs runtime `EVT_RET_LAST_001` — runtime directly manufactures played/no-match closure from a binary choice instead of preserving canonical fact-driven uncertainty.
+
+For all four:
+- do not rewrite old history ID;
+- do not directly rewrite old pending ID;
+- do not manufacture canonical `SEEN_*`;
+- implement the canonical replacement under its canonical ID;
+- keep any legacy compatibility definition outside active scheduling.
+
+### 26–30 candidates — PR #5 owns remaining 3
+
+- `EVT_27_STAR_001` ← runtime `EVT_28_TEAM_001`
+- `EVT_27_AWARD_001` ← runtime `EVT_28_GALA_001`
+- `EVT_28_RICH_001` ← runtime `EVT_29_MKT_001`
+
+PR #5 already records that title equality does not authorize a silent alias. Their final legacy dispositions stay owned by that task so they can be reviewed against the PR #7 seed-chronology result after dependency resolution.
+
+## Current legacy-side disposition progress
+
+Runtime-only principal IDs: **87**.
+
+- final planning disposition reviewed: **4**;
+- all 4 reviewed: `retire_technical_keep_history_only`;
+- approved direct same-scene migrations: **0**;
+- remaining principal legacy IDs requiring semantic disposition in their responsible batch: **83**.
+
+See global crosswalk state:
+- `T5_1_LEGACY_CROSSWALK_PLANNING_STATE_174.json`.
 
 ## Causal chain ownership
 
@@ -92,13 +129,15 @@ Principal batches through 04C must not use age, low market, body pressure, peer 
 04D owns terminal state-machine reconciliation. Current known blocker:
 - canonical conditional `CEVT_38_RETIREMENT_REVERSAL` vs monotonic retirement contract / `closed -> *` prohibition.
 
-See `T5_1_CANON_DECISION_REQUIRED_RETIREMENT_REVERSAL.md`.
+`T5_1_CANON_DECISION_REQUIRED_RETIREMENT_REVERSAL.md` now documents Option E as the current strongest source-fit planning recommendation while explicitly leaving it **unapproved** pending Pedro's decision.
 
 ## Current status
 
 Planning completeness does **not** mean runtime completeness.
 
-- Principal unresolved assignment: **87/87 complete**
+- Canonical principal missing-ID assignment: **87/87 complete**
+- Runtime-only principal responsibility assignment: **87/87 complete**
+- Runtime-only principal final dispositions: **4/87 complete**
 - Future principal task prompts: **02C–04E prepared**
 - Conditional semantic planning review: **134/134 complete**
 - Conditional task prompts: **05A–05E prepared**
