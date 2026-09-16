@@ -88,6 +88,86 @@ export const NPC_EVENT_KNOWLEDGE_RULES: NpcEventKnowledgeRule[] = [
     relationshipMemory: true
   },
   {
+    eventId: "EVT_18_CAP_001",
+    choiceIds: ["PUBLIC_SUPPORT"],
+    outcomeIds: ["PUBLIC_SUPPORT__PRIMARY"],
+    npcIds: ["NPC_PLR_10"],
+    source: "witnessed",
+    certainty: 100,
+    memory: "strong",
+    relationshipMemory: true
+  },
+  {
+    eventId: "EVT_18_MED_001",
+    choiceIds: ["TELL_COACH"],
+    outcomeIds: ["TELL_COACH__SECONDARY"],
+    npcIds: ["NPC_MED_01"],
+    source: "reported",
+    certainty: 100,
+    memory: "strong",
+    relationshipMemory: true
+  },
+  {
+    eventId: "EVT_18_PRS_002",
+    choiceIds: ["DENY"],
+    outcomeIds: ["DENY__SECONDARY"],
+    npcIds: ["NPC_PRS_01"],
+    source: "witnessed",
+    certainty: 100,
+    memory: "strong",
+    relationshipMemory: true
+  },
+  {
+    eventId: "EVT_18_TEAM_001",
+    choiceIds: ["HELP_REASONABLE"],
+    outcomeIds: ["HELP_REASONABLE__PRIMARY"],
+    npcIds: ["NPC_PLR_12"],
+    source: "witnessed",
+    certainty: 100,
+    memory: "strong",
+    relationshipMemory: true
+  },
+  {
+    eventId: "EVT_18_TEAM_001",
+    choiceIds: ["AGREE_BUT_SELF"],
+    outcomeIds: ["AGREE_BUT_SELF__SECONDARY"],
+    npcIds: ["NPC_PLR_12"],
+    source: "witnessed",
+    certainty: 100,
+    memory: "strong",
+    relationshipMemory: true
+  },
+  {
+    eventId: "EVT_18_TEAM_001",
+    choiceIds: ["TELL_MENA"],
+    outcomeIds: ["TELL_MENA__SECONDARY"],
+    npcIds: ["NPC_PLR_12"],
+    source: "reported",
+    certainty: 100,
+    memory: "strong",
+    relationshipMemory: true
+  },
+  {
+    eventId: "EVT_18_END_002",
+    choiceIds: ["DEFEND"],
+    outcomeIds: ["DEFEND__PRIMARY"],
+    npcIds: ["NPC_CCH_01"],
+    source: "public",
+    certainty: 100,
+    memory: "strong",
+    relationshipMemory: true
+  },
+  {
+    eventId: "EVT_18_MKT_001",
+    choiceIds: ["SOFT_LEVERAGE"],
+    outcomeIds: ["SOFT_LEVERAGE__SECONDARY"],
+    npcIds: ["NPC_DIR_02"],
+    source: "witnessed",
+    certainty: 100,
+    memory: "temporary",
+    relationshipMemory: true
+  },
+  {
     eventId: "EVT_19_TEAM_001",
     choiceIds: ["MOVE_CONTACT"],
     outcomeIds: ["MOVE_CONTACT__SECONDARY"],
