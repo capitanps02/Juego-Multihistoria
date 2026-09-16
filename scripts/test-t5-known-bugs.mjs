@@ -73,3 +73,22 @@ test('T5-QA-004: un NPC no puede transmitir como fuente un hecho que él mismo n
     'T5-QA-004: se creó conocimiento verdadero mediante una fuente NPC que no conocía el hecho'
   );
 });
+
+test('T5-QA-005: sync de presencia debe limpiar HAS_* sin instancia viva', t => {
+  if (typeof resolver.syncSeedPresenceFlagsInPlace !== 'function') {
+    t.skip('T5.2 todavía no está integrado en esta rama');
+    return;
+  }
+
+  const state = createInitialState(55201);
+  state.seeds = state.seeds.filter(seed => seed.id !== 'SEED_NANO_SHADOW');
+  state.flags.HAS_SEED_NANO_SHADOW = true;
+
+  resolver.syncSeedPresenceFlagsInPlace(state);
+
+  assert.equal(
+    state.flags.HAS_SEED_NANO_SHADOW,
+    false,
+    'T5-QA-005: HAS_SEED_NANO_SHADOW quedó true sin ninguna instancia viva de la seed'
+  );
+});
