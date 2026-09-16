@@ -16,6 +16,8 @@ Make retirement state responsibility canonical and testable before 05E condition
 Primary authority:
 - `project/t5_1/T5_1_04D_RETIREMENT_RUNTIME_AUDIT.md`
 - `project/t5_1/T5_1_COMPLETION_GATE.md`
+- `project/t5_1/T5_1_PRINCIPAL_TITLE_CANDIDATES_30_PLUS_REVIEW.md`
+- `project/t5_1/T5_1_PRINCIPAL_TITLE_CANDIDATES_30_PLUS_DISPOSITIONS.json`
 - retirement semantic source under `project/t5_1/source_archives/`
 - approved retirement-reversal decision file/amendment.
 
@@ -54,6 +56,32 @@ Current `reverseRetirement()` moves `decided`/`announced` back to `playing`.
 
 Repair strictly according to the approved canonical reversal decision. If unresolved, keep this lane failing rather than inventing behavior.
 
+## Reviewed legacy identity decisions — binding for this task
+
+Two runtime principal IDs share exact titles with canonical retirement principals, but both have already failed same-scene semantic review.
+
+### `EVT_RET_HOME_001` vs canonical `EVT_RET_FAM_001`
+
+Reviewed disposition:
+- legacy `EVT_RET_HOME_001`: `retire_technical_keep_history_only`;
+- direct same-scene migration: **not allowed**;
+- history ID rewrite: **not allowed**;
+- pending ID direct substitution: **not allowed**.
+
+Reason: canonical family conversation is a four-way priorities scene that may prepare a last season, retire now, continue without a date or wait for offers; it adjusts motivation/priorities and does not itself dictate the ending. Runtime `EVT_RET_HOME_001` is a two-choice KEEP/DECIDE terminal scene whose DECIDE choice directly enters `retirement.status = decided`.
+
+### `EVT_RET_LAST_001` vs canonical `EVT_RET_LASTMATCH_001`
+
+Reviewed disposition:
+- legacy `EVT_RET_LAST_001`: `retire_technical_keep_history_only`;
+- direct same-scene migration: **not allowed**;
+- history ID rewrite: **not allowed**;
+- pending ID direct substitution: **not allowed**.
+
+Reason: canonical last-match shape is fact-driven and uncertain, with four intents around medical fitness, technical decision, conditional minutes and injury risk. Runtime `EVT_RET_LAST_001` offers only PLAY/NO_MATCH and directly manufactures `LAST_MATCH_PLAYED`/closure type while immediately closing the career.
+
+Do not reopen these decisions from title equality. Implement the canonical IDs separately and move legacy definitions out of active scheduling while preserving supported legacy-history/pending compatibility.
+
 ## Canonical terminal events to implement/reconcile
 
 ### `EVT_RET_FAM_001` — family conversation
@@ -63,7 +91,7 @@ Required choices:
 - continue without date -> `playing`;
 - wait for offers -> `playing`.
 
-Do not silently alias current two-choice `EVT_RET_HOME_001` without migration/content-identity review.
+Canonical scene must not inherit the binary terminal function of legacy `EVT_RET_HOME_001`.
 
 ### `EVT_RET_BODY_001`
 Preserve distinct intents:
@@ -117,11 +145,13 @@ Do not solve terminal bugs by making epilogue accept earlier states.
 
 ## Save/migration
 
-Add migration/content-identity handling for old pending terminal events.
+Add migration/content-identity handling for old pending terminal events according to the T5.1 session-migration architecture.
 
 Required truth:
-- old history remains the event/choice actually seen;
-- a pending old technical terminal event keeps its old decision contract or fails resume explicitly;
+- completed `EVT_RET_HOME_001` and `EVT_RET_LAST_001` remain those legacy IDs in historical records;
+- a pending old technical terminal event keeps its exact old decision contract via supported content compatibility or fails resume explicitly;
+- no pending legacy scene is substituted by canonical `EVT_RET_FAM_001`/`EVT_RET_LASTMATCH_001`;
+- no migration manufactures canonical `SEEN_*` from title equality;
 - no migration upgrades old status/history into a more cinematic closure;
 - old `closed` saves remain immutable unless the approved reversal decision explicitly redesigns that invariant.
 
@@ -142,9 +172,11 @@ Mandatory:
 11. No-last-match and storybook appearance are mutually exclusive.
 12. Epilogue not generated/exposed before `closed`.
 13. Save/reload at `playing`, pending retire decision, `decided`, pending announcement, `announced`, pending last match and `closed` is exact.
-14. Deterministic terminal replay: same seed + same commands -> same reason, announcement path, closure shape and epilogue inputs.
-15. UI/read/microfeed operations do not perturb terminal RNG.
-16. Headless `simulateCareer` cannot bypass canonical terminal transitions just to ensure all QA careers eventually close.
+14. Legacy completed/pending `EVT_RET_HOME_001` remains truthful and is never silently converted to `EVT_RET_FAM_001`.
+15. Legacy completed/pending `EVT_RET_LAST_001` remains truthful and is never silently converted to `EVT_RET_LASTMATCH_001`.
+16. Deterministic terminal replay: same seed + same commands -> same reason, announcement path, closure shape and epilogue inputs.
+17. UI/read/microfeed operations do not perturb terminal RNG.
+18. Headless `simulateCareer` cannot bypass canonical terminal transitions just to ensure all QA careers eventually close.
 
 ## Allowed write scope
 
@@ -174,6 +206,7 @@ Plus dedicated retirement FSM/migration/deterministic replay tests.
 
 - canonical state responsibility is explicit and executable;
 - current automatic bypasses are removed/reframed canonically;
+- reviewed legacy title candidates are retired from active scheduling without historical laundering;
 - canonical terminal choices are preserved distinctly;
 - last-match closure is fact-driven;
 - reversal follows an explicit approved model, never an implementation guess;
