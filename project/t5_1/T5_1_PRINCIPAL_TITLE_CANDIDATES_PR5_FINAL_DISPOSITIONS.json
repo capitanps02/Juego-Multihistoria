@@ -1,0 +1,75 @@
+{
+  "generated": "2026-09-16",
+  "scope": "Three 26-30 exact-title principal candidates owned by PR #5",
+  "reviewed": 3,
+  "sameSceneMigrationsApproved": 0,
+  "defaultLegacyDisposition": "retire_technical_keep_history_only",
+  "rows": [
+    {
+      "batch": "PR #5 / 02A",
+      "canonicalId": "EVT_27_STAR_001",
+      "legacyId": "EVT_28_TEAM_001",
+      "sharedTitle": "Dos estrellas, un foco",
+      "classification": "same_concept_title_seed_lineage_not_same_implemented_scene",
+      "decision": "retire_technical_keep_history_only",
+      "sameSceneMigrationAllowed": false,
+      "historyEventIdRewriteAllowed": false,
+      "pendingEventIdDirectRewriteAllowed": false,
+      "canonicalReplacementRequired": true,
+      "seedMetadataMove": {
+        "seedId": "SEED_SECOND_STAR",
+        "canonicalOrigin": "EVT_27_STAR_001",
+        "canonicalAgeStart": 27,
+        "note": "Changing future catalog origin metadata does not relabel old history or prove old scene identity."
+      },
+      "reason": "Runtime is age 28 and uses the generic team-family factory; canon is age 27 with elite/project-face plus second-star context and distinct public-duo/brand/set-piece/hierarchy choices."
+    },
+    {
+      "batch": "PR #5 / 02A",
+      "canonicalId": "EVT_27_AWARD_001",
+      "legacyId": "EVT_28_GALA_001",
+      "sharedTitle": "La gala",
+      "classification": "same_concept_title_seed_lineage_not_same_implemented_scene",
+      "decision": "retire_technical_keep_history_only",
+      "sameSceneMigrationAllowed": false,
+      "historyEventIdRewriteAllowed": false,
+      "pendingEventIdDirectRewriteAllowed": false,
+      "canonicalReplacementRequired": true,
+      "seedMetadataMove": {
+        "seedId": "SEED_GLOBAL_AWARD_BEHAVIOR",
+        "canonicalOrigin": "EVT_27_AWARD_001",
+        "canonicalAgeStart": 27,
+        "note": "Legacy verified metadata is not semantic proof."
+      },
+      "reason": "Runtime is age 28 and still uses generic image-family decisions/outcomes; canon is age 27 with an award interview, independent vote result and four specific public-ambition/team-merit choices."
+    },
+    {
+      "batch": "PR #5 / 02A",
+      "canonicalId": "EVT_28_RICH_001",
+      "legacyId": "EVT_29_MKT_001",
+      "sharedTitle": "La oferta financieramente absurda",
+      "classification": "close_semantic_precursor_not_same_scene",
+      "decision": "retire_technical_keep_history_only",
+      "sameSceneMigrationAllowed": false,
+      "historyEventIdRewriteAllowed": false,
+      "pendingEventIdDirectRewriteAllowed": false,
+      "canonicalReplacementRequired": true,
+      "seedMetadataMove": {
+        "seedId": "SEED_WEALTHY_PEAK_EXIT",
+        "canonicalOrigin": "EVT_28_RICH_001",
+        "canonicalAgeStart": 28,
+        "preserveDownstreamConsumers": true
+      },
+      "reason": "This is the closest precursor, but runtime is age 29 with marketHeat gate and different C/D intent; canon is age 28 with WEALTHY_EXIT context, explicit terms/family/selection uncertainty and accept/reject/short-contract/leverage choices."
+    }
+  ],
+  "rules": {
+    "oldHistoryRemainsLegacyId": true,
+    "oldSeenDoesNotBecomeCanonicalSeen": true,
+    "pendingLegacySceneUsesContentCompatibility": true,
+    "technicalIdRemovedFromActivePrincipalsAfterCanonicalReplacement": true,
+    "futureSeedCatalogOriginMovesToCanonicalScene": true,
+    "seedOriginMetadataMoveDoesNotRewriteHistoricalOriginEventWithoutReviewedMigration": true
+  },
+  "status": "review_complete"
+}
