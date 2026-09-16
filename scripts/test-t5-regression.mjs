@@ -5,6 +5,7 @@ import { SEED_CATALOG } from '../dist/catalog/seeds.js';
 import { createInitialState } from '../dist/content/initial-state.js';
 import { simulateCareer } from '../dist/simulation/career-simulator.js';
 import { advanceWorldDayInPlace } from '../dist/simulation/world-simulator.js';
+import { respondToOffer } from '../dist/simulation/offers.js';
 
 const LIVE_SEED_STATES = new Set(['dormant', 'active', 'transformed']);
 const TERMINAL_SEED_STATES = new Set(['resolved', 'expired']);
@@ -85,6 +86,7 @@ test('T5 age boundaries: phase and adapters survive every canonical crossing wit
   const reached = new Set([state.age]);
   let guard = 0;
   while (state.age < 34 && guard++ < 6500) {
+    if (state.market?.pending) respondToOffer(state, state.market.pending.id, 'reject');
     advanceWorldDayInPlace(state);
     reached.add(state.age);
     assert.equal(state.phase, phaseForAge(state.age), `fase incorrecta a edad ${state.age} / ${state.date}`);
