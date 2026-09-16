@@ -43,6 +43,39 @@ for (const requirement of NPC_EVENT_KNOWLEDGE_REQUIREMENTS) {
   if (!eventIds.has(requirement.factId)) invalidKnowledgeRequirements.push(`${requirement.eventId}:${requirement.factId}:unknown-fact-event`);
 }
 
+function hasKnowledgeRule(eventId, choiceId, outcomeId, npcId) {
+  return NPC_EVENT_KNOWLEDGE_RULES.some(rule =>
+    rule.eventId === eventId &&
+    rule.npcIds.includes(npcId) &&
+    (!rule.choiceIds || rule.choiceIds.includes(choiceId)) &&
+    (!rule.outcomeIds || rule.outcomeIds.includes(outcomeId))
+  );
+}
+
+// Narrow anti-omniscience lint: when copy explicitly says an NPC discovers,
+// remembers, knows or detects something and that same outcome changes their
+// relationship, the runtime must record a knowledge path for that NPC.
+const epistemicCopy = /\b(descubre|descubren|recuerda|recuerdan|sabe|sabía|conocía|detecta|detectan)\b/i;
+const epistemicRelationshipGaps = [];
+for (const event of EVENTS) {
+  for (const outcome of event.outcomes) {
+    if (!epistemicCopy.test((outcome.messages ?? []).join(' '))) continue;
+    const choiceId = event.choices.find(choice => choice.outcomeIds.includes(outcome.id))?.id;
+    if (!choiceId) continue;
+    const targets = new Set(
+      (outcome.effects ?? [])
+        .filter(effect => effect.kind === 'numeric' && effect.path.startsWith('rel.NPC_'))
+        .map(effect => effect.path.split('.')[1])
+        .filter(Boolean)
+    );
+    for (const npcId of targets) {
+      if (!hasKnowledgeRule(event.id, choiceId, outcome.id, npcId)) {
+        epistemicRelationshipGaps.push(`${event.id}:${choiceId}:${outcome.id}:${npcId}`);
+      }
+    }
+  }
+}
+
 const npcs = NPC_CATALOG.map(npc => ({
   id: npc.id,
   name: npc.name,
@@ -67,9 +100,10 @@ const report = {
   unknownSeedNpcRefs,
   invalidKnowledgeRules,
   invalidKnowledgeRequirements,
+  epistemicRelationshipGaps,
   unreferencedNpcIds,
   npcs,
-  passed: NPC_CATALOG.length === 20 && unknownEventNpcRefs.length === 0 && unknownSeedNpcRefs.length === 0 && invalidKnowledgeRules.length === 0 && invalidKnowledgeRequirements.length === 0
+  passed: NPC_CATALOG.length === 20 && unknownEventNpcRefs.length === 0 && unknownSeedNpcRefs.length === 0 && invalidKnowledgeRules.length === 0 && invalidKnowledgeRequirements.length === 0 && epistemicRelationshipGaps.length === 0
 };
 
 console.log(JSON.stringify(report, null, 2));
