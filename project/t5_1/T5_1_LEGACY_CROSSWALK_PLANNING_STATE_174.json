@@ -3,19 +3,20 @@
   "generatedAt": "2026-09-16",
   "baselineLegacyRuntimeOnlyIds": 174,
   "status": "partially_dispositioned_planning_only",
+  "countingRule": "Counts are unique by legacy ID. Exact-title candidate reviews that overlap a batch review are counted once.",
   "counts": {
     "principalLegacyExtras": 87,
     "conditionalLegacyExtras": 87,
     "principalAssignedToBatch": 87,
-    "principalFinalDispositionReviewed": 58,
-    "principalRetireTechnicalKeepHistoryOnly": 58,
-    "principalStillPendingDisposition": 29,
+    "principalFinalDispositionReviewed": 68,
+    "principalRetireTechnicalKeepHistoryOnly": 68,
+    "principalStillPendingDisposition": 19,
     "conditionalDispositionReviewed": 87,
     "conditionalRetireTechnicalKeepHistoryOnly": 86,
     "conditionalUnresolved": 1,
     "approvedSameSceneMigrationsAcrossAllLegacyExtras": 0,
-    "totalLegacyExtrasWithFinalReviewedDisposition": 144,
-    "totalStillBlockingFinalCrosswalk": 30
+    "totalLegacyExtrasWithFinalReviewedDisposition": 154,
+    "totalStillBlockingFinalCrosswalk": 20
   },
   "principal": {
     "inventory": "project/t5_1/T5_1_PRINCIPAL_LEGACY_EXTRA_87_INVENTORY.json",
@@ -27,15 +28,17 @@
     "reviewed02ELegacyExtras": "project/t5_1/T5_1_02E_PRINCIPAL_LEGACY_DISPOSITIONS.json",
     "reviewed03ALegacyExtras": "project/t5_1/T5_1_03A_PRINCIPAL_LEGACY_DISPOSITIONS.json",
     "reviewed03BLegacyExtras": "project/t5_1/T5_1_03B_PRINCIPAL_LEGACY_DISPOSITIONS.json",
+    "reviewed04ALegacyExtras": "project/t5_1/T5_1_04A_PRINCIPAL_LEGACY_DISPOSITIONS.json",
     "reviewed30PlusTitleCandidates": "project/t5_1/T5_1_PRINCIPAL_TITLE_CANDIDATES_30_PLUS_DISPOSITIONS.json",
     "reviewed30PlusTitleCandidateDetail": "project/t5_1/T5_1_PRINCIPAL_TITLE_CANDIDATES_30_PLUS_REVIEW.md",
     "reviewedPr5TitleCandidates": "project/t5_1/T5_1_PRINCIPAL_TITLE_CANDIDATES_PR5_FINAL_DISPOSITIONS.json",
-    "state": "all assigned to responsible batch; PR #3, PR #7, PR #5 title candidates and 02C-03B legacy extras have reviewed dispositions; remaining principal extras require 34+ and retirement semantic review",
+    "state": "all assigned to responsible batch; unique dispositions are complete through age 34. Remaining unique principal blockers are age 35 and ages 36-38 entries not already covered by exact-title review.",
     "exactTitleCandidatesBaseline": 7,
     "exactTitleCandidatesReviewed": 7,
     "exactTitleCandidatesApprovedSameScene": 0,
     "exactTitleCandidateRule": "title/concept/seed lineage may guide authoring but does not authorize history or pending-scene ID migration",
-    "blockingCount": 29
+    "deduplicationCorrection": "EVT_30_IDN_001 was previously counted both in 03A and in the 30+ exact-title review. It is now counted once.",
+    "blockingCount": 19
   },
   "conditional": {
     "inventoryAndDisposition": "project/t5_1/T5_1_CONDITIONAL_LEGACY_DISPOSITION_OVERLAY_87.json",
