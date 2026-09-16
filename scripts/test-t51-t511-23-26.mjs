@@ -146,6 +146,7 @@ test('continental-list scene requires continental context and does not decide re
   const event = europe();
   assert.deepEqual(event.gates, [
     { path: 'flags.CONTINENTAL_CONTEXT', op: 'eq', value: true },
+    { path: 'flags.CONTINENTAL_REGISTERED', op: 'eq', value: false },
     { path: 'professional.roleSecurity', op: 'lte', value: 70 }
   ]);
   assert.deepEqual(event.timeWindow?.months, [8, 9]);
@@ -163,6 +164,9 @@ test('continental-list scene requires continental context and does not decide re
   state.flags.CONTINENTAL_REGISTERED = false;
   state.professional.roleSecurity = 45;
   assert.equal(eventGatesPass(state, event), true);
+  state.flags.CONTINENTAL_REGISTERED = true;
+  assert.equal(eventGatesPass(state, event), false, 'already registered players must not receive the unresolved-list scene');
+  state.flags.CONTINENTAL_REGISTERED = false;
   const beforeRegistration = state.flags.CONTINENTAL_REGISTERED;
   const result = resolveChoice(state, event, 'C');
   assert.equal(result.state.flags.CONTINENTAL_REGISTERED, beforeRegistration, 'narrative stance must not fabricate registration result');
