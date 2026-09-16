@@ -1,0 +1,242 @@
+{
+  "workstream": "T51_CANON_18_23",
+  "generatedAt": "2026-09-16",
+  "baseMainSha": "c28d1194d7a6cce8aef9759bbb96875a710cb945",
+  "branch": "t51/canon-18-23",
+  "source": {
+    "documentVersion": "Documento Maestro v0.9 · 10/09/2026",
+    "documentSha256": "9dce3a765c3a7a68f23b81c8b3de267df39d589f6d555ef318fb15739c1bde1e",
+    "principalTraceability": "analysis/2026-09-11/t1/principal-traceability.json",
+    "globalT51": "analysis/2026-09-15/T5.1-reconciliation.json",
+    "canonicalIdAudit": "analysis/2026-09-11/canonical-id-audit.json",
+    "conditionalCanonicalInventory": null
+  },
+  "scope": {
+    "owned": ["inicio", "18_20", "20_23"],
+    "excluded": ["23_26"],
+    "engine": {
+      "18_20": {"principal": 30, "conditional": 14},
+      "20_23": {"principal": 33, "conditional": 18},
+      "structuredTotal": 95
+    },
+    "canonicalPrincipals": 63
+  },
+  "identityDimensions": [
+    "identity", "trigger", "context", "playerKnowledge", "uncertainty", "options", "cost",
+    "immediateConsequences", "deferredConsequences", "seeds", "npcs", "futureContinuity", "saveCompatibility"
+  ],
+  "approvedAliases": [],
+  "summary": {
+    "canonicalPrincipals": {
+      "verified_same_identity": 16,
+      "needs_reimplementation": 27,
+      "canonical_missing": 6,
+      "requires_manual_review": 14,
+      "approved_alias": 0
+    },
+    "engine_only_noncanonical": 6,
+    "conditionals_requires_manual_review": 32
+  },
+  "profiles": {
+    "verified18": {
+      "evidence": [
+        "analysis/2026-09-11/t1/principal-traceability.json",
+        "src/content/events/18_20/canonical-events.ts",
+        "src/content/events/18_20/principal-additions.ts",
+        "project/T4_2_CIERRE.md"
+      ],
+      "differences": [],
+      "seed": "scene-specific",
+      "npc": "scene-specific",
+      "flags": "scene-specific",
+      "consequences": "scene-specific",
+      "saveRisk": "low",
+      "action": "Keep ID/semantics stable; retain directed tests."
+    },
+    "manual18": {
+      "evidence": [
+        "analysis/2026-09-11/t1/principal-traceability.json",
+        "project/T4_4_CIERRE.md",
+        "project/T4_5_CIERRE.md"
+      ],
+      "differences": [
+        "Technical T4 completion is not sufficient evidence for T5.1 semantic identity under the 13-dimension rule."
+      ],
+      "seed": "pending-card",
+      "npc": "pending-card",
+      "flags": "pending-card",
+      "consequences": "pending-card",
+      "saveRisk": "undetermined",
+      "action": "Complete explicit 13-dimension comparison before promoting or repairing."
+    },
+    "reimplement20": {
+      "evidence": [
+        "analysis/2026-09-11/t1/principal-traceability.json",
+        "src/content/events/20_23/principal-events.ts",
+        "analysis/2026-09-15/T5.1-reconciliation.json"
+      ],
+      "differences": [
+        "Literal ID exists, but all 20–23 rows use a shared generic choice/effect adapter.",
+        "Canonical trigger/context/player knowledge/uncertainty/options/resolution/seeds/NPC continuity are scene-specific and are not faithfully encoded."
+      ],
+      "seed": "canonical: sourceFields.Memoria / semillas; engine: row.seed/read/gates",
+      "npc": "canonical: source context; engine: not scene-specifically reconciled",
+      "flags": "canonical: Estado oculto relevante; engine: row gates/shared effects",
+      "consequences": "canonical: scene-specific resolution; engine: familyEffects + generic messages",
+      "saveRisk": "low_to_medium_same_id",
+      "action": "Reimplement in place with same ID; add gate/options/effects/memory/save-restore/determinism tests."
+    },
+    "missing20": {
+      "evidence": [
+        "analysis/2026-09-11/t1/principal-traceability.json",
+        "analysis/2026-09-15/T5.1-reconciliation.json",
+        "analysis/2026-09-11/canonical-id-audit.json"
+      ],
+      "differences": [
+        "Canonical principal exists; no engine principal with that ID and no approved semantic alias."
+      ],
+      "seed": "see canonical sourceFields",
+      "npc": "see canonical context",
+      "flags": "see canonical state/trigger",
+      "consequences": "see canonical resolution",
+      "saveRisk": "medium_catalog_change",
+      "action": "Implement canonical scene from source; do not alias to an engine-only ID."
+    },
+    "engineOnly20": {
+      "evidence": [
+        "analysis/2026-09-11/canonical-id-audit.json",
+        "src/content/events/20_23/principal-events.ts"
+      ],
+      "differences": [
+        "Engine principal ID is absent from the canonical principal inventory for 20–23."
+      ],
+      "seed": "engine-only/current row",
+      "npc": "not canonically reconciled",
+      "flags": "engine-only/current row",
+      "consequences": "shared familyEffects",
+      "saveRisk": "medium_high_history_compatibility",
+      "action": "Do not present as canonical. Retirement/rename requires coordinator/save-history decision; do not create alias."
+    },
+    "conditionalManual": {
+      "evidence": [
+        "project/T5_1_AUDITORIA_RECONCILIACION.md",
+        "src/content/events/18_20/conditional-events.ts",
+        "src/content/events/20_23/conditional-events.ts"
+      ],
+      "differences": [
+        "The current T5.1 audit has no authoritative canonical conditional-ID inventory.",
+        "Engine code/T4 closures cannot establish their own canonical identity."
+      ],
+      "seed": "canonical unknown; engine definition available",
+      "npc": "canonical unknown; engine definition available",
+      "flags": "canonical unknown; engine gates available",
+      "consequences": "canonical unknown; engine technical behavior available",
+      "saveRisk": "undetermined_until_identity_known",
+      "action": "Obtain authoritative conditional extraction, then perform 13-dimension comparison; no aliases."
+    }
+  },
+  "principal18_20": {
+    "verified_same_identity": [
+      "EVT_18_LOCK_001", "EVT_18_OPP_001", "EVT_18_MKT_001", "EVT_19_MKT_001", "EVT_19_RIV_001", "EVT_19_CCH_001",
+      "EVT_19_MEDIA_001", "EVT_19_BODY_001", "EVT_19_AGENT_001", "EVT_19_JAN_001", "EVT_19_TEAM_001", "EVT_19_FIN_001",
+      "EVT_18_PRE_001", "EVT_18_PRE_002", "EVT_18_PRE_003", "EVT_18_AGT_001"
+    ],
+    "requires_manual_review": [
+      "EVT_18_MATCH_001", "EVT_18_PRS_001", "EVT_18_SOC_001", "EVT_18_TACT_001", "EVT_18_CAP_001", "EVT_18_MED_001",
+      "EVT_18_PRS_002", "EVT_18_JAN_001", "EVT_18_TEAM_001", "EVT_18_MATCH_002", "EVT_18_END_001", "EVT_18_END_002",
+      "EVT_18_SUM_001", "EVT_19_SUM_001"
+    ],
+    "verificationNote": "The 12 T4.2 scenes are explicitly accredited as verified. PRE_001/PRE_002/PRE_003/AGT_001 were directly compared in this pass against committed Master-document extraction and scene-specific engine code.",
+    "profileByStatus": {
+      "verified_same_identity": "verified18",
+      "requires_manual_review": "manual18"
+    }
+  },
+  "principal20_23": [
+    {"canonicalId":"EVT_20_BRIDGE_001","engineId":null,"age":20,"canonicalTitle":"La reunión de los veinte","engineTitle":null,"status":"canonical_missing","profile":"missing20"},
+    {"canonicalId":"EVT_20_LIFE_001","engineId":"EVT_20_LIFE_001","age":20,"canonicalTitle":"Las llaves","engineTitle":"La primera casa que pagas tú","status":"needs_reimplementation","profile":"reimplement20"},
+    {"canonicalId":"EVT_20_MKT_001","engineId":"EVT_20_MKT_001","age":20,"canonicalTitle":"Titular aquí, promesa allí","engineTitle":"Una oferta que cambia el mapa","status":"needs_reimplementation","profile":"reimplement20"},
+    {"canonicalId":"EVT_20_MED_001","engineId":"EVT_20_MED_001","age":20,"canonicalTitle":"El historial que viaja contigo","engineTitle":"Lo que dices en la revisión","status":"needs_reimplementation","profile":"reimplement20"},
+    {"canonicalId":"EVT_20_AGT_001","engineId":"EVT_20_AGT_001","age":20,"canonicalTitle":"El teléfono del agente","engineTitle":"Ahora llama por ti","status":"needs_reimplementation","profile":"reimplement20"},
+    {"canonicalId":"EVT_20_ABR_001","engineId":"EVT_20_ABR_001","age":20,"canonicalTitle":"La ciudad que no habla tu idioma","engineTitle":"Un idioma dentro del vestuario","status":"needs_reimplementation","profile":"reimplement20"},
+    {"canonicalId":"EVT_20_STATUS_001","engineId":"EVT_20_STATUS_001","age":20,"canonicalTitle":"El dorsal libre","engineTitle":"El dorsal libre","status":"needs_reimplementation","profile":"reimplement20"},
+    {"canonicalId":"EVT_20_CCH_001","engineId":"EVT_20_CCH_001","age":20,"canonicalTitle":"La promesa de agosto","engineTitle":"La promesa de agosto","status":"needs_reimplementation","profile":"reimplement20"},
+    {"canonicalId":"EVT_20_LOCK_001","engineId":"EVT_20_LOCK_001","age":20,"canonicalTitle":"Un golpe de entrenamiento","engineTitle":"Un golpe de entrenamiento","status":"needs_reimplementation","profile":"reimplement20"},
+    {"canonicalId":"EVT_20_LOCK_002","engineId":"EVT_20_LOCK_002","age":20,"canonicalTitle":"Cubre a Marcos","engineTitle":"El compañero al que cubres","status":"needs_reimplementation","profile":"reimplement20"},
+    {"canonicalId":"EVT_20_MATCH_003","engineId":null,"age":20,"canonicalTitle":"El minuto 65","engineTitle":null,"status":"canonical_missing","profile":"missing20"},
+    {"canonicalId":"EVT_20_JAN_001","engineId":null,"age":20,"canonicalTitle":"Enero: la compra que depende de otro","engineTitle":null,"status":"canonical_missing","profile":"missing20"},
+    {"canonicalId":"EVT_20_BRUNO_001","engineId":"EVT_20_BRUNO_001","age":20,"canonicalTitle":"La llamada de Bruno","engineTitle":"La llamada de Bruno","status":"needs_reimplementation","profile":"reimplement20"},
+    {"canonicalId":"EVT_21_MONEY_001","engineId":"EVT_21_MONEY_001","age":21,"canonicalTitle":"El primer contrato que cambia a tu familia","engineTitle":"El primer contrato que cambia a tu familia","status":"needs_reimplementation","profile":"reimplement20"},
+    {"canonicalId":"EVT_21_AGT_001","engineId":"EVT_21_AGT_001","age":21,"canonicalTitle":"La agencia quiere otro porcentaje","engineTitle":"La comisión que ahora importa","status":"needs_reimplementation","profile":"reimplement20"},
+    {"canonicalId":"EVT_21_MKT_001","engineId":null,"age":21,"canonicalTitle":"El club que te quiere… cedido","engineTitle":null,"status":"canonical_missing","profile":"missing20"},
+    {"canonicalId":"EVT_21_NAT_001","engineId":"EVT_21_NAT_001","age":21,"canonicalTitle":"La ausencia","engineTitle":"Tu nombre no está","status":"needs_reimplementation","profile":"reimplement20"},
+    {"canonicalId":"EVT_21_IMG_001","engineId":"EVT_21_IMG_001","age":21,"canonicalTitle":"La campaña","engineTitle":"La campaña","status":"needs_reimplementation","profile":"reimplement20"},
+    {"canonicalId":"EVT_21_CAP_001","engineId":"EVT_21_CAP_001","age":21,"canonicalTitle":"El grupo de capitanes","engineTitle":"El grupo de capitanes","status":"needs_reimplementation","profile":"reimplement20"},
+    {"canonicalId":"EVT_21_PRS_001","engineId":"EVT_21_PRS_001","age":21,"canonicalTitle":"La cifra publicada","engineTitle":"La cifra publicada","status":"needs_reimplementation","profile":"reimplement20"},
+    {"canonicalId":"EVT_21_MED_001","engineId":"EVT_21_MED_001","age":21,"canonicalTitle":"La inyección","engineTitle":"Jugar no significa estar bien","status":"needs_reimplementation","profile":"reimplement20"},
+    {"canonicalId":"EVT_21_SOC_001","engineId":null,"age":21,"canonicalTitle":"Tu amigo contra tu agente","engineTitle":null,"status":"canonical_missing","profile":"missing20"},
+    {"canonicalId":"EVT_21_PRS_002","engineId":null,"age":21,"canonicalTitle":"La llamada que llega por Clara","engineTitle":null,"status":"canonical_missing","profile":"missing20"},
+    {"canonicalId":"EVT_21_RIV_001","engineId":"EVT_21_RIV_001","age":21,"canonicalTitle":"Adrián ya no es “el otro”","engineTitle":"Rivas vuelve a llamar","status":"needs_reimplementation","profile":"reimplement20"},
+    {"canonicalId":"EVT_21_CCH_002","engineId":"EVT_21_CCH_002","age":21,"canonicalTitle":"Otro entrenador, otra versión de ti","engineTitle":"Otro entrenador, otra versión de ti","status":"needs_reimplementation","profile":"reimplement20"},
+    {"canonicalId":"EVT_22_CON_001","engineId":"EVT_22_CON_001","age":22,"canonicalTitle":"Veintidós y dieciocho meses","engineTitle":"Veintidós y dieciocho meses","status":"needs_reimplementation","profile":"reimplement20"},
+    {"canonicalId":"EVT_22_LOCK_001","engineId":"EVT_22_LOCK_001","age":22,"canonicalTitle":"El compañero al que quieren vender","engineTitle":"La votación que divide el vestuario","status":"needs_reimplementation","profile":"reimplement20"},
+    {"canonicalId":"EVT_22_HOME_001","engineId":"EVT_22_HOME_001","age":22,"canonicalTitle":"El partido contra casa","engineTitle":"Volver ya no significa volver igual","status":"needs_reimplementation","profile":"reimplement20"},
+    {"canonicalId":"EVT_22_MKT_001","engineId":"EVT_22_MKT_001","age":22,"canonicalTitle":"La oferta de tu rival deportivo","engineTitle":"Dos proyectos, dos versiones de ti","status":"needs_reimplementation","profile":"reimplement20"},
+    {"canonicalId":"EVT_22_MED_001","engineId":"EVT_22_MED_001","age":22,"canonicalTitle":"La resonancia antes de firmar","engineTitle":"Lo que el nuevo club pregunta","status":"needs_reimplementation","profile":"reimplement20"},
+    {"canonicalId":"EVT_22_TACT_001","engineId":"EVT_22_TACT_001","age":22,"canonicalTitle":"Noventa minutos que no te favorecen","engineTitle":"Ser útil puede cambiar tu mercado","status":"needs_reimplementation","profile":"reimplement20"},
+    {"canonicalId":"EVT_22_DDL_001","engineId":"EVT_22_DDL_001","age":22,"canonicalTitle":"Último día, 17:40","engineTitle":"Quedan horas","status":"needs_reimplementation","profile":"reimplement20"},
+    {"canonicalId":"EVT_22_CON_002","engineId":"EVT_22_CON_002","age":22,"canonicalTitle":"Agotar","engineTitle":"La puerta de la libertad","status":"needs_reimplementation","profile":"reimplement20"}
+  ],
+  "engineOnly20_23": [
+    {"canonicalId":null,"engineId":"EVT_20_MATCH_001","age":20,"canonicalTitle":null,"engineTitle":"Tres partidos que pesan más","status":"engine_only_noncanonical","profile":"engineOnly20"},
+    {"canonicalId":null,"engineId":"EVT_21_ABR_001","age":21,"canonicalTitle":null,"engineTitle":"Navidad lejos","status":"engine_only_noncanonical","profile":"engineOnly20"},
+    {"canonicalId":null,"engineId":"EVT_21_AGT_002","age":21,"canonicalTitle":null,"engineTitle":"Una llamada que no escuchaste","status":"engine_only_noncanonical","profile":"engineOnly20"},
+    {"canonicalId":null,"engineId":"EVT_21_CCH_001","age":21,"canonicalTitle":null,"engineTitle":"Un banquillo después de una promesa","status":"engine_only_noncanonical","profile":"engineOnly20"},
+    {"canonicalId":null,"engineId":"EVT_22_END_001","age":22,"canonicalTitle":null,"engineTitle":"Cumples 23","status":"engine_only_noncanonical","profile":"engineOnly20"},
+    {"canonicalId":null,"engineId":"EVT_22_LIFE_001","age":22,"canonicalTitle":null,"engineTitle":"Tu entorno ya es una decisión","status":"engine_only_noncanonical","profile":"engineOnly20"}
+  ],
+  "conditionals": [
+    {"canonicalId":null,"engineId":"CEVT_18_EARLY_01","block":"18_20","canonicalTitle":null,"engineTitle":"Demasiado pronto","status":"requires_manual_review","profile":"conditionalManual"},
+    {"canonicalId":null,"engineId":"CEVT_18_NODEBUT_01","block":"18_20","canonicalTitle":null,"engineTitle":"Enero sin estreno","status":"requires_manual_review","profile":"conditionalManual"},
+    {"canonicalId":null,"engineId":"CEVT_18_BRUNO_01","block":"18_20","canonicalTitle":null,"engineTitle":"La taquilla vacía","status":"requires_manual_review","profile":"conditionalManual"},
+    {"canonicalId":null,"engineId":"CEVT_18_VELA_01","block":"18_20","canonicalTitle":null,"engineTitle":"Entrenar aparte","status":"requires_manual_review","profile":"conditionalManual"},
+    {"canonicalId":null,"engineId":"CEVT_18_CCH_01","block":"18_20","canonicalTitle":null,"engineTitle":"Lunes sin entrenador","status":"requires_manual_review","profile":"conditionalManual"},
+    {"canonicalId":null,"engineId":"CEVT_18_RELEG_01","block":"18_20","canonicalTitle":null,"engineTitle":"El día después","status":"requires_manual_review","profile":"conditionalManual"},
+    {"canonicalId":null,"engineId":"CEVT_18_PLAYOFF_01","block":"18_20","canonicalTitle":null,"engineTitle":"Nadie lo esperaba","status":"requires_manual_review","profile":"conditionalManual"},
+    {"canonicalId":null,"engineId":"CEVT_19_BIG_01","block":"18_20","canonicalTitle":null,"engineTitle":null,"status":"requires_manual_review","profile":"conditionalManual"},
+    {"canonicalId":null,"engineId":"CEVT_19_AGENT_01","block":"18_20","canonicalTitle":null,"engineTitle":null,"status":"requires_manual_review","profile":"conditionalManual"},
+    {"canonicalId":null,"engineId":"CEVT_19_INJ_01","block":"18_20","canonicalTitle":null,"engineTitle":null,"status":"requires_manual_review","profile":"conditionalManual"},
+    {"canonicalId":null,"engineId":"CEVT_19_ABROAD_01","block":"18_20","canonicalTitle":null,"engineTitle":null,"status":"requires_manual_review","profile":"conditionalManual"},
+    {"canonicalId":null,"engineId":"CEVT_19_SOCIAL_01","block":"18_20","canonicalTitle":null,"engineTitle":null,"status":"requires_manual_review","profile":"conditionalManual"},
+    {"canonicalId":null,"engineId":"CEVT_19_NANO_01","block":"18_20","canonicalTitle":null,"engineTitle":null,"status":"requires_manual_review","profile":"conditionalManual"},
+    {"canonicalId":null,"engineId":"CEVT_19_RETURN_01","block":"18_20","canonicalTitle":null,"engineTitle":null,"status":"requires_manual_review","profile":"conditionalManual"},
+    {"canonicalId":null,"engineId":"CEVT_20_LOAN_01","block":"20_23","canonicalTitle":null,"engineTitle":"El propietario pregunta por ti","status":"requires_manual_review","profile":"conditionalManual"},
+    {"canonicalId":null,"engineId":"CEVT_20_ABR_01","block":"20_23","canonicalTitle":null,"engineTitle":"La primera semana de verdad fuera","status":"requires_manual_review","profile":"conditionalManual"},
+    {"canonicalId":null,"engineId":"CEVT_20_AGENT_01","block":"20_23","canonicalTitle":null,"engineTitle":"Tu agente responde antes que tú","status":"requires_manual_review","profile":"conditionalManual"},
+    {"canonicalId":null,"engineId":"CEVT_20_BODY_01","block":"20_23","canonicalTitle":null,"engineTitle":"La señal que nadie ve en el resumen","status":"requires_manual_review","profile":"conditionalManual"},
+    {"canonicalId":null,"engineId":"CEVT_20_HOME_01","block":"20_23","canonicalTitle":null,"engineTitle":"En Valdoria todavía opinan","status":"requires_manual_review","profile":"conditionalManual"},
+    {"canonicalId":null,"engineId":"CEVT_20_BRUNO_01","block":"20_23","canonicalTitle":null,"engineTitle":"Bruno cumple —o no— su palabra","status":"requires_manual_review","profile":"conditionalManual"},
+    {"canonicalId":null,"engineId":"CEVT_21_CAPTAIN_01","block":"20_23","canonicalTitle":null,"engineTitle":"Tu nombre aparece en una decisión interna","status":"requires_manual_review","profile":"conditionalManual"},
+    {"canonicalId":null,"engineId":"CEVT_21_NAT_01","block":"20_23","canonicalTitle":null,"engineTitle":"Una lista que te coloca cerca","status":"requires_manual_review","profile":"conditionalManual"},
+    {"canonicalId":null,"engineId":"CEVT_21_MEDIA_01","block":"20_23","canonicalTitle":null,"engineTitle":"La fama llega antes que el siguiente partido","status":"requires_manual_review","profile":"conditionalManual"},
+    {"canonicalId":null,"engineId":"CEVT_21_CONTRACT_01","block":"20_23","canonicalTitle":null,"engineTitle":"El club escucha un rumor que tú no lanzaste","status":"requires_manual_review","profile":"conditionalManual"},
+    {"canonicalId":null,"engineId":"CEVT_21_ABR_01","block":"20_23","canonicalTitle":null,"engineTitle":"Navidad solo","status":"requires_manual_review","profile":"conditionalManual"},
+    {"canonicalId":null,"engineId":"CEVT_21_ADRIAN_01","block":"20_23","canonicalTitle":null,"engineTitle":"La comparación vuelve","status":"requires_manual_review","profile":"conditionalManual"},
+    {"canonicalId":null,"engineId":"CEVT_21_FAMILY_01","block":"20_23","canonicalTitle":null,"engineTitle":"Ayudar cambia la siguiente petición","status":"requires_manual_review","profile":"conditionalManual"},
+    {"canonicalId":null,"engineId":"CEVT_22_DEADLINE_01","block":"20_23","canonicalTitle":null,"engineTitle":"La llamada de las 22:47","status":"requires_manual_review","profile":"conditionalManual"},
+    {"canonicalId":null,"engineId":"CEVT_22_INJ_01","block":"20_23","canonicalTitle":null,"engineTitle":"El mes que amenaza con ser cuatro","status":"requires_manual_review","profile":"conditionalManual"},
+    {"canonicalId":null,"engineId":"CEVT_22_LOANBUY_01","block":"20_23","canonicalTitle":null,"engineTitle":"Comprar al cedido","status":"requires_manual_review","profile":"conditionalManual"},
+    {"canonicalId":null,"engineId":"CEVT_22_RETURN_01","block":"20_23","canonicalTitle":null,"engineTitle":"Volver al propietario","status":"requires_manual_review","profile":"conditionalManual"},
+    {"canonicalId":null,"engineId":"CEVT_22_FREE_01","block":"20_23","canonicalTitle":null,"engineTitle":"El mercado espera que cedas","status":"requires_manual_review","profile":"conditionalManual"}
+  ],
+  "dependencies": [
+    {"id":"COND_CANON_SOURCE","blocks":"semantic approval of 32 conditional identities","owner":"coordinator/canonical-source workstream","action":"Commit/provide authoritative conditional-event extraction from Documento Maestro."},
+    {"id":"ENGINE_ONLY_SAVE_HISTORY","blocks":"retirement/rename of six engine-only principal IDs","owner":"save-system/coordinator","action":"Define history/migration policy; this workstream will not change GameSession/save architecture."}
+  ],
+  "nextActions": [
+    "Finish explicit 13-dimension cards for 14 remaining 18–20 principals.",
+    "Reimplement canonical 20–23 in T5.5–T5.9-sized batches.",
+    "Add directed content tests and save/restore/determinism coverage.",
+    "Keep six engine-only IDs out of canonical claims until save-history policy is resolved."
+  ]
+}

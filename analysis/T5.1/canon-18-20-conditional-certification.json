@@ -1,0 +1,102 @@
+{
+  "workstream": "T51_CANON_18_23",
+  "generatedAt": "2026-09-16",
+  "scope": "final certification of the seven 18-20 exact-ID conditionals previously requiring manual review",
+  "rule": "Promotion requires canonical semantic review plus causal provenance plus executable eligibility/save-restore/determinism evidence. Known material trigger/function differences become needs_reimplementation rather than remaining manual.",
+  "summary": {
+    "reviewed": 7,
+    "verified_same_identity": 5,
+    "needs_reimplementation": 2,
+    "requires_manual_review": 0,
+    "approved_alias": 0
+  },
+  "evidence": [
+    "project/t5_1/T5_1_05A_REVIEW_18_20.md on chore/chatgpt-codex-workflow",
+    "project/t5_1/T5_1_05A_FLAG_PROVENANCE_18_20.md on chore/chatgpt-codex-workflow",
+    "project/t5_1/T5_1_05A_EXACT_ID_DISPOSITIONS.json on chore/chatgpt-codex-workflow",
+    "src/content/events/18_20/conditional-events.ts",
+    "src/simulation/world-simulator.ts",
+    "scripts/test-t43.mjs",
+    "scripts/test-t41.mjs",
+    "scripts/test-t52.mjs",
+    "scripts/test-t51-conditional-certification.mjs"
+  ],
+  "cards": [
+    {
+      "canonicalId": "CEVT_18_NODEBUT_01",
+      "engineId": "CEVT_18_NODEBUT_01",
+      "status": "verified_same_identity",
+      "trigger": "January, age 18, no official debut and very low role; JAN_NO_DEBUT writer is deterministic and semantically aligned.",
+      "sceneFunction": "No-debut/low-role January decision with loan, role-clarity or patience trade-off.",
+      "saveCompatibility": "Eligibility and every choice resolution preserve deterministic state/history/RNG after save/restore in T51 certification test.",
+      "differences": [],
+      "action": "Keep semantics stable; retain directed regression coverage."
+    },
+    {
+      "canonicalId": "CEVT_18_VELA_01",
+      "engineId": "CEVT_18_VELA_01",
+      "status": "verified_same_identity",
+      "trigger": "VELA_SEPARATED is a stochastic escalation of established Vela/board tension after seasonDay > 90.",
+      "sceneFunction": "Private support, distance or information-seeking while preserving uncertainty around the institutional conflict; stance memory is written explicitly.",
+      "saveCompatibility": "Eligibility and every choice resolution preserve deterministic state/history/RNG after save/restore in T51 certification test.",
+      "differences": [],
+      "action": "Keep semantics stable; retain provenance and save/restore tests."
+    },
+    {
+      "canonicalId": "CEVT_19_BIG_01",
+      "engineId": "CEVT_19_BIG_01",
+      "status": "verified_same_identity",
+      "trigger": "Age 19 plus marketHeat >= 42 can materialize BIG_CLUB_INTEREST stochastically; callback independently requires the same heat threshold.",
+      "sceneFunction": "Large-club interest without guaranteed first-team route; accept model, demand loan plan or decline preserve ambition/minutes ambiguity.",
+      "saveCompatibility": "Eligibility and every choice resolution preserve deterministic state/history/RNG after save/restore in T51 certification test.",
+      "differences": [],
+      "action": "Keep semantics stable; retain provenance and deterministic regression coverage."
+    },
+    {
+      "canonicalId": "CEVT_19_ABROAD_01",
+      "engineId": "CEVT_19_ABROAD_01",
+      "status": "verified_same_identity",
+      "trigger": "Age 19, market relevance and active agent/first-agent memory can materialize FOREIGN_DEV_INTEREST stochastically.",
+      "sceneFunction": "Foreign development-club opportunity with role, language and distance uncertainty; visit, written-role and decline choices do not assume abroad is automatically better.",
+      "saveCompatibility": "Eligibility and every choice resolution preserve deterministic state/history/RNG after save/restore in T51 certification test.",
+      "differences": [],
+      "action": "Keep semantics stable; retain provenance and deterministic regression coverage."
+    },
+    {
+      "canonicalId": "CEVT_19_NANO_01",
+      "engineId": "CEVT_19_NANO_01",
+      "status": "verified_same_identity",
+      "trigger": "Actual earlier CALL_NANO/MOVE_CONTACT resolution can create UNSOLICITED_NANO_HELP plus live SEED_NANO_SHADOW; callback requires both.",
+      "sceneFunction": "Nano autonomy conflict distinguishes professional usefulness from relational resentment; WITHDRAW can explicitly resolve the shadow memory.",
+      "saveCompatibility": "T41 establishes the real causal chain; T5.2 establishes seed persistence/idempotent terminal lifecycle; T51 certification proves save/restore eligibility and deterministic closure/history/RNG.",
+      "differences": [],
+      "action": "Keep semantics stable; retain real-chain and lifecycle regressions."
+    },
+    {
+      "canonicalId": "CEVT_18_EARLY_01",
+      "engineId": "CEVT_18_EARLY_01",
+      "status": "needs_reimplementation",
+      "trigger": "Runtime EARLY_BREAKOUT writer additionally requires form >= 60 and an RNG materialization after official debut, seasonDay < 150 and mediaHeat >= 9; callback also excludes mediaHeat < 12.",
+      "sceneFunction": "Scene/choices are strong, but trigger identity is narrower than the canonical early-breakout/public-heat condition.",
+      "saveCompatibility": "Generic callback execution is tested, but save compatibility cannot erase the trigger mismatch.",
+      "differences": [
+        "Canonical trigger is not proven equivalent to the extra form >= 60 restriction.",
+        "The causal writer adds a stochastic materialization layer that must be explicitly approved or repaired rather than treated as exact trigger identity."
+      ],
+      "action": "Repair or explicitly canonicalize the EARLY_BREAKOUT writer contract in the functional owner; keep exact event ID but do not mark verified until trigger equivalence is restored."
+    },
+    {
+      "canonicalId": "CEVT_19_INJ_01",
+      "engineId": "CEVT_19_INJ_01",
+      "status": "needs_reimplementation",
+      "trigger": "LONG_INJURY proves high body risk plus stochastic injury severity, but not the full canonical causal path involving prior body history/treatment and poor evolution.",
+      "sceneFunction": "The callback reads SEED_BODY_PRECEDENT and SEED_PHYSIO_CONFIDENCE as metadata, but no demonstrated condition/modifier/transition makes those memories causally alter the complication.",
+      "saveCompatibility": "T5.2 proves lifecycle persistence; persistence alone is not the missing canonical consumer/function.",
+      "differences": [
+        "Prior body/treatment history is not demonstrated as a causal contributor to the complication.",
+        "seedsRead metadata does not implement the canonical function."
+      ],
+      "action": "Add/prove a real causal writer/modifier for the canonical complication path, then retest save/restore and deterministic outcome semantics."
+    }
+  ]
+}

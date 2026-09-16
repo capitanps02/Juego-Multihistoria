@@ -1,0 +1,46 @@
+name: T51 canon 18-23
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'analysis/T5.1/canon-18-20-cards.json'
+      - 'analysis/T5.1/canon-18-20-architecture-boundaries.json'
+      - 'analysis/T5.1/canon-18-20-conditional-certification.json'
+      - 'analysis/T5.1/canon-18-23.json'
+      - 'analysis/T5.1/canon-18-23-current-state.json'
+      - 'analysis/T5.1/canon-18-23-conditionals.json'
+      - 'analysis/T5.1/canon-18-23-save-boundary.json'
+      - 'analysis/T5.1/canon-18-23-repair-plan.json'
+      - 'analysis/T5.1/canon-20-23-b2-handoff.json'
+      - 'analysis/T5.1/canon-20-23-b3-missing-handoff.json'
+      - 'analysis/T5.1/canon-18-23-b4-legacy-retirement.json'
+      - 'project/workstreams/T51_CANON_18_23.md'
+      - 'scripts/test-t51-canon-18-23.mjs'
+      - 'scripts/test-t51-repair-plan.mjs'
+      - 'scripts/test-t51-conditional-certification.mjs'
+      - 'scripts/test-t51-b2-handoff.mjs'
+      - 'scripts/test-t51-b3-missing-handoff.mjs'
+      - 'scripts/test-t51-b4-legacy-retirement.mjs'
+      - 'scripts/repro-t51-18-20-architecture.mjs'
+      - '.github/workflows/t51-canon-18-23.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - name: Build project for executable certification
+        run: npm ci && npm run build
+      - name: Validate T5.1 canon 18-23 audit and executable conditional evidence
+        run: node --test scripts/test-t51-canon-18-23.mjs scripts/test-t51-repair-plan.mjs scripts/test-t51-conditional-certification.mjs scripts/test-t51-b2-handoff.mjs scripts/test-t51-b3-missing-handoff.mjs scripts/test-t51-b4-legacy-retirement.mjs scripts/repro-t51-18-20-architecture.mjs
