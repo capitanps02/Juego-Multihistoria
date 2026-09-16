@@ -1,0 +1,52 @@
+name: T5.10 freeze catalog C
+
+on:
+  push:
+    branches: ["t51/canon-23-30"]
+
+permissions:
+  contents: write
+
+jobs:
+  freeze-and-validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - run: npm run build
+      - name: Freeze exact active catalog and regenerate post-T5.1 registry
+        shell: bash
+        run: |
+          set -euo pipefail
+          EXPECTED=fee2ff875bac7979d3907f5ee1004ef736efa9a257237c6dee629dd8687fe136
+          ACTUAL=$(node --input-type=module -e "import { EVENTS } from './dist/content/events/index.js'; import { contentIdentity } from './dist/session/content-identity.js'; process.stdout.write(await contentIdentity(EVENTS));")
+          test "$ACTUAL" = "$EXPECTED"
+          FIXTURE="qa/fixtures/t5.1/post-t51-sources/${ACTUAL}.json"
+          if [ -f "$FIXTURE" ]; then
+            node scripts/freeze-t51-active-source.mjs --check
+          else
+            node scripts/freeze-t51-active-source.mjs
+          fi
+          node scripts/generate-t51-post-legacy-registry.mjs
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$FIXTURE" src/session/post-t51-legacy-registry.ts
+          if ! git diff --cached --quiet; then
+            git commit -m "chore(t5.10): freeze catalog C evidence"
+            git push origin HEAD:t51/canon-23-30
+          fi
+      - run: npm run build
+      - name: Directed T5.10 lineage tests
+        run: node --test scripts/test-t51-t510-23-26.mjs
+      - name: Validate migration route and frozen evidence
+        run: node scripts/check-t51-content-migration-route.mjs
+      - name: Multigeneration lineage regression
+        run: node --test scripts/test-t51-content-lineage.mjs scripts/test-t51-content-migration.mjs
+      - name: T5 content references
+        run: node scripts/qa-t5-content.mjs
+      - name: Full repository regression
+        run: npm test
