@@ -74,11 +74,12 @@ test('Android entrypoint contains no absolute web paths or network fetches', () 
 test('Android bundle retains the production UI, accessibility layer, engine and IndexedDB persistence modules', () => {
   const ui = read('web/game-ui.js');
   const mobile = read('web/product-mobile.css');
+  const local = read('web/local.js');
   assert.ok(ui.includes('createIndexedSaveStore'));
   assert.ok(read('web/indexed-save-store.js').includes('multihistoria.saves.v1'));
-  assert.ok(read('web/local.js').includes('android.offline.session.v1'));
-  assert.ok(read('web/local.js').includes("appVersion:'0.8.0'"));
-  assert.ok(read('web/local.js').includes('data:image/png;base64,'));
+  assert.ok(local.includes('android.offline.session.v1'));
+  assert.match(local, /appVersion:["']0\.8\.0["']/);
+  assert.ok(local.includes('data:image/png;base64,'));
   assert.ok(read('dist/session/game-session.js').includes('export class GameSession'));
   assert.match(mobile, /safe-area-inset-bottom/);
   assert.match(mobile, /prefers-reduced-motion:reduce/);
