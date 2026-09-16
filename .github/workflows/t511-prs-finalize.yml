@@ -23,16 +23,65 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: Align generated test with ambiguousEvent runtime shape
+      - name: Align generated tests with runtime and historical lineage
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          path = Path('scripts/finalize-t511-prs.mjs')
-          body = path.read_text()
+
+          finalizer = Path('scripts/finalize-t511-prs.mjs')
+          body = finalizer.read_text()
           body = body.replace("event.text.visible.join(' ')", "event.intel.visible.join(' ')")
           body = body.replace("event.text.uncertain.join(' ')", "event.intel.uncertain.join(' ')")
           body = body.replace("/no puedes demostrar/i", "/tampoco puedes demostrar/i")
-          path.write_text(body)
+          finalizer.write_text(body)
+
+          test = Path('scripts/test-t51-t511-23-26.mjs')
+          body = test.read_text()
+          body = body.replace("import { EVENTS } from '../dist/content/events/index.js';\n", "")
+          anchor = "const T510_FIXTURE = JSON.parse(fs.readFileSync(`qa/fixtures/t5.1/post-t51-sources/${T51_T510_CONTENT_IDENTITY}.json`, 'utf8'));\n"
+          if anchor not in body:
+              raise SystemExit('T5.11 fixture anchor not found')
+          body = body.replace(anchor, anchor + "const T511_FIXTURE = JSON.parse(fs.readFileSync(`qa/fixtures/t5.1/post-t51-sources/${T51_T511_CONTENT_IDENTITY}.json`, 'utf8'));\n", 1)
+          body = body.replace("test('T5.11 extends only the T5.10 -> T5.11 lineage edge', async () => {\n  const actualIdentity = await contentIdentity(EVENTS);", "test('T5.11 frozen catalog preserves only the T5.10 -> T5.11 lineage edge', async () => {\n  const actualIdentity = await contentIdentity(T511_FIXTURE.events);", 1)
+          old = '''test('real PRE and T5.10 snapshots migrate to T5.11 without RNG drift', async () => {
+  const sources = [
+    ['pre', PRE_T51_EVENTS, 51106],
+    ['t510', T510_FIXTURE.events, 51107]
+  ];
+  for (const [name, events, seed] of sources) {
+    const session = await GameSession.create(seed, { sessionId: `t511-${name}`, events });
+    const before = session.exportSnapshot();
+    const stateBefore = structuredClone(before.state);
+    const rngBefore = structuredClone(before.state.rngState);
+    const migrated = await GameSession.migrateAndResume(before);
+    const after = migrated.exportSnapshot();
+    assert.equal(after.contentIdentity, TARGET_IDENTITY, `${name}: wrong target identity`);
+    assert.deepEqual(after.state, stateBefore, `${name}: migration mutated unresolved state`);
+    assert.deepEqual(after.state.rngState, rngBefore, `${name}: migration consumed RNG`);
+  }
+});'''
+          new = '''test('real PRE and T5.10 snapshots retain a unique no-drift route to frozen T5.11', async () => {
+  const sources = [
+    ['pre', PRE_T51_EVENTS, 51106],
+    ['t510', T510_FIXTURE.events, 51107]
+  ];
+  for (const [name, events, seed] of sources) {
+    const session = await GameSession.create(seed, { sessionId: `t511-${name}`, events });
+    const before = session.exportSnapshot();
+    const stateBefore = structuredClone(before.state);
+    const rngBefore = structuredClone(before.state.rngState);
+    const path = findMigrationPath(before.contentIdentity, TARGET_IDENTITY, CONTENT_MIGRATION_ROUTES);
+    assert.ok(path, `${name}: missing route to frozen T5.11`);
+    const migratedState = structuredClone(before.state);
+    for (const route of path) applyMigrationRouteInPlace(migratedState, route);
+    assert.deepEqual(migratedState, stateBefore, `${name}: route mutated unresolved state`);
+    assert.deepEqual(migratedState.rngState, rngBefore, `${name}: route consumed RNG`);
+  }
+});'''
+          if old not in body:
+              raise SystemExit('T5.11 historical migration test anchor not found')
+          body = body.replace(old, new, 1)
+          test.write_text(body)
           PY
       - run: node scripts/finalize-t511-prs.mjs
       - name: Commit PRS generation
