@@ -1,0 +1,25 @@
+name: T5.10 B1a target probe
+
+on:
+  push:
+    branches: ["t51/canon-23-30"]
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - run: npm run build
+      - name: B1a and T5.10 directed content tests
+        run: node --test scripts/test-t51-b1a-intel.mjs scripts/test-t51-t510-23-26.mjs
+      - name: T5 content references
+        run: node scripts/qa-t5-content.mjs
+      - name: T5 deferred consequences with OR/polarity audit
+        run: node scripts/audit-t52-deferred.mjs
+      - name: Print B1a plus T5.10 content identity
+        run: node --input-type=module -e "import { EVENTS } from './dist/content/events/index.js'; import { contentIdentity } from './dist/session/content-identity.js'; console.log('T510_AFTER_B1A_CONTENT_IDENTITY=' + await contentIdentity(EVENTS));"
