@@ -3,22 +3,30 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { EVENTS } from '../dist/content/events/index.js';
 import { contentIdentity } from '../dist/session/content-identity.js';
-import { LEGACY_CONTENT_SOURCES, T51_B1A_CONTENT_IDENTITY } from '../dist/session/content-migration.js';
+import { CONTENT_MIGRATION_ROUTES, LEGACY_CONTENT_SOURCES, findMigrationPath } from '../dist/session/content-migration.js';
+import { PRE_T51_CONTENT_IDENTITY } from '../dist/session/pre-t51-legacy-registry.js';
 
 const handoff = JSON.parse(fs.readFileSync('analysis/T5.1/canon-30-34-migration-handoff.json', 'utf8'));
 const readiness = JSON.parse(fs.readFileSync('analysis/T5.1/canon-30-34-implementation-readiness.json', 'utf8'));
 const audit = JSON.parse(fs.readFileSync('analysis/T5.1/canon-30-34.json', 'utf8'));
-const sourceFixture = JSON.parse(fs.readFileSync(`qa/fixtures/t5.1/post-t51-sources/${T51_B1A_CONTENT_IDENTITY}.json`, 'utf8'));
 
 const sorted = values => [...values].sort();
 const stableIds = sorted(readiness.events.filter(event => event.status === 'stable_semantics_implemented_shared_parity_gap').map(event => event.canonicalId));
 const shiftedIds = sorted(readiness.events.filter(event => event.status === 'shifted_identity_requires_migration').map(event => event.canonicalId));
 const missingIds = sorted(readiness.events.filter(event => event.status === 'canonical_missing_requires_coordinated_addition').map(event => event.canonicalId));
 
-test('T5.1 30-34 migration handoff usa fuente B1a congelada y target runtime actual', async () => {
-  assert.equal(handoff.sourceContentIdentity, T51_B1A_CONTENT_IDENTITY);
-  assert.equal(handoff.sourceContentIdentity, sourceFixture.contentIdentity);
-  assert.ok(LEGACY_CONTENT_SOURCES[handoff.sourceContentIdentity]);
+test('T5.1 30-34 migration handoff usa la última fuente upstream congelada y un target runtime actual', async () => {
+  assert.notEqual(handoff.sourceContentIdentity, PRE_T51_CONTENT_IDENTITY);
+  const source = LEGACY_CONTENT_SOURCES[handoff.sourceContentIdentity];
+  assert.ok(source, `Fuente upstream no congelada: ${handoff.sourceContentIdentity}`);
+  const fixturePath = `qa/fixtures/t5.1/post-t51-sources/${handoff.sourceContentIdentity}.json`;
+  assert.equal(fs.existsSync(fixturePath), true, `Falta fixture post-T5.1 para ${handoff.sourceContentIdentity}`);
+  const fixture = JSON.parse(fs.readFileSync(fixturePath, 'utf8'));
+  assert.equal(fixture.contentIdentity, handoff.sourceContentIdentity);
+  const upstreamPath = findMigrationPath(PRE_T51_CONTENT_IDENTITY, handoff.sourceContentIdentity, CONTENT_MIGRATION_ROUTES);
+  assert.ok(upstreamPath, 'La fuente del handoff debe ser alcanzable desde PRE_T51 por un lineage único');
+  assert.ok(upstreamPath.length > 0);
+  assert.equal(upstreamPath.at(-1).targetContentIdentity, handoff.sourceContentIdentity);
   assert.equal(handoff.observedTargetContentIdentity, await contentIdentity(EVENTS));
   assert.notEqual(handoff.observedTargetContentIdentity, handoff.sourceContentIdentity);
   assert.equal(handoff.consumer.workstreamMayRegisterRoute, false);
@@ -90,5 +98,5 @@ test('T5.1 30-34 handoff conserva invariantes fuertes de migración', () => {
   assert.equal(handoff.invariants.migrationConsumesRng, false);
   assert.equal(handoff.invariants.migrationSchedulesEvents, false);
   assert.ok(handoff.requiredCurrentRouteAssertions.includes('double migration is a no-op'));
-  assert.ok(handoff.requiredCurrentRouteAssertions.includes('registered edge extends the existing PRE_T51 -> T51_B1A lineage without shortcut or ambiguity'));
+  assert.ok(handoff.requiredCurrentRouteAssertions.includes('registered edge extends the existing upstream lineage without shortcut or ambiguity'));
 });
