@@ -4,6 +4,7 @@
   "issue": 2,
   "status": "prepared_for_implementation",
   "rule": "No alias is accepted without explicit semantic equivalence review.",
+  "crosswalkVocabularyNormalized": true,
   "canonicalMissing": [
     {"id":"EVT_20_BRIDGE_001","title":"La reunión de los veinte","decision":"canonical_scene_missing","aliasApproved":false},
     {"id":"EVT_20_MATCH_003","title":"El minuto 65","decision":"canonical_scene_missing","aliasApproved":false},
@@ -13,15 +14,75 @@
     {"id":"EVT_21_PRS_002","title":"La llamada que llega por Clara","decision":"canonical_scene_missing","aliasApproved":false}
   ],
   "engineOnlyInPhase": [
-    {"id":"EVT_20_MATCH_001","title":"Tres partidos que pesan más","decision":"retire_with_save_history_preservation","runtimeDependencies":[]},
-    {"id":"EVT_21_AGT_002","title":"Una llamada que no escuchaste","decision":"retire_after_seed_metadata_update","runtimeDependencies":["src/catalog/seeds.ts:SEED_AGENT_POWER.originEvents"]},
-    {"id":"EVT_21_ABR_001","title":"Navidad lejos","decision":"retire_after_seed_metadata_update","runtimeDependencies":["src/catalog/seeds.ts:SEED_FOREIGN_ADAPT.originEvents"]},
-    {"id":"EVT_21_CCH_001","title":"Un banquillo después de una promesa","decision":"retire_with_save_history_preservation","runtimeDependencies":[]},
-    {"id":"EVT_22_LIFE_001","title":"Tu entorno ya es una decisión","decision":"retire_and_revalidate_density","runtimeDependencies":[]},
-    {"id":"EVT_22_END_001","title":"Cumples 23","decision":"retire_only_after_transition_responsibility_moves","runtimeDependencies":["src/narrative/scheduler.ts:budgetExempt","src/content/events/20_23/principal-events.ts:weight=95"]}
+    {
+      "id":"EVT_20_MATCH_001",
+      "title":"Tres partidos que pesan más",
+      "decision":"retire_technical_keep_history_only",
+      "sameSceneMigrationAllowed":false,
+      "historyEventIdRewriteAllowed":false,
+      "pendingEventIdDirectRewriteAllowed":false,
+      "runtimeDependencies":[],
+      "obligations":["preserve legacy history/pending compatibility","revalidate phase narrative density"]
+    },
+    {
+      "id":"EVT_21_AGT_002",
+      "title":"Una llamada que no escuchaste",
+      "decision":"retire_technical_keep_history_only",
+      "sameSceneMigrationAllowed":false,
+      "historyEventIdRewriteAllowed":false,
+      "pendingEventIdDirectRewriteAllowed":false,
+      "runtimeDependencies":["src/catalog/seeds.ts:SEED_AGENT_POWER.originEvents"],
+      "obligations":["remove technical future catalog origin after canonical seed-origin review","preserve historical seed originEvent unless separately reviewed"]
+    },
+    {
+      "id":"EVT_21_ABR_001",
+      "title":"Navidad lejos",
+      "decision":"retire_technical_keep_history_only",
+      "sameSceneMigrationAllowed":false,
+      "historyEventIdRewriteAllowed":false,
+      "pendingEventIdDirectRewriteAllowed":false,
+      "runtimeDependencies":["src/catalog/seeds.ts:SEED_FOREIGN_ADAPT.originEvents"],
+      "obligations":["remove technical future catalog origin after canonical seed-origin review","preserve historical seed originEvent"]
+    },
+    {
+      "id":"EVT_21_CCH_001",
+      "title":"Un banquillo después de una promesa",
+      "decision":"retire_technical_keep_history_only",
+      "sameSceneMigrationAllowed":false,
+      "historyEventIdRewriteAllowed":false,
+      "pendingEventIdDirectRewriteAllowed":false,
+      "runtimeDependencies":[],
+      "obligations":["preserve legacy history/pending compatibility","revalidate tactical density"]
+    },
+    {
+      "id":"EVT_22_LIFE_001",
+      "title":"Tu entorno ya es una decisión",
+      "decision":"retire_technical_keep_history_only",
+      "sameSceneMigrationAllowed":false,
+      "historyEventIdRewriteAllowed":false,
+      "pendingEventIdDirectRewriteAllowed":false,
+      "runtimeDependencies":[],
+      "obligations":["preserve legacy history/pending compatibility","revalidate late-22 narrative density/pacing"]
+    },
+    {
+      "id":"EVT_22_END_001",
+      "title":"Cumples 23",
+      "decision":"retire_technical_keep_history_only",
+      "sameSceneMigrationAllowed":false,
+      "historyEventIdRewriteAllowed":false,
+      "pendingEventIdDirectRewriteAllowed":false,
+      "runtimeDependencies":["src/narrative/scheduler.ts:budgetExempt","src/content/events/20_23/principal-events.ts:weight=95"],
+      "obligations":["remove hardcoded scheduler reference after replacement","give canonical EVT_23_BRIDGE_001 appropriate start-of-phase narrative priority","test age-driven 22-to-23 transition and bridge reachability","preserve legacy history/pending"]
+    }
   ],
-  "saveRule": "Historical SEEN_old flags must not be translated to SEEN_new unless semantic equivalence is explicitly approved.",
-  "transitionRule": "If EVT_22_END_001 is removed, replace its scheduling responsibility with an explicit canonical transition mechanism and test age/phase 22->23.",
+  "phaseTransitionFinding": {
+    "mechanism": "src/simulation/world-simulator.ts phaseForAge(next.age)",
+    "dependsOnEvt22End": false,
+    "canonicalAge23Bridge": "EVT_23_BRIDGE_001",
+    "note": "EVT_22_END_001 is legacy narrative-priority plumbing, not the state transition gate and not the same scene as the canonical age-23 bridge."
+  },
+  "saveRule": "Historical technical IDs and SEEN_old flags remain historical truth; no SEEN_old -> SEEN_new translation without same-scene equivalence, which is not approved for these six extras.",
+  "transitionRule": "If EVT_22_END_001 is removed, remove its scheduler budget exemption and give the canonical age-23 bridge any explicit priority needed by design; prove 22->23 remains age-driven and bridge reachability remains deterministic.",
   "evidence": [
     "analysis/2026-09-11/t1/principal-traceability.json",
     "analysis/2026-09-11/canonical-id-audit.json",
@@ -30,6 +91,7 @@
     "src/content/events/23_26/principal-events.ts",
     "src/catalog/seeds.ts",
     "src/narrative/scheduler.ts",
+    "src/simulation/world-simulator.ts",
     "src/session/game-session.ts"
   ],
   "implementationBrief": "project/tasks/T5_1_BATCH_01_20_23.md"
