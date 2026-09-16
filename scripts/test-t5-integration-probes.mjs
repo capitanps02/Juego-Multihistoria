@@ -45,3 +45,33 @@ test('T5 integration/T5.2+T5.3: una resolución conserva simultáneamente lifecy
     'la seed fue creada pero el flag de presencia no quedó sincronizado'
   );
 });
+
+test('T5 integration/T5.3: una fuente NPC ignorante no puede crear conocimiento verdadero', async t => {
+  const npcKnowledge = await optionalImport('../dist/core/npc-knowledge.js');
+  if (!npcKnowledge) {
+    t.skip('T5.3 todavía no está integrado en esta rama');
+    return;
+  }
+
+  const state = createInitialState(55404);
+  resolver.resolveChoiceInPlace(state, byId('EVT_18_PRE_001'), 'CALL_NANO');
+
+  assert.equal(npcKnowledge.npcKnows(state, 'NPC_ACA_01', 'EVT_18_PRE_001'), false, 'reproducción inválida: la fuente ya conoce el hecho');
+  assert.equal(npcKnowledge.npcKnows(state, 'NPC_CCH_01', 'EVT_18_PRE_001'), false, 'reproducción inválida: el receptor ya conoce el hecho');
+
+  assert.throws(
+    () => npcKnowledge.informNpcOfEventInPlace(state, 'NPC_CCH_01', 'EVT_18_PRE_001', {
+      source: 'reported',
+      certainty: 80,
+      memory: 'temporary',
+      sourceNpcId: 'NPC_ACA_01'
+    }),
+    /uninformed NPC source|Cannot transmit/,
+    'T5-QA-004: una fuente ignorante debe ser rechazada antes de mutar conocimiento'
+  );
+  assert.equal(
+    npcKnowledge.npcKnows(state, 'NPC_CCH_01', 'EVT_18_PRE_001'),
+    false,
+    'T5-QA-004: el receptor aprendió el hecho pese a que la fuente no lo conocía'
+  );
+});
