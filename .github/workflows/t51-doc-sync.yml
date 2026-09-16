@@ -1,0 +1,88 @@
+name: T51 veteran evidence doc sync
+
+on:
+  push:
+    branches:
+      - t51/canon-30-34
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: t51/canon-30-34
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Refresh 30-34 evidence documents
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          MAIN = 'e48a6c85d0a9e61d88eca121f683dcd308c188c1'
+          SOURCE = '5d3fd71a8df42ed5b93fdde63ed386e9d776693addd62a30293dbecad7aa56d2'
+          TARGET = '380d28e0e09995330dbbf72ba958a9822855f0b66a3bdc63a202b30a34bb3989'
+          FOCUSED_RUN = 35143998574
+          OFFICIAL_RUN = 35144089866
+
+          handoff_path = Path('analysis/T5.1/canon-30-34-migration-handoff.json')
+          handoff = json.loads(handoff_path.read_text())
+          handoff['sourceMainSha'] = MAIN
+          handoff['sourceContentIdentity'] = SOURCE
+          handoff['observedTargetContentIdentity'] = TARGET
+          handoff['targetIdentityEvidence']['workflowRun'] = FOCUSED_RUN
+          handoff['targetIdentityEvidence']['source'] = 'T5.1 30-34 renewal integration run; runtime contentIdentity(EVENTS) after syncing main@' + MAIN
+          handoff['consumer']['targetFreezeFixture'] = f'qa/fixtures/t5.1/post-t51-sources/{TARGET}.json'
+          handoff_path.write_text(json.dumps(handoff, ensure_ascii=False, indent=2) + '\n')
+
+          audit_path = Path('analysis/T5.1/canon-30-34.json')
+          audit = json.loads(audit_path.read_text())
+          for dep in audit['globalDependencies']:
+            if dep['id'] == 'DEP_T51_EVENT_ID_MIGRATION':
+              dep['description'] = (
+                f'Latest frozen upstream lineage node is {SOURCE}. Integration must freeze the active 30-34 target {TARGET} '
+                'as post-T5.1 source evidence, then register/certify the unique latest-upstream -> target edge for the 27 '
+                'stable exact-ID semantic changes. Shifted IDs remain deferred.'
+              )
+          status = audit['integrationStatus']
+          status['syncedBaselineMain'] = MAIN
+          status['contentMigrationSourceIdentity'] = SOURCE
+          status['targetContentIdentity'] = TARGET
+          status['targetedT51Run'] = FOCUSED_RUN
+          status['targetedT51Result'] = '32_of_32_veteran_focused_pass'
+          status['officialIntegrityRun'] = OFFICIAL_RUN
+          status['officialIntegrityResult'] = 'blocked_only_at_missing_target_freeze_sentinel_after_build_saves_t52_t53_pass'
+          status['contentMigrationLineage'] = f'PRE_T51_to_latest_frozen_{SOURCE[:12]}_available_in_main'
+          status['contentMigrationTargetFreeze'] = f'pending:{TARGET}.json'
+          status['contentMigrationChecker'] = 'expected_missing_target_freeze_before_route_registration'
+          status['temporaryValidationWorkflowRemoved'] = True
+          audit_path.write_text(json.dumps(audit, ensure_ascii=False, indent=2) + '\n')
+
+          workstream_path = Path('project/workstreams/T51_CANON_30_34.md')
+          text = workstream_path.read_text()
+          marker = '<!-- T51_RENEWAL_EXACT_TRIGGER_STATUS -->'
+          block = f'''\n{marker}\n## Estado de integración del trigger de renovación — 2026-09-16\n\n`EVT_30_CON_001` ya no usa el proxy de alcanzabilidad. El catálogo activo consume el contrato compartido `gateAlternatives` con las dos ramas canónicas: `contract.monthsRemaining <= 18` **o** `facts.clubWantsRenewal === true`. La escena sigue como `technical_adaptation` / `needs_reimplementation`: resolver el trigger no demuestra todavía paridad completa de conocimiento, consecuencias, seeds/NPC y continuidad de saves.\n\nEvidencia actual:\n\n- baseline sincronizado: `main@{MAIN}`;\n- suite focal 30–34: **32/32** en Actions run `{FOCUSED_RUN}`;\n- source identity congelada más reciente en `main`: `{SOURCE}`;\n- target identity del catálogo de esta rama: `{TARGET}`;\n- Repository integrity run `{OFFICIAL_RUN}` compila y supera saves, T5.2 y T5.3 antes de detenerse exactamente en `freeze-t51-active-source --check`, porque todavía no existe `qa/fixtures/t5.1/post-t51-sources/{TARGET}.json`;\n- este workstream **no** crea ese fixture ni registra la ruta: el handoff mantiene `implementationOwner = coordination/integration` y `workstreamMayRegisterRoute = false`.\n\n`DEP_T51_RENEWAL_INTENT_FACT` queda cerrado. `DEP_T51_BRIDGE_PRIORITY` permanece abierto únicamente porque `EVT_30_BRIDGE_001` sigue siendo una identidad canónica desplazada frente a `EVT_30_IDN_001`; la infraestructura de prioridad ya existe, pero no debe optarse el legacy antes de aprobar identidad y migración.\n'''
+          if marker in text:
+            text = text.split(marker)[0].rstrip() + '\n' + block
+          else:
+            text = text.rstrip() + '\n' + block
+          workstream_path.write_text(text)
+          PY
+      - name: Validate veteran evidence
+        run: npm run test:t51:30-34
+      - name: Commit refreshed evidence
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add analysis/T5.1/canon-30-34.json analysis/T5.1/canon-30-34-migration-handoff.json project/workstreams/T51_CANON_30_34.md
+          git commit -m 'docs(t51): align veteran handoff with exact renewal target'
+          git push origin HEAD:t51/canon-30-34
