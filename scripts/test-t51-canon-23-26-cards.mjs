@@ -5,6 +5,7 @@ import fs from 'node:fs';
 const cardsDoc = JSON.parse(fs.readFileSync('analysis/T5.1/canon-23-26-reimplementation-cards.json', 'utf8'));
 const reconciliation = JSON.parse(fs.readFileSync('analysis/T5.1/canon-23-30.json', 'utf8'));
 const traceability = JSON.parse(fs.readFileSync('analysis/2026-09-11/t1/principal-traceability.json', 'utf8'));
+const freezeManifest = JSON.parse(fs.readFileSync('qa/fixtures/t5.1/pre-t51-content-manifest.json', 'utf8'));
 
 const cards = cardsDoc.cards;
 const byId = new Map(cards.map(card => [card.id, card]));
@@ -55,7 +56,10 @@ test('las seeds declaradas en las fichas proceden de la memoria canónica', () =
   }
 });
 
-test('la preparación no autoriza mutación de runtime antes del freeze de contentIdentity', () => {
-  assert.equal(cardsDoc.runtimeMutation, 'blocked_by_pre_T5_content_identity_freeze_and_migration_policy');
-  assert.match(cardsDoc.rule, /No autorizan cambiar runtime/);
+test('el baseline está congelado y las fichas solo esperan política de migración', () => {
+  assert.equal(cardsDoc.baselineContentIdentity, freezeManifest.contentIdentity);
+  assert.equal(cardsDoc.baselineContentIdentity, '2e07efd2ea99c4e9ec4c2b20ae89664204f76db2c55a72d567208799c01bccff');
+  assert.equal(cardsDoc.runtimeMutation, 'blocked_by_session_migration_policy_from_frozen_contentIdentity');
+  assert.match(cardsDoc.rule, /baseline pre-T5\.1 ya está congelado/i);
+  assert.match(cardsDoc.rule, /migración de sesiones/i);
 });
