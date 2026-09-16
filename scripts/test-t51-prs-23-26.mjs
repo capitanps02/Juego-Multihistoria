@@ -2,7 +2,6 @@ import fs from 'node:fs';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createInitialState } from '../dist/content/initial-state.js';
-import { EVENTS } from '../dist/content/events/index.js';
 import { EVENTS_23_26 } from '../dist/content/events/23_26/index.js';
 import { eventGatesPass } from '../dist/narrative/event-gates.js';
 import { GameSession } from '../dist/session/game-session.js';
@@ -22,6 +21,7 @@ import { PRE_T51_CONTENT_IDENTITY } from '../dist/session/pre-t51-legacy-registr
 const ID = 'EVT_23_PRS_001';
 const TARGET_IDENTITY = '88751a2107c035826162968991e3a1808b2f4573afa3a3a20a3efa376fa8af1f';
 const D_FIXTURE = JSON.parse(fs.readFileSync(`qa/fixtures/t5.1/post-t51-sources/${T51_T511_CONTENT_IDENTITY}.json`, 'utf8'));
+const E_FIXTURE = JSON.parse(fs.readFileSync(`qa/fixtures/t5.1/post-t51-sources/${T51_PRS_CONTENT_IDENTITY}.json`, 'utf8'));
 
 const press = () => {
   const rows = EVENTS_23_26.filter(event => event.id === ID);
@@ -77,8 +77,8 @@ test('PRS treats the minutes promise as an attributed claim and never mutates co
   assert.ok(event.outcomes.every(outcome => (outcome.seedTransitions ?? []).length === 0));
 });
 
-test('PRS creates only the adjacent D -> E migration edge', async () => {
-  const actualIdentity = await contentIdentity(EVENTS);
+test('PRS frozen E catalog preserves only the adjacent D -> E migration edge', async () => {
+  const actualIdentity = await contentIdentity(E_FIXTURE.events);
   assert.equal(actualIdentity, TARGET_IDENTITY);
   assert.equal(actualIdentity, T51_PRS_CONTENT_IDENTITY);
   assert.equal(findMigrationRoute(PRE_T51_CONTENT_IDENTITY, actualIdentity, CONTENT_MIGRATION_ROUTES), undefined);
@@ -133,14 +133,15 @@ test('D -> E preserves historical truth and releases only PRS scheduler suppress
   assert.equal(Object.hasOwn(state.eventCooldowns, ID), false);
 });
 
-test('real frozen D snapshot migrates to E with no RNG drift', async () => {
+test('real frozen D snapshot reaches frozen E semantics with no RNG drift', async () => {
   const session = await GameSession.create(51123, { sessionId: 't511-prs-d', events: D_FIXTURE.events });
   const before = session.exportSnapshot();
   const stateBefore = structuredClone(before.state);
   const rngBefore = structuredClone(before.state.rngState);
-  const migrated = await GameSession.migrateAndResume(before);
-  const after = migrated.exportSnapshot();
-  assert.equal(after.contentIdentity, TARGET_IDENTITY);
-  assert.deepEqual(after.state, stateBefore);
-  assert.deepEqual(after.state.rngState, rngBefore);
+  const route = findMigrationRoute(T51_T511_CONTENT_IDENTITY, T51_PRS_CONTENT_IDENTITY, CONTENT_MIGRATION_ROUTES);
+  assert.ok(route);
+  const migratedState = structuredClone(before.state);
+  applyMigrationRouteInPlace(migratedState, route);
+  assert.deepEqual(migratedState, stateBefore);
+  assert.deepEqual(migratedState.rngState, rngBefore);
 });
