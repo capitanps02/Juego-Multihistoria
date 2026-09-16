@@ -1,4 +1,4 @@
-import type { EventDefinition } from "../../../core/types.js";
+import type { Condition, EventDefinition } from "../../../core/types.js";
 import { PRINCIPAL_EVENTS_30_34 } from "./principal-events.js";
 import { CONDITIONAL_EVENTS_30_34 } from "./conditional-events.js";
 import { CANONICAL_REIMPLEMENTATIONS_30_34 } from "./canonical-reimplementations.js";
@@ -22,30 +22,32 @@ const overrides=new Map([
   ...CANONICAL_REIMPLEMENTATIONS_33A
 ].map(event=>[event.id,event]));
 
+const canonicalRenewalAlternatives:Condition[][]=[
+  [{path:"contract.monthsRemaining",op:"lte",value:18}],
+  [{path:"facts.clubWantsRenewal",op:"eq",value:true}]
+];
+
 /**
- * The canonical trigger for EVT_30_CON_001 is
- * "contract <= 18 months OR club wants to renew". The current GameState has
- * no explicit club-renewal-intent signal. Requiring only monthsRemaining<=18
- * produced a false negative for existing deterministic careers that represent
- * the unmodelled second branch of the OR. Keep the event reachable until that
- * state exists; the event remains a technical adaptation, not verified canon.
+ * EVT_30_CON_001 canon: contract <=18 months OR the current club wants to renew.
+ * The shared T5.1 condition root now exposes facts.clubWantsRenewal, so this event
+ * can use the exact event-level OR contract instead of the previous reachability
+ * proxy. Trigger parity alone does not prove full canonical identity.
  */
-const preserveUnmodelledTriggerBranches=(event:EventDefinition):EventDefinition=>{
+const applyCanonicalSharedTriggers=(event:EventDefinition):EventDefinition=>{
   if(event.id!=="EVT_30_CON_001") return event;
   return {
     ...event,
     gates:[],
-    tags:[...new Set([
-      ...(event.tags??[]),
-      "t51_trigger_approximation",
-      "t51_unmodelled_club_renewal_proxy"
-    ])]
-  };
+    gateAlternatives:canonicalRenewalAlternatives,
+    tags:(event.tags??[]).filter(tag=>
+      tag!=="t51_trigger_approximation" && tag!=="t51_unmodelled_club_renewal_proxy"
+    )
+  } as EventDefinition & {gateAlternatives:Condition[][]};
 };
 
 const principal:EventDefinition[]=PRINCIPAL_EVENTS_30_34.map(original=>{
   const selected=overrides.get(original.id)??original;
-  const event=preserveUnmodelledTriggerBranches(selected);
+  const event=applyCanonicalSharedTriggers(selected);
   if(!reimplementedIds.has(event.id)) return event;
   const tags=[...(event.tags??[]).filter(tag=>tag!=="t51_verified_same_identity"),"t51_canonical_reimplementation"];
   return {...event,canonStatus:"technical_adaptation",tags:[...new Set(tags)]};
