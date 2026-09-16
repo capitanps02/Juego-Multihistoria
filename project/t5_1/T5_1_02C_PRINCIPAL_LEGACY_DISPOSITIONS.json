@@ -1,0 +1,66 @@
+{
+  "generated": "2026-09-16",
+  "batch": "02C",
+  "phase": "26_30",
+  "age": 27,
+  "reviewed": 4,
+  "sameSceneMigrationsApproved": 0,
+  "defaultDisposition": "retire_technical_keep_history_only",
+  "rows": [
+    {
+      "legacyId": "EVT_27_REC_001",
+      "title": "El récord empieza a estar cerca",
+      "decision": "retire_technical_keep_history_only",
+      "sameSceneMigrationAllowed": false,
+      "historyEventIdRewriteAllowed": false,
+      "pendingEventIdDirectRewriteAllowed": false,
+      "chronology": {
+        "futureSeedOriginMovesTo": "EVT_26_MATCH_001",
+        "laterCanonicalConsequence": "EVT_27_MATCH_001"
+      },
+      "reason": "Obsolete technical record precursor: canonical record chase begins at age 26; age-27 canonical scene is the distinct post-record public-tone dilemma."
+    },
+    {
+      "legacyId": "EVT_27_RIV_001",
+      "title": "Otra vez comparados",
+      "decision": "retire_technical_keep_history_only",
+      "sameSceneMigrationAllowed": false,
+      "historyEventIdRewriteAllowed": false,
+      "pendingEventIdDirectRewriteAllowed": false,
+      "chronology": {
+        "futureSeedOriginMovesTo": "EVT_26_RIV_001"
+      },
+      "reason": "Adrián/public-rivalry lineage belongs canonically to age-26 EVT_26_RIV_001; none of the 02C canonical targets is this generic comparison callback."
+    },
+    {
+      "legacyId": "EVT_27_MENT_001",
+      "title": "¿Qué le dirías al de 19?",
+      "decision": "retire_technical_keep_history_only",
+      "sameSceneMigrationAllowed": false,
+      "historyEventIdRewriteAllowed": false,
+      "pendingEventIdDirectRewriteAllowed": false,
+      "chronology": {
+        "futureSeedOriginMovesTo": "EVT_26_TEAM_002",
+        "laterCanonicalConsequence": "EVT_27_TEAM_001"
+      },
+      "reason": "Advice-to-youngster precursor is distinct from canonical age-27 scene where the protected successor performs well in the protagonist's absence."
+    },
+    {
+      "legacyId": "EVT_27_FINAL_001",
+      "title": "La final empieza en el banquillo",
+      "decision": "retire_technical_keep_history_only",
+      "sameSceneMigrationAllowed": false,
+      "historyEventIdRewriteAllowed": false,
+      "pendingEventIdDirectRewriteAllowed": false,
+      "legacyVerifiedIsProof": false,
+      "chronology": {
+        "bigGameBenchOriginMovesTo": "EVT_26_EUR_001",
+        "canonicalFinalConsequence": "EVT_26_FINAL_001",
+        "distinctAge27CanonicalScene": "EVT_27_EUR_001"
+      },
+      "reason": "Generic verified final-bench runtime event is neither the age-26 canonical final chain nor the age-27 semifinal tactical-sacrifice scene."
+    }
+  ],
+  "migrationRule": "Preserve completed legacy IDs and exact pending definitions; no canonical SEEN/history rewrite; future seed catalog origin repairs from PR #7 do not rewrite historical seed.originEvent by themselves.",
+  "status": "review_complete"
+}
