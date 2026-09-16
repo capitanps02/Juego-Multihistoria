@@ -15,18 +15,25 @@ La parte técnica está preparada y pasa en emulador/CI. La evidencia externa pe
 
 ## Candidato técnico actual
 
-Código validado: `b45c1a2c21680b0453f64a9e766fee6509993c0c`.
+Base integrada: `main@171ecacc0a3619aabffcee30b84c3ba2d2438632`.
 
-Workflow `Android presentation candidate` #52:
+Código validado: `74c953058eb8672b34651ad6b2156afcec47932b`. El commit posterior `918b863e4ee1399ac743f315a4dc4862aa0be79d` solo actualiza documentación del workstream y fue revalidado con el mismo payload.
+
+Workflow `Android presentation candidate` **#67** (`35137089253`): **SUCCESS**.
 
 - versión `0.8.0`, versionCode `1`;
-- tamaño: **8.691.886 bytes**;
-- SHA-256 exacto: `83650120af602cebc8c562acb9b67912885f7c44ffec5c1fabcdc03d17e62807`;
-- payload SHA-256: `8ec600cef9f0b54e4bf8b8c51973fca945cb24bb1c6be44994d07e231b55103e`;
-- 214 entradas de payload;
-- única exclusión del fingerprint estable: `META-INF/CERT.RSA`.
+- tamaño: **8.971.846 bytes**;
+- SHA-256 exacto: `b60d34802fcbe6db738ce4782a653e0f231da85d1e65acae24d8cedaca00c11c`;
+- payload SHA-256: `11e3002ffba2dda9ddeff4c0a717a1205fb0fc2058132b6dc5754c241199bc80`;
+- **228** entradas de payload;
+- única exclusión del fingerprint estable: `META-INF/CERT.RSA`;
+- digest del ZIP de artefacto GitHub: `sha256:36085048ed2591ed1fb9a3c4aa115720c7c21485874e34dd280d9bb79b3d03ee`.
 
-Los cambios posteriores que solo afectan al recolector/documentación no modifican por sí mismos el payload de la aplicación. Para una prueba física definitiva debe conservarse el SHA exacto del APK concreto que se instale.
+El APK #67 fue descargado y sus huellas se recalcularon independientemente; coinciden con `analysis/2026-09-15/T3.3-apk-build.json`.
+
+El candidato #66 del HEAD de código tiene exactamente el mismo `payloadSha256`. El SHA exacto del APK firmado puede variar entre runners limpios porque la firma debug usa un certificado generado por el entorno; por eso la equivalencia de software se comprueba con la huella estable de payload y el APK concreto instalado debe conservar además su SHA exacto.
+
+**Para la prueba física usar el APK #67 identificado arriba, o un candidato posterior cuyo payload/commit se vuelva a verificar explícitamente. No usar candidatos antiguos por número sin comprobar sus huellas.**
 
 ## Preparar el APK candidato
 
