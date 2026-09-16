@@ -6,6 +6,8 @@ export interface AmbiguousChoiceSpec {
   intentTags: string[];
   primaryMessage: string;
   secondaryMessage: string;
+  /** Optional state gates that determine whether the player may see/select this choice. */
+  eligibility?: EventDefinition["gates"];
   primaryEffects?: Effect[];
   secondaryEffects?: Effect[];
   immediateEffects?: Effect[];
@@ -57,7 +59,8 @@ export function ambiguousEvent(spec: AmbiguousEventSpec): EventDefinition {
       label: c.label,
       intentTags: c.intentTags,
       immediateEffects: c.immediateEffects,
-      outcomeIds: [`${c.id}__PRIMARY`, `${c.id}__SECONDARY`]
+      outcomeIds: [`${c.id}__PRIMARY`, `${c.id}__SECONDARY`],
+      ...(c.eligibility ? { eligibility: c.eligibility } : {})
     })),
     outcomes: spec.choices.flatMap(c => ([
       {
