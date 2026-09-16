@@ -166,6 +166,17 @@ Una segunda pasada amplió el vocabulario a `memoria` y `olvida` y añadió un l
 
 Los diez casos outcome-specific reparados registran conocimiento únicamente cuando el texto demuestra que el NPC conoce o conserva el hecho; el resultado alternativo no concede esa memoria. El lint de callbacks no deja gaps pendientes.
 
+### D10 — una transferencia podía etiquetar la memoria con el club de destino
+
+T5.2 aplica correctamente el cambio de club y el scope de seeds antes de que T5.3 registre conocimiento. Sin una separación explícita de contextos, una escena como `EVT_19_JAN_001/FORCE_EXIT__SECONDARY` podía dejar a Ferrer recordando un conflicto ocurrido en UDV con `club: NEW_CLUB`.
+
+Corrección:
+
+- `rememberNpcFactInPlace` acepta un club de aprendizaje explícito;
+- el resolver conserva `previousClub` como contexto de la escena y lo pasa al registro de conocimiento;
+- una información comunicada posteriormente sigue usando el club actual, porque en ese caso el momento de aprendizaje sí es posterior;
+- la regresión exige que, tras la salida a `NEW_CLUB`, la memoria de Ferrer sobre `EVT_19_JAN_001` conserve `club: UDV`.
+
 ## 8. Trazabilidad y cobertura real
 
 `scripts/audit-t53.mjs` deriva la trazabilidad desde los catálogos compilados, no desde esta tabla manual:
@@ -203,7 +214,8 @@ La suite dirigida cubre el contrato pedido y regresiones adicionales:
 10. `PlayerView` no filtra estado interno;
 11. Nano solo aprende la ayuda no solicitada en el outcome donde realmente se entera;
 12. flags + seed no bastan para su callback sin conocimiento personal;
-13. diez descubrimientos/memorias explícitos de contenido crean memoria únicamente en el outcome revelador, nunca en el alternativo.
+13. diez descubrimientos/memorias explícitos de contenido crean memoria únicamente en el outcome revelador, nunca en el alternativo;
+14. una escena que cambia de club conserva en la memoria del NPC el club donde el hecho fue aprendido.
 
 `npm test` ejecuta conjuntamente los gates T5.2 ya integrados en `main` y la auditoría y suites T5.3. El workflow `Repository integrity` ejecuta además el QA T5: determinismo/RNG, límites de edad, referencias, carreras largas, lifecycle y simulación estratificada.
 
