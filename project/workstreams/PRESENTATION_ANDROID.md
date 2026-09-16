@@ -2,7 +2,7 @@
 
 Branch: `presentation/android-playcanvas`
 
-Base auditada: `main@c28d1194d7a6cce8aef9759bbb96875a710cb945` (16-09-2026).
+Base auditada inicialmente: `main@c28d1194d7a6cce8aef9759bbb96875a710cb945` (16-09-2026). La rama se sincronizó después con `main@568bde2166d5b50a755d0d4cc2c207fa56fe3d7b`, cuyo único cambio adicional era el panel de coordinación.
 
 ## Estado ejecutivo
 
@@ -24,7 +24,8 @@ Hallazgos:
 2. El navegador web no declaraba `viewport-fit=cover`; la capa visual no contemplaba safe areas ni reducción de movimiento. Corregido con `web/product-mobile.css`.
 3. La UI mostraba el término técnico `IndexedDB`. Sustituido por lenguaje de producto: `Guardado local protegido`.
 4. La exportación Android abría el selector sin confirmar después si el sistema guardó, canceló o falló. Corregido mediante evento público de plataforma `mh:android-file-result`.
-5. No se reescribe contenido narrativo ni canon en este workstream.
+5. **Carrera → Hitos de edad** mostraba `m.signature`. Esa firma se deriva de tags internos como `STATE20_HOME_STARTER`, por lo que era una fuga real de clasificación interna. Corregido: el hito visible muestra únicamente edad, fecha y club.
+6. No se reescribe contenido narrativo ni canon en este workstream.
 
 ### Contrato público pendiente para T5 NPC
 
@@ -36,6 +37,10 @@ La presentación **no** accederá a memoria, conocimiento o flags internas para 
 - añadir un campo público equivalente, por ejemplo `knownContacts`, y deprecar el listado indiscriminado.
 
 El filtrado debe ocurrir en la frontera ViewModel, no en la UI leyendo estado secreto.
+
+### Contrato público de hitos
+
+Aunque la UI ya no renderiza `signature`, el objeto público `ageMilestones` todavía transporta campos internos (`route`, `tags`, `signature`). No es necesario que la presentación los lea. Como endurecimiento futuro de contrato, el coordinador puede proyectar esos hitos a los campos visibles (`age`, `date`, `season`, `club`) dentro de `PlayerView`; esta rama no modifica el estado narrativo persistente para hacerlo.
 
 ## Mobile / responsive
 
@@ -69,7 +74,8 @@ Mejoras de esta rama:
 - `AndroidBridge.getRuntimeInfo()` expone solo diagnóstico de plataforma: versión de app, Android SDK/release y versión WebView;
 - logging Android para arranque y selectores;
 - exportación informa `saved`, `cancelled` o `error` a la UI;
-- la pantalla Tu partida muestra versión y modo offline sin exponer internals narrativos.
+- la pantalla Tu partida muestra versión y modo offline sin exponer internals narrativos;
+- `OfflineProbe` cubre además runtime diagnostics, Android Back y pausa/reanudación sin cambio del save exacto cuando se ejecute en el emulador dedicado.
 
 ## APK y evidencia
 
@@ -121,7 +127,9 @@ Existentes revisados:
 Añadidos/reforzados:
 
 - `scripts/test-t46.mjs`: bloquea texto visible `semilla`;
-- `scripts/test-presentation-platform.mjs`: viewport, safe areas, landscape, reduced motion, packaging común, diagnóstico Android, feedback de export y política sin Internet;
+- `scripts/test-presentation-platform.mjs`: viewport, safe areas, landscape, reduced motion, packaging común, diagnóstico Android, feedback de export, códigos de hitos internos y política sin Internet;
+- `scripts/test-android-offline.mjs`: comprueba capa móvil empaquetada, versión y bridge actualizado;
+- `OfflineProbe`: cuando se ejecute en emulador, comprueba también Android Back y pausa/reanudación;
 - `npm run test:presentation`;
 - `npm run qa:presentation`;
 - CI de integridad ejecuta regresión de presentación/PlayCanvas/offline Android;
@@ -133,7 +141,7 @@ Añadidos/reforzados:
 | --- | --- | --- |
 | Browser / fuentes | auditado | código y gates de rama |
 | PlayCanvas scene 2593315 | integración existente; bundle se regenera en gate | `playcanvas/manifest.json` + tests |
-| Android 15 emulator `emulator-5556` | histórico: pasa T3.4 técnica | `analysis/2026-09-15/T3.4-android-runtime.json` |
+| Android 15 emulator `emulator-5556` | histórico: pasa T3.4 técnica; sonda reforzada pendiente de próxima ejecución | `analysis/2026-09-15/T3.4-android-runtime.json` |
 | Teléfono Android físico | pendiente | no existe evidencia válida aún |
 
 ## Screenshots
@@ -146,8 +154,9 @@ No se añaden screenshots en esta pasada porque no se ha ejecutado una sesión v
 - La rama no modifica `project/PLAN_PASADAS.md`.
 - La rama no modifica `analysis/2026-09-11/plan-seguimiento.json`.
 - La visibilidad correcta de NPC requiere decisión transversal sobre el contrato público de contactos.
+- El endurecimiento final de `PlayerView.ageMilestones` puede hacerse transversalmente sin modificar el snapshot persistente.
 - El APK candidato de CI debe verificarse por SHA antes de la prueba física.
 
 ## PR
 
-PR a `main`: pendiente de apertura al finalizar los gates de esta pasada. No hacer merge desde este workstream.
+PR #14 `presentation/android-playcanvas` → `main`: **DRAFT mientras se ejecutan los gates**. No hacer merge desde este workstream. Cuando el HEAD exacto tenga CI verde podrá marcarse listo para revisión, manteniendo T3.4 abierta hasta la evidencia física.
