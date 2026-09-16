@@ -23,6 +23,42 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - name: Adapt finalizer to multiline C-D mapping
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          migration = Path('src/session/content-migration.ts')
+          body = migration.read_text()
+          eur = '''      {
+                  kind: "distinct_scene",
+                  legacyEventId: "EVT_23_EUR_001",
+                  canonicalEventId: "EVT_23_EUR_001",
+                  clearCanonicalSeen: true,
+                  clearCanonicalCooldown: true
+                }'''.replace('        ', '')
+          prs = eur + ''',
+              {
+                kind: "distinct_scene",
+                legacyEventId: "EVT_23_PRS_001",
+                canonicalEventId: "EVT_23_PRS_001",
+                clearCanonicalSeen: true,
+                clearCanonicalCooldown: true
+              }'''.replace('        ', '')
+          if eur not in body:
+              raise SystemExit('multiline EUR migration mapping not found')
+          migration.write_text(body.replace(eur, prs, 1))
+
+          finalizer = Path('scripts/finalize-t511-d.mjs')
+          script = finalizer.read_text()
+          start_marker = "{\n  const path = 'src/session/content-migration.ts';"
+          next_marker = "\n\n{\n  const path = 'scripts/test-t51-t511-23-26.mjs';"
+          start = script.find(start_marker)
+          end = script.find(next_marker, start)
+          if start < 0 or end < 0:
+              raise SystemExit('finalizer migration section not found')
+          finalizer.write_text(script[:start] + script[end + 2:])
+          PY
       - run: node scripts/finalize-t511-d.mjs
       - name: Commit final D candidate
         run: |
