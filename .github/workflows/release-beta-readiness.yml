@@ -42,7 +42,7 @@ jobs:
         run: node scripts/release-build-manifest.mjs --require-git
 
       - name: Test non-mutating diagnostics
-        run: node --test scripts/test-release-diagnostics.mjs
+        run: node --test scripts/test-release-diagnostics.mjs scripts/test-release-runtime-diagnostics.mjs
 
       - name: Verify automated upgrade prerequisites
         run: node scripts/release-upgrade-check.mjs
