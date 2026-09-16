@@ -47,7 +47,7 @@
       "engineId": "EVT_30_CON_001",
       "status": "needs_reimplementation",
       "title": "Uno más o tres",
-      "implementation": "canonical decision semantics implemented; canonical trigger is contract <=18 months OR club wants renewal. Shared event-level OR gates are available, but GameState still has no authoritative produced club-renewal-intent fact, so reachability preserves the unmodelled branch through an explicit proxy and remains non-verified"
+      "implementation": "canonical decision semantics implemented; canonical trigger contract <=18 months OR club wants renewal is now represented exactly through gateAlternatives and facts.clubWantsRenewal. The scene remains needs_reimplementation because knowledge/consequence/seed/NPC/save-continuity identity parity is not fully proven"
     },
     {
       "canonicalId": "EVT_30_BODY_001",
@@ -523,17 +523,12 @@
     {
       "id": "DEP_T51_BRIDGE_PRIORITY",
       "kind": "scheduler",
-      "description": "Canonical EVT_30_BRIDGE_001 is a mandatory start-of-Pasada-6 bridge. Current ordinary scheduling/weight does not prove it cannot be skipped."
+      "description": "The shared transition-priority contract is available, but canonical EVT_30_BRIDGE_001 is still a shifted identity versus legacy EVT_30_IDN_001. Do not opt the legacy scene into mandatory priority until identity and migration are approved."
     },
     {
       "id": "DEP_T51_SEED_TOPOLOGY",
       "kind": "seed_lifecycle",
       "description": "Open seeds must receive consumers/terminal transitions only when canonical evidence or an owning downstream block proves them; T5.2 findings must not be silenced with invented consumers."
-    },
-    {
-      "id": "DEP_T51_RENEWAL_INTENT_FACT",
-      "kind": "causal_state_fact",
-      "description": "Event-level OR composition is available in main. EVT_30_CON_001 still cannot reach strict trigger parity because GameState has no authoritative produced fact meaning club wants renewal; do not invent an ad-hoc flag."
     },
     {
       "id": "DEP_T51_T510_TEST_LINEAGE_STALENESS",
@@ -555,12 +550,12 @@
       "evidence": "Repository integrity run 35114618548 passed the frozen save suite including examples/save-v08-seed-424242.json after the consolidated main migration work; the run later failed specifically because the changed content identity had no registered route."
     },
     {
-      "claim": "The unmodelled club-renewal branch of EVT_30_CON_001 remains reachable without claiming canonical verification.",
-      "evidence": "The active catalog clears the incomplete months-only gate and marks t51_trigger_approximation plus t51_unmodelled_club_renewal_proxy; targeted run 35123290229 passed all 29 T5.1 30–34 tests, including the permanent guard that rejects stale OR-gate dependency wording."
+      "claim": "EVT_30_CON_001 now uses the canonical renewal OR trigger without the former reachability proxy.",
+      "evidence": "The active catalog uses gateAlternatives for contract.monthsRemaining <= 18 OR facts.clubWantsRenewal == true; dedicated tests cover both positive routes and the closed negative case."
     }
   ],
   "integrationStatus": {
-    "syncedBaselineMain": "30ae3f27ddcb846f59f049e3a4536276f3e9a97e",
+    "syncedBaselineMain": "e48a6c85d0a9e61d88eca121f683dcd308c188c1",
     "sharedChoiceEligibility": "available_in_main",
     "sharedOrGateContract": "available_in_main",
     "contentMigrationArchitecture": "available_in_main",
@@ -571,14 +566,15 @@
     "temporaryValidationWorkflowRemoved": true,
     "mergeReady": false,
     "contentMigrationLineage": "PRE_T51_to_B1A_to_T510_available_in_main",
-    "targetContentIdentity": "b7483243816fd4e2e8cf1774a4ece699f47b6a03637de50c31347109512f4446",
+    "targetContentIdentity": "380d28e0e09995330dbbf72ba958a9822855f0b66a3bdc63a202b30a34bb3989",
     "sharedB1aTest": "resolved_in_main_lineage_aware",
     "offerSessionBridge": "available_in_main",
     "contentMigrationTargetFreeze": "pending_post_t51_source_fixture",
     "offerSessionBridgeValidation": "pass",
     "contentMigrationChecker": "expected_missing_target_freeze_before_route_registration",
-    "contentMigrationSourceIdentity": "fee2ff875bac7979d3907f5ee1004ef736efa9a257237c6dee629dd8687fe136",
-    "sharedT510Test": "known_downstream_lineage_stale_2_tests"
+    "contentMigrationSourceIdentity": "5d3fd71a8df42ed5b93fdde63ed386e9d776693addd62a30293dbecad7aa56d2",
+    "sharedT510Test": "known_downstream_lineage_stale_2_tests",
+    "renewalIntentFact": "available_in_main_and_consumed"
   },
   "implementationProgress": {
     "stableIdReimplemented": [
@@ -619,7 +615,7 @@
     "safeNow": [
       "Keep partial canonical reimplementations as technical_adaptation until semantic parity is complete.",
       "Use stable-ID overrides to avoid destructive event-ID migration.",
-      "Keep EVT_30_CON_001 reachable through the documented proxy until a real club-renewal-intent signal exists; shared OR-gate composition is already available, but the proxy must not be labeled verified canon.",
+      "Use EVT_30_CON_001 with the exact shared OR trigger contract; keep technical_adaptation until the remaining identity dimensions are proven.",
       "Add regression tests for canonical option semantics, classification completeness, no silent aliases and no age-only terminal retirement."
     ],
     "deferred": [

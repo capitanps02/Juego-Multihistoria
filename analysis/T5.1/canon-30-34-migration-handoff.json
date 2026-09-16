@@ -3,8 +3,8 @@
   "workstream": "T5.1 canon 30-34 migration handoff",
   "generatedAt": "2026-09-16",
   "sourceMainSha": "30ae3f27ddcb846f59f049e3a4536276f3e9a97e",
-  "sourceContentIdentity": "fee2ff875bac7979d3907f5ee1004ef736efa9a257237c6dee629dd8687fe136",
-  "observedTargetContentIdentity": "b7483243816fd4e2e8cf1774a4ece699f47b6a03637de50c31347109512f4446",
+  "sourceContentIdentity": "5d3fd71a8df42ed5b93fdde63ed386e9d776693addd62a30293dbecad7aa56d2",
+  "observedTargetContentIdentity": "380d28e0e09995330dbbf72ba958a9822855f0b66a3bdc63a202b30a34bb3989",
   "targetIdentityEvidence": {
     "workflowRun": 35128992272,
     "source": "T5.1 30-34 final evidence / runtime contentIdentity(EVENTS) on current main tip",
