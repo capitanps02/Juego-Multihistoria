@@ -29,7 +29,9 @@ const cases = [
   ['EVT_18_TEAM_001', 'AGREE_BUT_SELF', 'AGREE_BUT_SELF__SECONDARY', 'NPC_PLR_12', 'witnessed'],
   ['EVT_18_TEAM_001', 'TELL_MENA', 'TELL_MENA__SECONDARY', 'NPC_PLR_12', 'reported'],
   ['EVT_18_END_002', 'DEFEND', 'DEFEND__PRIMARY', 'NPC_CCH_01', 'public'],
-  ['EVT_18_MKT_001', 'SOFT_LEVERAGE', 'SOFT_LEVERAGE__SECONDARY', 'NPC_DIR_02', 'witnessed']
+  ['EVT_18_MKT_001', 'SOFT_LEVERAGE', 'SOFT_LEVERAGE__SECONDARY', 'NPC_DIR_02', 'witnessed'],
+  ['CEVT_18_VELA_01', 'DISTANCE', 'DISTANCE__SECONDARY', 'NPC_PLR_10', 'witnessed'],
+  ['EVT_19_JAN_001', 'FORCE_EXIT', 'FORCE_EXIT__SECONDARY', 'NPC_DIR_02', 'witnessed']
 ];
 
 test('T5.3 explicit discoveries create NPC knowledge only on the revealing outcome', () => {
