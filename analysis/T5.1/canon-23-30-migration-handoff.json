@@ -1,0 +1,155 @@
+{
+  "schemaVersion": 1,
+  "workstream": "T5.1 canon 23-30 migration handoff",
+  "generatedAt": "2026-09-16",
+  "sourceMainSha": "800841b6780fc5d7b07ae3ca507a6b0131e9c305",
+  "sourceContentIdentity": "2e07efd2ea99c4e9ec4c2b20ae89664204f76db2c55a72d567208799c01bccff",
+  "consumer": {
+    "issue": 24,
+    "attemptedPullRequest": 25,
+    "attemptedPullRequestStatus": "closed_unmerged_no_runtime",
+    "implementationOwner": "coordination/integration"
+  },
+  "authorities": [
+    "analysis/T5.1/canon-23-30.json",
+    "analysis/T5.1/canon-23-30-conditionals.json",
+    "task/t5.1-batch-02b@a2d7f0b0964bcb57aa896c013e54acab82a18412:analysis/2026-09-16/t5.1-batch-02b-seed-chronology.json"
+  ],
+  "sourceDiscrepancy": {
+    "finding": "PR #7 prose says 10 seed-origin moves, but its machine-readable seedOrigins array contains 11 entries.",
+    "resolution": "This handoff treats the enumerated 11-entry machine artifact as authoritative and carries all 11 explicitly."
+  },
+  "invariants": {
+    "approvedSameSceneMappings": [],
+    "approvedAliases": [],
+    "unknownIdentityAccepted": false,
+    "legacyDefinitionScheduled": false,
+    "legacyHistoryRewrittenAsCanonical": false,
+    "legacyPendingReboundToNewDefinition": false,
+    "legacySeenSuppressesNonEquivalentCanonical": false,
+    "legacyCooldownSuppressesNonEquivalentCanonical": false,
+    "migrationConsumesRng": false,
+    "migrationSchedulesEvents": false,
+    "seedHistoricalOriginRewriteByChronologyRepair": false
+  },
+  "summary": {
+    "verifiedSameIdentityPrincipals": 25,
+    "exactIdSemanticCollisionPrincipals": 40,
+    "canonicalPrincipalsWithoutLegacyInheritance": 26,
+    "legacyPrincipalsKeepHistoryOnly": 26,
+    "exactIdSemanticCollisionConditionals": 25,
+    "safeDirectSameSceneConditionalMappings": 0,
+    "age26SeedOriginMoves": 11,
+    "t53TextualNpcMentionDebtInRange": 10
+  },
+  "principals": {
+    "verifiedSameIdentity": {
+      "ids": [
+        "EVT_23_CAP_001", "EVT_23_JAN_001", "EVT_23_MATCH_001", "EVT_23_MED_001", "EVT_23_NAT_001",
+        "EVT_24_ABR_001", "EVT_24_AGT_001", "EVT_24_CCH_001", "EVT_24_CON_001", "EVT_24_EUR_001",
+        "EVT_24_FREE_001", "EVT_24_IMG_001", "EVT_24_JAN_001", "EVT_24_LIFE_001", "EVT_24_LOCK_001",
+        "EVT_24_MED_001", "EVT_24_MKT_001", "EVT_24_NAT_001", "EVT_24_PRS_001", "EVT_25_CAP_001",
+        "EVT_25_END_001", "EVT_25_FAM_001", "EVT_25_MED_001", "EVT_25_TACT_001", "EVT_25_TEAM_001"
+      ],
+      "migrationAction": "none_if_definition_unchanged"
+    },
+    "exactIdSemanticCollision": {
+      "ids": [
+        "EVT_23_AGT_001", "EVT_23_BODY_001", "EVT_23_BRIDGE_001", "EVT_23_CON_001", "EVT_23_EUR_001",
+        "EVT_23_HOME_001", "EVT_23_LOCK_001", "EVT_23_MKT_001", "EVT_23_MONEY_001", "EVT_23_PRS_001",
+        "EVT_24_MATCH_001", "EVT_25_AGT_001", "EVT_25_CON_001", "EVT_25_MKT_001", "EVT_25_NAT_001",
+        "EVT_26_AGT_001", "EVT_26_BODY_001", "EVT_26_CON_001", "EVT_26_EUR_001", "EVT_26_HOME_001",
+        "EVT_26_IMG_001", "EVT_26_MKT_001", "EVT_26_NAT_001", "EVT_26_TEAM_001", "EVT_27_AGT_001",
+        "EVT_27_BODY_001", "EVT_27_LOCK_001", "EVT_27_MED_001", "EVT_27_MKT_001", "EVT_27_MONEY_001",
+        "EVT_27_NAT_001", "EVT_27_PRS_001", "EVT_27_TACT_001", "EVT_28_CON_001", "EVT_28_HOME_001",
+        "EVT_28_MKT_001", "EVT_28_NAT_001", "EVT_29_CON_001", "EVT_29_FIN_001", "EVT_29_PRS_001"
+      ],
+      "migrationAction": "bind_legacy_history_pending_seen_and_cooldown_to_source_fingerprint; do_not_treat_legacy_SEEN_or_eventCooldowns_as_canonical_suppression_after_reimplementation"
+    },
+    "canonicalWithoutLegacyInheritance": {
+      "canonicalMissingIds": [
+        "EVT_26_CAP_001", "EVT_26_DOC_001", "EVT_26_FINAL_001", "EVT_26_MATCH_001", "EVT_26_MED_001",
+        "EVT_26_NAT_002", "EVT_26_RIV_001", "EVT_26_TEAM_002", "EVT_27_AGT_002", "EVT_27_CON_001",
+        "EVT_27_EUR_001", "EVT_27_HOME_001", "EVT_27_IMG_001", "EVT_27_MATCH_001", "EVT_27_TEAM_001",
+        "EVT_28_CLUB_001", "EVT_28_FORM_001", "EVT_28_MEDIA_001", "EVT_28_MED_001", "EVT_28_STAR_001",
+        "EVT_29_NAT_002", "EVT_29_TACT_001"
+      ],
+      "unapprovedCandidateCanonicalIds": [
+        "EVT_26_BRIDGE_001", "EVT_27_STAR_001", "EVT_27_AWARD_001", "EVT_28_RICH_001"
+      ],
+      "migrationAction": "future_canonical_scene_starts_unseen; do_not_synthesize_history_seen_or_cooldown_from_legacy"
+    },
+    "legacyKeepHistoryOnly": {
+      "engineOnlyIds": [
+        "EVT_26_CLB_001", "EVT_26_JAN_001", "EVT_26_PRS_001", "EVT_27_FINAL_001", "EVT_27_MENT_001",
+        "EVT_27_REC_001", "EVT_27_RIV_001", "EVT_28_BODY_001", "EVT_28_FINAL_001", "EVT_28_IMG_001",
+        "EVT_28_JAN_001", "EVT_28_MONEY_001", "EVT_28_PRS_001", "EVT_28_TACT_001", "EVT_29_CCH_001",
+        "EVT_29_EUR_001", "EVT_29_FAN_001", "EVT_29_FORM_001", "EVT_29_HOME_001", "EVT_29_MED_001",
+        "EVT_29_NAT_001", "EVT_29_REC_001"
+      ],
+      "unapprovedCandidateLegacyIds": [
+        "EVT_26_IDN_001", "EVT_28_TEAM_001", "EVT_28_GALA_001", "EVT_29_MKT_001"
+      ],
+      "migrationAction": "preserve_history_journal_pending_with_legacy_definition; preserve legacy cooldown only as legacy provenance; remove from future active catalog when owner batch implements replacement"
+    },
+    "explicitNonMappings": [
+      {"canonicalId":"EVT_26_BRIDGE_001","legacyId":"EVT_26_IDN_001","sameSceneMigrationAllowed":false},
+      {"canonicalId":"EVT_27_STAR_001","legacyId":"EVT_28_TEAM_001","sameSceneMigrationAllowed":false},
+      {"canonicalId":"EVT_27_AWARD_001","legacyId":"EVT_28_GALA_001","sameSceneMigrationAllowed":false},
+      {"canonicalId":"EVT_28_RICH_001","legacyId":"EVT_29_MKT_001","sameSceneMigrationAllowed":false}
+    ]
+  },
+  "conditionals": {
+    "exactIdSemanticCollisionIds": [
+      "CEVT_23_RIVAS_02", "CEVT_23_MENA_02", "CEVT_23_VELA_02", "CEVT_23_BRUNO_03", "CEVT_23_ADR_03",
+      "CEVT_23_NANO_02", "CEVT_23_CLARA_03", "CEVT_23_AGENT_03", "CEVT_23_MED_02", "CEVT_23_UDV_02",
+      "CEVT_24_CHAT_01", "CEVT_24_TOURN_01", "CEVT_24_TOURN_02", "CEVT_24_OWNER_02", "CEVT_24_SPONSOR_02",
+      "CEVT_24_FAM_02", "CEVT_25_STAR_01", "CEVT_25_AGENT_04", "CEVT_25_BODY_02", "CEVT_25_SHOCK_02",
+      "CEVT_29_NAT_02", "CEVT_29_HOME_03", "CEVT_29_BODY_04", "CEVT_29_RECORD_02", "CEVT_29_PROJECT_02"
+    ],
+    "migrationAction": "fingerprint_legacy_occurrences_pending_seen_and_cooldown; same_string_id_is_not_same_scene_proof; legacy_seen_or_cooldown_must_not_suppress_rewritten_canonical_callback",
+    "nonExactPlanningRule": "For the other 19 canonical callbacks in 26-30, runtime lineage candidates are design evidence only. Do not create history/pending/seen/cooldown aliases from lineage.",
+    "source": "analysis/T5.1/canon-23-30-conditionals.json",
+    "safeDirectSameSceneMappings": []
+  },
+  "age26SeedChronology": {
+    "status": "migration_input_not_runtime_authorization",
+    "originMoves": [
+      {"seed":"SEED_PEAK_IDENTITY","legacyOrigin":"EVT_26_IDN_001","futureCanonicalOrigin":"EVT_26_BRIDGE_001","newMinAge":26,"historicalOriginRewriteAuthorized":false},
+      {"seed":"SEED_PROJECT_FACE","legacyOrigin":"EVT_26_CLB_001","futureCanonicalOrigin":"EVT_26_MKT_001","newMinAge":26,"historicalOriginRewriteAuthorized":false},
+      {"seed":"SEED_BIG_GAME_BENCH","legacyOrigin":"EVT_27_FINAL_001","futureCanonicalOrigin":"EVT_26_EUR_001","newMinAge":26,"historicalOriginRewriteAuthorized":false},
+      {"seed":"SEED_RECORD_CHASE","legacyOrigin":"EVT_27_REC_001","futureCanonicalOrigin":"EVT_26_MATCH_001","newMinAge":26,"historicalOriginRewriteAuthorized":false},
+      {"seed":"SEED_LOCKER_ENDORSEMENT","legacyOrigin":"EVT_27_LOCK_001","futureCanonicalOrigin":"EVT_26_CAP_001","newMinAge":26,"historicalOriginRewriteAuthorized":false},
+      {"seed":"SEED_PEAK_LOAD","legacyOrigin":"EVT_27_BODY_001","futureCanonicalOrigin":"EVT_26_MED_001","newMinAge":26,"historicalOriginRewriteAuthorized":false},
+      {"seed":"SEED_DOCUMENTARY_ACCESS","legacyOrigin":"EVT_27_PRS_001","futureCanonicalOrigin":"EVT_26_DOC_001","newMinAge":26,"historicalOriginRewriteAuthorized":false},
+      {"seed":"SEED_PUBLIC_RIVALRY","legacyOrigin":"EVT_27_RIV_001","futureCanonicalOrigin":"EVT_26_RIV_001","newMinAge":26,"historicalOriginRewriteAuthorized":false},
+      {"seed":"SEED_MENTOR_ADVICE","legacyOrigin":"EVT_27_MENT_001","futureCanonicalOrigin":"EVT_26_TEAM_002","newMinAge":26,"historicalOriginRewriteAuthorized":false},
+      {"seed":"SEED_NATIONAL_ROLE","legacyOrigin":"EVT_27_NAT_001","futureCanonicalOrigin":"EVT_26_NAT_002","newMinAge":26,"historicalOriginRewriteAuthorized":false},
+      {"seed":"SEED_FINAL_BENCH","legacyOrigin":"EVT_28_FINAL_001","futureCanonicalOrigin":"EVT_26_FINAL_001","newMinAge":26,"historicalOriginRewriteAuthorized":false}
+    ],
+    "canonicalChain": ["EVT_26_EUR_001", "SEED_BIG_GAME_BENCH", "EVT_26_FINAL_001", "SEED_FINAL_BENCH"],
+    "rule": "Apply new origin metadata only to future canonical creations. Existing live/historical seeds retain legacy originEvent unless a separately approved same-scene mapping exists."
+  },
+  "t53Dependency": {
+    "sourcePr": 9,
+    "integrationStatus": "not_integrated_at_handoff_time",
+    "textualNpcMentionsMissingRefs": [
+      "CEVT_23_RIVAS_02", "CEVT_23_MENA_02", "CEVT_23_VELA_02", "CEVT_23_BRUNO_03", "CEVT_23_NANO_02",
+      "CEVT_23_MED_02", "CEVT_26_RIVAS_01", "CEVT_27_NANO_01", "CEVT_27_RECORD_01", "CEVT_29_RECORD_02"
+    ],
+    "rule": "Do not add npcRefs merely to satisfy T5.3 audit before the owning canonical callback is implemented. Any npcRefs/content change changes contentIdentity and must follow the same migration/provenance rules; npcRefs alone never imply knowledge."
+  },
+  "requiredMigrationAssertions": [
+    "current identity remains no-op",
+    "unknown source identity is rejected",
+    "legacy pending exact-ID collision resolves against the exact legacy fingerprint and choices",
+    "legacy history exact-ID collision remains attributable to the legacy definition",
+    "legacy SEEN for a non-equivalent exact-ID collision does not suppress the future canonical definition",
+    "legacy eventCooldowns for a non-equivalent exact-ID collision do not suppress or delay the future canonical definition",
+    "canonical-missing IDs begin unseen with no inherited cooldown and receive no synthesized history",
+    "legacy technical IDs remain valid historical evidence but are absent from active scheduling after replacement",
+    "all 11 age-26 chronology seed moves preserve existing seed.originEvent",
+    "migration preserves RNG streams, receipts, revision, pendingResult, market, retirement, epilogue, NPC relations and knowledge",
+    "double migration is a no-op"
+  ]
+}

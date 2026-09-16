@@ -8,6 +8,7 @@ const a=simulateCareer({seed:424242,untilRetirement:true,maxAge:55,microfeeds:tr
 const reproducible=a.narrativeSignature===b.narrativeSignature && a.state.epilogue.summaryKey===b.state.epilogue.summaryKey;
 const microfeedIndependent=a.narrativeSignature===noFeed.narrativeSignature && a.state.epilogue.summaryKey===noFeed.state.epilogue.summaryKey;
 let migration=false; try{const raw=fs.readFileSync('examples/save-v07-seed-424242.json','utf8');const m=loadSave(raw); migration=m.schemaVersion===8&&m.retirement.status!==undefined&&m.epilogue.generated===false;}catch{}
-fs.writeFileSync('examples/save-v08-seed-424242.json',serializeSave(a.state,true));
+// Normal validation is read-only with respect to the tracked schema-v8 fixture. Regeneration is explicit.
+if(process.env.UPDATE_V08_FIXTURE==='1') fs.writeFileSync('examples/save-v08-seed-424242.json',serializeSave(a.state,true));
 const result={schema:CURRENT_SCHEMA_VERSION,buildErrors:errors.length,buildWarnings:warnings.length,reproducible,microfeedIndependent,migrationV7toV8:migration,exampleRetired:a.state.retirement.status==='closed',exampleAge:a.state.age,epilogueFamilies:a.state.epilogue.families,passed:errors.length===0&&warnings.length===0&&reproducible&&microfeedIndependent&&migration&&a.state.retirement.status==='closed'};
 fs.writeFileSync('qa/final-gate-v08.json',JSON.stringify(result,null,2)); console.log(JSON.stringify(result,null,2));

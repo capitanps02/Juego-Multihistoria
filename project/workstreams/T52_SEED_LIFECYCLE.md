@@ -101,6 +101,8 @@ Estas seeds se vinculan al club de origen y caducan al cambiar de club. Los equi
 
 T5.2 conserva `npcRefs` y los reporta, pero **no convierte conocimiento o psicología NPC en este subsistema**. El equipo NPC mantiene esa propiedad.
 
+Tras la implementación T5.3 observada en PR #9, la frontera transversal queda explícita: seed viva, flag `HAS_SEED_*` o `npcRefs` no conceden conocimiento. Un NPC solo puede reaccionar como conocedor mediante la vía causal de conocimiento T5.3. Resolver una seed tampoco informa por sí mismo a un NPC salvo que la escena canónica declare las dos consecuencias.
+
 ## Compatibilidad de saves
 
 No hay cambio de `schemaVersion`.
@@ -152,9 +154,10 @@ Comando:
 npm run audit:t52
 ```
 
-Salida:
+Salidas:
 
-`analysis/T5.2/seed-lifecycle.json`
+- `analysis/T5.2/seed-lifecycle.json`;
+- `analysis/T5.2/seed-handoff.json`.
 
 El inventario genera una fila por cada seed e intenta determinar:
 
@@ -180,6 +183,8 @@ El inventario genera una fila por cada seed e intenta determinar:
 - seeds sin consumidor;
 - seeds open-ended sin transición terminal.
 
+El handoff añade una partición por propietario canónico y falla si existe una seed duplicada, sin propietario o asignada a un ID inexistente.
+
 También produce cobertura orientativa para promesas, lesiones, operaciones, conflictos, relaciones, reputación, contratos, dinero, familia, agente, club, selección y decisiones de carrera.
 
 ## Qué NO corrige T5.2 automáticamente
@@ -194,7 +199,7 @@ Para seeds con `ageWindow` finito existe ahora cierre técnico por edad si nunca
 
 ## Tests T5.2
 
-`scripts/test-t52.mjs` cubre:
+`scripts/test-t52.mjs` y `scripts/test-t52-handoff.mjs` cubren:
 
 - inventario de 210 seeds;
 - creación;
@@ -211,7 +216,10 @@ Para seeds con `ageWindow` finito existe ahora cierre técnico por edad si nunca
 - doble comando mediante `GameSession.commandId`, incluido replay tras restore;
 - ausencia de draws RNG en el lifecycle;
 - seed desconocida presente en un save;
-- intento de crear una seed inexistente desde contenido nuevo.
+- intento de crear una seed inexistente desde contenido nuevo;
+- limpieza de flags `HAS_SEED_*` fantasma;
+- partición exacta de las 210 seeds entre workstreams canónicos;
+- consistencia entre listas de deuda y sus conteos.
 
 Comando dirigido:
 
@@ -232,4 +240,49 @@ Cada equipo de contenido debe revisar en el informe generado las seeds que le pe
 5. si un máximo de edad representa realmente la muerte del hilo;
 6. si una seed open-ended es memoria permanente o deuda narrativa.
 
-T5.2 no reescribe escenas para ocultar esos huecos; los hace medibles y comprobables.
+### Mapa de ownership y deuda medible
+
+| Workstream | Seeds | Productor runtime | Sin productor | Consumidor detectable | Sin consumidor | Terminal explícito | Open-ended sin terminal | Huérfanas productor+consumidor | `originEventsMissing` | Mismatch `seedsRead` |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `t51/canon-18-23` | 31 | 31 | 0 | 21 | 10 | 1 | 7 | 0 | 0 | 16 |
+| `t51/canon-23-30` | 59 | 59 | 0 | 29 | 30 | 0 | 35 | 0 | 0 | 12 |
+| `t51/canon-30-34` | 52 | 48 | 4 | 7 | 45 | 0 | 52 | 4 | 52 | 7 |
+| `t51/canon-34plus` | 68 | 0 | 68 | 0 | 68 | 0 | 68 | 68 | 68 | 0 |
+
+La partición automática es exacta: **210/210 seeds**, sin duplicados, sin IDs sin propietario y sin referencias desconocidas.
+
+Prioridad de handoff:
+
+- `t51/canon-18-23`: revisar 10 seeds sin consumidor y 16 lecturas reales que no declaran `seedsRead`; el productor existe para todas las seeds.
+- `t51/canon-23-30`: revisar 30 seeds sin consumidor y decidir el destino canónico de 35 hilos open-ended; el productor existe para las 59.
+- `t51/canon-30-34`: reconciliar 4 seeds sin productor/consumidor y la procedencia editorial `PASADA_6_30_34`; 45/52 carecen de consumidor y ninguna tiene cierre terminal explícito.
+- `t51/canon-34plus`: prioridad máxima de contenido; las 68 seeds están declaradas pero no poseen productor ni consumidor runtime. Deben reconciliarse con eventos reales de veterano/retirada/epílogo antes de poder considerarlas memoria funcional.
+
+T5.2 no reescribe escenas para ocultar esos huecos; los hace medibles, asignables y comprobables.
+
+## Readiness canónica y criterio de cierre
+
+La nueva evidencia T5.1 obliga a separar dos conceptos:
+
+- **deuda lifecycle**: lo que `seed-handoff.json` detecta en el runtime integrado;
+- **readiness canónica**: si ya existe una identidad de escena acreditada donde sea correcto implementar esa conexión.
+
+Snapshot detallado: `analysis/T5.2/CANONICAL_READINESS.md`.
+
+Estado observado:
+
+- 18–23: 39 principales requieren reimplementación y 6 están ausentes; la deuda condicional también es material.
+- 23–30: 25 principales están verificadas, pero 40 requieren reimplementación, 22 están ausentes y 4 siguen en revisión; 44 condicionales permanecen en revisión manual.
+- 30–34: 45/50 principales requieren reimplementación, 5 están ausentes y ninguna está acreditada como `verified_same_identity`; 26 condicionales siguen pendientes.
+- 34+: 4 principales verificadas + 3 aliases aprobados; 13 requieren reimplementación y 30 están ausentes, por lo que **43/50** siguen sin implementación canónica completa. El propio workstream 34+ difiere shared seed wiring.
+
+Regla: **canon first, wiring second**. No se añaden consumidores/cierres a escenas `engine_only_noncanonical` o genéricas únicamente para hacer bajar las métricas T5.2.
+
+La infraestructura T5.2 está integrada, pero la pasada permanece `in_progress` hasta que el `main` consolidado permita clasificar cada una de las 210 seeds, con evidencia, como una de estas opciones:
+
+1. productor + consumidor/cierre canónico implementados;
+2. memoria intencionalmente persistente/open-ended con razón canónica explícita;
+3. caducidad por edad/fecha/scope canónicamente justificada;
+4. retirada/deprecación compatible con saves/history y sin reinterpretación silenciosa.
+
+No se acepta como cierre de T5.2 inventar `resolve`/`expire`, reinterpretar history antigua, conectar seeds a escenas no canónicas ni usar conocimiento NPC implícito como sustituto de una consecuencia causal.
