@@ -28,7 +28,7 @@
   },
   "principals": [
     {"canonicalId":"EVT_30_BRIDGE_001","engineId":"EVT_30_IDN_001","status":"needs_reimplementation","title":"La palabra veterano"},
-    {"canonicalId":"EVT_30_CON_001","engineId":"EVT_30_CON_001","status":"needs_reimplementation","title":"Uno más o tres","implementation":"canonical decision semantics implemented; canonical trigger is contract <=18 months OR club wants renewal, but the second branch is not represented in GameState, so reachability is preserved through an explicit unmodelled-branch proxy and remains non-verified"},
+    {"canonicalId":"EVT_30_CON_001","engineId":"EVT_30_CON_001","status":"needs_reimplementation","title":"Uno más o tres","implementation":"canonical decision semantics implemented; canonical trigger is contract <=18 months OR club wants renewal, but the second branch is not represented in GameState and the shared OR-gate contract is still pending, so reachability is preserved through an explicit unmodelled-branch proxy and remains non-verified"},
     {"canonicalId":"EVT_30_BODY_001","engineId":"EVT_30_BODY_001","status":"needs_reimplementation","title":"El plan de 45 partidos","implementation":"canonical semantics implemented; trigger parity pending"},
     {"canonicalId":"EVT_30_MKT_001","engineId":"EVT_30_MKT_001","status":"needs_reimplementation","title":"¿El último mercado grande?","implementation":"canonical semantics implemented; market trigger/consequence parity pending"},
     {"canonicalId":"EVT_30_NAT_001","engineId":"EVT_30_NAT_001","status":"needs_reimplementation","title":"La conversación con el seleccionador","implementation":"canonical semantics implemented; national-cycle trigger parity pending"},
@@ -97,7 +97,8 @@
     {"id":"DEP_T51_CONDITIONAL_CANON","kind":"canonical_source","description":"Obtain/extract authoritative conditional-event inventory before approving any 30–34 conditional identity."},
     {"id":"DEP_T51_EVENT_ID_MIGRATION","kind":"save_continuity","description":"Shared contentIdentity migration architecture now exists in main, but the 30–34 catalog change still requires an approved registered route before integration. Shifted IDs must not be silently renamed; exact-ID semantic collisions require explicit migration semantics."},
     {"id":"DEP_T51_BRIDGE_PRIORITY","kind":"scheduler","description":"Canonical EVT_30_BRIDGE_001 is a mandatory start-of-Pasada-6 bridge. Current ordinary scheduling/weight does not prove it cannot be skipped."},
-    {"id":"DEP_T51_SEED_TOPOLOGY","kind":"seed_lifecycle","description":"Open seeds must receive consumers/terminal transitions only when canonical evidence or an owning downstream block proves them; T5.2 findings must not be silenced with invented consumers."}
+    {"id":"DEP_T51_SEED_TOPOLOGY","kind":"seed_lifecycle","description":"Open seeds must receive consumers/terminal transitions only when canonical evidence or an owning downstream block proves them; T5.2 findings must not be silenced with invented consumers."},
+    {"id":"DEP_T51_OR_GATES","kind":"shared_trigger_contract","description":"The historical Condition[] contract is AND-only. Shared T5.1 coordination has identified explicit deterministic OR-gate/fact-causal support as the next transversal gap. EVT_30_CON_001 depends on contract <=18 months OR club renewal intent and therefore cannot reach strict trigger parity until that shared contract and a renewal-intent fact exist."}
   ],
   "verifiedBehavior": [
     {"claim":"No automatic retirement by chronological age in the 30–34 classifier.","evidence":"classifyState34 is terminal only when flags.EARLY_RETIRED_30_34 === true; STATE34_RETIREMENT_NEAR is non-terminal."},
@@ -106,7 +107,9 @@
     {"claim":"The unmodelled club-renewal branch of EVT_30_CON_001 remains reachable without claiming canonical verification.","evidence":"The active catalog clears the incomplete months-only gate and marks t51_trigger_approximation plus t51_unmodelled_club_renewal_proxy; targeted run 35115188014 passed all 13 T5.1 30–34 tests."}
   ],
   "integrationStatus": {
-    "syncedBaselineMain": "a4a4c8df98bb1a3e88d9a7e0a19b48571af99074",
+    "syncedBaselineMain": "4b86e83c670f9659d57e0dcfa370897f38f5b579",
+    "sharedChoiceEligibility": "available_in_main",
+    "sharedOrGateContract": "pending_shared",
     "contentMigrationArchitecture": "available_in_main",
     "contentMigrationRoute": "required_not_registered",
     "frozenSaveCompatibility": "passing_before_route_gate",
@@ -131,11 +134,12 @@
     "safeNow": [
       "Keep partial canonical reimplementations as technical_adaptation until semantic parity is complete.",
       "Use stable-ID overrides to avoid destructive event-ID migration.",
-      "Keep EVT_30_CON_001 reachable through the documented proxy until a real club-renewal-intent signal exists; do not label the proxy verified canon.",
+      "Keep EVT_30_CON_001 reachable through the documented proxy until shared OR-gate support plus a real club-renewal-intent signal exist; do not label the proxy verified canon.",
       "Add regression tests for canonical option semantics, classification completeness, no silent aliases and no age-only terminal retirement."
     ],
     "deferred": [
       "Do not author the shared contentIdentity migration route from this workstream; coordinate it with the integration owner.",
+      "Do not implement the shared OR-gate contract from this age-owned workstream.",
       "Do not rename shifted IDs until save-continuity migration/alias behavior is approved.",
       "Do not add missing canonical IDs in a way that changes global principal counts before integration coordination approves the inventory change.",
       "Do not edit aging, retirement machine, scheduler, save schema, NPC core or UI from this workstream."
