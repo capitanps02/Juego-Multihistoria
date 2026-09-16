@@ -1,5 +1,5 @@
 {
-  "contentIdentity": "008962f2104461eeeb97acea011cd8ea0109d789923a8f9d7055b74f0d55b41e",
+  "contentIdentity": "de9ef2f501c015705a28d54afd140259356f15566d424511e6dbf67769c9bd19",
   "engineBuild": "0.8.0-t2.5",
   "sessionVersions": [
     3
@@ -34725,6 +34725,11 @@
           "value": true
         },
         {
+          "path": "flags.CONTINENTAL_REGISTERED",
+          "op": "eq",
+          "value": false
+        },
+        {
           "path": "professional.roleSecurity",
           "op": "lte",
           "value": 70
@@ -35185,29 +35190,6 @@
       "phase": "23_26",
       "family": "team",
       "gates": [],
-      "gateAlternatives": [
-        [
-          {
-            "path": "facts.lockerCaptainAffinity",
-            "op": "gte",
-            "value": 60
-          }
-        ],
-        [
-          {
-            "path": "facts.lockerStarAffinity",
-            "op": "gte",
-            "value": 60
-          }
-        ],
-        [
-          {
-            "path": "flags.HAS_SEED_TEAMMATE_COVER",
-            "op": "eq",
-            "value": true
-          }
-        ]
-      ],
       "timeWindow": {
         "months": [
           9,
@@ -35218,27 +35200,27 @@
       },
       "cooldown": 99999,
       "repeatable": false,
-      "weight": 18,
+      "weight": 12,
       "text": {
-        "title": "Las cuatro de la mañana",
-        "body": "Un compañero importante teme llegar tarde después de una noche fuera y te pide una coartada falsa: que cenabais juntos y que el tráfico os retrasó. Sabes que esa versión no es cierta."
+        "title": "Cúbreme diez minutos",
+        "body": "La etapa adulta de la carrera enfrenta objetivos compatibles en teoría, pero difíciles de conservar a la vez."
       },
       "intel": {
         "visible": [
-          "Sabes que la coartada que te pide es falsa y que no hay un delito ni una situación de seguridad en curso."
+          "Conoces las condiciones formales y tu situación deportiva actual."
         ],
         "uncertain": [
-          "No sabes si el club ya tiene pruebas del retraso ni si ese compañero te protegería a ti en una situación parecida."
+          "No conoces la agenda completa de terceros ni cómo evolucionará el contexto."
         ]
       },
       "choices": [
         {
           "id": "A",
-          "label": "Cubrirle",
+          "label": "Tomar la iniciativa",
           "intentTags": [
-            "locker_loyalty",
-            "false_cover"
+            "ceiling"
           ],
+          "immediateEffects": [],
           "outcomeIds": [
             "A__PRIMARY",
             "A__SECONDARY"
@@ -35246,11 +35228,11 @@
         },
         {
           "id": "B",
-          "label": "Negarte pero no avisar a nadie",
+          "label": "Esperar y reunir información",
           "intentTags": [
-            "boundary",
-            "locker_discretion"
+            "patience"
           ],
+          "immediateEffects": [],
           "outcomeIds": [
             "B__PRIMARY",
             "B__SECONDARY"
@@ -35258,11 +35240,11 @@
         },
         {
           "id": "C",
-          "label": "Decirle que admita el retraso y ofrecer acompañarlo",
+          "label": "Proteger tu posición",
           "intentTags": [
-            "accountability",
-            "locker_support"
+            "control"
           ],
+          "immediateEffects": [],
           "outcomeIds": [
             "C__PRIMARY",
             "C__SECONDARY"
@@ -35270,11 +35252,11 @@
         },
         {
           "id": "D",
-          "label": "Avisar al capitán para que gestione antes de que llegue al técnico",
+          "label": "Buscar una solución intermedia",
           "intentTags": [
-            "captain_channel",
-            "locker_governance"
+            "balance"
           ],
+          "immediateEffects": [],
           "outcomeIds": [
             "D__PRIMARY",
             "D__SECONDARY"
@@ -35289,31 +35271,23 @@
             {
               "kind": "numeric",
               "path": "professional.lockerPower",
-              "delta": 4,
+              "delta": 6,
               "min": 0,
               "max": 100
             },
             {
               "kind": "numeric",
               "path": "professional.environmentStability",
-              "delta": 2,
-              "min": 0,
-              "max": 100
-            },
-            {
-              "kind": "numeric",
-              "path": "professional.institutionalTrust",
               "delta": -2,
               "min": 0,
               "max": 100
             }
           ],
           "messages": [
-            "Sostienes la coartada. Dentro del vestuario el gesto puede leerse como lealtad, pero también aceptas que tu credibilidad quede ligada a una versión que sabes falsa."
+            "La decisión abre una oportunidad sin eliminar sus costes."
           ],
           "historyTags": [
-            "locker_loyalty",
-            "false_cover",
+            "ceiling",
             "primary_interpretation"
           ]
         },
@@ -35324,6 +35298,13 @@
             {
               "kind": "numeric",
               "path": "professional.lockerPower",
+              "delta": 6,
+              "min": 0,
+              "max": 100
+            },
+            {
+              "kind": "numeric",
+              "path": "professional.environmentStability",
               "delta": -2,
               "min": 0,
               "max": 100
@@ -35331,24 +35312,16 @@
             {
               "kind": "numeric",
               "path": "professional.environmentStability",
-              "delta": -3,
-              "min": 0,
-              "max": 100
-            },
-            {
-              "kind": "numeric",
-              "path": "professional.institutionalTrust",
-              "delta": -5,
+              "delta": -1,
               "min": 0,
               "max": 100
             }
           ],
           "messages": [
-            "La versión empieza a hacer agua y el coste deja de ser solo suyo: haberla respaldado reduce tu margen frente al staff y convierte un favor de vestuario en un riesgo propio."
+            "El mismo movimiento produce una lectura menos favorable de la esperada."
           ],
           "historyTags": [
-            "locker_loyalty",
-            "false_cover",
+            "ceiling",
             "secondary_interpretation"
           ]
         },
@@ -35358,32 +35331,24 @@
           "effects": [
             {
               "kind": "numeric",
-              "path": "professional.careerControl",
+              "path": "professional.lockerPower",
               "delta": 3,
               "min": 0,
               "max": 100
             },
             {
               "kind": "numeric",
-              "path": "professional.institutionalTrust",
-              "delta": 1,
-              "min": 0,
-              "max": 100
-            },
-            {
-              "kind": "numeric",
-              "path": "professional.lockerPower",
-              "delta": -1,
+              "path": "professional.environmentStability",
+              "delta": 4,
               "min": 0,
               "max": 100
             }
           ],
           "messages": [
-            "Te niegas a mentir y mantienes el asunto dentro de la conversación privada. Marcas un límite sin convertirte en acusador ni garante de su versión."
+            "La espera mejora una parte de la información, pero consume tiempo."
           ],
           "historyTags": [
-            "boundary",
-            "locker_discretion",
+            "patience",
             "primary_interpretation"
           ]
         },
@@ -35393,39 +35358,11 @@
           "effects": [
             {
               "kind": "numeric",
-              "path": "professional.careerControl",
-              "delta": 2,
-              "min": 0,
-              "max": 100
-            },
-            {
-              "kind": "numeric",
-              "path": "professional.environmentStability",
-              "delta": -2,
-              "min": 0,
-              "max": 100
-            },
-            {
-              "kind": "numeric",
               "path": "professional.lockerPower",
-              "delta": -3,
+              "delta": 3,
               "min": 0,
               "max": 100
-            }
-          ],
-          "messages": [
-            "El límite protege tu credibilidad, pero el compañero interpreta que no puede contar contigo cuando el vestuario se cierra sobre sí mismo."
-          ],
-          "historyTags": [
-            "boundary",
-            "locker_discretion",
-            "secondary_interpretation"
-          ]
-        },
-        {
-          "id": "C__PRIMARY",
-          "baseWeight": 55,
-          "effects": [
+            },
             {
               "kind": "numeric",
               "path": "professional.environmentStability",
@@ -35435,25 +35372,44 @@
             },
             {
               "kind": "numeric",
-              "path": "professional.institutionalTrust",
-              "delta": 3,
+              "path": "professional.environmentStability",
+              "delta": 1,
+              "min": 0,
+              "max": 100
+            }
+          ],
+          "messages": [
+            "Mientras esperas, un tercero mueve primero."
+          ],
+          "historyTags": [
+            "patience",
+            "secondary_interpretation"
+          ]
+        },
+        {
+          "id": "C__PRIMARY",
+          "baseWeight": 55,
+          "effects": [
+            {
+              "kind": "numeric",
+              "path": "professional.roleSecurity",
+              "delta": 4,
               "min": 0,
               "max": 100
             },
             {
               "kind": "numeric",
               "path": "professional.lockerPower",
-              "delta": 2,
+              "delta": -1,
               "min": 0,
               "max": 100
             }
           ],
           "messages": [
-            "No avalas la mentira y le ofreces estar a su lado si decide asumir el retraso. La salida conserva apoyo personal sin trasladar al club una versión falsa."
+            "Proteges una dimensión de la carrera y aceptas perder margen en otra."
           ],
           "historyTags": [
-            "accountability",
-            "locker_support",
+            "control",
             "primary_interpretation"
           ]
         },
@@ -35463,15 +35419,8 @@
           "effects": [
             {
               "kind": "numeric",
-              "path": "professional.environmentStability",
-              "delta": 1,
-              "min": 0,
-              "max": 100
-            },
-            {
-              "kind": "numeric",
-              "path": "professional.institutionalTrust",
-              "delta": 2,
+              "path": "professional.roleSecurity",
+              "delta": 4,
               "min": 0,
               "max": 100
             },
@@ -35481,14 +35430,20 @@
               "delta": -1,
               "min": 0,
               "max": 100
+            },
+            {
+              "kind": "numeric",
+              "path": "professional.environmentStability",
+              "delta": -1,
+              "min": 0,
+              "max": 100
             }
           ],
           "messages": [
-            "El compañero acepta que no mentirás, aunque vive la propuesta de admitirlo como una presión que quizá no te correspondía ejercer."
+            "La protección funciona, pero cambia cómo te leen club, mercado o vestuario."
           ],
           "historyTags": [
-            "accountability",
-            "locker_support",
+            "control",
             "secondary_interpretation"
           ]
         },
@@ -35498,32 +35453,24 @@
           "effects": [
             {
               "kind": "numeric",
-              "path": "professional.institutionalTrust",
-              "delta": 3,
-              "min": 0,
-              "max": 100
-            },
-            {
-              "kind": "numeric",
-              "path": "professional.environmentStability",
-              "delta": 2,
-              "min": 0,
-              "max": 100
-            },
-            {
-              "kind": "numeric",
               "path": "professional.lockerPower",
-              "delta": 1,
+              "delta": 4,
+              "min": 0,
+              "max": 100
+            },
+            {
+              "kind": "numeric",
+              "path": "professional.institutionalTrust",
+              "delta": 2,
               "min": 0,
               "max": 100
             }
           ],
           "messages": [
-            "Trasladas el problema al capitán antes de que llegue al cuerpo técnico. Si existe margen interno, la jerarquía del vestuario puede contener el daño sin que tú fabriques una coartada."
+            "Mantienes varias puertas abiertas, a cambio de una postura menos nítida."
           ],
           "historyTags": [
-            "captain_channel",
-            "locker_governance",
+            "balance",
             "primary_interpretation"
           ]
         },
@@ -35531,6 +35478,13 @@
           "id": "D__SECONDARY",
           "baseWeight": 45,
           "effects": [
+            {
+              "kind": "numeric",
+              "path": "professional.lockerPower",
+              "delta": 4,
+              "min": 0,
+              "max": 100
+            },
             {
               "kind": "numeric",
               "path": "professional.institutionalTrust",
@@ -35544,21 +35498,13 @@
               "delta": -1,
               "min": 0,
               "max": 100
-            },
-            {
-              "kind": "numeric",
-              "path": "professional.lockerPower",
-              "delta": -2,
-              "min": 0,
-              "max": 100
             }
           ],
           "messages": [
-            "El capitán conoce el problema, pero el compañero puede interpretar la escalada como una delación aunque tu intención fuese resolverlo dentro del grupo."
+            "El compromiso reduce el conflicto inmediato sin resolver toda la tensión."
           ],
           "historyTags": [
-            "captain_channel",
-            "locker_governance",
+            "balance",
             "secondary_interpretation"
           ]
         }
@@ -35566,12 +35512,9 @@
       "seedsRead": [
         "SEED_TEAMMATE_COVER"
       ],
-      "seedsWrite": [],
       "tags": [
         "team",
-        "locker",
-        "adult_consolidation",
-        "t5_11_lock"
+        "adult_consolidation"
       ],
       "presentation": {
         "layoutHint": "decision",
@@ -35585,7 +35528,7 @@
           }
         ]
       },
-      "canonStatus": "verified"
+      "canonStatus": "technical_adaptation"
     },
     {
       "id": "EVT_23_MATCH_001",
