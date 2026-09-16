@@ -3,7 +3,13 @@ import { offerBridgeSpec } from "../narrative/offer-bridge.js";
 import type { OfferDecision, OfferDisposition } from "../simulation/offers.js";
 import type { DecisionContentProvenance, SessionSnapshot } from "./game-session.js";
 import { eventFingerprint, journalSemanticsFingerprint } from "./content-identity.js";
-import { buildActiveEventEvidence, legacyContentSource, type ContentEvidenceSource } from "./content-migration.js";
+import {
+  buildActiveEventEvidence,
+  buildActiveOfferBridgeEvidence,
+  legacyContentSource,
+  type ContentEvidenceSource
+} from "./content-migration.js";
+import type { FrozenOfferBridgeEventEvidence } from "./frozen-offer-bridge-evidence.js";
 import type { LegacyEventEvidence } from "./pre-t51-legacy-registry.js";
 import { assertGameState, boolean, date, ensure, integer, list, oneOf, parseSaveJson, record, string, strings, validateData } from "../save/validation.js";
 
@@ -22,6 +28,16 @@ function evidenceSource(
 ): Readonly<Record<string, LegacyEventEvidence>> | undefined {
   if (contentIdentity === activeContentIdentity) return activeEvidence;
   return legacyContentSource(contentIdentity, contentSources)?.events;
+}
+
+function offerBridgeEvidenceSource(
+  contentIdentity: string,
+  activeContentIdentity: string,
+  activeOfferBridgeEvidence: Readonly<Record<string, FrozenOfferBridgeEventEvidence>>,
+  contentSources?: Readonly<Record<string, ContentEvidenceSource>>
+): Readonly<Record<string, FrozenOfferBridgeEventEvidence>> | undefined {
+  if (contentIdentity === activeContentIdentity) return activeOfferBridgeEvidence;
+  return legacyContentSource(contentIdentity, contentSources)?.offerBridges;
 }
 
 function provenance(value: unknown, path: string): DecisionContentProvenance {
@@ -58,6 +74,27 @@ async function validateJournalEntry(
 
 function normalizeDisposition(value: OfferDisposition): "accept" | "reject" | "delegate" {
   return value === "counter" || value === "defer" ? "reject" : value;
+}
+
+function validateNarrativeOfferDisposition(
+  offerDecision: OfferDecision | undefined,
+  sourceContentIdentity: string,
+  eventId: string,
+  choiceId: string,
+  eventFingerprintValue: string,
+  activeContentIdentity: string,
+  activeOfferBridgeEvidence: Readonly<Record<string, FrozenOfferBridgeEventEvidence>>,
+  contentSources?: Readonly<Record<string, ContentEvidenceSource>>
+): void {
+  if (!offerDecision) return;
+  const source = offerBridgeEvidenceSource(sourceContentIdentity, activeContentIdentity, activeOfferBridgeEvidence, contentSources);
+  ensure(source, "market.history.source", "falta evidencia contractual para la procedencia narrativa");
+  const bridge = source[eventId];
+  ensure(bridge && bridge.eventFingerprint === eventFingerprintValue, "market.history.source", "el bridge contractual no corresponde a la definición histórica");
+  const expectedDisposition = bridge.choiceActions[choiceId];
+  ensure(expectedDisposition, "market.history.source.choiceId", "la elección no existe en el bridge contractual histórico");
+  const persistedDisposition = offerDecision.source?.kind === "narrative_choice" ? offerDecision.source.disposition : undefined;
+  ensure(persistedDisposition === expectedDisposition, "market.history.source.disposition", "la disposición persistida contradice la elección narrativa histórica");
 }
 
 export async function assertSessionSnapshot(value: unknown, context: SessionValidationContext): Promise<void> {
@@ -147,12 +184,23 @@ export async function assertSessionSnapshot(value: unknown, context: SessionVali
   ensure(receipts.filter(x => record(x, "receipt").type === "choose").length === journal.length, "receipts", "faltan confirmaciones de decisiones");
 
   const activeEvidence = context.activeEvidence ?? await buildActiveEventEvidence(context.events, context.activeContentIdentity);
+  const activeOfferBridgeEvidence = buildActiveOfferBridgeEvidence(context.events, activeEvidence);
   const legacyOrActiveForSnapshot = evidenceSource(s.contentIdentity, context.activeContentIdentity, activeEvidence, context.contentSources);
   if ((s.sessionVersion as number) < 3) {
     ensure(legacyOrActiveForSnapshot, "contentIdentity", "identidad de contenido no registrada");
     for (let i = 0; i < journal.length; i++) {
       const h = state.history[i]!, event = legacyOrActiveForSnapshot[h.eventId];
       ensure(event, `journal[${i}]`, "decisión no reconocida por el catálogo fuente");
+      validateNarrativeOfferDisposition(
+        narrativeOfferHistory.get(i),
+        s.contentIdentity as string,
+        h.eventId,
+        h.choiceId,
+        event.fingerprint,
+        context.activeContentIdentity,
+        activeOfferBridgeEvidence,
+        context.contentSources
+      );
       await validateJournalEntry(journal[i], i, state, event, narrativeOfferHistory.get(i));
     }
   } else {
@@ -164,6 +212,16 @@ export async function assertSessionSnapshot(value: unknown, context: SessionVali
       ensure(source, `decisionProvenance[${i}].sourceContentIdentity`, "fuente de contenido no registrada");
       const event = source[h.eventId];
       ensure(event && event.fingerprint === p.eventFingerprint, `decisionProvenance[${i}]`, "fingerprint o evento no corresponde a la fuente declarada");
+      validateNarrativeOfferDisposition(
+        narrativeOfferHistory.get(i),
+        p.sourceContentIdentity,
+        h.eventId,
+        h.choiceId,
+        p.eventFingerprint,
+        context.activeContentIdentity,
+        activeOfferBridgeEvidence,
+        context.contentSources
+      );
       await validateJournalEntry(journal[i], i, state, event, narrativeOfferHistory.get(i));
     }
   }
