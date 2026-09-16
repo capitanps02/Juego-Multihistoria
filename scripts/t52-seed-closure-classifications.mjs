@@ -13,7 +13,20 @@ function nonEmptyStrings(values) {
     && values.every(value => typeof value === 'string' && value.trim().length > 0);
 }
 
-export function validateSeedClosureClassifications(classifications = [], rows = []) {
+function hasScopeProof(scopeProofs, seedId, scope) {
+  return scopeProofs.some(proof => (
+    proof?.seedId === seedId
+    && proof?.scope === scope
+    && typeof proof?.proofType === 'string'
+    && proof.proofType.length > 0
+  ));
+}
+
+export function validateSeedClosureClassifications(
+  classifications = [],
+  rows = [],
+  { scopeProofs = [] } = {}
+) {
   const rowById = new Map(rows.map(row => [row.id, row]));
   const accepted = [];
   const errors = [];
@@ -92,6 +105,15 @@ export function validateSeedClosureClassifications(classifications = [], rows = 
       );
       if (!basisSupported) {
         errors.push({ seedId: entry.seedId, code: 'canonical_expiry_basis_not_supported_by_runtime_evidence', expiryBasis: basis ?? null });
+        continue;
+      }
+
+      if (basis === 'club' && !hasScopeProof(scopeProofs, entry.seedId, 'origin_club')) {
+        errors.push({ seedId: entry.seedId, code: 'canonical_expiry_scope_proof_required', expiryBasis: basis, scope: 'origin_club' });
+        continue;
+      }
+      if (basis === 'season' && !hasScopeProof(scopeProofs, entry.seedId, 'origin_season')) {
+        errors.push({ seedId: entry.seedId, code: 'canonical_expiry_scope_proof_required', expiryBasis: basis, scope: 'origin_season' });
         continue;
       }
     }
