@@ -9,41 +9,55 @@ import type { EventWithGateAlternatives } from "../../../narrative/event-gates.j
  */
 export const T51_B1B_PUBLIC_HEAT_SUFFICIENT = 8;
 
-const REPAIR_IDS = ["EVT_18_PRS_002"] as const;
+const REPAIR_IDS = ["EVT_18_PRS_002", "EVT_19_SUM_001"] as const;
 
 /**
- * T5.1 B1b local repair.
+ * T5.1 B1b local repairs.
  *
- * Canon for EVT_18_PRS_002 opens "Lo que Clara sabe" when either:
- *   A) the Clara channel is already open; OR
- *   B) PUBLIC_HEAT is sufficient.
+ * - EVT_18_PRS_002: Clara channel OR sufficient PUBLIC_HEAT.
+ * - EVT_19_SUM_001: first full summer is only eligible in the absence of an
+ *   acute injury. The age/time window already represents the first full summer;
+ *   this overlay adds only the missing injury-state prerequisite.
  *
- * The frozen base definition only implemented route A. Keep the historical base
- * object untouched and layer the exact OR reachability onto a fresh definition.
- * Choices, outcomes, NPC refs, seeds, timing and text remain unchanged.
+ * Frozen base definitions remain untouched; active definitions are copied only
+ * for the exact IDs repaired here.
  */
 export function applyT51B1bLocalRepairs(events: EventDefinition[]): EventDefinition[] {
-  let found = false;
+  const found = new Set<string>();
 
   const repaired = events.map(event => {
-    if (event.id !== "EVT_18_PRS_002") return event;
-    found = true;
+    if (event.id === "EVT_18_PRS_002") {
+      found.add(event.id);
+      const gateAlternatives: NonNullable<EventWithGateAlternatives["gateAlternatives"]> = [
+        [{ path: "flags.CLARA_CONTACTED", op: "eq", value: true }],
+        [{ path: "reputation.mediaHeat", op: "gte", value: T51_B1B_PUBLIC_HEAT_SUFFICIENT }]
+      ];
 
-    const gateAlternatives: NonNullable<EventWithGateAlternatives["gateAlternatives"]> = [
-      [{ path: "flags.CLARA_CONTACTED", op: "eq", value: true }],
-      [{ path: "reputation.mediaHeat", op: "gte", value: T51_B1B_PUBLIC_HEAT_SUFFICIENT }]
-    ];
+      return {
+        ...event,
+        // The previous CLARA_CONTACTED gate becomes one OR route rather than a
+        // common prerequisite, otherwise the public-heat route could never open.
+        gates: [],
+        gateAlternatives
+      } satisfies EventWithGateAlternatives;
+    }
 
-    return {
-      ...event,
-      // The previous CLARA_CONTACTED gate becomes one OR route rather than a
-      // common prerequisite, otherwise the public-heat route could never open.
-      gates: [],
-      gateAlternatives
-    } satisfies EventWithGateAlternatives;
+    if (event.id === "EVT_19_SUM_001") {
+      found.add(event.id);
+      return {
+        ...event,
+        gates: [
+          ...event.gates,
+          { path: "body.acuteInjury", op: "neq", value: true }
+        ]
+      };
+    }
+
+    return event;
   });
 
-  if (!found) throw new Error("T5.1 B1b missing expected 18-20 event: EVT_18_PRS_002");
+  const missing = REPAIR_IDS.filter(id => !found.has(id));
+  if (missing.length) throw new Error(`T5.1 B1b missing expected 18-20 event(s): ${missing.join(", ")}`);
   return repaired;
 }
 
