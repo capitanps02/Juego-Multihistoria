@@ -8,6 +8,7 @@ on:
     paths:
       - 'src/session/**'
       - 'scripts/generate-t51-legacy-registry.mjs'
+      - 'scripts/check-t51-content-migration-route.mjs'
       - 'scripts/test-t51-content-migration.mjs'
       - 'qa/fixtures/t5.1/**'
       - 'project/t5_1/T5_1_*MIGRATION*'
@@ -31,11 +32,7 @@ jobs:
         run: npm run build
       - name: Frozen legacy registry is reproducible
         run: node scripts/generate-t51-legacy-registry.mjs --check
+      - name: Active content has an explicit migration route when required
+        run: node scripts/check-t51-content-migration-route.mjs
       - name: Directed migration tests
-        shell: bash
-        run: |
-          if [ -f scripts/test-t51-content-migration.mjs ]; then
-            node --test scripts/test-t51-content-migration.mjs
-          else
-            echo 'Migration test file not added yet; build/registry gate only.'
-          fi
+        run: node --test scripts/test-t51-content-migration.mjs
