@@ -145,7 +145,8 @@ test('closure classification: club/season expiry cannot be certified from scope 
   scoped.lifecycle.seeds[0].scope.club = 'origin_club';
   const report = buildClosureReadinessReport({
     ...scoped,
-    classifications: [classification('canonical_expiry', { expiryBasis: 'club' })]
+    classifications: [classification('canonical_expiry', { expiryBasis: 'club' })],
+    scopeProofs: []
   });
   assert.equal(report.rows[0].clubScoped, true);
   assert.equal(report.rules.classificationRegistryValid, false);
@@ -156,7 +157,7 @@ test('closure classification: club/season expiry cannot be certified from scope 
 test('closure classification: a matching registered scope proof unlocks club expiry validation', () => {
   const scoped = fixture();
   scoped.lifecycle.seeds[0].scope.club = 'origin_club';
-  const evidence = buildClosureReadinessReport(scoped);
+  const evidence = buildClosureReadinessReport({ ...scoped, scopeProofs: [] });
   const result = validateSeedClosureClassifications(
     [classification('canonical_expiry', { expiryBasis: 'club' })],
     evidence.rows,
@@ -170,6 +171,28 @@ test('closure classification: a matching registered scope proof unlocks club exp
   );
   assert.equal(result.valid, true, JSON.stringify(result.errors));
   assert.equal(result.accepted.length, 1);
+});
+
+test('closure classification: build report consumes the integrated scope proof registry by default', () => {
+  const scoped = fixture();
+  scoped.lifecycle.seeds[0].id = 'SEED_PRIVATE_CHAT';
+  scoped.lifecycle.seeds[0].scope.club = 'origin_club';
+  scoped.handoff.ownership[0].seeds = ['SEED_PRIVATE_CHAT'];
+  scoped.deferred.rows[0].id = 'SEED_PRIVATE_CHAT';
+  const report = buildClosureReadinessReport({
+    ...scoped,
+    classifications: [{
+      seedId: 'SEED_PRIVATE_CHAT',
+      owner: 't51/fixture',
+      disposition: 'canonical_expiry',
+      expiryBasis: 'club',
+      rationale: 'Canonical owner explicitly approved club-scope expiry with integrated continuity evidence.',
+      evidenceRefs: ['analysis/T5.2/SCOPE_PROOFS.md#seed_private_chat']
+    }]
+  });
+  assert.equal(report.summary.integratedScopeProofs > 0, true);
+  assert.equal(report.rules.classificationRegistryValid, true, JSON.stringify(report.classificationRegistry.errors));
+  assert.equal(report.rows[0].canonicalClosure, 'canonical_expiry');
 });
 
 test('closure readiness: technical adaptation endpoint is not promoted to verified canonical evidence', () => {
@@ -204,6 +227,7 @@ test('closure readiness: real catalog is covered 210/210 without structurally im
   assert.equal(report.summary.canonicalClosureClassified, report.classificationRegistry.accepted);
   assert.equal(report.summary.canonicalClosureClassified + report.summary.canonicalClosurePending, 210);
   assert.equal(report.rules.canonicalClosureComplete, report.summary.canonicalClosurePending === 0);
+  assert.equal(report.summary.integratedScopeProofs > 0, true);
   assert.equal(report.summary.simulationConsumerSeeds, 15);
   assert.equal(Object.values(report.summary.topologyCounts).reduce((sum, value) => sum + value, 0), 210);
   assert.equal(Object.values(report.ownerSummary).reduce((sum, value) => sum + value.total, 0), 210);
