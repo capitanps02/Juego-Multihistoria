@@ -42,6 +42,8 @@ export interface InformNpcOptions {
 }
 
 const MEMORY_RANK: Record<NpcMemoryClass, number> = { practical: 1, temporary: 2, strong: 3 };
+const KNOWLEDGE_SOURCES: readonly NpcKnowledgeSource[] = ["witnessed", "informed", "public", "reported"];
+const MEMORY_CLASSES: readonly NpcMemoryClass[] = ["strong", "temporary", "practical"];
 const clamp = (value: number, min = 0, max = 100) => Math.max(min, Math.min(max, value));
 
 function addDays(iso: string, days: number): string {
@@ -54,6 +56,16 @@ function defaultExpiryDays(memory: NpcMemoryClass): number | undefined {
   if (memory === "temporary") return 730;
   if (memory === "practical") return 90;
   return undefined;
+}
+
+function isIsoDate(value: unknown): value is string {
+  if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const parsed = new Date(`${value}T00:00:00Z`);
+  return Number.isFinite(parsed.getTime()) && parsed.toISOString().slice(0, 10) === value;
+}
+
+function nonEmptyString(value: unknown): value is string {
+  return typeof value === "string" && value.length > 0;
 }
 
 function npcFor(state: GameState, npcId: string): NPCState {
@@ -70,23 +82,43 @@ function rawRecord(npc: NPCState, factId: string): unknown {
   return (npc.knowledge as Record<string, unknown>)[factId];
 }
 
-function parseRecord(value: unknown): NpcKnowledgeRecord | undefined {
+function parseRecord(
+  value: unknown,
+  state?: GameState,
+  targetNpcId?: string,
+  expectedFactId?: string
+): NpcKnowledgeRecord | undefined {
   if (!value || typeof value !== "object" || Array.isArray(value)) return undefined;
   const row = value as Record<string, unknown>;
   if (
-    typeof row.factId !== "string" || typeof row.eventId !== "string" ||
-    typeof row.choiceId !== "string" || typeof row.outcomeId !== "string" ||
-    typeof row.learnedAt !== "string" || typeof row.source !== "string" ||
-    typeof row.certainty !== "number" || typeof row.memory !== "string" ||
-    typeof row.club !== "string"
+    !nonEmptyString(row.factId) || !nonEmptyString(row.eventId) ||
+    !nonEmptyString(row.choiceId) || !nonEmptyString(row.outcomeId) ||
+    !isIsoDate(row.learnedAt) || !nonEmptyString(row.club) ||
+    typeof row.source !== "string" || !KNOWLEDGE_SOURCES.includes(row.source as NpcKnowledgeSource) ||
+    typeof row.memory !== "string" || !MEMORY_CLASSES.includes(row.memory as NpcMemoryClass) ||
+    typeof row.certainty !== "number" || !Number.isFinite(row.certainty) || row.certainty < 0 || row.certainty > 100
   ) return undefined;
+  if (expectedFactId !== undefined && row.factId !== expectedFactId) return undefined;
+
+  if (row.expiresAfter !== undefined) {
+    if (!isIsoDate(row.expiresAfter) || row.expiresAfter <= row.learnedAt) return undefined;
+    if (row.memory === "strong") return undefined;
+  }
+
+  if (row.sourceNpcId !== undefined) {
+    if (!nonEmptyString(row.sourceNpcId)) return undefined;
+    if (row.source === "witnessed" || row.source === "public") return undefined;
+    if (targetNpcId !== undefined && row.sourceNpcId === targetNpcId) return undefined;
+    if (state && !state.npcs.some(candidate => candidate.id === row.sourceNpcId)) return undefined;
+  }
+
   return row as unknown as NpcKnowledgeRecord;
 }
 
 export function getNpcKnowledgeRecord(state: GameState, npcId: string, factId: string): NpcKnowledgeRecord | undefined {
   const npc = state.npcs.find(candidate => candidate.id === npcId);
   if (!npc) return undefined;
-  return parseRecord(rawRecord(npc, factId));
+  return parseRecord(rawRecord(npc, factId), state, npcId, factId);
 }
 
 export function npcKnows(state: GameState, npcId: string, factId: string, asOfDate = state.date): boolean {
@@ -152,7 +184,10 @@ export function rememberNpcFactInPlace(state: GameState, npcId: string, options:
   const npc = npcFor(state, npcId);
   const sourceRecord = knowledgeSourceForTransmission(state, npcId, options.factId, options.source, options.sourceNpcId);
   const memory = options.memory ?? "temporary";
-  const expiryDays = options.expiresAfterDays ?? defaultExpiryDays(memory);
+  const requestedExpiryDays = memory === "strong" ? undefined : (options.expiresAfterDays ?? defaultExpiryDays(memory));
+  if (requestedExpiryDays !== undefined && (!Number.isInteger(requestedExpiryDays) || requestedExpiryDays <= 0)) {
+    throw new Error(`Invalid NPC knowledge expiry: ${requestedExpiryDays}`);
+  }
   const requestedCertainty = clamp(options.certainty ?? 100);
   const certainty = sourceRecord ? Math.min(requestedCertainty, sourceRecord.certainty) : requestedCertainty;
   const candidate: NpcKnowledgeRecord = {
@@ -166,7 +201,7 @@ export function rememberNpcFactInPlace(state: GameState, npcId: string, options:
     memory,
     club: options.club ?? state.club
   };
-  if (expiryDays !== undefined) candidate.expiresAfter = addDays(state.date, expiryDays);
+  if (requestedExpiryDays !== undefined) candidate.expiresAfter = addDays(state.date, requestedExpiryDays);
   if (options.sourceNpcId) candidate.sourceNpcId = options.sourceNpcId;
 
   const existing = getNpcKnowledgeRecord(state, npcId, options.factId);
@@ -212,7 +247,7 @@ export function forgetExpiredNpcKnowledgeInPlace(state: GameState): string[] {
   for (const npc of state.npcs) {
     const knowledge = npc.knowledge as Record<string, unknown>;
     for (const factId of Object.keys(knowledge)) {
-      const record = parseRecord(knowledge[factId]);
+      const record = parseRecord(knowledge[factId], state, npc.id, factId);
       if (!record?.expiresAfter || record.expiresAfter > state.date) continue;
       delete npc.knowledge[factId];
       npc.memories = npc.memories.filter(id => id !== factId);
