@@ -177,6 +177,17 @@ Corrección:
 - una información comunicada posteriormente sigue usando el club actual, porque en ese caso el momento de aprendizaje sí es posterior;
 - la regresión exige que, tras la salida a `NEW_CLUB`, la memoria de Ferrer sobre `EVT_19_JAN_001` conserve `club: UDV`.
 
+### D11 — una fuente NPC podía transmitir un hecho que no conocía
+
+La API de información posterior aceptaba `sourceNpcId` como trazabilidad, pero no comprobaba que el supuesto informante conociera el hecho. Eso permitía construir una cadena causal falsa: por ejemplo, Nano conoce `EVT_18_PRE_001`, Rivas no, pero se podía declarar a Rivas como fuente de un reporte a Montalbán.
+
+Corrección:
+
+- si `sourceNpcId` está presente, la fuente debe satisfacer `npcKnows` para el `factId` transmitido o para el `eventId` subyacente cuando se usa un alias;
+- una fuente desconocedora provoca error antes de escribir conocimiento o memoria en el destinatario;
+- una transmisión legítima Nano → Rivas continúa funcionando;
+- un rumor/claim no verificado no se modela como `knowledge`; si se añade en el futuro deberá ser un estado separado que no satisfaga gates `know.*`.
+
 ## 8. Trazabilidad y cobertura real
 
 `scripts/audit-t53.mjs` deriva la trazabilidad desde los catálogos compilados, no desde esta tabla manual:
@@ -214,8 +225,9 @@ La suite dirigida cubre el contrato pedido y regresiones adicionales:
 10. `PlayerView` no filtra estado interno;
 11. Nano solo aprende la ayuda no solicitada en el outcome donde realmente se entera;
 12. flags + seed no bastan para su callback sin conocimiento personal;
-13. diez descubrimientos/memorias explícitos de contenido crean memoria únicamente en el outcome revelador, nunca en el alternativo;
-14. una escena que cambia de club conserva en la memoria del NPC el club donde el hecho fue aprendido.
+13. una cadena reportada exige que el NPC fuente conozca el hecho;
+14. diez descubrimientos/memorias explícitos de contenido crean memoria únicamente en el outcome revelador, nunca en el alternativo;
+15. una escena que cambia de club conserva en la memoria del NPC el club donde el hecho fue aprendido.
 
 `npm test` ejecuta conjuntamente los gates T5.2 ya integrados en `main` y la auditoría y suites T5.3. El workflow `Repository integrity` ejecuta además el QA T5: determinismo/RNG, límites de edad, referencias, carreras largas, lifecycle y simulación estratificada.
 
@@ -227,6 +239,7 @@ T5.3 queda **técnicamente preparado para revisión/integración**, con estas pr
 - no se infiere conocimiento desde `npcRefs`;
 - `NPCState.access` permanece metadata legado y no se usa como probabilidad implícita de conocimiento;
 - el contenido sin vía explícita no concede conocimiento;
+- un `sourceNpcId` no puede transmitir un hecho que desconoce;
 - no se ha añadido contenido canónico para Mamadou ni Mara;
 - la cobertura futura puede declarar nuevas vías de conocimiento cuando el canon demuestre testigo, comunicación o publicación;
 - la rama integra explícitamente el lifecycle T5.2 sin alterar su semántica;
