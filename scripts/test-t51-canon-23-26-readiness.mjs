@@ -9,6 +9,7 @@ const offerSource = fs.readFileSync('src/simulation/offers.ts', 'utf8');
 const conditionSource = fs.readFileSync('src/core/conditions.ts', 'utf8');
 const pathSource = fs.readFileSync('src/core/path.ts', 'utf8');
 const sessionValidation = fs.readFileSync('src/session/validate-session.ts', 'utf8');
+const freezeManifest = JSON.parse(fs.readFileSync('qa/fixtures/t5.1/pre-t51-content-manifest.json', 'utf8'));
 
 const sorted = values => [...values].sort();
 const seedIds = new Set([...seedSource.matchAll(/id:\s*"(SEED_[A-Z0-9_]+)"/g)].map(m => m[1]));
@@ -70,6 +71,9 @@ test('el gate canónico de cobertura de compañero necesita composición OR, no 
   assert.equal(lock.dependency.kind, 'or_gate_or_derived_eligibility');
 });
 
-test('el bloqueo global de contentIdentity sigue vigente en la matriz', () => {
-  assert.equal(readiness.globalBlocker, 'pre_T5_contentIdentity_freeze_and_session_migration_policy');
+test('el freeze pre-T5.1 está cerrado y el único bloqueo global restante es la migración', () => {
+  assert.equal(readiness.baselineFreeze.status, 'closed');
+  assert.equal(readiness.baselineFreeze.contentIdentity, freezeManifest.contentIdentity);
+  assert.equal(readiness.baselineFreeze.contentIdentity, '2e07efd2ea99c4e9ec4c2b20ae89664204f76db2c55a72d567208799c01bccff');
+  assert.equal(readiness.globalBlocker, 'session_migration_policy_from_frozen_contentIdentity');
 });
