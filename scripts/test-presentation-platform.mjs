@@ -9,6 +9,7 @@ const index = read('web/index.html');
 const local = read('web/local.js');
 const androidBuild = read('scripts/build-android-offline.mjs');
 const playcanvasBuild = read('scripts/build-playcanvas.mjs');
+const physicalEvidence = read('scripts/collect-android-physical-evidence.mjs');
 const activity = read('android/app/src/main/java/com/multihistoria/MainActivity.java');
 const manifest = read('android/app/src/main/AndroidManifest.xml');
 
@@ -54,4 +55,15 @@ test('Android bridge reports version and export outcomes without enabling networ
   assert.match(activity, /Log\.(?:i|e)\(TAG/);
   assert.doesNotMatch(manifest, /android\.permission\.INTERNET/);
   assert.match(manifest, /usesCleartextTraffic="false"/);
+});
+
+test('physical T3.4 evidence collection is hardware-only and non-destructive', () => {
+  assert.match(physicalEvidence, /serial\.startsWith\('emulator-'\)/);
+  assert.match(physicalEvidence, /ro\.kernel\.qemu/);
+  assert.match(physicalEvidence, /ro\.boot\.qemu/);
+  assert.match(physicalEvidence, /physicalDevice:\s*false/);
+  assert.match(physicalEvidence, /t34Closed:\s*false/);
+  assert.match(physicalEvidence, /destructiveActionsPerformed:\s*false/);
+  assert.match(physicalEvidence, /T3\.4-physical-evidence\.json/);
+  assert.doesNotMatch(physicalEvidence, /'install'|"install"|pm', 'clear|pm\", \"clear/);
 });
