@@ -107,6 +107,58 @@ for (const event of EVENTS) {
   if (!hasKnowledgeRequirement(event.id, npcId)) epistemicCallbackGaps.push(`${event.id}:${npcId}`);
 }
 
+// Cross-workstream debt detector. Some technical-adaptation callbacks name a
+// persistent NPC in visible copy but do not declare that NPC in `npcRefs`.
+// Without the ref T5.3 cannot safely infer identity or attach a knowledge gate.
+// This is reported but deliberately does not fail T5.3: fixing the content row
+// belongs to canonical reconciliation and may affect contentIdentity.
+const aliasOwners = new Map();
+for (const npc of NPC_CATALOG) {
+  for (const token of new Set(npc.name.match(/\p{L}+/gu) ?? [])) {
+    if (token.length < 4) continue;
+    const owners = aliasOwners.get(token) ?? new Set();
+    owners.add(npc.id);
+    aliasOwners.set(token, owners);
+  }
+}
+const uniqueNpcAliases = new Map(
+  [...aliasOwners.entries()]
+    .filter(([, owners]) => owners.size === 1)
+    .map(([alias, owners]) => [alias, [...owners][0]])
+);
+
+const textualNpcMentionsMissingRefs = [];
+for (const event of EVENTS) {
+  if (event.family !== 'conditional') continue;
+  const refs = new Set(event.npcRefs ?? []);
+  const copy = [
+    event.text?.title,
+    event.text?.body,
+    ...(event.intel?.visible ?? []),
+    ...(event.intel?.uncertain ?? []),
+    ...event.choices.map(choice => choice.label),
+    ...event.outcomes.flatMap(outcome => outcome.messages ?? [])
+  ].filter(Boolean).join(' ');
+  const copyTokens = new Set(copy.match(/\p{L}+/gu) ?? []);
+  const mentions = new Map();
+  for (const token of copyTokens) {
+    const npcId = uniqueNpcAliases.get(token);
+    if (!npcId || refs.has(npcId)) continue;
+    const aliases = mentions.get(npcId) ?? [];
+    aliases.push(token);
+    mentions.set(npcId, aliases);
+  }
+  for (const [npcId, aliases] of mentions) {
+    textualNpcMentionsMissingRefs.push({
+      eventId: event.id,
+      npcId,
+      aliases: [...new Set(aliases)].sort(),
+      canonStatus: event.canonStatus ?? null,
+      declaredNpcRefs: [...refs]
+    });
+  }
+}
+
 const npcs = NPC_CATALOG.map(npc => ({
   id: npc.id,
   name: npc.name,
@@ -133,6 +185,7 @@ const report = {
   invalidKnowledgeRequirements,
   epistemicRelationshipGaps,
   epistemicCallbackGaps,
+  textualNpcMentionsMissingRefs,
   appliedEpistemicExceptions,
   staleEpistemicExceptions,
   unreferencedNpcIds,
