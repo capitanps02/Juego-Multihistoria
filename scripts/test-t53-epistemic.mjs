@@ -4,6 +4,7 @@ import { EVENTS } from '../dist/content/events/index.js';
 import { createInitialState } from '../dist/content/initial-state.js';
 import { getNpcKnowledgeRecord, npcKnows } from '../dist/core/npc-knowledge.js';
 import { resolveChoiceInPlace } from '../dist/narrative/resolver.js';
+import { loadSave, serializeSave } from '../dist/save/save.js';
 
 const byId = id => {
   const event = EVENTS.find(candidate => candidate.id === id);
@@ -66,4 +67,46 @@ test('T5.3 una memoria de transferencia conserva el club donde se aprendió el h
   const record = getNpcKnowledgeRecord(state, 'NPC_DIR_02', 'EVT_19_JAN_001');
   assert.ok(record);
   assert.equal(record.club, 'UDV');
+});
+
+test('T5.3 persisted malformed knowledge nunca satisface npcKnows', () => {
+  const malformedCases = [
+    { source: 'telepathy' },
+    { memory: 'eternal' },
+    { certainty: -1 },
+    { certainty: 101 },
+    { learnedAt: 'not-a-date' },
+    { expiresAfter: 'not-a-date' },
+    { factId: 'OTHER_FACT' },
+    { source: 'public', sourceNpcId: 'NPC_PLR_14' },
+    { sourceNpcId: 'NPC_DOES_NOT_EXIST' },
+    { sourceNpcId: 'NPC_CCH_01' }
+  ];
+
+  for (const [index, override] of malformedCases.entries()) {
+    const state = createInitialState(300 + index);
+    const coach = state.npcs.find(npc => npc.id === 'NPC_CCH_01');
+    assert.ok(coach);
+    coach.knowledge.T53_MALFORMED = {
+      factId: 'T53_MALFORMED',
+      eventId: 'EVT_18_PRE_001',
+      choiceId: 'CALL_NANO',
+      outcomeId: 'CALL_NANO__PRIMARY',
+      learnedAt: '2026-07-01',
+      source: 'reported',
+      certainty: 60,
+      memory: 'temporary',
+      club: 'UDV',
+      expiresAfter: '2027-07-01',
+      ...override
+    };
+
+    const restored = loadSave(serializeSave(state));
+    assert.equal(
+      npcKnows(restored, 'NPC_CCH_01', 'T53_MALFORMED'),
+      false,
+      `payload malformado #${index} fue aceptado como conocimiento`
+    );
+    assert.equal(getNpcKnowledgeRecord(restored, 'NPC_CCH_01', 'T53_MALFORMED'), undefined);
+  }
 });
