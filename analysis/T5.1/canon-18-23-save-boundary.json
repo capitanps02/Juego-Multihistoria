@@ -1,0 +1,124 @@
+{
+  "workstream": "T51_CANON_18_23",
+  "date": "2026-09-16",
+  "status": "freeze_and_session_migration_framework_resolved",
+  "reviewedAgainstMain": "4b86e83c670f9659d57e0dcfa370897f38f5b579",
+  "preT51Freeze": {
+    "status": "resolved",
+    "commit": "9773104440615611f059a4f45c69c25d280a26aa",
+    "engineBuild": "0.8.0-t2.5",
+    "sessionVersion": 2,
+    "gameStateSchemaVersion": 8,
+    "eventCount": 388,
+    "principalCount": 254,
+    "conditionalCount": 134,
+    "contentIdentity": "2e07efd2ea99c4e9ec4c2b20ae89664204f76db2c55a72d567208799c01bccff",
+    "fixtureActiveInScheduler": false
+  },
+  "finding": {
+    "contentIdentityAlgorithm": "SHA-256(JSON.stringify(events))",
+    "sessionField": "SessionSnapshot.contentIdentity",
+    "resumeBehavior": "GameSession.resume remains strict and rejects a mismatched catalog; GameSession.migrateAndResume/migrateFromSave provide the explicit supported migration path.",
+    "implication": "Any active event-definition repair still changes contentIdentity. The migration framework is now integrated, but each EVENTS-changing batch must register the exact frozen-source -> new-target route before it can be a supported release.",
+    "evidence": [
+      "src/session/game-session.ts",
+      "src/session/content-migration.ts",
+      "src/session/pre-t51-legacy-registry.ts",
+      "project/workstreams/T51_CONTENT_MIGRATION.md",
+      "qa/fixtures/t5.1/pre-t51-content-manifest.json",
+      "scripts/test-t51-content-migration.mjs"
+    ]
+  },
+  "sessionMigration": {
+    "runtimeIntegrated": true,
+    "integratedCommit": "a4a4c8df98bb1a3e88d9a7e0a19b48571af99074",
+    "sessionVersion": 3,
+    "strictResumePreserved": true,
+    "explicitMigrationOnly": true,
+    "unknownIdentityRejected": true,
+    "migrationConsumesRng": false,
+    "migrationSchedulesScenes": false,
+    "legacyRegistrySchedulesEvents": false,
+    "pendingLegacyPreservesEmbeddedDefinition": true,
+    "decisionProvenance": ["sourceContentIdentity", "eventFingerprint"],
+    "currentRoutes": "empty while active EVENTS equals the frozen pre-T5.1 catalog",
+    "batchRequirement": "Future active content changes must add an exact CONTENT_MIGRATION_ROUTES entry and classify semantic collisions explicitly.",
+    "truthRules": [
+      "preserve completed legacy history as historical truth",
+      "preserve legacy pending definition/choice contract unless same-scene equivalence is proven",
+      "do not manufacture SEEN_<canonical> from thematic/title similarity",
+      "do not consume RNG during migration",
+      "reject unknown/tampered legacy provenance explicitly",
+      "exact-ID semantic collisions default to distinct_scene unless same_scene equivalence is independently approved"
+    ]
+  },
+  "integratedSeedLifecycle": {
+    "baseCommit": "14e55bb0e7f2c7582889c7b4ebbbccfd0b792345",
+    "hardeningObservedInMain": "73f59ffc5d404b976a210825f9e9aaf141b5b037",
+    "status": "integrated_and_hardened",
+    "relevantLifecycleSeeds": [
+      "SEED_AGENT_OMISSION",
+      "SEED_BODY_PRECEDENT",
+      "SEED_EXIT_STYLE_UDV",
+      "SEED_COACH_PUBLIC"
+    ],
+    "whatItProves": [
+      "seed instances can persist across saves/restores",
+      "terminal seed transitions are idempotent",
+      "finite age/date expiry can be deterministic",
+      "configured lifecycle does not consume RNG"
+    ],
+    "whatItDoesNotProve": "T5.2 intentionally does not invent missing canonical consumers or scene-specific seed effects. Metadata/lifecycle support does not make a callback canonically equivalent."
+  },
+  "engineOnlyDependencies": [
+    {
+      "id": "EVT_20_MATCH_001",
+      "classification": "engine_only_noncanonical",
+      "knownRuntimeDependency": null,
+      "historicalRisk": "Appears in QA/historical simulations; do not alias or rewrite history."
+    },
+    {
+      "id": "EVT_21_AGT_002",
+      "classification": "engine_only_noncanonical",
+      "knownRuntimeDependency": "src/catalog/seeds.ts contains it in seed origin metadata",
+      "historicalRisk": "SEEN_EVT_21_AGT_002 is present in committed example saves."
+    },
+    {
+      "id": "EVT_21_ABR_001",
+      "classification": "engine_only_noncanonical",
+      "knownRuntimeDependency": "SEED_FOREIGN_ADAPT.originEvents includes EVT_21_ABR_001",
+      "historicalRisk": "Present in prior QA/simulation outputs."
+    },
+    {
+      "id": "EVT_21_CCH_001",
+      "classification": "engine_only_noncanonical",
+      "knownRuntimeDependency": null,
+      "historicalRisk": "Present in QA/historical event sets; no same-scene migration approved."
+    },
+    {
+      "id": "EVT_22_LIFE_001",
+      "classification": "engine_only_noncanonical",
+      "knownRuntimeDependency": null,
+      "historicalRisk": "Historically highly reachable in batch QA; removal changes catalog/content identity."
+    },
+    {
+      "id": "EVT_22_END_001",
+      "classification": "engine_only_noncanonical",
+      "knownRuntimeDependency": "src/narrative/scheduler.ts budget-exempt list references EVT_22_END_001",
+      "historicalRisk": "SEEN_EVT_22_END_001 is present in committed example saves and the event is reached in historical QA runs."
+    }
+  ],
+  "workstreamRule": [
+    "Do not modify GameSession or migration runtime from this audit workstream.",
+    "Do not rewrite SEEN_old flags/history/seed origin labels to canonical IDs without same-scene equivalence; no aliases are approved here.",
+    "The Session v3 framework may preserve retired technical IDs as historical truth without scheduling them in the future active catalog.",
+    "Do not retire an engine-only ID until its functional batch supplies explicit migration-route semantics and owner-side cleanup for seed/scheduler couplings.",
+    "PR #10 remains audit-only even though freeze, migration framework and choice eligibility are integrated."
+  ],
+  "requiredCrossWorkstreamActions": [
+    "For the first active EVENTS-changing batch, calculate the new contentIdentity and register the exact frozen-source -> target route.",
+    "Classify exact-ID collisions as distinct_scene unless same-scene equivalence is explicitly approved by the canonical audit.",
+    "Reconcile seed origin metadata before removing EVT_21_AGT_002 or EVT_21_ABR_001 from the active catalog.",
+    "Remove/replace scheduler coupling to EVT_22_END_001 only in the scheduler-owning functional workstream and test deterministic 22->23 transition."
+  ]
+}

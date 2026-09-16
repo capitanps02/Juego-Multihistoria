@@ -1,0 +1,232 @@
+{
+  "workstream": "T51_CANON_18_23",
+  "scope": "principal events previously pending in 18_20",
+  "canonicalSource": "analysis/2026-09-11/t1/principal-traceability.json",
+  "engineSource": "src/content/events/18_20/canonical-events.ts",
+  "identityDimensions": [
+    "identity", "trigger", "context", "playerKnowledge", "uncertainty", "options", "cost",
+    "immediateConsequences", "deferredConsequences", "seeds", "npcs", "futureContinuity", "saveCompatibility"
+  ],
+  "summary": {
+    "reviewed": 14,
+    "verified_same_identity": 5,
+    "needs_reimplementation": 9,
+    "requires_manual_review": 0,
+    "approved_alias": 0
+  },
+  "cards": [
+    {
+      "canonicalId": "EVT_18_MATCH_001",
+      "engineId": "EVT_18_MATCH_001",
+      "title": "Minuto 78",
+      "status": "needs_reimplementation",
+      "canonicalTrigger": "Debut oficial + marcador y rol compatibles.",
+      "engineTrigger": "flags.OFFICIAL_DEBUT=true + ventana mensual; no gate de marcador/rol de la escena.",
+      "dimensions": {
+        "identity": "same", "trigger": "different", "context": "partial", "playerKnowledge": "same", "uncertainty": "same",
+        "options": "same", "cost": "same", "immediateConsequences": "compatible", "deferredConsequences": "compatible",
+        "seeds": "same", "npcs": "same", "futureContinuity": "compatible", "saveCompatibility": "migration_required_if_content_changes"
+      },
+      "differences": ["El scheduler puede ofrecer la escena después del debut sin demostrar el marcador/rol concreto que define la identidad canónica."],
+      "requiredAction": "Añadir un gate/contexto equivalente al estado de partido antes de promover a verified; conservar ID y SEED_MENA_EARLY_READ."
+    },
+    {
+      "canonicalId": "EVT_18_PRS_001",
+      "engineId": "EVT_18_PRS_001",
+      "title": "Tres líneas",
+      "status": "needs_reimplementation",
+      "canonicalTrigger": "Después de primer debut o primera convocatoria con atención local.",
+      "engineTrigger": "flags.FIRST_TEAM_ATTENTION=true + ventana mensual.",
+      "dimensions": {
+        "identity": "same", "trigger": "different", "context": "partial", "playerKnowledge": "same", "uncertainty": "compatible",
+        "options": "same", "cost": "same", "immediateConsequences": "compatible", "deferredConsequences": "compatible",
+        "seeds": "same", "npcs": "same", "futureContinuity": "same", "saveCompatibility": "migration_required_if_content_changes"
+      },
+      "differences": ["FIRST_TEAM_ATTENTION no acredita por sí solo que ya haya ocurrido el debut/convocatoria pública que justifica la pregunta posterior al partido."],
+      "requiredAction": "Ajustar reachability al hito público real y mantener las cuatro respuestas y SEED_CLARA_CHANNEL."
+    },
+    {
+      "canonicalId": "EVT_18_SOC_001",
+      "engineId": "EVT_18_SOC_001",
+      "title": "02:13",
+      "status": "needs_reimplementation",
+      "canonicalTrigger": "PUBLIC_HEAT mínimo + no partido en menos de 24 h + entrenamiento posterior.",
+      "engineTrigger": "reputation.mediaHeat>=5 + ventana mensual; no representa la restricción de calendario inmediato.",
+      "dimensions": {
+        "identity": "same", "trigger": "different", "context": "partial", "playerKnowledge": "compatible", "uncertainty": "compatible",
+        "options": "same", "cost": "same", "immediateConsequences": "compatible", "deferredConsequences": "same",
+        "seeds": "same", "npcs": "same", "futureContinuity": "same", "saveCompatibility": "migration_required_if_content_changes"
+      },
+      "differences": ["Puede aparecer en un contexto deportivo incompatible con el canon al no comprobar la proximidad del siguiente partido/entrenamiento."],
+      "requiredAction": "Modelar o gatear el contexto de calendario sin alterar SEED_DANI_NORMALITY."
+    },
+    {
+      "canonicalId": "EVT_18_TACT_001",
+      "engineId": "EVT_18_TACT_001",
+      "title": "Un puesto que no es el tuyo",
+      "status": "verified_same_identity",
+      "canonicalTrigger": "ROLE bajo/medio + sistema compatible.",
+      "engineTrigger": "sport.roleScore<=55 + flags.FORMATION_532=true.",
+      "dimensions": {
+        "identity": "same", "trigger": "same", "context": "same", "playerKnowledge": "same", "uncertainty": "same",
+        "options": "same", "cost": "same", "immediateConsequences": "same", "deferredConsequences": "compatible",
+        "seeds": "compatible", "npcs": "same", "futureContinuity": "same", "saveCompatibility": "no_change_required"
+      },
+      "differences": [],
+      "requiredAction": "Mantener implementación y pruebas; no requiere cambio funcional T5.1."
+    },
+    {
+      "canonicalId": "EVT_18_CAP_001",
+      "engineId": "EVT_18_CAP_001",
+      "title": "El papel de Vela",
+      "status": "verified_same_identity",
+      "canonicalTrigger": "Otoño + tensión Vela-dirección activa.",
+      "engineTrigger": "flags.VELA_BOARD_TENSION=true + ventana otoñal/invernal.",
+      "dimensions": {
+        "identity": "same", "trigger": "same", "context": "same", "playerKnowledge": "same", "uncertainty": "same",
+        "options": "same", "cost": "same", "immediateConsequences": "same", "deferredConsequences": "same",
+        "seeds": "same", "npcs": "same", "futureContinuity": "same", "saveCompatibility": "no_change_required"
+      },
+      "differences": [],
+      "requiredAction": "Mantener implementación y pruebas; no requiere cambio funcional T5.1."
+    },
+    {
+      "canonicalId": "EVT_18_MED_001",
+      "engineId": "EVT_18_MED_001",
+      "title": "El aductor",
+      "status": "verified_same_identity",
+      "canonicalTrigger": "WIN_BODY + oportunidad deportiva.",
+      "engineTrigger": "flags.BODY_WINDOW=true + ventana mensual.",
+      "dimensions": {
+        "identity": "same", "trigger": "compatible", "context": "same", "playerKnowledge": "same", "uncertainty": "same",
+        "options": "same", "cost": "same", "immediateConsequences": "same", "deferredConsequences": "same",
+        "seeds": "same", "npcs": "same", "futureContinuity": "same", "saveCompatibility": "explicit_content_migration_integrated"
+      },
+      "differences": [],
+      "evidence": ["ddfbc08e158a1dc49afccc29ff0680da8f887ccd", "f05667453a1e40d5a4af635e8b9b787bbecdb726"],
+      "requiredAction": "Mantener reparación B1a y regresiones de identidad/migración; no requiere más cambio funcional para esta diferencia."
+    },
+    {
+      "canonicalId": "EVT_18_PRS_002",
+      "engineId": "EVT_18_PRS_002",
+      "title": "Lo que Clara sabe",
+      "status": "needs_reimplementation",
+      "canonicalTrigger": "Canal con Clara abierto O PUBLIC_HEAT suficiente.",
+      "engineTrigger": "flags.CLARA_CONTACTED=true; no existe la ruta alternativa por PUBLIC_HEAT.",
+      "dimensions": {
+        "identity": "same", "trigger": "different", "context": "same", "playerKnowledge": "compatible", "uncertainty": "compatible",
+        "options": "same", "cost": "same", "immediateConsequences": "same", "deferredConsequences": "same",
+        "seeds": "same", "npcs": "same", "futureContinuity": "same", "saveCompatibility": "migration_required_if_content_changes"
+      },
+      "differences": ["La implementación hace la escena inalcanzable en carreras donde el canon permite que PUBLIC_HEAT abra el canal aun sin contacto previo explícito."],
+      "requiredAction": "Restaurar el OR canónico de reachability conservando SEED_CLARA_CHANNEL y SEED_FIRST_LEAK."
+    },
+    {
+      "canonicalId": "EVT_18_JAN_001",
+      "engineId": "EVT_18_JAN_001",
+      "title": "Enero no espera",
+      "status": "needs_reimplementation",
+      "canonicalTrigger": "1–20 enero; contenido y opciones dependen de ROLE, contrato, MARKET_HEAT y alternativas reales.",
+      "engineTrigger": "Mes de enero; las cuatro opciones se exponen sin gates por alternativa real.",
+      "dimensions": {
+        "identity": "same", "trigger": "partial", "context": "partial", "playerKnowledge": "same", "uncertainty": "compatible",
+        "options": "different", "cost": "different", "immediateConsequences": "different", "deferredConsequences": "compatible",
+        "seeds": "compatible", "npcs": "same", "futureContinuity": "different", "saveCompatibility": "migration_required_if_content_changes"
+      },
+      "differences": ["LOAN y TRANSFER pueden elegirse aunque no exista cesión/comprador real; el canon prohíbe ofrecer una opción sin alternativa que la sostenga.", "La definición actual puede mutar club/ruta desde una opción que no está acreditada por mercado real."],
+      "requiredAction": "Gatear opciones/subescenas por estado real y probar que nunca se materializa una salida inexistente."
+    },
+    {
+      "canonicalId": "EVT_18_TEAM_001",
+      "engineId": "EVT_18_TEAM_001",
+      "title": "Una noche para Bruno",
+      "status": "verified_same_identity",
+      "canonicalTrigger": "Primavera + Bruno sigue en club + interés por él.",
+      "engineTrigger": "flags.BRUNO_SCOUTS=true + ventana enero-abril.",
+      "dimensions": {
+        "identity": "same", "trigger": "compatible", "context": "same", "playerKnowledge": "same", "uncertainty": "same",
+        "options": "same", "cost": "same", "immediateConsequences": "same", "deferredConsequences": "same",
+        "seeds": "same", "npcs": "same", "futureContinuity": "same", "saveCompatibility": "explicit_content_migration_integrated"
+      },
+      "differences": [],
+      "evidence": ["ddfbc08e158a1dc49afccc29ff0680da8f887ccd", "f05667453a1e40d5a4af635e8b9b787bbecdb726"],
+      "requiredAction": "Mantener reparación B1a y regresiones de identidad/migración; no requiere más cambio funcional para esta diferencia."
+    },
+    {
+      "canonicalId": "EVT_18_MATCH_002",
+      "engineId": "EVT_18_MATCH_002",
+      "title": "El balón parado",
+      "status": "verified_same_identity",
+      "canonicalTrigger": "Partido cerrado + protagonista en campo + lanzador principal fuera.",
+      "engineTrigger": "flags.SET_PIECE_WINDOW=true + ventana mensual.",
+      "dimensions": {
+        "identity": "same", "trigger": "compatible", "context": "same", "playerKnowledge": "same", "uncertainty": "same",
+        "options": "same", "cost": "same", "immediateConsequences": "compatible", "deferredConsequences": "compatible",
+        "seeds": "compatible", "npcs": "same", "futureContinuity": "compatible", "saveCompatibility": "explicit_content_migration_integrated"
+      },
+      "differences": [],
+      "evidence": ["ddfbc08e158a1dc49afccc29ff0680da8f887ccd", "f05667453a1e40d5a4af635e8b9b787bbecdb726"],
+      "requiredAction": "Mantener reparación B1a y regresiones de identidad/migración; no requiere más cambio funcional para esta diferencia."
+    },
+    {
+      "canonicalId": "EVT_18_END_001",
+      "engineId": "EVT_18_END_001",
+      "title": "Quedan cuatro partidos",
+      "status": "needs_reimplementation",
+      "canonicalTrigger": "Últimas cuatro jornadas + objetivo del club todavía abierto.",
+      "engineTrigger": "Ventana abril-mayo sin gate que pruebe objetivo abierto/últimas cuatro jornadas.",
+      "dimensions": {
+        "identity": "same", "trigger": "different", "context": "partial", "playerKnowledge": "same", "uncertainty": "same",
+        "options": "same", "cost": "same", "immediateConsequences": "same", "deferredConsequences": "same",
+        "seeds": "compatible", "npcs": "same", "futureContinuity": "same", "saveCompatibility": "migration_required_if_content_changes"
+      },
+      "differences": ["Puede aparecer cuando el objetivo institucional ya esté resuelto, eliminando el motivo canónico de posponer o presionar una conversación."],
+      "requiredAction": "Añadir gate equivalente al estado competitivo final antes de verificar."
+    },
+    {
+      "canonicalId": "EVT_18_END_002",
+      "engineId": "EVT_18_END_002",
+      "title": "El pasillo vacío",
+      "status": "needs_reimplementation",
+      "canonicalTrigger": "Final de temporada + entrenador cuestionado + PUBLIC_HEAT suficiente.",
+      "engineTrigger": "reputation.mediaHeat>=8 + mayo; no gate explícito de entrenador cuestionado.",
+      "dimensions": {
+        "identity": "same", "trigger": "different", "context": "partial", "playerKnowledge": "same", "uncertainty": "compatible",
+        "options": "same", "cost": "same", "immediateConsequences": "same", "deferredConsequences": "same",
+        "seeds": "same", "npcs": "same", "futureContinuity": "same", "saveCompatibility": "migration_required_if_content_changes"
+      },
+      "differences": ["La pregunta sobre confianza puede aparecer sin evidencia de que Montalbán esté realmente cuestionado, condición que define el coste político canónico."],
+      "requiredAction": "Gatear por estado de continuidad del técnico."
+    },
+    {
+      "canonicalId": "EVT_18_SUM_001",
+      "engineId": "EVT_18_SUM_001",
+      "title": "Tu primera firma de verdad",
+      "status": "needs_reimplementation",
+      "canonicalTrigger": "Junio tras primera temporada; contrato y mercado evaluados; salida solo si existe oferta real.",
+      "engineTrigger": "Junio; opción REQUEST_EXIT presente de forma incondicional.",
+      "dimensions": {
+        "identity": "same", "trigger": "partial", "context": "same", "playerKnowledge": "same", "uncertainty": "same",
+        "options": "different", "cost": "different", "immediateConsequences": "different", "deferredConsequences": "compatible",
+        "seeds": "same", "npcs": "same", "futureContinuity": "different", "saveCompatibility": "migration_required_if_content_changes"
+      },
+      "differences": ["El canon condiciona pedir salida a que exista una oferta real; el motor expone la opción y puede aplicar efectos de salida/mercado sin acreditar esa oferta."],
+      "requiredAction": "Condicionar REQUEST_EXIT a oferta real y cubrir la rama sin oferta con test dirigido."
+    },
+    {
+      "canonicalId": "EVT_19_SUM_001",
+      "engineId": "EVT_19_SUM_001",
+      "title": "El verano que sí cuenta",
+      "status": "needs_reimplementation",
+      "canonicalTrigger": "Primer verano completo + ausencia de lesión aguda.",
+      "engineTrigger": "Junio-julio sin gate de lesión aguda.",
+      "dimensions": {
+        "identity": "same", "trigger": "different", "context": "partial", "playerKnowledge": "same", "uncertainty": "same",
+        "options": "same", "cost": "same", "immediateConsequences": "same", "deferredConsequences": "same",
+        "seeds": "same", "npcs": "same", "futureContinuity": "same", "saveCompatibility": "migration_required_if_content_changes"
+      },
+      "differences": ["Puede ofrecer viaje/bloque intensivo/aparición comercial durante una lesión aguda, estado que el canon excluye."],
+      "requiredAction": "Añadir exclusión/gate de lesión aguda y prueba de no aparición."
+    }
+  ]
+}

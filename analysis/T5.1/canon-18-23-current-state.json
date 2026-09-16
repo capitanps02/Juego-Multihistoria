@@ -1,0 +1,196 @@
+# T5.1 · Workstream canon 18–23
+
+## Estado actual
+
+**Rama:** `t51/canon-18-23`  
+**PR:** #10 — audit-only, debe permanecer draft y no se fusiona desde este workstream.  
+**Base funcional observada:** `main@e48a6c85d0a9e61d88eca121f683dcd308c188c1`.  
+**Re-ground limpio:** `342f7c22239058ff63543eb0fbb2a1628d973420`, creado con ese `main` como padre directo; los commits documentales posteriores no alteran runtime.
+
+GitHub, código ejecutable y CI prevalecen sobre resúmenes históricos. Este documento consolida el estado efectivo de la reconciliación 18–23 tras incorporar evidencia ejecutable, contratos compartidos T5.1, el lote B1a y el linaje de contenido vigente. Los lotes 23–26 que `main` integre se heredan para compatibilidad global, pero quedan fuera de la propiedad semántica de este workstream.
+
+## Alcance e inventario
+
+Propiedad: inicio, 18–20 y 20–23. 23–26+ queda fuera salvo continuidad mínima. El PR #10 no modifica `EVENTS` activos.
+
+Runtime histórico del scope auditado:
+
+- 18–20: 30 principales + 14 condicionales = 44;
+- 20–23: 33 principales + 18 condicionales = 51;
+- total: 95.
+
+Canon: 63 principales + 32 condicionales. No hay aliases aprobados.
+
+## Principales — estado efectivo
+
+- **21 `verified_same_identity`**
+- **36 `needs_reimplementation`**
+- **6 `canonical_missing`**
+- **0 `requires_manual_review`**
+- **0 `approved_alias`**
+- además: **6 `engine_only_noncanonical`**
+
+Las 14 tarjetas 18–20 están cerradas: **5 verified + 9 reimplementation**. Cada tarjeta conserva las 13 dimensiones exigidas de identidad.
+
+### B1a ya integrado y certificado
+
+`main` integra el lote **B1a canonical intel repairs**:
+
+- implementación: `ddfbc08e158a1dc49afccc29ff0680da8f887ccd`;
+- merge: `f05667453a1e40d5a4af635e8b9b787bbecdb726`.
+
+Promociones de auditoría:
+
+- `EVT_18_MED_001` → `verified_same_identity`;
+- `EVT_18_TEAM_001` → `verified_same_identity`;
+- `EVT_18_MATCH_002` → `verified_same_identity`.
+
+La reparación restaura la información/incertidumbre canónica que era la diferencia pendiente, mantiene la escena/choices/efectos y está acompañada por migración explícita de `contentIdentity` y regresiones de catálogo congelado. Por ello esos tres IDs dejan de formar parte del backlog.
+
+Canonical missing principales:
+
+- `EVT_20_BRIDGE_001`
+- `EVT_20_MATCH_003`
+- `EVT_20_JAN_001`
+- `EVT_21_MKT_001`
+- `EVT_21_SOC_001`
+- `EVT_21_PRS_002`
+
+Engine-only principales:
+
+- `EVT_20_MATCH_001`
+- `EVT_21_ABR_001`
+- `EVT_21_AGT_002`
+- `EVT_21_CCH_001`
+- `EVT_22_END_001`
+- `EVT_22_LIFE_001`
+
+Los IDs legacy no se renombran ni eliminan silenciosamente: historial/pending y acoplamientos runtime deben conservar verdad histórica durante cada lote funcional.
+
+## Condicionales — estado efectivo
+
+`analysis/T5.1/canon-18-23-conditionals.json` conserva la foto semántica pre-certificación 0/10/15/7. `analysis/T5.1/canon-18-20-conditional-certification.json` es el overlay autoritativo sobre las siete filas manuales: 5 verified + 2 reimplementation + 0 manual.
+
+Estado efectivo de 32 condicionales:
+
+- **5 `verified_same_identity`**
+- **12 `needs_reimplementation`**
+- **15 `canonical_missing`**
+- **0 `requires_manual_review`**
+- **0 `approved_alias`**
+- además: **15 `engine_only_noncanonical`**
+
+Verificados por certificación ejecutable:
+
+- `CEVT_18_NODEBUT_01`
+- `CEVT_18_VELA_01`
+- `CEVT_19_BIG_01`
+- `CEVT_19_ABROAD_01`
+- `CEVT_19_NANO_01`
+
+Cerrados como reimplementation:
+
+- `CEVT_18_EARLY_01`: trigger runtime más estrecho que el canónico;
+- `CEVT_19_INJ_01`: historia/tratamiento no está demostrada como causa de la complicación.
+
+Exact-ID 20–23 que siguen siendo colisiones semánticas:
+
+- `CEVT_21_ABR_01`
+- `CEVT_21_MEDIA_01`
+- `CEVT_22_FREE_01`
+
+## Contratos compartidos T5.1
+
+### Session/content migration
+
+Session v3 fue integrada inicialmente en `a4a4c8df98bb1a3e88d9a7e0a19b48571af99074` y después extendida a **linaje multigeneración** en `fe06a5c9d61632ea4491dc6df95788154884177a`.
+
+La fuente B1a posterior fue congelada como evidencia legacy en `49e195d07d064e0532ea9109d9544b91df52bf0e`. El `main@922b9ecc…` extiende de nuevo ese linaje al integrar T5.11 23–26; este workstream hereda esa compatibilidad sin reclamar propiedad sobre esas escenas.
+
+Garantías relevantes:
+
+- provenance `sourceContentIdentity` + `eventFingerprint`;
+- `resume()` estricto;
+- unknown identity rechazada;
+- pending legacy conserva definición;
+- legacy registry no agenda eventos;
+- migración sin RNG;
+- linaje de migración acíclico y fail-closed.
+
+Freeze pre-T5.1:
+
+`2e07efd2ea99c4e9ec4c2b20ae89664204f76db2c55a72d567208799c01bccff`
+
+Cada lote futuro que cambie `EVENTS` debe extender el linaje exacto de migración desde todas las fuentes persistidas soportadas y clasificar explícitamente las colisiones semánticas.
+
+### Choice eligibility
+
+Integrado en `76699f93e19e1ac9e17b42ccfaea011d92630fb6`.
+
+Contenido todavía pendiente de cablear:
+
+- `EVT_18_JAN_001`;
+- `EVT_18_SUM_001`.
+
+### Event gate alternatives / OR
+
+Integrado en `291e34bfd8bb7c529182a2664564c63ff33eee19`.
+
+Semántica: `common gates AND (route 1 OR route 2 OR ...)`, cada ruta internamente AND y un array explícito vacío falla cerrado. El evaluador actual usa `narrativeConditionRoot(state)` antes de aplicar los gates; el test del workstream sigue esa semántica y no una llamada textual antigua.
+
+Contenido todavía pendiente de cablear:
+
+- `EVT_18_PRS_002`;
+- `CEVT_19_SOCIAL_01`;
+- `CEVT_21_MEDIA_01`.
+
+**Bloqueos arquitectónicos compartidos conocidos restantes en 18–23: 0.** Eso no significa contenido terminado; significa que el backlog restante es trabajo de escenas/continuidad y no ausencia de contratos base conocidos.
+
+## Plan funcional resultante — fuera de PR #10
+
+Principales:
+
+- **36** reimplementation pendientes;
+- **6** canonical missing;
+- **6** engine-only a retirar con compatibilidad explícita.
+
+Condicionales:
+
+- **12** reimplementation pendientes;
+- **15** canonical missing;
+- **15** engine-only a retirar con compatibilidad explícita.
+
+Batches:
+
+1. **B0 shared contracts:** infraestructura completada.
+2. **B1 18–20 repairs:** B1a ya cerró 3 principales; quedan **9 principales + 9 condicionales**.
+3. **B2 20–23 rewrites:** **27 principales + 3 condicionales**.
+4. **B3 canonical missing:** **6 principales + 15 condicionales**.
+5. **B4 legacy retirement:** **6 principales + 15 condicionales**.
+
+Cada lote que cambie `EVENTS` necesita extensión exacta del linaje de migración, tests dirigidos y QA T5 verde sobre el SHA exacto.
+
+## QA propio
+
+`.github/workflows/t51-canon-18-23.yml` ejecuta build y:
+
+- `scripts/test-t51-canon-18-23.mjs`;
+- `scripts/test-t51-repair-plan.mjs`;
+- `scripts/test-t51-conditional-certification.mjs`;
+- `scripts/repro-t51-18-20-architecture.mjs`.
+
+Los tests del workstream fijan además que los tres eventos B1a ya no estén en el backlog y que su compatibilidad de save dependa de la migración explícita integrada. La reproducción de OR se actualizó para seguir el `narrativeConditionRoot` vigente en runtime.
+
+## Criterio de cierre de esta auditoría
+
+El PR audit-only queda preparado cuando:
+
+- todos los principales y condicionales tienen estado permitido;
+- 0 manuales;
+- 0 aliases silenciosos;
+- contratos y lotes funcionales ya integrados están reflejados sin deuda obsoleta;
+- diff aislado a archivos propios;
+- PR #10 sigue draft;
+- CI del SHA exacto está verde.
+
+T5.1 funcional sigue `in_progress`: quedan 36 principales + 12 condicionales a reimplementar, 6 + 15 escenas canónicas nuevas y los retiros legacy correspondientes.

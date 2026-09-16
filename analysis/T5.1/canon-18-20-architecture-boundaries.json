@@ -1,0 +1,77 @@
+{
+  "workstream": "T51_CANON_18_23",
+  "scope": "transversal contracts discovered while reconciling 18_20",
+  "reviewedAgainstMain": "291e34bfd8bb7c529182a2664564c63ff33eee19",
+  "rule": "PR #10 remains audit-only. Integrated shared contracts are evidence and prerequisites for later functional batches, not authorization to edit active content here.",
+  "boundaries": [
+    {
+      "id": "CHOICE_ELIGIBILITY",
+      "status": "resolved_integrated",
+      "integratedCommit": "76699f93e19e1ac9e17b42ccfaea011d92630fb6",
+      "affectedCanonicalEvents": ["EVT_18_JAN_001", "EVT_18_SUM_001"],
+      "evidence": [
+        "src/narrative/choice-eligibility.ts exposes opt-in per-choice eligibility",
+        "src/narrative/scheduler.ts rejects scenes with zero eligible choices and returns a filtered event definition",
+        "src/content/events/18_20/helpers.ts propagates AmbiguousChoiceSpec.eligibility",
+        "scripts/test-t51-shared-contracts.mjs covers hidden/exposed choices and historical compatibility"
+      ],
+      "remainingContentWork": "Wire canonical LOAN/TRANSFER/REQUEST_EXIT availability to real causal state in the functional content batch."
+    },
+    {
+      "id": "EVENT_GATE_OR_OR_DERIVED_FACT",
+      "status": "resolved_integrated",
+      "integratedCommit": "291e34bfd8bb7c529182a2664564c63ff33eee19",
+      "affectedCanonicalEvents": ["EVT_18_PRS_002", "CEVT_19_SOCIAL_01", "CEVT_21_MEDIA_01"],
+      "evidence": [
+        "src/narrative/event-gates.ts adds gateAlternatives with common AND (route1 OR route2 ...)",
+        "each alternative route remains internally AND",
+        "explicit empty alternatives fail closed",
+        "src/narrative/scheduler.ts uses eventGatesPass",
+        "scripts/test-t51-event-gates.mjs covers legacy behavior, alternative routes, common gates, fail-closed and non-mutation"
+      ],
+      "remainingContentWork": "The three canonical scenes still need their exact alternative causal routes wired with gateAlternatives; the shared contract itself is no longer a blocker."
+    },
+    {
+      "id": "SESSION_CONTENT_MIGRATION",
+      "status": "resolved_framework_integrated",
+      "integratedCommit": "a4a4c8df98bb1a3e88d9a7e0a19b48571af99074",
+      "evidence": [
+        "project/workstreams/T51_CONTENT_MIGRATION.md",
+        "src/session/content-migration.ts",
+        "src/session/game-session.ts",
+        "scripts/test-t51-content-migration.mjs"
+      ],
+      "remainingContentWork": "Every future EVENTS-changing batch must add the exact frozen-source -> target route and classify exact-ID collisions explicitly."
+    },
+    {
+      "id": "ENGINE_ONLY_HISTORY",
+      "status": "framework_resolved_batch_mapping_required",
+      "evidence": [
+        "Session v3 preserves legacy history/pending provenance while allowing retired technical events to stay outside the future scheduler"
+      ],
+      "remainingContentWork": "Functional retirement still requires explicit route entries plus cleanup of seed-origin/scheduler couplings owned elsewhere; no silent alias is approved."
+    }
+  ],
+  "knownSharedArchitectureBlockersRemaining": [],
+  "contentWiringStillRequired": [
+    "EVT_18_JAN_001: per-choice eligibility",
+    "EVT_18_SUM_001: per-choice eligibility",
+    "EVT_18_PRS_002: gateAlternatives",
+    "CEVT_19_SOCIAL_01: gateAlternatives",
+    "CEVT_21_MEDIA_01: gateAlternatives"
+  ],
+  "integratedInfrastructure": [
+    {"id":"PRE_T51_CONTENT_IDENTITY_FREEZE","status":"resolved","commit":"9773104440615611f059a4f45c69c25d280a26aa"},
+    {"id":"SESSION_CONTENT_MIGRATION","status":"integrated","commit":"a4a4c8df98bb1a3e88d9a7e0a19b48571af99074"},
+    {"id":"CHOICE_ELIGIBILITY","status":"integrated","commit":"76699f93e19e1ac9e17b42ccfaea011d92630fb6"},
+    {"id":"EVENT_GATE_OR_OR_DERIVED_FACT","status":"integrated","commit":"291e34bfd8bb7c529182a2664564c63ff33eee19"},
+    {"id":"T52_SEED_LIFECYCLE","status":"integrated_and_hardened","baseCommit":"14e55bb0e7f2c7582889c7b4ebbbccfd0b792345","deferredGuardsObservedBy":"f36443969995e85fef89eff0bd1776f384f19e09"}
+  ],
+  "preconditionsForFunctionalRuntimeChange": [
+    "the functional batch is explicitly authorized outside audit-only PR #10",
+    "if EVENTS changes, add the exact content-migration route from the frozen identity to the new active identity",
+    "wire integrated choice eligibility / gateAlternatives only from canonical causal evidence",
+    "add targeted reachability/options/effects/seeds/save/determinism tests for each repaired event",
+    "Repository integrity + relevant T5 QA gates green on the exact functional SHA"
+  ]
+}
