@@ -1,0 +1,21 @@
+name: T51 final validation
+
+on:
+  push:
+    branches: [t51/canon-23-30]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: T51 workstream gates
+        run: node --test scripts/test-t51-canon-23-30.mjs scripts/test-t51-canon-23-30-conditionals.mjs scripts/test-t51-canon-23-26-cards.mjs scripts/test-t51-canon-23-26-readiness.mjs
+      - name: Full regression
+        run: npm test
