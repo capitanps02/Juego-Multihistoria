@@ -5,6 +5,7 @@ import { EVENTS } from "../content/events/index.js";
 import { createInitialState } from "../content/initial-state.js";
 import { EventIndex } from "../narrative/event-index.js";
 import { scheduleEvent } from "../narrative/scheduler.js";
+import { eligibleChoices, isChoiceEligible } from "../narrative/choice-eligibility.js";
 import { resolveChoiceInPlace } from "../narrative/resolver.js";
 import { advanceWorldDayInPlace } from "../simulation/world-simulator.js";
 import { maybeEmitMicroFeed } from "../simulation/microfeed.js";
@@ -303,7 +304,7 @@ export class GameSession {
       contacts: NPC_CATALOG.map(n => ({ id: n.id, name: n.name, role: n.role })),
       decision: p ? { instanceId: p.instanceId, family: p.event.family, title: p.event.text.title, body: p.event.text.body,
         visible: p.event.intel.visible, uncertain: p.event.intel.uncertain,
-        choices: p.event.choices.map(c => ({ id: c.id, label: c.label })) } : null,
+        choices: eligibleChoices(s, p.event).map(c => ({ id: c.id, label: c.label })) } : null,
       result, resultCategory: result ? (lastEvent?.family === "sport" ? "match" : "story") : null,
       journal: this.#snapshot.journal
     });
@@ -338,7 +339,7 @@ export class GameSession {
       const pending = next.pendingDecision;
       requireThat(pending && pending.instanceId === command.pendingInstanceId, "STALE_DECISION", "Esta escena ya no está pendiente.");
       const choice = pending.event.choices.find(c => c.id === command.choiceId);
-      requireThat(choice, "INVALID_CHOICE", "La elección no pertenece a esta escena.");
+      requireThat(choice && isChoiceEligible(next.state, choice), "INVALID_CHOICE", "La elección no pertenece a esta escena o no está disponible.");
       const result = resolveChoiceInPlace(next.state, pending.event, choice.id);
       next.pendingResult = { title: pending.event.text.title, choiceLabel: choice.label, messages: result.messages };
       next.journal.push({ date: next.state.date, ...structuredClone(next.pendingResult) });
@@ -385,9 +386,11 @@ export class GameSession {
       const scheduled = scheduleEvent(next.state, this.#index);
       if (scheduled) {
         const evidence = requireEvidence(this.#activeEvidence, scheduled.event.id, "CONTENT_CHANGED");
+        const canonicalEvent = this.#index.events.find(event => event.id === scheduled.event.id);
+        requireThat(canonicalEvent, "CONTENT_CHANGED", "La escena programada ya no existe en el catálogo activo.");
         next.pendingDecision = {
           instanceId: `${next.sessionId}:${next.revision + 1}`,
-          event: structuredClone(scheduled.event),
+          event: structuredClone(canonicalEvent),
           provenance: { sourceContentIdentity: next.contentIdentity, eventFingerprint: evidence.fingerprint }
         };
         return;
