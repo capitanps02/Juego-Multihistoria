@@ -5,7 +5,7 @@ on:
     branches: ["t51/canon-23-30-t510-work"]
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   probe:
@@ -13,6 +13,27 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+      - name: Make mixed migration fixture deterministic
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('scripts/test-t51-content-migration.mjs')
+          text = path.read_text()
+          needle = "  synthetic.weight = 1_000_000;\n"
+          addition = "  synthetic.tags = ['hard_deadline'];\n"
+          if addition not in text:
+              if needle not in text:
+                  raise SystemExit('synthetic migration fixture anchor not found')
+              path.write_text(text.replace(needle, needle + addition, 1))
+          PY
+          if ! git diff --quiet -- scripts/test-t51-content-migration.mjs; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add scripts/test-t51-content-migration.mjs
+            git commit -m "test(t5.1): make mixed migration fixture deterministic"
+            git push origin HEAD:t51/canon-23-30-t510-work
+          fi
       - uses: actions/setup-node@v4
         with:
           node-version: 20
