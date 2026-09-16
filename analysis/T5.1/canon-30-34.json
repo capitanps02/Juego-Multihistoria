@@ -560,13 +560,13 @@
     }
   ],
   "integrationStatus": {
-    "syncedBaselineMain": "de2af6b698d22343a1b7dadf63fb857ddeef5aec",
+    "syncedBaselineMain": "30ae3f27ddcb846f59f049e3a4536276f3e9a97e",
     "sharedChoiceEligibility": "available_in_main",
     "sharedOrGateContract": "available_in_main",
     "contentMigrationArchitecture": "available_in_main",
     "contentMigrationRoute": "handoff_latest_upstream_to_target_freeze_and_registration_pending",
     "frozenSaveCompatibility": "passing_before_route_gate",
-    "targetedT51Run": 35128517165,
+    "targetedT51Run": 35128992272,
     "targetedT51Result": "30_34_plus_b1a_focused_pass",
     "temporaryValidationWorkflowRemoved": true,
     "mergeReady": false,

@@ -2,12 +2,12 @@
   "schemaVersion": 1,
   "workstream": "T5.1 canon 30-34 migration handoff",
   "generatedAt": "2026-09-16",
-  "sourceMainSha": "de2af6b698d22343a1b7dadf63fb857ddeef5aec",
+  "sourceMainSha": "30ae3f27ddcb846f59f049e3a4536276f3e9a97e",
   "sourceContentIdentity": "fee2ff875bac7979d3907f5ee1004ef736efa9a257237c6dee629dd8687fe136",
   "observedTargetContentIdentity": "b7483243816fd4e2e8cf1774a4ece699f47b6a03637de50c31347109512f4446",
   "targetIdentityEvidence": {
-    "workflowRun": 35128517165,
-    "source": "T5.1 30-34 T5.10-lineage focused validation / runtime contentIdentity(EVENTS)",
+    "workflowRun": 35128992272,
+    "source": "T5.1 30-34 final evidence / runtime contentIdentity(EVENTS) on current main tip",
     "rule": "Target is calculated from the active branch after syncing current main; historical copied target identities are invalid."
   },
   "consumer": {
