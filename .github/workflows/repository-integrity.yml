@@ -42,3 +42,6 @@ jobs:
 
       - name: Run project validation
         run: npm test
+
+      - name: Run T5 regression gate
+        run: npm run qa:t5
