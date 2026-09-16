@@ -3,7 +3,7 @@
   "workstream": "T5.1 canon 23-30",
   "repository": "capitanps02/Juego-Multihistoria",
   "branch": "t51/canon-23-30",
-  "baseMainSha": "46c5f729a8252d5b7ca244ad9e9d9a110098fb09",
+  "baseMainSha": "d3dc842f9e6cc0397f1e95bed57b5259ecfd4877",
   "generatedAt": "2026-09-16",
   "authority": {
     "principals": "analysis/2026-09-11/t1/principal-traceability.json",
@@ -108,7 +108,7 @@
       "seedOriginMappings": 0,
       "directedTests": "7/7 PASS",
       "fullRegressionBeforeFinalReground": "PASS",
-      "latestRegroundAdds": "T5.2 OR-gate deferred-consumer audit",
+      "latestRegroundAdds": "T5.2 OR-gate deferred-consumer audit plus HAS_SEED condition polarity",
       "notes": [
         "EVT_23_BRIDGE_001 no firma ni modifica contrato.",
         "EVT_23_AGT_001 no crea oferta formal mediante efectos narrativos.",
