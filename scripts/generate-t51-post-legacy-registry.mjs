@@ -1,10 +1,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
+import { fileURLToPath } from 'node:url';
 
 const SOURCE_DIR = 'qa/fixtures/t5.1/post-t51-sources';
 const OUTPUT = 'src/session/post-t51-legacy-registry.ts';
-const check = process.argv.includes('--check');
 const sha256 = value => createHash('sha256').update(value).digest('hex');
 const journalDigest = (title, label, messages) => sha256(JSON.stringify([title, label, messages]));
 
@@ -60,11 +60,11 @@ export function renderRegistry(records) {
     `export const POST_T51_CONTENT_SOURCES: Readonly<Record<string, PostT51ContentEvidenceSource>> = ${JSON.stringify(sorted)};\n`;
 }
 
-function loadRecords() {
-  if (!fs.existsSync(SOURCE_DIR)) return {};
+export function loadPostSourceRecords(sourceDir = SOURCE_DIR) {
+  if (!fs.existsSync(sourceDir)) return {};
   const records = {};
-  for (const name of fs.readdirSync(SOURCE_DIR).filter(name => name.endsWith('.json')).sort()) {
-    const fixture = JSON.parse(fs.readFileSync(path.join(SOURCE_DIR, name), 'utf8'));
+  for (const name of fs.readdirSync(sourceDir).filter(name => name.endsWith('.json')).sort()) {
+    const fixture = JSON.parse(fs.readFileSync(path.join(sourceDir, name), 'utf8'));
     const record = sourceRecordFromFixture(fixture, name);
     const expectedName = `${record.contentIdentity}.json`;
     if (name !== expectedName) throw new Error(`Source fixture ${name} must be named ${expectedName}`);
@@ -74,12 +74,18 @@ function loadRecords() {
   return records;
 }
 
-const body = renderRegistry(loadRecords());
-if (check) {
-  if (!fs.existsSync(OUTPUT)) throw new Error(`Missing generated registry ${OUTPUT}`);
-  if (fs.readFileSync(OUTPUT, 'utf8') !== body) throw new Error(`${OUTPUT} is stale; run node scripts/generate-t51-post-legacy-registry.mjs`);
-  console.log(JSON.stringify({ checked: true, sources: Object.keys(loadRecords()).length, bytes: Buffer.byteLength(body) }));
-} else {
-  fs.writeFileSync(OUTPUT, body);
-  console.log(JSON.stringify({ generated: OUTPUT, sources: Object.keys(loadRecords()).length, bytes: Buffer.byteLength(body) }));
+function main() {
+  const check = process.argv.includes('--check');
+  const records = loadPostSourceRecords();
+  const body = renderRegistry(records);
+  if (check) {
+    if (!fs.existsSync(OUTPUT)) throw new Error(`Missing generated registry ${OUTPUT}`);
+    if (fs.readFileSync(OUTPUT, 'utf8') !== body) throw new Error(`${OUTPUT} is stale; run node scripts/generate-t51-post-legacy-registry.mjs`);
+    console.log(JSON.stringify({ checked: true, sources: Object.keys(records).length, bytes: Buffer.byteLength(body) }));
+  } else {
+    fs.writeFileSync(OUTPUT, body);
+    console.log(JSON.stringify({ generated: OUTPUT, sources: Object.keys(records).length, bytes: Buffer.byteLength(body) }));
+  }
 }
+
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) main();
