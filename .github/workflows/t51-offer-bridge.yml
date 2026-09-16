@@ -1,0 +1,45 @@
+name: T5.1 offer session bridge
+
+on:
+  pull_request:
+    paths:
+      - 'src/simulation/offers.ts'
+      - 'src/narrative/offer-bridge.ts'
+      - 'src/session/game-session.ts'
+      - 'src/session/validate-session.ts'
+      - 'scripts/test-t51-offer-bridge.mjs'
+      - 'scripts/test-offers.mjs'
+      - 'package.json'
+      - '.github/workflows/t51-offer-bridge.yml'
+  push:
+    branches:
+      - integration/t51-offer-session-bridge
+    paths:
+      - 'src/simulation/offers.ts'
+      - 'src/narrative/offer-bridge.ts'
+      - 'src/session/game-session.ts'
+      - 'src/session/validate-session.ts'
+      - 'scripts/test-t51-offer-bridge.mjs'
+      - 'scripts/test-offers.mjs'
+      - 'package.json'
+      - '.github/workflows/t51-offer-bridge.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  offer-bridge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Narrative offer/session authority
+        run: node --test scripts/test-t51-offer-bridge.mjs
+      - name: Existing offer authority regressions
+        run: node --test scripts/test-offers.mjs
