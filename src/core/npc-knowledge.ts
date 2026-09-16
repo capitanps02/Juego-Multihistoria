@@ -157,13 +157,20 @@ function laterExpiry(first?: string, second?: string): string | undefined {
   return first >= second ? first : second;
 }
 
+function sameEpistemicVersion(first: NpcKnowledgeRecord, second: NpcKnowledgeRecord): boolean {
+  return first.eventId === second.eventId && first.choiceId === second.choiceId && first.outcomeId === second.outcomeId;
+}
+
 /**
- * Re-learning an already-known fact can reinforce it, but never make the NPC
- * less certain or turn durable memory into a shorter-lived one. Provenance,
+ * Re-learning an already-known version of a fact can reinforce it, but never
+ * make the NPC less certain or turn durable memory into a shorter-lived one.
+ * A contradictory active version is not silently merged: until claims/rumours
+ * have their own model, the existing belief remains unchanged. Provenance,
  * learnedAt and club remain the context of first acquisition while the fact is
  * still known. Once it has expired, learning it again creates a fresh record.
  */
 function reinforceActiveRecord(existing: NpcKnowledgeRecord, candidate: NpcKnowledgeRecord): NpcKnowledgeRecord {
+  if (!sameEpistemicVersion(existing, candidate)) return existing;
   const memory = MEMORY_RANK[candidate.memory] > MEMORY_RANK[existing.memory] ? candidate.memory : existing.memory;
   const reinforced: NpcKnowledgeRecord = {
     ...existing,
