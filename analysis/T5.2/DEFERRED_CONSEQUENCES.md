@@ -50,8 +50,10 @@ Estado del árbol al crear el follow-up:
 
 - **22** pares archivo+seed;
 - **15** seeds únicas;
-- hitos de 26, 30 y 34 registrados como `[26,26]`, `[30,30]`, `[34,34]`;
-- `runMaturityPreseason` registrado como `[31,33]`, que son las edades en las que `world-simulator` lo invoca realmente;
+- adaptadores de transición exactos: `adaptState26ToPeak` usa `[26,26]` y `adaptState30ToMaturity` usa `[30,30]`;
+- clasificadores: `State26` usa `[26,null]`, `State30` usa `[30,null]` y `State34` usa `[34,null]`, porque además del hito anual `career-simulator` los recalcula al construir el estado final de una simulación;
+- `State34` no baja a 33 por la retirada anticipada: en ese branch el predicado que consulta `SEED_CHRONIC_BODY` queda dentro del bloque `!EARLY_RETIRED_30_34` y no se evalúa;
+- `runMaturityPreseason` usa `[31,33]`, que son las edades en las que `world-simulator` lo invoca realmente;
 - efectos semanales conservan sus guards explícitos, por ejemplo edad 19, `>=26` o `>=30`.
 
 El audit escanea todos los `.ts` bajo `src/simulation`. El gate falla si aparece:
@@ -78,7 +80,7 @@ Ejemplos:
 - productor 18–20, consumidor narrativo 23–26, seed 18–26 → posible;
 - productor 18–20, opción dependiente 21–23, seed 18–20 → imposible;
 - productor 26, efecto de simulación a 30, seed abierta → consecuencia diferida posible;
-- productor 29, efecto de simulación a 30, seed 29+ → consecuencia diferida posible;
+- productor 29, efecto de simulación a 30+, seed 29+ → consecuencia diferida posible;
 - productor 18–20, efecto de simulación únicamente a 21–23, seed 18–20 → imposible.
 
 ## Qué NO infiere
