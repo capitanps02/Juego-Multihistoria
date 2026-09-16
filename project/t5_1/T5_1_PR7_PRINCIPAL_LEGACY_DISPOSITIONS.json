@@ -1,0 +1,68 @@
+{
+  "generated": "2026-09-16",
+  "scope": "Four runtime-only principal IDs owned by PR #7 / Batch 02B age 26",
+  "reviewed": 4,
+  "sameSceneMigrationsApproved": 0,
+  "defaultDisposition": "retire_technical_keep_history_only",
+  "rows": [
+    {
+      "legacyId": "EVT_26_IDN_001",
+      "title": "Ahora te compran por lo que ya eres",
+      "decision": "retire_technical_keep_history_only",
+      "sameSceneMigrationAllowed": false,
+      "historyEventIdRewriteAllowed": false,
+      "pendingEventIdDirectRewriteAllowed": false,
+      "canonicalReplacement": "EVT_26_BRIDGE_001",
+      "seedCatalogResponsibility": {
+        "seed": "SEED_PEAK_IDENTITY",
+        "futureCanonicalOrigin": "EVT_26_BRIDGE_001",
+        "historicalOriginRewriteAllowed": false
+      },
+      "reason": "Strong conceptual/seed lineage exists, but runtime EVT_26_IDN_001 is a generic legacy-family scene. Canonical EVT_26_BRIDGE_001 has a specific start-of-Pasada-5 sporting-director presentation and four distinct role/price/succession/market responses."
+    },
+    {
+      "legacyId": "EVT_26_CLB_001",
+      "title": "Ser la cara del proyecto",
+      "decision": "retire_technical_keep_history_only",
+      "sameSceneMigrationAllowed": false,
+      "historyEventIdRewriteAllowed": false,
+      "pendingEventIdDirectRewriteAllowed": false,
+      "canonicalReplacement": null,
+      "seedCatalogResponsibility": {
+        "seed": "SEED_PROJECT_FACE",
+        "futureCanonicalOrigin": "EVT_26_MKT_001",
+        "historicalOriginRewriteAllowed": false,
+        "canonicalEvidence": "EVT_26_MKT_001 sourceFields Memoria / semillas explicitly creates SEED_PROJECT_FACE"
+      },
+      "reason": "Runtime technical team event is not a missing canonical scene. The exact canonical EVT_26_MKT_001 owns the project-face memory according to source traceability and must be repaired to write it."
+    },
+    {
+      "legacyId": "EVT_26_PRS_001",
+      "title": "La entrevista del pico",
+      "decision": "retire_technical_keep_history_only",
+      "sameSceneMigrationAllowed": false,
+      "historyEventIdRewriteAllowed": false,
+      "pendingEventIdDirectRewriteAllowed": false,
+      "canonicalReplacement": null,
+      "reason": "Generic press-family peak callback has no canonical principal identity counterpart. It is not canonical EVT_26_DOC_001, whose documentary-access trigger, rights/access information and decision set are materially different."
+    },
+    {
+      "legacyId": "EVT_26_JAN_001",
+      "title": "Enero: comprar tu siguiente versión",
+      "decision": "retire_technical_keep_history_only",
+      "sameSceneMigrationAllowed": false,
+      "historyEventIdRewriteAllowed": false,
+      "pendingEventIdDirectRewriteAllowed": false,
+      "canonicalReplacement": null,
+      "reason": "Generic January market callback has no canonical principal identity counterpart in the age-26 source set; thematic market overlap is insufficient for history/pending migration."
+    }
+  ],
+  "additionalSeedChronologyFinding": {
+    "seed": "SEED_PROJECT_FACE",
+    "baselineCatalogOrigin": "EVT_26_CLB_001",
+    "canonicalCatalogOrigin": "EVT_26_MKT_001",
+    "canonicalMinAge": 26,
+    "requiredAction": "Repair canonical EVT_26_MKT_001 to create/write SEED_PROJECT_FACE and update future catalog origin metadata; preserve any legacy active seed and historical originEvent unless an explicit migration rule says otherwise."
+  },
+  "status": "review_complete"
+}
