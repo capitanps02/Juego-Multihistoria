@@ -76,8 +76,17 @@ function assertEpilogueBackedByHistory(state, label) {
   assert.equal(state.epilogue.generated, true, `${label}: carrera cerrada sin epílogo`);
   assert.ok(state.epilogue.families.length >= 2 && state.epilogue.families.length <= 5, `${label}: familias de epílogo fuera de rango`);
   assert.equal(new Set(state.epilogue.families).size, state.epilogue.families.length, `${label}: familias de epílogo duplicadas`);
-  const historyMilestones = new Set(state.history.map(h => `${h.season} · ${h.eventId} · ${h.choiceId}`));
-  for (const milestone of state.epilogue.milestones) assert.ok(historyMilestones.has(milestone), `${label}: hito de epílogo no existe en historial: ${milestone}`);
+
+  // Soporta el formato histórico y el formato T5.1 34+ enriquecido con club/outcome.
+  // En ambos casos el hito tiene que ser demostrable por una HistoryEntry real.
+  const historyMilestones = new Set();
+  for (const h of state.history) {
+    historyMilestones.add(`${h.season} · ${h.eventId} · ${h.choiceId}`);
+    historyMilestones.add(`${h.season} · ${h.club || 'club desconocido'} · ${h.eventId} · ${h.choiceId}/${h.outcomeId}`);
+  }
+  for (const milestone of state.epilogue.milestones) {
+    assert.ok(historyMilestones.has(milestone), `${label}: hito de epílogo no existe en historial: ${milestone}`);
+  }
 }
 
 test('T5 determinism matrix: same seed/options are byte-stable and microfeeds cannot perturb strong narrative', () => {
