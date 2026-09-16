@@ -58,12 +58,36 @@ jobs:
         run: npm run test:android:offline
 
       - name: Build debug APK candidate
+        id: apk_build
+        continue-on-error: true
         run: npm run android:apk
 
+      - name: Print APK build report
+        if: always()
+        shell: bash
+        run: |
+          if test -f analysis/2026-09-15/T3.3-apk-build.json; then
+            cat analysis/2026-09-15/T3.3-apk-build.json
+          else
+            echo 'APK build report missing'
+          fi
+
+      - name: Upload Android diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: multihistoria-android-presentation-diagnostics
+          if-no-files-found: warn
+          retention-days: 14
+          path: |
+            android/app/src/main/assets/offline-manifest.json
+            analysis/2026-09-15/T3.3-apk-build.json
+
       - name: Verify APK build report
-        run: node -e "const fs=require('fs');const r=JSON.parse(fs.readFileSync('analysis/2026-09-15/T3.3-apk-build.json','utf8'));if(r.status!=='pass'||!r.apk?.sha256)process.exit(1);console.log(JSON.stringify(r.apk));"
+        run: node -e "const fs=require('fs');const file='analysis/2026-09-15/T3.3-apk-build.json';if(!fs.existsSync(file))process.exit(1);const r=JSON.parse(fs.readFileSync(file,'utf8'));if(r.status!=='pass'||!r.apk?.sha256)process.exit(1);console.log(JSON.stringify(r.apk));"
 
       - name: Upload Android candidate
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: multihistoria-android-presentation-candidate
