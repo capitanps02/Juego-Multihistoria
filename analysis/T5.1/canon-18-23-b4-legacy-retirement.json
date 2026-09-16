@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "generatedAt": "2026-09-16",
   "workstream": "T51_CANON_18_23",
   "batch": "B4_LEGACY_RETIREMENT",
@@ -13,7 +13,7 @@
     "historyRewriteAllowed": false,
     "pendingDirectRewriteAllowed": false,
     "canonicalSeenManufactureAllowed": false,
-    "principalHardDecouplingRequired": 3,
+    "principalHardDecouplingRequired": 4,
     "conditionalHardDecouplingObserved": 0
   },
   "globalRules": [
@@ -28,9 +28,10 @@
     {
       "id": "EVT_20_MATCH_001",
       "disposition": "retire_technical_keep_history_only",
-      "hardDecouplingRequired": false,
-      "observedCouplings": ["active principal catalog", "qa/event-ids-20-23.json", "historical QA frequency artifacts", "SEEN_EVT_20_MATCH_001 in historical example saves"],
-      "retirementRequirements": ["remove from active canonical scheduling only in a migration-backed functional batch", "retain frozen legacy definition for pending/history validation", "preserve historical SEEN/history truth without mapping it to EVT_20_MATCH_003 or any other canonical ID"]
+      "hardDecouplingRequired": true,
+      "hardCoupling": "src/narrative/scheduler.ts -> budgetExempt explicit ID",
+      "observedCouplings": ["active principal catalog", "scheduler budget exemption", "qa/event-ids-20-23.json", "historical QA frequency artifacts", "SEEN_EVT_20_MATCH_001 in historical example saves"],
+      "retirementRequirements": ["remove/replace the explicit scheduler dependency before or atomically with active-catalog retirement", "prove phase-20 principal budget behavior remains correct without this technical event", "retain frozen legacy definition for pending/history validation", "preserve historical SEEN/history truth without mapping it to EVT_20_MATCH_003 or any other canonical ID"]
     },
     {
       "id": "EVT_21_ABR_001",
@@ -66,7 +67,7 @@
       "id": "EVT_22_END_001",
       "disposition": "retire_technical_keep_history_only",
       "hardDecouplingRequired": true,
-      "hardCoupling": "src/narrative/scheduler.ts budgetExempt explicit ID",
+      "hardCoupling": "src/narrative/scheduler.ts -> budgetExempt explicit ID",
       "observedCouplings": ["active principal catalog", "scheduler budget exemption", "SEEN_EVT_22_END_001 in historical example saves", "historical QA frequency artifacts"],
       "retirementRequirements": ["remove/replace the explicit scheduler dependency before or atomically with active-catalog retirement", "prove age-22/23 transition and principal budgets remain correct without this technical event", "retain frozen legacy definition and historical ID", "do not map its completion to an unrelated canonical event"]
     }
@@ -97,7 +98,7 @@
     "migrationRuntime": "src/session/content-migration.ts",
     "historicalExamples": "examples/save-v04..v08-seed-424242.json",
     "notes": [
-      "Targeted source searches found the hard principal couplings listed above.",
+      "Targeted source searches found the four hard principal couplings listed above: two scheduler budget exemptions and two seed-origin metadata references.",
       "Targeted conditional searches showed active-catalog/QA/historical-save usage and no ID-specific seed/scheduler hard coupling comparable to the principal cases.",
       "The global conditional overlay explicitly approves retire_technical_keep_history_only for all 15 phase-20_23 runtime-only callback IDs and forbids direct pending/history rewrite."
     ]
@@ -108,7 +109,7 @@
     "Historical history.eventId values remain byte-for-byte unchanged by migration.",
     "Legacy pending decisions still resolve their stored legacy definition/fingerprint or fail closed; they are never substituted by a new canonical scene.",
     "EVT_21_ABR_001 and EVT_21_AGT_002 no longer act as future active seed origins, while existing saved seed.originEvent values are not rewritten.",
-    "The scheduler contains no active semantic dependency on EVT_22_END_001 and age transition/budget tests prove equivalent engine correctness without the retired technical row.",
+    "The scheduler contains no active semantic dependency on EVT_20_MATCH_001 or EVT_22_END_001 and budget/age-transition tests prove engine correctness without the retired technical rows.",
     "No legacy ID creates SEEN state for a canonical scene without an independently approved same_scene mapping.",
     "The retirement generation extends the unique acyclic contentIdentity migration lineage and passes save/session/determinism/repository-integrity gates."
   ]
