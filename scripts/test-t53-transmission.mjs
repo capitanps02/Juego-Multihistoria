@@ -106,3 +106,40 @@ test('T5.3 transmission: NPC→NPC conserva la versión de la fuente y no consul
   assert.notEqual(coach.choiceId, worldFact.choiceId);
   assert.notEqual(coach.outcomeId, worldFact.outcomeId);
 });
+
+test('T5.3 transmission: una versión contradictoria activa no refuerza certeza ni durabilidad de la versión vigente', () => {
+  const state = createInitialState(124);
+
+  const original = rememberNpcFactInPlace(state, 'NPC_ACA_01', {
+    factId: 'T53_CONTRADICTORY_FACT',
+    eventId: 'EVT_18_PRE_001',
+    choiceId: 'VERSION_A',
+    outcomeId: 'OUTCOME_A',
+    source: 'reported',
+    certainty: 35,
+    memory: 'practical',
+    expiresAfterDays: 30
+  });
+  assert.equal(original.certainty, 35);
+  assert.equal(original.memory, 'practical');
+  assert.ok(original.expiresAfter);
+
+  const afterContradiction = rememberNpcFactInPlace(state, 'NPC_ACA_01', {
+    factId: 'T53_CONTRADICTORY_FACT',
+    eventId: 'EVT_18_PRE_001',
+    choiceId: 'VERSION_B',
+    outcomeId: 'OUTCOME_B',
+    source: 'reported',
+    certainty: 99,
+    memory: 'strong'
+  });
+
+  assert.deepEqual(afterContradiction, original);
+  const persisted = getNpcKnowledgeRecord(state, 'NPC_ACA_01', 'T53_CONTRADICTORY_FACT');
+  assert.deepEqual(persisted, original);
+  assert.equal(persisted?.choiceId, 'VERSION_A');
+  assert.equal(persisted?.outcomeId, 'OUTCOME_A');
+  assert.equal(persisted?.certainty, 35);
+  assert.equal(persisted?.memory, 'practical');
+  assert.equal(persisted?.expiresAfter, original.expiresAfter);
+});
