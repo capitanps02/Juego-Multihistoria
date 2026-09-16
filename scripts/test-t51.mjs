@@ -7,6 +7,7 @@ const veteranReport = JSON.parse(fs.readFileSync('analysis/T5.1/canon-30-34.json
 const principalSource = fs.readFileSync('src/content/events/30_34/principal-events.ts', 'utf8');
 const conditionalSource = fs.readFileSync('src/content/events/30_34/conditional-events.ts', 'utf8');
 const state34Source = fs.readFileSync('src/simulation/state34-classifier.ts', 'utf8');
+const schedulerSource = fs.readFileSync('src/narrative/scheduler.ts', 'utf8');
 
 test('T5.1 no convierte coincidencias de título en aliases silenciosos', () => {
   assert.equal(report.counts.canonicalPrincipals, 254);
@@ -67,4 +68,21 @@ test('T5.1 30-34 no introduce retirada terminal automática por edad', () => {
   assert.match(state34Source, /STATE34_WORLD_ELITE/);
   assert.match(state34Source, /STATE34_REINVENTED_CREATOR/);
   assert.match(state34Source, /STATE34_BODY_MANAGED/);
+});
+
+test('T5.1 30-34 caracteriza el bloqueo de prioridad del puente veterano', () => {
+  const dependency = veteranReport.globalDependencies.find(dep => dep.id === 'DEP_T51_BRIDGE_PRIORITY');
+  assert.ok(dependency);
+  assert.match(principalSource, /EVT_30_IDN_001/);
+  assert.match(schedulerSource, /if\(age>=30&&age<=33\)/);
+  assert.match(schedulerSource, /cap:code===skipped\?0:1/);
+  const budgetLine = schedulerSource.match(/const budgetExempt=.*?;\n/s)?.[0] ?? '';
+  assert.doesNotMatch(budgetLine, /EVT_30_IDN_001/);
+});
+
+test('T5.1 30-34 documenta por qué renombrar IDs desplazados requiere migración', () => {
+  const dependency = veteranReport.globalDependencies.find(dep => dep.id === 'DEP_T51_EVENT_ID_MIGRATION');
+  assert.ok(dependency);
+  assert.match(schedulerSource, /state\.flags\[`SEEN_\$\{event\.id\}`\]/);
+  assert.match(schedulerSource, /state\.eventCooldowns\[event\.id\]/);
 });
