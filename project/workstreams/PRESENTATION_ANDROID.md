@@ -11,13 +11,11 @@ Estado PR: **DRAFT / software verde; T3.4 pendiente de evidencia en teléfono f�
 - T3.3: cerrada técnicamente; paquete Android offline y candidato APK verificable disponibles.
 - T3.4: **pendiente de evidencia en teléfono Android físico**. CI/emulador no la cierran.
 - T4.6: flujo Inicio → Carrera → Mundo → Relaciones → Perfil → Tu partida revisado.
-- Base funcional integrada y validada: `main@de2af6b698d22343a1b7dadf63fb857ddeef5aec` (T5.10 primer lote canónico 23–26).
-- `main@30ae3f27ddcb846f59f049e3a4536276f3e9a97e` añade únicamente historia de coordinación y conserva exactamente el mismo árbol `f531c1845ad49120e1864737229bf68a3d1fa09e`.
-- HEAD de código validado: `16489907e068aaa0817548c8420a59e01dc12967`.
-- HEAD sincronizado tras absorber el commit de coordinación sin cambios de árbol: `ae770f037a915f170ac58f5f04c1eae4d7428b07`.
-- Reconciliación: `behind_by: 0`; diff contra main: **22 archivos**, todos del perímetro presentación/Android/CI/documentación propia.
-- No se modifican desde este workstream `src/session/*`, canon narrativo, `project/PLAN_PASADAS.md` ni `analysis/2026-09-11/plan-seguimiento.json`.
-- Contrato público de contactos de Relaciones: **resuelto e integrado**.
+- Base integrada y validada: `main@171ecacc0a3619aabffcee30b84c3ba2d2438632`.
+- HEAD de código validado: `74c953058eb8672b34651ad6b2156afcec47932b`.
+- Reconciliación: `behind_by: 0`; diff contra `main`: **22 archivos**, todos del perímetro presentación/Android/CI/documentación propia.
+- No se modifican desde este workstream canon narrativo, `src/session/*`, `project/PLAN_PASADAS.md` ni `analysis/2026-09-11/plan-seguimiento.json`.
+- PR #14 permanece `mergeable: true` y DRAFT.
 
 ## Frontera de jugador
 
@@ -28,27 +26,28 @@ Estado PR: **DRAFT / software verde; T3.4 pendiente de evidencia en teléfono f�
 - `fromSave()` sigue siendo estricto.
 - Solo ante `CONTENT_CHANGED` se delega en la API pública `GameSession.migrateFromSave()`.
 - La presentación no reimplementa lineage, provenance, historial, RNG, seeds ni migraciones.
-- La base actual incorpora migración de contenido multigeneración fail-closed, preservación de fuentes post-B1a y la ruta PRE → B1a → T5.10.
+- La base conserva la ruta PRE → B1a → T5.10 y evidencia histórica fail-closed.
 
-## Oferta / contrato / autoridad de sesión
+## Autoridad de ofertas, provenance y transiciones
 
-La base actual integra el puente narrativo T5.1 oferta/contrato/sesión.
+La rama consume, sin duplicar lógica de dominio, los contratos actuales de `main`:
 
-- La UI no calcula ni muta términos de contrato.
-- Si `GameSession` convierte una oferta pendiente en escena narrativa, presentación recibe `screen: "decision"` y responde mediante el comando `choose`.
-- Si no existe bridge narrativo aplicable, recibe `screen: "offer"` y responde mediante el comando `offer`.
-- No se duplica `respondToOffer`, elegibilidad, bridge metadata ni autoridad contractual en web/PlayCanvas/Android.
-- El workflow dedicado `T5.1 offer session bridge` y las regresiones existentes pasan sobre la rama de presentación.
+- offer/session authority bridge;
+- validación de disposición de oferta ligada a provenance histórica exacta (`sourceContentIdentity + eventFingerprint + eventId + choiceId`);
+- prioridad de transición obligatoria en fronteras de fase;
+- hecho causal de solo lectura `facts.clubWantsRenewal`.
+
+La UI no calcula ni muta términos contractuales. Si `GameSession` materializa una oferta como escena narrativa, la presentación recibe `screen: "decision"` y usa `choose`; si queda como oferta ordinaria, recibe `screen: "offer"` y usa el comando `offer`.
+
+Los nuevos contratos no cambian la identidad activa del contenido por sí mismos y se validan en los gates del repositorio antes de empaquetar Android.
 
 ## Relaciones / T5.3
 
-Web, PlayCanvas y Android consumen `getKnownPlayerContacts(session)` en la frontera de jugador.
+Web, PlayCanvas y Android consumen el contrato público de contactos conocidos por el protagonista.
 
 - No se infiere visibilidad desde conocimiento privado, relaciones, access, flags, seeds o `npcRefs`.
-- `PlayerView.contacts` legacy puede seguir transportando el catálogo completo por compatibilidad, pero la vista player-facing lo sustituye por la proyección pública de contactos conocidos.
 - No se exponen agendas, memoria privada ni conocimiento secreto NPC.
-
-**Bloqueo de Relaciones: resuelto.**
+- El bloqueo de visibilidad de Relaciones está resuelto.
 
 ## Endurecimiento de presentación
 
@@ -60,7 +59,11 @@ Web, PlayCanvas y Android consumen `getKnownPlayerContacts(session)` en la front
 - soporte <=380 px, landscape, overscroll y `prefers-reduced-motion`;
 - misma capa móvil en web, PlayCanvas y Android offline;
 - feedback de exportación Android (`saved`, `cancelled`, `error`);
-- Android Back y pausa/reanudación cubiertos por `OfflineProbe`.
+- Android Back y pausa/reanudación cubiertos por `OfflineProbe`;
+- cambios de vista mueven foco al `<main>`;
+- navegación usa `aria-current`;
+- errores usan `role="alert"` y estados dinámicos usan semántica live/status;
+- navegación y choices soportan recorrido con flechas.
 
 No se muestran IDs de seed, RNG, flags internas, conocimiento NPC secreto ni rutas futuras.
 
@@ -78,15 +81,19 @@ Se mantiene:
 - Storage Access Framework para importar/exportar;
 - versión instalada obtenida mediante `PackageManager`.
 
-## CI exacto del árbol validado T5.10
+## CI exacto del HEAD validado
 
-### Repository integrity
+Todos los siguientes gates son **SUCCESS** sobre `74c953058eb8672b34651ad6b2156afcec47932b`:
 
-Run **#816** (`35128214447`): **SUCCESS** sobre `16489907...`.
+### Repository Integrity
+
+Run **#858** (`35136695403`).
 
 Incluye:
 
-- `npm test` con T5.1 lineage multigeneración, registro post-B1a/source-policy, offer/session bridge y primer lote T5.10 23–26;
+- `npm test` con T5.1 lineage/source-policy, T5.10 23–26 y migraciones;
+- offer/session bridge + provenance histórica exacta;
+- prioridad de transición y hecho causal de renovación;
 - T5.2 lifecycle/deferred;
 - T5.3 epistemic/transmission/contact contract;
 - freeze/source sentinels;
@@ -99,34 +106,34 @@ Incluye:
 
 ### T5.1 choice eligibility
 
-Run **#158** (`35128214461`): **SUCCESS**.
+Run **#188** (`35136695425`): **SUCCESS**.
 
 ### T5.1 offer/session bridge
 
-Run **#23** (`35128214465`): **SUCCESS**.
+Run **#53** (`35136695362`): **SUCCESS**.
 
 ### Android presentation candidate
 
-Run **#63** (`35128214450`): **SUCCESS** sobre el mismo árbol de código.
+Run **#66** (`35136695337`): **SUCCESS**.
 
 Pasan regresión de presentación, paquete Android offline, compilación Java 17 / Gradle 8.9 / API 35, informe T3.3, verificación de huellas y publicación de artefactos.
 
-## APK candidato #63
+## APK candidato #66
 
 Versión `0.8.0`, versionCode `1`.
 
-- tamaño: **8.964.787 bytes**;
-- SHA-256 exacto del APK firmado: `12ecccc0897f27f9eb93c75adf59f71700dcc100b1c86a3d3483c5fa16303500`;
-- `payloadSha256`: `2611690e439968b8761833f5eb6dfd1357c31d870d8d1f1ba4ec6933039cd6eb`;
-- entradas incluidas en payload: **222**;
+- tamaño: **8.971.848 bytes**;
+- SHA-256 exacto del APK firmado: `cd573ebf2c674e0cbe9e19f1629dcb43999a7521bf95377defe15f8b4ebd614a`;
+- `payloadSha256`: `11e3002ffba2dda9ddeff4c0a717a1205fb0fc2058132b6dc5754c241199bc80`;
+- entradas incluidas en payload: **228**;
 - contenedor de firma excluido: `META-INF/CERT.RSA`;
-- digest del ZIP de artefacto GitHub: `sha256:02823196f9992b7b19c8ce26c5bebb5fc1ae9fc736092589ba9d88ca55f125b1`.
+- digest del ZIP de artefacto GitHub: `sha256:0d01d3ca7894a881a29ba652d9e9a8fcf0add7c8cf8ae85c33a5c93850d7222e`.
 
 El SHA exacto, tamaño, número de entradas y `payloadSha256` fueron recalculados independientemente tras descargar el artefacto y coinciden con `analysis/2026-09-15/T3.3-apk-build.json`.
 
-La huella estable incluye `CERT.SF` y `MANIFEST.MF`; solo se excluyen contenedores de certificado `META-INF/*.RSA|*.DSA|*.EC`. No se compromete una clave privada fija.
+La huella estable incluye `CERT.SF` y `MANIFEST.MF`; solo excluye contenedores de certificado `META-INF/*.RSA|*.DSA|*.EC`. No se compromete una clave privada fija.
 
-Este APK es candidato técnico para la prueba física; **no** acredita T3.4.
+El candidato #65 queda supersedido porque los cambios de runtime QA-018/transition/renewal modifican el payload empaquetado. #66 es el candidato técnico actual para la prueba física; **no** acredita T3.4.
 
 ## T3.4 · evidencia física no destructiva
 
@@ -154,6 +161,9 @@ Para cerrar T3.4 faltan en hardware real: modo avión/offline, creación y avanc
 - Save QA #22: **resuelto**.
 - T5.1 Session/content migration + lineage/source evidence: **integrado y verde**.
 - T5.1 offer/session authority bridge: **integrado y verde**.
+- T5 QA-018 provenance-bound offer disposition: **integrado y verde**.
+- Mandatory transition priority: **integrado y verde**.
+- Club renewal intent causal fact: **integrado y verde**.
 - T5.10 primer lote canónico 23–26 + migración: **integrado y verde**.
 - T5.2 lifecycle/deferred/OR auditing: **integrado y verde**.
 - T5.3 contactos públicos conocidos: **integrado y verde**.
