@@ -46,6 +46,26 @@ export interface ContentMigrationRoute {
   seedOriginMappings?: readonly SeedOriginMigrationMapping[];
 }
 
+export const T51_B1A_CONTENT_IDENTITY = "1a8a5e2006fe7160f4fbc02060568d3abec99df038fe3a1a7799c8a0e802eac7";
+
+const T51_B1A_FINGERPRINT_DELTA: Readonly<Record<string, string>> = Object.freeze({
+  EVT_18_MED_001: "4c4aa41d92d751367da996fcf8e8fb6f0657a02128ba68f7c6f65245fdd28dd0",
+  EVT_18_TEAM_001: "7a75ec92626db910450930df747cffe0679b5533467340b77932940e47be88d3",
+  EVT_18_MATCH_002: "67494fabb6f6f61a8acc16789ca524ab99dfb39e0df608ab30c2a6b58854ab00"
+});
+
+/**
+ * B1a changed only player-facing intel for three stable-ID scenes. Journal
+ * semantics remain exactly the frozen ones; only those event fingerprints
+ * change. The overlay avoids duplicating the full 388-event evidence table.
+ */
+export const T51_B1A_EVENT_EVIDENCE: Readonly<Record<string, LegacyEventEvidence>> = Object.freeze(
+  Object.fromEntries(Object.entries(PRE_T51_EVENT_EVIDENCE).map(([eventId, evidence]) => {
+    const fingerprint = T51_B1A_FINGERPRINT_DELTA[eventId];
+    return [eventId, fingerprint ? { ...evidence, fingerprint } : evidence];
+  }))
+);
+
 /** Validation-only historical catalogs. They never join EventIndex or scheduling. */
 export const LEGACY_CONTENT_SOURCES: Readonly<Record<string, ContentEvidenceSource>> = {
   [PRE_T51_CONTENT_IDENTITY]: {
@@ -53,10 +73,14 @@ export const LEGACY_CONTENT_SOURCES: Readonly<Record<string, ContentEvidenceSour
     engineBuild: "0.8.0-t2.5",
     sessionVersions: [1, 2, 3],
     events: PRE_T51_EVENT_EVIDENCE
+  },
+  [T51_B1A_CONTENT_IDENTITY]: {
+    contentIdentity: T51_B1A_CONTENT_IDENTITY,
+    engineBuild: "0.8.0-t5.1-b1a",
+    sessionVersions: [3],
+    events: T51_B1A_EVENT_EVIDENCE
   }
 };
-
-export const T51_B1A_CONTENT_IDENTITY = "1a8a5e2006fe7160f4fbc02060568d3abec99df038fe3a1a7799c8a0e802eac7";
 
 /**
  * Explicit identity-bound edges. Successive canonical batches extend this as a
@@ -76,6 +100,7 @@ export const CONTENT_MIGRATION_ROUTES: readonly ContentMigrationRoute[] = [
 
 const activeEvidenceCache = new Map<string, Readonly<Record<string, LegacyEventEvidence>>>();
 activeEvidenceCache.set(PRE_T51_CONTENT_IDENTITY, PRE_T51_EVENT_EVIDENCE);
+activeEvidenceCache.set(T51_B1A_CONTENT_IDENTITY, T51_B1A_EVENT_EVIDENCE);
 
 export function findMigrationRoute(
   sourceContentIdentity: string,
