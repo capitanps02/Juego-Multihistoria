@@ -5,6 +5,7 @@ import type { EventDefinition, GameState, ScheduledEvent, WeightedCandidate } fr
 import { knowledgeRequirementsFor } from "../catalog/npc-knowledge-rules.js";
 import { EventIndex } from "./event-index.js";
 import { eligibleChoices, eventWithEligibleChoices } from "./choice-eligibility.js";
+import { eventGatesPass } from "./event-gates.js";
 
 export interface SchedulerOptions { qa?: boolean; currentTick?: number; ignoreRhythmGate?: boolean; }
 type Period = { key: string; cap: number };
@@ -96,7 +97,7 @@ function isEligible(state:GameState,event:EventDefinition,options:SchedulerOptio
   if(event.family==="conditional"&&ctx.conditionalCount>=ctx.conditionalCap)return false;
   const budgetExempt=(event.tags??[]).includes("hard_deadline")||["EVT_19_FIN_001","EVT_18_SUM_001","EVT_22_END_001","EVT_22_DDL_001","EVT_25_END_001","EVT_23_JAN_001","EVT_29_FIN_001","EVT_30_FINAL_001","EVT_31_RETURN_001","EVT_31_FINAL_001","EVT_32_BOS_001","EVT_33_RET_001","EVT_33_END_001"].includes(event.id);
   if(event.family!=="conditional"&&!budgetExempt&&ctx.periodCount>=ctx.currentPeriod.cap)return false;
-  if(!inTimeWindow(state,event,ctx)||!conditionsPass(state,event.gates)||!knowledgePass(state,event))return false;
+  if(!inTimeWindow(state,event,ctx)||!eventGatesPass(state,event)||!knowledgePass(state,event))return false;
   if(event.exclusions&&event.exclusions.some(c=>conditionsPass(state,[c])))return false;
   if(eligibleChoices(state,event).length===0)return false;
   return rhythmPass(state,event,options,ctx);
