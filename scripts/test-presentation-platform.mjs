@@ -32,11 +32,13 @@ test('web, PlayCanvas and Android all consume the same mobile presentation layer
   assert.match(androidBuild, /appVersion/);
 });
 
-test('player UI hides internal seed mechanics and architecture wording', () => {
+test('player UI hides seed mechanics, technical storage and milestone state codes', () => {
   assert.doesNotMatch(ui, /semilla/i);
   assert.doesNotMatch(ui, /Guardado transaccional|IndexedDB/);
+  assert.doesNotMatch(ui, /\.signature\b|STATE(?:20|23|26|30|34)_/);
   assert.match(ui, /Empieza de nuevo\. Conservaremos una copia/);
   assert.match(ui, /crypto\.getRandomValues/);
+  assert.match(ui, /Hitos de edad/);
 });
 
 test('Android bridge reports version and export outcomes without enabling network access', () => {
