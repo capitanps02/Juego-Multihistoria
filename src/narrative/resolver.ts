@@ -156,7 +156,7 @@ function outcomeWeight(state: GameState, outcome: OutcomeDefinition): { weight: 
   return { weight: Math.max(0, weight), modifiers: reasons };
 }
 
-function recordResolvedNpcKnowledge(state: GameState, event: EventDefinition, choiceId: string, outcomeId: string): void {
+function recordResolvedNpcKnowledge(state: GameState, event: EventDefinition, choiceId: string, outcomeId: string, eventClub: string): void {
   forgetExpiredNpcKnowledgeInPlace(state);
   for (const rule of knowledgeRulesFor(event.id, choiceId, outcomeId)) {
     for (const npcId of rule.npcIds) {
@@ -169,7 +169,8 @@ function recordResolvedNpcKnowledge(state: GameState, event: EventDefinition, ch
         certainty: rule.certainty,
         memory: rule.memory,
         expiresAfterDays: rule.expiresAfterDays,
-        relationshipMemory: rule.relationshipMemory
+        relationshipMemory: rule.relationshipMemory,
+        club: eventClub
       });
     }
   }
@@ -221,7 +222,7 @@ function resolveChoiceCore(next: GameState, event: EventDefinition, choiceId: st
     snapshot: { family: event.family, npcRefs: event.npcRefs ?? [], tags: event.tags ?? [], age: next.age },
     salience: 70, visibility: "private"
   });
-  recordResolvedNpcKnowledge(next, event, choiceId, selected.id);
+  recordResolvedNpcKnowledge(next, event, choiceId, selected.id, previousClub);
 
   return {
     state: next, eventId: event.id, choiceId, outcomeId: selected.id,
