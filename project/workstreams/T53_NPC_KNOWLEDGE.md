@@ -1,12 +1,12 @@
 # T5.3 — NPC, relaciones, memoria y conocimiento
 
-Estado: auditoría inicial + arquitectura mínima en implementación.
+Estado: técnicamente preparado para revisión/integración.
 
 Rama de trabajo: `t5/npc-memory`.
 
 ## 1. Fuente de verdad inspeccionada
 
-La auditoría parte del código real de `main` en `c28d119` y de la rama T5.3 creada desde ese commit. No se modifica `project/PLAN_PASADAS.md` ni `analysis/2026-09-11/plan-seguimiento.json`.
+La auditoría parte del código real del repositorio y de la rama T5.3, contrastada además contra el `main` vigente mediante el merge ref del PR. No se modifica `project/PLAN_PASADAS.md` ni `analysis/2026-09-11/plan-seguimiento.json`.
 
 Archivos principales revisados:
 
@@ -15,6 +15,7 @@ Archivos principales revisados:
 - `src/core/path.ts`
 - `src/content/initial-state.ts`
 - `src/narrative/resolver.ts`
+- `src/narrative/scheduler.ts`
 - `src/save/validation.ts`
 - `src/session/game-session.ts`
 - escenas 18–20 usadas como cadena piloto
@@ -123,7 +124,7 @@ No se introduce una barra extra de «lealtad» o «rivalidad»: cuando sea neces
 | NPC_PLR_10 | Tomás Vela — Capitán | UDV/vestuario | 48/48/50, leverage 45 | códigos de vestuario y hechos observados | mentor, antagonista, técnico o director | recordar rupturas fuertes de código |
 | NPC_PLR_11 | Leo Barreiro — Vicecapitán | UDV/vestuario | basal por defecto | conflictos que presencia o le comunican | veterano de referencia | su agenda ya exige memoria de códigos |
 | NPC_PLR_12 | Bruno Leal — Titular/rival | UDV/vestuario | 47/52/52 | competencia y acciones compartidas | mentor, bloqueo, venta o rival futuro | no revelar su promesa privada sin fuente |
-| NPC_PLR_13 | Mamadou Diarra — Compañero | UDV/vestuario | basal por defecto | información social solo si la recibe | puente de vestuario | especialmente sensible a propagación indebida |
+| NPC_PLR_13 | Mamadou Diarra — Compañero | UDV/vestuario | basal por defecto | información social solo si la recibe | puente de vestuario | actualmente sin eventos/seeds referenciados |
 | NPC_PLR_14 | Iván «Nano» Serrano — amigo/canterano | UDV/cantera | trust 74, affinity 82, respect 58 | amistad, promesas, ayudas y comparaciones directas | amistad, rivalidad, caída o carrera paralela | cadena piloto T4.1/T5.3 |
 | NPC_PLR_15 | Adrián Costa — rival espejo | UDV/cantera | 42/45/54, resentment 8 | comparaciones que presencia/recibe | rival o aliado | no conocer automáticamente conversaciones con Prisma |
 | NPC_AGT_01 | Héctor Salvatierra — agente local | externo; acceso a mercado propio | 35/40/42 | autorizaciones, rechazos y negociaciones directas | primer agente plausible | conversación privada no se comparte con vestuario |
@@ -132,46 +133,82 @@ No se introduce una barra extra de «lealtad» o «rivalidad»: cuando sea neces
 | NPC_PRS_02 | Raúl Carrión — locutor | externo; información pública | basal por defecto | hechos publicados, no secretos | amplificador reputacional | nunca usar flags secretos como conocimiento directo |
 | NPC_FAM_01 | Elena — madre | familiar; acceso personal si se comunica | 82/90/75 | decisiones familiares y conversaciones directas | apoyo/prudencia | no asumir acceso a vestuario o agente |
 | NPC_FAM_02 | Julián — padre | familiar | 78/88/70 | decisiones familiares comunicadas | apoyo/presión/conflicto | idem |
-| NPC_FAM_03 | Mara — hermana | familiar/redes | 82/92/68 | información familiar y pública en redes | termómetro social | puede saber fama pública, no secretos contractuales |
+| NPC_FAM_03 | Mara — hermana | familiar/redes | 82/92/68 | información familiar y pública en redes | termómetro social | actualmente sin eventos/seeds referenciados |
 | NPC_SOC_01 | Dani Lucas — amigo infancia | social/personal | 78/88/60 | vida social comunicada u observada | apoyo/distracción/vínculo origen | cambio de club reduce frecuencia, no borra relación |
 
 > Los campos `privateAgenda` permanecen estado interno del motor y no conocimiento del protagonista.
 
-## 7. Reglas piloto que T5.3 sí declara explícitamente
+## 7. Defectos funcionales corregidos y regresiones
 
-Se limita el primer lote para poder auditarlo:
+### D8 — callback de Nano podía reaccionar por flags sin saber el hecho
 
-- `EVT_18_PRE_001 / CALL_NANO` → Nano es informado; Rivas no.
-- `EVT_18_PRE_001 / CALL_RIVAS` → Rivas es informado; Nano no recibe por defecto el contenido de la llamada.
-- `EVT_18_PRE_002` → Vela, Bruno y Paula pueden ser testigos del manejo de carga.
-- `EVT_18_PRE_003` → Mena y Bruno conocen la resolución por presencia; Montalbán no se infiere solo porque aparezca en `npcRefs`.
-- `EVT_18_AGT_001` → solo el agente o agentes con los que realmente se habla conocen esa conversación.
+`CEVT_19_NANO_01` afirma que Nano descubre que moviste un contacto por él. Antes, `UNSOLICITED_NANO_HELP` y `SEED_NANO_SHADOW` bastaban para que el callback apareciera aunque `NPC_PLR_14` no tuviera conocimiento personal del hecho.
 
-La extensión al resto de las 388 escenas debe hacerse como reconciliación de contenido, no mediante una regla global de omnisciencia.
+Corrección:
 
-## 8. Contrato de tests T5.3
+- `EVT_19_TEAM_001/MOVE_CONTACT__SECONDARY` registra que Nano se entera, con fuente `reported` y memoria fuerte;
+- el scheduler exige que `NPC_PLR_14` conozca `EVT_19_TEAM_001` para `CEVT_19_NANO_01`;
+- si se elimina solo conocimiento y memoria de Nano, conservando flags y seed, el callback ya no se agenda.
 
-1. NPC con vía de acceso → recuerda.
-2. NPC sin acceso → no sabe/no puede gatear reacción.
-3. NPC informado después → aprende desde ese momento.
-4. Cambio de club → relación no se reinicia.
-5. Memoria fuerte → sigue disponible años después.
-6. Save/restore → conserva conocimiento.
-7. Nueva partida → memoria vacía.
-8. Dos NPC → pueden tener certeza/fuente diferente sobre el mismo hecho.
-9. Información práctica → caduca.
-10. PlayerView → no filtra conocimiento interno.
+### D9 — resultados que verbalizan memoria/descubrimiento sin registro epistemológico
 
-## 9. Criterio de cierre de esta rama
+La auditoría T5.3 detecta outcomes cuyo copy contiene términos explícitos como `descubre`, `recuerda`, `sabe` o `detecta`, que además cambian una relación con un NPC, pero carecen de vía de conocimiento.
 
-Para considerar T5.3 preparado hacen falta conjuntamente:
+La primera pasada estricta detectó nueve candidatos. Tras revisión semántica:
 
-- inventario de 20 NPC trazable;
-- API `npcKnows` y adquisición explícita de hechos;
-- una ruta declarativa para testigos/informados;
-- memoria fuerte y caducable;
-- persistencia por save;
-- relaciones persistentes tras cambio de club;
-- gates de conocimiento posibles sin acceder a estado secreto desde UI;
-- tests T5.3 en CI;
-- PR abierto contra `main`, sin merge automático.
+- ocho eran conocimiento real del NPC y ahora tienen regla explícita de fuente/memoria;
+- uno (`EVT_19_AGENT_001/AUDIT__SECONDARY`) era un falso positivo: «la revisión descubre más lagunas» describe conocimiento nuevo del protagonista, no del agente. La excepción queda declarada con motivo y el auditor falla si deja de corresponder a contenido real.
+
+Los ocho casos reparados cubren Vela, Paula, Clara, Bruno, Montalbán y Ferrer. Las reglas son outcome-specific: el resultado alternativo no concede el hecho.
+
+## 8. Trazabilidad y cobertura real
+
+`scripts/audit-t53.mjs` deriva la trazabilidad desde los catálogos compilados, no desde esta tabla manual:
+
+- 20 NPC;
+- 388 eventos;
+- 210 seeds;
+- referencias NPC desconocidas: 0;
+- reglas de conocimiento inválidas: 0;
+- requisitos de conocimiento inválidos: 0;
+- gaps epistemológicos explícitos conocidos tras revisión: 0.
+
+Inconsistencia canónica/contenido preservada como hallazgo, no reparada inventando escenas:
+
+- `NPC_PLR_13` (Mamadou Diarra) no tiene actualmente evento ni seed que lo referencie;
+- `NPC_FAM_03` (Mara) no tiene actualmente evento ni seed que la referencie.
+
+Ambos existen y persisten en `GameState`, pero el runtime actual no ofrece material canónico para demostrar memoria o reaparición. T5.3 no los convierte artificialmente en protagonistas recurrentes; su incorporación futura debe venir de reconciliación canónica autorizada.
+
+## 9. Tests y gate de integración
+
+La suite dirigida cubre el contrato pedido y regresiones adicionales:
+
+1. NPC presencia un hecho → puede recordarlo;
+2. NPC sin acceso → no sabe ni reacciona;
+3. información posterior → aprende desde ese momento;
+4. relación persiste tras cambio de club;
+5. recuerdo fuerte sigue disponible años después;
+6. save/restore conserva conocimiento y relación;
+7. partida nueva no hereda memoria;
+8. dos NPC pueden conocer versiones distintas;
+9. información práctica caduca y puede podarse;
+10. `PlayerView` no filtra estado interno;
+11. Nano solo aprende la ayuda no solicitada en el outcome donde realmente se entera;
+12. flags + seed no bastan para su callback sin conocimiento personal;
+13. ocho descubrimientos explícitos de contenido crean memoria únicamente en el outcome revelador, nunca en el alternativo.
+
+`npm test` ejecuta la auditoría y ambas suites T5.3. El workflow `Repository integrity` del PR ejecuta además el QA T5 integrado en `main`: determinismo/RNG, límites de edad, referencias, carreras largas, lifecycle y simulación estratificada.
+
+## 10. Estado de cierre técnico
+
+T5.3 queda **técnicamente preparado para revisión/integración**, con estas precisiones:
+
+- la arquitectura continúa siendo `deny-by-default`;
+- no se infiere conocimiento desde `npcRefs`;
+- el contenido sin vía explícita no concede conocimiento;
+- no se ha añadido contenido canónico para Mamadou ni Mara;
+- la cobertura futura puede declarar nuevas vías de conocimiento cuando el canon demuestre testigo, comunicación o publicación;
+- no se ha modificado `project/PLAN_PASADAS.md` ni `analysis/2026-09-11/plan-seguimiento.json`.
+
+El PR debe ser revisado por el integrador y **no debe auto-mergearse**.
