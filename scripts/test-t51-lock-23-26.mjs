@@ -16,6 +16,7 @@ import {
   T51_T510_CONTENT_IDENTITY,
   T51_T511_CONTENT_IDENTITY,
   T51_PRS_CONTENT_IDENTITY,
+  T51_EUR_ELIGIBILITY_CONTENT_IDENTITY,
   T51_LOCK_CONTENT_IDENTITY,
   applyMigrationRouteInPlace,
   findMigrationPath,
@@ -24,9 +25,9 @@ import {
 import { PRE_T51_CONTENT_IDENTITY } from '../dist/session/pre-t51-legacy-registry.js';
 
 const ID = 'EVT_23_LOCK_001';
-const TARGET_IDENTITY = '008962f2104461eeeb97acea011cd8ea0109d789923a8f9d7055b74f0d55b41e';
-const E_FIXTURE = JSON.parse(fs.readFileSync(
-  `qa/fixtures/t5.1/post-t51-sources/${T51_PRS_CONTENT_IDENTITY}.json`,
+const TARGET_IDENTITY = '8767c7098aab0114a94dd72863a67053117b7ace7ab05cb3b38eaeb904c203af';
+const F_FIXTURE = JSON.parse(fs.readFileSync(
+  `qa/fixtures/t5.1/post-t51-sources/${T51_EUR_ELIGIBILITY_CONTENT_IDENTITY}.json`,
   'utf8'
 ));
 
@@ -173,7 +174,7 @@ test('LOCK23 non-escalation choices do not make the captain omniscient', () => {
   assert.deepEqual(state.history.at(-1)?.snapshot.npcRefs, []);
 });
 
-test('LOCK23 creates only the adjacent E -> F migration edge', async () => {
+test('LOCK23 creates only the adjacent EUR-F -> LOCK-G migration edge', async () => {
   const actualIdentity = await contentIdentity(EVENTS);
   assert.equal(actualIdentity, TARGET_IDENTITY);
   assert.equal(actualIdentity, T51_LOCK_CONTENT_IDENTITY);
@@ -182,6 +183,7 @@ test('LOCK23 creates only the adjacent E -> F migration edge', async () => {
   assert.equal(findMigrationRoute(T51_B1A_CONTENT_IDENTITY, actualIdentity, CONTENT_MIGRATION_ROUTES), undefined);
   assert.equal(findMigrationRoute(T51_T510_CONTENT_IDENTITY, actualIdentity, CONTENT_MIGRATION_ROUTES), undefined);
   assert.equal(findMigrationRoute(T51_T511_CONTENT_IDENTITY, actualIdentity, CONTENT_MIGRATION_ROUTES), undefined);
+  assert.equal(findMigrationRoute(T51_PRS_CONTENT_IDENTITY, actualIdentity, CONTENT_MIGRATION_ROUTES), undefined);
 
   const path = findMigrationPath(PRE_T51_CONTENT_IDENTITY, actualIdentity, CONTENT_MIGRATION_ROUTES);
   assert.ok(path);
@@ -190,10 +192,11 @@ test('LOCK23 creates only the adjacent E -> F migration edge', async () => {
     [T51_B1A_CONTENT_IDENTITY, T51_T510_CONTENT_IDENTITY],
     [T51_T510_CONTENT_IDENTITY, T51_T511_CONTENT_IDENTITY],
     [T51_T511_CONTENT_IDENTITY, T51_PRS_CONTENT_IDENTITY],
-    [T51_PRS_CONTENT_IDENTITY, actualIdentity]
+    [T51_PRS_CONTENT_IDENTITY, T51_EUR_ELIGIBILITY_CONTENT_IDENTITY],
+    [T51_EUR_ELIGIBILITY_CONTENT_IDENTITY, actualIdentity]
   ]);
 
-  const route = findMigrationRoute(T51_PRS_CONTENT_IDENTITY, actualIdentity, CONTENT_MIGRATION_ROUTES);
+  const route = findMigrationRoute(T51_EUR_ELIGIBILITY_CONTENT_IDENTITY, actualIdentity, CONTENT_MIGRATION_ROUTES);
   assert.ok(route);
   assert.deepEqual(route.seedOriginMappings ?? [], []);
   assert.deepEqual(route.schedulerMappings ?? [], [{
@@ -205,8 +208,8 @@ test('LOCK23 creates only the adjacent E -> F migration edge', async () => {
   }]);
 });
 
-test('E -> F preserves historical truth and releases only LOCK23 scheduler suppression', () => {
-  const route = findMigrationRoute(T51_PRS_CONTENT_IDENTITY, TARGET_IDENTITY, CONTENT_MIGRATION_ROUTES);
+test('F -> G preserves historical truth and releases only LOCK23 scheduler suppression', () => {
+  const route = findMigrationRoute(T51_EUR_ELIGIBILITY_CONTENT_IDENTITY, TARGET_IDENTITY, CONTENT_MIGRATION_ROUTES);
   assert.ok(route);
   const state = state23(51143);
   state.flags.SEEN_EVT_23_LOCK_001 = true;
@@ -237,10 +240,10 @@ test('E -> F preserves historical truth and releases only LOCK23 scheduler suppr
   assert.equal(state.eventCooldowns.EVT_23_PRS_001, 700);
 });
 
-test('real frozen E snapshot migrates to F with no RNG drift', async () => {
-  const session = await GameSession.create(51144, { sessionId: 't511-lock-e', events: E_FIXTURE.events });
+test('real frozen EUR-F snapshot migrates to LOCK-G with no RNG drift', async () => {
+  const session = await GameSession.create(51144, { sessionId: 't511-lock-f', events: F_FIXTURE.events });
   const before = session.exportSnapshot();
-  assert.equal(before.contentIdentity, T51_PRS_CONTENT_IDENTITY);
+  assert.equal(before.contentIdentity, T51_EUR_ELIGIBILITY_CONTENT_IDENTITY);
   const stateBefore = structuredClone(before.state);
   const rngBefore = structuredClone(before.state.rngState);
 
