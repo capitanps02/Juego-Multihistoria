@@ -1,6 +1,9 @@
 import type { GameState } from "../core/types.js";
+import { lockerSlotAffinity } from "./locker-leadership.js";
 
 export const CLUB_WANTS_RENEWAL_FACT = "facts.clubWantsRenewal" as const;
+export const LOCKER_CAPTAIN_AFFINITY_FACT = "facts.lockerCaptainAffinity" as const;
+export const LOCKER_STAR_AFFINITY_FACT = "facts.lockerStarAffinity" as const;
 export const CLUB_RENEWAL_INTENT_MAX_MONTHS = 24;
 export const CLUB_RENEWAL_INTENT_THRESHOLD = 0.50;
 export const FORMAL_RENEWAL_REASON = "Renovación de contrato";
@@ -55,10 +58,16 @@ export function clubWantsRenewal(state: GameState): boolean {
 
 export interface NarrativeCausalFacts {
   clubWantsRenewal: boolean;
+  lockerCaptainAffinity: number | null;
+  lockerStarAffinity: number | null;
 }
 
 export function narrativeCausalFacts(state: GameState): NarrativeCausalFacts {
-  return { clubWantsRenewal: clubWantsRenewal(state) };
+  return {
+    clubWantsRenewal: clubWantsRenewal(state),
+    lockerCaptainAffinity: lockerSlotAffinity(state, "captain"),
+    lockerStarAffinity: lockerSlotAffinity(state, "star")
+  };
 }
 
 /**
