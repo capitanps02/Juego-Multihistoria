@@ -41,6 +41,7 @@ export interface InformNpcOptions {
   relationshipMemory?: boolean;
 }
 
+const MEMORY_RANK: Record<NpcMemoryClass, number> = { practical: 1, temporary: 2, strong: 3 };
 const clamp = (value: number, min = 0, max = 100) => Math.max(min, Math.min(max, value));
 
 function addDays(iso: string, days: number): string {
@@ -107,12 +108,41 @@ function assertKnowledgeSourceCanTransmit(state: GameState, targetNpcId: string,
   }
 }
 
+function laterExpiry(first?: string, second?: string): string | undefined {
+  if (!first) return second;
+  if (!second) return first;
+  return first >= second ? first : second;
+}
+
+/**
+ * Re-learning an already-known fact can reinforce it, but never make the NPC
+ * less certain or turn durable memory into a shorter-lived one. Provenance,
+ * learnedAt and club remain the context of first acquisition while the fact is
+ * still known. Once it has expired, learning it again creates a fresh record.
+ */
+function reinforceActiveRecord(existing: NpcKnowledgeRecord, candidate: NpcKnowledgeRecord): NpcKnowledgeRecord {
+  const memory = MEMORY_RANK[candidate.memory] > MEMORY_RANK[existing.memory] ? candidate.memory : existing.memory;
+  const reinforced: NpcKnowledgeRecord = {
+    ...existing,
+    certainty: Math.max(existing.certainty, candidate.certainty),
+    memory
+  };
+  if (memory === "strong") {
+    delete reinforced.expiresAfter;
+  } else {
+    const expiry = laterExpiry(existing.expiresAfter, candidate.expiresAfter);
+    if (expiry) reinforced.expiresAfter = expiry;
+    else delete reinforced.expiresAfter;
+  }
+  return reinforced;
+}
+
 export function rememberNpcFactInPlace(state: GameState, npcId: string, options: RememberNpcFactOptions): NpcKnowledgeRecord {
   const npc = npcFor(state, npcId);
   assertKnowledgeSourceCanTransmit(state, npcId, options.factId, options.sourceNpcId);
   const memory = options.memory ?? "temporary";
   const expiryDays = options.expiresAfterDays ?? defaultExpiryDays(memory);
-  const record: NpcKnowledgeRecord = {
+  const candidate: NpcKnowledgeRecord = {
     factId: options.factId,
     eventId: options.eventId,
     choiceId: options.choiceId,
@@ -123,8 +153,13 @@ export function rememberNpcFactInPlace(state: GameState, npcId: string, options:
     memory,
     club: options.club ?? state.club
   };
-  if (expiryDays !== undefined) record.expiresAfter = addDays(state.date, expiryDays);
-  if (options.sourceNpcId) record.sourceNpcId = options.sourceNpcId;
+  if (expiryDays !== undefined) candidate.expiresAfter = addDays(state.date, expiryDays);
+  if (options.sourceNpcId) candidate.sourceNpcId = options.sourceNpcId;
+
+  const existing = getNpcKnowledgeRecord(state, npcId, options.factId);
+  const record = existing && npcKnows(state, npcId, options.factId)
+    ? reinforceActiveRecord(existing, candidate)
+    : candidate;
 
   npc.knowledge[options.factId] = record as unknown as DataValue;
   if (!npc.memories.includes(options.factId)) npc.memories.push(options.factId);
