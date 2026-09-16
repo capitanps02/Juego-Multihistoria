@@ -1,0 +1,27 @@
+name: T51 deterministic diagnostic
+on:
+  push:
+    branches: ["t51/canon-30-34"]
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Print seed-424242 30-34 trace
+        run: |
+          node --input-type=module <<'EOF'
+          import {simulateCareer} from './dist/simulation/career-simulator.js';
+          const result=simulateCareer({seed:424242,untilRetirement:true,maxAge:55,microfeeds:true});
+          const trace=result.state.history
+            .filter(h => /^E?CE?VT_(30|31|32|33)_/.test(h.eventId) || /^EVT_(30|31|32|33)_/.test(h.eventId))
+            .map(({eventId,date,season,choiceId,outcomeId})=>({eventId,date,season,choiceId,outcomeId}));
+          console.log('T51_TRACE='+JSON.stringify(trace));
+          console.log('T51_AGE34='+JSON.stringify(result.state.ageMilestones?.find(x=>x.age===34)??null));
+          console.log('T51_FINAL='+JSON.stringify({age:result.state.age,club:result.state.club,retirement:result.state.retirement,epilogue:result.state.epilogue,narrativeSignature:result.narrativeSignature}));
+          EOF
