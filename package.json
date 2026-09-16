@@ -12,7 +12,7 @@
     "test:saves": "npm run build && node --test scripts/test-session.mjs scripts/test-saves.mjs",
     "validate": "npm run build && node scripts/final-gate-v08.mjs",
     "demo": "npm run build && node scripts/final-gate-v08.mjs",
-    "test": "npm run build && node scripts/final-gate-v08.mjs && node scripts/audit-t52.mjs && node --test --test-name-pattern='inventario|creación|reapertura|consumo|caducidad explícita|transición de edad' scripts/test-t52.mjs",
+    "test": "npm run build && node scripts/final-gate-v08.mjs && node scripts/audit-t52.mjs && node --test --test-name-pattern='cambio de club|temporadas largas|save/restore|doble comando|seed incompatible|seed inexistente' scripts/test-t52.mjs",
     "qa:1000": "npm run build && bash scripts/qa-v08-1000.sh",
     "qa:aggregate": "node scripts/qa-v08-aggregate.mjs qa/shards-v08-final",
     "qa:gate": "npm run build && node scripts/final-gate-v08.mjs",
