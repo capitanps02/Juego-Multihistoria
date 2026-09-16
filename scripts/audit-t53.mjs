@@ -27,7 +27,11 @@ for (const rule of NPC_EVENT_KNOWLEDGE_RULES) {
     invalidKnowledgeRules.push(`${rule.eventId}:unknown-event`);
     continue;
   }
-  for (const npcId of rule.npcIds) if (!npcIds.has(npcId)) invalidKnowledgeRules.push(`${rule.eventId}:${npcId}:unknown-npc`);
+  const declaredRefs = new Set(event.npcRefs ?? []);
+  for (const npcId of rule.npcIds) {
+    if (!npcIds.has(npcId)) invalidKnowledgeRules.push(`${rule.eventId}:${npcId}:unknown-npc`);
+    else if (!declaredRefs.has(npcId)) invalidKnowledgeRules.push(`${rule.eventId}:${npcId}:knowledge-target-not-in-npcRefs`);
+  }
   for (const choiceId of rule.choiceIds ?? []) {
     if (!event.choices.some(choice => choice.id === choiceId)) invalidKnowledgeRules.push(`${rule.eventId}:${choiceId}:unknown-choice`);
   }
@@ -38,8 +42,12 @@ for (const rule of NPC_EVENT_KNOWLEDGE_RULES) {
 
 const invalidKnowledgeRequirements = [];
 for (const requirement of NPC_EVENT_KNOWLEDGE_REQUIREMENTS) {
-  if (!eventIds.has(requirement.eventId)) invalidKnowledgeRequirements.push(`${requirement.eventId}:unknown-callback`);
+  const callback = eventById.get(requirement.eventId);
+  if (!callback) invalidKnowledgeRequirements.push(`${requirement.eventId}:unknown-callback`);
   if (!npcIds.has(requirement.npcId)) invalidKnowledgeRequirements.push(`${requirement.eventId}:${requirement.npcId}:unknown-npc`);
+  else if (callback && !(callback.npcRefs ?? []).includes(requirement.npcId)) {
+    invalidKnowledgeRequirements.push(`${requirement.eventId}:${requirement.npcId}:required-npc-not-in-npcRefs`);
+  }
   if (!eventIds.has(requirement.factId)) invalidKnowledgeRequirements.push(`${requirement.eventId}:${requirement.factId}:unknown-fact-event`);
 }
 
@@ -50,6 +58,11 @@ function hasKnowledgeRule(eventId, choiceId, outcomeId, npcId) {
     (!rule.choiceIds || rule.choiceIds.includes(choiceId)) &&
     (!rule.outcomeIds || rule.outcomeIds.includes(outcomeId))
   );
+}
+
+function hasAnyKnowledgeRuleForOutcomeTarget(event, outcome, npcId) {
+  const choices = event.choices.filter(choice => choice.outcomeIds.includes(outcome.id));
+  return choices.some(choice => hasKnowledgeRule(event.id, choice.id, outcome.id, npcId));
 }
 
 function hasKnowledgeRequirement(eventId, npcId) {
@@ -107,11 +120,46 @@ for (const event of EVENTS) {
   if (!hasKnowledgeRequirement(event.id, npcId)) epistemicCallbackGaps.push(`${event.id}:${npcId}`);
 }
 
-// Cross-workstream debt detector. Some technical-adaptation callbacks name a
-// persistent NPC in visible copy but do not declare that NPC in `npcRefs`.
-// Without the ref T5.3 cannot safely infer identity or attach a knowledge gate.
-// This is reported but deliberately does not fail T5.3: fixing the content row
-// belongs to canonical reconciliation and may affect contentIdentity.
+// Structural coverage metric: changing an NPC relationship while omitting that
+// NPC from the event refs is suspicious, but not automatically an epistemic bug.
+// It remains non-blocking because institutional/indirect consequences can be
+// legitimate and the content owner must decide whether the NPC was present,
+// informed later, or should not receive the relational effect at all.
+const relationshipOutcomeTargets = [];
+const relationshipEffectTargetsMissingRefs = [];
+for (const event of EVENTS) {
+  const refs = new Set(event.npcRefs ?? []);
+  for (const outcome of event.outcomes) {
+    const targetAxes = new Map();
+    for (const effect of outcome.effects ?? []) {
+      if (effect.kind !== 'numeric' || !effect.path.startsWith('rel.NPC_')) continue;
+      const [, npcId, axis] = effect.path.split('.');
+      if (!npcId || !axis) continue;
+      const axes = targetAxes.get(npcId) ?? new Set();
+      axes.add(axis);
+      targetAxes.set(npcId, axes);
+    }
+    for (const [npcId, axes] of targetAxes) {
+      const row = {
+        eventId: event.id,
+        outcomeId: outcome.id,
+        npcId,
+        axes: [...axes].sort(),
+        declaredNpcRef: refs.has(npcId),
+        explicitKnowledgeRule: hasAnyKnowledgeRuleForOutcomeTarget(event, outcome, npcId),
+        canonStatus: event.canonStatus ?? null
+      };
+      relationshipOutcomeTargets.push(row);
+      if (npcIds.has(npcId) && !row.declaredNpcRef) relationshipEffectTargetsMissingRefs.push(row);
+    }
+  }
+}
+
+// Cross-workstream debt detector. Some callbacks name a persistent NPC in
+// visible copy but do not declare that NPC in `npcRefs`. Without the ref T5.3
+// cannot safely infer identity or attach a knowledge gate. This is reported but
+// deliberately does not fail T5.3: fixing content belongs to canonical
+// reconciliation and may affect contentIdentity.
 const aliasOwners = new Map();
 for (const npc of NPC_CATALOG) {
   for (const token of new Set(npc.name.match(/\p{L}+/gu) ?? [])) {
@@ -171,6 +219,7 @@ const npcs = NPC_CATALOG.map(npc => ({
 }));
 
 const unreferencedNpcIds = npcs.filter(npc => npc.eventIds.length === 0 && npc.seedIds.length === 0).map(npc => npc.id);
+const relationshipTargetsWithKnowledgeRule = relationshipOutcomeTargets.filter(row => row.explicitKnowledgeRule).length;
 const report = {
   workstream: 'T5.3',
   source: 'runtime catalogs after TypeScript build',
@@ -179,12 +228,16 @@ const report = {
   seedCount: SEED_CATALOG.length,
   knowledgeRuleCount: NPC_EVENT_KNOWLEDGE_RULES.length,
   knowledgeRequirementCount: NPC_EVENT_KNOWLEDGE_REQUIREMENTS.length,
+  relationshipOutcomeTargetCount: relationshipOutcomeTargets.length,
+  relationshipTargetsWithKnowledgeRule,
+  relationshipKnowledgeCoverage: relationshipOutcomeTargets.length === 0 ? 1 : Number((relationshipTargetsWithKnowledgeRule / relationshipOutcomeTargets.length).toFixed(4)),
   unknownEventNpcRefs,
   unknownSeedNpcRefs,
   invalidKnowledgeRules,
   invalidKnowledgeRequirements,
   epistemicRelationshipGaps,
   epistemicCallbackGaps,
+  relationshipEffectTargetsMissingRefs,
   textualNpcMentionsMissingRefs,
   appliedEpistemicExceptions,
   staleEpistemicExceptions,
