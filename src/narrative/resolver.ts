@@ -1,13 +1,21 @@
+import { SEED_CATALOG } from "../catalog/seeds.js";
+import { getSeedScopePolicy } from "../catalog/seed-scope.js";
 import { conditionsPass } from "../core/conditions.js";
 import { getPath, setPath } from "../core/path.js";
 import { DeterministicRng } from "../core/rng.js";
-import type { ChoiceDefinition, Effect, EventDefinition, GameState, OutcomeDefinition, ResolutionResult, SeedTransition } from "../core/types.js";
+import type { ChoiceDefinition, Effect, EventDefinition, GameState, OutcomeDefinition, ResolutionResult, SeedInstance, SeedTransition } from "../core/types.js";
 import { syncRetirementState } from "../simulation/late-career-engine.js";
+
+const TERMINAL_SEED_STATES = new Set(["resolved", "expired"]);
+const SEED_DEFINITIONS = new Map(SEED_CATALOG.map(seed => [seed.id, seed]));
+const SCOPE_CLUB_PAYLOAD = "__t52OriginClub";
+const TERMINAL_REASON_PAYLOAD = "__t52TerminalReason";
+const TERMINAL_DATE_PAYLOAD = "__t52TerminalDate";
 
 function cloneState(state: GameState): GameState { return structuredClone(state); }
 
 function isLiveSeed(state: GameState, seedId: string): boolean {
-  return state.seeds.some(seed => seed.id === seedId && !["resolved", "expired"].includes(seed.state));
+  return state.seeds.some(seed => seed.id === seedId && !TERMINAL_SEED_STATES.has(seed.state));
 }
 
 function applyEffect(state: GameState, effect: Effect): void {
@@ -19,47 +27,118 @@ function applyEffect(state: GameState, effect: Effect): void {
   setPath(state, effect.path, Math.min(effect.max ?? Infinity, Math.max(effect.min ?? -Infinity, next)));
 }
 
+function bindScopeMetadata(state: GameState, seed: SeedInstance): void {
+  const policy = getSeedScopePolicy(seed.id);
+  if (policy.club === "origin_club" && typeof seed.payload[SCOPE_CLUB_PAYLOAD] !== "string") {
+    seed.payload[SCOPE_CLUB_PAYLOAD] = state.club;
+  }
+}
+
+function inferOriginClub(state: GameState, seed: SeedInstance): string | undefined {
+  const stored = seed.payload[SCOPE_CLUB_PAYLOAD];
+  if (typeof stored === "string") return stored;
+  for (let i = state.history.length - 1; i >= 0; i -= 1) {
+    const entry = state.history[i];
+    if (entry.eventId === seed.originEvent && entry.season === seed.originSeason) return entry.club;
+  }
+  return undefined;
+}
+
+function markSeedExpired(state: GameState, seed: SeedInstance, reason: string): void {
+  seed.state = "expired";
+  seed.lastTouchedDate = state.date;
+  seed.payload[TERMINAL_REASON_PAYLOAD] = reason;
+  seed.payload[TERMINAL_DATE_PAYLOAD] = state.date;
+}
+
 function applySeedTransition(state: GameState, t: SeedTransition, event: EventDefinition): void {
-  const existing = state.seeds.find(s => s.id === t.seedId && !["resolved", "expired"].includes(s.state));
+  if (t.action === "create" && !SEED_DEFINITIONS.has(t.seedId)) {
+    throw new Error(`Unknown seed ${t.seedId} in ${event.id}`);
+  }
+
+  const existing = state.seeds.find(s => s.id === t.seedId && !TERMINAL_SEED_STATES.has(s.state));
   const presenceFlag = `HAS_${t.seedId}`;
   if (t.action === "create") {
-    if (!existing) state.seeds.push({
-      id: t.seedId, state: "dormant", intensity: t.intensity ?? 50,
-      originEvent: event.id, originSeason: state.season, npcRefs: event.npcRefs ?? [],
-      payload: t.payload ?? {}, expiresAfter: t.expiresAfter, lastTouchedDate: state.date
-    });
-    else {
+    if (!existing) {
+      const created: SeedInstance = {
+        id: t.seedId, state: "dormant", intensity: t.intensity ?? 50,
+        originEvent: event.id, originSeason: state.season, npcRefs: event.npcRefs ?? [],
+        payload: { ...(t.payload ?? {}) }, expiresAfter: t.expiresAfter, lastTouchedDate: state.date
+      };
+      bindScopeMetadata(state, created);
+      state.seeds.push(created);
+    } else {
       existing.intensity = Math.max(existing.intensity, t.intensity ?? existing.intensity);
       Object.assign(existing.payload, t.payload ?? {});
       if (t.expiresAfter !== undefined) existing.expiresAfter = t.expiresAfter;
       existing.lastTouchedDate = state.date;
+      bindScopeMetadata(state, existing);
     }
     state.flags[presenceFlag] = true;
     return;
   }
+
+  // Missing/non-live targets are a safe no-op: terminal transitions are idempotent.
   if (!existing) return;
   existing.lastTouchedDate = state.date;
   if (t.expiresAfter !== undefined) existing.expiresAfter = t.expiresAfter;
   if (t.action === "activate") existing.state = "active";
   if (t.action === "intensify") existing.intensity = Math.max(0, Math.min(100, existing.intensity + (t.intensity ?? 10)));
   if (t.action === "transform") { existing.state = "transformed"; Object.assign(existing.payload, t.payload ?? {}); }
-  if (t.action === "resolve") { existing.state = "resolved"; existing.consumedBy = event.id; state.flags[presenceFlag] = false; }
-  if (t.action === "expire") { existing.state = "expired"; state.flags[presenceFlag] = false; }
+  if (t.action === "resolve") {
+    existing.state = "resolved";
+    existing.consumedBy = event.id;
+    existing.payload[TERMINAL_REASON_PAYLOAD] = "resolved";
+    existing.payload[TERMINAL_DATE_PAYLOAD] = state.date;
+    state.flags[presenceFlag] = false;
+  }
+  if (t.action === "expire") {
+    markSeedExpired(state, existing, "explicit_transition");
+    state.flags[presenceFlag] = false;
+  }
   if (!["resolve", "expire"].includes(t.action)) state.flags[presenceFlag] = true;
 }
 
-/** Apply explicit seed expirations after the world clock advances. */
+export function syncSeedPresenceFlagsInPlace(state: GameState): void {
+  const ids = new Set(state.seeds.map(seed => seed.id));
+  for (const seedId of ids) state.flags[`HAS_${seedId}`] = isLiveSeed(state, seedId);
+}
+
+/**
+ * Apply lifecycle scope after the clock or career context changes.
+ * Eligibility remains derived from event gates; it is intentionally not persisted as a second source of truth.
+ */
 export function expireDueSeedsInPlace(state: GameState): string[] {
   const expired = new Set<string>();
   for (const seed of state.seeds) {
-    if (["resolved", "expired"].includes(seed.state) || !seed.expiresAfter) continue;
-    if (seed.expiresAfter <= state.date) {
-      seed.state = "expired";
-      seed.lastTouchedDate = state.date;
+    if (TERMINAL_SEED_STATES.has(seed.state)) continue;
+
+    const definition = SEED_DEFINITIONS.get(seed.id);
+    const policy = getSeedScopePolicy(seed.id);
+    let reason: string | undefined;
+
+    if (seed.expiresAfter && seed.expiresAfter <= state.date) reason = "explicit_date";
+
+    const maxAge = definition?.ageWindow[1];
+    if (!reason && policy.expireAtAgeWindowEnd && maxAge !== null && maxAge !== undefined && state.age > maxAge) {
+      reason = "age_window";
+    }
+
+    if (!reason && policy.season === "origin_season" && seed.originSeason !== state.season) {
+      reason = "season_scope";
+    }
+
+    if (!reason && policy.club === "origin_club") {
+      const originClub = inferOriginClub(state, seed);
+      if (originClub !== undefined && originClub !== state.club) reason = "club_scope";
+    }
+
+    if (reason) {
+      markSeedExpired(state, seed, reason);
       expired.add(seed.id);
     }
   }
-  for (const seedId of expired) state.flags[`HAS_${seedId}`] = isLiveSeed(state, seedId);
+  syncSeedPresenceFlagsInPlace(state);
   return [...expired];
 }
 
@@ -75,11 +154,30 @@ function outcomeWeight(state: GameState, outcome: OutcomeDefinition): { weight: 
   return { weight: Math.max(0, weight), modifiers: reasons };
 }
 
+function findSameDayResolution(state: GameState, event: EventDefinition, choiceId: string) {
+  for (let i = state.history.length - 1; i >= 0; i -= 1) {
+    const entry = state.history[i];
+    if (entry.date !== state.date) break;
+    if (entry.eventId === event.id && entry.choiceId === choiceId) return entry;
+  }
+  return undefined;
+}
+
 function resolveChoiceCore(next: GameState, event: EventDefinition, choiceId: string, qa = false): ResolutionResult {
   const previousClub=next.club;
   const previousRetirementStatus = next.retirement?.status ?? "playing";
   const choice: ChoiceDefinition | undefined = event.choices.find(c => c.id === choiceId);
   if (!choice) throw new Error(`Unknown choice ${choiceId} for ${event.id}`);
+
+  // UI double-submit / recovery replay: the same event+choice on the same game day is one transaction.
+  const replay = findSameDayResolution(next, event, choiceId);
+  if (replay) {
+    const priorOutcome = event.outcomes.find(outcome => outcome.id === replay.outcomeId);
+    return {
+      state: next, eventId: event.id, choiceId, outcomeId: replay.outcomeId,
+      messages: priorOutcome?.messages ?? [], presentation: event.presentation
+    };
+  }
 
   for (const e of choice.immediateEffects ?? []) applyEffect(next, e);
 
@@ -106,6 +204,7 @@ function resolveChoiceCore(next: GameState, event: EventDefinition, choiceId: st
     p.ownerClub=next.flags.LOAN_ACTIVE ? String(next.world.ownerClub ?? previousClub) : next.club;
     next.world.ownerClub=p.ownerClub;
     p.route=next.flags.ABROAD_ROUTE?"abroad":next.flags.LOAN_ACTIVE?"loan":next.club==="UDV"?"home":"domestic";
+    expireDueSeedsInPlace(next);
   }
 
   next.eventCooldowns[event.id] = event.cooldown;
