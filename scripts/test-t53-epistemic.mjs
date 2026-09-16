@@ -59,3 +59,11 @@ test('T5.3 explicit discoveries create NPC knowledge only on the revealing outco
     );
   }
 });
+
+test('T5.3 una memoria de transferencia conserva el club donde se aprendió el hecho', () => {
+  const state = stateForOutcome('EVT_19_JAN_001', 'FORCE_EXIT', 'FORCE_EXIT__SECONDARY');
+  assert.equal(state.club, 'NEW_CLUB');
+  const record = getNpcKnowledgeRecord(state, 'NPC_DIR_02', 'EVT_19_JAN_001');
+  assert.ok(record);
+  assert.equal(record.club, 'UDV');
+});
