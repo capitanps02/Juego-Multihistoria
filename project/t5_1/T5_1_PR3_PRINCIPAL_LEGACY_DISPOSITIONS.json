@@ -1,0 +1,77 @@
+{
+  "generated": "2026-09-16",
+  "scope": "Six runtime-only principal IDs owned by PR #3 / Batch 01 ages 20-23",
+  "reviewed": 6,
+  "sameSceneMigrationsApproved": 0,
+  "defaultDisposition": "retire_technical_keep_history_only",
+  "rows": [
+    {
+      "legacyId": "EVT_20_MATCH_001",
+      "title": "Tres partidos que pesan más",
+      "decision": "retire_technical_keep_history_only",
+      "sameSceneMigrationAllowed": false,
+      "historyEventIdRewriteAllowed": false,
+      "pendingEventIdDirectRewriteAllowed": false,
+      "obligations": ["preserve legacy history/pending via content compatibility", "revalidate phase narrative density"],
+      "reason": "Generic runtime sport scene has no canonical ID/title counterpart; it is not canonical EVT_20_MATCH_003 ('El minuto 65'), whose match-state dilemma and tactical choices are specific."
+    },
+    {
+      "legacyId": "EVT_21_AGT_002",
+      "title": "Una llamada que no escuchaste",
+      "decision": "retire_technical_keep_history_only",
+      "sameSceneMigrationAllowed": false,
+      "historyEventIdRewriteAllowed": false,
+      "pendingEventIdDirectRewriteAllowed": false,
+      "obligations": ["remove technical origin from future SEED_AGENT_POWER catalog metadata only after canonical origin review", "preserve historical seed originEvent unless separately proven/migrated"],
+      "reason": "Technical agent-omission callback is not canonical EVT_21_PRS_002 (Clara contract-information call) or another missing principal scene. SEED_AGENT_POWER already has EVT_20_AGT_001 as another catalog origin."
+    },
+    {
+      "legacyId": "EVT_21_ABR_001",
+      "title": "Navidad lejos",
+      "decision": "retire_technical_keep_history_only",
+      "sameSceneMigrationAllowed": false,
+      "historyEventIdRewriteAllowed": false,
+      "pendingEventIdDirectRewriteAllowed": false,
+      "obligations": ["remove technical origin from future SEED_FOREIGN_ADAPT metadata after review", "preserve historical seed originEvent"],
+      "reason": "Generic principal social callback is not a missing canonical principal scene. SEED_FOREIGN_ADAPT already has EVT_20_ABR_001 as another catalog origin. Similar late/conditional holiday themes do not authorize principal-ID migration."
+    },
+    {
+      "legacyId": "EVT_21_CCH_001",
+      "title": "Un banquillo después de una promesa",
+      "decision": "retire_technical_keep_history_only",
+      "sameSceneMigrationAllowed": false,
+      "historyEventIdRewriteAllowed": false,
+      "pendingEventIdDirectRewriteAllowed": false,
+      "obligations": ["preserve legacy history/pending", "revalidate tactical scene density"],
+      "reason": "Generic tactical callback has no canonical missing-scene identity match; related coach/promise themes elsewhere are distinct scenes and memories."
+    },
+    {
+      "legacyId": "EVT_22_LIFE_001",
+      "title": "Tu entorno ya es una decisión",
+      "decision": "retire_technical_keep_history_only",
+      "sameSceneMigrationAllowed": false,
+      "historyEventIdRewriteAllowed": false,
+      "pendingEventIdDirectRewriteAllowed": false,
+      "obligations": ["preserve legacy history/pending", "revalidate late-22 narrative density/pacing"],
+      "reason": "Generic life callback has no canonical principal counterpart and no proven causal responsibility outside catalog density."
+    },
+    {
+      "legacyId": "EVT_22_END_001",
+      "title": "Cumples 23",
+      "decision": "retire_technical_keep_history_only",
+      "sameSceneMigrationAllowed": false,
+      "historyEventIdRewriteAllowed": false,
+      "pendingEventIdDirectRewriteAllowed": false,
+      "obligations": ["remove hardcoded scheduler budgetExempt reference after replacement", "ensure canonical EVT_23_BRIDGE_001 receives appropriate start-of-phase narrative priority", "test 22-to-23 phase transition and bridge reachability", "preserve legacy history/pending"],
+      "reason": "World phase transition is age-driven through phaseForAge(age), so EVT_22_END_001 is not a functional phase gate. Canonical EVT_23_BRIDGE_001 ('Ya no eres proyecto') is a distinct age-23 scene with different information/choices. Only narrative-priority responsibility needs transfer."
+    }
+  ],
+  "supportingFacts": {
+    "phaseTransitionMechanism": "src/simulation/world-simulator.ts phaseForAge(next.age)",
+    "schedulerLegacyReference": "EVT_22_END_001 is currently in scheduler budgetExempt list",
+    "canonicalAge23Bridge": "EVT_23_BRIDGE_001 — Ya no eres proyecto",
+    "agentPowerCatalogOriginsBaseline": ["EVT_20_AGT_001", "EVT_21_AGT_002"],
+    "foreignAdaptCatalogOriginsBaseline": ["EVT_20_ABR_001", "EVT_21_ABR_001"]
+  },
+  "status": "review_complete"
+}
