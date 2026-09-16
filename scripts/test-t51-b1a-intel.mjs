@@ -1,3 +1,4 @@
+import fs from 'node:fs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { EVENTS } from '../dist/content/events/index.js';
@@ -7,7 +8,8 @@ import { contentIdentity } from '../dist/session/content-identity.js';
 import {
   CONTENT_MIGRATION_ROUTES,
   T51_B1A_CONTENT_IDENTITY,
-  findMigrationRoute
+  findMigrationRoute,
+  legacyContentSource
 } from '../dist/session/content-migration.js';
 import { PRE_T51_CONTENT_IDENTITY } from '../dist/session/pre-t51-legacy-registry.js';
 
@@ -16,6 +18,8 @@ const EXPECTED = {
   EVT_18_TEAM_001: { visible: ['Si Bruno sale, puede liberarse tu puesto.'], uncertain: ['No sabes si el ojeador viene realmente por él ni si Bruno cumpliría luego algún favor.'] },
   EVT_18_MATCH_002: { visible: ['Sabes tu confianza y quién está en el campo.'], uncertain: ['No sabes si el cuerpo técnico te considera siguiente lanzador.'] }
 };
+
+const B1A_FIXTURE = JSON.parse(fs.readFileSync(`qa/fixtures/t5.1/post-t51-sources/${T51_B1A_CONTENT_IDENTITY}.json`, 'utf8'));
 
 const byId = (events, id) => {
   const event = events.find(candidate => candidate.id === id);
@@ -48,8 +52,15 @@ test('T5.1 B1a leaves all other base 18-20 events untouched', () => {
   }
 });
 
-test('T5.1 B1a migration is exact-identity and same-scene only', async () => {
-  assert.equal(await contentIdentity(EVENTS), T51_B1A_CONTENT_IDENTITY);
+test('T5.1 B1a historical source keeps its exact identity and PRE -> B1a same-scene route', async () => {
+  assert.equal(B1A_FIXTURE.contentIdentity, T51_B1A_CONTENT_IDENTITY);
+  assert.equal(await contentIdentity(B1A_FIXTURE.events), T51_B1A_CONTENT_IDENTITY, 'frozen B1a fixture drifted');
+
+  const source = legacyContentSource(T51_B1A_CONTENT_IDENTITY);
+  assert.ok(source, 'B1a must remain registered as historical source after later content batches');
+  assert.equal(source.contentIdentity, T51_B1A_CONTENT_IDENTITY);
+  assert.equal(Object.keys(source.events).length, B1A_FIXTURE.events.length);
+
   const route = findMigrationRoute(PRE_T51_CONTENT_IDENTITY, T51_B1A_CONTENT_IDENTITY, CONTENT_MIGRATION_ROUTES);
   assert.ok(route, 'missing PRE_T51 -> B1a route');
   assert.deepEqual(route.seedOriginMappings ?? [], [], 'intel-only repair must not rewrite historical seed origins');
