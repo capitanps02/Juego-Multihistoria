@@ -1,0 +1,88 @@
+{
+  "task": "T5.1 Batch 02D principal legacy dispositions",
+  "generatedAt": "2026-09-16",
+  "phase": "26_30",
+  "canonicalAge": 28,
+  "reviewedLegacyCount": 7,
+  "approvedSameSceneMigrations": 0,
+  "defaultDisposition": "retire_technical_keep_history_only",
+  "rules": {
+    "historyIdRewriteAllowed": false,
+    "pendingIdDirectRewriteAllowed": false,
+    "canonicalSeenSynthesisAllowed": false,
+    "legacyCompatibilityDefinitionMaySchedule": false,
+    "futureSeedCatalogOriginMayMoveAfterCanonicalImplementation": true,
+    "historicalSeedOriginRewriteAutomatic": false
+  },
+  "entries": [
+    {
+      "legacyId": "EVT_28_PRS_001",
+      "title": "La presión pública para salir",
+      "decision": "retire_technical_keep_history_only",
+      "sameSceneMigrationAllowed": false,
+      "causalOwner": "EVT_27_AGT_001",
+      "seed": "SEED_PUBLIC_EXIT_PRESSURE",
+      "reason": "Displaced generic age-28 writer; canonical age-27 agent/public-pressure scene owns this memory."
+    },
+    {
+      "legacyId": "EVT_28_MONEY_001",
+      "title": "Tu dinero ya es una empresa",
+      "decision": "retire_technical_keep_history_only",
+      "sameSceneMigrationAllowed": false,
+      "causalOwner": "EVT_27_MONEY_001",
+      "seed": "SEED_WEALTH_STRUCTURE",
+      "reason": "Displaced generic writer of a memory canonically created by the specific age-27 wealth-structure scene."
+    },
+    {
+      "legacyId": "EVT_28_IMG_001",
+      "title": "Tu marca ya no quiere llevar el escudo",
+      "decision": "retire_technical_keep_history_only",
+      "sameSceneMigrationAllowed": false,
+      "causalOwner": "EVT_27_IMG_001",
+      "seed": "SEED_PERSONAL_BRAND_INDEPENDENCE",
+      "reason": "Displaced generic writer; canonical age-27 independent-brand conflict owns the seed."
+    },
+    {
+      "legacyId": "EVT_28_TACT_001",
+      "title": "Tu nueva posición",
+      "decision": "retire_technical_keep_history_only",
+      "sameSceneMigrationAllowed": false,
+      "causalOwner": "EVT_27_TACT_001",
+      "seed": "SEED_POSITIONAL_REINVENTION",
+      "reason": "Displaced writer. Canonical EVT_28_STAR_001 consumes positional reinvention but is a successor-competition scene, not this technical row."
+    },
+    {
+      "legacyId": "EVT_28_FINAL_001",
+      "title": "Una final no garantiza protagonismo",
+      "decision": "retire_technical_keep_history_only",
+      "sameSceneMigrationAllowed": false,
+      "causalOwner": "EVT_26_FINAL_001",
+      "seed": "SEED_FINAL_BENCH",
+      "reason": "Obsolete late writer in the canonical age-26 big-game/final chain restored by PR #7."
+    },
+    {
+      "legacyId": "EVT_28_BODY_001",
+      "title": "La recuperación tarda un día más",
+      "decision": "retire_technical_keep_history_only",
+      "sameSceneMigrationAllowed": false,
+      "nearestCanonical": "EVT_28_MED_001",
+      "reason": "Only broad body/load overlap. Canon is a specific club-vs-selection load-allocation decision with different trigger, choices and memory."
+    },
+    {
+      "legacyId": "EVT_28_JAN_001",
+      "title": "El invierno del segundo gran proyecto",
+      "decision": "retire_technical_keep_history_only",
+      "sameSceneMigrationAllowed": false,
+      "nearestCanonical": null,
+      "reason": "Generic January market callback has no canonical identity counterpart in the remaining age-28 target set."
+    }
+  ],
+  "canonical02DTargets": [
+    "EVT_28_MEDIA_001",
+    "EVT_28_FORM_001",
+    "EVT_28_STAR_001",
+    "EVT_28_MED_001",
+    "EVT_28_CLUB_001"
+  ],
+  "status": "review_complete_planning_only"
+}
