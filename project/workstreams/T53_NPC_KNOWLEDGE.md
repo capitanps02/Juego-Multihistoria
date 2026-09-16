@@ -190,6 +190,43 @@ Corrección:
 - una transmisión legítima Nano → Rivas continúa funcionando y no consume RNG;
 - un rumor/claim no verificado no se modela como `knowledge`; si se añade en el futuro deberá ser un estado separado que no satisfaga gates `know.*`.
 
+### D12 — callbacks que nombran un NPC pero no declaran `npcRefs`
+
+La tercera pasada de auditoría busca menciones textuales inequívocas de NPC persistentes dentro de callbacks y las compara con `npcRefs`. Es una advertencia de trazabilidad, no un gate: T5.3 no puede adjuntar de forma segura un requisito epistemológico si el propio contenido no declara qué NPC participa.
+
+Se detectan 15 callbacks:
+
+- `CEVT_18_EARLY_01` → Ferrer;
+- `CEVT_18_CCH_01` → Ferrer;
+- `CEVT_20_BRUNO_01` → Bruno;
+- `CEVT_23_RIVAS_02` → Rivas;
+- `CEVT_23_MENA_02` → Mena;
+- `CEVT_23_VELA_02` → Vela;
+- `CEVT_23_BRUNO_03` → Bruno;
+- `CEVT_23_NANO_02` → Nano;
+- `CEVT_23_MED_02` → Paula;
+- `CEVT_26_RIVAS_01` → Rivas;
+- `CEVT_27_NANO_01` → Nano;
+- `CEVT_27_RECORD_01` → Adrián;
+- `CEVT_29_RECORD_02` → Adrián;
+- `CEVT_30_RIVAL_01` → Adrián;
+- `CEVT_31_RIVAS_01` → Rivas.
+
+Catorce están marcados `technical_adaptation`; `CEVT_29_RECORD_02` está `verified`. T5.3 **no modifica esas filas**: añadir `npcRefs` desde este workstream invadiría los bloques canónicos T5.1 y puede alterar `contentIdentity`. El auditor las deja visibles en `textualNpcMentionsMissingRefs` para reconciliación por sus propietarios.
+
+### D13 — reaprender un hecho podía degradar un recuerdo ya fuerte
+
+`rememberNpcFactInPlace` sustituía el registro completo. Por tanto un hecho aprendido con memoria `strong` y certeza alta podía recibir más tarde una versión `practical` de baja certeza y quedar artificialmente debilitado o incluso caducar.
+
+Corrección:
+
+- mientras `npcKnows(...)` siga siendo verdadero para el `factId`, reaprenderlo es **refuerzo**, no sustitución;
+- la certeza solo puede mantenerse o aumentar;
+- la clase de memoria solo puede mantenerse o subir (`practical < temporary < strong`);
+- una caducidad no puede acortarse y una memoria `strong` no recupera caducidad;
+- se conserva la procedencia del primer aprendizaje vigente (`learnedAt`, `source`, `club`);
+- si el recuerdo ya caducó, un aprendizaje posterior sí crea un registro fresco con nueva fecha, fuente y contexto.
+
 ## 8. Trazabilidad y cobertura real
 
 `scripts/audit-t53.mjs` deriva la trazabilidad desde los catálogos compilados, no desde esta tabla manual:
@@ -202,7 +239,8 @@ Corrección:
 - requisitos de conocimiento inválidos: 0;
 - gaps epistemológicos de outcomes tras revisión: 0;
 - gaps epistemológicos de callbacks con NPC identificable: 0;
-- excepciones semánticas revisadas: 1, con control contra excepciones obsoletas.
+- excepciones semánticas revisadas: 1, con control contra excepciones obsoletas;
+- callbacks con mención textual de NPC pero sin `npcRefs`: 15, reportados como deuda no bloqueante de reconciliación canónica.
 
 Inconsistencia canónica/contenido preservada como hallazgo, no reparada inventando escenas:
 
@@ -231,8 +269,10 @@ La suite dirigida cubre el contrato pedido y regresiones adicionales:
 14. un retry del mismo `commandId` no reaprende, no reescribe `learnedAt` y no altera RNG/estado;
 15. la API de escritura directa tampoco admite una fuente NPC ignorante;
 16. una fuente cuyo conocimiento ha caducado no puede seguir propagándolo;
-17. diez descubrimientos/memorias explícitos de contenido crean memoria únicamente en el outcome revelador, nunca en el alternativo;
-18. una escena que cambia de club conserva en la memoria del NPC el club donde el hecho fue aprendido.
+17. un hecho vigente reaprendido solo puede reforzar certeza/durabilidad, nunca degradarlas;
+18. un hecho ya caducado sí puede reaprenderse con un contexto nuevo;
+19. diez descubrimientos/memorias explícitos de contenido crean memoria únicamente en el outcome revelador, nunca en el alternativo;
+20. una escena que cambia de club conserva en la memoria del NPC el club donde el hecho fue aprendido.
 
 `npm test` ejecuta conjuntamente los gates T5.2 ya integrados en `main` y la auditoría y suites T5.3. El workflow `Repository integrity` ejecuta además el QA T5: determinismo/RNG, límites de edad, referencias, carreras largas, lifecycle y simulación estratificada.
 
@@ -245,6 +285,8 @@ T5.3 queda **técnicamente preparado para revisión/integración**, con estas pr
 - `NPCState.access` permanece metadata legado y no se usa como probabilidad implícita de conocimiento;
 - el contenido sin vía explícita no concede conocimiento;
 - un `sourceNpcId` solo puede transmitir un `factId` que conozca y que siga vigente;
+- el reaprendizaje de un hecho vigente es monótono: nunca reduce certeza ni durabilidad;
+- los 15 callbacks con NPC nombrado pero sin `npcRefs` quedan explícitamente derivados para reconciliación canónica, sin tocar contenido desde T5.3;
 - no se ha añadido contenido canónico para Mamadou ni Mara;
 - la cobertura futura puede declarar nuevas vías de conocimiento cuando el canon demuestre testigo, comunicación o publicación;
 - la rama integra explícitamente el lifecycle T5.2 sin alterar su semántica;
