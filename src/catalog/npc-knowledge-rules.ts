@@ -205,6 +205,16 @@ export const NPC_EVENT_KNOWLEDGE_RULES: NpcEventKnowledgeRule[] = [
     certainty: 100,
     memory: "strong",
     relationshipMemory: true
+  },
+  {
+    eventId: "EVT_23_LOCK_001",
+    choiceIds: ["D"],
+    npcIds: [],
+    targetSlots: ["captain"],
+    source: "informed",
+    certainty: 100,
+    memory: "strong",
+    relationshipMemory: true
   }
 ];
 
