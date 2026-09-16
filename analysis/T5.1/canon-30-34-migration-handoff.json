@@ -2,12 +2,12 @@
   "schemaVersion": 1,
   "workstream": "T5.1 canon 30-34 migration handoff",
   "generatedAt": "2026-09-16",
-  "sourceMainSha": "30ae3f27ddcb846f59f049e3a4536276f3e9a97e",
+  "sourceMainSha": "e48a6c85d0a9e61d88eca121f683dcd308c188c1",
   "sourceContentIdentity": "5d3fd71a8df42ed5b93fdde63ed386e9d776693addd62a30293dbecad7aa56d2",
   "observedTargetContentIdentity": "380d28e0e09995330dbbf72ba958a9822855f0b66a3bdc63a202b30a34bb3989",
   "targetIdentityEvidence": {
-    "workflowRun": 35128992272,
-    "source": "T5.1 30-34 final evidence / runtime contentIdentity(EVENTS) on current main tip",
+    "workflowRun": 35143998574,
+    "source": "T5.1 30-34 renewal integration run; runtime contentIdentity(EVENTS) after syncing main@e48a6c85d0a9e61d88eca121f683dcd308c188c1",
     "rule": "Target is calculated from the active branch after syncing current main; historical copied target identities are invalid."
   },
   "consumer": {
@@ -16,7 +16,7 @@
     "routeRegistry": "CONTENT_MIGRATION_ROUTES",
     "workstreamMayRegisterRoute": false,
     "targetFreezeRequiredBeforeRouteRegistration": true,
-    "targetFreezeFixture": "qa/fixtures/t5.1/post-t51-sources/b7483243816fd4e2e8cf1774a4ece699f47b6a03637de50c31347109512f4446.json"
+    "targetFreezeFixture": "qa/fixtures/t5.1/post-t51-sources/380d28e0e09995330dbbf72ba958a9822855f0b66a3bdc63a202b30a34bb3989.json"
   },
   "authorities": [
     "analysis/T5.1/canon-30-34.json",

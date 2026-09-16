@@ -518,7 +518,7 @@
     {
       "id": "DEP_T51_EVENT_ID_MIGRATION",
       "kind": "save_continuity",
-      "description": "Shared multigeneration migration lineage is available through T5.10 (fee2ff87…). Integration must freeze active 30-34 target b7483243… as post-T5.1 source evidence, then register/certify the unique latest-upstream -> target edge with the 27 exact-ID distinct_scene mappings. Shifted IDs remain deferred."
+      "description": "Latest frozen upstream lineage node is 5d3fd71a8df42ed5b93fdde63ed386e9d776693addd62a30293dbecad7aa56d2. Integration must freeze the active 30-34 target 380d28e0e09995330dbbf72ba958a9822855f0b66a3bdc63a202b30a34bb3989 as post-T5.1 source evidence, then register/certify the unique latest-upstream -> target edge for the 27 stable exact-ID semantic changes. Shifted IDs remain deferred."
     },
     {
       "id": "DEP_T51_BRIDGE_PRIORITY",
@@ -561,20 +561,22 @@
     "contentMigrationArchitecture": "available_in_main",
     "contentMigrationRoute": "handoff_latest_upstream_to_target_freeze_and_registration_pending",
     "frozenSaveCompatibility": "passing_before_route_gate",
-    "targetedT51Run": 35128992272,
-    "targetedT51Result": "30_34_plus_b1a_focused_pass",
+    "targetedT51Run": 35143998574,
+    "targetedT51Result": "32_of_32_veteran_focused_pass",
     "temporaryValidationWorkflowRemoved": true,
     "mergeReady": false,
-    "contentMigrationLineage": "PRE_T51_to_B1A_to_T510_available_in_main",
+    "contentMigrationLineage": "PRE_T51_to_latest_frozen_5d3fd71a8df4_available_in_main",
     "targetContentIdentity": "380d28e0e09995330dbbf72ba958a9822855f0b66a3bdc63a202b30a34bb3989",
     "sharedB1aTest": "resolved_in_main_lineage_aware",
     "offerSessionBridge": "available_in_main",
-    "contentMigrationTargetFreeze": "pending_post_t51_source_fixture",
+    "contentMigrationTargetFreeze": "pending:380d28e0e09995330dbbf72ba958a9822855f0b66a3bdc63a202b30a34bb3989.json",
     "offerSessionBridgeValidation": "pass",
     "contentMigrationChecker": "expected_missing_target_freeze_before_route_registration",
     "contentMigrationSourceIdentity": "5d3fd71a8df42ed5b93fdde63ed386e9d776693addd62a30293dbecad7aa56d2",
     "sharedT510Test": "known_downstream_lineage_stale_2_tests",
-    "renewalIntentFact": "available_in_main_and_consumed"
+    "renewalIntentFact": "available_in_main_and_consumed",
+    "officialIntegrityRun": 35144089866,
+    "officialIntegrityResult": "blocked_only_at_missing_target_freeze_sentinel_after_build_saves_t52_t53_pass"
   },
   "implementationProgress": {
     "stableIdReimplemented": [
