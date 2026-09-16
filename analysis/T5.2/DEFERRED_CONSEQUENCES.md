@@ -1,114 +1,129 @@
 # T5.2 — Consecuencias diferidas
 
 Fecha: 2026-09-16  
-Rama base: `t5/deferred-consequences`; follow-up OR: `t5/deferred-or-gates`
+Cadena de trabajo: `t5/deferred-consequences` → `t5/deferred-or-gates` → `t5/deferred-runtime-effects`
 
 ## Objetivo
 
-Añadir una comprobación estructural entre productor y consumidor de una seed sin inventar semántica canónica. El audit responde a una pregunta concreta:
+Comprobar estructuralmente que una seed producida por el runtime puede ejercer sus consecuencias antes de caducar, sin inventar semántica canónica.
 
-> Si una seed se crea en el runtime y otra escena intenta leerla, resolverla o expirarla, ¿existe al menos una cronología por edad en la que esa consecuencia pueda ocurrir antes de que la seed caduque automáticamente?
+El audit responde a esta pregunta:
 
-Esto complementa `seed-lifecycle.json`: el lifecycle indica que existen productores/consumidores; este gate comprueba que no estén ordenados de forma temporalmente imposible.
+> Si una seed se crea y después afecta una escena, una opción o la propia simulación de carrera, ¿existe al menos una cronología por edad en la que esa consecuencia pueda ocurrir mientras la seed sigue viva?
 
-## Composición actual
-
-El gate fue integrado inicialmente por PR #40. El follow-up parte de `main@291e34bfd8bb7c529182a2664564c63ff33eee19`, que además incorpora el contrato transversal T5.1 `gateAlternatives` para reachability OR a nivel de evento.
-
-La base integrada contiene:
-
-- lifecycle corregido de T5.2;
-- conocimiento NPC causal de T5.3;
-- migración explícita de Session/contentIdentity;
-- contrato compartido de elegibilidad por opción;
-- contrato compartido de gates OR (`gateAlternatives`).
-
-El gate diferido no modifica esos contratos: inspecciona catálogo/eventos compilados y se compone con sus suites en `npm test`.
-
-Además, T5.2 añade una regresión específica de `seedOriginMappings` para fijar que `rewriteExisting:false` preserve las instancias históricas y que `rewriteExisting:true` solo pueda cambiar `originEvent` en coincidencias exactas de `seedId + fromEventId`, sin alterar estado, payload, fechas, `consumedBy`, flags, history, cooldowns ni RNG.
+Esto complementa `seed-lifecycle.json`: el lifecycle inventaría productores/consumidores de forma amplia; este gate demuestra factibilidad temporal necesaria.
 
 ## Qué cuenta como consumidor runtime
 
-El audit usa únicamente evidencia que afecta comportamiento:
+### Narrativa
 
-- condiciones `flags.HAS_SEED_*` en `event.gates` y `event.exclusions`;
-- condiciones `flags.HAS_SEED_*` en cualquiera de las rutas OR de `event.gateAlternatives`;
-- condiciones `flags.HAS_SEED_*` en outcomes/modifiers;
-- condiciones `flags.HAS_SEED_*` en `choice.eligibility`;
-- transiciones `resolve`;
-- transiciones `expire`.
+- `flags.HAS_SEED_*` en `event.gates` y `event.exclusions`;
+- `flags.HAS_SEED_*` en rutas OR de `event.gateAlternatives`;
+- `flags.HAS_SEED_*` en outcomes/modifiers;
+- `flags.HAS_SEED_*` en `choice.eligibility`;
+- transiciones `resolve` y `expire`.
 
-La elegibilidad por opción es una vía de consumo real aunque la escena pueda agendarse sin la seed: si una seed decide si una opción está disponible para el jugador, esa seed está afectando comportamiento runtime y debe entrar en la cadena diferida.
+Un `seedsRead` declarado sin una de esas vías sigue siendo metadata y no demuestra una consecuencia runtime.
 
-Las rutas OR también son consumo real. `event.gates` conserva AND común; cada grupo de `gateAlternatives` es AND interno y los grupos se combinan mediante OR. Si una de esas rutas usa `HAS_SEED_*`, la seed participa causalmente en la reachability aunque exista otra ruta alternativa que no la use.
+### Simulación
 
-Un `seedsRead` declarado sin ninguna de esas vías se reporta como metadata, pero **no** se usa para afirmar que la seed tiene una consecuencia runtime.
+T5.4 detectó que varias seeds afectan directamente el estado simulado sin pasar por una escena consumidora. Ejemplos actuales:
+
+- `SEED_TACTICAL_SACRIFICE` / `SEED_YOUNG_MENTOR` modifican `roleAdaptability` al adaptar el estado de 26 años;
+- `SEED_PEAK_LOAD` y `SEED_SELF_OPTIMIZATION` modifican selectividad, recuperación y físico al entrar en 30;
+- `SEED_YOUNG_SUCCESSOR` modifica presión sucesoria semanal desde el tramo peak;
+- `SEED_POSITIONAL_REINVENTION` modifica adaptación semanal y pretemporadas maduras;
+- `SEED_CHRONIC_BODY` afecta riesgo de lesión madura y clasificaciones 26/30/34;
+- precedentes como `PROJECT_FACE`, `SURGERY_TIMING`, `FIRST_PEAK_DIP`, `WEALTHY_PEAK_EXIT` o `EARLY_HOME_RETURN` afectan tags/estado de carrera en hitos posteriores.
+
+Estas lecturas son consecuencias causales reales y ahora entran en el mismo grafo productor→consumidor.
+
+## Registry de consumidores de simulación
+
+`scripts/t52-simulation-seed-consumers.mjs` declara cada par `archivo + seed` que aparece como `HAS_SEED_*` en `src/simulation`, junto a:
+
+- ventana de edad real de la superficie;
+- nombre de la superficie;
+- justificación de esa ventana.
+
+Estado del árbol al crear el follow-up:
+
+- **22** pares archivo+seed;
+- **15** seeds únicas;
+- hitos de 26, 30 y 34 registrados como `[26,26]`, `[30,30]`, `[34,34]`;
+- `runMaturityPreseason` registrado como `[31,33]`, que son las edades en las que `world-simulator` lo invoca realmente;
+- efectos semanales conservan sus guards explícitos, por ejemplo edad 19, `>=26` o `>=30`.
+
+El audit escanea todos los `.ts` bajo `src/simulation`. El gate falla si aparece:
+
+1. un uso `HAS_SEED_*` no registrado;
+2. un registro que ya no corresponde a ningún uso real;
+3. un par archivo+seed duplicado;
+4. una ventana inválida.
+
+Por tanto, añadir una nueva consecuencia de seed a la simulación exige declarar explícitamente cuándo puede ocurrir.
 
 ## Regla temporal
 
-Para cada pareja productor→consumidor:
+Para cada pareja productor→consumidor, narrativo o de simulación:
 
 1. el productor debe poder ejecutarse antes o en la edad máxima de la seed;
 2. el consumidor debe poder ejecutarse antes o en esa edad máxima;
 3. debe existir al menos una edad de consumidor igual o posterior a una edad posible del productor.
 
-Si una seed tiene productores y consumidores runtime pero **ninguna** pareja cumple esas condiciones, `hardPass=false`.
+Si una seed tiene productor y consumidor runtime pero **ninguna** pareja cumple las condiciones, `hardPass=false`.
 
-### Ejemplos
+Ejemplos:
 
-- productor 18–20, consumidor 23–26, seed 18–26 → consecuencia diferida posible;
-- productor 18–20, consumidor 21–23, seed 18–20 → imposible: la seed caduca antes;
-- productor 23–26, consumidor 18–20, seed abierta → imposible: el consumidor solo existe antes del productor;
-- seed creada 18–20, opción dependiente de esa seed 23–26, seed 18–26 → opción diferida posible;
-- seed 18–20, opción dependiente solo disponible 21–23 → cadena imposible porque la seed ya ha caducado;
-- seed creada 18–20 usada como una ruta de `gateAlternatives` a los 23–26, seed 18–26 → ruta OR diferida posible;
-- seed 18–20 usada únicamente en una ruta OR 21–23 → ese edge es temporalmente imposible aunque otra ruta no dependa de la seed.
+- productor 18–20, consumidor narrativo 23–26, seed 18–26 → posible;
+- productor 18–20, opción dependiente 21–23, seed 18–20 → imposible;
+- productor 26, efecto de simulación a 30, seed abierta → consecuencia diferida posible;
+- productor 29, efecto de simulación a 30, seed 29+ → consecuencia diferida posible;
+- productor 18–20, efecto de simulación únicamente a 21–23, seed 18–20 → imposible.
 
-## Lo que NO infiere este audit
+## Qué NO infiere
 
-No intenta demostrar:
+No demuestra:
 
-- continuidad de club para seeds `origin_club`;
+- continuidad de club para `origin_club`;
 - continuidad de temporada para `origin_season`;
-- viabilidad de una fecha ISO concreta de `expiresAfter`;
+- fecha ISO exacta de `expiresAfter`;
 - probabilidad de outcomes;
-- que una ruta OR basada en seed sea la única ruta por la que la escena puede aparecer;
-- que dos escenas sean canónicamente equivalentes;
-- que una escena legacy pueda recibir wiring nuevo;
+- que una ruta OR sea la única ruta posible;
+- equivalencia canónica de escenas;
+- autorización para cablear una escena legacy;
 - conocimiento NPC.
 
-Esos casos quedan como `proofObligations`, no como errores automáticos.
+Esas fronteras siguen siendo obligaciones separadas.
 
 ## Salida
 
-`node scripts/audit-t52-deferred.mjs` genera:
-
-`analysis/T5.2/deferred-consequences.json`
-
-Incluye por seed:
+`node scripts/audit-t52-deferred.mjs` genera `analysis/T5.2/deferred-consequences.json` con:
 
 - productores runtime;
-- consumidores runtime, incluidos gates AND, rutas OR y elegibilidad de opciones;
-- readers solo declarativos;
-- parejas temporalmente factibles;
-- parejas estrictamente diferidas;
+- consumidores narrativos;
+- consumidores directos de simulación;
+- readers metadata-only;
+- parejas temporalmente factibles y estrictamente diferidas;
 - edges inalcanzables;
-- obligaciones de prueba por club/temporada/fecha;
+- obligaciones de club/temporada/fecha;
+- estado del registry de simulación;
 - cadenas completamente imposibles.
+
+Las métricas distinguen `runtimeEventConsumerSeeds` de `runtimeSimulationConsumerSeeds` y también ofrecen el conjunto combinado `runtimeConsumerSeeds`.
 
 ## Criterio duro
 
-El gate falla solo si:
+El gate falla si:
 
-1. aparece una referencia a una seed desconocida; o
-2. una seed tiene productor y consumidor runtime, pero no existe ninguna pareja temporalmente posible.
+1. aparece una referencia a una seed desconocida;
+2. una seed con productor y consumidor runtime no tiene ninguna pareja temporalmente posible; o
+3. el registry de consumidores de simulación deja de coincidir exactamente con `src/simulation`.
 
-Los edges individuales inalcanzables se reportan para auditoría, aunque otra ruta de la misma seed sí sea viable. Del mismo modo, que un evento tenga una ruta OR alternativa no elimina el hecho de que `HAS_SEED_*` sea un consumer causal en la ruta que lo usa.
+Los edges individuales inalcanzables se reportan aunque otra pareja de la misma seed sí sea viable.
 
-## Relación con canon y migración
+## Canon, migración y NPC
 
-Este gate **no autoriza wiring**. La regla sigue siendo `canon first, wiring second`.
+Este gate **no autoriza wiring**. Sigue vigente `canon first, wiring second`.
 
-Con la migración compartida ya integrada, los bloques canónicos pueden empezar a introducir wiring real por lotes. El audit debe ejecutarse después de cada lote: si una escena crea una seed cuya única consecuencia —incluida una opción condicionada o una ruta OR— cae fuera de su ventana temporal, el error se detecta antes de integrar esa cadena.
-
-`SeedInstance.originEvent`, history, pending legacy, `contentIdentity`, RNG y conocimiento NPC no son modificados por el audit.
+`SeedInstance.originEvent`, history, pending legacy, `contentIdentity`, RNG y conocimiento NPC no son modificados. La presencia de una seed o una consecuencia de simulación tampoco implica que un NPC conozca el hecho: T5.3 conserva esa frontera epistemológica.
