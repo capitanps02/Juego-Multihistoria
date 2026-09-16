@@ -7,6 +7,7 @@ const audit = JSON.parse(fs.readFileSync('analysis/T5.1/canon-30-34.json', 'utf8
 const freeze = JSON.parse(fs.readFileSync('qa/fixtures/t5.1/pre-t51-content-manifest.json', 'utf8'));
 const indexSource = fs.readFileSync('src/content/events/30_34/index.ts', 'utf8');
 const eventGateSource = fs.readFileSync('src/narrative/event-gates.ts', 'utf8');
+const renewalFactSource = fs.readFileSync('src/simulation/club-contract-intent.ts', 'utf8');
 
 const byStatus = status => readiness.events.filter(event => event.status === status);
 const ids = rows => rows.map(row => row.canonicalId).sort();
@@ -35,7 +36,7 @@ test('T5.1 30-34 readiness: los 27 estables coinciden con la implementación aud
   assert.deepEqual(stable, [...audit.implementationProgress.stableIdReimplemented].sort());
   for (const event of byStatus('stable_semantics_implemented_shared_parity_gap')) {
     assert.equal(event.engineId, event.canonicalId, `${event.canonicalId}: un estable no puede apuntar a otro ID`);
-    assert.ok(event.dependencies.includes('PARITY') || event.dependencies.includes('RENEWAL_INTENT_FACT'));
+    assert.ok(event.dependencies.includes('PARITY'));
   }
 });
 
@@ -60,23 +61,24 @@ test('T5.1 30-34 readiness: los cinco missing coinciden exactamente con el audit
   assert.equal(missing.every(event => event.dependencies.includes('COORDINATED_ADDITION')), true);
 });
 
-test('T5.1 30-34 readiness reconoce que OR gates ya existe y aísla el hecho causal que aún falta', () => {
+test('T5.1 30-34 readiness consume OR gates y el hecho causal de renovación ya disponibles', () => {
   assert.match(eventGateSource, /gateAlternatives/);
   assert.match(eventGateSource, /alternatives\.some/);
-  assert.match(readiness.architectureEvidence.orGates, /no longer the architectural blocker/);
+  assert.match(renewalFactSource, /clubWantsRenewal/);
+  assert.match(readiness.architectureEvidence.orGates, /EVT_30_CON_001 consumes it directly/);
+  assert.match(readiness.architectureEvidence.renewalIntent, /facts\.clubWantsRenewal/);
+
   const contract = readiness.events.find(event => event.canonicalId === 'EVT_30_CON_001');
   assert.ok(contract);
-  assert.ok(contract.dependencies.includes('RENEWAL_INTENT_FACT'));
-  assert.equal(contract.dependencies.includes('OR_GATES'), false);
-  assert.match(indexSource, /t51_unmodelled_club_renewal_proxy/);
+  assert.deepEqual(contract.dependencies, ['PARITY']);
+  assert.match(indexSource, /facts\.clubWantsRenewal/);
+  assert.doesNotMatch(indexSource, /t51_unmodelled_club_renewal_proxy/);
 
   const dependencyIds = audit.globalDependencies.map(dependency => dependency.id);
-  assert.ok(dependencyIds.includes('DEP_T51_RENEWAL_INTENT_FACT'));
+  assert.equal(dependencyIds.includes('DEP_T51_RENEWAL_INTENT_FACT'), false);
   assert.equal(dependencyIds.includes('DEP_T51_OR_GATES'), false);
   assert.equal(audit.integrationStatus.sharedOrGateContract, 'available_in_main');
-  const serializedAudit = JSON.stringify(audit);
-  assert.doesNotMatch(serializedAudit, /pending_shared/);
-  assert.doesNotMatch(serializedAudit, /shared OR-gate contract is still pending/);
+  assert.equal(audit.integrationStatus.renewalIntentFact, 'available_in_main_and_consumed');
 });
 
 test('T5.1 30-34 readiness no convierte deuda en canon verificado ni alias aprobado', () => {
