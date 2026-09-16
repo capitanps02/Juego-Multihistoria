@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 1,
+  "workstream": "T51_CANON_20_23",
+  "microbatch": "T5.5-A",
+  "generatedAt": "2026-09-16",
+  "routeOwner": "coordinator/integrator",
+  "registerGlobalRouteHere": false,
+  "lineagePolicy": "adjacent_edges_only",
+  "sourceContentIdentity": "de9ef2f501c015705a28d54afd140259356f15566d424511e6dbf67769c9bd19",
+  "targetContentIdentity": "6a9c66ab3afaec76299662afb2a662e19203f8c6c430a87cc458b8608965a651",
+  "sourceGeneration": "main T5.1 EUR eligibility generation at branch sync",
+  "targetGeneration": "T5.5-A canonical 20-23 generation",
+  "sourceEvidence": {
+    "registry": "LEGACY_CONTENT_SOURCES[T51_EUR_ELIGIBILITY_CONTENT_IDENTITY]",
+    "frozenIdentityRequired": true
+  },
+  "targetEvidence": {
+    "reporter": "scripts/report-t51-t55a-20-23-identity.mjs",
+    "ciRun": 35155078752,
+    "focusedTestsPassed": 10,
+    "t5ContentHardErrors": 0
+  },
+  "invariants": {
+    "preserveHistory": true,
+    "preserveDecisionProvenance": true,
+    "preserveLegacyPendingDefinition": true,
+    "preserveSeedsUnlessExplicitlyMapped": true,
+    "seedOriginMappings": [],
+    "consumeRng": false,
+    "reinterpretPendingByStringId": false,
+    "clearSeenGlobally": false,
+    "clearCooldownGlobally": false
+  },
+  "mappings": [
+    {
+      "kind": "distinct_scene",
+      "legacyEventId": "EVT_20_LIFE_001",
+      "canonicalEventId": "EVT_20_LIFE_001",
+      "sourceFingerprint": "35c35f04eb0e8dad0178181b8a9d446852f10879dabb117cd14b1e5a1fa58afb",
+      "targetFingerprint": "1411894e4992cbb8dc6d1c1f7442b4665c9ee233e22bff0bd29050ab5ce046ad",
+      "clearCanonicalSeen": true,
+      "clearCanonicalCooldown": true,
+      "pendingBehavior": "preserve_source_definition_by_saved_source_identity_and_fingerprint",
+      "historyBehavior": "preserve_history_and_provenance"
+    },
+    {
+      "kind": "distinct_scene",
+      "legacyEventId": "EVT_20_ABR_001",
+      "canonicalEventId": "EVT_20_ABR_001",
+      "sourceFingerprint": "4e8f5cbc5fea607d4ae7dda650ed36a1019003723b73c39256b58f5a597aa10a",
+      "targetFingerprint": "d346eb173388ae65ab107e41ea6d6bbd6809dcf4bdd98c8dfdb952d722c1886f",
+      "clearCanonicalSeen": true,
+      "clearCanonicalCooldown": true,
+      "pendingBehavior": "preserve_source_definition_by_saved_source_identity_and_fingerprint",
+      "historyBehavior": "preserve_history_and_provenance"
+    },
+    {
+      "kind": "distinct_scene",
+      "legacyEventId": "EVT_21_RIV_001",
+      "canonicalEventId": "EVT_21_RIV_001",
+      "sourceFingerprint": "90ea9cac330e40bf4fbc276af22e8751e67631cd0cbd534a27a175774e3e4f54",
+      "targetFingerprint": "3f71815ac5ece24c1a573ee966fd24f2e252934821156dc5dc53c637b14e54db",
+      "clearCanonicalSeen": true,
+      "clearCanonicalCooldown": true,
+      "pendingBehavior": "preserve_Rivas_definition_for_source_generation; never reinterpret as Adrian",
+      "historyBehavior": "preserve_history_and_provenance",
+      "criticalIdentityNote": {
+        "sourceSemanticIdentity": "Rivas / HAS_SEED_RIVAS_TRUST / SEED_RIVAS_TRUST",
+        "targetSemanticIdentity": "Adrian Costa / HAS_SEED_ADRIAN_MIRROR / SEED_ADRIAN_MIRROR / media comparison",
+        "sameStringIdIsNotAlias": true
+      }
+    },
+    {
+      "kind": "distinct_scene",
+      "legacyEventId": "CEVT_21_ABR_01",
+      "canonicalEventId": "CEVT_21_ABR_01",
+      "sourceFingerprint": "dd530e5a2ba36cec0700547f389555509dd05adfc8fefdbbbe9b9d6f473e9972",
+      "targetFingerprint": "d797e65a800e81618f6f91c6fde9d416cd13fe692b9ecfac8d982879d2390699",
+      "clearCanonicalSeen": true,
+      "clearCanonicalCooldown": true,
+      "pendingBehavior": "preserve_source_definition_by_saved_source_identity_and_fingerprint",
+      "historyBehavior": "preserve_history_and_provenance"
+    },
+    {
+      "kind": "distinct_scene",
+      "legacyEventId": "CEVT_21_MEDIA_01",
+      "canonicalEventId": "CEVT_21_MEDIA_01",
+      "sourceFingerprint": "4a058aa8a9f6d2d65510e80bea81e1dd9abf8791bd6a4f14e6d261cb9bf511dc",
+      "targetFingerprint": "cb754e2add66ec1f9e7ca9e78da1b1a71f3d136c580d064cb31328ada184747a",
+      "clearCanonicalSeen": true,
+      "clearCanonicalCooldown": true,
+      "pendingBehavior": "preserve_source_definition_by_saved_source_identity_and_fingerprint",
+      "historyBehavior": "preserve_history_and_provenance"
+    }
+  ],
+  "integrationInstructions": [
+    "Freeze targetContentIdentity as an intermediate supported source before any later 20-23 microbatch changes EVENTS.",
+    "Coordinator should add exactly one adjacent source→target route for this generation; do not add PRE→target shortcuts.",
+    "Apply SEEN/cooldown release only to the five mappings above and only for target canonical scheduling state.",
+    "If main gains a newer content generation before integration, regenerate the adjacent source edge from the actual latest supported generation rather than skipping an intermediate identity.",
+    "Pending/history rows must continue resolving against frozen source identity+fingerprint evidence."
+  ]
+}
