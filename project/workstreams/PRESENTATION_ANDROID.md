@@ -2,7 +2,7 @@
 
 Branch: `presentation/android-playcanvas`  
 PR: #14 `presentation/android-playcanvas` → `main`  
-Estado PR: **DRAFT / bloqueado por regresión transversal de saves #22**.
+Estado PR: **DRAFT / bloqueado por save QA #22 y contrato público de Relaciones**.
 
 ## Estado ejecutivo
 
@@ -11,7 +11,8 @@ Estado PR: **DRAFT / bloqueado por regresión transversal de saves #22**.
 - T3.3: cerrada técnicamente; paquete Android offline, IndexedDB y ejecución histórica en emulador disponibles.
 - T3.4: **pendiente de evidencia en teléfono Android físico**. Emulador y CI no la cierran.
 - T4.6: cierre revisado; flujo Inicio → Carrera → Mundo → Relaciones → Perfil → Tu partida operativo.
-- Rama re-grounded sobre la base con T5.2 lifecycle integrado. El código de presentación validado más reciente es `4825eb03e12a471fdb5575da3234b69f4ddc779d`.
+- Rama re-grounded sobre `main@4d547ea9c070d9879d812861ed0abb6493ff1d75`, con `behind_by: 0` en la última comprobación.
+- Último HEAD con código de presentación validado en CI: `1c9b14b01dce71a0c84d644d54abdffa974426d2`.
 
 ## Cambios de producto
 
@@ -24,10 +25,14 @@ Estado PR: **DRAFT / bloqueado por regresión transversal de saves #22**.
 
 ### Contratos públicos pendientes
 
-`PlayerView.contacts` continúa construyéndose desde todo `NPC_CATALOG`. La UI no intentará decidir qué NPC conoce el protagonista leyendo memoria/flags internos. T5.3/coordinación debe:
+`PlayerView.contacts` continúa construyéndose desde todo `NPC_CATALOG`.
 
-- filtrar `PlayerView.contacts` en la frontera pública; o
-- añadir un contrato equivalente como `knownContacts`.
+La nueva implementación T5.3 de PR #9 protege correctamente `knowledge`, memorias y agendas internas, pero **no modifica `GameSession.getView()`**. Por tanto la UI todavía carece de una señal pública para saber si el protagonista ya ha sido presentado a un NPC.
+
+Presentación no inferirá ese dato desde memoria secreta, flags, seeds ni `npcRefs`. Se ha dejado review COMMENT en PR #9 solicitando uno de estos contratos:
+
+- `PlayerView.contacts` filtrado por el motor; o
+- un campo público equivalente como `knownContacts` / `introducedContacts`.
 
 `PlayerView.ageMilestones` todavía transporta `route`, `tags` y `signature`, aunque la UI ya no los renderiza. Endurecimiento recomendado: proyectar solo los campos visibles en el ViewModel sin modificar el snapshot persistente.
 
@@ -66,16 +71,16 @@ Mejoras:
 - exportación comunica `saved`, `cancelled` o `error` mediante `mh:android-file-result`;
 - `OfflineProbe` cubre diagnóstico, Android Back y pausa/reanudación sin alterar el save exacto cuando se ejecute en emulador.
 
-## APK candidato actual
+## APK candidato exacto del HEAD probado
 
-Construido por GitHub Actions sobre código `4825eb03e12a471fdb5575da3234b69f4ddc779d` tras integrar T5.2:
+Construido por GitHub Actions sobre `1c9b14b01dce71a0c84d644d54abdffa974426d2`:
 
-- workflow `Android presentation candidate` run #11: **SUCCESS**;
+- workflow `Android presentation candidate` run #14: **SUCCESS**;
 - versión: `0.8.0`, versionCode `1`;
 - archivo: `app-debug.apk`;
-- tamaño: **8.539.267 bytes**;
-- SHA-256: `43a99d2637eb5ccbe88b375473cc6bed46a54890fb573096dea3b7727181d4cc`;
-- el hash fue recalculado sobre el APK descargado y coincide con `T3.3-apk-build.json`.
+- tamaño: **8.539.268 bytes**;
+- SHA-256: `28aa0354a3355ac1e97861ebfe2a730bf2aaf83d32b9dfb0a9f6791ab0be0cea`;
+- el hash fue recalculado sobre el APK descargado y coincide exactamente con `T3.3-apk-build.json`.
 
 Este APK es candidato técnico para T3.4; **no es evidencia de teléfono físico**.
 
@@ -116,49 +121,59 @@ Añadidos/reforzados:
 - CI Android con APK + informe/hash;
 - `Repository integrity` conserva gates T5 y añade regresión presentación/PlayCanvas/offline Android.
 
-### Resultado sobre T5.2
+### Resultado del HEAD `1c9b14b...`
 
-Sobre `4825eb03e12a471fdb5575da3234b69f4ddc779d`:
+- `Android presentation candidate` run #14: **PASS**.
+- `Repository integrity` run #282: **FAIL** únicamente en `qa:presentation -> test:playcanvas -> test-saves` por el baseline v8.
+- `npm test` + T5.2: **PASS**.
+- determinismo/RNG T5: **PASS**.
+- cruces de edad: **PASS**.
+- referencias T5: **PASS**.
+- carreras largas: **PASS**.
+- auditoría lifecycle: **PASS**.
+- simulación estratificada: **PASS**.
+- tests propios de presentación: **PASS**.
+- Android offline: **PASS**.
+- build PlayCanvas: **PASS** hasta `test:saves`.
 
-- `npm test` + `audit:t52` + `test:t52`: **PASS**;
-- determinismo/RNG T5: **PASS**;
-- cruces de edad: **PASS**;
-- referencias T5: **PASS**;
-- carreras largas: **PASS**;
-- auditoría lifecycle: **PASS**;
-- simulación estratificada: **PASS**;
-- tests propios de presentación: **PASS**;
-- Android offline: **PASS**;
-- APK Android: **PASS**;
-- `test:playcanvas`/`test-saves`: **FAIL** únicamente en el hash congelado del fixture schema 8.
+## #22 · diagnóstico de save QA
 
-Regresión registrada como **issue #22**: `T5.2: v8 save migration baseline changes under PlayCanvas regression`.
+Issue actual: **`Save QA: imported v8 migration baseline is stale`**.
 
-Esperado:
+Esperado histórico:
 `7136e3239ba5a5c71a85239401e790d8deb9292d4d49f7d4e2cd8d4359f9ca51`
 
-Actual:
+Actual reproducible:
 `973721941c79d61ee4a08045778c604641fc87db7d8423533505f8d13fe3db1b`
 
-Los fixtures v2–v7 pasan. El blob del fixture v8 no cambió respecto a la base anterior. Presentación **no actualizará el baseline a ciegas ni relajará el gate**: T5.2/save owner debe decidir si schema 8 debe conservar normalización estable o requiere migración/versionado explícito.
+La investigación posterior demuestra que el defecto **no lo introdujo T5.2**:
+
+- T5.2 no toca `src/save/*`, el fixture v8 ni `migration-baselines.json`;
+- fixture y baseline solo tienen el commit de importación inicial `6c9d7fb...`;
+- en ese mismo import, `src/save/save.ts` y `dist/save/save.js` tienen la misma semántica para schema 8: validan y devuelven `parsed` sin migrarlo.
+
+Conclusión: el hash esperado ya estaba desfasado en el repositorio importado. `qa:presentation` lo hizo visible porque incorpora `test:saves` al gate completo.
+
+Presentación **no corregirá el runtime ni relajará el test**. El owner de save/QA debe recalcular el baseline v8 con evidencia reproducible, verificar history/seeds/RNG/round-trip y actualizar únicamente la expectativa si corresponde.
 
 ## Dispositivos / entornos
 
 | Entorno | Estado | Evidencia |
 | --- | --- | --- |
 | Browser / fuentes | auditado | código + gates |
-| PlayCanvas scene 2593315 | bundle regenera; bloqueado solo por #22 | suite PlayCanvas |
+| PlayCanvas scene 2593315 | bundle regenera; gate global bloqueado solo por #22 | suite PlayCanvas |
 | Android 15 emulator `emulator-5556` | evidencia histórica T3.4 técnica | `analysis/2026-09-15/T3.4-android-runtime.json` |
-| APK CI | PASS | run #11, SHA arriba |
+| APK CI | PASS | run #14, SHA arriba |
 | Teléfono Android físico | pendiente | sin evidencia válida |
 
 ## Límites
 
 - No se modifica canon narrativo.
 - Este workstream no edita `project/PLAN_PASADAS.md` ni `analysis/2026-09-11/plan-seguimiento.json`.
-- No se corrige lifecycle/save T5.2 desde presentación.
+- No se corrige save QA/lifecycle desde presentación.
+- No se integra código no mergeado de T5.3/T5.2 follow-up.
 - No se hace merge del PR desde este workstream.
 
 ## PR
 
-PR #14 permanece **DRAFT**. No debe marcarse listo ni mergearse mientras #22 mantenga rojo el gate completo. Una vez resuelta la compatibilidad de saves, ejecutar de nuevo el HEAD exacto, verificar `Repository integrity` + `Android presentation candidate` y después pasar a revisión. T3.4 seguirá abierta hasta una prueba física real.
+PR #14 permanece **DRAFT**. No debe marcarse listo ni mergearse mientras #22 mantenga rojo el gate completo y mientras Relaciones carezca de contrato público seguro para contactos introducidos. Una vez resueltos esos dos puntos, ejecutar de nuevo el HEAD de código exacto, verificar `Repository integrity` + `Android presentation candidate` y después pasar a revisión. T3.4 seguirá abierta hasta una prueba física real.
