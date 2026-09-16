@@ -15,25 +15,60 @@
     "EVT_26_FINAL_001"
   ],
   "canonicalLiteralNeedsSemanticRepair": ["EVT_26_EUR_001"],
+  "assignedRuntimeOnlyLegacyIds": [
+    {
+      "id": "EVT_26_IDN_001",
+      "disposition": "retire_technical_keep_history_only",
+      "canonicalReplacement": "EVT_26_BRIDGE_001",
+      "sameSceneMigrationAllowed": false
+    },
+    {
+      "id": "EVT_26_CLB_001",
+      "disposition": "retire_technical_keep_history_only",
+      "canonicalReplacement": null,
+      "sameSceneMigrationAllowed": false
+    },
+    {
+      "id": "EVT_26_PRS_001",
+      "disposition": "retire_technical_keep_history_only",
+      "canonicalReplacement": null,
+      "sameSceneMigrationAllowed": false
+    },
+    {
+      "id": "EVT_26_JAN_001",
+      "disposition": "retire_technical_keep_history_only",
+      "canonicalReplacement": null,
+      "sameSceneMigrationAllowed": false
+    }
+  ],
   "seedOrigins": [
-    {"seed":"SEED_PEAK_IDENTITY","oldOrigin":"EVT_26_IDN_001","newOrigin":"EVT_26_BRIDGE_001","newMinAge":26},
-    {"seed":"SEED_BIG_GAME_BENCH","oldOrigin":"EVT_27_FINAL_001","newOrigin":"EVT_26_EUR_001","newMinAge":26},
-    {"seed":"SEED_RECORD_CHASE","oldOrigin":"EVT_27_REC_001","newOrigin":"EVT_26_MATCH_001","newMinAge":26},
-    {"seed":"SEED_LOCKER_ENDORSEMENT","oldOrigin":"EVT_27_LOCK_001","newOrigin":"EVT_26_CAP_001","newMinAge":26},
-    {"seed":"SEED_PEAK_LOAD","oldOrigin":"EVT_27_BODY_001","newOrigin":"EVT_26_MED_001","newMinAge":26},
-    {"seed":"SEED_DOCUMENTARY_ACCESS","oldOrigin":"EVT_27_PRS_001","newOrigin":"EVT_26_DOC_001","newMinAge":26},
-    {"seed":"SEED_PUBLIC_RIVALRY","oldOrigin":"EVT_27_RIV_001","newOrigin":"EVT_26_RIV_001","newMinAge":26},
-    {"seed":"SEED_MENTOR_ADVICE","oldOrigin":"EVT_27_MENT_001","newOrigin":"EVT_26_TEAM_002","newMinAge":26},
-    {"seed":"SEED_NATIONAL_ROLE","oldOrigin":"EVT_27_NAT_001","newOrigin":"EVT_26_NAT_002","newMinAge":26},
-    {"seed":"SEED_FINAL_BENCH","oldOrigin":"EVT_28_FINAL_001","newOrigin":"EVT_26_FINAL_001","newMinAge":26}
+    {"seed":"SEED_PEAK_IDENTITY","oldOrigin":"EVT_26_IDN_001","newOrigin":"EVT_26_BRIDGE_001","newMinAge":26,"historicalOriginRewriteAuthorized":false},
+    {"seed":"SEED_PROJECT_FACE","oldOrigin":"EVT_26_CLB_001","newOrigin":"EVT_26_MKT_001","newMinAge":26,"historicalOriginRewriteAuthorized":false,"finding":"Canonical EVT_26_MKT_001 sourceFields explicitly creates SEED_PROJECT_FACE."},
+    {"seed":"SEED_BIG_GAME_BENCH","oldOrigin":"EVT_27_FINAL_001","newOrigin":"EVT_26_EUR_001","newMinAge":26,"historicalOriginRewriteAuthorized":false},
+    {"seed":"SEED_RECORD_CHASE","oldOrigin":"EVT_27_REC_001","newOrigin":"EVT_26_MATCH_001","newMinAge":26,"historicalOriginRewriteAuthorized":false},
+    {"seed":"SEED_LOCKER_ENDORSEMENT","oldOrigin":"EVT_27_LOCK_001","newOrigin":"EVT_26_CAP_001","newMinAge":26,"historicalOriginRewriteAuthorized":false},
+    {"seed":"SEED_PEAK_LOAD","oldOrigin":"EVT_27_BODY_001","newOrigin":"EVT_26_MED_001","newMinAge":26,"historicalOriginRewriteAuthorized":false},
+    {"seed":"SEED_DOCUMENTARY_ACCESS","oldOrigin":"EVT_27_PRS_001","newOrigin":"EVT_26_DOC_001","newMinAge":26,"historicalOriginRewriteAuthorized":false},
+    {"seed":"SEED_PUBLIC_RIVALRY","oldOrigin":"EVT_27_RIV_001","newOrigin":"EVT_26_RIV_001","newMinAge":26,"historicalOriginRewriteAuthorized":false},
+    {"seed":"SEED_MENTOR_ADVICE","oldOrigin":"EVT_27_MENT_001","newOrigin":"EVT_26_TEAM_002","newMinAge":26,"historicalOriginRewriteAuthorized":false},
+    {"seed":"SEED_NATIONAL_ROLE","oldOrigin":"EVT_27_NAT_001","newOrigin":"EVT_26_NAT_002","newMinAge":26,"historicalOriginRewriteAuthorized":false},
+    {"seed":"SEED_FINAL_BENCH","oldOrigin":"EVT_28_FINAL_001","newOrigin":"EVT_26_FINAL_001","newMinAge":26,"historicalOriginRewriteAuthorized":false}
   ],
   "incorrectLaterWriters": [
-    {"event":"EVT_27_LOCK_001","currentlyWrites":"SEED_LOCKER_ENDORSEMENT","canonicalNewSeed":"SEED_MANAGER_POWER"},
-    {"event":"EVT_27_BODY_001","currentlyWrites":"SEED_PEAK_LOAD","canonicalContext":"SEED_SELF_OPTIMIZATION + prior SEED_PEAK_LOAD"},
-    {"event":"EVT_27_PRS_001","currentlyWrites":"SEED_DOCUMENTARY_ACCESS","canonicalNewSeed":"SEED_FAN_FRACTURE"},
-    {"event":"EVT_27_NAT_001","currentlyWrites":"SEED_NATIONAL_ROLE","canonicalNewSeed":"SEED_NATIONAL_CAPTAINCY"}
+    {"event":"EVT_27_LOCK_001","currentlyWrites":"SEED_LOCKER_ENDORSEMENT","canonicalNewSeed":"SEED_MANAGER_POWER","ownerBatch":"02C","pr7Rule":"Remove false writer / add minimum canonical-safe seed behavior only if required; do not retire event or claim full semantic reconciliation unless explicitly proven."},
+    {"event":"EVT_27_BODY_001","currentlyWrites":"SEED_PEAK_LOAD","canonicalContext":"SEED_SELF_OPTIMIZATION + prior SEED_PEAK_LOAD","ownerBatch":"02C","pr7Rule":"Remove false origin; leave full scene reconciliation to owner batch unless localized proof is complete."},
+    {"event":"EVT_27_PRS_001","currentlyWrites":"SEED_DOCUMENTARY_ACCESS","canonicalNewSeed":"SEED_FAN_FRACTURE","ownerBatch":"02C","pr7Rule":"Remove false origin; do not retire the event in PR #7."},
+    {"event":"EVT_27_NAT_001","currentlyWrites":"SEED_NATIONAL_ROLE","canonicalNewSeed":"SEED_NATIONAL_CAPTAINCY","ownerBatch":"02C","pr7Rule":"Remove false origin; do not retire the event in PR #7."}
   ],
+  "laterLegacyIdsOwnedByFutureBatches": [
+    {"id":"EVT_27_REC_001","ownerBatch":"02C"},
+    {"id":"EVT_27_RIV_001","ownerBatch":"02C"},
+    {"id":"EVT_27_MENT_001","ownerBatch":"02C"},
+    {"id":"EVT_27_FINAL_001","ownerBatch":"02C"},
+    {"id":"EVT_28_FINAL_001","ownerBatch":"02D"}
+  ],
+  "scopeRule": "PR #7 may repair seed chronology dependencies in later events but must not consume the semantic-disposition scope of 02C/02D by retiring their assigned legacy IDs.",
   "canonicalChain": ["EVT_26_EUR_001","SEED_BIG_GAME_BENCH","EVT_26_FINAL_001","SEED_FINAL_BENCH"],
-  "saveRule": "Preserve historical events and active seeds. Do not synthesize SEEN_new or replay RNG when catalog origin metadata changes.",
+  "saveRule": "Preserve historical events and active seeds. Catalog origin changes affect future canonical content; do not synthesize SEEN_new, rewrite historical seed.originEvent without reviewed equivalence, recreate active seeds or replay RNG.",
   "implementationBrief": "project/tasks/T5_1_BATCH_02B_AGE26_SEED_CHRONOLOGY.md"
 }
