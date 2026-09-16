@@ -1,13 +1,34 @@
+import fs from 'node:fs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { NPC_EVENT_KNOWLEDGE_RULES } from '../dist/catalog/npc-knowledge-rules.js';
 import { createInitialState } from '../dist/content/initial-state.js';
+import { EVENTS } from '../dist/content/events/index.js';
 import { EVENTS_23_26 } from '../dist/content/events/23_26/index.js';
 import { getNpcKnowledgeRecord, npcKnows } from '../dist/core/npc-knowledge.js';
 import { eventGatesPass } from '../dist/narrative/event-gates.js';
 import { resolveChoiceInPlace } from '../dist/narrative/resolver.js';
+import { GameSession } from '../dist/session/game-session.js';
+import { contentIdentity } from '../dist/session/content-identity.js';
+import {
+  CONTENT_MIGRATION_ROUTES,
+  T51_B1A_CONTENT_IDENTITY,
+  T51_T510_CONTENT_IDENTITY,
+  T51_T511_CONTENT_IDENTITY,
+  T51_PRS_CONTENT_IDENTITY,
+  T51_LOCK_CONTENT_IDENTITY,
+  applyMigrationRouteInPlace,
+  findMigrationPath,
+  findMigrationRoute
+} from '../dist/session/content-migration.js';
+import { PRE_T51_CONTENT_IDENTITY } from '../dist/session/pre-t51-legacy-registry.js';
 
 const ID = 'EVT_23_LOCK_001';
+const TARGET_IDENTITY = '008962f2104461eeeb97acea011cd8ea0109d789923a8f9d7055b74f0d55b41e';
+const E_FIXTURE = JSON.parse(fs.readFileSync(
+  `qa/fixtures/t5.1/post-t51-sources/${T51_PRS_CONTENT_IDENTITY}.json`,
+  'utf8'
+));
 
 function lockEvent() {
   const rows = EVENTS_23_26.filter(event => event.id === ID);
@@ -121,4 +142,83 @@ test('LOCK23 non-escalation choices do not make the captain omniscient', () => {
   resolveChoiceInPlace(state, lockEvent(), 'B');
   assert.equal(npcKnows(state, 'NPC_PLR_10', ID), false);
   assert.deepEqual(state.history.at(-1)?.snapshot.npcRefs, []);
+});
+
+test('LOCK23 creates only the adjacent E -> F migration edge', async () => {
+  const actualIdentity = await contentIdentity(EVENTS);
+  assert.equal(actualIdentity, TARGET_IDENTITY);
+  assert.equal(actualIdentity, T51_LOCK_CONTENT_IDENTITY);
+
+  assert.equal(findMigrationRoute(PRE_T51_CONTENT_IDENTITY, actualIdentity, CONTENT_MIGRATION_ROUTES), undefined);
+  assert.equal(findMigrationRoute(T51_B1A_CONTENT_IDENTITY, actualIdentity, CONTENT_MIGRATION_ROUTES), undefined);
+  assert.equal(findMigrationRoute(T51_T510_CONTENT_IDENTITY, actualIdentity, CONTENT_MIGRATION_ROUTES), undefined);
+  assert.equal(findMigrationRoute(T51_T511_CONTENT_IDENTITY, actualIdentity, CONTENT_MIGRATION_ROUTES), undefined);
+
+  const path = findMigrationPath(PRE_T51_CONTENT_IDENTITY, actualIdentity, CONTENT_MIGRATION_ROUTES);
+  assert.ok(path);
+  assert.deepEqual(path.map(route => [route.sourceContentIdentity, route.targetContentIdentity]), [
+    [PRE_T51_CONTENT_IDENTITY, T51_B1A_CONTENT_IDENTITY],
+    [T51_B1A_CONTENT_IDENTITY, T51_T510_CONTENT_IDENTITY],
+    [T51_T510_CONTENT_IDENTITY, T51_T511_CONTENT_IDENTITY],
+    [T51_T511_CONTENT_IDENTITY, T51_PRS_CONTENT_IDENTITY],
+    [T51_PRS_CONTENT_IDENTITY, actualIdentity]
+  ]);
+
+  const route = findMigrationRoute(T51_PRS_CONTENT_IDENTITY, actualIdentity, CONTENT_MIGRATION_ROUTES);
+  assert.ok(route);
+  assert.deepEqual(route.seedOriginMappings ?? [], []);
+  assert.deepEqual(route.schedulerMappings ?? [], [{
+    kind: 'distinct_scene',
+    legacyEventId: ID,
+    canonicalEventId: ID,
+    clearCanonicalSeen: true,
+    clearCanonicalCooldown: true
+  }]);
+});
+
+test('E -> F preserves historical truth and releases only LOCK23 scheduler suppression', () => {
+  const route = findMigrationRoute(T51_PRS_CONTENT_IDENTITY, TARGET_IDENTITY, CONTENT_MIGRATION_ROUTES);
+  assert.ok(route);
+  const state = state23(51143);
+  state.flags.SEEN_EVT_23_LOCK_001 = true;
+  state.flags.SEEN_EVT_23_PRS_001 = true;
+  state.eventCooldowns[ID] = 900;
+  state.eventCooldowns.EVT_23_PRS_001 = 700;
+  state.seeds.push({
+    id: 'SEED_TEAMMATE_COVER', state: 'dormant', intensity: 55,
+    originEvent: 'EVT_20_LOCK_002', originSeason: state.season,
+    npcRefs: [], payload: { stance: 'kept_private' }
+  });
+  state.history.push({
+    eventId: ID, date: '2026-10-01', season: state.season, choiceId: 'LEGACY', outcomeId: 'LEGACY_OUT',
+    club: state.club, snapshot: { age: 23, family: 'team' }, salience: 70, visibility: 'private'
+  });
+
+  const historyBefore = structuredClone(state.history);
+  const seedsBefore = structuredClone(state.seeds);
+  const rngBefore = structuredClone(state.rngState);
+  applyMigrationRouteInPlace(state, route);
+
+  assert.deepEqual(state.history, historyBefore);
+  assert.deepEqual(state.seeds, seedsBefore);
+  assert.deepEqual(state.rngState, rngBefore);
+  assert.equal(state.flags.SEEN_EVT_23_LOCK_001, false);
+  assert.equal(Object.hasOwn(state.eventCooldowns, ID), false);
+  assert.equal(state.flags.SEEN_EVT_23_PRS_001, true);
+  assert.equal(state.eventCooldowns.EVT_23_PRS_001, 700);
+});
+
+test('real frozen E snapshot migrates to F with no RNG drift', async () => {
+  const session = await GameSession.create(51144, { sessionId: 't511-lock-e', events: E_FIXTURE.events });
+  const before = session.exportSnapshot();
+  assert.equal(before.contentIdentity, T51_PRS_CONTENT_IDENTITY);
+  const stateBefore = structuredClone(before.state);
+  const rngBefore = structuredClone(before.state.rngState);
+
+  const migrated = await GameSession.migrateAndResume(before);
+  const after = migrated.exportSnapshot();
+
+  assert.equal(after.contentIdentity, TARGET_IDENTITY);
+  assert.deepEqual(after.state, stateBefore);
+  assert.deepEqual(after.state.rngState, rngBefore);
 });
