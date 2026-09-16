@@ -110,10 +110,9 @@ jobs:
 
           const workstreamPath = 'project/workstreams/T51_CANON_30_34.md';
           let workstream = fs.readFileSync(workstreamPath, 'utf8');
-          workstream = workstream.replace(
-            new RegExp(`- run \\`${runId}\\`: gate final[^\\n]*`),
-            `- run \`${runId}\`: **PASS** final sobre \`main@30ae3f27…\`: 30–34+B1a histórico PASS, offer/session bridge PASS, dos tests T5.10 shared reproducidos como deuda lineage-stale y checker detenido únicamente por el freeze \`b7483243…\`.`
-          );
+          const pendingPrefix = `- run \`${runId}\`: gate final`;
+          const finalLine = `- run \`${runId}\`: **PASS** final sobre \`main@30ae3f27…\`: 30–34+B1a histórico PASS, offer/session bridge PASS, dos tests T5.10 shared reproducidos como deuda lineage-stale y checker detenido únicamente por el freeze \`b7483243…\`.`;
+          workstream = workstream.split('\n').map(line => line.startsWith(pendingPrefix) ? finalLine : line).join('\n');
           fs.writeFileSync(workstreamPath, workstream);
           NODE
           rm .github/workflows/t51-30-34-final-evidence.yml
