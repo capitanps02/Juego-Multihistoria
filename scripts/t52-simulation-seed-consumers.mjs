@@ -54,9 +54,9 @@ export const SIMULATION_SEED_CONSUMERS = [
   {
     file: 'src/simulation/state26-classifier.ts',
     seedId: 'SEED_CHRONIC_BODY',
-    ageWindow: [26, 26],
-    surface: 'age26-injury-management-classification',
-    rationale: 'the authoritative career milestone records classifyState26 when entering age 26.'
+    ageWindow: [26, null],
+    surface: 'state26-injury-management-classification',
+    rationale: 'world-simulator classifies at age 26 and career-simulator recomputes State26 in final summaries whenever state.age >= 26.'
   },
   {
     file: 'src/simulation/maturity-adapter.ts',
@@ -89,51 +89,51 @@ export const SIMULATION_SEED_CONSUMERS = [
   {
     file: 'src/simulation/state30-classifier.ts',
     seedId: 'SEED_PROJECT_FACE',
-    ageWindow: [30, 30],
-    surface: 'age30-project-face-classification',
-    rationale: 'the authoritative career milestone records classifyState30 when entering age 30.'
+    ageWindow: [30, null],
+    surface: 'state30-project-face-classification',
+    rationale: 'world-simulator classifies at age 30 and career-simulator recomputes State30 in final summaries whenever state.age >= 30.'
   },
   {
     file: 'src/simulation/state30-classifier.ts',
     seedId: 'SEED_POSITIONAL_REINVENTION',
-    ageWindow: [30, 30],
-    surface: 'age30-reinvention-classification',
-    rationale: 'the authoritative career milestone records classifyState30 when entering age 30.'
+    ageWindow: [30, null],
+    surface: 'state30-reinvention-classification',
+    rationale: 'world-simulator classifies at age 30 and career-simulator recomputes State30 in final summaries whenever state.age >= 30.'
   },
   {
     file: 'src/simulation/state30-classifier.ts',
     seedId: 'SEED_CHRONIC_BODY',
-    ageWindow: [30, 30],
-    surface: 'age30-body-management-classification',
-    rationale: 'the authoritative career milestone records classifyState30 when entering age 30.'
+    ageWindow: [30, null],
+    surface: 'state30-body-management-classification',
+    rationale: 'world-simulator classifies at age 30 and career-simulator recomputes State30 in final summaries whenever state.age >= 30.'
   },
   {
     file: 'src/simulation/state30-classifier.ts',
     seedId: 'SEED_SURGERY_TIMING',
-    ageWindow: [30, 30],
-    surface: 'age30-body-management-classification',
-    rationale: 'the authoritative career milestone records classifyState30 when entering age 30.'
+    ageWindow: [30, null],
+    surface: 'state30-body-management-classification',
+    rationale: 'world-simulator classifies at age 30 and career-simulator recomputes State30 in final summaries whenever state.age >= 30.'
   },
   {
     file: 'src/simulation/state30-classifier.ts',
     seedId: 'SEED_FIRST_PEAK_DIP',
-    ageWindow: [30, 30],
-    surface: 'age30-early-decline-classification',
-    rationale: 'the authoritative career milestone records classifyState30 when entering age 30.'
+    ageWindow: [30, null],
+    surface: 'state30-early-decline-classification',
+    rationale: 'world-simulator classifies at age 30 and career-simulator recomputes State30 in final summaries whenever state.age >= 30.'
   },
   {
     file: 'src/simulation/state30-classifier.ts',
     seedId: 'SEED_WEALTHY_PEAK_EXIT',
-    ageWindow: [30, 30],
-    surface: 'age30-contract-and-exit-classification',
-    rationale: 'the authoritative career milestone records classifyState30 when entering age 30.'
+    ageWindow: [30, null],
+    surface: 'state30-contract-and-exit-classification',
+    rationale: 'world-simulator classifies at age 30 and career-simulator recomputes State30 in final summaries whenever state.age >= 30.'
   },
   {
     file: 'src/simulation/state30-classifier.ts',
     seedId: 'SEED_EARLY_HOME_RETURN',
-    ageWindow: [30, 30],
-    surface: 'age30-home-return-classification',
-    rationale: 'the authoritative career milestone records classifyState30 when entering age 30.'
+    ageWindow: [30, null],
+    surface: 'state30-home-return-classification',
+    rationale: 'world-simulator classifies at age 30 and career-simulator recomputes State30 in final summaries whenever state.age >= 30.'
   },
   {
     file: 'src/simulation/ageing-engine.ts',
@@ -152,8 +152,8 @@ export const SIMULATION_SEED_CONSUMERS = [
   {
     file: 'src/simulation/state34-classifier.ts',
     seedId: 'SEED_CHRONIC_BODY',
-    ageWindow: [34, 34],
-    surface: 'age34-body-fragility-classification',
-    rationale: 'the authoritative career milestone records classifyState34 when entering age 34.'
+    ageWindow: [34, null],
+    surface: 'state34-body-fragility-classification',
+    rationale: 'world-simulator classifies at age 34 and career-simulator recomputes State34 for final states at age >= 34; the early-retirement age-33 branch skips the chronic-body predicate.'
   }
 ];
