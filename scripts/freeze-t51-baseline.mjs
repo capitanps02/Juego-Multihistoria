@@ -7,6 +7,7 @@ import { SESSION_VERSION } from '../dist/session/game-session.js';
 import { CURRENT_SCHEMA_VERSION } from '../dist/save/save.js';
 import { CONTENT_MIGRATION_ROUTES, findMigrationRoute } from '../dist/session/content-migration.js';
 import { PRE_T51_CONTENT_IDENTITY } from '../dist/session/pre-t51-legacy-registry.js';
+import { evaluateT51FreezeTransition } from './t51-freeze-policy.mjs';
 
 const outDir = 'qa/fixtures/t5.1';
 const catalogPath = `${outDir}/pre-t51-event-catalog.json`;
@@ -56,27 +57,23 @@ if (check) {
 
   if (existingDigest !== existingManifest.eventCatalogSha256) throw new Error('Frozen T5.1 catalog digest does not match manifest');
   if (existingManifest.contentIdentity !== existingDigest) throw new Error('Frozen T5.1 manifest identity does not match frozen catalog bytes');
-  if (existingManifest.contentIdentity !== PRE_T51_CONTENT_IDENTITY) throw new Error('Frozen T5.1 manifest no longer matches PRE_T51_CONTENT_IDENTITY');
   if (existingManifest.counts?.total !== 388 || existingManifest.counts?.principal !== 254 || existingManifest.counts?.conditional !== 134) {
     throw new Error('Frozen T5.1 manifest counts are invalid');
   }
 
-  let mode = 'pre-t51-content-still-active';
-  let migrationRoute = null;
-  if (contentIdentity !== existingManifest.contentIdentity) {
-    migrationRoute = findMigrationRoute(existingManifest.contentIdentity, contentIdentity, CONTENT_MIGRATION_ROUTES);
-    if (!migrationRoute) {
-      throw new Error(`Active contentIdentity ${contentIdentity} differs from frozen pre-T5.1 baseline without a registered migration route`);
-    }
-    mode = 'post-t51-content-route-registered';
-  }
+  const transition = evaluateT51FreezeTransition({
+    frozenContentIdentity: existingManifest.contentIdentity,
+    activeContentIdentity: contentIdentity,
+    preT51ContentIdentity: PRE_T51_CONTENT_IDENTITY,
+    findRoute: (from, to) => findMigrationRoute(from, to, CONTENT_MIGRATION_ROUTES)
+  });
 
   console.log(JSON.stringify({
     ok: true,
-    mode,
+    mode: transition.mode,
     frozenContentIdentity: existingManifest.contentIdentity,
     activeContentIdentity: contentIdentity,
-    migrationRouteRegistered: Boolean(migrationRoute),
+    migrationRouteRegistered: transition.migrationRouteRegistered,
     sourceGitCommit: existingManifest.sourceGitCommit,
     activeGitCommit: gitCommit
   }, null, 2));
