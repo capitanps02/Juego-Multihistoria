@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import { createInitialState } from '../dist/content/initial-state.js';
 import { expireDueSeedsInPlace, resolveChoiceInPlace } from '../dist/narrative/resolver.js';
 import { loadSave, serializeSave } from '../dist/save/save.js';
+import { GameSession } from '../dist/session/game-session.js';
 
 const report = JSON.parse(fs.readFileSync('analysis/T5.2/seed-lifecycle.json', 'utf8'));
 
@@ -36,6 +37,26 @@ function liveInstances(state, seedId) {
   return state.seeds.filter(seed => seed.id === seedId && !['resolved', 'expired'].includes(seed.state));
 }
 
+async function advanceSessionToDecision(session) {
+  for (let i = 0; i < 60; i += 1) {
+    const view = session.getView();
+    if (view.screen === 'decision') return view;
+    if (view.screen === 'offer') {
+      await session.dispatch({
+        type: 'offer', offerId: view.offer.id, action: 'reject',
+        commandId: `t52-offer-${i}`, expectedRevision: view.revision
+      });
+      continue;
+    }
+    if (view.screen === 'result') {
+      await session.dispatch({ type: 'acknowledge', commandId: `t52-ack-${i}`, expectedRevision: view.revision });
+      continue;
+    }
+    await session.dispatch({ type: 'continue', maxDays: 30, commandId: `t52-advance-${i}`, expectedRevision: view.revision });
+  }
+  assert.fail('La fixture T5.2 no llegó a una decisión');
+}
+
 test('T5.2 inventario: las 210 seeds quedan trazadas sin referencias desconocidas', () => {
   assert.equal(report.summary.catalogSeeds, 210);
   assert.equal(report.summary.uniqueCatalogSeeds, 210);
@@ -47,6 +68,7 @@ test('T5.2 inventario: las 210 seeds quedan trazadas sin referencias desconocida
   assert.equal(report.rules.noUnknownReferences, true);
   assert.equal(report.rules.scopeOverridesAreKnownSeeds, true);
   assert.equal(report.rules.noDuplicateCatalogIds, true);
+  assert.equal(report.rules.commandReplayOwnedByGameSession, true);
   assert.ok(report.summary.runtimeProducedSeeds > 0);
   assert.ok(report.summary.finiteAgeWindowSeeds > 0);
   assert.equal(report.summary.clubScopedSeeds, 5);
@@ -90,7 +112,7 @@ test('T5.2 reapertura: una seed terminal puede iniciar una nueva instancia sin b
   assert.equal(state.flags.HAS_SEED_NANO_SHADOW, true);
 });
 
-test('T5.2 consumo: resolve cierra una vez, conserva consumedBy y apaga presencia', () => {
+test('T5.2 consumo: resolve es terminal e idempotente sobre la seed aunque el resolver se invoque otra vez', () => {
   const state = createInitialState(5203);
   const create = fixtureEvent('T52_CONSUME_CREATE', 'SEED_NANO_SHADOW', { action: 'create' });
   const consume = fixtureEvent('T52_CONSUME_RESOLVE', 'SEED_NANO_SHADOW', { action: 'resolve' });
@@ -102,10 +124,10 @@ test('T5.2 consumo: resolve cierra una vez, conserva consumedBy y apaga presenci
   assert.equal(seed?.payload.__t52TerminalReason, 'resolved');
   assert.equal(state.flags.HAS_SEED_NANO_SHADOW, false);
 
-  const historyCount = state.history.length;
+  const terminalSnapshot = structuredClone(seed);
   resolveChoiceInPlace(state, consume, 'A');
-  assert.equal(state.history.length, historyCount, 'repetir el comando no añade otra resolución');
-  assert.equal(seed?.consumedBy, 'T52_CONSUME_RESOLVE');
+  assert.deepEqual(seed, terminalSnapshot, 'un segundo resolve no vuelve a consumir ni mutar la seed terminal');
+  assert.equal(liveInstances(state, 'SEED_NANO_SHADOW').length, 0);
 });
 
 test('T5.2 caducidad explícita: expiresAfter cierra la seed al cruzar la fecha', () => {
@@ -182,26 +204,31 @@ test('T5.2 save/restore: una seed pendiente sobrevive y se consume después de r
   assert.equal(roundTrip.seeds.find(seed => seed.id === 'SEED_PRIVATE_CHAT')?.state, 'resolved');
 });
 
-test('T5.2 doble comando: evento+choice del mismo día no duplica efectos, RNG, historia ni seed', () => {
-  const state = createInitialState(5209);
-  const beforeControl = state.control.career;
+test('T5.2 doble comando: GameSession aplica una sola vez el mismo commandId, incluso tras restore', async () => {
   const event = fixtureEvent('T52_DOUBLE', 'SEED_NANO_SHADOW', { action: 'create', intensity: 57 }, {
     immediateEffects: [{ kind: 'numeric', path: 'control.career', delta: 5 }]
   });
-  const first = resolveChoiceInPlace(state, event, 'A');
-  const afterFirst = {
-    control: state.control.career,
-    draws: state.rngState.narrative.draws,
-    history: state.history.length,
-    seeds: state.seeds.length
+  const session = await GameSession.create(5209, { events: [event], sessionId: 't52-idempotence' });
+  const decision = await advanceSessionToDecision(session);
+  const before = session.exportSnapshot();
+  const command = {
+    type: 'choose', pendingInstanceId: decision.decision.instanceId, choiceId: 'A',
+    commandId: 't52-double-command', expectedRevision: decision.revision
   };
-  const second = resolveChoiceInPlace(state, event, 'A');
-  assert.equal(first.outcomeId, second.outcomeId);
-  assert.equal(afterFirst.control, beforeControl + 5);
-  assert.equal(state.control.career, afterFirst.control);
-  assert.equal(state.rngState.narrative.draws, afterFirst.draws);
-  assert.equal(state.history.length, afterFirst.history);
-  assert.equal(state.seeds.length, afterFirst.seeds);
+
+  const [first, second] = await Promise.all([session.dispatch(command), session.dispatch(command)]);
+  assert.deepEqual([first.replayed, second.replayed], [false, true]);
+  const after = session.exportSnapshot();
+  assert.equal(after.state.control.career, before.state.control.career + 5);
+  assert.equal(after.state.history.length, before.state.history.length + 1);
+  assert.equal(liveInstances(after.state, 'SEED_NANO_SHADOW').length, 1);
+  assert.equal(after.receipts.filter(receipt => receipt.commandId === command.commandId).length, 1);
+
+  const restored = await GameSession.resume(after, { events: [event] });
+  const beforeReplay = restored.exportSnapshot();
+  const replay = await restored.dispatch(command);
+  assert.equal(replay.replayed, true);
+  assert.deepEqual(restored.exportSnapshot(), beforeReplay, 'el replay tras restore no altera estado ni RNG');
 });
 
 test('T5.2 seed incompatible en save: se preserva y el sweep no rompe una partida futura/antigua', () => {
