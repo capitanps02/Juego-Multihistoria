@@ -62,48 +62,56 @@ DRAFT task prompts:
 
 Conditional DRAFT prompts are separately prepared for 05A–05E.
 
-## Exact-title candidate review state
+## Exact-title candidate review state — 7/7 complete
 
-Baseline exact-title candidates: **7**.
+Baseline exact-title candidates: **7**.  
+Reviewed: **7/7**.  
+Approved same-scene ID migrations: **0/7**.
 
-### 30+/retirement candidates — review complete
+All seven runtime IDs have final planning disposition:
+`retire_technical_keep_history_only`.
 
-Detailed review:
+This means:
+- implement the canonical scene under the canonical ID;
+- remove the technical predecessor from active canonical scheduling after replacement;
+- keep old completed history under the technical ID;
+- never translate `SEEN_old` into `SEEN_canonical` from title/concept similarity;
+- pending old content resolves through supported content-version compatibility only;
+- seed catalog origin metadata may move to the canonical creator for future content without relabeling the player's old historical origin unless a separate reviewed migration explicitly proves that fact.
+
+### 30+/retirement candidates
+
+Evidence:
 - `T5_1_PRINCIPAL_TITLE_CANDIDATES_30_PLUS_REVIEW.md`
 - `T5_1_PRINCIPAL_TITLE_CANDIDATES_30_PLUS_DISPOSITIONS.json`
 
-Reviewed: **4/4**  
-Approved same-scene migrations: **0/4**.
+Pairs:
+- `EVT_30_BRIDGE_001` vs legacy `EVT_30_IDN_001` — strong title/seed lineage, but generic runtime scene/choices differ from the canonical age-30 bridge;
+- `EVT_38_RICH_001` vs legacy `EVT_36_RICH_001` — title only; age, trigger, information and huge-offer/retirement choices differ;
+- `EVT_RET_FAM_001` vs legacy `EVT_RET_HOME_001` — runtime converts a four-way family/priorities conversation into a binary retirement decision;
+- `EVT_RET_LASTMATCH_001` vs legacy `EVT_RET_LAST_001` — runtime directly manufactures played/no-match closure from a binary choice instead of preserving canonical fact-driven uncertainty.
 
-Final planning disposition for all four legacy IDs is `retire_technical_keep_history_only`:
-- canonical `EVT_30_BRIDGE_001` vs runtime `EVT_30_IDN_001` — strong title/seed lineage, but generic runtime scene/choices differ from the canonical age-30 bridge;
-- canonical `EVT_38_RICH_001` vs runtime `EVT_36_RICH_001` — title only; age, trigger, information and huge-offer/retirement choices differ;
-- canonical `EVT_RET_FAM_001` vs runtime `EVT_RET_HOME_001` — runtime converts a four-way family/priorities conversation into a binary retirement decision;
-- canonical `EVT_RET_LASTMATCH_001` vs runtime `EVT_RET_LAST_001` — runtime directly manufactures played/no-match closure from a binary choice instead of preserving canonical fact-driven uncertainty.
+### PR #5 / 26–30 candidates
 
-For all four:
-- do not rewrite old history ID;
-- do not directly rewrite old pending ID;
-- do not manufacture canonical `SEEN_*`;
-- implement the canonical replacement under its canonical ID;
-- keep any legacy compatibility definition outside active scheduling.
+Evidence:
+- `T5_1_PRINCIPAL_TITLE_CANDIDATES_PR5_FINAL_DISPOSITIONS.json`
+- PR #5 task evidence under `task/t5.1-batch-02a`.
 
-### 26–30 candidates — PR #5 owns remaining 3
+Pairs:
+- `EVT_27_STAR_001` vs legacy `EVT_28_TEAM_001` — same title/`SEED_SECOND_STAR`, but technical scene is age 28 and uses generic team-family decisions instead of the canonical age-27 second-star hierarchy dilemma;
+- `EVT_27_AWARD_001` vs legacy `EVT_28_GALA_001` — same title/award seed, but technical scene is age 28 and generic despite `verified:true`; canon is the age-27 award-interview/vote scene;
+- `EVT_28_RICH_001` vs legacy `EVT_29_MKT_001` — close precursor, but age, gate, visible uncertainty and C/D decision intents differ from canon.
 
-- `EVT_27_STAR_001` ← runtime `EVT_28_TEAM_001`
-- `EVT_27_AWARD_001` ← runtime `EVT_28_GALA_001`
-- `EVT_28_RICH_001` ← runtime `EVT_29_MKT_001`
-
-PR #5 already records that title equality does not authorize a silent alias. Their final legacy dispositions stay owned by that task so they can be reviewed against the PR #7 seed-chronology result after dependency resolution.
+PR #5 still remains blocked by PR #7 because future seed origin metadata/chronology must be reconciled against the reviewed age-26 seed repair before implementation.
 
 ## Current legacy-side disposition progress
 
 Runtime-only principal IDs: **87**.
 
-- final planning disposition reviewed: **4**;
-- all 4 reviewed: `retire_technical_keep_history_only`;
+- final planning disposition reviewed: **7**;
+- all 7 reviewed: `retire_technical_keep_history_only`;
 - approved direct same-scene migrations: **0**;
-- remaining principal legacy IDs requiring semantic disposition in their responsible batch: **83**.
+- remaining principal legacy IDs requiring semantic disposition in their responsible batch: **80**.
 
 See global crosswalk state:
 - `T5_1_LEGACY_CROSSWALK_PLANNING_STATE_174.json`.
@@ -129,7 +137,7 @@ Principal batches through 04C must not use age, low market, body pressure, peer 
 04D owns terminal state-machine reconciliation. Current known blocker:
 - canonical conditional `CEVT_38_RETIREMENT_REVERSAL` vs monotonic retirement contract / `closed -> *` prohibition.
 
-`T5_1_CANON_DECISION_REQUIRED_RETIREMENT_REVERSAL.md` now documents Option E as the current strongest source-fit planning recommendation while explicitly leaving it **unapproved** pending Pedro's decision.
+`T5_1_CANON_DECISION_REQUIRED_RETIREMENT_REVERSAL.md` documents Option E as the current strongest source-fit planning recommendation while explicitly leaving it **unapproved** pending Pedro's decision.
 
 ## Current status
 
@@ -137,7 +145,8 @@ Planning completeness does **not** mean runtime completeness.
 
 - Canonical principal missing-ID assignment: **87/87 complete**
 - Runtime-only principal responsibility assignment: **87/87 complete**
-- Runtime-only principal final dispositions: **4/87 complete**
+- Exact-title principal semantic dispositions: **7/7 complete**
+- Runtime-only principal final dispositions overall: **7/87 complete**
 - Future principal task prompts: **02C–04E prepared**
 - Conditional semantic planning review: **134/134 complete**
 - Conditional task prompts: **05A–05E prepared**
