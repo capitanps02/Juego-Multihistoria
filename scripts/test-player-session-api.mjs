@@ -60,10 +60,10 @@ test('unsupported content migration remains an explicit failure', async () => {
   await assert.rejects(api.fromSave('unknown-legacy'), error => error === unsupported);
 });
 
-test('player presentation replaces legacy catalog contacts with the public known-contact projection', async () => {
+test('player presentation projects known contacts in getView and synchronous dispatch results', () => {
   const privateSession = {
     getView: () => ({ screen: 'career', contacts: [{ id: 'ALL_1' }, { id: 'ALL_2' }], revision: 4 }),
-    dispatch: (...args) => ({ kind: 'dispatch', args }),
+    dispatch: (...args) => ({ kind: 'dispatch', args, view: { screen: 'career', contacts: [{ id: 'ALL_1' }], revision: 5 } }),
     exportSnapshot: () => ({ state: { private: true } })
   };
   const known = [{ id: 'KNOWN_1', name: 'Conocido', role: 'Amigo' }];
@@ -77,7 +77,30 @@ test('player presentation replaces legacy catalog contacts with the public known
   const presented = api.create(123, {});
   assert.deepEqual(presented.getView().contacts, known);
   assert.equal(presented.getView().contacts.some(contact => contact.id === 'ALL_1'), false);
-  assert.deepEqual(presented.dispatch('continue'), { kind: 'dispatch', args: ['continue'] });
+  const dispatched = presented.dispatch('continue');
+  assert.deepEqual(dispatched.view.contacts, known);
+  assert.equal(dispatched.view.contacts.some(contact => contact.id === 'ALL_1'), false);
+  assert.deepEqual(dispatched.args, ['continue']);
   assert.deepEqual(presented.exportSnapshot(), { state: { private: true } });
   assert.ok(projectionCalls.every(session => session === privateSession));
+});
+
+test('player presentation also projects known contacts in asynchronous dispatch results', async () => {
+  const privateSession = {
+    getView: () => ({ screen: 'career', contacts: [{ id: 'ALL_1' }], revision: 7 }),
+    dispatch: async () => ({ receipt: { ok: true }, view: { screen: 'career', contacts: [{ id: 'ALL_1' }], revision: 8 } }),
+    exportSnapshot: () => ({ state: {} })
+  };
+  const known = [{ id: 'KNOWN_2', name: 'Visible', role: 'Compañero' }];
+  const api = createPlayerSessionApi({
+    fromSave: async () => privateSession,
+    migrateFromSave: async () => privateSession,
+    create: () => privateSession
+  }, globalThis.crypto, () => known);
+
+  const presented = api.create(321, {});
+  const result = await presented.dispatch({ type: 'continue' });
+  assert.deepEqual(result.receipt, { ok: true });
+  assert.deepEqual(result.view.contacts, known);
+  assert.equal(result.view.contacts.some(contact => contact.id === 'ALL_1'), false);
 });
