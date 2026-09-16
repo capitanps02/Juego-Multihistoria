@@ -85,6 +85,16 @@ test('T5.2 presencia: sincronizar limpia un HAS_SEED conocido sin instancia viva
   assert.equal(state.flags.HAS_SEED_NANO_SHADOW, false);
 });
 
+test('T5.2 presencia: sincronizar no materializa flags falsos ausentes', () => {
+  const state = createInitialState(5200);
+  state.seeds = state.seeds.filter(seed => seed.id !== 'SEED_RIVAS_TRUST');
+  delete state.flags.HAS_SEED_RIVAS_TRUST;
+  const beforeKeys = Object.keys(state.flags).sort();
+  syncSeedPresenceFlagsInPlace(state);
+  assert.equal(Object.prototype.hasOwnProperty.call(state.flags, 'HAS_SEED_RIVAS_TRUST'), false);
+  assert.deepEqual(Object.keys(state.flags).sort(), beforeKeys);
+});
+
 test('T5.2 creación y persistencia: create abre una única instancia viva y conserva memoria', () => {
   const state = createInitialState(5201);
   const event = fixtureEvent('T52_CREATE', 'SEED_RIVAS_TRUST', { action: 'create', intensity: 61, payload: { promise: 'kept' } });
