@@ -1,0 +1,159 @@
+{
+  "schemaVersion": 2,
+  "workstream": "T5.1 canon 23-30 post-migration execution readiness",
+  "generatedAt": "2026-09-16",
+  "sourceMainSha": "76699f93e19e1ac9e17b42ccfaea011d92630fb6",
+  "authorities": [
+    "analysis/T5.1/canon-23-30.json",
+    "analysis/T5.1/canon-23-30-conditionals.json",
+    "analysis/T5.1/canon-23-26-implementation-readiness.json",
+    "analysis/T5.1/canon-23-30-migration-handoff.json",
+    "analysis/T5.2/CANONICAL_READINESS.md",
+    "src/session/content-migration.ts",
+    "scripts/check-t51-content-migration-route.mjs"
+  ],
+  "integrationState": {
+    "t52SeedLifecycle": "integrated",
+    "t53NpcKnowledge": "integrated",
+    "sessionContentMigration": "integrated_mechanism_route_required_per_changed_target_identity",
+    "sessionContentMigrationGate": "The mechanism is integrated. The first active 23-30 content batch must register an explicit PRE_T51_CONTENT_IDENTITY -> target contentIdentity route in the same integration candidate; exact-ID distinct scenes must clear canonical SEEN and cooldown.",
+    "choiceEligibilityS1": "integrated; available for future canonical choices that need state-dependent visibility, although the 10 local 23-26 repairs do not require it",
+    "orGateOrDerivedFact": "required_for_EVT_23_LOCK_001",
+    "offerSessionBridge": "required_for_EVT_23_MKT_001_EVT_23_CON_001_EVT_25_CON_001",
+    "footballOutcomeHook": "required_for_EVT_24_MATCH_001"
+  },
+  "globalInvariants": {
+    "approvedAliases": [],
+    "noSilentAliases": true,
+    "legacyHistoryRewritten": false,
+    "legacySeedOriginRewritten": false,
+    "legacySeenOrCooldownSuppressesDistinctCanonicalScene": false,
+    "npcRefsImpliesKnowledge": false,
+    "seedPresenceImpliesNpcKnowledge": false,
+    "artificialSeedClosureAllowed": false,
+    "migrationConsumesRng": false,
+    "migrationSchedulesEvents": false
+  },
+  "summary": {
+    "canonicalPrincipals": 91,
+    "principalReimplementations": 40,
+    "canonicalPrincipalsMissingOrUnapprovedFresh": 26,
+    "legacyPrincipalIdsHistoryOnly": 26,
+    "conditionalsReviewed": 44,
+    "conditionalsRuntimeCertifiedFull": 0,
+    "exactIdConditionalCollisions": 25,
+    "age26FutureSeedOriginMoves": 11,
+    "ownedSeeds": 59,
+    "ownedSeedsWithoutConsumer": 30,
+    "ownedSeedsOpenEnded": 35,
+    "t53NpcRefDebtCallbacks": 10,
+    "qaSeedReadDebtPairsObservedInRange": 14
+  },
+  "batches": {
+    "T5.10_T5.14_23_26": {
+      "state": "migration_mechanism_ready; local scenes may proceed only with target route in the same active-content candidate",
+      "sceneLevelAfterMigration": [
+        "EVT_23_BRIDGE_001",
+        "EVT_23_AGT_001",
+        "EVT_23_BODY_001",
+        "EVT_23_MONEY_001",
+        "EVT_23_HOME_001",
+        "EVT_23_EUR_001",
+        "EVT_23_PRS_001",
+        "EVT_25_AGT_001",
+        "EVT_25_MKT_001",
+        "EVT_25_NAT_001"
+      ],
+      "crossWorkstreamBlocked": [
+        {"id":"EVT_23_MKT_001","dependency":"offer_session_bridge"},
+        {"id":"EVT_23_CON_001","dependency":"contract_offer_bridge"},
+        {"id":"EVT_23_LOCK_001","dependency":"or_gate_or_derived_fact"},
+        {"id":"EVT_24_MATCH_001","dependency":"football_outcome_hook"},
+        {"id":"EVT_25_CON_001","dependency":"contract_offer_bridge"}
+      ],
+      "proposedSmallBatches": [
+        {"id":"T5.10","events":["EVT_23_BRIDGE_001","EVT_23_AGT_001","EVT_23_BODY_001"],"routeAction":"three exact-ID distinct_scene mappings; clear canonical SEEN and cooldown for each"},
+        {"id":"T5.11","events":["EVT_23_MONEY_001","EVT_23_HOME_001","EVT_23_EUR_001","EVT_23_PRS_001"],"routeAction":"four exact-ID distinct_scene mappings; clear canonical SEEN and cooldown for each"},
+        {"id":"T5.12","events":["EVT_25_AGT_001","EVT_25_MKT_001","EVT_25_NAT_001"],"routeAction":"three exact-ID distinct_scene mappings; clear canonical SEEN and cooldown for each"},
+        {"id":"T5.13","events":["EVT_23_MKT_001","EVT_23_CON_001","EVT_25_CON_001"],"dependency":"offer/contract authority"},
+        {"id":"T5.14","events":["EVT_23_LOCK_001","EVT_24_MATCH_001"],"dependency":"OR/derived fact plus football outcome hook"}
+      ],
+      "rule": "Canonical card -> identity/migration disposition -> implementation + target route -> directed test -> continuity/seed/NPC audit."
+    },
+    "T5.15_T5.21_26_30": {
+      "state": "migration_mechanism_ready; each active-content candidate must extend the registered route for the identities it changes",
+      "exactIdReimplementations": [
+        "EVT_26_AGT_001","EVT_26_BODY_001","EVT_26_CON_001","EVT_26_EUR_001","EVT_26_HOME_001","EVT_26_IMG_001","EVT_26_MKT_001","EVT_26_NAT_001","EVT_26_TEAM_001",
+        "EVT_27_AGT_001","EVT_27_BODY_001","EVT_27_LOCK_001","EVT_27_MED_001","EVT_27_MKT_001","EVT_27_MONEY_001","EVT_27_NAT_001","EVT_27_PRS_001","EVT_27_TACT_001",
+        "EVT_28_CON_001","EVT_28_HOME_001","EVT_28_MKT_001","EVT_28_NAT_001","EVT_29_CON_001","EVT_29_FIN_001","EVT_29_PRS_001"
+      ],
+      "canonicalFreshWithoutLegacyInheritance": [
+        "EVT_26_CAP_001","EVT_26_DOC_001","EVT_26_FINAL_001","EVT_26_MATCH_001","EVT_26_MED_001","EVT_26_NAT_002","EVT_26_RIV_001","EVT_26_TEAM_002",
+        "EVT_27_AGT_002","EVT_27_CON_001","EVT_27_EUR_001","EVT_27_HOME_001","EVT_27_IMG_001","EVT_27_MATCH_001","EVT_27_TEAM_001",
+        "EVT_28_CLUB_001","EVT_28_FORM_001","EVT_28_MEDIA_001","EVT_28_MED_001","EVT_28_STAR_001","EVT_29_NAT_002","EVT_29_TACT_001",
+        "EVT_26_BRIDGE_001","EVT_27_STAR_001","EVT_27_AWARD_001","EVT_28_RICH_001"
+      ],
+      "legacyHistoryOnly": [
+        "EVT_26_CLB_001","EVT_26_JAN_001","EVT_26_PRS_001","EVT_27_FINAL_001","EVT_27_MENT_001","EVT_27_REC_001","EVT_27_RIV_001",
+        "EVT_28_BODY_001","EVT_28_FINAL_001","EVT_28_IMG_001","EVT_28_JAN_001","EVT_28_MONEY_001","EVT_28_PRS_001","EVT_28_TACT_001",
+        "EVT_29_CCH_001","EVT_29_EUR_001","EVT_29_FAN_001","EVT_29_FORM_001","EVT_29_HOME_001","EVT_29_MED_001","EVT_29_NAT_001","EVT_29_REC_001",
+        "EVT_26_IDN_001","EVT_28_TEAM_001","EVT_28_GALA_001","EVT_29_MKT_001"
+      ],
+      "explicitNonMappings": [
+        {"canonicalId":"EVT_26_BRIDGE_001","legacyId":"EVT_26_IDN_001"},
+        {"canonicalId":"EVT_27_STAR_001","legacyId":"EVT_28_TEAM_001"},
+        {"canonicalId":"EVT_27_AWARD_001","legacyId":"EVT_28_GALA_001"},
+        {"canonicalId":"EVT_28_RICH_001","legacyId":"EVT_29_MKT_001"}
+      ]
+    }
+  },
+  "conditionalExecution": {
+    "all44RequireSceneSpecificImplementationOrCertification": true,
+    "exactIdCollisionCount": 25,
+    "safeSameSceneMappings": [],
+    "t53NowIntegrated": true,
+    "rule": "When a callback depends on personal NPC knowledge, use the integrated deny-by-default knowledge contract; npcRefs or HAS_SEED_* alone never satisfy knowledge."
+  },
+  "seedPolicy": {
+    "ownerSeedCount": 59,
+    "withoutConsumer": 30,
+    "openEnded": 35,
+    "age26OriginMoves": 11,
+    "rule": "Canon first, wiring second. Future canonical producers may move according to the approved chronology; existing SeedInstance.originEvent remains historical unless a separately approved mapping explicitly authorizes rewrite."
+  },
+  "qaSeedReadRatchet": {
+    "sourcePr": 32,
+    "integrationStatus": "open_not_in_main_at_manifest_time",
+    "meaning": "Maximum tolerated inherited metadata debt if the ratchet is integrated; removing debt is allowed, adding new undeclared seed reads is not.",
+    "pairs": [
+      {"eventId":"CEVT_23_RIVAS_02","seedId":"SEED_RIVAS_TRUST"},
+      {"eventId":"CEVT_23_MENA_02","seedId":"SEED_MENA_EARLY_READ"},
+      {"eventId":"CEVT_23_VELA_02","seedId":"SEED_VELA_STANCE"},
+      {"eventId":"CEVT_23_BRUNO_03","seedId":"SEED_BRUNO_FAVOR"},
+      {"eventId":"CEVT_23_ADR_03","seedId":"SEED_ADRIAN_MIRROR"},
+      {"eventId":"CEVT_23_NANO_02","seedId":"SEED_NANO_SHADOW"},
+      {"eventId":"CEVT_23_CLARA_03","seedId":"SEED_CLARA_CHANNEL"},
+      {"eventId":"CEVT_23_AGENT_03","seedId":"SEED_FIRST_AGENT"},
+      {"eventId":"CEVT_23_MED_02","seedId":"SEED_PHYSIO_CONFIDENCE"},
+      {"eventId":"CEVT_23_UDV_02","seedId":"SEED_HOME_DISTANCE"},
+      {"eventId":"CEVT_24_CHAT_01","seedId":"SEED_PRIVATE_CHAT"},
+      {"eventId":"CEVT_24_SPONSOR_02","seedId":"SEED_SPONSOR_IMAGE"},
+      {"eventId":"CEVT_24_FAM_02","seedId":"SEED_FAMILY_BUSINESS"},
+      {"eventId":"CEVT_25_BODY_02","seedId":"SEED_LOAD_MANAGEMENT"}
+    ]
+  },
+  "releaseGate": {
+    "requiredBeforeFirstActive23_30DefinitionChange": [
+      "integrated migration mechanism is present on the branch base",
+      "the active-content candidate registers a pre-T5.1 -> target contentIdentity route",
+      "every exact-ID distinct_scene changed by the batch clears canonical SEEN and cooldown",
+      "23-30 migration handoff invariants have executable coverage on the integration candidate",
+      "Repository Integrity is green on the exact integration candidate",
+      "no protected tracker files are modified by this workstream"
+    ],
+    "protectedFiles": [
+      "project/PLAN_PASADAS.md",
+      "analysis/2026-09-11/plan-seguimiento.json"
+    ]
+  }
+}
