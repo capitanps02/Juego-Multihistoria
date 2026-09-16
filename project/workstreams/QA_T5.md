@@ -134,6 +134,25 @@ Riesgos a revalidar cuando cambien esos heads:
 
 Estas métricas son telemetría QA. No son objetivos de balance.
 
+## Evidencia del primer PR
+
+PR: `#11` — `QA T5: regression gates and stratified simulation harness`.
+
+Validación limpia sobre `01dd195094b147c70743de64bea84ca70ee9d629`:
+
+- GitHub Actions `Repository integrity` run `#111`: **success**.
+- `npm test`: success.
+- determinismo + RNG isolation: success.
+- cruces de edad y adaptadores: success.
+- referencias de contenido: success.
+- carreras largas: success.
+- auditoría de lifecycle: success.
+- simulación estratificada de 9 perfiles: success.
+
+El primer intento del gate T5 detectó un defecto del propio harness: el test de edades llamaba directamente a `advanceWorldDayInPlace()` sin resolver una oferta pendiente, por lo que el reloj quedaba correctamente bloqueado por la autoridad de mercado. Se corrigió **solo QA** haciendo que el fixture rechace la oferta pendiente antes de avanzar. No se tocó producción.
+
+CI separa las propiedades T5 en pasos individuales para que una regresión futura indique inmediatamente qué familia de invariantes se rompió. La simulación expensive sigue fuera de CI.
+
 ## Política ante nuevos bugs
 
 1. aislar la seed/perfil/estado mínimo;
@@ -153,8 +172,10 @@ Estas métricas son telemetría QA. No son objetivos de balance.
 El PR inicial es revisable cuando:
 
 - los gates están versionados;
-- CI ejecuta `npm test` y después `npm run qa:t5`;
+- CI ejecuta `npm test` y después los gates T5 normales como pasos diagnósticos separados;
 - las reproducciones de bugs conocidos están separadas;
 - la simulación expensive queda fuera de CI;
 - no hay cambios en producción/canon;
 - se inspecciona el resultado real de GitHub Actions antes de recomendar integración.
+
+Estado: **cumplido para el primer PR de QA; no implica que T5 esté cerrado ni que los bugs T5-QA-001/002 estén resueltos.**
