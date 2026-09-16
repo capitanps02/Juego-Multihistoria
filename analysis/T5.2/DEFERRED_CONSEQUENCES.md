@@ -11,6 +11,10 @@ Añadir una comprobación estructural entre productor y consumidor de una seed s
 
 Esto complementa `seed-lifecycle.json`: el lifecycle indica que existen productores/consumidores; este gate comprueba que no estén ordenados de forma temporalmente imposible.
 
+## Composición actual
+
+La rama está re-groundeada sobre `main@edfda9e2cd8b70a421491b8be31507745da0f59b`, donde T5.3 ya está integrado sobre el lifecycle corregido de T5.2. El gate diferido no modifica conocimiento NPC; se limita a inspeccionar catálogo/eventos compilados y convive con los tests epistemológicos en `npm test`.
+
 ## Qué cuenta como consumidor runtime
 
 El audit usa únicamente evidencia que afecta comportamiento:
