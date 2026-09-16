@@ -11,6 +11,9 @@ Read and obey:
 - `project/CHATGPT_CODEX_WORKFLOW.md`
 - `project/t5_1/T5_1_PRINCIPAL_BATCH_IMPLEMENTATION_RULES.md`
 - `project/t5_1/T5_1_PRINCIPAL_87_BATCH_MANIFEST.json`
+- `project/t5_1/T5_1_PRINCIPAL_LEGACY_EXTRA_87_INVENTORY.json`
+- `project/t5_1/T5_1_PRINCIPAL_TITLE_CANDIDATES_30_PLUS_REVIEW.md`
+- `project/t5_1/T5_1_PRINCIPAL_TITLE_CANDIDATES_30_PLUS_DISPOSITIONS.json`
 - `project/t5_1/T5_1_04D_RETIREMENT_RUNTIME_AUDIT.md`
 - canonical rows in `analysis/2026-09-11/t1/principal-traceability.json`
 
@@ -34,11 +37,22 @@ Reconcile the ten baseline-unresolved canonical principal scenes across ages 36�
 9. `EVT_38_RICH_001` — Una última oferta enorme
 10. `EVT_38_MARKET_001` — Nadie llama en julio
 
-## Special identity warning
+## Reviewed identity decision — do not reopen from title alone
 
-Baseline runtime contains `EVT_36_RICH_001` with the same title as canonical `EVT_38_RICH_001`.
+Baseline runtime `EVT_36_RICH_001` shares the title **Una última oferta enorme** with canonical `EVT_38_RICH_001`.
 
-Do **not** treat this as an approved age move/rename. Prove same-scene semantics from the complete canonical row, including age/window, trigger, decision, outcomes and downstream retirement responsibility. If it is not the same scene, preserve truthful legacy history and implement the age-38 canonical scene separately.
+This pair has already received field-level semantic review.
+
+Approved disposition:
+- `EVT_36_RICH_001`: `retire_technical_keep_history_only`;
+- same-scene migration: **not allowed**;
+- old history ID rewrite: **not allowed**;
+- old pending ID direct substitution: **not allowed**;
+- canonical `EVT_38_RICH_001`: implement separately at its canonical age/trigger.
+
+Reason: runtime starts at age 36 and uses generic late-career body/intel/market choices; canon is age 37+ with a specific huge offer, explicit money/ambassador/duration information and distinct accept/retire/minimum-role/six-month choices.
+
+Do not reclassify this from title equality. If actual source evidence contradicts the reviewed disposition, stop and report it.
 
 ## Required work
 
@@ -46,7 +60,7 @@ For each target:
 - implement the exact canonical scene from `sourceFields`;
 - preserve concrete trigger, visible/uncertain information, decision and outcome intent;
 - preserve seed/NPC responsibility;
-- identify and explicitly disposition technical late-career rows that overlap.
+- identify and explicitly disposition every other technical late-career row assigned to 04C.
 
 ## High-risk semantic distinctions
 
@@ -96,15 +110,20 @@ Avoid broad FSM changes here; if a current automatic engine path prevents a cano
 
 ## Migration rules
 
-- No direct pending migration from `EVT_36_RICH_001` to `EVT_38_RICH_001` without full same-scene proof.
-- Preserve old history when age/function differs.
-- Generic late-career technical rows are not aliases merely because the title/theme resembles canon.
+- Keep completed `EVT_36_RICH_001` history under the legacy ID.
+- A pending `EVT_36_RICH_001` resolves only through supported legacy-content compatibility; it must not become canonical `EVT_38_RICH_001`.
+- Do not manufacture `SEEN_EVT_38_RICH_001` from title equality.
+- Preserve compatible old seed facts only through explicit migration rules; do not use them as proof the canonical scene happened.
+- Generic late-career technical rows are not aliases merely because title/theme resembles canon.
 - Preserve content identity and session integrity.
 
 ## Tests
 
 Add targeted coverage for:
 - all ten target IDs;
+- canonical `EVT_38_RICH_001` age/trigger/choice contract;
+- legacy `EVT_36_RICH_001` absent from active canonical scheduling after reconciliation while legacy history remains readable;
+- pending legacy `EVT_36_RICH_001` compatibility without canonical substitution;
 - body/availability pressure without terminal auto-close;
 - peer retirement without protagonist retirement;
 - lower league, short contract, home offer and rich offer all leave career playable when chosen;
@@ -124,4 +143,4 @@ Run the common required validation commands.
 
 ## Deliverable
 
-Canonical ages-36–38 principal reconciliation with explicit technical dispositions, preserved player agency and current validation evidence for ChatGPT review.
+Canonical ages-36–38 principal reconciliation with reviewed technical dispositions, preserved player agency and current validation evidence for ChatGPT review.
