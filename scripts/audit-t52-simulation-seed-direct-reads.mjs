@@ -19,13 +19,13 @@ function walkTsFiles(dir) {
  * Extract positive direct seed-presence checks that bypass HAS_SEED_* flags.
  *
  * Deliberately narrow: equality against an object `.id` / `?.id` or a variable
- * named `seedId` is treated as a positive presence read. Inequality is not,
- * because it does not prove dependence on the named seed being present.
+ * named `seedId` / ending in `SeedId` is treated as a positive presence read.
+ * Inequality is not, because it does not prove dependence on the named seed being present.
  */
 export function directSeedIdentityReadsFromSource(source) {
   const ids = new Set();
   const objectId = String.raw`(?:[A-Za-z_$][\w$]*(?:\?\.|\.))+id`;
-  const seedIdVariable = String.raw`[A-Za-z_$][\w$]*seed[Ii]d`;
+  const seedIdVariable = String.raw`(?:seed[Ii][Dd]|[A-Za-z_$][\w$]*Seed[Ii][Dd])`;
   const lhs = `(?:${objectId}|${seedIdVariable})`;
 
   const forward = new RegExp(String.raw`\b${lhs}\s*={2,3}\s*['"](SEED_[A-Z0-9_]+)['"]`, 'g');
