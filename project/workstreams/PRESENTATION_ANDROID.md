@@ -12,11 +12,13 @@ Estado PR: **DRAFT / bloqueado por save QA #22 y contrato público de Relaciones
 - T3.4: **pendiente de evidencia en teléfono Android físico**. Emulador y CI no la cierran.
 - T4.6: flujo Inicio → Carrera → Mundo → Relaciones → Perfil → Tu partida revisado.
 - Base integrada: `main@4d547ea9c070d9879d812861ed0abb6493ff1d75`.
-- Último HEAD de código validado en CI: `9973c5a0df2d91246e06c324b353e3e6cbcc4e4c`.
+- Último HEAD de código validado en CI: `c0fc499f6fa2bd4db54420ce0f8ebe10dbd7f566`.
 
 ## Cambios de producto
 
-- eliminada la seed visible/editable de **Tu partida**; `Empezar otra carrera` usa `crypto.getRandomValues`;
+- eliminada la seed visible/editable de **Tu partida**;
+- tanto la primera carrera de una instalación nueva como **Empezar otra carrera** obtienen ahora origen interno aleatorio en la frontera de presentación;
+- el motor `GameSession` permanece determinista cuando QA/headless le entrega una seed explícita;
 - eliminada `ageMilestone.signature` de la representación visual para no mostrar `STATE*` internos;
 - `IndexedDB` sustituido por lenguaje de producto (`Guardado local protegido`);
 - safe areas, `viewport-fit=cover`, objetivos táctiles de 44 px, <=380 px, landscape, overscroll y `prefers-reduced-motion`;
@@ -27,9 +29,17 @@ Estado PR: **DRAFT / bloqueado por save QA #22 y contrato público de Relaciones
 
 No se muestra seed ID, RNG, flags internas, agendas/conocimiento secreto NPC ni firmas de rutas internas.
 
-### Deuda propia detectada
+### Adaptador de sesión de jugador
 
-La primera ejecución sin save todavía crea `GameSession.create(424242, ...)`, mientras `Empezar otra carrera` ya usa una seed interna aleatoria. No se expone al usuario, pero hace que todas las instalaciones nuevas arranquen con la misma trayectoria determinista. Debe sustituirse por `newCareerSeed()` antes de considerar cerrada la pulida de producto. No se ha aplicado una reescritura insegura del archivo desde el conector.
+`web/player-session-api.js` encapsula el acceso del jugador a `GameSession`.
+
+- El placeholder histórico `424242` usado por el primer arranque se sustituye por un `uint32` obtenido con `crypto.getRandomValues`.
+- Seeds explícitas distintas se reenvían sin modificación.
+- `fromSave` se delega sin reinterpretar el snapshot.
+- Web, PlayCanvas y Android empaquetan el mismo adaptador.
+- Los tests del motor siguen llamando a `GameSession` directamente y conservan reproducibilidad.
+
+CI confirma el contrato con tests funcionales y de empaquetado.
 
 ## Contrato público de Relaciones / T5.3
 
@@ -78,26 +88,26 @@ El recolector:
 - escribe `analysis/2026-09-15/T3.4-physical-evidence.json`;
 - deja expresamente `t34Closed: false` y todos los checks manuales a `false`.
 
-El intento de añadir comparación automática entre el hash local y el `base.apk` instalado no fue aceptado por el control de escritura del conector y **no forma parte del código actual**. Por tanto esa igualdad debe verificarse externamente durante la prueba física si se requiere.
+La comparación automática entre el hash local y el `base.apk` instalado se intentó como endurecimiento adicional, pero el control de escritura del conector no aceptó ese cambio y **no forma parte del código actual**.
 
-El test estático `physical T3.4 evidence collection is hardware-only and non-destructive` pasa en CI.
+El gate `physical T3.4 evidence collection is hardware-only and non-destructive` pasa en CI.
 
-## APK candidato exacto del HEAD `9973c5a...`
+## APK candidato exacto del HEAD `c0fc499...`
 
-Workflow `Android presentation candidate` run #19: **PASS**.
+Workflow `Android presentation candidate` run #27: **PASS**.
 
 - versión: `0.8.0`, versionCode `1`;
-- tamaño: **8.539.269 bytes**;
-- SHA-256: `c5a00e14419b44c25d301a27fa8a367baaca991e1baa9346f88aad4e0557a7d7`;
+- tamaño: **8.540.096 bytes**;
+- SHA-256: `a5159defb76620e9833e6858755fdddfe82644dcdda598b64552bad26d2a9784`;
 - hash recalculado sobre el APK descargado y coincidente con `T3.3-apk-build.json`.
 
 Este APK es candidato técnico para la prueba física; no es evidencia de T3.4 completada.
 
-## CI / QA del HEAD `9973c5a...`
+## CI / QA del HEAD `c0fc499...`
 
-`Android presentation candidate` run #19: **PASS**.
+`Android presentation candidate` run #27: **PASS**.
 
-`Repository integrity` run #309:
+`Repository integrity` run #351:
 
 - build: PASS;
 - `npm test` + T5.2: PASS;
@@ -107,9 +117,12 @@ Este APK es candidato técnico para la prueba física; no es evidencia de T3.4 c
 - carreras largas: PASS;
 - lifecycle audit: PASS;
 - simulación estratificada: PASS;
-- `test:presentation`: **6/6 PASS**, incluido el recolector físico;
-- build PlayCanvas + tests de estado/RNG/privacidad/offline package: PASS hasta `test:saves`;
-- resultado final: **FAIL únicamente por #22**.
+- `test:presentation`: **8/8 PASS**;
+- adaptación de primera carrera aleatoria: PASS;
+- empaquetado común web/PlayCanvas/Android del adaptador: PASS;
+- PlayCanvas equivalencia de estado/RNG: PASS;
+- PlayCanvas privacidad/offline/self-contained: PASS;
+- resultado final: **FAIL únicamente por #22** dentro de `test:saves`.
 
 ## #22 · baseline v8 histórico desfasado
 
@@ -162,7 +175,8 @@ PR #14 permanece **DRAFT**. Para marcarlo listo se requiere:
 
 1. resolver #22 y obtener `Repository integrity` verde;
 2. resolver el contrato público de contactos en Relaciones;
-3. corregir la seed fija de la primera partida;
-4. obtener `Android presentation candidate` verde sobre el HEAD de código final.
+3. obtener `Android presentation candidate` verde sobre el HEAD de código final.
+
+La deuda de seed fija de la primera partida queda **resuelta y validada** en `c0fc499...`.
 
 T3.4 seguirá abierta incluso después del merge técnico hasta existir evidencia real en teléfono Android físico.
