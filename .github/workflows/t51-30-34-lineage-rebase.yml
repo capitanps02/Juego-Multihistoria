@@ -1,0 +1,121 @@
+name: T5.1 30-34 lineage rebase
+
+on:
+  push:
+    branches: [t51/canon-30-34]
+    paths:
+      - '.github/workflows/t51-30-34-lineage-rebase.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  rebase-handoff:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: t51/canon-30-34
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Rebase handoff and evidence onto B1a source
+        env:
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+
+          const MAIN_SHA = '49e195d07d064e0532ea9109d9544b91df52bf0e';
+          const B1A = '1a8a5e2006fe7160f4fbc02060568d3abec99df038fe3a1a7799c8a0e802eac7';
+          const runId = Number(process.env.RUN_ID);
+
+          const handoffPath = 'analysis/T5.1/canon-30-34-migration-handoff.json';
+          const handoff = JSON.parse(fs.readFileSync(handoffPath, 'utf8'));
+          handoff.sourceMainSha = MAIN_SHA;
+          handoff.sourceContentIdentity = B1A;
+          handoff.sourceIdentityEvidence = {
+            source: 'src/session/content-migration.ts#T51_B1A_CONTENT_IDENTITY',
+            fixture: `qa/fixtures/t5.1/post-t51-sources/${B1A}.json`,
+            policy: 'This batch extends the frozen post-T5.1 B1a lineage; it must not add a PRE_T51 shortcut.'
+          };
+          handoff.targetIdentityEvidence.workflowRun = runId;
+          handoff.targetIdentityEvidence.source = 'T5.1 30-34 lineage rebase / runtime contentIdentity(EVENTS)';
+          handoff.currentBatch.routeSemantics = 'A completed or pending T51_B1A source event with one of these same string IDs remains source provenance. Because no identity is verified same-scene, source SEEN/cooldown must not suppress the repaired canonical definition.';
+          handoff.requiredCurrentRouteAssertions = handoff.requiredCurrentRouteAssertions
+            .map(value => value === 'source identity is the frozen pre-T5.1 identity'
+              ? 'source identity is the frozen post-T5.1 B1a identity'
+              : value)
+            .filter(value => value !== 'registered edge extends the existing PRE_T51 -> T51_B1A lineage without shortcut or ambiguity');
+          handoff.requiredCurrentRouteAssertions.push('registered edge extends the existing PRE_T51 -> T51_B1A lineage without shortcut or ambiguity');
+          fs.writeFileSync(handoffPath, JSON.stringify(handoff, null, 2) + '\n');
+
+          const auditPath = 'analysis/T5.1/canon-30-34.json';
+          const audit = JSON.parse(fs.readFileSync(auditPath, 'utf8'));
+          audit.integrationStatus.syncedBaselineMain = MAIN_SHA;
+          audit.integrationStatus.contentMigrationLineage = 'PRE_T51_to_T51_B1A_available_in_main';
+          audit.integrationStatus.contentMigrationRoute = 'handoff_rebased_on_B1A_registration_pending';
+          audit.integrationStatus.targetedT51Run = runId;
+          audit.integrationStatus.targetedT51Result = 'pending_current_run';
+          audit.integrationStatus.temporaryValidationWorkflowRemoved = false;
+          fs.writeFileSync(auditPath, JSON.stringify(audit, null, 2) + '\n');
+
+          const workstreamPath = 'project/workstreams/T51_CANON_30_34.md';
+          let workstream = fs.readFileSync(workstreamPath, 'utf8');
+          workstream = workstream.replace(
+            'source content identity congelada: `2e07efd2ea99c4e9ec4c2b20ae89664204f76db2c55a72d567208799c01bccff`;',
+            `source content identity congelada post-B1a: \`${B1A}\`;`
+          );
+          workstream = workstream.replace(
+            'Baseline sincronizado: `main@fb545cd18c6828b1f8d636435d91e296e92eaab6`.',
+            `Baseline sincronizado: \`main@${MAIN_SHA}\`.`
+          );
+          workstream = workstream.replace(
+            'Repository integrity sigue alcanzando el boundary esperado de política global: la ruta pre-T5.1 → target aún no está registrada por integración.',
+            'La infraestructura global ya preserva el lineage `PRE_T51 → T51_B1A`. El boundary esperado pasa a ser el edge `T51_B1A → target`, que aún debe registrar/certificar integración.'
+          );
+          workstream = workstream.replace(
+            '- `contentMigrationRoute: handoff_ready_registration_pending`;',
+            '- `contentMigrationLineage: PRE_T51_to_T51_B1A_available_in_main`;\n- `contentMigrationRoute: handoff_rebased_on_B1A_registration_pending`;'
+          );
+          const marker = 'Evidencia dirigida:\n';
+          const currentEvidence = `\n- run \`${runId}\`: validación post-lineage en curso; solo se conservará en Git si \`npm run test:t51\` queda verde.\n`;
+          if (!workstream.includes(`run \`${runId}\``)) workstream = workstream.replace(marker, marker + currentEvidence);
+          fs.writeFileSync(workstreamPath, workstream);
+          NODE
+      - run: npm ci
+      - name: Validate focused T5.1 30-34 suite
+        run: npm run test:t51
+      - name: Mark validation green and remove temporary workflow
+        env:
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const runId = Number(process.env.RUN_ID);
+          const auditPath = 'analysis/T5.1/canon-30-34.json';
+          const audit = JSON.parse(fs.readFileSync(auditPath, 'utf8'));
+          audit.integrationStatus.targetedT51Run = runId;
+          audit.integrationStatus.targetedT51Result = '29/29_pass';
+          audit.integrationStatus.temporaryValidationWorkflowRemoved = true;
+          fs.writeFileSync(auditPath, JSON.stringify(audit, null, 2) + '\n');
+
+          const workstreamPath = 'project/workstreams/T51_CANON_30_34.md';
+          let workstream = fs.readFileSync(workstreamPath, 'utf8');
+          workstream = workstream.replace(
+            `- run \`${runId}\`: validación post-lineage en curso; solo se conservará en Git si \`npm run test:t51\` queda verde.`,
+            `- run \`${runId}\`: **29/29 PASS** tras rebasar el handoff a \`T51_B1A\` y validar la identidad target runtime.`
+          );
+          fs.writeFileSync(workstreamPath, workstream);
+          NODE
+          rm .github/workflows/t51-30-34-lineage-rebase.yml
+      - name: Commit validated rebase
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add analysis/T5.1/canon-30-34-migration-handoff.json analysis/T5.1/canon-30-34.json project/workstreams/T51_CANON_30_34.md .github/workflows/t51-30-34-lineage-rebase.yml
+          git commit -m 'audit(t51): rebase 30-34 migration handoff onto B1a lineage'
+          git push origin HEAD:t51/canon-30-34
