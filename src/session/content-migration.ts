@@ -55,11 +55,24 @@ export const LEGACY_CONTENT_SOURCES: Readonly<Record<string, ContentEvidenceSour
   }
 };
 
+export const T51_B1A_CONTENT_IDENTITY = "1a8a5e2006fe7160f4fbc02060568d3abec99df038fe3a1a7799c8a0e802eac7";
+
 /**
- * Target-specific routes belong here once a canonical content batch changes EVENTS.
- * Keeping this empty while active content still equals the frozen pre-T5.1 catalog is intentional.
+ * Target-specific routes are explicit and identity-bound. B1a only repairs the
+ * information presented by three stable-ID scenes; they remain the same scene
+ * for history, SEEN state, cooldown and pending-decision continuity.
  */
-export const CONTENT_MIGRATION_ROUTES: readonly ContentMigrationRoute[] = [];
+export const CONTENT_MIGRATION_ROUTES: readonly ContentMigrationRoute[] = [
+  {
+    sourceContentIdentity: PRE_T51_CONTENT_IDENTITY,
+    targetContentIdentity: T51_B1A_CONTENT_IDENTITY,
+    schedulerMappings: [
+      { kind: "same_scene", legacyEventId: "EVT_18_MED_001", canonicalEventId: "EVT_18_MED_001" },
+      { kind: "same_scene", legacyEventId: "EVT_18_TEAM_001", canonicalEventId: "EVT_18_TEAM_001" },
+      { kind: "same_scene", legacyEventId: "EVT_18_MATCH_002", canonicalEventId: "EVT_18_MATCH_002" }
+    ]
+  }
+];
 
 const activeEvidenceCache = new Map<string, Readonly<Record<string, LegacyEventEvidence>>>();
 activeEvidenceCache.set(PRE_T51_CONTENT_IDENTITY, PRE_T51_EVENT_EVIDENCE);
