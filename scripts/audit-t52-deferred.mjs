@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { EVENTS } from '../dist/content/events/index.js';
 import { SEED_CATALOG } from '../dist/catalog/seeds.js';
 import { getSeedScopePolicy } from '../dist/catalog/seed-scope.js';
+import { seedPresencePolarity } from './t52-seed-condition-polarity.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const outputPath = path.join(root, 'analysis/T5.2/deferred-consequences.json');
@@ -53,6 +54,8 @@ export function buildDeferredConsequenceReport(events = EVENTS, seeds = SEED_CAT
   const unknownRefs = [];
   const producers = [];
   const consumers = [];
+  const negativeDependencies = [];
+  const neutralDependencies = [];
   const declaredReaders = [];
   const sameOutcomeCreateTerminal = [];
 
@@ -70,15 +73,24 @@ export function buildDeferredConsequenceReport(events = EVENTS, seeds = SEED_CAT
         unknownRefs.push({ seedId, eventId: event.id, kind: 'condition', context });
         continue;
       }
-      consumers.push({
+
+      const polarity = seedPresencePolarity(condition);
+      const row = {
         seedId,
         eventId: event.id,
         kind: 'condition',
         context,
+        polarity,
+        op: condition.op,
+        value: condition.value,
         ageWindow: event.ageWindow,
         phase: event.phase,
         family: event.family
-      });
+      };
+
+      if (polarity === 'positive') consumers.push(row);
+      else if (polarity === 'negative') negativeDependencies.push(row);
+      else neutralDependencies.push(row);
     }
   };
 
@@ -95,15 +107,14 @@ export function buildDeferredConsequenceReport(events = EVENTS, seeds = SEED_CAT
     collectConditions(event, event.exclusions, 'exclusion');
 
     // Event-level OR routes are first-class reachability gates. Each route is internally
-    // AND, while routes are OR-ed by the shared T5.1 contract. A HAS_SEED_* condition in
-    // any route is therefore behavioral consumption and belongs in the deferred graph.
+    // AND, while routes are OR-ed by the shared T5.1 contract. Positive HAS_SEED_* routes
+    // are consumers; absence/suppression routes are tracked separately by polarity.
     for (const [alternativeIndex, route] of (event.gateAlternatives ?? []).entries()) {
       collectConditions(event, route, `gateAlternative:${alternativeIndex}`);
     }
 
-    // Choice eligibility is a first-class runtime gate. A seed used only to expose one
-    // canonical option is still being consumed by behavior and must not be misclassified
-    // as metadata-only just because the event itself is schedulable without the seed.
+    // Choice eligibility is a first-class runtime gate. A positive seed-presence condition
+    // can consume a deferred seed even when the event itself is schedulable without it.
     for (const choice of event.choices ?? []) {
       collectConditions(event, choice.eligibility, `choice:${choice.id}`);
     }
@@ -148,6 +159,7 @@ export function buildDeferredConsequenceReport(events = EVENTS, seeds = SEED_CAT
             eventId: event.id,
             kind: transition.action,
             context: `outcome:${outcome.id}`,
+            polarity: 'positive',
             ageWindow: event.ageWindow,
             phase: event.phase,
             family: event.family
@@ -167,6 +179,14 @@ export function buildDeferredConsequenceReport(events = EVENTS, seeds = SEED_CAT
     consumers,
     row => `${row.seedId}:${row.eventId}:${row.kind}:${row.context}`
   );
+  const runtimeNegativeDependencies = dedupeRows(
+    negativeDependencies,
+    row => `${row.seedId}:${row.eventId}:${row.context}:${row.op}:${JSON.stringify(row.value)}`
+  );
+  const runtimeNeutralDependencies = dedupeRows(
+    neutralDependencies,
+    row => `${row.seedId}:${row.eventId}:${row.context}:${row.op}:${JSON.stringify(row.value)}`
+  );
   const runtimeProducers = dedupeRows(
     producers,
     row => `${row.seedId}:${row.eventId}:${row.outcomeId}`
@@ -176,9 +196,15 @@ export function buildDeferredConsequenceReport(events = EVENTS, seeds = SEED_CAT
   const rows = seeds.map(seed => {
     const seedProducers = runtimeProducers.filter(row => row.seedId === seed.id);
     const seedConsumers = runtimeConsumers.filter(row => row.seedId === seed.id);
-    const runtimeConsumerEvents = new Set(seedConsumers.map(row => row.eventId));
+    const seedNegativeDependencies = runtimeNegativeDependencies.filter(row => row.seedId === seed.id);
+    const seedNeutralDependencies = runtimeNeutralDependencies.filter(row => row.seedId === seed.id);
+    const runtimeDependencyEvents = new Set([
+      ...seedConsumers.map(row => row.eventId),
+      ...seedNegativeDependencies.map(row => row.eventId),
+      ...seedNeutralDependencies.map(row => row.eventId)
+    ]);
     const metadataOnlyReaders = declared
-      .filter(row => row.seedId === seed.id && !runtimeConsumerEvents.has(row.eventId))
+      .filter(row => row.seedId === seed.id && !runtimeDependencyEvents.has(row.eventId))
       .map(row => row.eventId);
 
     const pairs = [];
@@ -207,8 +233,12 @@ export function buildDeferredConsequenceReport(events = EVENTS, seeds = SEED_CAT
       scope,
       producerCount: seedProducers.length,
       runtimeConsumerCount: seedConsumers.length,
+      negativeDependencyCount: seedNegativeDependencies.length,
+      neutralDependencyCount: seedNeutralDependencies.length,
       producers: seedProducers,
       runtimeConsumers: seedConsumers,
+      negativeDependencies: seedNegativeDependencies,
+      neutralDependencies: seedNeutralDependencies,
       metadataOnlyReaders,
       feasiblePairCount: feasiblePairs.length,
       strictDeferredPairCount: strictDeferredPairs.length,
@@ -228,6 +258,7 @@ export function buildDeferredConsequenceReport(events = EVENTS, seeds = SEED_CAT
   const impossibleRuntimeChains = rows.filter(row => row.impossibleRuntimeChain).map(row => row.id);
   const seedsWithStrictDeferredPath = rows.filter(row => row.strictDeferredPairCount > 0).map(row => row.id);
   const seedsWithUnreachableEdges = rows.filter(row => row.unreachableEdgeCount > 0).map(row => row.id);
+  const seedsWithNegativeDependencies = rows.filter(row => row.negativeDependencyCount > 0).map(row => row.id);
   const scopeProofRequired = rows
     .filter(row => row.proofObligations.clubContinuity || row.proofObligations.seasonContinuity)
     .map(row => ({ id: row.id, ...row.proofObligations }));
@@ -239,8 +270,9 @@ export function buildDeferredConsequenceReport(events = EVENTS, seeds = SEED_CAT
     task: 'T5.2 deferred consequences',
     generatedAt: new Date().toISOString(),
     model: {
-      purpose: 'prove necessary temporal feasibility for runtime producer→consumer seed chains without inventing canonical semantics',
-      consumerEvidence: 'runtime HAS_SEED_* conditions in event gates/gate alternatives/exclusions/outcomes/modifiers/choice eligibility plus resolve/expire transitions; seedsRead-only metadata is reported separately',
+      purpose: 'prove necessary temporal feasibility for positive runtime producer→consumer seed chains without inventing canonical semantics',
+      consumerEvidence: 'positive HAS_SEED_* conditions in event gates/gate alternatives/exclusions/outcomes/modifiers/choice eligibility plus resolve/expire transitions; negative/neutral dependencies and seedsRead-only metadata are reported separately',
+      polarity: 'boolean HAS_SEED_* predicates are classified by whether the same comparator passes for true vs false; only positive presence requirements create producer→consumer edges',
       ageExpiry: 'catalog max age is treated as terminal because expireDueSeedsInPlace expires live seeds when state.age > maxAge',
       chronology: 'a consumer must be schedulable at the same or later age than at least one producer occurrence',
       clubSeasonDate: 'reported as proof obligations, not inferred statically',
@@ -251,6 +283,9 @@ export function buildDeferredConsequenceReport(events = EVENTS, seeds = SEED_CAT
       eventCount: events.length,
       runtimeProducerSeeds: rows.filter(row => row.producerCount > 0).length,
       runtimeEventConsumerSeeds: rows.filter(row => row.runtimeConsumerCount > 0).length,
+      seedsWithNegativeDependencies: seedsWithNegativeDependencies.length,
+      negativeDependencyConditions: runtimeNegativeDependencies.length,
+      neutralDependencyConditions: runtimeNeutralDependencies.length,
       seedsWithBothSides: rows.filter(row => row.producerCount > 0 && row.runtimeConsumerCount > 0).length,
       seedsWithStrictDeferredPath: seedsWithStrictDeferredPath.length,
       impossibleRuntimeChains: impossibleRuntimeChains.length,
@@ -263,6 +298,9 @@ export function buildDeferredConsequenceReport(events = EVENTS, seeds = SEED_CAT
     impossibleRuntimeChains,
     seedsWithStrictDeferredPath,
     seedsWithUnreachableEdges,
+    seedsWithNegativeDependencies,
+    negativeDependencies: runtimeNegativeDependencies,
+    neutralDependencies: runtimeNeutralDependencies,
     scopeProofRequired,
     dateProofRequired,
     sameOutcomeCreateTerminal,
