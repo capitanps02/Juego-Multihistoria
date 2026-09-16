@@ -46,6 +46,9 @@ jobs:
       - name: Build T5 QA target
         run: npm run build
 
+      - name: T5 pre-content freeze sentinel
+        run: node scripts/freeze-t51-baseline.mjs --check
+
       - name: T5 determinism and RNG isolation
         run: node --test --test-name-pattern="T5 determinism" scripts/test-t5-regression.mjs
 
@@ -60,6 +63,9 @@ jobs:
 
       - name: T5 content lifecycle audit
         run: node scripts/qa-t5-content.mjs
+
+      - name: T5 cross-workstream integration probes
+        run: node --test scripts/test-t5-integration-probes.mjs
 
       - name: T5 stratified simulation
         run: node scripts/qa-t5-sim.mjs

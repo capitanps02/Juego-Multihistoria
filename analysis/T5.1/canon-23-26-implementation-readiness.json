@@ -1,0 +1,153 @@
+{
+  "schemaVersion": 1,
+  "workstream": "T5.10-T5.14 implementation readiness",
+  "phase": "23_26",
+  "base": "main@901170c85322d324b19781913cb3705757676f41",
+  "baselineFreeze": {
+    "status": "closed",
+    "contentIdentity": "2e07efd2ea99c4e9ec4c2b20ae89664204f76db2c55a72d567208799c01bccff",
+    "manifest": "qa/fixtures/t5.1/pre-t51-content-manifest.json",
+    "catalogFixture": "qa/fixtures/t5.1/pre-t51-event-catalog.json"
+  },
+  "globalBlocker": "session_migration_policy_from_frozen_contentIdentity",
+  "summary": {
+    "total": 15,
+    "contentReadyWaitingIdentity": 10,
+    "crossWorkstreamDependency": 5,
+    "runtimeChanged": false
+  },
+  "architectureEvidence": {
+    "offerAuthority": "src/simulation/offers.ts mantiene CareerOffer en market.pending y solo respondToOffer aplica CareerTerms al aceptar/delegar.",
+    "sessionExclusivity": "src/session/validate-session.ts exige que una market.pending no coexista con pendingDecision/pendingResult.",
+    "gateComposition": "src/core/conditions.ts evalúa gates con every(); no existe composición OR en EventDefinition.",
+    "relationshipPaths": "src/core/path.ts soporta rel.<npcId>.<axis>, pero no selección dinámica SLOT_CAPTAIN/STAR ni OR entre relación y seed.",
+    "footballSeparation": "El contrato T1 exige separar resultado deportivo de interpretación social; EVT_24_MATCH_001 no debe convertir la elección de lanzador en gol garantizado ni consumir el RNG narrativo como sustituto del fútbol."
+  },
+  "events": [
+    {
+      "id": "EVT_23_BRIDGE_001",
+      "status": "content_ready_waiting_identity",
+      "availableSignals": ["age", "phase", "contract.monthsRemaining", "professional.roleSecurity", "professional.careerControl", "SEED_ELITE_ROLE_BARGAIN", "SEED_AGENT_POWER"],
+      "localWork": "Reemplazar copy/choices genéricos y escribir memoria de negociación/agent power sin firmar contrato.",
+      "dependency": null
+    },
+    {
+      "id": "EVT_23_MKT_001",
+      "status": "cross_workstream_dependency",
+      "availableSignals": ["reputation.marketHeat", "professional.clubPrestigeTier", "professional.roleSecurity", "SEED_ELITE_ROLE_BARGAIN", "SEED_DEADLINE_DAY"],
+      "localWork": "Construir escena e intención de cada opción sin aplicar un traspaso mediante efectos narrativos.",
+      "dependency": {
+        "owner": "offer/session authority",
+        "kind": "offer_decision_bridge",
+        "reason": "El canon muestra una oferta real con términos y permite aceptarla/rechazarla, pero market.pending no puede coexistir con pendingDecision y solo respondToOffer está autorizado a aplicar el cambio de carrera."
+      }
+    },
+    {
+      "id": "EVT_23_CON_001",
+      "status": "cross_workstream_dependency",
+      "availableSignals": ["contract.monthsRemaining", "contract.salaryMonthly", "contract.releaseClause", "professional.contractPower", "reputation.marketHeat", "SEED_FIRST_FREE_AGENCY", "SEED_CONTRACT_CEILING"],
+      "localWork": "Preparar los cuatro paquetes/intenciones y sus consecuencias relacionales; no mutar contrato desde Choice effects.",
+      "dependency": {
+        "owner": "offer/session authority",
+        "kind": "contract_offer_bridge",
+        "reason": "Firmar, reducir cláusula o cambiar duración son términos contractuales y deben pasar por la autoridad de CareerOffer/respondToOffer para preservar atomicidad, idempotencia y save/restore."
+      }
+    },
+    {
+      "id": "EVT_23_AGT_001",
+      "status": "content_ready_waiting_identity",
+      "availableSignals": ["reputation.marketHeat", "professional.agentControl", "SEED_DIRECT_RECRUIT", "SEED_AGENT_POWER", "rel.NPC_AGT_01.trust", "rel.NPC_AGT_02.trust"],
+      "localWork": "Gates por interés plausible; opciones específicas; actualizar control/confianza y SEED_DIRECT_RECRUIT sin crear oferta formal.",
+      "dependency": null
+    },
+    {
+      "id": "EVT_23_BODY_001",
+      "status": "content_ready_waiting_identity",
+      "availableSignals": ["professional.bodyLoad", "professional.recoveryMargin", "SEED_BODY_PRECEDENT", "SEED_LOAD_MANAGEMENT", "rel.NPC_MED_01.trust"],
+      "localWork": "Gate por carga/historial, opciones preventivas y memoria de load management; mantener incertidumbre médica.",
+      "dependency": null
+    },
+    {
+      "id": "EVT_23_MONEY_001",
+      "status": "content_ready_waiting_identity",
+      "availableSignals": ["professional.moneyComfort", "SEED_FIRST_BIG_MONEY", "SEED_FAMILY_MONEY", "SEED_FAMILY_BUSINESS", "rel.NPC_FAM_01.trust", "rel.NPC_FAM_02.trust"],
+      "localWork": "Representar la decisión como estructura patrimonial/memoria diferida; evitar convertir inversión en rentabilidad garantizada inmediata.",
+      "dependency": null
+    },
+    {
+      "id": "EVT_23_HOME_001",
+      "status": "content_ready_waiting_identity",
+      "availableSignals": ["professional.publicMyth", "professional.homePull", "SEED_HOME_DISTANCE", "SEED_EXIT_STYLE_UDV", "SEED_HOME_SYMBOL"],
+      "localWork": "Gate por vínculo local/semillas y cuatro tratamientos distintos del uso de imagen; crear SEED_HOME_SYMBOL según decisión.",
+      "dependency": null
+    },
+    {
+      "id": "EVT_23_EUR_001",
+      "status": "content_ready_waiting_identity",
+      "availableSignals": ["flags.CONTINENTAL_CONTEXT", "flags.CONTINENTAL_REGISTERED", "professional.roleSecurity", "professional.continentalCred", "SEED_EURO_REGISTRATION", "SEED_ELITE_ROLE_BARGAIN"],
+      "localWork": "Modelar incertidumbre de inscripción y consecuencias sobre rol/mercado; pedir salida o cesión crea intención, no firma automática.",
+      "dependency": null
+    },
+    {
+      "id": "EVT_23_LOCK_001",
+      "status": "cross_workstream_dependency",
+      "availableSignals": ["SEED_TEAMMATE_COVER", "rel.NPC_PLR_10.affinity", "rel.NPC_PLR_11.affinity", "professional.lockerPower"],
+      "localWork": "Copy, opciones y consecuencias relacionales están especificados; no ampliar el gate a cualquier vestuario.",
+      "dependency": {
+        "owner": "scheduler/condition model",
+        "kind": "or_gate_or_derived_eligibility",
+        "reason": "El trigger canónico es afinidad con SLOT_CAPTAIN/STAR O SEED_TEAMMATE_COVER previa. conditionsPass usa AND para gates y EventDefinition no ofrece grupos OR; rel.* sí existe pero no resuelve esa composición dinámica."
+      }
+    },
+    {
+      "id": "EVT_23_PRS_001",
+      "status": "content_ready_waiting_identity",
+      "availableSignals": ["sport.roleScore", "professional.roleSecurity", "reputation.mediaHeat", "SEED_FIRST_LEAK", "SEED_ELITE_ROLE_BARGAIN"],
+      "localWork": "Gate por caída real de rol tras expectativa alta; distinguir filtración, reunión interna, declaración y espera.",
+      "dependency": null
+    },
+    {
+      "id": "EVT_24_MATCH_001",
+      "status": "cross_workstream_dependency",
+      "availableSignals": ["professional.lockerPower", "professional.composure", "SEED_PENALTY_HIERARCHY"],
+      "localWork": "La decisión social/jerárquica y su memoria pueden definirse en contenido; el resultado del penalti no debe resolverse como premio fijo del Choice.",
+      "dependency": {
+        "owner": "football/match resolution",
+        "kind": "football_outcome_hook",
+        "reason": "El canon exige que el penalti se resuelva por atributos y azar deportivo y que marcar no borre el conflicto. Hace falta un resultado deportivo separado del RNG/interpretación narrativa."
+      }
+    },
+    {
+      "id": "EVT_25_CON_001",
+      "status": "cross_workstream_dependency",
+      "availableSignals": ["contract.monthsRemaining", "contract.salaryMonthly", "contract.releaseClause", "professional.contractPower", "professional.nationalStanding", "reputation.marketHeat", "SEED_CONTRACT_CEILING", "SEED_FIRST_FREE_AGENCY", "SEED_PUBLIC_CONTRACT"],
+      "localWork": "Preparar decisión pre-torneo y memoria contractual; no aplicar renovación desde efectos narrativos.",
+      "dependency": {
+        "owner": "offer/session authority",
+        "kind": "contract_offer_bridge",
+        "reason": "Renovar ahora, esperar o firmar con salida modifican CareerTerms y deben mantener las garantías T2.4 de oferta, doble pulsación, rollback, reload e idempotencia."
+      }
+    },
+    {
+      "id": "EVT_25_AGT_001",
+      "status": "content_ready_waiting_identity",
+      "availableSignals": ["professional.agentControl", "SEED_AGENT_OMISSION", "SEED_AGENT_PROOF", "rel.NPC_AGT_01.trust", "rel.NPC_AGT_02.trust"],
+      "localWork": "Gate por evidencia/omisión y consecuencias sobre confianza/control; SEED_AGENT_PROOF debe registrar evidencia, no convertir una oportunidad hipotética en hecho.",
+      "dependency": null
+    },
+    {
+      "id": "EVT_25_MKT_001",
+      "status": "content_ready_waiting_identity",
+      "availableSignals": ["reputation.marketHeat", "professional.careerControl", "SEED_DIRECT_RECRUIT"],
+      "localWork": "La llamada abre negociación o pide confirmación; ninguna opción firma todavía, por lo que puede quedar como escena narrativa/seed sin violar CareerOffer.",
+      "dependency": null
+    },
+    {
+      "id": "EVT_25_NAT_001",
+      "status": "content_ready_waiting_identity",
+      "availableSignals": ["professional.nationalStanding", "professional.nationalCaps", "professional.nationalRole", "SEED_FIRST_ABSOLUTE_CALL"],
+      "localWork": "Gate por convocatorias repetidas/standing y opciones sobre rol; consecuencias deben separar jerarquía deportiva, adaptación y uso comercial del estatus.",
+      "dependency": null
+    }
+  ]
+}
