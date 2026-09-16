@@ -1,0 +1,30 @@
+{
+  "task": "T5.1 Batch 02E principal legacy dispositions",
+  "generatedAt": "2026-09-16",
+  "phase": "26_30",
+  "canonicalAge": 29,
+  "reviewedLegacyCount": 8,
+  "approvedSameSceneMigrations": 0,
+  "defaultDisposition": "retire_technical_keep_history_only",
+  "rules": {
+    "historyIdRewriteAllowed": false,
+    "pendingIdDirectRewriteAllowed": false,
+    "canonicalSeenSynthesisAllowed": false,
+    "legacyCompatibilityDefinitionMaySchedule": false,
+    "historicalSeedOriginRewriteAutomatic": false
+  },
+  "entries": [
+    {"legacyId":"EVT_29_CCH_001","decision":"retire_technical_keep_history_only","sameSceneMigrationAllowed":false,"causalOwner":"EVT_27_LOCK_001","seed":"SEED_MANAGER_POWER"},
+    {"legacyId":"EVT_29_FAN_001","decision":"retire_technical_keep_history_only","sameSceneMigrationAllowed":false,"causalOwner":"EVT_27_PRS_001","seed":"SEED_FAN_FRACTURE"},
+    {"legacyId":"EVT_29_MED_001","decision":"retire_technical_keep_history_only","sameSceneMigrationAllowed":false,"causalOwner":"EVT_27_MED_001","seed":"SEED_SURGERY_TIMING"},
+    {"legacyId":"EVT_29_NAT_001","decision":"retire_technical_keep_history_only","sameSceneMigrationAllowed":false,"causalOwner":"EVT_27_NAT_001","seed":"SEED_NATIONAL_CAPTAINCY","notCanonicalTarget":"EVT_29_NAT_002"},
+    {"legacyId":"EVT_29_EUR_001","decision":"retire_technical_keep_history_only","sameSceneMigrationAllowed":false,"causalOwner":"EVT_27_EUR_001","seed":"SEED_ELITE_SACRIFICE","notCanonicalTarget":"EVT_29_TACT_001"},
+    {"legacyId":"EVT_29_REC_001","decision":"retire_technical_keep_history_only","sameSceneMigrationAllowed":false,"causalOwner":"EVT_27_MATCH_001","seed":"SEED_RECORD_PUBLIC_TONE"},
+    {"legacyId":"EVT_29_HOME_001","decision":"retire_technical_keep_history_only","sameSceneMigrationAllowed":false,"causalOwner":"EVT_28_HOME_001","seed":"SEED_EARLY_HOME_RETURN"},
+    {"legacyId":"EVT_29_FORM_001","decision":"retire_technical_keep_history_only","sameSceneMigrationAllowed":false,"causalOwner":"EVT_28_FORM_001","seed":"SEED_FIRST_PEAK_DIP"}
+  ],
+  "canonical02ETargets": ["EVT_29_TACT_001","EVT_29_NAT_002"],
+  "hardDeadlineOwner": "EVT_29_FIN_001",
+  "hardDeadlineMemory": ["SEED_AGE30_PRIORITY","world.age30Priority"],
+  "status": "review_complete_planning_only"
+}
