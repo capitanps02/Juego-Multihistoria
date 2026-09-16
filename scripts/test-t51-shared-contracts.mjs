@@ -1,4 +1,5 @@
 import './test-t51-locker-leadership.mjs';
+import './test-t51-narrative-football-moment.mjs';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createInitialState } from '../dist/content/initial-state.js';
