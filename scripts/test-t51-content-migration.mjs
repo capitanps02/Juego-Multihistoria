@@ -161,6 +161,42 @@ test('retired technical event remains historical evidence and is absent from the
   assert.equal(new EventIndex(events).events.some(event => event.id === retiredId), false);
 });
 
+test('pending retired technical event resolves from frozen legacy definition and never re-enters the active scheduler', async () => {
+  const { snapshot } = await sourceWithPending(719);
+  const legacy = downgradeToV2(snapshot);
+  const retiredId = legacy.pendingDecision.event.id;
+  const frozenEvent = clone(legacy.pendingDecision.event);
+  const events = clone(EVENTS).filter(event => event.id !== retiredId);
+  const identity = await contentIdentity(events);
+  const migrationRoute = route(legacy.contentIdentity, identity);
+  const rngBefore = clone(legacy.state.rngState);
+
+  const migrated = await GameSession.migrateAndResume(legacy, { events, migrationRoutes: [migrationRoute] });
+  const afterMigration = migrated.exportSnapshot();
+  assert.equal(afterMigration.contentIdentity, identity);
+  assert.deepEqual(afterMigration.state.rngState, rngBefore);
+  assert.deepEqual(afterMigration.pendingDecision.event, frozenEvent);
+  assert.equal(afterMigration.pendingDecision.provenance.sourceContentIdentity, PRE_T51_CONTENT_IDENTITY);
+  assert.equal(new EventIndex(events).events.some(event => event.id === retiredId), false);
+
+  const view = migrated.getView();
+  assert.equal(view.screen, 'decision');
+  await migrated.dispatch(command(migrated, 'choose', {
+    pendingInstanceId: view.decision.instanceId,
+    choiceId: view.decision.choices[0].id
+  }));
+  const resolved = migrated.exportSnapshot();
+  assert.equal(resolved.state.history.at(-1).eventId, retiredId);
+  assert.equal(resolved.decisionProvenance.at(-1).sourceContentIdentity, PRE_T51_CONTENT_IDENTITY);
+  assert.equal(resolved.pendingDecision, null);
+
+  await migrated.dispatch(command(migrated, 'acknowledge'));
+  await migrated.dispatch(command(migrated, 'continue', { maxDays: 30 }));
+  const later = migrated.exportSnapshot();
+  assert.notEqual(later.pendingDecision?.event.id, retiredId);
+  assert.equal(new EventIndex(events).events.some(event => event.id === retiredId), false);
+});
+
 test('tampered legacy pending definition is rejected before content identity changes', async () => {
   const { snapshot } = await sourceWithPending(715);
   const legacy = downgradeToV2(snapshot);
