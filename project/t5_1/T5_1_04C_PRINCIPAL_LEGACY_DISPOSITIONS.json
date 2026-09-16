@@ -1,0 +1,49 @@
+{
+  "task": "T5.1 Batch 04C principal legacy semantic dispositions",
+  "generatedAt": "2026-09-16",
+  "batch": "04C",
+  "phase": "34_plus",
+  "ages": [36, 37, 38],
+  "reviewedBatchEntries": 10,
+  "newUniqueDispositionsThisReview": 9,
+  "reaffirmedPriorDisposition": ["EVT_36_RICH_001"],
+  "approvedSameSceneMigrations": 0,
+  "defaultDisposition": "retire_technical_keep_history_only",
+  "evidence": {
+    "runtime": "src/content/events/34_plus/principal-events.ts",
+    "canonical": "analysis/2026-09-11/t1/principal-traceability.json",
+    "structuralFinding": "All 04C legacy entries are baseline generic() late-career rows with common body/intel/A-B-C-D choices. Canonical 36-38 scenes are fact-specific and carry distinct gates, decisions and memory. EVT_36_RICH_001 had already been reviewed as an exact-title candidate for EVT_38_RICH_001 and remains not-same-scene."
+  },
+  "entries": [
+    {"legacyId":"EVT_36_COM_001","decision":"retire_technical_keep_history_only","lineageCanonicalId":null,"reason":"Generic sporting-resurgence row; no unique canonical same-scene target."},
+    {"legacyId":"EVT_36_MENT_001","decision":"retire_technical_keep_history_only","lineageCanonicalId":"EVT_36_PEER_001","reason":"Veteran-conversation theme only; canonical peer-retirement mirror requires a specific veteran relationship and explicit retirement-distance reflection."},
+    {"legacyId":"EVT_36_RICH_001","decision":"retire_technical_keep_history_only","lineageCanonicalId":"EVT_38_RICH_001","reason":"Prior exact-title review reaffirmed: age-36 generic rich-offer row is not the canonical age-37+ huge-offer/retirement dilemma."},
+    {"legacyId":"EVT_36_HOME_001","decision":"retire_technical_keep_history_only","lineageCanonicalId":"EVT_37_HOME_001","reason":"Home-return lineage only; canonical scene is a specific ten-match UDV offer with four role/closure choices and SEED_TEN_MATCH_HOME_RETURN."},
+    {"legacyId":"EVT_36_END_001","decision":"retire_technical_keep_history_only","lineageCanonicalId":null,"reason":"Generic continue-or-not maturity row; cannot substitute any explicit canonical retirement or contract scene."},
+    {"legacyId":"EVT_37_PRE_001","decision":"retire_technical_keep_history_only","lineageCanonicalId":null,"reason":"Generic preseason row; no unique canonical same-scene target."},
+    {"legacyId":"EVT_37_DERBY_001","decision":"retire_technical_keep_history_only","lineageCanonicalId":"EVT_37_PEN_001","reason":"Late-match/farewell atmosphere lineage only; canonical penalty scene depends on an actual penalty, hierarchy and four penalty-specific choices."},
+    {"legacyId":"EVT_37_PRIVATE_001","decision":"retire_technical_keep_history_only","lineageCanonicalId":"EVT_36_PEER_001","reason":"Private-conversation theme only; no same-scene proof for the canonical peer-retirement mirror or other late-career callback."},
+    {"legacyId":"EVT_38_MKT_001","decision":"retire_technical_keep_history_only","lineageCanonicalId":"EVT_38_MARKET_001","reason":"Baseline title/body is 'El teléfono todavía suena' using generic market choices. Canon is 'Nadie llama en julio', free agent 37+ with low market floor, real silence, five specific options and SEED_MARKET_SILENCE_END. Repairing semantics in place does not prove historical identity."},
+    {"legacyId":"EVT_38_CON_001","decision":"retire_technical_keep_history_only","lineageCanonicalId":"EVT_37_SHORT_001","reason":"Short-contract lineage only; generic six-month row is not the canonical three-month emergency offer with project/option-specific choices and SEED_THREE_MONTH_CONTRACT."}
+  ],
+  "representativeCanonicalContrasts": [
+    "EVT_36_BODY_001: age 36+ recovery limitation, competition-selectivity choices, SEED_COMPETITION_SELECTIVITY",
+    "EVT_36_CCH_001: younger-coach arrival, authority/load/leadership choices, SEED_YOUNGER_COACH",
+    "EVT_36_RECORD_001: real 700-match milestone vs rest, SEED_700_MATCH_CHOICE",
+    "EVT_36_PEER_001: veteran peer retires and asks about your own plans, SEED_PEER_RETIREMENT_MIRROR",
+    "EVT_36_LOWER_001: low market floor + desire for minutes, lower-league/retire/home/wait choices, SEED_DROP_LEVEL_TO_PLAY",
+    "EVT_37_SHORT_001: free-agent 37+ three-month emergency contract, SEED_THREE_MONTH_CONTRACT",
+    "EVT_37_HOME_001: ten-match home return, SEED_TEN_MATCH_HOME_RETURN",
+    "EVT_37_PEN_001: actual farewell-context penalty and hierarchy, SEED_FAREWELL_PENALTY",
+    "EVT_38_MARKET_001: real market silence with five choices, SEED_MARKET_SILENCE_END"
+  ],
+  "migrationRules": {
+    "rewriteCompletedHistoryIds": false,
+    "rewritePendingIdsDirectly": false,
+    "manufactureCanonicalSeenFlags": false,
+    "rewriteHistoricalSeedOriginAutomatically": false,
+    "legacyCompatibilityMayResolvePendingOldChoiceContract": true,
+    "legacyCompatibilityDefinitionsMaySchedule": false
+  },
+  "status": "04C_LEGACY_REVIEW_COMPLETE"
+}
