@@ -3,6 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { EVENTS } from '../dist/content/events/index.js';
 import { validateSeedClosureClassifications } from './t52-seed-closure-classifications.mjs';
+import { SEED_SCOPE_PROOFS } from './t52-seed-scope-proofs.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const lifecyclePath = path.join(root, 'analysis/T5.2/seed-lifecycle.json');
@@ -57,7 +58,14 @@ function nextActionFor(row) {
   return 'upgrade_runtime_endpoints_to_verified_canonical_evidence';
 }
 
-export function buildClosureReadinessReport({ lifecycle, handoff, deferred, events = EVENTS, classifications = [] }) {
+export function buildClosureReadinessReport({
+  lifecycle,
+  handoff,
+  deferred,
+  events = EVENTS,
+  classifications = [],
+  scopeProofs = SEED_SCOPE_PROOFS
+}) {
   const eventStatuses = eventStatusMap(events);
   const owners = ownerMapFromHandoff(handoff);
   const deferredRows = new Map((deferred.rows ?? []).map(row => [row.id, row]));
@@ -122,7 +130,7 @@ export function buildClosureReadinessReport({ lifecycle, handoff, deferred, even
     return row;
   });
 
-  const classificationValidation = validateSeedClosureClassifications(classifications, rows);
+  const classificationValidation = validateSeedClosureClassifications(classifications, rows, { scopeProofs });
   const acceptedClassifications = new Map(classificationValidation.accepted.map(entry => [entry.seedId, entry]));
   for (const row of rows) {
     const classification = acceptedClassifications.get(row.id);
@@ -179,7 +187,8 @@ export function buildClosureReadinessReport({ lifecycle, handoff, deferred, even
       verifiedEndpoint: 'an event endpoint counts as canonically verified only when active EventDefinition.canonStatus === "verified"',
       verifiedPair: 'both producer and non-simulation event consumer are verified and the temporal pair is feasible',
       simulationRule: 'simulation effects are valid runtime consequences but do not by themselves certify final canonical disposition',
-      canonicalClosure: 'closure is applied only from explicit owner-authored classifications that satisfy evidence-specific validation'
+      canonicalClosure: 'closure is applied only from explicit owner-authored classifications that satisfy evidence-specific validation',
+      scopeProofs: 'club/season expiry classifications are checked against the integrated T5.2/T5.4 scope proof registry'
     },
     summary: {
       catalogSeeds,
@@ -194,6 +203,7 @@ export function buildClosureReadinessReport({ lifecycle, handoff, deferred, even
       explicitTerminalSeeds: rows.filter(row => row.explicitTerminalTransition).length,
       finiteAgeWindowSeeds: rows.filter(row => row.finiteAgeWindow).length,
       scopeProofRequiredSeeds: rows.filter(row => row.scopeProofRequired).length,
+      integratedScopeProofs: scopeProofs.length,
       openEndedNeedsCanonicalRationale: rows.filter(row => row.openEndedWithoutTerminalTransition).length,
       impossibleRuntimeChains: impossibleRuntimeChains.length,
       canonicalClosureClassified,
