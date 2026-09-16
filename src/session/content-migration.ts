@@ -55,11 +55,37 @@ export const LEGACY_CONTENT_SOURCES: Readonly<Record<string, ContentEvidenceSour
   }
 };
 
-/**
- * Target-specific routes belong here once a canonical content batch changes EVENTS.
- * Keeping this empty while active content still equals the frozen pre-T5.1 catalog is intentional.
- */
-export const CONTENT_MIGRATION_ROUTES: readonly ContentMigrationRoute[] = [];
+/** Routes are target-specific because contentIdentity changes with each active canonical batch. */
+export const CONTENT_MIGRATION_ROUTES: readonly ContentMigrationRoute[] = [
+  {
+    sourceContentIdentity: PRE_T51_CONTENT_IDENTITY,
+    targetContentIdentity: "5f6a871e4124498aab29903327739037a52b50e6505026bd95824d275d92eaae",
+    schedulerMappings: [
+      {
+        kind: "distinct_scene",
+        legacyEventId: "EVT_23_BRIDGE_001",
+        canonicalEventId: "EVT_23_BRIDGE_001",
+        clearCanonicalSeen: true,
+        clearCanonicalCooldown: true
+      },
+      {
+        kind: "distinct_scene",
+        legacyEventId: "EVT_23_AGT_001",
+        canonicalEventId: "EVT_23_AGT_001",
+        clearCanonicalSeen: true,
+        clearCanonicalCooldown: true
+      },
+      {
+        kind: "distinct_scene",
+        legacyEventId: "EVT_23_BODY_001",
+        canonicalEventId: "EVT_23_BODY_001",
+        clearCanonicalSeen: true,
+        clearCanonicalCooldown: true
+      }
+    ],
+    seedOriginMappings: []
+  }
+];
 
 const activeEvidenceCache = new Map<string, Readonly<Record<string, LegacyEventEvidence>>>();
 activeEvidenceCache.set(PRE_T51_CONTENT_IDENTITY, PRE_T51_EVENT_EVIDENCE);
