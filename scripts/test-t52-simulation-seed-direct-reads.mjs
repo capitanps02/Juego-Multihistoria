@@ -14,7 +14,10 @@ test('direct seed identity scanner detects positive equality forms and ignores i
     state.seeds.some(seed => 'SEED_DIRECT_B' == seed.id);
     current?.id === 'SEED_DIRECT_C';
     selectedSeedId === "SEED_DIRECT_D";
+    seedId == "SEED_DIRECT_E";
+    "SEED_DIRECT_F" === selectedSeedID;
     seed.id !== "SEED_NEGATIVE_ONLY";
+    seedId !== "SEED_NEGATIVE_VARIABLE";
     const label = "SEED_PLAIN_LITERAL";
     state.flags.HAS_SEED_FLAG_ONLY;
   `;
@@ -22,7 +25,9 @@ test('direct seed identity scanner detects positive equality forms and ignores i
     'SEED_DIRECT_A',
     'SEED_DIRECT_B',
     'SEED_DIRECT_C',
-    'SEED_DIRECT_D'
+    'SEED_DIRECT_D',
+    'SEED_DIRECT_E',
+    'SEED_DIRECT_F'
   ]);
 });
 
