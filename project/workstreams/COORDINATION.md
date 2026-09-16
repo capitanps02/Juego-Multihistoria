@@ -5,160 +5,173 @@
 **Repositorio oficial:** `capitanps02/Juego-Multihistoria`  
 **Rama de integración:** `main`
 
-> Este documento registra el estado de integración, no sustituye la evidencia de cierre de cada pasada. GitHub y el código ejecutable prevalecen sobre resúmenes históricos. Una auditoría o un prompt preparado no equivalen a implementación.
+> Este documento registra el estado de integración. GitHub, código ejecutable y CI prevalecen sobre resúmenes históricos. Una auditoría, prompt o planning completo no equivale a implementación funcional.
 
-## 1. Estado de `main` en la revisión
+## 1. Estado de `main`
 
-- SHA inspeccionado antes de crear este panel: `c28d1194d7a6cce8aef9759bbb96875a710cb945`.
-- Último cambio funcional conocido: motor v0.8 + cierres T1–T4.6 ya presentes; el commit superior añade validación de checkout limpio.
-- CI `Repository integrity` para `c28d1194d7a6cce8aef9759bbb96875a710cb945`: **SUCCESS**.
-- El workflow ejecuta `npm ci` y `npm test` sobre checkout limpio con Node 20.
-- `main` no tiene protección de rama configurada en GitHub en esta revisión. La disciplina de integración depende por tanto del proceso y de revisión por SHA.
+- SHA actual tras integración QA: `3079a311a3899d720024cffe8003a577c4146096`.
+- Último PR integrado por el coordinador: **#11 · QA T5 regression gates and stratified simulation harness**.
+- PR #11 fue integrado por squash con `expected_head_sha=4233ffee44bcfc46a88394ff8a86b8d276eb9427` después de `Repository integrity: SUCCESS` sobre ese SHA.
+- El cambio integrado añade QA/CI; **no modifica runtime de producción ni contenido canónico**.
+- `main` sigue sin protección de rama configurada en GitHub; la integración usa revisión explícita + SHA esperado.
 
-## 2. Estado real reconstruido del producto
+## 2. Base funcional y progreso
 
-### Base funcional confirmada
+Confirmado en la base integrada:
 
-- Motor v0.8.
-- 254 eventos principales + 134 condicionales = **388 eventos estructurados**.
-- **210 seeds** registradas.
-- **20 NPC persistentes**.
-- **20 familias de epílogo**.
-- Guardados: **schema 8**.
-- RNG separado entre `narrative`, `football`, `microfeed` y `qa`.
+- motor v0.8;
+- 254 eventos principales + 134 condicionales = **388 eventos**;
+- **210 seeds**;
+- **20 NPC persistentes**;
+- **20 familias de epílogo**;
+- save schema **8**;
+- RNG separado `narrative`, `football`, `microfeed`, `qa`.
 
-### Pasadas
+Pasadas:
 
-- **T1:** completada.
-- **T2.1–T2.5:** completadas con evidencia específica de sesión, migraciones, persistencia, autoridad de ofertas e hitos.
-- **T3.1–T3.3:** completadas.
-- **T3.4:** técnicamente preparada en emulador; **NO cerrada**. Falta evidencia en teléfono Android físico y comprobación visual de importar/exportar.
-- **T4.1–T4.6:** completadas con pruebas dirigidas y regresión.
-- **T4.7/T4.8:** **omitidas por decisión de alcance**; no se cuentan como completadas ni ganan peso.
-- **T5.1:** **en curso**. La implementación canónica completa no está cerrada.
+- T1: completada.
+- T2.1–T2.5: completadas.
+- T3.1–T3.3: completadas.
+- T3.4: técnicamente preparada; **pendiente teléfono Android físico**.
+- T4.1–T4.6: completadas.
+- T4.7/T4.8: **omitidas por decisión de alcance**, sin peso ganado.
+- T5.1: en curso; sin cierre funcional acreditado.
+- T5.2/T5.3: ramas funcionales activas, aún no integradas.
 
-### Progreso ponderado
-
-Reconstrucción a partir de pesos cerrados en `PLAN_PASADAS.md`:
-
-- T1: 6,00 %.
-- T2: 11,00 %.
-- T3: 8,25 % de 11 %.
-- T4: 8,26 % de 11 %.
-- T5+: 0 % ganado todavía.
-- **Total ganado: 33,51 %.**
-
+Progreso ponderado acreditado: **33,51 %**.  
 Pasadas realmente cerradas: **15**.  
-Pasadas omitidas: **2** (`T4.7`, `T4.8`).  
-Baseline histórico: 68 pasadas. Permanecen 53 no cerradas en la aritmética original; al excluir las 2 omitidas quedan **51 pasadas baseline ejecutables**. Esto no recalibra todavía el rango 55–87.
+No se gana porcentaje por auditorías parciales, prompts, ramas abiertas o CI verde sin criterio completo.
 
-## 3. T5.1 — estado de verdad
+## 3. QA T5 ya integrado
 
-### En `main`
+PR #11 incorpora:
 
-La auditoría reproducible vigente en `main` conserva esta línea base:
+- `qa:t5:fast`;
+- `qa:t5:content`;
+- `qa:t5:simulation`;
+- `qa:t5:expensive` fuera del CI normal;
+- `qa:t5:known-bugs` deliberadamente rojo y fuera del gate normal;
+- workflow de `Repository integrity` con determinismo/RNG, edades, referencias, carreras largas, lifecycle y simulación estratificada.
 
-- 254 principales canónicos.
-- 254 principales en motor.
-- **167** principales con el mismo ID literal.
-- **87** IDs principales canónicos sin correspondencia aprobada.
-- **134** condicionales registrados como conteo todavía no reconciliado semánticamente en la auditoría actualmente integrada.
-- Ningún alias automático aprobado.
+Defectos base documentados por QA:
 
-### En la rama de planificación todavía no integrada
+- T5-QA-001: conocimiento/memoria NPC inerte en la base histórica;
+- T5-QA-002: lifecycle de seeds con cierres insuficientemente demostrados;
+- T5-QA-003: cobertura histórica de determinismo demasiado estrecha, mitigada por los nuevos gates.
 
-`chore/chatgpt-codex-workflow` contiene una planificación T5.1 mucho más avanzada, pero **no cambia runtime**. Entre otros artefactos declara:
+Los workstreams funcionales deben re-groundearse sobre este `main` y conservar estos gates.
 
-- asignación de los 87/87 principales canónicos ausentes a lotes responsables;
-- asignación de los 87 principales técnicos extra;
-- revisión semántica de planificación de 134/134 condicionales;
-- diseño de migración de contenido/sesión;
-- requisito de congelar el catálogo pre-T5.1 antes del primer cambio funcional;
-- bloqueo canónico explícito sobre la reversión de retirada.
+## 4. PR y ramas activas
 
-Esto se considera **planning/audit evidence**, no avance funcional ni cierre de T5.1.
+| PR / rama | Workstream | Estado integrador | Riesgo / acción requerida |
+|---|---|---|---|
+| #1 `chore/chatgpt-codex-workflow` | coordinación + planning T5.1 | **HOLD** | Rama sigue recibiendo commits. No mergear hasta HEAD estable, diff final revisado y CI del SHA exacto. |
+| #3 `task/t5.1-batch-01` | canon 20–23 | DRAFT planning | Base antigua; no funcional. Re-ground después de integrar la base planning/freeze. |
+| #5 `task/t5.1-batch-02a` | canon 27–28 | **BLOCKED-BY-#7** | No ejecutar/integrar antes del resultado revisado de #7. |
+| #7 `task/t5.1-batch-02b` | edad 26 + seeds | DRAFT planning | Base antigua; requiere re-ground y debe preceder a #5. |
+| #8 `t5/seed-lifecycle` | T5.2 seeds | **CHANGES REQUIRED** | CI verde, pero `resolver.ts` introduce replay por `(eventId, choiceId, same date)`. Esa idempotencia amplia puede suprimir repeticiones legítimas y duplica responsabilidad de `GameSession`. Eliminar ese shortcut, re-ground sobre `main`, conservar QA y revalidar. |
+| #9 `t5/npc-memory` | T5.3 NPC/conocimiento | **REVIEWED, RE-GROUND REQUIRED** | Arquitectura deny-by-default correcta: reglas explícitas, `know.*` read-only, sin inferir desde `npcRefs`, sin exponer memoria al ViewModel. Debe re-groundearse sobre #11 y preservar scripts/gates QA de `package.json`. Comparte `resolver.ts` con #8. |
+| #10 `t51/canon-18-23` | auditoría canon 18–23 | **AUDIT ACCEPTABLE / NON-MERGEABLE** | Solo analysis/workstream/test; tras #11 está 1 commit behind y GitHub reporta no mergeable. Re-ground y rerun CI. No añadir runtime en este PR. |
+| #12 `t51/canon-23-30` | auditoría canon 23–30 | **AUDIT ACCEPTABLE / NON-MERGEABLE** | Igual que #10: auditoría pura, pero debe re-groundearse sobre `main` y volver a CI. |
+| #13 `t51/canon-30-34` | canon 30–34 | **BLOCKED: CONTENT IDENTITY** | La descripción sigue diciendo auditoría, pero el diff actual ya contiene implementación funcional (`stableCanonicalEvent`) y cambia definiciones activas. No entra antes del freeze pre-T5.1 + política de migración. Separar audit/runtime o actualizar alcance explícitamente. |
+| #14 `presentation/android-playcanvas` | web/PlayCanvas/Android | **RE-GROUND REQUIRED** | Alcance de presentación correcto y T3.4 sigue abierto. Modifica `package.json` y workflow, ambos cambiados por #11; re-ground, preservar QA y revalidar. |
 
-## 4. Ramas y PR activos
+## 5. Conflictos y orden de propiedad
 
-| PR / rama | Workstream | Estado de revisión | Trabajo presente | Bloqueo / acción |
-|---|---|---|---|---|
-| #1 `chore/chatgpt-codex-workflow` | Coordinación + auditoría/planificación T5.1 | **PENDIENTE, rama activa** | Reglas de agentes, cola Codex, auditorías y diseño de migración; sin cambios de runtime según auditoría de rama | La rama está recibiendo commits concurrentes. Dos intentos de merge protegidos por `expected_head_sha` se abortaron correctamente al cambiar `HEAD`. No integrar hasta estabilizar y volver a revisar SHA + CI. |
-| #3 `task/t5.1-batch-01` | Canon 20–23 | **DRAFT / planificación solamente** | Briefing para 6 IDs canónicos ausentes y 6 IDs técnicos extra | Re-ground/rebase sobre la base integrada vigente antes de cualquier implementación. Después ejecutar código/tests y volver a revisión. |
-| #7 `task/t5.1-batch-02b` | Canon 26 + seeds/cronología | **DRAFT / planificación solamente** | 9 escenas canónicas de 26 y reparación de cronología de seeds | Re-ground sobre base vigente. Integración funcional recomendada después de #3; debe preceder a #5. |
-| #5 `task/t5.1-batch-02a` | Canon 27–28 / candidatos de título | **BLOCKED-BY-#7** | 3 reparaciones semánticas candidatas | No ejecutar ni integrar hasta incorporar el resultado revisado de #7 y refrescar auditoría. |
+### T5.2 (#8) ↔ T5.3 (#9)
 
-En la revisión actual no existen ramas separadas activas para Canon 30–34, Canon 34+/retirada/epílogo, NPC/conocimiento, QA independiente o PlayCanvas/Android/presentación. Sus tareas pueden planificarse, pero no deben figurar como implementadas.
+Ambos modifican `src/narrative/resolver.ts` y `package.json`.
 
-## 5. Conflictos y propiedad
+- No hacer cherry-picks ciegos.
+- #9 puede integrarse antes de #8 si #8 mantiene el defecto de replay detectado.
+- El segundo en entrar debe combinar conscientemente knowledge acquisition + seed lifecycle sin perder ninguno.
+- Cualquier cambio de scheduler de #9 debe conservar determinismo y no consumir RNG en lecturas de conocimiento.
 
-### Conflicto confirmado #7 ↔ #5
+### Canon 26–30
 
-Ambos workstreams están previstos sobre catálogo `26_30` y metadata/cronología de seeds. **No deben integrarse en paralelo.** Orden: #7 → refrescar/rebasar #5 → #5.
+Orden funcional conservador:
 
-### #3 frente a #7
+`#7 -> re-ground #5 -> #5`.
 
-El contenido principal está en tramos distintos y la investigación/revisión semántica puede avanzar en paralelo. La integración funcional se mantiene serializada mientras ambos puedan tocar contratos compartidos de identidad de contenido, saves, migración o catálogo global. Orden conservador actual: #3 → #7.
+Auditoría #12 puede integrarse en cuanto esté re-grounded porque no cambia runtime.
 
-### Seeds / NPC / QA
+### Canon 30–34
 
-- Auditoría y diseño pueden avanzar en paralelo con contenido si no escriben el mismo contrato.
-- Cambios a `src/catalog/seeds.ts`, scheduler, save/session, conocimiento de NPC o tipos compartidos requieren coordinación central antes de integrar.
-- QA puede añadir pruebas independientes en paralelo, pero no debe relajar gates para hacer pasar una implementación.
+#13 no puede usar la etiqueta “auditoría” para introducir implementación funcional. Antes del primer cambio de catálogo activo se exige freeze del `contentIdentity`/catálogo pre-T5.1.
 
-### Presentación / Android
+### Presentación
 
-Puede avanzar en UI/packaging sin modificar estado oculto ni lógica del motor. Bundles generados deben regenerarse desde fuente; no se aceptan hand-edits. T3.4 continúa dependiendo de evidencia física externa.
+#14 puede avanzar en paralelo si se mantiene fuera de canon y estado oculto. El hallazgo `PlayerView.contacts = NPC_CATALOG completo` queda como dependencia T5.3: UI no debe inferir “conocido” leyendo memoria/flags internos.
 
-## 6. Orden de integración recomendado
+## 6. Freeze pre-T5.1 — bloqueo transversal
 
-1. Estabilizar y revisar la cabeza final de PR #1; integrar solo si el diff sigue siendo planificación/auditoría y el CI del SHA exacto pasa.
-2. Congelar de forma reproducible el catálogo/content identity pre-T5.1 **antes del primer cambio funcional**.
-3. Re-ground PR #3 sobre la base vigente; implementar; ejecutar pruebas dirigidas + `npm test`; revisar; integrar.
-4. Re-ground PR #7 sobre la nueva base; implementar seeds/edad 26; pruebas causales + saves/RNG + `npm test`; revisar; integrar.
-5. Re-ground PR #5 sobre el resultado de #7; implementar solo equivalencias semánticamente demostradas; pruebas de migración + `npm test`; revisar; integrar.
-6. Continuar los lotes 02C+ únicamente después de refrescar la auditoría, manteniendo propiedad por tramo y contratos compartidos bajo el coordinador.
+**Pendiente y obligatorio antes del primer merge que modifique definiciones activas de eventos.**
 
-## 7. Tests globales / gates
+Debe fijar como mínimo:
 
-Gate mínimo de integración:
+- SHA exacto de la base pre-cambio;
+- `ENGINE_BUILD`;
+- session version;
+- save schema;
+- 388 eventos / 254 principales / 134 condicionales;
+- `SHA-256(utf8(JSON.stringify(EVENTS)))`;
+- fixture/catalogo compatible o referencia inmutable suficiente para regenerarlo exactamente;
+- prueba de que el fixture de compatibilidad no entra en `EventIndex`/scheduler activo.
+
+La base candidata actual para el freeze es `main@3079a311a3899d720024cffe8003a577c4146096`, porque #11 no alteró contenido.
+
+No integrar #13 ni futuros lotes funcionales T5.1 antes de cerrar este punto.
+
+## 7. Tests / gates de integración
+
+Mínimo:
 
 ```text
 npm test
 ```
 
-Además, ejecutar las suites del subsistema tocado. Como referencia disponible en `package.json`:
+Y, desde PR #11, para cambios T5 relevantes:
 
-- `test:session`
-- `test:saves`
-- `test:persistence`
-- `test:offers`
-- `test:playcanvas`
-- `test:android:offline`
-- `test:android:t34`
-- `test:t25`, `test:t32`, `test:t41`…`test:t47`
-- `audit:t51`, `test:t51`
+```text
+npm run qa:t5:fast
+npm run qa:t5:content
+npm run qa:t5:simulation
+```
 
-Para T5.1 no se aceptará un `test:t51` verde basado en supuestos obsoletos si la reconciliación nueva demuestra que el auditor debe evolucionar. La solución es actualizar el auditor con evidencia, no conservar una falsa compatibilidad.
+Más suites del subsistema tocado (`test:saves`, `test:session`, `test:persistence`, `test:playcanvas`, `test:android:offline`, `test:t52`, `test:t53`, etc.).
 
-## 8. Inconsistencias documentales detectadas
+`qa:t5:known-bugs` permanece fuera del gate normal mientras documente deuda de producción conocida; cuando el owner corrige el defecto, la reproducción correspondiente debe convertirse en regresión verde.
 
-1. `project/PLAN_PASADAS.md` ya dice T4.7/T4.8 omitidas y T5.1 en curso, pero su tabla todavía representa T4 como 6/8 y T5 como pendiente. El porcentaje 33,51 % sigue siendo matemáticamente correcto porque las omitidas no ganan peso.
-2. `analysis/2026-09-11/plan-seguimiento.json` está más atrasado: mantiene `nextPass = T4.7`, T4.7/T4.8 como `not_started` y T5/T5.1 como `not_started`.
-3. La auditoría T5.1 integrada en `main` todavía dice que los 134 condicionales son `count_only_not_semantically_reconciled`; la rama de planificación tiene revisión 134/134, pero esa evidencia aún no está integrada y tampoco equivale a runtime reconciliado.
-4. Los cierres históricos T2/T3 contienen porcentajes acumulados válidos en su fecha; no deben leerse como el porcentaje global vigente.
+## 8. Tracking/documentación desincronizada
 
-**Política:** hasta sincronizar los dos artefactos de seguimiento, este panel + evidencia de código/CI define la interpretación actual. La próxima revisión de tracking debe conservar 33,51 %, marcar T5.1 `in_progress`, T4.7/T4.8 `omitted`, T3.4 `in_progress/external evidence pending` y eliminar `T4.7` como siguiente pasada.
+Sigue pendiente sincronizar autoritativamente:
+
+- `project/PLAN_PASADAS.md`;
+- `analysis/2026-09-11/plan-seguimiento.json`.
+
+Estado que deben reflejar sin cambiar el porcentaje:
+
+- 33,51 %;
+- T3.4 `in_progress`, evidencia física pendiente;
+- T4.7/T4.8 `omitted`;
+- T5.1 `in_progress`;
+- PR #11/QA integrado **no suma porcentaje por sí mismo**;
+- `nextPass` no puede seguir siendo T4.7.
 
 ## 9. Bloqueos actuales
 
-- **T3.4:** teléfono físico Android.
-- **PR #1:** rama en escritura concurrente; no existe SHA estable revisado para integrar.
-- **T5.1 funcional:** ramas de tareas obsoletas respecto a su base de planificación; requieren re-ground antes de ejecutar.
-- **Retirada 34+:** conflicto canónico sobre reconsideración tras anuncio. No implementar por inferencia.
-- **Migración de contenido:** hay que congelar el catálogo pre-T5.1 antes de modificar definiciones activas.
+1. T3.4: teléfono Android físico.
+2. Freeze pre-T5.1 / migración de `contentIdentity`.
+3. PR #8: idempotencia incorrectamente ubicada en resolver.
+4. PR #9/#10/#12/#14: re-ground tras QA integrado.
+5. PR #13: runtime antes de freeze y descripción desactualizada respecto al diff.
+6. Retirada 34+: conflicto canónico sobre reconsideración tras anuncio sigue sin aprobación explícita.
+7. PR #1 sigue en escritura concurrente.
 
-## 10. Siguiente cuello de botella
+## 10. Siguiente prioridad
 
-**Conseguir una base T5.1 estable e integrada, congelar el content identity pre-T5.1 y re-groundear el primer lote funcional (#3).**
-
-Hasta entonces, preparar más prompts o auditorías puede mejorar planificación, pero no aumenta el porcentaje ponderado ni cierra T5.1.
+1. cerrar el freeze pre-T5.1 sobre el `main` sin cambios de contenido;
+2. re-ground/integrar auditorías puras #10 y #12;
+3. re-ground #9 y revisar combinación con QA;
+4. corregir #8 y luego integrar lifecycle sin replay global;
+5. solo después desbloquear implementación canónica funcional (#13/#3/#7/#5 según dependencias).
