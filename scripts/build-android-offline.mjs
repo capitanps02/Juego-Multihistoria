@@ -29,6 +29,7 @@ copy(path.join(root, 'web', 'game-ui.css'), path.join(assetsRoot, 'web', 'game-u
 copy(path.join(root, 'web', 'product-mobile.css'), path.join(assetsRoot, 'web', 'product-mobile.css'));
 copy(path.join(root, 'web', 'game-ui.js'), path.join(assetsRoot, 'web', 'game-ui.js'));
 copy(path.join(root, 'web', 'indexed-save-store.js'), path.join(assetsRoot, 'web', 'indexed-save-store.js'));
+copy(path.join(root, 'web', 'player-session-api.js'), path.join(assetsRoot, 'web', 'player-session-api.js'));
 
 const assets = JSON.parse(fs.readFileSync(path.join(root, 'web', 'assets.json'), 'utf8'));
 const css = [
@@ -37,9 +38,11 @@ const css = [
 ].join('\n');
 const local = `import { GameSession } from '../dist/session/game-session.js';
 import { mountGame } from './game-ui.js';
+import { createPlayerSessionApi } from './player-session-api.js';
 const assets=${JSON.stringify(assets)};
 const css=${JSON.stringify(css)};
-mountGame({root:document.querySelector('#game').attachShadow({mode:'open'}),GameSession,assets,css,storageKey:'historia-jugador.android.offline.session.v1',appVersion:${JSON.stringify(appVersion)}});
+const PlayerSession=createPlayerSessionApi(GameSession);
+mountGame({root:document.querySelector('#game').attachShadow({mode:'open'}),GameSession:PlayerSession,assets,css,storageKey:'historia-jugador.android.offline.session.v1',appVersion:${JSON.stringify(appVersion)}});
 `;
 write(path.join(assetsRoot, 'web', 'local.js'), local);
 
@@ -77,7 +80,7 @@ const manifest = {
   storage: { type: 'IndexedDB', key: 'historia-jugador.android.offline.session.v1', legacyMigration: 'localStorage', androidRuntimeVerified },
   origin: 'https://appassets.androidplatform.net/assets/',
   networkPolicy: { internetPermission: false, connectSrc: 'none', externalUrls: [] },
-  resources: { images: 'data-uri-in-local.js', fonts: 'system-only', mobileCss: 'web/product-mobile.css' },
+  resources: { images: 'data-uri-in-local.js', fonts: 'system-only', mobileCss: 'web/product-mobile.css', playerSessionApi: 'web/player-session-api.js' },
   files,
   generatedAt: '2026-09-16'
 };
