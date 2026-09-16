@@ -152,9 +152,10 @@ Comando:
 npm run audit:t52
 ```
 
-Salida:
+Salidas:
 
-`analysis/T5.2/seed-lifecycle.json`
+- `analysis/T5.2/seed-lifecycle.json`;
+- `analysis/T5.2/seed-handoff.json`.
 
 El inventario genera una fila por cada seed e intenta determinar:
 
@@ -180,6 +181,8 @@ El inventario genera una fila por cada seed e intenta determinar:
 - seeds sin consumidor;
 - seeds open-ended sin transición terminal.
 
+El handoff añade una partición por propietario canónico y falla si existe una seed duplicada, sin propietario o asignada a un ID inexistente.
+
 También produce cobertura orientativa para promesas, lesiones, operaciones, conflictos, relaciones, reputación, contratos, dinero, familia, agente, club, selección y decisiones de carrera.
 
 ## Qué NO corrige T5.2 automáticamente
@@ -194,7 +197,7 @@ Para seeds con `ageWindow` finito existe ahora cierre técnico por edad si nunca
 
 ## Tests T5.2
 
-`scripts/test-t52.mjs` cubre:
+`scripts/test-t52.mjs` y `scripts/test-t52-handoff.mjs` cubren:
 
 - inventario de 210 seeds;
 - creación;
@@ -211,7 +214,10 @@ Para seeds con `ageWindow` finito existe ahora cierre técnico por edad si nunca
 - doble comando mediante `GameSession.commandId`, incluido replay tras restore;
 - ausencia de draws RNG en el lifecycle;
 - seed desconocida presente en un save;
-- intento de crear una seed inexistente desde contenido nuevo.
+- intento de crear una seed inexistente desde contenido nuevo;
+- limpieza de flags `HAS_SEED_*` fantasma;
+- partición exacta de las 210 seeds entre workstreams canónicos;
+- consistencia entre listas de deuda y sus conteos.
 
 Comando dirigido:
 
@@ -232,4 +238,22 @@ Cada equipo de contenido debe revisar en el informe generado las seeds que le pe
 5. si un máximo de edad representa realmente la muerte del hilo;
 6. si una seed open-ended es memoria permanente o deuda narrativa.
 
-T5.2 no reescribe escenas para ocultar esos huecos; los hace medibles y comprobables.
+### Mapa de ownership y deuda medible
+
+| Workstream | Seeds | Productor runtime | Sin productor | Consumidor detectable | Sin consumidor | Terminal explícito | Open-ended sin terminal | Huérfanas productor+consumidor | `originEventsMissing` | Mismatch `seedsRead` |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `t51/canon-18-23` | 31 | 31 | 0 | 21 | 10 | 1 | 7 | 0 | 0 | 16 |
+| `t51/canon-23-30` | 59 | 59 | 0 | 29 | 30 | 0 | 35 | 0 | 0 | 12 |
+| `t51/canon-30-34` | 52 | 48 | 4 | 7 | 45 | 0 | 52 | 4 | 52 | 7 |
+| `t51/canon-34plus` | 68 | 0 | 68 | 0 | 68 | 0 | 68 | 68 | 68 | 0 |
+
+La partición automática es exacta: **210/210 seeds**, sin duplicados, sin IDs sin propietario y sin referencias desconocidas.
+
+Prioridad de handoff:
+
+- `t51/canon-18-23`: revisar 10 seeds sin consumidor y 16 lecturas reales que no declaran `seedsRead`; el productor existe para todas las seeds.
+- `t51/canon-23-30`: revisar 30 seeds sin consumidor y decidir el destino canónico de 35 hilos open-ended; el productor existe para las 59.
+- `t51/canon-30-34`: reconciliar 4 seeds sin productor/consumidor y la procedencia editorial `PASADA_6_30_34`; 45/52 carecen de consumidor y ninguna tiene cierre terminal explícito.
+- `t51/canon-34plus`: prioridad máxima de contenido; las 68 seeds están declaradas pero no poseen productor ni consumidor runtime. Deben reconciliarse con eventos reales de veterano/retirada/epílogo antes de poder considerarlas memoria funcional.
+
+T5.2 no reescribe escenas para ocultar esos huecos; los hace medibles, asignables y comprobables.
