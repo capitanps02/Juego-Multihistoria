@@ -59,3 +59,25 @@ test('unsupported content migration remains an explicit failure', async () => {
 
   await assert.rejects(api.fromSave('unknown-legacy'), error => error === unsupported);
 });
+
+test('player presentation replaces legacy catalog contacts with the public known-contact projection', async () => {
+  const privateSession = {
+    getView: () => ({ screen: 'career', contacts: [{ id: 'ALL_1' }, { id: 'ALL_2' }], revision: 4 }),
+    dispatch: (...args) => ({ kind: 'dispatch', args }),
+    exportSnapshot: () => ({ state: { private: true } })
+  };
+  const known = [{ id: 'KNOWN_1', name: 'Conocido', role: 'Amigo' }];
+  const projectionCalls = [];
+  const api = createPlayerSessionApi({
+    fromSave: async () => privateSession,
+    migrateFromSave: async () => privateSession,
+    create: () => privateSession
+  }, globalThis.crypto, session => { projectionCalls.push(session); return known; });
+
+  const presented = api.create(123, {});
+  assert.deepEqual(presented.getView().contacts, known);
+  assert.equal(presented.getView().contacts.some(contact => contact.id === 'ALL_1'), false);
+  assert.deepEqual(presented.dispatch('continue'), { kind: 'dispatch', args: ['continue'] });
+  assert.deepEqual(presented.exportSnapshot(), { state: { private: true } });
+  assert.ok(projectionCalls.every(session => session === privateSession));
+});
