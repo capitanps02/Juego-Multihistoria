@@ -60,6 +60,7 @@ export const LEGACY_CONTENT_SOURCES: Readonly<Record<string, ContentEvidenceSour
 
 export const T51_B1A_CONTENT_IDENTITY = "1a8a5e2006fe7160f4fbc02060568d3abec99df038fe3a1a7799c8a0e802eac7";
 export const T51_T510_CONTENT_IDENTITY = "fee2ff875bac7979d3907f5ee1004ef736efa9a257237c6dee629dd8687fe136";
+export const T51_T511_CONTENT_IDENTITY = "5d3fd71a8df42ed5b93fdde63ed386e9d776693addd62a30293dbecad7aa56d2";
 
 /**
  * Explicit identity-bound edges. Successive canonical batches extend this as a
@@ -97,6 +98,34 @@ export const CONTENT_MIGRATION_ROUTES: readonly ContentMigrationRoute[] = [
         kind: "distinct_scene",
         legacyEventId: "EVT_23_BODY_001",
         canonicalEventId: "EVT_23_BODY_001",
+        clearCanonicalSeen: true,
+        clearCanonicalCooldown: true
+      }
+    ],
+    seedOriginMappings: []
+  },
+  {
+    sourceContentIdentity: T51_T510_CONTENT_IDENTITY,
+    targetContentIdentity: T51_T511_CONTENT_IDENTITY,
+    schedulerMappings: [
+      {
+        kind: "distinct_scene",
+        legacyEventId: "EVT_23_MONEY_001",
+        canonicalEventId: "EVT_23_MONEY_001",
+        clearCanonicalSeen: true,
+        clearCanonicalCooldown: true
+      },
+      {
+        kind: "distinct_scene",
+        legacyEventId: "EVT_23_HOME_001",
+        canonicalEventId: "EVT_23_HOME_001",
+        clearCanonicalSeen: true,
+        clearCanonicalCooldown: true
+      },
+      {
+        kind: "distinct_scene",
+        legacyEventId: "EVT_23_EUR_001",
+        canonicalEventId: "EVT_23_EUR_001",
         clearCanonicalSeen: true,
         clearCanonicalCooldown: true
       }
