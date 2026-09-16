@@ -6,4 +6,4 @@ export interface FrozenOfferBridgeEventEvidence {
   choiceActions: Readonly<Record<string, OfferDisposition>>;
 }
 
-export const FROZEN_OFFER_BRIDGE_SOURCES: Readonly<Record<string, Readonly<Record<string, FrozenOfferBridgeEventEvidence>>>> = {"1a8a5e2006fe7160f4fbc02060568d3abec99df038fe3a1a7799c8a0e802eac7":{},"2e07efd2ea99c4e9ec4c2b20ae89664204f76db2c55a72d567208799c01bccff":{},"fee2ff875bac7979d3907f5ee1004ef736efa9a257237c6dee629dd8687fe136":{}};
+export const FROZEN_OFFER_BRIDGE_SOURCES: Readonly<Record<string, Readonly<Record<string, FrozenOfferBridgeEventEvidence>>>> = {"1a8a5e2006fe7160f4fbc02060568d3abec99df038fe3a1a7799c8a0e802eac7":{},"2e07efd2ea99c4e9ec4c2b20ae89664204f76db2c55a72d567208799c01bccff":{},"5d3fd71a8df42ed5b93fdde63ed386e9d776693addd62a30293dbecad7aa56d2":{},"fee2ff875bac7979d3907f5ee1004ef736efa9a257237c6dee629dd8687fe136":{}};

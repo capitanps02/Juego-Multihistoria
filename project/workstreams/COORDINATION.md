@@ -5,36 +5,23 @@
 **Repositorio:** `capitanps02/Juego-Multihistoria`  
 **Rama de integración:** `main`
 
-> GitHub, código ejecutable y CI prevalecen sobre resúmenes históricos. Auditoría, planificación o un PR verde no equivalen por sí solos a una pasada cerrada.
+> GitHub, código ejecutable y CI prevalecen sobre resúmenes históricos. Un PR verde, una auditoría o una micro-generación de contenido no equivalen por sí solos a una pasada oficial cerrada.
 
-## Estado de `main`
+## Estado actual de `main`
 
-SHA actual tras los últimos merges coordinados:
+SHA al actualizar este panel:
 
-`27755444abeb55e9886c24facad97e67df28a180`
+`88ab33ed844a964cd9ab21ad156ed2c2f7cd40ac`
 
-Integrado recientemente:
+Estado técnico relevante:
 
-- PR #11 — QA T5 independiente.
-- PR #16 — freeze exacto pre-T5.1.
-- PR #8 — infraestructura base T5.2 seed lifecycle.
-- PR #20 — sincronización del roadmap/tracking.
-- PR #23 — baseline schema-8 corregido + `test-saves` dentro del gate normal.
-- PR #12 — auditoría canónica 23–30, condicionales, fichas y readiness; sin runtime.
-
-No se acredita porcentaje adicional por estas integraciones mientras las pasadas T5 no cumplan su criterio completo.
-
-## Base funcional y progreso
-
-- 388 eventos estructurados = 254 principales + 134 condicionales.
-- 210 seeds.
-- 20 NPC persistentes.
-- 20 familias de epílogo.
-- save schema 8.
-- session version 2 actual; una migración T5.1 puede requerir versionado explícito nuevo.
+- Engine build base: `0.8.0-t2.5`.
+- GameState/save schema: 8.
+- Session: **v3** con provenance por decisión.
 - RNG separado: `narrative`, `football`, `microfeed`, `qa`.
+- `main` sigue sin branch protection; usar siempre `expected_head_sha` y CI exacta antes de merge.
 
-Estado de pasadas:
+## Progreso acreditado
 
 - T1 completa.
 - T2.1–T2.5 completas.
@@ -42,216 +29,215 @@ Estado de pasadas:
 - T3.4 abierta: falta evidencia en teléfono Android físico.
 - T4.1–T4.6 completas.
 - T4.7/T4.8 omitidas por alcance; no ganan peso.
-- T5.1 en curso.
-- T5.2 infraestructura base integrada, pasada todavía `in_progress` hasta reconciliar destino de las 210 seeds.
-- T5.3 en PR #9, pendiente de integración consolidada.
+- T5 en curso.
 
 **Progreso ponderado acreditado: 33,51 %.**  
-**Pasadas cerradas: 15.**
+**Pasadas realmente cerradas: 15.**  
+**Pasadas omitidas: 2.**
 
-## Freeze pre-T5.1
+No modificar estos números por infraestructura, auditorías ni batches parciales. La autoridad de cierre sigue siendo `project/PLAN_PASADAS.md` + `analysis/2026-09-11/plan-seguimiento.json`.
 
-Baseline integrado:
+## Content identity y migración
 
-- build `0.8.0-t2.5`;
-- session v2;
-- save/GameState schema 8;
-- 388 eventos = 254 + 134;
-- `contentIdentity = 2e07efd2ea99c4e9ec4c2b20ae89664204f76db2c55a72d567208799c01bccff`.
+Baseline pre-T5.1 congelado:
 
-Artefactos:
+`2e07efd2ea99c4e9ec4c2b20ae89664204f76db2c55a72d567208799c01bccff`
 
-- `qa/fixtures/t5.1/pre-t51-event-catalog.json`;
-- `qa/fixtures/t5.1/pre-t51-content-manifest.json`;
-- `scripts/freeze-t51-baseline.mjs`.
+Lineage sucesivo integrado:
 
-El freeze es evidencia/compatibilidad; no entra en scheduling y no resuelve la migración.
+`PRE -> B1a -> C -> D`
 
-## Auditoría canónica
+Identidades:
 
-### 18–23 — PR #10
+- PRE: `2e07efd2ea99c4e9ec4c2b20ae89664204f76db2c55a72d567208799c01bccff`
+- B1a: `1a8a5e2006fe7160f4fbc02060568d3abec99df038fe3a1a7799c8a0e802eac7`
+- C: `fee2ff875bac7979d3907f5ee1004ef736efa9a257237c6dee629dd8687fe136`
+- D, catálogo activo: `5d3fd71a8df42ed5b93fdde63ed386e9d776693addd62a30293dbecad7aa56d2`
 
-Auditoría completa preparada y audit-only:
+Contrato vigente:
 
-- 63 principales: 18 `verified_same_identity`, 39 `needs_reimplementation`, 6 `canonical_missing`.
-- 32 condicionales: 10 `needs_reimplementation`, 15 `canonical_missing`, 7 `requires_manual_review`.
-- blockers compartidos formalizados: `SESSION_CONTENT_MIGRATION`, `CHOICE_ELIGIBILITY`, gates OR/derived facts, legacy history y certificación final de callbacks.
+- `resume()` normal es estricto.
+- La migración de contenido es explícita.
+- Cada decisión conserva `sourceContentIdentity` + fingerprint de definición.
+- La lineage debe tener exactamente un camino acíclico hasta el target.
+- 0 caminos o más de 1 camino => fail closed.
+- No crear shortcuts PRE→target si existe una generación intermedia.
+- Cada identidad persistible histórica conserva evidencia inmutable.
+- Catálogos legacy sirven para validar/migrar; nunca entran en `EventIndex` ni scheduler.
+- Pending legacy se resuelve con su definición/fingerprint exactos.
+- Migrar no consume RNG, no agenda escenas y no persiste por sí mismo.
 
-PR #10 debe re-groundearse sobre el main actual y pasar CI exacto antes de integrar la auditoría.
+## Integraciones T5 recientes
 
-### 23–30 — INTEGRADO por PR #12
+### Contenido 23–26
 
-- 91/91 principales clasificados.
-- 23–26: 25 verified + 15 reimplementación.
-- 26–30: 25 reimplementación + 22 canonical missing + 4 candidatos no aprobados.
-- 44/44 condicionales con planning semántico revisado; ninguno certificado full-canonical en runtime.
-- 15 fichas 23–26 preparadas; 10 scene-level waiting identity y 5 dependencias transversales.
+Micro-generación C integrada por PR #75:
+
+- `EVT_23_BRIDGE_001`
+- `EVT_23_AGT_001`
+- `EVT_23_BODY_001`
+
+Micro-generación D integrada por PR #91:
+
+- `EVT_23_MONEY_001`
+- `EVT_23_HOME_001`
+- `EVT_23_EUR_001`
+
+Total actual de escenas canónicas nuevas/reimplementadas de este tramo en estas micro-generaciones: **6**.
+
+### Regla crítica de nomenclatura
+
+Los nombres históricos de workstream `T5.10`, `T5.11`, etc. se han usado también para micro-generaciones de integración. **No confundirlos con las pasadas oficiales del PLAN.**
+
+La pasada oficial `T5.10 — Lote 23–26 1` exige **12 escenas**. Por tanto el trabajo actual equivale a **6/12** del primer lote oficial y no acredita todavía peso ni una pasada cerrada.
+
+### Próximas escenas 23–26 con ficha canónica preparada
+
+Sin blocker arquitectónico conocido:
+
+- `EVT_23_PRS_001`
+- `EVT_25_AGT_001`
+- `EVT_25_MKT_001`
+- `EVT_25_NAT_001`
+
+El offer/session bridge ya está integrado, por lo que también pueden prepararse en su turno canónico:
+
+- `EVT_23_MKT_001`
+- `EVT_23_CON_001`
+- `EVT_25_CON_001`
+
+Siguen bloqueadas por contratos compartidos específicos:
+
+- `EVT_23_LOCK_001` -> issue #84, slots autoritativos CAPTAIN/STAR.
+- `EVT_24_MATCH_001` -> issue #85, micro-resultado deportivo con RNG `football`.
+
+Cada nueva activación que cambie `EVENTS` debe crear únicamente la siguiente edge adyacente desde D o su sucesor real, congelar target y actualizar registries/evidencia antes del merge.
+
+## T5.2 / T5.4 — Seeds y consecuencias diferidas
+
+Infraestructura integrada, pasada todavía no cerrada.
+
+Estado transversal actual:
+
+- lifecycle de seeds con scopes y expiración técnica;
+- gate alternatives OR auditados;
+- polaridad positiva/negativa/neutral de `HAS_SEED_*`;
+- seed-origin migration guard;
+- PR #94 integrado: auditoría de **22 pares archivo+seed** de lecturas directas bajo `src/simulation`, cubriendo **15 seeds únicas**.
+
+El audit combinado falla por:
+
+- consumer de simulación no registrado;
+- registro stale o duplicado;
+- ventana temporal inválida;
+- cadena productor→consumidor imposible.
+
+Regla vigente: **canon first, wiring second**. No inventar consumers o cierres para mejorar métricas.
+
+## T5.3 — NPC, conocimiento y contactos públicos
+
+Integrado:
+
+- conocimiento deny-by-default;
+- fuentes explícitas `witnessed`, `informed`, `public`, `reported`;
+- memoria strong/temporary/practical;
+- `know.*` gates;
+- no inferencia desde `npcRefs`, seeds, relaciones o access;
+- relaciones persistentes entre cambios de club;
+- contactos visibles del protagonista provenance-safe;
+- contactos públicos no se deducen de memoria NPC privada.
+
+PR #89 integrado:
+
+- reconciliación de conocimiento histórico en `resume()`/`migrateAndResume()`;
+- `HistoryEntry` emparejado 1:1 con `decisionProvenance`;
+- exact-ID no autoriza reinterpretación semántica;
+- requiere fingerprint activo compatible o certificación legacy explícita;
+- versiones subjetivas persistidas válidas siguen siendo autoritativas;
+- conserva `learnedAt`/club históricos;
+- no resucita recuerdos caducados;
+- 0 RNG / 0 scheduling / 0 commit en resume.
+
+T5-QA-017 cerrado en producto.
+
+## Offer / contract authority
+
+Integrado:
+
+- `CareerOffer` + `respondToOffer()` siguen siendo la única autoridad para aplicar `CareerTerms`.
+- `offerBridge` conecta decisiones narrativas con offer disposition sin mutar contrato desde effects.
+- `counter/defer` no firman contrato.
+- `market.history.source` enlaza history/event/choice real.
+- QA-018 liga la disposition persistida a la definición histórica exacta mediante source identity + fingerprint.
+
+Las escenas contractuales futuras deben consumir este contrato, no crear una segunda autoridad.
+
+## Otros contratos compartidos ya integrados
+
+- per-choice eligibility.
+- event-level `gateAlternatives` OR.
+- mandatory phase-transition priority sin RNG adicional.
+- fact read-only `facts.clubWantsRenewal`.
+- freeze/source evidence post-T5.1.
+- lineage multigeneración fail-closed.
+
+## Blockers transversales abiertos
+
+### Issue #84 — locker leadership slots
+
+Necesario para `EVT_23_LOCK_001`.
+
+Requiere resolver de forma explícita y determinista CAPTAIN/STAR por club/fase, sin inferir por texto de `role`, relación más alta ni RNG. Slot ausente debe fallar cerrado.
+
+### Issue #85 — football outcome hook
+
+Necesario para `EVT_24_MATCH_001`.
+
+La elección narrativa decide quién/intención; el gol/fallo debe salir de atributos deportivos + stream `football`, con save/resume e idempotencia y sin mezclar RNG narrativo.
+
+### Issue #61 — retirada
+
+T5-QA-016 sigue abierto. No integrar #15 fuera de su turno final de lineage. No autorizar `announced -> playing` por similitud histórica ni reutilizar una identidad provisional 34+.
+
+## Otros workstreams
 
 ### 30–34 — PR #13
 
-- 50/50 principales clasificados.
-- 45 `needs_reimplementation`.
-- 5 `canonical_missing`.
-- 0 `verified_same_identity` bajo comparación estricta.
-- 26 condicionales todavía con deuda de reconciliación/certificación.
-
-PR contiene contenido activo y queda bloqueado por migración #24/#25.
+Sigue draft. Tiene trabajo útil de contenido/readiness, pero debe integrarse solo cuando llegue su turno después de cerrar las generaciones previas 23–30. Sus identidades/migration handoff históricos no son autoridad para saltar la lineage actual.
 
 ### 34+ — PR #15
 
-- 50 principales clasificados.
-- 4 `verified_same_identity`.
-- 3 aliases aprobados y preservados por seguridad histórica.
-- 13 `needs_reimplementation`.
-- 30 `canonical_missing`.
-- 43/50 todavía no acreditan implementación canónica completa.
+Sigue aislado. Re-ground final solo al llegar su turno real. La retirada post-anuncio no se decide por implementación histórica; requiere canon explícito y compatibilidad de pending legacy.
 
-También contiene cambios runtime y queda bloqueado por #24/#25. Retirada post-anuncio sigue siendo una decisión canónica separada: no aprobar `closed -> playing`; cualquier reconsideración pre-cierre debe ser explícita y probada.
+### Presentación / Android — PR #14
 
-## T5.2 — Seeds
+Software web/PlayCanvas/Android puede seguir en paralelo. T3.4 **no se cierra** hasta disponer de evidencia física real en teléfono Android.
 
-Infraestructura base integrada.
+### QA independiente — PR #32
 
-PR #19 contiene follow-up pendiente:
-
-- limpia `HAS_SEED_*` fantasma;
-- asigna 210/210 seeds a exactamente un owner canónico;
-- 18–23: 31 seeds, 10 sin consumidor;
-- 23–30: 59 seeds, 30 sin consumidor;
-- 30–34: 52 seeds, 4 sin productor y 45 sin consumidor;
-- 34+: 68 seeds, 68 sin productor y 68 sin consumidor.
-
-Regla: **canon first, wiring second**. No conectar consumers/terminales a shells genéricos solo para mejorar métricas.
-
-PR #21 fue cerrado como duplicado/superseded por #19.
-
-PR #19 debe re-groundearse sobre el main actual y conservar el gate de save de #23.
-
-## T5.3 — NPC / conocimiento
-
-PR #9 implementa:
-
-- conocimiento deny-by-default;
-- vías explícitas `witnessed/informed/public/reported`;
-- memoria strong/temporary/practical;
-- gates `know.*`;
-- persistencia de relaciones y conocimiento;
-- protección contra fuente NPC que no conoce el hecho;
-- no inferencia desde `npcRefs`;
-- privacidad del ViewModel.
-
-Pendiente antes de merge:
-
-1. integrar primero QA #17 + seed hardening #19;
-2. re-ground #9 sobre ese main;
-3. resolver T5-QA-008: knowledge persistido malformado no puede satisfacer `npcKnows`;
-4. conservar lifecycle T5.2 + flags + knowledge + QA en un único resolver;
-5. ejecutar gates T5.2/T5.3/QA juntos.
-
-## QA T5
-
-PR #17 añade la segunda capa adversarial:
-
-- `qa:t5:integration`;
-- `qa:t5:saves`;
-- freeze sentinel;
-- probes T5.2/T5.3;
-- malformed knowledge;
-- correcciones del harness.
-
-Debe re-groundearse sobre `main` posterior a #23/#12 y eliminar duplicación del fix v8 ya integrado, conservando únicamente los probes/gates QA.
-
-Orden preferido:
-
-`#17 -> #19 -> #9`
-
-Cada paso debe re-groundear y revalidar el siguiente.
-
-## Migración contentIdentity — NUEVO CRITICAL PATH
-
-Issue #24:
-
-`T5 integration: explicit session/contentIdentity migration from frozen pre-T5.1 catalog`
-
-Rama:
-
-`integration/content-migration-t51`
-
-PR draft:
-
-#25 `T5.1 integration: explicit session/contentIdentity migration`
-
-Contrato versionado:
-
-`project/workstreams/T51_CONTENT_MIGRATION.md`
-
-Principios:
-
-- no relajar `contentIdentity`;
-- identities desconocidas se rechazan;
-- history/journal se preservan como verdad histórica;
-- pending legacy conserva la definición que el jugador vio;
-- legacy definitions sirven para compatibilidad, nunca scheduler;
-- exact-ID semantic collisions requieren procedencia/fingerprint;
-- migración consume cero RNG y agenda cero escenas;
-- receipts/revision/market/seeds/NPC/retirement/epilogue factual se preservan;
-- migración determinista e idempotente.
-
-Existe diseño histórico útil en la rama archivada `chore/chatgpt-codex-workflow` (`SESSION_CONTENT_MIGRATION_CONTRACT`, runtime audit, Session v3 spec, test matrix). Reutilizar selectivamente; PR #1 no debe mergearse completo.
-
-#25 debe integrarse antes de cualquier PR que cambie el catálogo activo (#13/#15 y futuros T5.5–T5.35).
-
-## Presentación / Android — PR #14
-
-Puede avanzar en paralelo si:
-
-- no toca canon;
-- UI solo consume contrato público;
-- no expone seeds/flags/agendas/memoria interna;
-- mantiene offline + IndexedDB;
-- conserva QA T5 del main.
-
-PR #23 ya resolvió el baseline v8 que bloqueaba su gate. Próximos pasos de #14:
-
-1. re-ground sobre main nuevo;
-2. Repository Integrity verde;
-3. Android presentation candidate verde;
-4. resolver contrato público de contactos tras T5.3.
-
-T3.4 seguirá abierta hasta evidencia física real.
-
-## PRs archivados/superseded
-
-- #1 cerrado: rama histórica de planning, no mergear wholesale.
-- #3 cerrado: superseded por #10 + #24/#25.
-- #5 cerrado: superseded por #12 + #24/#25.
-- #7 cerrado: superseded por #12 + #24/#25.
-- #21 cerrado: duplicado de #19.
-
-Las ramas archivadas pueden conservarse como evidencia/documentación.
-
-## Orden de integración vigente
-
-1. Re-ground e integrar #17 (QA transversal) cuando exact HEAD quede verde.
-2. Re-ground #19 sobre ese main, ejecutar T5.2 + QA, integrar si verde.
-3. Re-ground #9 sobre #17+#19, resolver malformed knowledge y ejecutar T5.2/T5.3/QA; integrar si verde.
-4. Re-ground #14 sobre el main consolidado; integrar únicamente capa de presentación si workflows verdes. T3.4 sigue abierta.
-5. Implementar e integrar #25 (content migration).
-6. Tras #25, re-ground #13/#15 y futuros lotes de contenido; activar escenas por batches pequeños con migration mappings explícitos.
-7. Resolver contratos transversales adicionales (`CHOICE_ELIGIBILITY`, OR/derived gates, offer/session bridges, football outcome hooks) cuando bloqueen el siguiente lote real.
+Mantener como adversarial/ratchet. T5-QA-017 y 018 ya están cerrados en producto; T5-QA-016 sigue abierto. Re-ground antes de cualquier integración.
 
 ## Reglas de integración
 
-- usar `expected_head_sha` al mergear;
-- no integrar branches en movimiento sin revisar HEAD exacto;
-- no debilitar tests para hacer pasar un PR;
-- no regenerar el freeze para aceptar contenido nuevo;
-- no usar igualdad de ID/título como prueba de canon;
-- no fusionar runtime content antes de #25;
-- no acreditar porcentaje por auditorías/QA parciales.
+1. Nunca desarrollar cambios funcionales grandes directamente en `main`.
+2. Revisar intención y ownership antes de combinar PRs.
+3. Re-ground sobre el `main` exacto cuando haya contratos compartidos nuevos.
+4. Usar `expected_head_sha` al mergear.
+5. No mergear un HEAD distinto del que pasó CI.
+6. No debilitar un test para aceptar un PR.
+7. No regenerar un freeze histórico para que coincida con contenido nuevo.
+8. No usar igualdad de ID/título como prueba de equivalencia canónica.
+9. No mezclar catálogos legacy en scheduling.
+10. No acreditar porcentaje por auditorías, infraestructura o contenido parcial.
+
+## Orden operativo inmediato
+
+1. Completar las seis escenas restantes necesarias para cerrar el primer lote oficial de 12 escenas 23–26, respetando lineage adyacente desde D.
+2. En paralelo, resolver contratos #84 y #85 para desbloquear LOCK/MATCH cuando toque su generación.
+3. Mantener T5.2/T5.4 y T5.3 bajo gates permanentes mientras entra nuevo contenido.
+4. Después cerrar el resto 23–26 y continuar 26–30 por generaciones sucesivas.
+5. No adelantar 30–34/34+ sobre la lineage.
 
 ## Siguiente cuello de botella
 
-**Consolidar #17 -> #19 -> #9 mientras se implementa en paralelo #25.**
-
-Después de #25, el cuello de botella pasa a ser la ejecución masiva de los lotes canónicos T5.5–T5.35 con seeds/NPC/migración ya estabilizados.
+**Contenido canónico 23–26: pasar de 6/12 a 12/12 en la primera pasada oficial sin romper saves, provenance, seeds ni autoridad contractual.**
