@@ -5,6 +5,7 @@ import type { EventDefinition, GameState, ScheduledEvent, WeightedCandidate } fr
 import { knowledgeRequirementsFor } from "../catalog/npc-knowledge-rules.js";
 import { EventIndex } from "./event-index.js";
 import { eligibleChoices, eventWithEligibleChoices } from "./choice-eligibility.js";
+import { eventGatesPass } from "./event-gates.js";
 
 export interface SchedulerOptions { qa?: boolean; currentTick?: number; ignoreRhythmGate?: boolean; }
 type Period = { key: string; cap: number };
@@ -96,7 +97,7 @@ function isEligible(state:GameState,event:EventDefinition,options:SchedulerOptio
   if(event.family==="conditional"&&ctx.conditionalCount>=ctx.conditionalCap)return false;
   const budgetExempt=(event.tags??[]).includes("hard_deadline")||["EVT_19_FIN_001","EVT_18_SUM_001","EVT_22_END_001","EVT_22_DDL_001","EVT_25_END_001","EVT_23_JAN_001","EVT_29_FIN_001","EVT_30_FINAL_001","EVT_31_RETURN_001","EVT_31_FINAL_001","EVT_32_BOS_001","EVT_33_RET_001","EVT_33_END_001"].includes(event.id);
   if(event.family!=="conditional"&&!budgetExempt&&ctx.periodCount>=ctx.currentPeriod.cap)return false;
-  if(!inTimeWindow(state,event,ctx)||!conditionsPass(state,event.gates)||!knowledgePass(state,event))return false;
+  if(!inTimeWindow(state,event,ctx)||!eventGatesPass(state,event)||!knowledgePass(state,event))return false;
   if(event.exclusions&&event.exclusions.some(c=>conditionsPass(state,[c])))return false;
   if(eligibleChoices(state,event).length===0)return false;
   return rhythmPass(state,event,options,ctx);
@@ -127,7 +128,7 @@ function density(state:GameState):number { if(state.runtime.daysSinceNarrative>=
 export function scheduleEvent(state:GameState,source:EventDefinition[]|EventIndex,options:SchedulerOptions={}):ScheduledEvent|null {
   const tick=options.currentTick??state.runtime.day, pool=source instanceof EventIndex?source.candidates(state):source, ctx=buildContext(state);
   const eligible=pool.filter(e=>isEligible(state,e,options,ctx)); if(!eligible.length)return null;
-  const weighted:WeightedCandidate<EventDefinition>[]=eligible.map(event=>{const factors={base:event.weight,contentNeed:contentNeed(state,event,tick),relevance:relevance(event,ctx),arcPressure:arcPressure(state,event),routeCoverage:routeCoverage(state,event),novelty:novelty(event,ctx),density:density(state),conditionalDensity:conditionalDensity(state,event,ctx),lateOpportunity:lateOpportunity(state,event)}; return {item:event,weight:Object.values(factors).reduce((a,b)=>a*b,1),factors};});
+  const weighted:WeightedCandidate<EventDefinition>[]=eligible.map(event=>{const factors={base:event.weight,contentNeed:contentNeed(state,event,tick),relevance:relevance(event,ctx),arcPressure:arcPressure(state,event),routeCoverage:routeCoverage(state,event),novelty:novelty(event,ctx),density:density(state),conditionalDensity:conditionalDensity(state,event,ctx),lateOpportunity:lateOpportunity(state,event,ctx)}; return {item:event,weight:Object.values(factors).reduce((a,b)=>a*b,1),factors};});
   const rng=new DeterministicRng(state.rngState.narrative), picked=rng.pickWeighted(weighted);
   return {event:eventWithEligibleChoices(state,picked.item),debug:options.qa?{candidates:weighted.map(x=>({id:x.item.id,weight:x.weight,factors:x.factors})),rngDraw:picked.draw}:undefined};
 }
