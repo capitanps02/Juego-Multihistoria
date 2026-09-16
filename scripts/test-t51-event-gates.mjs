@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createInitialState } from '../dist/content/initial-state.js';
+import { ambiguousEvent } from '../dist/content/events/18_20/helpers.js';
 import { scheduleEvent } from '../dist/narrative/scheduler.js';
 import { eventGatesPass } from '../dist/narrative/event-gates.js';
 
@@ -84,12 +85,47 @@ test('explicit empty alternatives fail closed instead of widening reachability',
   assert.equal(sched(state, event), null);
 });
 
-test('evaluating event alternatives does not mutate the event definition', () => {
+test('an empty inner route also fails closed', () => {
+  const state = createInitialState(424242);
+  const event = fixtureEvent();
+  state.flags.COMMON_PREREQUISITE = true;
+  event.gateAlternatives = [[]];
+  assert.equal(eventGatesPass(state, event), false);
+  assert.equal(sched(state, event), null);
+});
+
+test('evaluating event alternatives does not mutate event, state or RNG', () => {
   const state = createInitialState(424242);
   const event = fixtureEvent();
   state.flags.COMMON_PREREQUISITE = true;
   state.flags.ROUTE_A = true;
-  const before = structuredClone(event);
+  const eventBefore = structuredClone(event);
+  const stateBefore = structuredClone(state);
+  for (let i = 0; i < 20; i++) assert.equal(eventGatesPass(state, event), true);
+  assert.deepEqual(event, eventBefore);
+  assert.deepEqual(state, stateBefore);
+});
+
+test('ambiguousEvent propagates gateAlternatives for 18-20 canonical consumers', () => {
+  const gateAlternatives = [
+    [{ path: 'flags.PHOTO', op: 'eq', value: true }],
+    [
+      { path: 'reputation.mediaHeat', op: 'gte', value: 20 },
+      { path: 'flags.RECENT_CONFLICT', op: 'eq', value: true }
+    ]
+  ];
+  const event = ambiguousEvent({
+    id: 'T51_HELPER_OR', ageWindow: [18, 19], family: 'press', title: 'Helper OR',
+    body: 'Fixture.', visible: [], uncertain: [], gateAlternatives,
+    choices: [
+      { id: 'ONE', label: 'Uno', intentTags: [], primaryMessage: 'uno', secondaryMessage: 'uno2' },
+      { id: 'TWO', label: 'Dos', intentTags: [], primaryMessage: 'dos', secondaryMessage: 'dos2' }
+    ]
+  });
+  assert.deepEqual(event.gateAlternatives, gateAlternatives);
+  const state = createInitialState(424242);
+  state.reputation.mediaHeat = 25;
+  state.flags.RECENT_CONFLICT = true;
   assert.equal(eventGatesPass(state, event), true);
-  assert.deepEqual(event, before);
+  assert.ok(sched(state, event));
 });
