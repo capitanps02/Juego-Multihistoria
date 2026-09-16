@@ -20,6 +20,37 @@ Sin embargo, la auditoría histórica de contenido (`analysis/2026-09-11/content
 
 La implementación previa de T5.2 estaba además inconclusa: existían `scripts/audit-t52.mjs` y `scripts/test-t52.mjs`, pero el informe esperado no estaba versionado/generado por `npm test` y el auditor trataba `seedsRead` como si fuera la única forma de consumo.
 
+## Resultado de auditoría actual
+
+La auditoría reproducible ejecutada sobre el contenido actual después de compilar detecta:
+
+- **210** seeds únicas en catálogo;
+- **388** eventos totales: 254 principales + 134 condicionales;
+- **138** seeds con al menos un productor runtime (`create`);
+- **72** seeds sin productor runtime detectable;
+- **57** seeds con algún consumidor detectable entre metadata, gates y usos `HAS_SEED_*` del código;
+- **153** seeds sin consumidor detectable;
+- **48** seeds con `ageWindow` finito, que ahora poseen un cierre técnico determinista si nunca son consumidas antes;
+- **5** seeds explícitamente locales de club;
+- **0** seeds locales de temporada actualmente configuradas;
+- **1236** transiciones `create`;
+- **0** `activate`;
+- **0** `intensify`;
+- **0** `transform`;
+- **2** `resolve`;
+- **0** `expire`;
+- **0** asignaciones `expiresAfter` en contenido canónico actual;
+- **1** seed con consumidor terminal explícito: `SEED_NANO_SHADOW`; sus dos `resolve` corresponden a dos outcomes del mismo callback;
+- **0** referencias a IDs de seed desconocidos;
+- **0** overrides de scope sobre IDs inexistentes;
+- **0** mismatches entre transiciones y `seedsWrite`.
+
+También aparecen numerosos gates reales `HAS_SEED_*` que no están reflejados en `seedsRead`. El auditor los conserva como `declaredReadMismatches`: no impiden que el juego funcione, pero son deuda de metadata y trazabilidad para los workstreams de contenido.
+
+Los `originEventsMissing` incluyen además identificadores de procedencia editorial como `PASADA_6_30_34` y `PASADA_7_34_PLUS`. Se reportan para reconciliación canónica, pero no se interpretan automáticamente como fallo runtime.
+
+Conclusión técnica de T5.2: **el hueco dominante está en la conexión del contenido, no en la capacidad del mecanismo**. El runtime dispone ahora de creación, persistencia, reapertura, cierre, caducidad, scope, restore e idempotencia verificables; los equipos de contenido deben decidir qué hilos abiertos deben realmente reaparecer, transformarse o cerrarse.
+
 ## Modelo adoptado
 
 No se introduce un nuevo estado persistido `eligible`. La elegibilidad se deriva de los gates/conditions del evento para evitar dos fuentes de verdad.
