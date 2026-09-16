@@ -7,6 +7,7 @@ on:
       - 'src/content/events/20_23/**'
       - 'src/catalog/npc-knowledge-rules.ts'
       - 'scripts/test-t51-t55a-20-23.mjs'
+      - 'scripts/report-t51-t55a-20-23-identity.mjs'
       - 'analysis/T5.1/**20-23**'
       - '.github/workflows/t51-canon-20-23.yml'
   workflow_dispatch:
@@ -26,5 +27,7 @@ jobs:
         run: npm run build
       - name: T5.5-A scene semantics, gates, seeds, NPC knowledge and RNG
         run: node --test scripts/test-t51-t55a-20-23.mjs
+      - name: Emit adjacent migration evidence
+        run: node scripts/report-t51-t55a-20-23-identity.mjs
       - name: T5 content references and lifecycle
         run: node scripts/qa-t5-content.mjs
