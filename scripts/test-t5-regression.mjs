@@ -30,8 +30,23 @@ function assertSeedRuntimeInvariants(state, label) {
   for (const [id, rows] of grouped) {
     const live = rows.filter(seed => LIVE_SEED_STATES.has(seed.state));
     assert.ok(live.length <= 1, `${label}: ${id} tiene ${live.length} instancias vivas`);
-    const resolved = rows.filter(seed => seed.state === 'resolved');
-    assert.ok(resolved.length <= 1, `${label}: ${id} fue consumida/resuelta ${resolved.length} veces`);
+
+    // A seed puede cerrarse, reabrirse y conservar generaciones terminales históricas.
+    // Lo inválido es duplicar exactamente el mismo cierre, no tener >1 resolved de por vida.
+    const terminalFingerprints = new Set();
+    for (const seed of rows.filter(seed => TERMINAL_SEED_STATES.has(seed.state))) {
+      const fingerprint = [
+        seed.state,
+        seed.originEvent,
+        seed.originSeason,
+        seed.lastTouchedDate ?? '',
+        seed.consumedBy ?? '',
+        seed.payload?.__t52TerminalReason ?? ''
+      ].join('|');
+      assert.ok(!terminalFingerprints.has(fingerprint), `${label}: ${id} contiene un cierre terminal duplicado (${fingerprint})`);
+      terminalFingerprints.add(fingerprint);
+    }
+
     assert.equal(state.flags[`HAS_${id}`] === true, live.length > 0, `${label}: flag HAS_${id} no coincide con el lifecycle real`);
   }
 }
