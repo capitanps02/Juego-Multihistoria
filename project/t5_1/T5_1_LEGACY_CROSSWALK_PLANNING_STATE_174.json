@@ -2,7 +2,7 @@
   "task": "T5.1 legacy crosswalk planning state",
   "generatedAt": "2026-09-16",
   "baselineLegacyRuntimeOnlyIds": 174,
-  "status": "principal_dispositions_complete_one_conditional_decision_remaining",
+  "status": "all_legacy_dispositions_reviewed",
   "countingRule": "Counts are unique by legacy ID. Exact-title candidate reviews that overlap a batch review are counted once.",
   "counts": {
     "principalLegacyExtras": 87,
@@ -12,11 +12,11 @@
     "principalRetireTechnicalKeepHistoryOnly": 87,
     "principalStillPendingDisposition": 0,
     "conditionalDispositionReviewed": 87,
-    "conditionalRetireTechnicalKeepHistoryOnly": 86,
-    "conditionalUnresolved": 1,
+    "conditionalRetireTechnicalKeepHistoryOnly": 87,
+    "conditionalUnresolved": 0,
     "approvedSameSceneMigrationsAcrossAllLegacyExtras": 0,
-    "totalLegacyExtrasWithFinalReviewedDisposition": 173,
-    "totalStillBlockingFinalCrosswalk": 1
+    "totalLegacyExtrasWithFinalReviewedDisposition": 174,
+    "totalStillBlockingFinalCrosswalk": 0
   },
   "principal": {
     "inventory": "project/t5_1/T5_1_PRINCIPAL_LEGACY_EXTRA_87_INVENTORY.json",
@@ -34,7 +34,7 @@
     "reviewed30PlusTitleCandidates": "project/t5_1/T5_1_PRINCIPAL_TITLE_CANDIDATES_30_PLUS_DISPOSITIONS.json",
     "reviewed30PlusTitleCandidateDetail": "project/t5_1/T5_1_PRINCIPAL_TITLE_CANDIDATES_30_PLUS_REVIEW.md",
     "reviewedPr5TitleCandidates": "project/t5_1/T5_1_PRINCIPAL_TITLE_CANDIDATES_PR5_FINAL_DISPOSITIONS.json",
-    "state": "All 87 runtime-only principal IDs now have a unique final planning disposition. All 87 are retire_technical_keep_history_only; zero same-scene ID migrations are approved. 04D retirement legacy IDs were already resolved by the exact-title review and are counted once.",
+    "state": "All 87 runtime-only principal IDs have a unique final planning disposition. All 87 are retire_technical_keep_history_only; zero same-scene ID migrations are approved. 04D retirement legacy IDs were already resolved by the exact-title review and are counted once.",
     "exactTitleCandidatesBaseline": 7,
     "exactTitleCandidatesReviewed": 7,
     "exactTitleCandidatesApprovedSameScene": 0,
@@ -45,9 +45,9 @@
   "conditional": {
     "inventoryAndDisposition": "project/t5_1/T5_1_CONDITIONAL_LEGACY_DISPOSITION_OVERLAY_87.json",
     "reconciliationState": "project/t5_1/T5_1_CONDITIONAL_RECONCILIATION_STATE.json",
-    "state": "86 retired-history-only planning decisions; one unresolved state-model conflict",
-    "blockingIds": ["CEVT_RET_RECONSIDER"],
-    "blockingCount": 1
+    "state": "All 87 runtime-only conditional IDs have final planning disposition retire_technical_keep_history_only. CEVT_RET_RECONSIDER is not a same-scene migration; its legacy history remains legacy. The future canonical CEVT_38_RETIREMENT_REVERSAL behavior remains a separate design decision.",
+    "blockingIds": [],
+    "blockingCount": 0
   },
   "crosswalkDecisionVocabulary": [
     "same_scene_rewrite_and_id_migration",
@@ -71,6 +71,12 @@
     "project/t5_1/T5_1_SESSION_V3_DESIGN_SPEC.md",
     "project/t5_1/T5_1_CONTENT_MIGRATION_DELIVERY_PLAN.md"
   ],
+  "remainingT51BlockersAfterCrosswalkClosure": [
+    "implement the supported-release content/session migration contract",
+    "replace or certify all 388 active canonical definitions under exact canonical identities",
+    "make retirement reversal canonical behavior explicit without rewriting legacy CEVT_RET_RECONSIDER history",
+    "run final identity, semantic, migration, causal, retirement and RNG gates"
+  ],
   "sourceArchive": "project/t5_1/source_archives/T5_1_LEGACY_ID_CROSSWALK_TEMPLATE.json.gz",
-  "warning": "This file is a reviewed planning overlay/state summary. It does not mutate the original crosswalk source and does not authorize runtime ID rewrites."
+  "warning": "Crosswalk planning completion does not mean T5.1 runtime completion. It closes identity disposition for legacy-only IDs and does not authorize runtime ID rewrites or canonical behavior changes."
 }
