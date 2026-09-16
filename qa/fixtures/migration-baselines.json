@@ -1,5 +1,5 @@
 {
-  "provenance": "Expected outputs for v2-v7 were captured from the unmodified T0 compiled/save/save.js before T2.2 validation. v2 is synthetic, derived from the authentic v3 example by removing fields introduced by v2to4. v3-v7 are supplied examples. The supplied schema-v8 fixture is already at the current schema and loadSave validates/returns it without migration; its baseline was recalculated on 2026-09-16 from JSON.stringify(loadSave(examples/save-v08-seed-424242.json)) after repository QA exposed that the imported expected hash did not match the imported fixture.",
+  "provenance": "Expected outputs for v2-v7 were captured from the unmodified T0 compiled/save/save.js before T2.2 validation. v2 is synthetic, derived from the authentic v3 example by removing fields introduced by v2to4. v3-v7 are supplied examples. The supplied schema-v8 fixture is already at the current schema: loadSave validates it and returns the parsed object without a schema migration. Its authoritative baseline is therefore SHA-256(JSON.stringify(JSON.parse(examples/save-v08-seed-424242.json))). Repository Integrity on the exact current fixture/blob exposed the previously committed 9737... value as incorrect and produced 8ffab5482a2ab55e0520a482a47589f8aeebd3da3fda4afe742cdcf9c3648990; this correction does not change the save fixture or runtime.",
   "cases": [
     {
       "source": "qa/fixtures/save-v02-derived.json",
@@ -27,7 +27,7 @@
     },
     {
       "source": "examples/save-v08-seed-424242.json",
-      "normalizedV8Sha256": "973721941c79d61ee4a08045778c604641fc87db7d8423533505f8d13fe3db1b"
+      "normalizedV8Sha256": "8ffab5482a2ab55e0520a482a47589f8aeebd3da3fda4afe742cdcf9c3648990"
     }
   ]
 }
