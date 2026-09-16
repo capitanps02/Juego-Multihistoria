@@ -6,12 +6,17 @@ import { EVENTS_18_20 } from '../dist/content/events/index.js';
 import { eventGatesPass, gateAlternatives } from '../dist/narrative/event-gates.js';
 import { T51_B1B_PUBLIC_HEAT_SUFFICIENT } from '../dist/content/events/18_20/t51-b1b-local-repairs.js';
 
-const id = 'EVT_18_PRS_002';
-const base = BASE_EVENTS_18_20.find(event => event.id === id);
-const active = EVENTS_18_20.find(event => event.id === id);
+const claraId = 'EVT_18_PRS_002';
+const summerId = 'EVT_19_SUM_001';
+const claraBase = BASE_EVENTS_18_20.find(event => event.id === claraId);
+const claraActive = EVENTS_18_20.find(event => event.id === claraId);
+const summerBase = BASE_EVENTS_18_20.find(event => event.id === summerId);
+const summerActive = EVENTS_18_20.find(event => event.id === summerId);
 
-assert.ok(base, `missing frozen base ${id}`);
-assert.ok(active, `missing active ${id}`);
+assert.ok(claraBase, `missing frozen base ${claraId}`);
+assert.ok(claraActive, `missing active ${claraId}`);
+assert.ok(summerBase, `missing frozen base ${summerId}`);
+assert.ok(summerActive, `missing active ${summerId}`);
 
 function state() {
   const value = createInitialState(424242);
@@ -21,13 +26,13 @@ function state() {
 }
 
 test('B1b keeps the frozen EVT_18_PRS_002 definition untouched', () => {
-  assert.deepEqual(base.gates, [{ path: 'flags.CLARA_CONTACTED', op: 'eq', value: true }]);
-  assert.equal(gateAlternatives(base), undefined);
+  assert.deepEqual(claraBase.gates, [{ path: 'flags.CLARA_CONTACTED', op: 'eq', value: true }]);
+  assert.equal(gateAlternatives(claraBase), undefined);
 });
 
 test('B1b active definition expresses Clara-channel OR sufficient PUBLIC_HEAT', () => {
-  assert.deepEqual(active.gates, []);
-  assert.deepEqual(gateAlternatives(active), [
+  assert.deepEqual(claraActive.gates, []);
+  assert.deepEqual(gateAlternatives(claraActive), [
     [{ path: 'flags.CLARA_CONTACTED', op: 'eq', value: true }],
     [{ path: 'reputation.mediaHeat', op: 'gte', value: T51_B1B_PUBLIC_HEAT_SUFFICIENT }]
   ]);
@@ -36,26 +41,26 @@ test('B1b active definition expresses Clara-channel OR sufficient PUBLIC_HEAT', 
 test('Clara channel alone reaches EVT_18_PRS_002 at low public heat', () => {
   const s = state();
   s.flags.CLARA_CONTACTED = true;
-  assert.equal(eventGatesPass(s, active), true);
+  assert.equal(eventGatesPass(s, claraActive), true);
 });
 
 test('sufficient public heat reaches EVT_18_PRS_002 without prior Clara contact', () => {
   const s = state();
   s.reputation.mediaHeat = T51_B1B_PUBLIC_HEAT_SUFFICIENT;
-  assert.equal(eventGatesPass(s, active), true);
+  assert.equal(eventGatesPass(s, claraActive), true);
 });
 
 test('EVT_18_PRS_002 fails closed when neither canonical route exists', () => {
   const s = state();
   s.reputation.mediaHeat = T51_B1B_PUBLIC_HEAT_SUFFICIENT - 1;
-  assert.equal(eventGatesPass(s, active), false);
+  assert.equal(eventGatesPass(s, claraActive), false);
 });
 
-test('B1b reachability evaluation consumes no RNG and mutates no state', () => {
+test('Clara reachability evaluation consumes no RNG and mutates no state', () => {
   const s = state();
   s.flags.CLARA_CONTACTED = true;
   const before = structuredClone(s);
-  assert.equal(eventGatesPass(s, active), true);
+  assert.equal(eventGatesPass(s, claraActive), true);
   assert.deepEqual(s, before);
 });
 
@@ -66,5 +71,36 @@ test('B1b changes only reachability metadata for EVT_18_PRS_002', () => {
     copy.gates = [];
     return copy;
   };
-  assert.deepEqual(stripGates(active), stripGates(base));
+  assert.deepEqual(stripGates(claraActive), stripGates(claraBase));
+});
+
+test('B1b keeps the frozen EVT_19_SUM_001 definition untouched', () => {
+  assert.deepEqual(summerBase.gates, []);
+  assert.equal(gateAlternatives(summerBase), undefined);
+});
+
+test('EVT_19_SUM_001 is eligible through gates only when there is no acute injury', () => {
+  const healthy = state();
+  healthy.body.acuteInjury = false;
+  assert.equal(eventGatesPass(healthy, summerActive), true);
+
+  const injured = state();
+  injured.body.acuteInjury = true;
+  assert.equal(eventGatesPass(injured, summerActive), false);
+});
+
+test('undefined acute-injury state is treated as no active acute injury', () => {
+  const s = state();
+  delete s.body.acuteInjury;
+  assert.equal(eventGatesPass(s, summerActive), true);
+});
+
+test('B1b changes only gates for EVT_19_SUM_001', () => {
+  const stripGates = event => {
+    const copy = structuredClone(event);
+    copy.gates = [];
+    return copy;
+  };
+  assert.deepEqual(stripGates(summerActive), stripGates(summerBase));
+  assert.deepEqual(summerActive.gates, [{ path: 'body.acuteInjury', op: 'neq', value: true }]);
 });
