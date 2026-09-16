@@ -2,11 +2,13 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { EVENTS } from '../dist/content/events/index.js';
+import { validateSeedClosureClassifications } from './t52-seed-closure-classifications.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const lifecyclePath = path.join(root, 'analysis/T5.2/seed-lifecycle.json');
 const handoffPath = path.join(root, 'analysis/T5.2/seed-handoff.json');
 const deferredPath = path.join(root, 'analysis/T5.2/deferred-consequences.json');
+const classificationsPath = path.join(root, 'analysis/T5.2/seed-closure-classifications.json');
 const outputPath = path.join(root, 'analysis/T5.2/closure-readiness.json');
 
 function readJson(file) {
@@ -55,7 +57,7 @@ function nextActionFor(row) {
   return 'upgrade_runtime_endpoints_to_verified_canonical_evidence';
 }
 
-export function buildClosureReadinessReport({ lifecycle, handoff, deferred, events = EVENTS }) {
+export function buildClosureReadinessReport({ lifecycle, handoff, deferred, events = EVENTS, classifications = [] }) {
   const eventStatuses = eventStatusMap(events);
   const owners = ownerMapFromHandoff(handoff);
   const deferredRows = new Map((deferred.rows ?? []).map(row => [row.id, row]));
@@ -72,6 +74,8 @@ export function buildClosureReadinessReport({ lifecycle, handoff, deferred, even
         id: seed.id,
         owner,
         topology: 'missing_deferred_evidence',
+        canonicalClosure: 'requires_owner_classification',
+        canonicalClosureEvidence: null,
         nextAction: 'repair_audit_coverage'
       };
     }
@@ -111,11 +115,29 @@ export function buildClosureReadinessReport({ lifecycle, handoff, deferred, even
       seasonScoped: seed.scope.season === 'origin_season',
       scopeProofRequired: d.proofObligations?.clubContinuity === true || d.proofObligations?.seasonContinuity === true,
       impossibleRuntimeChain: d.impossibleRuntimeChain === true,
-      canonicalClosure: 'requires_owner_classification'
+      canonicalClosure: 'requires_owner_classification',
+      canonicalClosureEvidence: null
     };
     row.nextAction = nextActionFor(row);
     return row;
   });
+
+  const classificationValidation = validateSeedClosureClassifications(classifications, rows);
+  const acceptedClassifications = new Map(classificationValidation.accepted.map(entry => [entry.seedId, entry]));
+  for (const row of rows) {
+    const classification = acceptedClassifications.get(row.id);
+    if (!classification) continue;
+    row.canonicalClosure = classification.disposition;
+    row.canonicalClosureEvidence = {
+      owner: classification.owner,
+      rationale: classification.rationale,
+      evidenceRefs: classification.evidenceRefs,
+      ...(classification.producerEventId ? { producerEventId: classification.producerEventId } : {}),
+      ...(classification.consumerEventId ? { consumerEventId: classification.consumerEventId } : {}),
+      ...(classification.expiryBasis ? { expiryBasis: classification.expiryBasis } : {})
+    };
+    row.nextAction = 'canonical_closure_classified';
+  }
 
   const topologyCounts = Object.fromEntries(
     ['producer_consumer_feasible', 'producer_consumer_impossible', 'producer_only', 'consumer_only', 'unwired', 'missing_deferred_evidence']
@@ -129,7 +151,8 @@ export function buildClosureReadinessReport({ lifecycle, handoff, deferred, even
     producerOnly: rows.filter(row => row.owner === owner && row.topology === 'producer_only').length,
     consumerOnly: rows.filter(row => row.owner === owner && row.topology === 'consumer_only').length,
     unwired: rows.filter(row => row.owner === owner && row.topology === 'unwired').length,
-    openEndedNeedsRationale: rows.filter(row => row.owner === owner && row.openEndedWithoutTerminalTransition).length
+    openEndedNeedsRationale: rows.filter(row => row.owner === owner && row.openEndedWithoutTerminalTransition).length,
+    closureClassified: rows.filter(row => row.owner === owner && row.canonicalClosure !== 'requires_owner_classification').length
   }]));
 
   const catalogSeeds = lifecycle.summary?.catalogSeeds ?? rows.length;
@@ -139,6 +162,14 @@ export function buildClosureReadinessReport({ lifecycle, handoff, deferred, even
     && unknownOwners.length === 0
     && missingDeferredRows.length === 0;
   const impossibleRuntimeChains = rows.filter(row => row.impossibleRuntimeChain).map(row => row.id);
+  const canonicalClosureClassified = rows.filter(row => row.canonicalClosure !== 'requires_owner_classification').length;
+  const canonicalClosurePending = rows.length - canonicalClosureClassified;
+  const structuralPass = exactCoverage
+    && unknownOwners.length === 0
+    && missingDeferredRows.length === 0
+    && impossibleRuntimeChains.length === 0
+    && classificationValidation.valid;
+  const canonicalClosureComplete = structuralPass && canonicalClosurePending === 0;
 
   return {
     task: 'T5.2 seed closure readiness',
@@ -148,7 +179,7 @@ export function buildClosureReadinessReport({ lifecycle, handoff, deferred, even
       verifiedEndpoint: 'an event endpoint counts as canonically verified only when active EventDefinition.canonStatus === "verified"',
       verifiedPair: 'both producer and non-simulation event consumer are verified and the temporal pair is feasible',
       simulationRule: 'simulation effects are valid runtime consequences but do not by themselves certify final canonical disposition',
-      canonicalClosure: 'always remains owner-classified; this audit supplies evidence and next action only'
+      canonicalClosure: 'closure is applied only from explicit owner-authored classifications that satisfy evidence-specific validation'
     },
     summary: {
       catalogSeeds,
@@ -165,10 +196,16 @@ export function buildClosureReadinessReport({ lifecycle, handoff, deferred, even
       scopeProofRequiredSeeds: rows.filter(row => row.scopeProofRequired).length,
       openEndedNeedsCanonicalRationale: rows.filter(row => row.openEndedWithoutTerminalTransition).length,
       impossibleRuntimeChains: impossibleRuntimeChains.length,
-      canonicalClosureClassified: 0,
-      canonicalClosurePending: rows.length
+      canonicalClosureClassified,
+      canonicalClosurePending
     },
     ownerSummary,
+    classificationRegistry: {
+      entries: classifications.length,
+      accepted: classificationValidation.accepted.length,
+      valid: classificationValidation.valid,
+      errors: classificationValidation.errors
+    },
     unknownOwners,
     missingDeferredRows,
     impossibleRuntimeChains,
@@ -178,8 +215,9 @@ export function buildClosureReadinessReport({ lifecycle, handoff, deferred, even
       noUnknownOwners: unknownOwners.length === 0,
       noMissingDeferredRows: missingDeferredRows.length === 0,
       noImpossibleRuntimeChains: impossibleRuntimeChains.length === 0,
-      structuralPass: exactCoverage && unknownOwners.length === 0 && missingDeferredRows.length === 0 && impossibleRuntimeChains.length === 0,
-      canonicalClosureComplete: false
+      classificationRegistryValid: classificationValidation.valid,
+      structuralPass,
+      canonicalClosureComplete
     }
   };
 }
@@ -188,10 +226,22 @@ function main() {
   const lifecycle = readJson(lifecyclePath);
   const handoff = readJson(handoffPath);
   const deferred = readJson(deferredPath);
-  const report = buildClosureReadinessReport({ lifecycle, handoff, deferred });
+  const classificationRegistry = readJson(classificationsPath);
+  const report = buildClosureReadinessReport({
+    lifecycle,
+    handoff,
+    deferred,
+    classifications: classificationRegistry.classifications ?? []
+  });
   fs.mkdirSync(path.dirname(outputPath), { recursive: true });
   fs.writeFileSync(outputPath, JSON.stringify(report, null, 2) + '\n');
-  console.log(JSON.stringify({ output: path.relative(root, outputPath), ...report.summary, structuralPass: report.rules.structuralPass }, null, 2));
+  console.log(JSON.stringify({
+    output: path.relative(root, outputPath),
+    ...report.summary,
+    classificationRegistryValid: report.rules.classificationRegistryValid,
+    structuralPass: report.rules.structuralPass,
+    canonicalClosureComplete: report.rules.canonicalClosureComplete
+  }, null, 2));
   if (!report.rules.structuralPass) process.exitCode = 1;
 }
 
