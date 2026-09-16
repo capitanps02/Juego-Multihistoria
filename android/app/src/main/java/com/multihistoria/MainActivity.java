@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.ClipData;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -32,9 +33,29 @@ public final class MainActivity extends Activity {
     private String pendingDownloadName;
     private String pendingDownloadText;
 
+    private PackageInfo appPackageInfo() {
+        try { return getPackageManager().getPackageInfo(getPackageName(), 0); }
+        catch (PackageManager.NameNotFoundException error) {
+            Log.e(TAG, "Could not resolve installed package info", error);
+            return null;
+        }
+    }
+
+    private String appVersionName() {
+        PackageInfo info = appPackageInfo();
+        return info == null || info.versionName == null ? "unknown" : info.versionName;
+    }
+
+    @SuppressWarnings("deprecation")
+    private long appVersionCode() {
+        PackageInfo info = appPackageInfo();
+        if (info == null) return 0;
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.P ? info.getLongVersionCode() : info.versionCode;
+    }
+
     @Override public void onCreate(Bundle state) {
         super.onCreate(state);
-        Log.i(TAG, "Launching offline shell version=" + BuildConfig.VERSION_NAME);
+        Log.i(TAG, "Launching offline shell version=" + appVersionName());
         game = new WebView(this);
         game.getSettings().setJavaScriptEnabled(true);
         game.getSettings().setDomStorageEnabled(true);
@@ -123,8 +144,8 @@ public final class MainActivity extends Activity {
             }
             try {
                 JSONObject info = new JSONObject();
-                info.put("versionName", BuildConfig.VERSION_NAME);
-                info.put("versionCode", BuildConfig.VERSION_CODE);
+                info.put("versionName", appVersionName());
+                info.put("versionCode", appVersionCode());
                 info.put("androidRelease", Build.VERSION.RELEASE);
                 info.put("androidSdk", Build.VERSION.SDK_INT);
                 info.put("webViewVersion", webViewVersion == null ? JSONObject.NULL : webViewVersion);
