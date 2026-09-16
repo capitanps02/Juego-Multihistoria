@@ -5,6 +5,7 @@ import path from 'node:path';
 import { createHash } from 'node:crypto';
 import { GameSession } from '../dist/session/game-session.js';
 import { GameSession as PackagedSession } from '../android/app/src/main/assets/dist/session/game-session.js';
+import { createPlayerSessionApi as PackagedPlayerSessionApi } from '../android/app/src/main/assets/web/player-session-api.js';
 
 const root = path.resolve(import.meta.dirname, '..');
 const assetsRoot = path.join(root, 'android', 'app', 'src', 'main', 'assets');
@@ -37,6 +38,7 @@ test('Android package has a complete local entrypoint and verified file manifest
   assert.equal(manifest.networkPolicy.connectSrc, 'none');
   assert.deepEqual(manifest.networkPolicy.externalUrls, []);
   assert.equal(manifest.resources.mobileCss, 'web/product-mobile.css');
+  assert.equal(manifest.resources.playerSessionApi, 'web/player-session-api.js');
   for (const file of manifest.files) {
     assert.ok(fs.existsSync(path.join(assetsRoot, file.path)), file.path);
     assert.equal(fs.statSync(path.join(assetsRoot, file.path)).size, file.bytes, file.path);
@@ -45,6 +47,17 @@ test('Android package has a complete local entrypoint and verified file manifest
   assert.ok(manifest.files.some(file => file.path === 'dist/session/game-session.js'));
   assert.ok(manifest.files.some(file => file.path === 'web/local.js'));
   assert.ok(manifest.files.some(file => file.path === 'web/product-mobile.css'));
+  assert.ok(manifest.files.some(file => file.path === 'web/player-session-api.js'));
+});
+
+test('packaged player entrypoint randomizes only the legacy initial placeholder', () => {
+  const cryptoApi={getRandomValues(value){value[0]=987654321;return value;}};
+  const calls=[];
+  const fake={fromSave:(...args)=>args,create:(seed,options)=>{calls.push(seed);return {seed,options};}};
+  const api=PackagedPlayerSessionApi(fake,cryptoApi);
+  assert.equal(api.create(424242,{}).seed,987654321);
+  assert.equal(api.create(12345,{}).seed,12345);
+  assert.deepEqual(calls,[987654321,12345]);
 });
 
 test('Android entrypoint contains no absolute web paths or network fetches', () => {
@@ -57,6 +70,8 @@ test('Android entrypoint contains no absolute web paths or network fetches', () 
   assert.match(index, /connect-src 'none'/);
   assert.doesNotMatch(local, /fetch\(|https?:\/\//);
   assert.doesNotMatch(local, /from ['"]\/(?:dist|web)\//);
+  assert.match(local, /createPlayerSessionApi/);
+  assert.match(local, /GameSession:PlayerSession/);
   const manifest = fs.readFileSync(path.join(root, 'android/app/src/main/AndroidManifest.xml'), 'utf8');
   assert.doesNotMatch(manifest, /android\.permission\.INTERNET/);
   assert.match(activity, /WebViewAssetLoader/);
@@ -77,6 +92,7 @@ test('Android bundle retains the production UI, accessibility layer, engine and 
   const local = read('web/local.js');
   assert.ok(ui.includes('createIndexedSaveStore'));
   assert.ok(read('web/indexed-save-store.js').includes('multihistoria.saves.v1'));
+  assert.ok(read('web/player-session-api.js').includes('LEGACY_INITIAL_SEED'));
   assert.ok(local.includes('android.offline.session.v1'));
   assert.match(local, /appVersion:["']0\.8\.0["']/);
   assert.ok(local.includes('data:image/png;base64,'));
