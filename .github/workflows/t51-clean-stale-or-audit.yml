@@ -1,0 +1,61 @@
+name: T5.1 clean stale OR audit references
+
+on:
+  push:
+    branches:
+      - t51/canon-30-34
+
+permissions:
+  contents: write
+
+jobs:
+  clean:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Update stale audit wording
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          p = Path('analysis/T5.1/canon-30-34.json')
+          s = p.read_text()
+          replacements = {
+            'canonical decision semantics implemented; canonical trigger is contract <=18 months OR club wants renewal, but the second branch is not represented in GameState and the shared OR-gate contract is still pending, so reachability is preserved through an explicit unmodelled-branch proxy and remains non-verified':
+            'canonical decision semantics implemented; canonical trigger is contract <=18 months OR club wants renewal. Shared event-level OR gates are available, but GameState still has no authoritative produced club-renewal-intent fact, so reachability preserves the unmodelled branch through an explicit proxy and remains non-verified',
+            '{"id":"DEP_T51_OR_GATES","kind":"shared_trigger_contract","description":"The historical Condition[] contract is AND-only. Shared T5.1 coordination has identified explicit deterministic OR-gate/fact-causal support as the next transversal gap. EVT_30_CON_001 depends on contract <=18 months OR club renewal intent and therefore cannot reach strict trigger parity until that shared contract and a renewal-intent fact exist."}':
+            '{"id":"DEP_T51_RENEWAL_INTENT_FACT","kind":"causal_state_fact","description":"Event-level OR composition is available in main. EVT_30_CON_001 still cannot reach strict trigger parity because GameState has no authoritative produced fact meaning club wants renewal; do not invent an ad-hoc flag."}',
+            '"sharedOrGateContract": "pending_shared"':
+            '"sharedOrGateContract": "available_in_main"',
+            '"Keep EVT_30_CON_001 reachable through the documented proxy until shared OR-gate support plus a real club-renewal-intent signal exist; do not label the proxy verified canon."':
+            '"Keep EVT_30_CON_001 reachable through the documented proxy until a real club-renewal-intent signal exists; shared OR-gate composition is already available, but the proxy must not be labeled verified canon."',
+            '      "Do not implement the shared OR-gate contract from this age-owned workstream.",\n': ''
+          }
+          for old, new in replacements.items():
+              if old not in s:
+                  raise SystemExit(f'missing expected stale text: {old[:100]}')
+              s = s.replace(old, new, 1)
+          if 'DEP_T51_OR_GATES' in s or 'pending_shared' in s or 'shared OR-gate contract is still pending' in s:
+              raise SystemExit('stale OR-gate wording remains')
+          json.loads(s)
+          p.write_text(s)
+          PY
+      - run: npm run test:t51
+      - name: Commit cleanup and remove temporary workflow
+        shell: bash
+        run: |
+          rm .github/workflows/t51-clean-stale-or-audit.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add analysis/T5.1/canon-30-34.json .github/workflows/t51-clean-stale-or-audit.yml
+          git commit -m 'docs(t51): align audit with available OR contract'
+          git push origin HEAD:t51/canon-30-34
