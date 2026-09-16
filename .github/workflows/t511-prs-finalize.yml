@@ -1,0 +1,34 @@
+name: T5.1 PRS adjacent generation
+
+on:
+  push:
+    branches:
+      - integration/t511-prs-23-26
+    paths:
+      - .github/workflows/t511-prs-finalize.yml
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: integration/t511-prs-23-26
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: node scripts/finalize-t511-prs.mjs
+      - name: Commit PRS generation
+        run: |
+          git rm -f .github/workflows/t511-prs-finalize.yml scripts/finalize-t511-prs.mjs
+          git config user.name "multihistoria-t51-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A
+          git commit -m "feat(t51): add PRS canonical adjacent generation"
+          git push origin HEAD:integration/t511-prs-23-26
