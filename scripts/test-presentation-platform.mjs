@@ -43,7 +43,9 @@ test('player UI hides seed mechanics, technical storage and milestone state code
 
 test('Android bridge reports version and export outcomes without enabling network access', () => {
   assert.match(activity, /getRuntimeInfo/);
-  assert.match(activity, /BuildConfig\.VERSION_NAME/);
+  assert.match(activity, /getPackageManager\(\)\.getPackageInfo/);
+  assert.match(activity, /appVersionName\(\)/);
+  assert.match(activity, /appVersionCode\(\)/);
   assert.match(activity, /getCurrentWebViewPackage/);
   assert.match(activity, /mh:android-file-result/);
   assert.match(activity, /notifyFileResult\("export", "saved"/);
