@@ -6,6 +6,7 @@ import {
   buildDeferredConsequenceReport,
   temporalFeasibility
 } from './audit-t52-deferred.mjs';
+import { seedPresencePolarity } from './t52-seed-condition-polarity.mjs';
 
 test('deferred chain: later consumer before finite seed expiry is feasible', () => {
   const result = temporalFeasibility([18, 26], [18, 20], [23, 26]);
@@ -54,6 +55,7 @@ test('choice eligibility using HAS_SEED_* is counted as a runtime deferred consu
     choices: [{ id: 'SEED_ONLY_OPTION', eligibility: [{ path: 'flags.HAS_SEED_SYNTHETIC_CHOICE', op: 'eq', value: true }] }],
     outcomes: []
   };
+
   const report = buildDeferredConsequenceReport([producer, consumer], [seed]);
   const row = report.rows[0];
   assert.equal(row.runtimeConsumerCount, 1);
@@ -75,6 +77,7 @@ test('choice eligibility detects a producer→consumer chain that is only availa
     choices: [{ id: 'TOO_LATE_OPTION', eligibility: [{ path: 'flags.HAS_SEED_SYNTHETIC_EXPIRED_CHOICE', op: 'eq', value: true }] }],
     outcomes: []
   };
+
   const report = buildDeferredConsequenceReport([producer, consumer], [seed]);
   assert.deepEqual(report.impossibleRuntimeChains, [seed.id]);
   assert.equal(report.rules.hardPass, false);
@@ -95,6 +98,7 @@ test('event gateAlternatives using HAS_SEED_* are counted as runtime deferred co
     ],
     choices: [], outcomes: []
   };
+
   const report = buildDeferredConsequenceReport([producer, consumer], [seed]);
   const row = report.rows[0];
   assert.equal(row.runtimeConsumerCount, 1);
@@ -115,11 +119,77 @@ test('event gateAlternatives detect a seed route that exists only after seed exp
     gateAlternatives: [[{ path: 'flags.HAS_SEED_SYNTHETIC_OR_EXPIRED', op: 'eq', value: true }]],
     choices: [], outcomes: []
   };
+
   const report = buildDeferredConsequenceReport([producer, consumer], [seed]);
   assert.deepEqual(report.impossibleRuntimeChains, [seed.id]);
   assert.equal(report.rules.hardPass, false);
   assert.equal(report.rows[0].runtimeConsumers[0].context, 'gateAlternative:0');
   assert.equal(report.rows[0].unreachableEdges[0].reason, 'consumer_after_seed_expiry');
+});
+
+test('HAS_SEED boolean comparators are classified by actual presence semantics', () => {
+  const positive = [
+    { op: 'eq', value: true },
+    { op: 'neq', value: false },
+    { op: 'in', value: [true] },
+    { op: 'notIn', value: [false] }
+  ];
+  const negative = [
+    { op: 'eq', value: false },
+    { op: 'neq', value: true },
+    { op: 'in', value: [false] },
+    { op: 'notIn', value: [true] }
+  ];
+
+  for (const condition of positive) assert.equal(seedPresencePolarity(condition), 'positive', JSON.stringify(condition));
+  for (const condition of negative) assert.equal(seedPresencePolarity(condition), 'negative', JSON.stringify(condition));
+  assert.equal(seedPresencePolarity({ op: 'exists' }), 'neutral');
+  assert.equal(seedPresencePolarity({ op: 'gte', value: 1 }), 'neutral');
+});
+
+test('absence/suppression predicates do not create positive producer→consumer edges', () => {
+  const seed = { id: 'SEED_SYNTHETIC_ABSENCE', ageWindow: [18, 26] };
+  const producer = {
+    id: 'EVT_SYNTH_ABSENCE_PRODUCER', phase: '18_20', family: 'career', ageWindow: [18, 18], choices: [],
+    outcomes: [{ id: 'CREATE', seedTransitions: [{ seedId: seed.id, action: 'create' }] }]
+  };
+  const consumer = {
+    id: 'EVT_SYNTH_ABSENCE_CONSUMER', phase: '18_20', family: 'career', ageWindow: [19, 19], seedsRead: [seed.id],
+    choices: [{
+      id: 'ONLY_WHEN_ABSENT',
+      eligibility: [{ path: `flags.HAS_${seed.id}`, op: 'eq', value: false }]
+    }],
+    outcomes: []
+  };
+
+  const report = buildDeferredConsequenceReport([producer, consumer], [seed]);
+  const row = report.rows[0];
+  assert.equal(row.runtimeConsumerCount, 0);
+  assert.equal(row.feasiblePairCount, 0);
+  assert.equal(row.negativeDependencyCount, 1);
+  assert.equal(row.negativeDependencies[0].context, 'choice:ONLY_WHEN_ABSENT');
+  assert.deepEqual(row.metadataOnlyReaders, []);
+  assert.equal(row.impossibleRuntimeChain, false);
+});
+
+test('negative HAS_SEED polarity is preserved inside gateAlternatives', () => {
+  const seed = { id: 'SEED_SYNTHETIC_OR_ABSENCE', ageWindow: [18, 26] };
+  const producer = {
+    id: 'EVT_SYNTH_OR_ABSENCE_PRODUCER', phase: '18_20', family: 'team', ageWindow: [18, 18], choices: [],
+    outcomes: [{ id: 'CREATE', seedTransitions: [{ seedId: seed.id, action: 'create' }] }]
+  };
+  const consumer = {
+    id: 'EVT_SYNTH_OR_ABSENCE_CONSUMER', phase: '18_20', family: 'team', ageWindow: [19, 19],
+    gateAlternatives: [[{ path: `flags.HAS_${seed.id}`, op: 'neq', value: true }]],
+    choices: [], outcomes: []
+  };
+
+  const report = buildDeferredConsequenceReport([producer, consumer], [seed]);
+  const row = report.rows[0];
+  assert.equal(row.runtimeConsumerCount, 0);
+  assert.equal(row.negativeDependencyCount, 1);
+  assert.equal(row.negativeDependencies[0].context, 'gateAlternative:0');
+  assert.equal(report.rules.hardPass, true);
 });
 
 test('registered simulation consumer participates in deferred temporal graph', () => {
@@ -129,9 +199,13 @@ test('registered simulation consumer participates in deferred temporal graph', (
     outcomes: [{ id: 'CREATE_OUT', seedTransitions: [{ action: 'create', seedId: seed.id }] }]
   };
   const simulationConsumers = [{
-    file: 'src/simulation/synthetic.ts', seedId: seed.id, ageWindow: [23, 26],
-    surface: 'synthetic-runtime-effect', rationale: 'test'
+    file: 'src/simulation/synthetic.ts',
+    seedId: seed.id,
+    ageWindow: [23, 26],
+    surface: 'synthetic-runtime-effect',
+    rationale: 'test'
   }];
+
   const report = buildDeferredConsequenceReport([producer], [seed], { simulationConsumers });
   const row = report.rows[0];
   assert.equal(row.runtimeEventConsumerCount, 0);
@@ -139,6 +213,7 @@ test('registered simulation consumer participates in deferred temporal graph', (
   assert.equal(row.runtimeConsumerCount, 1);
   assert.equal(row.strictDeferredPairCount, 1);
   assert.equal(row.runtimeSimulationConsumers[0].kind, 'simulation');
+  assert.equal(row.runtimeSimulationConsumers[0].polarity, 'positive');
   assert.equal(row.impossibleRuntimeChain, false);
 });
 
@@ -149,9 +224,13 @@ test('simulation consumer after finite seed expiry makes the chain impossible', 
     outcomes: [{ id: 'CREATE_OUT', seedTransitions: [{ action: 'create', seedId: seed.id }] }]
   };
   const simulationConsumers = [{
-    file: 'src/simulation/synthetic.ts', seedId: seed.id, ageWindow: [21, 23],
-    surface: 'too-late-runtime-effect', rationale: 'test'
+    file: 'src/simulation/synthetic.ts',
+    seedId: seed.id,
+    ageWindow: [21, 23],
+    surface: 'too-late-runtime-effect',
+    rationale: 'test'
   }];
+
   const report = buildDeferredConsequenceReport([producer], [seed], { simulationConsumers });
   assert.deepEqual(report.impossibleRuntimeChains, [seed.id]);
   assert.equal(report.rows[0].unreachableEdges[0].reason, 'consumer_after_seed_expiry');
