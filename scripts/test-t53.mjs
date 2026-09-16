@@ -201,3 +201,19 @@ test('T5.3/12 flags y seed no bastan: el callback de Nano exige conocimiento per
   assert.equal(omniscient.flags.HAS_SEED_NANO_SHADOW, true);
   assert.equal(scheduleEvent(omniscient, [callback], { ignoreRhythmGate: true }), null);
 });
+
+test('T5.3/13 un NPC no puede reportar un hecho que no conoce', () => {
+  const state = createInitialState(113);
+  resolveChoiceInPlace(state, origin(), 'CALL_NANO');
+  assert.equal(npcKnows(state, 'NPC_PLR_14', 'EVT_18_PRE_001'), true);
+  assert.equal(npcKnows(state, 'NPC_ACA_01', 'EVT_18_PRE_001'), false);
+  assert.equal(npcKnows(state, 'NPC_CCH_01', 'EVT_18_PRE_001'), false);
+
+  assert.throws(
+    () => informNpcOfEventInPlace(state, 'NPC_CCH_01', 'EVT_18_PRE_001', {
+      source: 'reported', sourceNpcId: 'NPC_ACA_01', memory: 'strong'
+    }),
+    /uninformed NPC source NPC_ACA_01/
+  );
+  assert.equal(npcKnows(state, 'NPC_CCH_01', 'EVT_18_PRE_001'), false);
+});
