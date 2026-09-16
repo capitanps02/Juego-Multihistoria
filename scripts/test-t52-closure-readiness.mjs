@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { buildClosureReadinessReport } from './audit-t52-closure-readiness.mjs';
+import { validateSeedClosureClassifications } from './t52-seed-closure-classifications.mjs';
 
 function fixture({ producerStatus = 'verified', consumerStatus = 'verified', consumerKind = 'condition' } = {}) {
   const seedId = 'SEED_FIXTURE_CLOSURE';
@@ -137,6 +138,38 @@ test('closure classification: unsupported expiry basis fails closed', () => {
   });
   assert.equal(report.rules.classificationRegistryValid, false);
   assert.equal(report.classificationRegistry.errors[0].code, 'canonical_expiry_basis_not_supported_by_runtime_evidence');
+});
+
+test('closure classification: club/season expiry cannot be certified from scope metadata alone', () => {
+  const scoped = fixture();
+  scoped.lifecycle.seeds[0].scope.club = 'origin_club';
+  const report = buildClosureReadinessReport({
+    ...scoped,
+    classifications: [classification('canonical_expiry', { expiryBasis: 'club' })]
+  });
+  assert.equal(report.rows[0].clubScoped, true);
+  assert.equal(report.rules.classificationRegistryValid, false);
+  assert.equal(report.rules.structuralPass, false);
+  assert.equal(report.classificationRegistry.errors[0].code, 'canonical_expiry_scope_proof_required');
+});
+
+test('closure classification: a matching registered scope proof unlocks club expiry validation', () => {
+  const scoped = fixture();
+  scoped.lifecycle.seeds[0].scope.club = 'origin_club';
+  const evidence = buildClosureReadinessReport(scoped);
+  const result = validateSeedClosureClassifications(
+    [classification('canonical_expiry', { expiryBasis: 'club' })],
+    evidence.rows,
+    {
+      scopeProofs: [{
+        seedId: 'SEED_FIXTURE_CLOSURE',
+        scope: 'origin_club',
+        proofType: 'scope_expiry_blocks_consumer'
+      }]
+    }
+  );
+  assert.equal(result.valid, true, JSON.stringify(result.errors));
+  assert.equal(result.accepted.length, 1);
 });
 
 test('closure readiness: technical adaptation endpoint is not promoted to verified canonical evidence', () => {
