@@ -7,21 +7,27 @@
     "principalLegacyExtras": 87,
     "conditionalLegacyExtras": 87,
     "principalAssignedToBatch": 87,
-    "principalFinalDispositionReviewed": 0,
+    "principalFinalDispositionReviewed": 4,
+    "principalRetireTechnicalKeepHistoryOnly": 4,
+    "principalStillPendingDisposition": 83,
     "conditionalDispositionReviewed": 87,
     "conditionalRetireTechnicalKeepHistoryOnly": 86,
     "conditionalUnresolved": 1,
     "approvedSameSceneMigrationsAcrossAllLegacyExtras": 0,
-    "totalLegacyExtrasWithFinalReviewedDisposition": 86,
-    "totalStillBlockingFinalCrosswalk": 88
+    "totalLegacyExtrasWithFinalReviewedDisposition": 90,
+    "totalStillBlockingFinalCrosswalk": 84
   },
   "principal": {
     "inventory": "project/t5_1/T5_1_PRINCIPAL_LEGACY_EXTRA_87_INVENTORY.json",
     "canonicalCounterpartBatchManifest": "project/t5_1/T5_1_PRINCIPAL_87_BATCH_MANIFEST.json",
-    "state": "all_assigned_to_responsible_batch_but_semantic_disposition_pending",
-    "exactTitleCandidates": 7,
+    "reviewed30PlusTitleCandidates": "project/t5_1/T5_1_PRINCIPAL_TITLE_CANDIDATES_30_PLUS_DISPOSITIONS.json",
+    "reviewed30PlusTitleCandidateDetail": "project/t5_1/T5_1_PRINCIPAL_TITLE_CANDIDATES_30_PLUS_REVIEW.md",
+    "state": "all assigned to responsible batch; four 30+/retirement title candidates now have final planning dispositions; remaining principal extras still require batch semantic review",
+    "exactTitleCandidatesBaseline": 7,
+    "exactTitleCandidatesReviewedHere": 4,
+    "exactTitleCandidatesRemainingInPr5": 3,
     "exactTitleCandidateRule": "review candidate only; not an approved same-scene migration",
-    "blockingCount": 87
+    "blockingCount": 83
   },
   "conditional": {
     "inventoryAndDisposition": "project/t5_1/T5_1_CONDITIONAL_LEGACY_DISPOSITION_OVERLAY_87.json",
