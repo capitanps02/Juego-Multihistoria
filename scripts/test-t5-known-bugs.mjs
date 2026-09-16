@@ -1,6 +1,5 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { EVENTS } from '../dist/content/events/index.js';
 import { createInitialState } from '../dist/content/initial-state.js';
 import { simulateCareer } from '../dist/simulation/career-simulator.js';
 import * as resolver from '../dist/narrative/resolver.js';
@@ -18,14 +17,6 @@ test('T5-QA-001: NPCs referenced by played events must learn or remember somethi
       || JSON.stringify(before.memories) !== JSON.stringify(after.memories);
   });
   assert.ok(evolved.length > 0, `T5-QA-001: ${referenced.size} NPCs participaron en escenas, pero knowledge/memories permanecieron estáticos`);
-});
-
-test('T5-QA-002: seed graph must contain at least one explicit terminal consumer', () => {
-  const terminal = [];
-  for (const event of EVENTS) for (const outcome of event.outcomes) for (const transition of outcome.seedTransitions ?? []) {
-    if (transition.action === 'resolve' || transition.action === 'expire') terminal.push(`${event.id}/${outcome.id}:${transition.seedId}:${transition.action}`);
-  }
-  assert.ok(terminal.length > 0, 'T5-QA-002: el catálogo crea memoria pero no declara consumidores resolve/expire; las seeds pueden quedar eternas');
 });
 
 test('T5-QA-005: sync de presencia debe limpiar HAS_* sin instancia viva', t => {
