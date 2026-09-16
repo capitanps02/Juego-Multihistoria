@@ -44,7 +44,7 @@ El runtime conserva los estados existentes `dormant | active | transformed | res
 Reglas añadidas/comprobadas:
 
 - `create` mantiene una sola instancia viva; una creación posterior a una instancia terminal abre una nueva y conserva la histórica;
-- `resolve` y `expire` son terminales e idempotentes;
+- `resolve` y `expire` son terminales e idempotentes sobre la seed;
 - `ageWindow` finito caduca la seed al superar su máximo si sigue abierta;
 - `expiresAfter`, cuando exista, tiene cierre determinista por fecha;
 - cambio de temporada no resetea memoria por defecto;
@@ -52,7 +52,7 @@ Reglas añadidas/comprobadas:
 - cinco consecuencias inequívocamente locales usan `origin_club` y caducan al abandonar ese club;
 - seeds desconocidas presentes en saves se preservan; contenido nuevo que intenta crear un ID inexistente falla explícitamente;
 - el lifecycle no consume RNG;
-- replay de `eventId + choiceId + date` evita doble efecto, doble RNG, doble historia y doble transición de seed.
+- la idempotencia de doble click/retry pertenece a `GameSession.commandId` y sus receipts persistidos, no a una deduplicación narrativa por evento/choice/fecha.
 
 ## Compatibilidad de saves
 
@@ -60,7 +60,7 @@ No se cambia `schemaVersion` (continúa en 8) ni se añaden campos obligatorios 
 
 ## Tests
 
-`npm run test:t52` cubre creación, persistencia, reapertura, consumo, caducidad, save/restore, consumo tras restore, doble comando, transición de edad, cambio de club, temporadas largas, seed incompatible y seed inexistente.
+`npm run test:t52` cubre creación, persistencia, reapertura, consumo, caducidad, save/restore, consumo tras restore, doble comando mediante `GameSession` (incluido retry tras restore), transición de edad, cambio de club, temporadas largas, seed incompatible y seed inexistente.
 
 `npm test` ejecuta además el gate histórico v0.8 y la auditoría/tests T5.2.
 
