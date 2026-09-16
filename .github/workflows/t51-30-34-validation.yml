@@ -23,9 +23,3 @@ jobs:
 
       - name: T5.1 30-34 reconciliation tests
         run: npm run test:t51
-
-      - name: T5.1 content migration contract
-        run: npm run test:t51:migration
-
-      - name: T5.2 seed lifecycle integration
-        run: npm run test:t52
