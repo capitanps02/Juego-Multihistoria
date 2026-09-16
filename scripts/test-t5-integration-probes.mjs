@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { EVENTS } from '../dist/content/events/index.js';
 import { createInitialState } from '../dist/content/initial-state.js';
+import { assertGameState } from '../dist/save/validation.js';
 import * as resolver from '../dist/narrative/resolver.js';
 
 async function optionalImport(path) {
@@ -74,4 +75,42 @@ test('T5 integration/T5.3: una fuente NPC ignorante no puede crear conocimiento 
     false,
     'T5-QA-004: el receptor aprendió el hecho pese a que la fuente no lo conocía'
   );
+});
+
+test('T5 integration/T5.3: conocimiento persistido malformado no puede satisfacer npcKnows', async t => {
+  const npcKnowledge = await optionalImport('../dist/core/npc-knowledge.js');
+  if (!npcKnowledge) {
+    t.skip('T5.3 todavía no está integrado en esta rama');
+    return;
+  }
+
+  const state = createInitialState(55808);
+  const npc = state.npcs.find(candidate => candidate.id === 'NPC_CCH_01');
+  assert.ok(npc, 'reproducción inválida: falta NPC_CCH_01');
+  npc.knowledge.T53_CORRUPT = {
+    factId: 'T53_CORRUPT',
+    eventId: 'T53_FAKE',
+    choiceId: 'FAKE',
+    outcomeId: 'FAKE',
+    learnedAt: 'not-a-date',
+    source: 'telepathy',
+    certainty: -1,
+    memory: 'eternal',
+    club: state.club
+  };
+
+  let rejectedBySaveValidation = false;
+  try {
+    assertGameState(state);
+  } catch {
+    rejectedBySaveValidation = true;
+  }
+
+  if (!rejectedBySaveValidation) {
+    assert.equal(
+      npcKnowledge.npcKnows(state, 'NPC_CCH_01', 'T53_CORRUPT'),
+      false,
+      'T5-QA-008: un registro knowledge malformado aceptado por save validation se convirtió en conocimiento verdadero'
+    );
+  }
 });
