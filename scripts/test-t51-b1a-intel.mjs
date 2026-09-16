@@ -3,11 +3,11 @@ import assert from 'node:assert/strict';
 import { EVENTS } from '../dist/content/events/index.js';
 import { EVENTS_18_20 as BASE_EVENTS_18_20 } from '../dist/content/events/18_20/canonical-events.js';
 import { T51_B1A_INTEL_EVENT_IDS } from '../dist/content/events/18_20/t51-b1a-intel-overrides.js';
-import { contentIdentity } from '../dist/session/content-identity.js';
 import {
   CONTENT_MIGRATION_ROUTES,
   T51_B1A_CONTENT_IDENTITY,
-  findMigrationRoute
+  findMigrationRoute,
+  legacyContentSource
 } from '../dist/session/content-migration.js';
 import { PRE_T51_CONTENT_IDENTITY } from '../dist/session/pre-t51-legacy-registry.js';
 
@@ -48,8 +48,11 @@ test('T5.1 B1a leaves all other base 18-20 events untouched', () => {
   }
 });
 
-test('T5.1 B1a migration is exact-identity and same-scene only', async () => {
-  assert.equal(await contentIdentity(EVENTS), T51_B1A_CONTENT_IDENTITY);
+test('T5.1 B1a remains frozen historical evidence with an exact PRE route after later catalogs', () => {
+  const source = legacyContentSource(T51_B1A_CONTENT_IDENTITY);
+  assert.ok(source, 'B1a historical evidence must remain registered after later catalogs become active');
+  assert.equal(source.contentIdentity, T51_B1A_CONTENT_IDENTITY);
+
   const route = findMigrationRoute(PRE_T51_CONTENT_IDENTITY, T51_B1A_CONTENT_IDENTITY, CONTENT_MIGRATION_ROUTES);
   assert.ok(route, 'missing PRE_T51 -> B1a route');
   assert.deepEqual(route.seedOriginMappings ?? [], [], 'intel-only repair must not rewrite historical seed origins');
