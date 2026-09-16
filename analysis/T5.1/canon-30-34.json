@@ -518,7 +518,7 @@
     {
       "id": "DEP_T51_EVENT_ID_MIGRATION",
       "kind": "save_continuity",
-      "description": "Shared contentIdentity migration architecture now exists in main, but the 30–34 catalog change still requires an approved registered route before integration. Shifted IDs must not be silently renamed; exact-ID semantic collisions require explicit migration semantics."
+      "description": "Shared multigeneration contentIdentity migration architecture exists in main. For this 30–34 batch, integration must first freeze active target 163b5823… as post-T5.1 source evidence and then register/certify the unique T51_B1A -> target edge with the 27 exact-ID distinct_scene mappings. Shifted IDs remain deferred."
     },
     {
       "id": "DEP_T51_BRIDGE_PRIORITY",
@@ -560,19 +560,23 @@
     }
   ],
   "integrationStatus": {
-    "syncedBaselineMain": "49e195d07d064e0532ea9109d9544b91df52bf0e",
+    "syncedBaselineMain": "24c176474bb17a8c271f52bac7bf41e08a929c72",
     "sharedChoiceEligibility": "available_in_main",
     "sharedOrGateContract": "available_in_main",
     "contentMigrationArchitecture": "available_in_main",
-    "contentMigrationRoute": "handoff_B1A_to_163b_registration_pending",
+    "contentMigrationRoute": "handoff_B1A_to_163b_freeze_and_registration_pending",
     "frozenSaveCompatibility": "passing_before_route_gate",
-    "targetedT51Run": 35127605089,
+    "targetedT51Run": 35127976484,
     "targetedT51Result": "29/29_focused_pass",
     "temporaryValidationWorkflowRemoved": true,
     "mergeReady": false,
     "contentMigrationLineage": "PRE_T51_to_T51_B1A_available_in_main",
     "targetContentIdentity": "163b582315bb8d08ac4a03f13719b89c0d76c130a2b33f3e32fa53af5474d8dc",
-    "sharedB1aTest": "known_lineage_stale_1_of_3_fails"
+    "sharedB1aTest": "known_lineage_stale_1_of_3_fails",
+    "offerSessionBridge": "available_in_main",
+    "contentMigrationTargetFreeze": "pending_post_t51_source_fixture",
+    "offerSessionBridgeValidation": "pass",
+    "contentMigrationChecker": "expected_missing_target_freeze_before_route_registration"
   },
   "implementationProgress": {
     "stableIdReimplemented": [

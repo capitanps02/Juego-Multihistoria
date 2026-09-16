@@ -2,19 +2,21 @@
   "schemaVersion": 1,
   "workstream": "T5.1 canon 30-34 migration handoff",
   "generatedAt": "2026-09-16",
-  "sourceMainSha": "49e195d07d064e0532ea9109d9544b91df52bf0e",
+  "sourceMainSha": "24c176474bb17a8c271f52bac7bf41e08a929c72",
   "sourceContentIdentity": "1a8a5e2006fe7160f4fbc02060568d3abec99df038fe3a1a7799c8a0e802eac7",
   "observedTargetContentIdentity": "163b582315bb8d08ac4a03f13719b89c0d76c130a2b33f3e32fa53af5474d8dc",
   "targetIdentityEvidence": {
-    "workflowRun": 35127605089,
-    "source": "T5.1 30-34 focused lineage validation / runtime contentIdentity(EVENTS)",
+    "workflowRun": 35127976484,
+    "source": "T5.1 30-34 post-offer focused validation / runtime contentIdentity(EVENTS)",
     "rule": "Target must equal contentIdentity(EVENTS) on this branch after inheriting current main; copied historical target identities are invalid."
   },
   "consumer": {
     "implementationOwner": "coordination/integration",
     "routeFile": "src/session/content-migration.ts",
     "routeRegistry": "CONTENT_MIGRATION_ROUTES",
-    "workstreamMayRegisterRoute": false
+    "workstreamMayRegisterRoute": false,
+    "targetFreezeRequiredBeforeRouteRegistration": true,
+    "targetFreezeFixture": "qa/fixtures/t5.1/post-t51-sources/163b582315bb8d08ac4a03f13719b89c0d76c130a2b33f3e32fa53af5474d8dc.json"
   },
   "authorities": [
     "analysis/T5.1/canon-30-34.json",
@@ -401,7 +403,8 @@
     "18 shifted pairs receive no mapping in the current route",
     "5 canonical-missing IDs receive no synthesized history/SEEN/cooldown in the current route",
     "5 engine-only IDs remain schedulable in this current batch because this PR has not removed them from EVENTS",
-    "registered edge extends the existing PRE_T51 -> T51_B1A lineage without shortcut or ambiguity"
+    "registered edge extends the existing PRE_T51 -> T51_B1A lineage without shortcut or ambiguity",
+    "target identity is frozen as post-T5.1 source evidence before the B1a-to-target route is registered"
   ],
   "sourceIdentityEvidence": {
     "source": "src/session/content-migration.ts#T51_B1A_CONTENT_IDENTITY",
