@@ -7,11 +7,27 @@ export interface PublicPlayerContact {
   role: string;
 }
 
+export interface ContactDecisionProvenance {
+  sourceContentIdentity: string;
+  eventFingerprint: string;
+}
+
+export type PlayerContactRuleProvenance =
+  | { kind: "invariant" }
+  | { kind: "event_fingerprints"; eventFingerprints: readonly string[] };
+
 export interface PlayerContactRule {
   eventId: string;
   npcIds: string[];
   choiceIds?: string[];
   outcomeIds?: string[];
+  /**
+   * `invariant` is an explicit semantic certification across every supported
+   * source catalog. Otherwise the resolved decision must carry one of the exact
+   * event fingerprints listed here. No provenance means no match for a
+   * fingerprint-bound rule.
+   */
+  provenance: PlayerContactRuleProvenance;
 }
 
 /**
@@ -34,7 +50,11 @@ export const PLAYER_CONTACT_RULES: readonly PlayerContactRule[] = [
   {
     eventId: "EVT_18_PRE_001",
     choiceIds: ["CALL_RIVAS"],
-    npcIds: ["NPC_ACA_01"]
+    npcIds: ["NPC_ACA_01"],
+    // Audited across every currently supported content source. A regression test
+    // requires all frozen/active definitions to retain the same event fingerprint;
+    // if a future batch changes this event, the rule must become fingerprint-bound.
+    provenance: { kind: "invariant" }
   }
 ];
 
@@ -47,34 +67,54 @@ for (const rule of PLAYER_CONTACT_RULES) {
   RULES_BY_EVENT.set(rule.eventId, bucket);
 }
 
-function matches(rule: PlayerContactRule, entry: HistoryEntry): boolean {
+export function contactIntroductionRuleMatches(
+  rule: PlayerContactRule,
+  entry: HistoryEntry,
+  provenance?: ContactDecisionProvenance
+): boolean {
   if (rule.choiceIds && !rule.choiceIds.includes(entry.choiceId)) return false;
   if (rule.outcomeIds && !rule.outcomeIds.includes(entry.outcomeId)) return false;
-  return true;
+  if (rule.provenance.kind === "invariant") return true;
+  return Boolean(
+    provenance
+    && rule.provenance.eventFingerprints.includes(provenance.eventFingerprint)
+  );
 }
 
 /**
  * Reconstruct the protagonist-facing contact set from durable factual history.
- * Deny-by-default: no rule means no newly visible contact.
+ * Deny-by-default: no rule means no newly visible contact. Fingerprint-bound
+ * rules additionally require the 1:1 decision provenance row.
  */
-export function knownPlayerContactIds(state: GameState): string[] {
+export function knownPlayerContactIds(
+  state: GameState,
+  decisionProvenance?: readonly ContactDecisionProvenance[]
+): string[] {
   const known = new Set<string>(INITIAL_IDS);
-  for (const entry of state.history) {
+  for (const [index, entry] of state.history.entries()) {
+    const provenance = decisionProvenance?.[index];
     for (const rule of RULES_BY_EVENT.get(entry.eventId) ?? []) {
-      if (!matches(rule, entry)) continue;
+      if (!contactIntroductionRuleMatches(rule, entry, provenance)) continue;
       for (const npcId of rule.npcIds) if (CATALOG_IDS.has(npcId)) known.add(npcId);
     }
   }
   return NPC_CATALOG.filter(npc => known.has(npc.id)).map(npc => npc.id);
 }
 
-export function playerKnowsNpc(state: GameState, npcId: string): boolean {
+export function playerKnowsNpc(
+  state: GameState,
+  npcId: string,
+  decisionProvenance?: readonly ContactDecisionProvenance[]
+): boolean {
   if (!CATALOG_IDS.has(npcId)) return false;
-  return knownPlayerContactIds(state).includes(npcId);
+  return knownPlayerContactIds(state, decisionProvenance).includes(npcId);
 }
 
-export function knownPlayerContacts(state: GameState): PublicPlayerContact[] {
-  const ids = new Set(knownPlayerContactIds(state));
+export function knownPlayerContacts(
+  state: GameState,
+  decisionProvenance?: readonly ContactDecisionProvenance[]
+): PublicPlayerContact[] {
+  const ids = new Set(knownPlayerContactIds(state, decisionProvenance));
   return NPC_CATALOG
     .filter(npc => ids.has(npc.id))
     .map(npc => ({ id: npc.id, name: npc.name, role: npc.role }));
