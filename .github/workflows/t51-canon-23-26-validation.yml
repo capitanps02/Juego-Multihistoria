@@ -1,0 +1,21 @@
+name: T51 canon 23-26 validation
+
+on:
+  push:
+    branches: [t51/canon-23-30]
+
+jobs:
+  validate-cards:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Validate canonical repair cards
+        run: node --test scripts/test-t51-canon-23-26-cards.mjs
+      - name: Run regression gate
+        run: npm test
