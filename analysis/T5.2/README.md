@@ -87,7 +87,9 @@ No se cambia `schemaVersion` (continúa en 8) ni se añaden campos obligatorios 
 
 `npm run test:t52` cubre creación, persistencia, reapertura, consumo, caducidad, save/restore, consumo tras restore, doble comando mediante `GameSession` (incluido retry tras restore), transición de edad, cambio de club, temporadas largas, seed incompatible, seed inexistente, limpieza de presencia fantasma y partición canónica del handoff.
 
-El follow-up PR #19 ejecutó **15/15 tests T5.2** con éxito. El workflow `Repository integrity` también pasó build, determinismo/RNG, fronteras de edad, referencias de contenido, carreras largas, auditoría lifecycle y simulación estratificada. La simulación cerró **9/9 carreras**, con 0 carreras bloqueadas y 0 estados imposibles detectados.
+El follow-up PR #19 ejecutó **15/15 tests T5.2** con éxito sobre el código funcional del handoff (`6f67451`). El workflow `Repository integrity` también pasó build, determinismo/RNG, fronteras de edad, referencias de contenido, carreras largas, auditoría lifecycle y simulación estratificada. La simulación cerró **9/9 carreras**, con 0 carreras bloqueadas y 0 estados imposibles detectados.
+
+El SHA documental final vuelve a ejecutar el mismo workflow completo antes de que el PR salga de draft.
 
 `npm test` ejecuta además el gate histórico v0.8 y la auditoría/tests T5.2.
 
