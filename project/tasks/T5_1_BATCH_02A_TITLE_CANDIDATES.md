@@ -6,7 +6,19 @@ Issue: #4
 
 Resolver los tres únicos casos de la fase `26_30` en los que la auditoría T5.1 encontró un evento técnico con exactamente el mismo título que un evento canónico ausente.
 
-La coincidencia de título **no** se acepta como alias. Los tres casos se consideran adaptaciones técnicas de la misma idea que necesitan reparación semántica, cambio al ID/edad canónicos y migración explícita de metadata/seeds.
+La coincidencia de título **no** se acepta como alias. Los tres casos son adaptaciones técnicas de una idea relacionada que necesitan escena canónica explícita, retirada del ID técnico del catálogo activo y migración controlada de metadata de seeds.
+
+Vocabulario de crosswalk T5.1 para los tres IDs técnicos:
+
+`retire_technical_keep_history_only`
+
+Esto significa:
+- el ID técnico se retira del catálogo principal activo una vez integrado el canónico;
+- el historial ya jugado conserva el ID técnico;
+- un pending técnico no se sustituye directamente por el canónico;
+- no se traduce `SEEN_old` a `SEEN_canonical`;
+- el origen **futuro** de la seed en catálogo sí se mueve a la escena canónica;
+- mover metadata de catálogo no autoriza reescribir `seed.originEvent` histórico sin una regla de migración revisada.
 
 ## 1. Dos estrellas, un foco
 
@@ -35,11 +47,11 @@ La coincidencia de título **no** se acepta como alias. Los tres casos se consid
 - Usa las cuatro decisiones genéricas de `make(row)` para familia `team`.
 - `SEED_SECOND_STAR` figura en catálogo con `originEvents:["EVT_28_TEAM_001"]` y `ageWindow:[28,36]`.
 
-### Decisión
+### Decisión final de planning
 
-`same_scene_concept_requires_semantic_rewrite_and_id_migration`
+Legacy disposition: `retire_technical_keep_history_only`.
 
-No conservar el evento técnico como alias. Implementar el canónico explícitamente y mover la metadata de `SEED_SECOND_STAR` a `EVT_27_STAR_001`, con ventana desde 27. El histórico `SEEN_EVT_28_TEAM_001` no debe convertirse automáticamente en `SEEN_EVT_27_STAR_001`.
+No hay equivalencia de escena suficiente para migrar historial/pending. Implementar `EVT_27_STAR_001` explícitamente y mover la metadata futura de `SEED_SECOND_STAR` al origen canónico, con ventana desde 27.
 
 ## 2. La gala
 
@@ -70,11 +82,11 @@ No conservar el evento técnico como alias. Implementar el canónico explícitam
 - Aun así usa decisiones, mensajes y efectos genéricos de familia `image`.
 - `SEED_GLOBAL_AWARD_BEHAVIOR` figura en catálogo con `originEvents:["EVT_28_GALA_001"]` y `ageWindow:[28,null]`.
 
-### Decisión
+### Decisión final de planning
 
-`same_scene_concept_requires_semantic_rewrite_and_id_migration`
+Legacy disposition: `retire_technical_keep_history_only`.
 
-El `verified:true` actual no es suficiente y debe desaparecer junto con la adaptación técnica o quedar degradado hasta que la escena canónica esté realmente revisada. Implementar `EVT_27_AWARD_001` explícitamente y mover origen/ventana del seed a edad 27. No convertir flags históricos de seen entre ambos IDs.
+El `verified:true` técnico no prueba fidelidad. Implementar `EVT_27_AWARD_001` explícitamente, mover el origen/ventana futura de la seed a edad 27 y conservar cualquier historia/pending técnico como contenido legacy.
 
 ## 3. La oferta financieramente absurda
 
@@ -98,33 +110,31 @@ El `verified:true` actual no es suficiente y debe desaparecer junto con la adapt
 - ID: `EVT_29_MKT_001`
 - Edad: 29
 - Título idéntico.
-- Seed: `SEED_WEALTHY_PEAK_EXIT`, creado únicamente con choice A mediante `seedChoices:["A"]`.
+- Seed: `SEED_WEALTHY_PEAK_EXIT`, creado únicamente con choice A.
 - Gate: `reputation.marketHeat >= 55`.
-- Labels técnicos:
-  1. aceptar y salir del máximo escaparate;
-  2. rechazar para mantener nivel competitivo;
-  3. negociar estructura que preserve salida futura;
-  4. no cerrar nada todavía.
+- Labels técnicos difieren en C/D del contrato canónico.
 - Marcado `verified:true`.
-- `SEED_WEALTHY_PEAK_EXIT` está catalogado con origen `EVT_29_MKT_001` y ventana desde 29.
-- El seed tiene dependencias reales: condicionales de 29 y `state30-classifier.ts` consultan `HAS_SEED_WEALTHY_PEAK_EXIT`.
+- La seed tiene consumidores reales en condicionales de 29 y `state30-classifier.ts`.
 
-### Decisión
+### Decisión final de planning
 
-`close_semantic_precursor_requires_rewrite_and_id_migration`
+Legacy disposition: `retire_technical_keep_history_only`.
 
-Es el candidato más próximo, pero no un alias directo: edad, trigger, opción D, memoria secundaria y contexto visible/oculto divergen. Implementar `EVT_28_RICH_001` explícitamente. Actualizar el catálogo para que `SEED_WEALTHY_PEAK_EXIT` nazca desde 28 y verificar que los consumidores posteriores siguen funcionando determinísticamente.
+Es el precursor más próximo, pero edad, trigger, información y opciones no son equivalentes. Implementar `EVT_28_RICH_001` explícitamente, mover el origen futuro de `SEED_WEALTHY_PEAK_EXIT` a edad 28 y conservar determinísticamente sus consumidores posteriores.
 
 ## Regla común de migración
 
 Para los tres casos:
 
-- retirar el ID técnico del conjunto principal una vez integrado el canónico;
-- conservar registros históricos del ID antiguo como historia técnica válida;
-- no traducir `SEEN_old` a `SEEN_new` salvo equivalencia semántica total (no aprobada aquí);
-- actualizar `originEvents`/`ageWindow` de seeds;
-- mantener las dependencias aguas abajo por seed, no por ID técnico;
-- cambiar `canonStatus` a `verified` solo después de comparar la definición final con la ficha canónica campo por campo.
+- retirar el ID técnico del conjunto principal activo una vez integrado el canónico;
+- conservar registros históricos del ID antiguo como verdad de lo jugado;
+- no traducir `SEEN_old` a `SEEN_new`;
+- no sustituir pending técnico por la nueva escena canónica;
+- resolver pending legacy mediante compatibilidad de contenido o fallar explícitamente si la identidad fuente no es compatible;
+- actualizar `originEvents`/`ageWindow` de seeds para **contenido futuro**;
+- no reescribir `seed.originEvent` histórico solo por coincidencia de concepto/título;
+- mantener dependencias aguas abajo por seed, no por ID técnico;
+- cambiar `canonStatus` a `verified` solo después de comparar la definición canónica final campo por campo.
 
 ## Pruebas necesarias
 
@@ -135,8 +145,9 @@ Para los tres casos:
 5. `SEED_WEALTHY_PEAK_EXIT` puede originarse a los 28 y sus consumidores de edad 29/30 siguen reaccionando correctamente.
 6. La misma seed de partida sigue siendo determinista tras la migración de contenido dentro de la nueva versión.
 7. Saves anteriores no se reinterpretan como si hubieran jugado la escena canónica nueva.
-8. `npm run build`, `npm run validate`, `npm run test:session`, `npm run test:saves`, `npm run audit:t51`, `npm run test:t51`.
+8. Pending legacy conserva exactamente su contrato de decisión o falla compatibilidad explícitamente.
+9. `npm run build`, `npm run validate`, `npm run test:session`, `npm run test:saves`, `npm run audit:t51`, `npm run test:t51`.
 
 ## Fuera de alcance
 
-Los otros 23 IDs canónicos ausentes de la fase `26_30`; se prepararán en sublotes posteriores agrupados por arco/seed.
+Los otros IDs canónicos ausentes de la fase `26_30`; se preparan en sublotes posteriores agrupados por arco/seed.
