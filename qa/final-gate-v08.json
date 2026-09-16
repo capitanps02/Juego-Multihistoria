@@ -6,13 +6,11 @@
   "microfeedIndependent": true,
   "migrationV7toV8": true,
   "exampleRetired": true,
-  "exampleAge": 43,
+  "exampleAge": 34,
   "epilogueFamilies": [
-    "END_NATIONAL_CAPTAIN",
-    "END_MARKET_SILENCE",
-    "END_TOO_LONG",
-    "END_GREAT_PRO",
-    "END_CONTRACT_KING"
+    "END_BODY_CLOSED_DOOR",
+    "END_JOURNEYMAN_VETERAN",
+    "END_EARLY_VOLUNTARY"
   ],
   "passed": true
 }

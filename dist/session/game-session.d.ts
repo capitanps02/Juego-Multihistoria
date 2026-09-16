@@ -1,7 +1,9 @@
 import { type CareerOffer, type OfferAction, type OfferDecision } from "../simulation/offers.js";
 import type { AgeMilestone } from "../simulation/age-milestones.js";
 import type { EventDefinition, GameState } from "../core/types.js";
-export declare const SESSION_VERSION = 2;
+import { type NpcKnowledgeLegacyCertification } from "../narrative/npc-knowledge-reconciliation.js";
+import { type ContentEvidenceSource, type ContentMigrationRoute } from "./content-migration.js";
+export declare const SESSION_VERSION = 3;
 export declare const SESSION_BUILD = "0.8.0-t2.5";
 interface CommandBase {
     commandId: string;
@@ -27,11 +29,22 @@ export interface CommandReceipt {
     revision: number;
     type: SessionCommand["type"];
 }
+export interface DecisionContentProvenance {
+    sourceContentIdentity: string;
+    eventFingerprint: string;
+}
 export interface PendingDecision {
     instanceId: string;
     event: EventDefinition;
+    provenance: DecisionContentProvenance;
 }
 export interface PendingResult {
+    title: string;
+    choiceLabel: string;
+    messages: string[];
+}
+export interface JournalEntry {
+    date: string;
     title: string;
     choiceLabel: string;
     messages: string[];
@@ -39,7 +52,7 @@ export interface PendingResult {
 export interface SessionSnapshot {
     sessionVersion: number;
     build: string;
-    /** SHA-256 of serialized definitions; content changes require explicit migration. */
+    /** Identity of the active catalog used for future scheduling. */
     contentIdentity: string;
     sessionId: string;
     revision: number;
@@ -49,12 +62,9 @@ export interface SessionSnapshot {
     pendingResult: PendingResult | null;
     receipts: CommandReceipt[];
     /** Human-readable actions actually shown, independent of later label changes. */
-    journal: Array<{
-        date: string;
-        title: string;
-        choiceLabel: string;
-        messages: string[];
-    }>;
+    journal: JournalEntry[];
+    /** Immutable source identity + exact definition hash for every resolved decision. */
+    decisionProvenance: DecisionContentProvenance[];
     /** Match the existing simulator's advance after resolving a decision. */
     needsWorldAdvance: boolean;
 }
@@ -67,6 +77,11 @@ export type CommitSnapshot = (snapshot: SessionSnapshot, previous: CommitExpecta
 export interface SessionOptions {
     events?: EventDefinition[];
     commit?: CommitSnapshot;
+    migrationRoutes?: readonly ContentMigrationRoute[];
+    /** Validation-only evidence for historical catalog identities. Never scheduled. */
+    contentSources?: Readonly<Record<string, ContentEvidenceSource>>;
+    /** Explicit semantic whitelist for legacy NPC-knowledge replay. Never inferred from migration routes. */
+    knowledgeLegacyCertifications?: readonly NpcKnowledgeLegacyCertification[];
 }
 type PublicTerms = Pick<CareerOffer["terms"], "club" | "ownerClub" | "registrationClub" | "leagueTier" | "months" | "salary" | "releaseClause" | "loan">;
 type PublicOffer = Omit<CareerOffer, "before" | "terms"> & {
@@ -138,7 +153,13 @@ export declare class GameSession {
     }): Promise<GameSession>;
     /** Validates before use; restoring is read-only until a command is committed. */
     static resume(snapshot: unknown, options?: SessionOptions): Promise<GameSession>;
+    /**
+     * Explicit content migration path. Normal resume remains strict.
+     * Migration validates the source first, consumes no RNG/scheduling, and does not persist by itself.
+     */
+    static migrateAndResume(snapshot: unknown, options?: SessionOptions): Promise<GameSession>;
     static fromSave(raw: string, options?: SessionOptions): Promise<GameSession>;
+    static migrateFromSave(raw: string, options?: SessionOptions): Promise<GameSession>;
     /** Full snapshot for persistence/QA, never feed this object to the player UI. */
     exportSnapshot(): SessionSnapshot;
     getView(): PlayerView;

@@ -1,6 +1,11 @@
 import { conditionsPass } from "../core/conditions.js";
+import { npcKnows } from "../core/npc-knowledge.js";
 import { DeterministicRng } from "../core/rng.js";
+import { knowledgeRequirementsFor } from "../catalog/npc-knowledge-rules.js";
 import { EventIndex } from "./event-index.js";
+import { eligibleChoices, eventWithEligibleChoices } from "./choice-eligibility.js";
+import { eventGatesPass } from "./event-gates.js";
+import { mandatoryTransitionPriorityActive } from "./transition-priority.js";
 function monthOf(date) { return Number(date.slice(5, 7)); }
 function phaseAges(state) {
     return state.phase === "18_20" ? ["18", "19"] : state.phase === "20_23" ? ["20", "21", "22"] : state.phase === "23_26" ? ["23", "24", "25"] : state.phase === "26_30" ? ["26", "27", "28", "29"] : state.phase === "30_34" ? ["30", "31", "32", "33"] : state.phase === "34_plus" ? ["34+"] : [];
@@ -123,6 +128,9 @@ function inTimeWindow(state, event, ctx) {
         return false;
     return true;
 }
+function knowledgePass(state, event) {
+    return knowledgeRequirementsFor(event.id).every(requirement => npcKnows(state, requirement.npcId, requirement.factId));
+}
 function rhythmPass(state, event, options, ctx) {
     if (options.ignoreRhythmGate || (event.tags ?? []).includes("hard_deadline"))
         return true;
@@ -142,7 +150,8 @@ function isEligible(state, event, options, ctx) {
     const maxAge = event.ageWindow[1] ?? Infinity;
     if (state.age < event.ageWindow[0] || state.age > maxAge || state.phase !== event.phase)
         return false;
-    if (state.phase === "34_plus" && event.family !== "conditional" && !(event.tags ?? []).includes("retirement_terminal")) {
+    const mandatoryTransition = mandatoryTransitionPriorityActive(state, event);
+    if (!mandatoryTransition && state.phase === "34_plus" && event.family !== "conditional" && !(event.tags ?? []).includes("retirement_terminal")) {
         if (ctx.finalPrincipalCount >= 20)
             return false;
         const ageCap = state.age === 34 ? 6 : state.age === 35 ? 5 : state.age === 36 ? 4 : state.age === 37 ? 3 : 2;
@@ -163,16 +172,18 @@ function isEligible(state, event, options, ctx) {
     }
     if ((state.eventCooldowns[event.id] ?? 0) > 0 || (!event.repeatable && state.flags[`SEEN_${event.id}`] === true))
         return false;
-    if (event.family === "conditional" && ctx.conditionalCount >= ctx.conditionalCap)
+    if (!mandatoryTransition && event.family === "conditional" && ctx.conditionalCount >= ctx.conditionalCap)
         return false;
     const budgetExempt = (event.tags ?? []).includes("hard_deadline") || ["EVT_19_FIN_001", "EVT_18_SUM_001", "EVT_22_END_001", "EVT_22_DDL_001", "EVT_25_END_001", "EVT_23_JAN_001", "EVT_29_FIN_001", "EVT_30_FINAL_001", "EVT_31_RETURN_001", "EVT_31_FINAL_001", "EVT_32_BOS_001", "EVT_33_RET_001", "EVT_33_END_001"].includes(event.id);
-    if (event.family !== "conditional" && !budgetExempt && ctx.periodCount >= ctx.currentPeriod.cap)
+    if (!mandatoryTransition && event.family !== "conditional" && !budgetExempt && ctx.periodCount >= ctx.currentPeriod.cap)
         return false;
-    if (!inTimeWindow(state, event, ctx) || !conditionsPass(state, event.gates))
+    if (!inTimeWindow(state, event, ctx) || !eventGatesPass(state, event) || !knowledgePass(state, event))
         return false;
     if (event.exclusions && event.exclusions.some(c => conditionsPass(state, [c])))
         return false;
-    return rhythmPass(state, event, options, ctx);
+    if (eligibleChoices(state, event).length === 0)
+        return false;
+    return mandatoryTransition || rhythmPass(state, event, options, ctx);
 }
 function contentNeed(state, event, tick) { const last = state.familyLastSeen[event.family]; if (last === undefined)
     return 1.22; const gap = Math.max(0, tick - last); return Math.min(1.45, .78 + gap / 35); }
@@ -256,7 +267,12 @@ export function scheduleEvent(state, source, options = {}) {
     const eligible = pool.filter(e => isEligible(state, e, options, ctx));
     if (!eligible.length)
         return null;
+    const mandatory = eligible.filter(event => mandatoryTransitionPriorityActive(state, event));
+    if (mandatory.length > 1)
+        throw new Error(`Ambiguous mandatory transition priority: ${mandatory.map(event => event.id).join(", ")}`);
+    if (mandatory.length === 1)
+        return { event: eventWithEligibleChoices(state, mandatory[0]) };
     const weighted = eligible.map(event => { const factors = { base: event.weight, contentNeed: contentNeed(state, event, tick), relevance: relevance(event, ctx), arcPressure: arcPressure(state, event), routeCoverage: routeCoverage(state, event), novelty: novelty(event, ctx), density: density(state), conditionalDensity: conditionalDensity(state, event, ctx), lateOpportunity: lateOpportunity(state, event) }; return { item: event, weight: Object.values(factors).reduce((a, b) => a * b, 1), factors }; });
     const rng = new DeterministicRng(state.rngState.narrative), picked = rng.pickWeighted(weighted);
-    return { event: picked.item, debug: options.qa ? { candidates: weighted.map(x => ({ id: x.item.id, weight: x.weight, factors: x.factors })), rngDraw: picked.draw } : undefined };
+    return { event: eventWithEligibleChoices(state, picked.item), debug: options.qa ? { candidates: weighted.map(x => ({ id: x.item.id, weight: x.weight, factors: x.factors })), rngDraw: picked.draw } : undefined };
 }
