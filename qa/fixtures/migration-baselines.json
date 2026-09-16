@@ -1,5 +1,5 @@
 {
-  "provenance": "Expected outputs for v2-v7 were captured from the unmodified T0 compiled/save/save.js before T2.2 validation. v2 is synthetic, derived from the authentic v3 example by removing fields introduced by v2to4. v3-v7 are supplied examples. The supplied schema-v8 fixture is already at the current schema and loadSave validates/returns it without migration. Its authoritative baseline is SHA-256(JSON.stringify(JSON.parse(examples/save-v08-seed-424242.json))) for the exact committed fixture. The normal validation gate must not rewrite this tracked fixture; explicit regeneration is opt-in via UPDATE_V08_FIXTURE=1.",
+  "provenance": "Expected outputs for v2-v7 were captured from the unmodified T0 compiled/save/save.js before T2.2 validation. v2 is synthetic, derived from the authentic v3 example by removing fields introduced by v2to4. v3-v7 are supplied examples. The supplied schema-v8 fixture is already at the current schema and loadSave validates/returns it without migration. Its authoritative baseline is SHA-256(JSON.stringify(JSON.parse(examples/save-v08-seed-424242.json))) for the exact committed fixture. Repository Integrity with the normal v0.8 gate made read-only proves this exact committed object hashes to 7136e3239ba5a5c71a85239401e790d8deb9292d4d49f7d4e2cd8d4359f9ca51. Regenerating the example is opt-in via UPDATE_V08_FIXTURE=1 and must never occur during normal validation.",
   "cases": [
     {
       "source": "qa/fixtures/save-v02-derived.json",
@@ -27,7 +27,7 @@
     },
     {
       "source": "examples/save-v08-seed-424242.json",
-      "normalizedV8Sha256": "973721941c79d61ee4a08045778c604641fc87db7d8423533505f8d13fe3db1b"
+      "normalizedV8Sha256": "7136e3239ba5a5c71a85239401e790d8deb9292d4d49f7d4e2cd8d4359f9ca51"
     }
   ]
 }
