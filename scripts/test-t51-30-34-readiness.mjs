@@ -72,7 +72,7 @@ test('T5.1 30-34 readiness consume OR gates y el hecho causal de renovación ya 
   assert.ok(contract);
   assert.deepEqual(contract.dependencies, ['PARITY']);
   assert.match(indexSource, /facts\.clubWantsRenewal/);
-  assert.doesNotMatch(indexSource, /t51_unmodelled_club_renewal_proxy/);
+  assert.doesNotMatch(indexSource, /preserveUnmodelledTriggerBranches/);
 
   const dependencyIds = audit.globalDependencies.map(dependency => dependency.id);
   assert.equal(dependencyIds.includes('DEP_T51_RENEWAL_INTENT_FACT'), false);
