@@ -1,0 +1,30 @@
+name: T5.1 canon 20-23
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/content/events/20_23/**'
+      - 'src/catalog/npc-knowledge-rules.ts'
+      - 'scripts/test-t51-t55a-20-23.mjs'
+      - 'analysis/T5.1/**20-23**'
+      - '.github/workflows/t51-canon-20-23.yml'
+  workflow_dispatch:
+
+jobs:
+  canonical-microbatch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Build engine
+        run: npm run build
+      - name: T5.5-A scene semantics, gates, seeds, NPC knowledge and RNG
+        run: node --test scripts/test-t51-t55a-20-23.mjs
+      - name: T5 content references and lifecycle
+        run: node scripts/qa-t5-content.mjs
