@@ -10,8 +10,18 @@ export function createPlayerSessionApi(GameSession, cryptoApi = globalThis.crypt
     return value[0];
   };
 
+  const fromSave = async (...args) => {
+    try {
+      return await GameSession.fromSave(...args);
+    } catch (error) {
+      if (error?.code !== 'CONTENT_CHANGED' || typeof GameSession.migrateFromSave !== 'function') throw error;
+      return GameSession.migrateFromSave(...args);
+    }
+  };
+
   return Object.freeze({
-    fromSave: (...args) => GameSession.fromSave(...args),
+    fromSave,
+    migrateFromSave: (...args) => GameSession.migrateFromSave(...args),
     create: (seed, options) => GameSession.create(seed === LEGACY_INITIAL_SEED ? freshSeed() : seed, options)
   });
 }
