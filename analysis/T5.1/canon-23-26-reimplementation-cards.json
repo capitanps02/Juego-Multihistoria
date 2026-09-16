@@ -3,8 +3,9 @@
   "workstream": "T5.10-T5.14 preparation",
   "phase": "23_26",
   "authority": "analysis/2026-09-11/t1/principal-traceability.json",
-  "runtimeMutation": "blocked_by_pre_T5_content_identity_freeze_and_migration_policy",
-  "rule": "Estas fichas fijan identidad semántica. No autorizan cambiar runtime hasta congelar contentIdentity y aprobar compatibilidad de sesiones/saves.",
+  "baselineContentIdentity": "2e07efd2ea99c4e9ec4c2b20ae89664204f76db2c55a72d567208799c01bccff",
+  "runtimeMutation": "blocked_by_session_migration_policy_from_frozen_contentIdentity",
+  "rule": "Estas fichas fijan identidad semántica. El baseline pre-T5.1 ya está congelado; no autorizan cambiar runtime hasta aprobar compatibilidad/migración de sesiones para esa contentIdentity.",
   "cards": [
     {
       "id": "EVT_23_BRIDGE_001",
