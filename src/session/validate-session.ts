@@ -1,6 +1,6 @@
 import type { EventDefinition } from "../core/types.js";
 import type { DecisionContentProvenance, SessionSnapshot } from "./game-session.js";
-import { eventFingerprint } from "./content-identity.js";
+import { eventFingerprint, journalSemanticsFingerprint } from "./content-identity.js";
 import { buildActiveEventEvidence, legacyContentSource } from "./content-migration.js";
 import type { LegacyEventEvidence } from "./pre-t51-legacy-registry.js";
 import { assertGameState, boolean, date, ensure, integer, list, oneOf, parseSaveJson, record, string, strings, validateData } from "../save/validation.js";
@@ -32,21 +32,18 @@ function provenance(value: unknown, path: string): DecisionContentProvenance {
   };
 }
 
-function validateJournalEntry(
+async function validateJournalEntry(
   raw: unknown,
   index: number,
   state: SessionSnapshot["state"],
   event: LegacyEventEvidence
-): void {
+): Promise<void> {
   const r = record(raw, `journal[${index}]`), path = `journal[${index}]`, h = state.history[index]!;
   date(r.date, `${path}.date`); string(r.title, `${path}.title`); string(r.choiceLabel, `${path}.choiceLabel`); strings(r.messages, `${path}.messages`);
-  const choice = event.choices[h.choiceId], outcome = event.outcomes[h.outcomeId];
-  ensure(choice && outcome && choice.outcomeIds.includes(h.outcomeId), path, "decisión no reconocida por este catálogo/procedencia");
-  ensure(
-    r.date === h.date && r.title === event.title && r.choiceLabel === choice.label && JSON.stringify(r.messages) === JSON.stringify(outcome.messages),
-    path,
-    "el texto no corresponde a la decisión registrada"
-  );
+  const expectedDigest = event.journalDigests[h.choiceId]?.[h.outcomeId];
+  ensure(expectedDigest, path, "decisión no reconocida por este catálogo/procedencia");
+  const actualDigest = await journalSemanticsFingerprint(r.title, r.choiceLabel, r.messages as string[]);
+  ensure(r.date === h.date && actualDigest === expectedDigest, path, "el texto no corresponde a la decisión registrada");
 }
 
 export async function assertSessionSnapshot(value: unknown, context: SessionValidationContext): Promise<void> {
@@ -99,26 +96,26 @@ export async function assertSessionSnapshot(value: unknown, context: SessionVali
   ensure(journal.length === state.history.length, "journal", "el recorrido no coincide con el historial");
   ensure(receipts.filter(x => record(x, "receipt").type === "choose").length === journal.length, "receipts", "faltan confirmaciones de decisiones");
 
-  const activeEvidence = context.activeEvidence ?? await buildActiveEventEvidence(context.events);
+  const activeEvidence = context.activeEvidence ?? await buildActiveEventEvidence(context.events, context.activeContentIdentity);
   const legacyOrActiveForSnapshot = evidenceSource(s.contentIdentity, context.activeContentIdentity, activeEvidence);
   if ((s.sessionVersion as number) < 3) {
     ensure(legacyOrActiveForSnapshot, "contentIdentity", "identidad de contenido no registrada");
-    journal.forEach((x, i) => {
+    for (let i = 0; i < journal.length; i++) {
       const h = state.history[i]!, event = legacyOrActiveForSnapshot[h.eventId];
       ensure(event, `journal[${i}]`, "decisión no reconocida por el catálogo fuente");
-      validateJournalEntry(x, i, state, event);
-    });
+      await validateJournalEntry(journal[i], i, state, event);
+    }
   } else {
     const rows = list(s.decisionProvenance, "decisionProvenance");
     ensure(rows.length === state.history.length, "decisionProvenance", "la procedencia no coincide con el historial");
-    rows.forEach((raw, i) => {
-      const p = provenance(raw, `decisionProvenance[${i}]`), h = state.history[i]!;
+    for (let i = 0; i < rows.length; i++) {
+      const p = provenance(rows[i], `decisionProvenance[${i}]`), h = state.history[i]!;
       const source = evidenceSource(p.sourceContentIdentity, context.activeContentIdentity, activeEvidence);
       ensure(source, `decisionProvenance[${i}].sourceContentIdentity`, "fuente de contenido no registrada");
       const event = source[h.eventId];
       ensure(event && event.fingerprint === p.eventFingerprint, `decisionProvenance[${i}]`, "fingerprint o evento no corresponde a la fuente declarada");
-      validateJournalEntry(journal[i], i, state, event);
-    });
+      await validateJournalEntry(journal[i], i, state, event);
+    }
   }
 
   ensure(s.pendingDecision !== undefined && s.pendingResult !== undefined && !(s.pendingDecision && s.pendingResult), "session", "pantallas pendientes incompatibles");
