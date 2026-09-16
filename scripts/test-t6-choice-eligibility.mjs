@@ -2,9 +2,9 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createInitialState } from '../dist/content/initial-state.js';
 import { scheduleEvent } from '../dist/narrative/scheduler.js';
-import { chooseForProfile, T6_PROFILES } from './t6-profiles.mjs';
+import { chooseForProfile } from './t6-profiles.mjs';
 
-function fixtureEvent() {
+function eligibilityFixture() {
   return {
     id: 'T6_CHOICE_ELIGIBILITY',
     ageWindow: [18, 18],
@@ -14,63 +14,66 @@ function fixtureEvent() {
     cooldown: 0,
     repeatable: false,
     weight: 100,
-    text: { title: 'T6 eligibility', body: 'Regression fixture.' },
+    text: { title: 'Eligibility', body: 'T6 scheduler contract fixture.' },
     intel: { visible: [], uncertain: [] },
     choices: [
       {
-        id: 'STAY',
-        label: 'Seguir con el equipo',
-        intentTags: ['loyalty', 'team'],
-        outcomeIds: ['STAY_OUT']
+        id: 'SAFE',
+        label: 'Take the safe option',
+        intentTags: ['safety'],
+        outcomeIds: ['SAFE_OUT']
       },
       {
-        id: 'CASH',
-        label: 'Aceptar el gran contrato',
-        intentTags: ['money', 'salary', 'contract'],
-        outcomeIds: ['CASH_OUT'],
-        eligibility: [{ path: 'flags.T6_MONEY_ROUTE', op: 'eq', value: true }]
+        id: 'BLOCKED_HIGH_SCORE',
+        label: 'Take the elite opportunity',
+        intentTags: ['elite', 'ambition'],
+        outcomeIds: ['BLOCKED_OUT'],
+        eligibility: [{ path: 'flags.T6_ELITE_AVAILABLE', op: 'eq', value: true }]
       }
     ],
     outcomes: [
-      { id: 'STAY_OUT', baseWeight: 1, effects: [], messages: ['stay'] },
-      { id: 'CASH_OUT', baseWeight: 1, effects: [], messages: ['cash'] }
+      { id: 'SAFE_OUT', baseWeight: 1, effects: [], messages: ['safe'] },
+      { id: 'BLOCKED_OUT', baseWeight: 1, effects: [], messages: ['elite'] }
     ]
   };
 }
 
-function schedule(state, event) {
+const profile = {
+  id: 'eligibility-probe',
+  offer: 'accept',
+  fallback: 'first',
+  weights: { elite: 100, ambition: 50, safety: 1 }
+};
+
+function scheduleFixture(state, event) {
   return scheduleEvent(state, [event], { ignoreRhythmGate: true });
 }
 
-const moneyFirst = T6_PROFILES.find(profile => profile.id === 'money-first');
+test('T6 profile selection scores only choices materialized as eligible by the scheduler', () => {
+  const state = createInitialState(616161);
+  state.flags.T6_ELITE_AVAILABLE = false;
+  const event = eligibilityFixture();
 
-test('T6 selector only sees choices materialized as eligible by the production scheduler', () => {
-  assert.ok(moneyFirst);
-  const state = createInitialState(610001);
-  state.flags.T6_MONEY_ROUTE = false;
-  const event = fixtureEvent();
-
-  const scheduled = schedule(state, event);
+  const scheduled = scheduleFixture(state, event);
   assert.ok(scheduled);
-  assert.deepEqual(scheduled.event.choices.map(choice => choice.id), ['STAY']);
+  assert.deepEqual(scheduled.event.choices.map(choice => choice.id), ['SAFE']);
+  assert.deepEqual(event.choices.map(choice => choice.id), ['SAFE', 'BLOCKED_HIGH_SCORE']);
 
-  const selected = chooseForProfile(moneyFirst, scheduled.event, 0);
-  assert.equal(selected.choiceId, 'STAY');
-  assert.deepEqual(event.choices.map(choice => choice.id), ['STAY', 'CASH'], 'canonical event must remain untouched');
+  const selected = chooseForProfile(profile, scheduled.event, 0);
+  assert.equal(selected.choiceId, 'SAFE');
+  assert.equal(selected.score, 1);
 });
 
-test('T6 selector can choose the semantically preferred choice once production marks it eligible', () => {
-  assert.ok(moneyFirst);
-  const state = createInitialState(610001);
-  state.flags.T6_MONEY_ROUTE = true;
-  const event = fixtureEvent();
+test('T6 profile selection can choose the high-score option once the scheduler exposes it', () => {
+  const state = createInitialState(616161);
+  state.flags.T6_ELITE_AVAILABLE = true;
+  const event = eligibilityFixture();
 
-  const scheduled = schedule(state, event);
+  const scheduled = scheduleFixture(state, event);
   assert.ok(scheduled);
-  assert.deepEqual(scheduled.event.choices.map(choice => choice.id), ['STAY', 'CASH']);
+  assert.deepEqual(scheduled.event.choices.map(choice => choice.id), ['SAFE', 'BLOCKED_HIGH_SCORE']);
 
-  const selected = chooseForProfile(moneyFirst, scheduled.event, 0);
-  assert.equal(selected.choiceId, 'CASH');
-  assert.equal(selected.usedFallback, false);
-  assert.ok(selected.score > 0);
+  const selected = chooseForProfile(profile, scheduled.event, 0);
+  assert.equal(selected.choiceId, 'BLOCKED_HIGH_SCORE');
+  assert.equal(selected.score, 150);
 });
