@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { EVENTS } from '../dist/content/events/index.js';
 import { SEED_CATALOG } from '../dist/catalog/seeds.js';
 import { getSeedScopePolicy } from '../dist/catalog/seed-scope.js';
+import { SIMULATION_SEED_CONSUMERS } from './t52-simulation-seed-consumers.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const outputPath = path.join(root, 'analysis/T5.2/deferred-consequences.json');
@@ -48,13 +49,76 @@ function dedupeRows(rows, keyFn) {
   return [...new Map(rows.map(row => [keyFn(row), row])).values()];
 }
 
-export function buildDeferredConsequenceReport(events = EVENTS, seeds = SEED_CATALOG) {
+function walkTsFiles(dir) {
+  const out = [];
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) out.push(...walkTsFiles(full));
+    else if (entry.isFile() && entry.name.endsWith('.ts')) out.push(full);
+  }
+  return out;
+}
+
+export function auditSimulationSeedConsumerRegistry(
+  registry = SIMULATION_SEED_CONSUMERS,
+  simulationDir = path.join(root, 'src/simulation')
+) {
+  const observedUses = [];
+  for (const file of walkTsFiles(simulationDir)) {
+    const relative = path.relative(root, file).replaceAll(path.sep, '/');
+    const source = fs.readFileSync(file, 'utf8');
+    const seedIds = new Set();
+    for (const match of source.matchAll(/\bHAS_(SEED_[A-Z0-9_]+)\b/g)) seedIds.add(match[1]);
+    for (const seedId of seedIds) observedUses.push({ file: relative, seedId });
+  }
+
+  const registrationKey = row => `${row.file}:${row.seedId}`;
+  const observedKeys = new Set(observedUses.map(registrationKey));
+  const registeredKeys = new Set(registry.map(registrationKey));
+  const duplicateRegistrations = [...registry.reduce((counts, row) => {
+    const key = registrationKey(row);
+    counts.set(key, (counts.get(key) ?? 0) + 1);
+    return counts;
+  }, new Map()).entries()]
+    .filter(([, count]) => count > 1)
+    .map(([key, count]) => ({ key, count }));
+
+  const invalidWindows = registry
+    .filter(row => (
+      !Array.isArray(row.ageWindow) ||
+      row.ageWindow.length !== 2 ||
+      typeof row.ageWindow[0] !== 'number' ||
+      (row.ageWindow[1] !== null && typeof row.ageWindow[1] !== 'number') ||
+      (typeof row.ageWindow[1] === 'number' && row.ageWindow[0] > row.ageWindow[1])
+    ))
+    .map(row => ({ file: row.file, seedId: row.seedId, ageWindow: row.ageWindow }));
+
+  return {
+    observedUses,
+    registeredUses: registry.map(row => ({ file: row.file, seedId: row.seedId, ageWindow: row.ageWindow, surface: row.surface })),
+    unregisteredUses: observedUses.filter(row => !registeredKeys.has(registrationKey(row))),
+    staleRegistrations: registry
+      .filter(row => !observedKeys.has(registrationKey(row)))
+      .map(row => ({ file: row.file, seedId: row.seedId, surface: row.surface })),
+    duplicateRegistrations,
+    invalidWindows
+  };
+}
+
+export function buildDeferredConsequenceReport(events = EVENTS, seeds = SEED_CATALOG, options = {}) {
   const localSeedIds = new Set(seeds.map(seed => seed.id));
   const unknownRefs = [];
   const producers = [];
   const consumers = [];
   const declaredReaders = [];
   const sameOutcomeCreateTerminal = [];
+  const useDefaultSimulationRegistry = events === EVENTS && seeds === SEED_CATALOG;
+  const simulationConsumers = options.simulationConsumers ?? (useDefaultSimulationRegistry ? SIMULATION_SEED_CONSUMERS : []);
+  const simulationRegistryAudit = options.simulationRegistryAudit ?? (
+    useDefaultSimulationRegistry
+      ? auditSimulationSeedConsumerRegistry(simulationConsumers)
+      : { observedUses: [], registeredUses: [], unregisteredUses: [], staleRegistrations: [], duplicateRegistrations: [], invalidWindows: [] }
+  );
 
   const seedFromPresencePath = value => (
     typeof value === 'string' && value.startsWith('flags.HAS_SEED_')
@@ -163,6 +227,29 @@ export function buildDeferredConsequenceReport(events = EVENTS, seeds = SEED_CAT
     }
   }
 
+  for (const entry of simulationConsumers) {
+    if (!localSeedIds.has(entry.seedId)) {
+      unknownRefs.push({
+        seedId: entry.seedId,
+        kind: 'simulation',
+        file: entry.file,
+        surface: entry.surface
+      });
+      continue;
+    }
+    consumers.push({
+      seedId: entry.seedId,
+      eventId: `@simulation:${entry.file}#${entry.surface}`,
+      kind: 'simulation',
+      context: entry.surface,
+      ageWindow: entry.ageWindow,
+      phase: 'simulation',
+      family: 'simulation',
+      file: entry.file,
+      rationale: entry.rationale
+    });
+  }
+
   const runtimeConsumers = dedupeRows(
     consumers,
     row => `${row.seedId}:${row.eventId}:${row.kind}:${row.context}`
@@ -176,7 +263,9 @@ export function buildDeferredConsequenceReport(events = EVENTS, seeds = SEED_CAT
   const rows = seeds.map(seed => {
     const seedProducers = runtimeProducers.filter(row => row.seedId === seed.id);
     const seedConsumers = runtimeConsumers.filter(row => row.seedId === seed.id);
-    const runtimeConsumerEvents = new Set(seedConsumers.map(row => row.eventId));
+    const seedEventConsumers = seedConsumers.filter(row => row.kind !== 'simulation');
+    const seedSimulationConsumers = seedConsumers.filter(row => row.kind === 'simulation');
+    const runtimeConsumerEvents = new Set(seedEventConsumers.map(row => row.eventId));
     const metadataOnlyReaders = declared
       .filter(row => row.seedId === seed.id && !runtimeConsumerEvents.has(row.eventId))
       .map(row => row.eventId);
@@ -207,8 +296,12 @@ export function buildDeferredConsequenceReport(events = EVENTS, seeds = SEED_CAT
       scope,
       producerCount: seedProducers.length,
       runtimeConsumerCount: seedConsumers.length,
+      runtimeEventConsumerCount: seedEventConsumers.length,
+      runtimeSimulationConsumerCount: seedSimulationConsumers.length,
       producers: seedProducers,
       runtimeConsumers: seedConsumers,
+      runtimeEventConsumers: seedEventConsumers,
+      runtimeSimulationConsumers: seedSimulationConsumers,
       metadataOnlyReaders,
       feasiblePairCount: feasiblePairs.length,
       strictDeferredPairCount: strictDeferredPairs.length,
@@ -234,13 +327,20 @@ export function buildDeferredConsequenceReport(events = EVENTS, seeds = SEED_CAT
   const dateProofRequired = rows
     .filter(row => row.proofObligations.explicitDateExpiry)
     .map(row => row.id);
+  const simulationRegistryComplete = (
+    simulationRegistryAudit.unregisteredUses.length === 0 &&
+    simulationRegistryAudit.staleRegistrations.length === 0 &&
+    simulationRegistryAudit.duplicateRegistrations.length === 0 &&
+    simulationRegistryAudit.invalidWindows.length === 0
+  );
 
   return {
     task: 'T5.2 deferred consequences',
     generatedAt: new Date().toISOString(),
     model: {
       purpose: 'prove necessary temporal feasibility for runtime producer→consumer seed chains without inventing canonical semantics',
-      consumerEvidence: 'runtime HAS_SEED_* conditions in event gates/gate alternatives/exclusions/outcomes/modifiers/choice eligibility plus resolve/expire transitions; seedsRead-only metadata is reported separately',
+      consumerEvidence: 'runtime HAS_SEED_* conditions in event gates/gate alternatives/exclusions/outcomes/modifiers/choice eligibility, resolve/expire transitions, plus registered direct HAS_SEED_* effects in src/simulation',
+      simulationRegistry: 'every direct HAS_SEED_* read in src/simulation must map to exactly one declared file+seed entry with an evidence-based runtime age window',
       ageExpiry: 'catalog max age is treated as terminal because expireDueSeedsInPlace expires live seeds when state.age > maxAge',
       chronology: 'a consumer must be schedulable at the same or later age than at least one producer occurrence',
       clubSeasonDate: 'reported as proof obligations, not inferred statically',
@@ -250,7 +350,10 @@ export function buildDeferredConsequenceReport(events = EVENTS, seeds = SEED_CAT
       catalogSeeds: seeds.length,
       eventCount: events.length,
       runtimeProducerSeeds: rows.filter(row => row.producerCount > 0).length,
-      runtimeEventConsumerSeeds: rows.filter(row => row.runtimeConsumerCount > 0).length,
+      runtimeEventConsumerSeeds: rows.filter(row => row.runtimeEventConsumerCount > 0).length,
+      runtimeSimulationConsumerSeeds: rows.filter(row => row.runtimeSimulationConsumerCount > 0).length,
+      runtimeConsumerSeeds: rows.filter(row => row.runtimeConsumerCount > 0).length,
+      registeredSimulationConsumerEdges: simulationConsumers.length,
       seedsWithBothSides: rows.filter(row => row.producerCount > 0 && row.runtimeConsumerCount > 0).length,
       seedsWithStrictDeferredPath: seedsWithStrictDeferredPath.length,
       impossibleRuntimeChains: impossibleRuntimeChains.length,
@@ -258,7 +361,11 @@ export function buildDeferredConsequenceReport(events = EVENTS, seeds = SEED_CAT
       scopeProofRequired: scopeProofRequired.length,
       dateProofRequired: dateProofRequired.length,
       sameOutcomeCreateTerminal: sameOutcomeCreateTerminal.length,
-      unknownReferences: unknownRefs.length
+      unknownReferences: unknownRefs.length,
+      unregisteredSimulationSeedUses: simulationRegistryAudit.unregisteredUses.length,
+      staleSimulationSeedRegistrations: simulationRegistryAudit.staleRegistrations.length,
+      duplicateSimulationSeedRegistrations: simulationRegistryAudit.duplicateRegistrations.length,
+      invalidSimulationSeedWindows: simulationRegistryAudit.invalidWindows.length
     },
     impossibleRuntimeChains,
     seedsWithStrictDeferredPath,
@@ -267,11 +374,13 @@ export function buildDeferredConsequenceReport(events = EVENTS, seeds = SEED_CAT
     dateProofRequired,
     sameOutcomeCreateTerminal,
     unknownReferences: unknownRefs,
+    simulationRegistryAudit,
     rows,
     rules: {
       noUnknownReferences: unknownRefs.length === 0,
       noImpossibleRuntimeChains: impossibleRuntimeChains.length === 0,
-      hardPass: unknownRefs.length === 0 && impossibleRuntimeChains.length === 0
+      simulationSeedRegistryComplete: simulationRegistryComplete,
+      hardPass: unknownRefs.length === 0 && impossibleRuntimeChains.length === 0 && simulationRegistryComplete
     }
   };
 }
@@ -284,7 +393,9 @@ function main() {
     output: path.relative(root, outputPath),
     ...report.summary,
     hardPass: report.rules.hardPass,
-    impossibleRuntimeChains: report.impossibleRuntimeChains
+    impossibleRuntimeChains: report.impossibleRuntimeChains,
+    unregisteredSimulationSeedUses: report.simulationRegistryAudit.unregisteredUses,
+    staleSimulationSeedRegistrations: report.simulationRegistryAudit.staleRegistrations
   }, null, 2));
   if (!report.rules.hardPass) process.exitCode = 1;
 }
