@@ -1,6 +1,8 @@
+import { knowledgeRulesFor } from "../catalog/npc-knowledge-rules.js";
 import { SEED_CATALOG } from "../catalog/seeds.js";
 import { getSeedScopePolicy } from "../catalog/seed-scope.js";
 import { conditionsPass } from "../core/conditions.js";
+import { forgetExpiredNpcKnowledgeInPlace, rememberNpcFactInPlace } from "../core/npc-knowledge.js";
 import { getPath, setPath } from "../core/path.js";
 import { DeterministicRng } from "../core/rng.js";
 import type { ChoiceDefinition, Effect, EventDefinition, GameState, OutcomeDefinition, ResolutionResult, SeedInstance, SeedTransition } from "../core/types.js";
@@ -164,6 +166,26 @@ function outcomeWeight(state: GameState, outcome: OutcomeDefinition): { weight: 
   return { weight: Math.max(0, weight), modifiers: reasons };
 }
 
+function recordResolvedNpcKnowledge(state: GameState, event: EventDefinition, choiceId: string, outcomeId: string, eventClub: string): void {
+  forgetExpiredNpcKnowledgeInPlace(state);
+  for (const rule of knowledgeRulesFor(event.id, choiceId, outcomeId)) {
+    for (const npcId of rule.npcIds) {
+      rememberNpcFactInPlace(state, npcId, {
+        factId: rule.factId ?? event.id,
+        eventId: event.id,
+        choiceId,
+        outcomeId,
+        source: rule.source,
+        certainty: rule.certainty,
+        memory: rule.memory,
+        expiresAfterDays: rule.expiresAfterDays,
+        relationshipMemory: rule.relationshipMemory,
+        club: eventClub
+      });
+    }
+  }
+}
+
 function resolveChoiceCore(next: GameState, event: EventDefinition, choiceId: string, qa = false): ResolutionResult {
   const previousClub=next.club;
   const previousRetirementStatus = next.retirement?.status ?? "playing";
@@ -210,6 +232,7 @@ function resolveChoiceCore(next: GameState, event: EventDefinition, choiceId: st
     snapshot: { family: event.family, npcRefs: event.npcRefs ?? [], tags: event.tags ?? [], age: next.age },
     salience: 70, visibility: "private"
   });
+  recordResolvedNpcKnowledge(next, event, choiceId, selected.id, previousClub);
 
   return {
     state: next, eventId: event.id, choiceId, outcomeId: selected.id,
