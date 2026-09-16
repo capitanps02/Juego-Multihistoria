@@ -1,0 +1,34 @@
+name: T5.1 OR gates
+
+on:
+  push:
+    branches:
+      - integration/t51-or-gates
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'src/narrative/event-gates.ts'
+      - 'src/narrative/scheduler.ts'
+      - 'src/content/events/18_20/helpers.ts'
+      - 'scripts/test-t51-or-gates.mjs'
+      - 'package.json'
+      - '.github/workflows/t51-or-gates.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  or-gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Alternative event gates
+        run: node --test scripts/test-t51-or-gates.mjs
