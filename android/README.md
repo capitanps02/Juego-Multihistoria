@@ -33,8 +33,11 @@ En el Mac usado para el cierre histórico T3.3 se instalaron Java 17, Gradle 8.9
 2. ejecuta la regresión de presentación;
 3. reconstruye y verifica el paquete offline;
 4. compila el APK;
-5. valida que el informe contenga un SHA-256;
-6. publica `multihistoria-android-presentation-candidate` como artefacto temporal.
+5. conserva y publica el informe de diagnóstico aunque la compilación falle;
+6. valida que una compilación válida contenga un SHA-256;
+7. publica `multihistoria-android-presentation-candidate` como artefacto temporal cuando el build pasa.
+
+La versión mostrada por `AndroidBridge.getRuntimeInfo()` se obtiene del paquete realmente instalado mediante `PackageManager`, no de `BuildConfig`. Esto mantiene el diagnóstico independiente de que la generación de `BuildConfig` esté habilitada en una variante concreta de Android Gradle Plugin.
 
 Ese artefacto facilita T3.4, pero no constituye por sí solo una prueba en teléfono físico.
 
