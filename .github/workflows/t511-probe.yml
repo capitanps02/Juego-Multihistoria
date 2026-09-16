@@ -1,0 +1,27 @@
+name: T5.11 identity probe
+
+on:
+  push:
+    branches:
+      - integration/t511-23-26
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Directed T5.11 tests
+        run: node --test scripts/test-t51-t511-23-26.mjs
+      - name: Print active identity
+        run: |
+          node --input-type=module - <<'NODE'
+          import { EVENTS } from './dist/content/events/index.js';
+          import { contentIdentity } from './dist/session/content-identity.js';
+          console.log(`T511_TARGET=${await contentIdentity(EVENTS)}`);
+          NODE
