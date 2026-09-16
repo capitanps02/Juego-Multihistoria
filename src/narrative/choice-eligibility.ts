@@ -1,5 +1,6 @@
 import { conditionsPass } from "../core/conditions.js";
 import type { ChoiceDefinition, Condition, EventDefinition, GameState } from "../core/types.js";
+import { narrativeConditionRoot } from "../simulation/club-contract-intent.js";
 
 /**
  * Additive compatibility contract for canonical choices whose availability depends on state.
@@ -15,7 +16,7 @@ export function choiceEligibility(choice: ChoiceDefinition): Condition[] {
 }
 
 export function isChoiceEligible(state: GameState, choice: ChoiceDefinition): boolean {
-  return conditionsPass(state, choiceEligibility(choice));
+  return conditionsPass(narrativeConditionRoot(state), choiceEligibility(choice));
 }
 
 export function eligibleChoices(state: GameState, event: EventDefinition): ChoiceDefinition[] {
