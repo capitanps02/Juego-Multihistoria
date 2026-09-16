@@ -31,6 +31,37 @@ Large source artifacts from the handoff are preserved byte-for-byte as determini
 
 Overall runtime status remains **NOT_READY**. Planning evidence is much further ahead than implementation; no planning review is treated as a runtime PASS.
 
+## Principal reconciliation planning — 87/87 baseline drift assigned
+
+Master planning artifacts:
+- `T5_1_PRINCIPAL_87_BATCH_MANIFEST.json`
+- `T5_1_PRINCIPAL_PLANNING_SUMMARY.md`
+- `T5_1_PRINCIPAL_BATCH_IMPLEMENTATION_RULES.md`
+
+Baseline:
+- canonical principal events: 254;
+- exact principal IDs in P1: 167;
+- baseline unresolved: 87.
+
+Assignment:
+- active PRs #3/#7/#5: 18 IDs;
+- future batches 02C–04D: 69 IDs;
+- total assigned exactly once: 87/87.
+
+Prepared DRAFT prompts for the future principal chain:
+- `T5_1_02C_CODEX_PROMPT_DRAFT.md`
+- `T5_1_02D_CODEX_PROMPT_DRAFT.md`
+- `T5_1_02E_CODEX_PROMPT_DRAFT.md`
+- `T5_1_03A_CODEX_PROMPT_DRAFT.md`
+- `T5_1_03B_CODEX_PROMPT_DRAFT.md`
+- `T5_1_04A_CODEX_PROMPT_DRAFT.md`
+- `T5_1_04B_CODEX_PROMPT_DRAFT.md`
+- `T5_1_04C_CODEX_PROMPT_DRAFT.md`
+- `T5_1_04D_CODEX_PROMPT_DRAFT.md`
+- `T5_1_04E_CODEX_PROMPT_DRAFT.md`
+
+Important title-only candidates still require full semantic proof before any rename/migration, including `EVT_30_BRIDGE_001` vs `EVT_30_IDN_001`, `EVT_38_RICH_001` vs `EVT_36_RICH_001`, and the retirement principal candidates.
+
 ## Conditional semantic review — 134/134 planning complete
 
 Master summary:
@@ -122,4 +153,4 @@ That assumption must be replaced during 05A runtime work with the 134-row semant
 
 ## Current execution safety
 
-The first executable item remains the first `READY` entry in `project/CODEX_QUEUE.md`. A user command `ejecuta Codex` is required before Codex is launched. DRAFT/BLOCKED items must not be executed.
+The first executable item remains the first `READY` entry in `project/CODEX_QUEUE.md` — currently PR #3 unless GitHub changes after this snapshot. A user command `ejecuta Codex` is required before Codex is launched. DRAFT/BLOCKED items must not be executed.
