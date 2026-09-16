@@ -1,13 +1,10 @@
 import type { Effect, EventDefinition, EventFamily, NarrativePhase, OutcomeModifier, PresentationSpec, SeedTransition } from "../../../core/types.js";
-import type { EventWithGateAlternatives } from "../../../narrative/event-gates.js";
 export interface AmbiguousChoiceSpec {
     id: string;
     label: string;
     intentTags: string[];
     primaryMessage: string;
     secondaryMessage: string;
-    /** Optional state gates that determine whether the player may see/select this choice. */
-    eligibility?: EventDefinition["gates"];
     primaryEffects?: Effect[];
     secondaryEffects?: Effect[];
     immediateEffects?: Effect[];
@@ -27,8 +24,6 @@ export interface AmbiguousEventSpec {
     uncertain: string[];
     choices: AmbiguousChoiceSpec[];
     gates?: EventDefinition["gates"];
-    /** Alternative causal routes. Each inner group is AND; groups are OR. */
-    gateAlternatives?: EventDefinition["gates"][];
     exclusions?: EventDefinition["exclusions"];
     timeWindow?: EventDefinition["timeWindow"];
     weight?: number;
@@ -40,7 +35,7 @@ export interface AmbiguousEventSpec {
     presentation?: PresentationSpec;
     canonStatus?: EventDefinition["canonStatus"];
 }
-export declare function ambiguousEvent(spec: AmbiguousEventSpec): EventWithGateAlternatives;
+export declare function ambiguousEvent(spec: AmbiguousEventSpec): EventDefinition;
 export declare const n: (path: string, delta: number, min?: number, max?: number) => Effect;
 export declare const flag: (name: string, value?: boolean) => Effect;
 export declare const set: (path: string, value: string | number | boolean | null) => Effect;

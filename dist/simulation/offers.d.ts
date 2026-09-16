@@ -22,24 +22,12 @@ export interface CareerOffer {
     before: CareerTerms;
     terms: CareerTerms;
 }
-/** Direct player actions exposed by the ordinary offer screen and persisted in market.history.action. */
 export type OfferAction = "accept" | "reject" | "delegate";
-/** Narrative decisions may close an offer without changing the persisted action enum. */
-export type OfferDisposition = OfferAction | "counter" | "defer";
-export interface NarrativeOfferSource {
-    kind: "narrative_choice";
-    historyIndex: number;
-    eventId: string;
-    choiceId: string;
-    disposition: OfferDisposition;
-}
 export interface OfferDecision {
     offer: CareerOffer;
     action: OfferAction;
     accepted: boolean;
     explanation: string;
-    /** Absent for ordinary offer commands; present when a narrative choice consumed the offer. */
-    source?: NarrativeOfferSource;
 }
 export interface MarketState {
     version: 1;
@@ -52,9 +40,5 @@ export declare function careerTerms(s: GameState): CareerTerms;
 export declare function applyTerms(s: GameState, t: CareerTerms): void;
 /** Run the world's proposal on a detached state. No signature or destination leaks. */
 export declare function proposeCareerChange(s: GameState, reason: string, propose: (draft: GameState) => void): void;
-/**
- * Single authority for closing an offer. Narrative choices may counter/defer, but only
- * accept/delegate are ever allowed to apply CareerTerms. Counter/defer normalize to the
- * persisted reject action while retaining their exact semantics in source.disposition.
- */
-export declare function respondToOffer(s: GameState, id: string, disposition: OfferDisposition, source?: Omit<NarrativeOfferSource, "disposition">): OfferDecision;
+/** Delegation authorizes only this offer; no standing authority is inferred. */
+export declare function respondToOffer(s: GameState, id: string, action: OfferAction): OfferDecision;

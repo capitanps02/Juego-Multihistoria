@@ -12,7 +12,6 @@ import { adaptState30ToMaturity } from "./maturity-adapter.js";
 import { maturityWeek, runMaturityPreseason } from "./ageing-engine.js";
 import { lateCareerPreseason, lateCareerWeek, closeCareer } from "./late-career-engine.js";
 import { recordAgeMilestone } from "./age-milestones.js";
-import { expireDueSeedsInPlace } from "../narrative/resolver.js";
 const clamp = (x, min = 0, max = 100) => Math.min(max, Math.max(min, x));
 const num = (x, fallback = 0) => typeof x === "number" ? x : fallback;
 function addDays(iso, days) {
@@ -434,7 +433,6 @@ export function advanceWorldDayInPlace(next) {
     next.runtime.day += 1;
     next.runtime.seasonDay += 1;
     next.runtime.daysSinceNarrative += 1;
-    expireDueSeedsInPlace(next);
     for (const id of Object.keys(next.eventCooldowns))
         next.eventCooldowns[id] = Math.max(0, next.eventCooldowns[id] - 1);
     monthlyContractTick(next, oldDate);

@@ -138,8 +138,6 @@ export interface SeedTransition {
     action: "create" | "activate" | "intensify" | "transform" | "resolve" | "expire";
     intensity?: number;
     payload?: Record<string, DataValue>;
-    /** ISO date at which this instance becomes terminal, when explicitly assigned. */
-    expiresAfter?: string;
 }
 export interface OutcomeModifier {
     id: string;

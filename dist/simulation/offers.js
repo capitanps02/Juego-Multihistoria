@@ -51,36 +51,22 @@ export function proposeCareerChange(s, reason, propose) {
     terms.tier = terms.leagueTier;
     market.pending = { id: `offer:${++market.sequence}`, date: s.date, reason, before, terms };
 }
-/**
- * Single authority for closing an offer. Narrative choices may counter/defer, but only
- * accept/delegate are ever allowed to apply CareerTerms. Counter/defer normalize to the
- * persisted reject action while retaining their exact semantics in source.disposition.
- */
-export function respondToOffer(s, id, disposition, source) {
+/** Delegation authorizes only this offer; no standing authority is inferred. */
+export function respondToOffer(s, id, action) {
     const m = marketState(s), offer = m.pending;
     if (!offer || offer.id !== id)
         throw Error("Esta oferta ya no está pendiente.");
-    if (!["accept", "reject", "delegate", "counter", "defer"].includes(disposition))
+    if (!["accept", "reject", "delegate"].includes(action))
         throw Error("Respuesta de oferta no válida.");
-    if ((disposition === "counter" || disposition === "defer") && !source)
-        throw Error("Contraofertar o aplazar requiere una decisión narrativa identificada.");
     if (JSON.stringify(careerTerms(s)) !== JSON.stringify(offer.before))
         throw Error("Las condiciones han cambiado; la oferta ya no corresponde a esta partida.");
-    const action = disposition === "counter" || disposition === "defer" ? "reject" : disposition;
     const accepted = action === "accept" || (action === "delegate" && offer.terms.salary >= offer.before.salary && offer.terms.months >= 12 && offer.terms.leagueTier <= offer.before.leagueTier);
-    const explanation = disposition === "delegate"
+    const explanation = action === "delegate"
         ? `Delegación para esta oferta: ${accepted ? "aceptada" : "rechazada"}. Criterio: no bajar salario ni categoría y asegurar al menos 12 meses.`
-        : disposition === "counter"
-            ? "Has planteado una contraoferta. El contrato actual sigue vigente hasta que exista una nueva propuesta formal."
-            : disposition === "defer"
-                ? "Has aplazado la firma. El contrato actual sigue vigente y esta propuesta deja de estar pendiente."
-                : accepted
-                    ? "Has aceptado la oferta. Las nuevas condiciones ya están en vigor."
-                    : "Has rechazado la oferta. Conservas tus condiciones actuales.";
+        : accepted ? "Has aceptado la oferta. Las nuevas condiciones ya están en vigor." : "Has rechazado la oferta. Conservas tus condiciones actuales.";
     if (accepted)
         applyTerms(s, offer.terms);
-    const narrativeSource = source ? { ...structuredClone(source), disposition } : undefined;
-    const decision = { offer: structuredClone(offer), action, accepted, explanation, ...(narrativeSource ? { source: narrativeSource } : {}) };
+    const decision = { offer: structuredClone(offer), action, accepted, explanation };
     m.history.push(decision);
     m.pending = null;
     return decision;
