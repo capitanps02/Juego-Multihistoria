@@ -52,10 +52,14 @@ function hasKnowledgeRule(eventId, choiceId, outcomeId, npcId) {
   );
 }
 
+function hasKnowledgeRequirement(eventId, npcId) {
+  return NPC_EVENT_KNOWLEDGE_REQUIREMENTS.some(rule => rule.eventId === eventId && rule.npcId === npcId);
+}
+
 // Narrow anti-omniscience lint: when copy explicitly says an NPC discovers,
-// remembers, knows or detects something and that same outcome changes their
-// relationship, the runtime must record a knowledge path for that NPC.
-const epistemicCopy = /\b(descubre|descubren|recuerda|recuerdan|sabe|sabía|conocía|detecta|detectan)\b/i;
+// remembers, knows, detects, forgets or keeps a memory and that same outcome
+// changes their relationship, the runtime must record a knowledge path.
+const epistemicCopy = /\b(descubre|descubren|recuerda|recuerdan|sabe|sabía|conocía|detecta|detectan|memoria|olvida|olvidan)\b/i;
 const reviewedEpistemicExceptions = new Map([
   [
     'EVT_19_AGENT_001:AUDIT:AUDIT__SECONDARY:NPC_AGT_01',
@@ -89,6 +93,20 @@ const staleEpistemicExceptions = [...reviewedEpistemicExceptions.keys()].filter(
   key => !appliedEpistemicExceptions.some(exception => exception.key === key)
 );
 
+// Callback-level lint. We only infer the reacting NPC when the event is
+// conditional and has exactly one npcRef; this deliberately avoids guessing
+// among multi-NPC scenes or technical_adaptation rows without npcRefs.
+const callbackEpistemicCopy = /\b(descubre|recuerda|sabe|conoce|detecta)\b|\bse entera\b/i;
+const epistemicCallbackGaps = [];
+for (const event of EVENTS) {
+  const refs = event.npcRefs ?? [];
+  if (event.family !== 'conditional' || refs.length !== 1) continue;
+  const copy = [event.text?.title, event.text?.body, ...(event.intel?.visible ?? [])].filter(Boolean).join(' ');
+  if (!callbackEpistemicCopy.test(copy)) continue;
+  const npcId = refs[0];
+  if (!hasKnowledgeRequirement(event.id, npcId)) epistemicCallbackGaps.push(`${event.id}:${npcId}`);
+}
+
 const npcs = NPC_CATALOG.map(npc => ({
   id: npc.id,
   name: npc.name,
@@ -114,11 +132,12 @@ const report = {
   invalidKnowledgeRules,
   invalidKnowledgeRequirements,
   epistemicRelationshipGaps,
+  epistemicCallbackGaps,
   appliedEpistemicExceptions,
   staleEpistemicExceptions,
   unreferencedNpcIds,
   npcs,
-  passed: NPC_CATALOG.length === 20 && unknownEventNpcRefs.length === 0 && unknownSeedNpcRefs.length === 0 && invalidKnowledgeRules.length === 0 && invalidKnowledgeRequirements.length === 0 && epistemicRelationshipGaps.length === 0 && staleEpistemicExceptions.length === 0
+  passed: NPC_CATALOG.length === 20 && unknownEventNpcRefs.length === 0 && unknownSeedNpcRefs.length === 0 && invalidKnowledgeRules.length === 0 && invalidKnowledgeRequirements.length === 0 && epistemicRelationshipGaps.length === 0 && epistemicCallbackGaps.length === 0 && staleEpistemicExceptions.length === 0
 };
 
 console.log(JSON.stringify(report, null, 2));
