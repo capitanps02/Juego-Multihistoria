@@ -1,3 +1,4 @@
+import { npcKnows } from "./npc-knowledge.js";
 import type { DataValue, GameState } from "./types.js";
 
 function relationshipLookup(root: unknown, path: string): unknown {
@@ -10,8 +11,17 @@ function relationshipLookup(root: unknown, path: string): unknown {
   return relation ? (relation as unknown as Record<string, unknown>)[axis] : undefined;
 }
 
+function knowledgeLookup(root: unknown, path: string): unknown {
+  if (!path.startsWith("know.")) return undefined;
+  const [, npcId, ...factParts] = path.split(".");
+  const factId = factParts.join(".");
+  if (!npcId || !factId || !root || typeof root !== "object") return undefined;
+  return npcKnows(root as GameState, npcId, factId);
+}
+
 export function getPath(root: unknown, path: string): unknown {
   if (path.startsWith("rel.")) return relationshipLookup(root, path);
+  if (path.startsWith("know.")) return knowledgeLookup(root, path);
   return path.split(".").reduce<unknown>((acc, key) => {
     if (acc && typeof acc === "object" && key in (acc as Record<string, unknown>)) {
       return (acc as Record<string, unknown>)[key];
@@ -21,6 +31,7 @@ export function getPath(root: unknown, path: string): unknown {
 }
 
 export function setPath(root: object, path: string, value: DataValue): void {
+  if (path.startsWith("know.")) throw new Error(`Knowledge paths are read-only: ${path}`);
   if (path.startsWith("rel.")) {
     const [, npcId, axis] = path.split(".");
     const relationships = (root as Partial<GameState>).relationships;
