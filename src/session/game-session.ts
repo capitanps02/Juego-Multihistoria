@@ -7,6 +7,10 @@ import { EventIndex } from "../narrative/event-index.js";
 import { scheduleEvent } from "../narrative/scheduler.js";
 import { eligibleChoices, isChoiceEligible } from "../narrative/choice-eligibility.js";
 import { offerDispositionForChoice, selectOfferBridgeEvent } from "../narrative/offer-bridge.js";
+import {
+  reconcileNpcKnowledgeFromHistoryInPlace,
+  type NpcKnowledgeLegacyCertification
+} from "../narrative/npc-knowledge-reconciliation.js";
 import { resolveChoiceInPlace } from "../narrative/resolver.js";
 import { advanceWorldDayInPlace } from "../simulation/world-simulator.js";
 import { maybeEmitMicroFeed } from "../simulation/microfeed.js";
@@ -91,6 +95,8 @@ export interface SessionOptions {
   migrationRoutes?: readonly ContentMigrationRoute[];
   /** Validation-only evidence for historical catalog identities. Never scheduled. */
   contentSources?: Readonly<Record<string, ContentEvidenceSource>>;
+  /** Explicit semantic whitelist for legacy NPC-knowledge replay. Never inferred from migration routes. */
+  knowledgeLegacyCertifications?: readonly NpcKnowledgeLegacyCertification[];
 }
 type PublicTerms = Pick<CareerOffer["terms"], "club" | "ownerClub" | "registrationClub" | "leagueTier" | "months" | "salary" | "releaseClause" | "loan">;
 type PublicOffer = Omit<CareerOffer,"before" | "terms"> & {before:PublicTerms;terms:PublicTerms};
@@ -187,6 +193,18 @@ function upgradeToV3(
   return next;
 }
 
+function reconcileKnowledge(
+  snapshot: SessionSnapshot,
+  activeEvidence: Readonly<Record<string, LegacyEventEvidence>>,
+  legacyCertifications: readonly NpcKnowledgeLegacyCertification[] | undefined
+): void {
+  reconcileNpcKnowledgeFromHistoryInPlace(snapshot.state, {
+    decisionProvenance: snapshot.decisionProvenance,
+    activeEventEvidence: activeEvidence,
+    legacyCertifications
+  });
+}
+
 /**
  * Interactive single-writer boundary. Reads never schedule, resolve or draw RNG.
  * The low-level simulator remains available for headless QA.
@@ -254,6 +272,7 @@ export class GameSession {
     requireThat(header.contentIdentity === activeContentIdentity, "CONTENT_CHANGED", "El contenido cambió; conserva la partida para migrarla antes de continuar.");
     await assertSessionSnapshot(snapshot, { events, activeContentIdentity, activeEvidence, contentSources });
     const next = upgradeToV3(snapshot as SessionSnapshot, activeContentIdentity, activeEvidence);
+    reconcileKnowledge(next, activeEvidence, options.knowledgeLegacyCertifications);
     marketState(next.state);
     next.build=SESSION_BUILD; // Existing narrative and RNG are preserved; new offers require explicit consent.
     await assertSessionSnapshot(next, { events, activeContentIdentity, activeEvidence, contentSources });
@@ -272,7 +291,7 @@ export class GameSession {
     const activeEvidence = await buildActiveEventEvidence(events);
     const routes = options.migrationRoutes ?? CONTENT_MIGRATION_ROUTES;
     const contentSources = options.contentSources ?? LEGACY_CONTENT_SOURCES;
-    const header = record(snapshot, "session");
+    const header = record(snapshot,"session");
     requireThat(typeof header.contentIdentity === "string", "INVALID_SAVE", "Falta la identidad del contenido.");
     const sourceContentIdentity = header.contentIdentity;
     if (sourceContentIdentity === activeContentIdentity) return GameSession.resume(snapshot, options);
@@ -285,6 +304,7 @@ export class GameSession {
     await assertSessionSnapshot(snapshot, { events, activeContentIdentity, activeEvidence, contentSources });
     const next = upgradeToV3(snapshot as SessionSnapshot, sourceContentIdentity, source.events);
     applyMigrationPathInPlace(next.state, path);
+    reconcileKnowledge(next, activeEvidence, options.knowledgeLegacyCertifications);
     marketState(next.state);
     next.contentIdentity = activeContentIdentity;
     next.sessionVersion = SESSION_VERSION;
