@@ -1,11 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import { GameSession, SESSION_VERSION } from '../dist/session/game-session.js';
 import { EVENTS } from '../dist/content/events/index.js';
 import { EventIndex } from '../dist/narrative/event-index.js';
 import { contentIdentity } from '../dist/session/content-identity.js';
 import { PRE_T51_CONTENT_IDENTITY } from '../dist/session/pre-t51-legacy-registry.js';
 
+const PRE_T51_EVENTS = JSON.parse(fs.readFileSync('qa/fixtures/t5.1/pre-t51-event-catalog.json', 'utf8'));
 const clone = value => structuredClone(value);
 let commandSeq = 0;
 const command = (s, type, extra = {}) => ({
@@ -43,10 +45,10 @@ function downgradeToV2(snapshot) {
 }
 
 async function sourceWithPending(seed = 701) {
-  const session = await GameSession.create(seed, { sessionId: `migration-${seed}` });
+  const session = await GameSession.create(seed, { sessionId: `migration-${seed}`, events: PRE_T51_EVENTS });
   const decision = await pending(session);
   const snapshot = session.exportSnapshot();
-  assert.equal(snapshot.contentIdentity, PRE_T51_CONTENT_IDENTITY, 'main ya no coincide con el freeze pre-T5.1');
+  assert.equal(snapshot.contentIdentity, PRE_T51_CONTENT_IDENTITY, 'frozen source catalog no longer matches PRE_T51_CONTENT_IDENTITY');
   return { session, decision, snapshot };
 }
 
@@ -74,7 +76,7 @@ test('current v2 snapshot upgrades to Session v3 provenance without changing gam
   const { snapshot } = await sourceWithResolved(710);
   const old = downgradeToV2(snapshot);
   const beforeState = clone(old.state);
-  const resumed = await GameSession.resume(old);
+  const resumed = await GameSession.resume(old, { events: PRE_T51_EVENTS });
   const after = resumed.exportSnapshot();
   assert.equal(after.sessionVersion, SESSION_VERSION);
   assert.equal(after.sessionVersion, 3);
