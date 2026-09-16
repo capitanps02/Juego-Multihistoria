@@ -34,7 +34,9 @@
     "android:offline": "npm run build && node scripts/build-android-offline.mjs",
     "test:android:offline": "npm run android:offline && node --test scripts/test-android-offline.mjs",
     "android:apk": "npm run android:offline && node scripts/build-android-apk.mjs",
-    "test:android:t34": "node scripts/test-android-t34.mjs"
+    "test:android:t34": "node scripts/test-android-t34.mjs",
+    "test:presentation": "npm run build && node --test scripts/test-t46.mjs scripts/test-presentation-platform.mjs",
+    "qa:presentation": "npm run test:presentation && npm run test:playcanvas && npm run test:android:offline"
   },
   "devDependencies": {
     "typescript": "5.8.3"
