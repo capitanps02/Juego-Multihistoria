@@ -282,3 +282,63 @@ test('T5.3/16 un NPC cuyo conocimiento caducó no puede seguir transmitiéndolo'
   );
   assert.equal(npcKnows(state, 'NPC_CCH_01', 'EVT_18_PRE_001'), false);
 });
+
+test('T5.3/17 reaprender un hecho vigente solo puede reforzarlo, nunca degradarlo', () => {
+  const state = createInitialState(117);
+  state.date = '2026-07-01';
+  const first = rememberNpcFactInPlace(state, 'NPC_PRS_01', {
+    factId: 'T53_REINFORCED', eventId: 'T53_MANUAL', choiceId: 'FIRST', outcomeId: 'HEARD',
+    source: 'reported', certainty: 40, memory: 'practical', expiresAfterDays: 90,
+    relationshipMemory: true
+  });
+  const originalLearnedAt = first.learnedAt;
+  const originalClub = first.club;
+  const originalSource = first.source;
+
+  state.date = '2026-07-20';
+  const upgraded = rememberNpcFactInPlace(state, 'NPC_PRS_01', {
+    factId: 'T53_REINFORCED', eventId: 'T53_MANUAL', choiceId: 'SECOND', outcomeId: 'CONFIRMED',
+    source: 'public', certainty: 90, memory: 'strong', relationshipMemory: true
+  });
+  assert.equal(upgraded.learnedAt, originalLearnedAt);
+  assert.equal(upgraded.club, originalClub);
+  assert.equal(upgraded.source, originalSource);
+  assert.equal(upgraded.certainty, 90);
+  assert.equal(upgraded.memory, 'strong');
+  assert.equal(upgraded.expiresAfter, undefined);
+
+  state.date = '2038-07-01';
+  const weakRepeat = rememberNpcFactInPlace(state, 'NPC_PRS_01', {
+    factId: 'T53_REINFORCED', eventId: 'T53_MANUAL', choiceId: 'THIRD', outcomeId: 'RUMOR',
+    source: 'informed', certainty: 20, memory: 'practical', expiresAfterDays: 1
+  });
+  assert.equal(weakRepeat.learnedAt, originalLearnedAt);
+  assert.equal(weakRepeat.certainty, 90);
+  assert.equal(weakRepeat.memory, 'strong');
+  assert.equal(weakRepeat.expiresAfter, undefined);
+  assert.equal(npcKnows(state, 'NPC_PRS_01', 'T53_REINFORCED'), true);
+});
+
+test('T5.3/18 un hecho ya caducado puede reaprenderse con contexto nuevo', () => {
+  const state = createInitialState(118);
+  state.date = '2026-07-01';
+  rememberNpcFactInPlace(state, 'NPC_PRS_01', {
+    factId: 'T53_RELEARN', eventId: 'T53_MANUAL', choiceId: 'FIRST', outcomeId: 'HEARD',
+    source: 'reported', certainty: 40, memory: 'practical', expiresAfterDays: 1
+  });
+  state.date = '2026-07-03';
+  state.club = 'ATL';
+  assert.equal(npcKnows(state, 'NPC_PRS_01', 'T53_RELEARN'), false);
+
+  const relearned = rememberNpcFactInPlace(state, 'NPC_PRS_01', {
+    factId: 'T53_RELEARN', eventId: 'T53_MANUAL', choiceId: 'SECOND', outcomeId: 'CONFIRMED',
+    source: 'public', certainty: 95, memory: 'strong'
+  });
+  assert.equal(relearned.learnedAt, '2026-07-03');
+  assert.equal(relearned.club, 'ATL');
+  assert.equal(relearned.source, 'public');
+  assert.equal(relearned.certainty, 95);
+  assert.equal(relearned.memory, 'strong');
+  assert.equal(relearned.expiresAfter, undefined);
+  assert.equal(npcKnows(state, 'NPC_PRS_01', 'T53_RELEARN'), true);
+});
