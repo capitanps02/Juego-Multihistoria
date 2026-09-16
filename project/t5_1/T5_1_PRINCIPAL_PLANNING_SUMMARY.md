@@ -68,8 +68,7 @@ Baseline exact-title candidates: **7**.
 Reviewed: **7/7**.  
 Approved same-scene ID migrations: **0/7**.
 
-All seven runtime IDs have final planning disposition:
-`retire_technical_keep_history_only`.
+All seven runtime IDs have final planning disposition `retire_technical_keep_history_only`.
 
 This means:
 - implement the canonical scene under the canonical ID;
@@ -79,39 +78,52 @@ This means:
 - pending old content resolves through supported content-version compatibility only;
 - seed catalog origin metadata may move to the canonical creator for future content without relabeling the player's old historical origin unless a separate reviewed migration explicitly proves that fact.
 
-### 30+/retirement candidates
-
 Evidence:
 - `T5_1_PRINCIPAL_TITLE_CANDIDATES_30_PLUS_REVIEW.md`
 - `T5_1_PRINCIPAL_TITLE_CANDIDATES_30_PLUS_DISPOSITIONS.json`
-
-Pairs:
-- `EVT_30_BRIDGE_001` vs legacy `EVT_30_IDN_001` — strong title/seed lineage, but generic runtime scene/choices differ from the canonical age-30 bridge;
-- `EVT_38_RICH_001` vs legacy `EVT_36_RICH_001` — title only; age, trigger, information and huge-offer/retirement choices differ;
-- `EVT_RET_FAM_001` vs legacy `EVT_RET_HOME_001` — runtime converts a four-way family/priorities conversation into a binary retirement decision;
-- `EVT_RET_LASTMATCH_001` vs legacy `EVT_RET_LAST_001` — runtime directly manufactures played/no-match closure from a binary choice instead of preserving canonical fact-driven uncertainty.
-
-### PR #5 / 26–30 candidates
-
-Evidence:
 - `T5_1_PRINCIPAL_TITLE_CANDIDATES_PR5_FINAL_DISPOSITIONS.json`
-- PR #5 task evidence under `task/t5.1-batch-02a`.
 
-Pairs:
-- `EVT_27_STAR_001` vs legacy `EVT_28_TEAM_001` — same title/`SEED_SECOND_STAR`, but technical scene is age 28 and uses generic team-family decisions instead of the canonical age-27 second-star hierarchy dilemma;
-- `EVT_27_AWARD_001` vs legacy `EVT_28_GALA_001` — same title/award seed, but technical scene is age 28 and generic despite `verified:true`; canon is the age-27 award-interview/vote scene;
-- `EVT_28_RICH_001` vs legacy `EVT_29_MKT_001` — close precursor, but age, gate, visible uncertainty and C/D decision intents differ from canon.
+## Active-PR legacy dispositions
 
-PR #5 still remains blocked by PR #7 because future seed origin metadata/chronology must be reconciled against the reviewed age-26 seed repair before implementation.
+### PR #3 — 6/6 complete
+
+`T5_1_PR3_PRINCIPAL_LEGACY_DISPOSITIONS.json`
+
+All six runtime-only IDs are `retire_technical_keep_history_only`.
+
+Important finding: `EVT_22_END_001` is not the functional 22→23 transition gate. `world-simulator.ts` derives phase from age. Its scheduler `budgetExempt` role is legacy narrative-priority plumbing; canonical `EVT_23_BRIDGE_001` is a different scene and should own any required start-of-phase narrative priority.
+
+### PR #7 — 4/4 complete
+
+`T5_1_PR7_PRINCIPAL_LEGACY_DISPOSITIONS.json`
+
+All four runtime-only age-26 IDs are `retire_technical_keep_history_only`:
+- `EVT_26_IDN_001`
+- `EVT_26_CLB_001`
+- `EVT_26_PRS_001`
+- `EVT_26_JAN_001`
+
+Additional chronology finding:
+- baseline `SEED_PROJECT_FACE` points to technical `EVT_26_CLB_001`;
+- canonical traceability for existing `EVT_26_MKT_001` explicitly creates `SEED_PROJECT_FACE`;
+- PR #7 future seed catalog responsibility therefore includes this eleventh origin repair.
+
+PR #7 task scope has been tightened so it may remove false seed-writer responsibility from age-27/28 events but cannot retire IDs assigned to 02C/02D.
+
+### PR #5 — 3/3 exact-title legacy candidates complete at planning level
+
+`T5_1_PRINCIPAL_TITLE_CANDIDATES_PR5_FINAL_DISPOSITIONS.json`
+
+All three = `retire_technical_keep_history_only`; PR #5 remains blocked by PR #7 before implementation because seed chronology must settle first.
 
 ## Current legacy-side disposition progress
 
 Runtime-only principal IDs: **87**.
 
-- final planning disposition reviewed: **7**;
-- all 7 reviewed: `retire_technical_keep_history_only`;
+- final planning disposition reviewed: **17**;
+- reviewed `retire_technical_keep_history_only`: **17**;
 - approved direct same-scene migrations: **0**;
-- remaining principal legacy IDs requiring semantic disposition in their responsible batch: **80**.
+- remaining principal legacy IDs requiring semantic disposition: **70**.
 
 See global crosswalk state:
 - `T5_1_LEGACY_CROSSWALK_PLANNING_STATE_174.json`.
@@ -146,7 +158,7 @@ Planning completeness does **not** mean runtime completeness.
 - Canonical principal missing-ID assignment: **87/87 complete**
 - Runtime-only principal responsibility assignment: **87/87 complete**
 - Exact-title principal semantic dispositions: **7/7 complete**
-- Runtime-only principal final dispositions overall: **7/87 complete**
+- Runtime-only principal final dispositions overall: **17/87 complete**
 - Future principal task prompts: **02C–04E prepared**
 - Conditional semantic planning review: **134/134 complete**
 - Conditional task prompts: **05A–05E prepared**
