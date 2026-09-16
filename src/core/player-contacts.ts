@@ -14,7 +14,7 @@ export interface ContactDecisionProvenance {
 
 export type PlayerContactRuleProvenance =
   | { kind: "invariant" }
-  | { kind: "event_fingerprints"; eventFingerprints: readonly string[] };
+  | { kind: "exact_sources"; sources: readonly ContactDecisionProvenance[] };
 
 export interface PlayerContactRule {
   eventId: string;
@@ -24,8 +24,8 @@ export interface PlayerContactRule {
   /**
    * `invariant` is an explicit semantic certification across every supported
    * source catalog. Otherwise the resolved decision must carry one of the exact
-   * event fingerprints listed here. No provenance means no match for a
-   * fingerprint-bound rule.
+   * sourceContentIdentity + eventFingerprint pairs listed here. No provenance
+   * means no match for a source-bound rule.
    */
   provenance: PlayerContactRuleProvenance;
 }
@@ -53,7 +53,7 @@ export const PLAYER_CONTACT_RULES: readonly PlayerContactRule[] = [
     npcIds: ["NPC_ACA_01"],
     // Audited across every currently supported content source. A regression test
     // requires all frozen/active definitions to retain the same event fingerprint;
-    // if a future batch changes this event, the rule must become fingerprint-bound.
+    // if a future batch changes this event, the rule must become exact-source-bound.
     provenance: { kind: "invariant" }
   }
 ];
@@ -75,16 +75,17 @@ export function contactIntroductionRuleMatches(
   if (rule.choiceIds && !rule.choiceIds.includes(entry.choiceId)) return false;
   if (rule.outcomeIds && !rule.outcomeIds.includes(entry.outcomeId)) return false;
   if (rule.provenance.kind === "invariant") return true;
-  return Boolean(
-    provenance
-    && rule.provenance.eventFingerprints.includes(provenance.eventFingerprint)
+  if (!provenance) return false;
+  return rule.provenance.sources.some(source =>
+    source.sourceContentIdentity === provenance.sourceContentIdentity
+    && source.eventFingerprint === provenance.eventFingerprint
   );
 }
 
 /**
  * Reconstruct the protagonist-facing contact set from durable factual history.
- * Deny-by-default: no rule means no newly visible contact. Fingerprint-bound
- * rules additionally require the 1:1 decision provenance row.
+ * Deny-by-default: no rule means no newly visible contact. Source-bound rules
+ * additionally require the matching 1:1 decision provenance row.
  */
 export function knownPlayerContactIds(
   state: GameState,
