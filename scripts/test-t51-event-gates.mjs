@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createInitialState } from '../dist/content/initial-state.js';
+import { ambiguousEvent } from '../dist/content/events/18_20/helpers.js';
 import { scheduleEvent } from '../dist/narrative/scheduler.js';
 import { eventGatesPass } from '../dist/narrative/event-gates.js';
 
@@ -26,6 +27,29 @@ function fixtureEvent() {
     choices: [{ id: 'OK', label: 'Seguir', intentTags: [], outcomeIds: ['OK_OUT'] }],
     outcomes: [{ id: 'OK_OUT', baseWeight: 1, effects: [], messages: ['ok'] }]
   };
+}
+
+function ambiguousFixture(gateAlternatives) {
+  return ambiguousEvent({
+    id: 'T51_AMBIGUOUS_HELPER_OR',
+    ageWindow: [18, 18],
+    family: 'press',
+    title: 'Helper OR fixture',
+    body: 'Fixture para comprobar propagación del contrato OR.',
+    visible: [],
+    uncertain: [],
+    gates: [{ path: 'flags.COMMON_PREREQUISITE', op: 'eq', value: true }],
+    ...(gateAlternatives !== undefined ? { gateAlternatives } : {}),
+    cooldown: 0,
+    weight: 100,
+    choices: [{
+      id: 'OK',
+      label: 'Seguir',
+      intentTags: ['fixture'],
+      primaryMessage: 'ok',
+      secondaryMessage: 'ok'
+    }]
+  });
 }
 
 function sched(state, event) {
@@ -92,4 +116,24 @@ test('evaluating event alternatives does not mutate the event definition', () =>
   const before = structuredClone(event);
   assert.equal(eventGatesPass(state, event), true);
   assert.deepEqual(event, before);
+});
+
+test('18-20 ambiguousEvent propagates gateAlternatives into scheduler reachability', () => {
+  const alternatives = [
+    [{ path: 'flags.ROUTE_A', op: 'eq', value: true }],
+    [{ path: 'flags.ROUTE_B', op: 'eq', value: true }]
+  ];
+  const event = ambiguousFixture(alternatives);
+  assert.deepEqual(event.gateAlternatives, alternatives);
+
+  const state = createInitialState(424242);
+  state.flags.COMMON_PREREQUISITE = true;
+  state.flags.ROUTE_B = true;
+  assert.equal(eventGatesPass(state, event), true);
+  assert.ok(sched(state, event));
+});
+
+test('18-20 ambiguousEvent keeps legacy serialized shape when OR routes are absent', () => {
+  const event = ambiguousFixture(undefined);
+  assert.equal(Object.prototype.hasOwnProperty.call(event, 'gateAlternatives'), false);
 });
