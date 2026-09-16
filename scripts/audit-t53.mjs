@@ -56,7 +56,14 @@ function hasKnowledgeRule(eventId, choiceId, outcomeId, npcId) {
 // remembers, knows or detects something and that same outcome changes their
 // relationship, the runtime must record a knowledge path for that NPC.
 const epistemicCopy = /\b(descubre|descubren|recuerda|recuerdan|sabe|sabía|conocía|detecta|detectan)\b/i;
+const reviewedEpistemicExceptions = new Map([
+  [
+    'EVT_19_AGENT_001:AUDIT:AUDIT__SECONDARY:NPC_AGT_01',
+    'La revisión descubre más lagunas para el protagonista; el texto no afirma que el agente adquiera información nueva.'
+  ]
+]);
 const epistemicRelationshipGaps = [];
+const appliedEpistemicExceptions = [];
 for (const event of EVENTS) {
   for (const outcome of event.outcomes) {
     if (!epistemicCopy.test((outcome.messages ?? []).join(' '))) continue;
@@ -69,12 +76,18 @@ for (const event of EVENTS) {
         .filter(Boolean)
     );
     for (const npcId of targets) {
-      if (!hasKnowledgeRule(event.id, choiceId, outcome.id, npcId)) {
-        epistemicRelationshipGaps.push(`${event.id}:${choiceId}:${outcome.id}:${npcId}`);
-      }
+      if (hasKnowledgeRule(event.id, choiceId, outcome.id, npcId)) continue;
+      const key = `${event.id}:${choiceId}:${outcome.id}:${npcId}`;
+      const reason = reviewedEpistemicExceptions.get(key);
+      if (reason) appliedEpistemicExceptions.push({ key, reason });
+      else epistemicRelationshipGaps.push(key);
     }
   }
 }
+
+const staleEpistemicExceptions = [...reviewedEpistemicExceptions.keys()].filter(
+  key => !appliedEpistemicExceptions.some(exception => exception.key === key)
+);
 
 const npcs = NPC_CATALOG.map(npc => ({
   id: npc.id,
@@ -101,9 +114,11 @@ const report = {
   invalidKnowledgeRules,
   invalidKnowledgeRequirements,
   epistemicRelationshipGaps,
+  appliedEpistemicExceptions,
+  staleEpistemicExceptions,
   unreferencedNpcIds,
   npcs,
-  passed: NPC_CATALOG.length === 20 && unknownEventNpcRefs.length === 0 && unknownSeedNpcRefs.length === 0 && invalidKnowledgeRules.length === 0 && invalidKnowledgeRequirements.length === 0 && epistemicRelationshipGaps.length === 0
+  passed: NPC_CATALOG.length === 20 && unknownEventNpcRefs.length === 0 && unknownSeedNpcRefs.length === 0 && invalidKnowledgeRules.length === 0 && invalidKnowledgeRequirements.length === 0 && epistemicRelationshipGaps.length === 0 && staleEpistemicExceptions.length === 0
 };
 
 console.log(JSON.stringify(report, null, 2));
