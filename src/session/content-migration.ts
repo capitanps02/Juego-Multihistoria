@@ -46,6 +46,14 @@ export interface ContentMigrationRoute {
   seedOriginMappings?: readonly SeedOriginMigrationMapping[];
 }
 
+/**
+ * Compatibility evidence is validation-only. None of these event definitions are
+ * inserted into EventIndex or used for future scheduling.
+ *
+ * Future canonical batches may register additional immutable source identities
+ * here (normally through generated per-batch evidence modules) once those
+ * identities can exist in persisted saves.
+ */
 export const LEGACY_CONTENT_SOURCES: Readonly<Record<string, ContentEvidenceSource>> = {
   [PRE_T51_CONTENT_IDENTITY]: {
     contentIdentity: PRE_T51_CONTENT_IDENTITY,
@@ -56,8 +64,8 @@ export const LEGACY_CONTENT_SOURCES: Readonly<Record<string, ContentEvidenceSour
 };
 
 /**
- * Target-specific routes belong here once a canonical content batch changes EVENTS.
- * Keeping this empty while active content still equals the frozen pre-T5.1 catalog is intentional.
+ * Target-specific routes are appended by canonical content batches. Successive
+ * batches may form a lineage A -> B -> C; callers must resolve a unique path.
  */
 export const CONTENT_MIGRATION_ROUTES: readonly ContentMigrationRoute[] = [];
 
@@ -72,8 +80,53 @@ export function findMigrationRoute(
   return routes.find(route => route.sourceContentIdentity === sourceContentIdentity && route.targetContentIdentity === targetContentIdentity);
 }
 
-export function legacyContentSource(contentIdentity: string): ContentEvidenceSource | undefined {
-  return LEGACY_CONTENT_SOURCES[contentIdentity];
+/**
+ * Resolve exactly one acyclic migration path. Missing or ambiguous paths fail
+ * closed by returning undefined. Route declaration order never decides between
+ * competing histories.
+ */
+export function findMigrationPath(
+  sourceContentIdentity: string,
+  targetContentIdentity: string,
+  routes: readonly ContentMigrationRoute[] = CONTENT_MIGRATION_ROUTES
+): readonly ContentMigrationRoute[] | undefined {
+  if (sourceContentIdentity === targetContentIdentity) return [];
+
+  const outgoing = new Map<string, ContentMigrationRoute[]>();
+  for (const route of routes) {
+    const list = outgoing.get(route.sourceContentIdentity) ?? [];
+    list.push(route);
+    outgoing.set(route.sourceContentIdentity, list);
+  }
+
+  const found: ContentMigrationRoute[][] = [];
+  const walk = (current: string, path: ContentMigrationRoute[], visited: ReadonlySet<string>): void => {
+    if (found.length > 1) return;
+    for (const route of outgoing.get(current) ?? []) {
+      const nextIdentity = route.targetContentIdentity;
+      if (visited.has(nextIdentity)) continue;
+      const nextPath = [...path, route];
+      if (nextIdentity === targetContentIdentity) {
+        found.push(nextPath);
+        if (found.length > 1) return;
+        continue;
+      }
+      const nextVisited = new Set(visited);
+      nextVisited.add(nextIdentity);
+      walk(nextIdentity, nextPath, nextVisited);
+      if (found.length > 1) return;
+    }
+  };
+
+  walk(sourceContentIdentity, [], new Set([sourceContentIdentity]));
+  return found.length === 1 ? found[0] : undefined;
+}
+
+export function legacyContentSource(
+  contentIdentityValue: string,
+  sources: Readonly<Record<string, ContentEvidenceSource>> = LEGACY_CONTENT_SOURCES
+): ContentEvidenceSource | undefined {
+  return sources[contentIdentityValue];
 }
 
 export async function buildActiveEventEvidence(
@@ -134,6 +187,10 @@ export function applyMigrationRouteInPlace(state: GameState, route: ContentMigra
   }
 }
 
+export function applyMigrationPathInPlace(state: GameState, path: readonly ContentMigrationRoute[]): void {
+  for (const route of path) applyMigrationRouteInPlace(state, route);
+}
+
 /** Re-apply only scheduler semantics after resolving a preserved legacy pending scene. */
 export function applyPostLegacyResolutionRouteInPlace(state: GameState, eventId: string, route: ContentMigrationRoute): void {
   for (const mapping of route.schedulerMappings ?? []) {
@@ -149,4 +206,12 @@ export function applyPostLegacyResolutionRouteInPlace(state: GameState, eventId:
       if (mapping.clearCanonicalCooldown) delete state.eventCooldowns[mapping.canonicalEventId];
     }
   }
+}
+
+export function applyPostLegacyResolutionPathInPlace(
+  state: GameState,
+  eventId: string,
+  path: readonly ContentMigrationRoute[]
+): void {
+  for (const route of path) applyPostLegacyResolutionRouteInPlace(state, eventId, route);
 }
