@@ -283,7 +283,7 @@ test('T5.3/16 un NPC cuyo conocimiento caducó no puede seguir transmitiéndolo'
   assert.equal(npcKnows(state, 'NPC_CCH_01', 'EVT_18_PRE_001'), false);
 });
 
-test('T5.3/17 reaprender un hecho vigente solo puede reforzarlo, nunca degradarlo', () => {
+test('T5.3/17 reaprender la misma versión vigente solo puede reforzarla, nunca degradarla', () => {
   const state = createInitialState(117);
   state.date = '2026-07-01';
   const first = rememberNpcFactInPlace(state, 'NPC_PRS_01', {
@@ -297,7 +297,7 @@ test('T5.3/17 reaprender un hecho vigente solo puede reforzarlo, nunca degradarl
 
   state.date = '2026-07-20';
   const upgraded = rememberNpcFactInPlace(state, 'NPC_PRS_01', {
-    factId: 'T53_REINFORCED', eventId: 'T53_MANUAL', choiceId: 'SECOND', outcomeId: 'CONFIRMED',
+    factId: 'T53_REINFORCED', eventId: 'T53_MANUAL', choiceId: 'FIRST', outcomeId: 'HEARD',
     source: 'public', certainty: 90, memory: 'strong', relationshipMemory: true
   });
   assert.equal(upgraded.learnedAt, originalLearnedAt);
@@ -309,7 +309,7 @@ test('T5.3/17 reaprender un hecho vigente solo puede reforzarlo, nunca degradarl
 
   state.date = '2038-07-01';
   const weakRepeat = rememberNpcFactInPlace(state, 'NPC_PRS_01', {
-    factId: 'T53_REINFORCED', eventId: 'T53_MANUAL', choiceId: 'THIRD', outcomeId: 'RUMOR',
+    factId: 'T53_REINFORCED', eventId: 'T53_MANUAL', choiceId: 'FIRST', outcomeId: 'HEARD',
     source: 'informed', certainty: 20, memory: 'practical', expiresAfterDays: 1
   });
   assert.equal(weakRepeat.learnedAt, originalLearnedAt);
