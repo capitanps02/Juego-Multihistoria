@@ -29,6 +29,8 @@ export interface RememberNpcFactOptions {
   sourceNpcId?: string;
   relationshipMemory?: boolean;
   club?: string;
+  /** Historical reconciliation only; normal runtime learns on state.date. */
+  learnedAt?: string;
 }
 
 export interface InformNpcOptions {
@@ -195,6 +197,10 @@ export function rememberNpcFactInPlace(state: GameState, npcId: string, options:
   if (requestedExpiryDays !== undefined && (!Number.isInteger(requestedExpiryDays) || requestedExpiryDays <= 0)) {
     throw new Error(`Invalid NPC knowledge expiry: ${requestedExpiryDays}`);
   }
+  const learnedAt = options.learnedAt ?? state.date;
+  if (!isIsoDate(learnedAt) || learnedAt > state.date) {
+    throw new Error(`Invalid NPC knowledge acquisition date: ${learnedAt}`);
+  }
   const requestedCertainty = clamp(options.certainty ?? 100);
   const certainty = sourceRecord ? Math.min(requestedCertainty, sourceRecord.certainty) : requestedCertainty;
   const candidate: NpcKnowledgeRecord = {
@@ -202,13 +208,13 @@ export function rememberNpcFactInPlace(state: GameState, npcId: string, options:
     eventId: options.eventId,
     choiceId: options.choiceId,
     outcomeId: options.outcomeId,
-    learnedAt: state.date,
+    learnedAt,
     source: options.source,
     certainty,
     memory,
     club: options.club ?? state.club
   };
-  if (requestedExpiryDays !== undefined) candidate.expiresAfter = addDays(state.date, requestedExpiryDays);
+  if (requestedExpiryDays !== undefined) candidate.expiresAfter = addDays(learnedAt, requestedExpiryDays);
   if (options.sourceNpcId) candidate.sourceNpcId = options.sourceNpcId;
 
   const existing = getNpcKnowledgeRecord(state, npcId, options.factId);

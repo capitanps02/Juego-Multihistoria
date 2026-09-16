@@ -1,4 +1,5 @@
 import type { EventDefinition, GameState } from "../core/types.js";
+import { offerBridgeSpec } from "../narrative/offer-bridge.js";
 import { contentIdentity, eventFingerprintMap, journalSemanticsFingerprint } from "./content-identity.js";
 import {
   PRE_T51_CONTENT_IDENTITY,
@@ -6,12 +7,18 @@ import {
   type LegacyEventEvidence
 } from "./pre-t51-legacy-registry.js";
 import { POST_T51_CONTENT_SOURCES } from "./post-t51-legacy-registry.js";
+import {
+  FROZEN_OFFER_BRIDGE_SOURCES,
+  type FrozenOfferBridgeEventEvidence
+} from "./frozen-offer-bridge-evidence.js";
 
 export interface ContentEvidenceSource {
   contentIdentity: string;
   engineBuild: string;
   sessionVersions: readonly number[];
   events: Readonly<Record<string, LegacyEventEvidence>>;
+  /** Validation-only contractual semantics. Never scheduled. */
+  offerBridges?: Readonly<Record<string, FrozenOfferBridgeEventEvidence>>;
 }
 
 export interface SameSceneSchedulerMapping {
@@ -47,15 +54,23 @@ export interface ContentMigrationRoute {
   seedOriginMappings?: readonly SeedOriginMigrationMapping[];
 }
 
+const postLegacySourcesWithBridgeEvidence: Readonly<Record<string, ContentEvidenceSource>> = Object.fromEntries(
+  Object.entries(POST_T51_CONTENT_SOURCES).map(([identity, source]) => [identity, {
+    ...source,
+    offerBridges: FROZEN_OFFER_BRIDGE_SOURCES[identity] ?? {}
+  }])
+);
+
 /** Validation-only historical catalogs. They never join EventIndex or scheduling. */
 export const LEGACY_CONTENT_SOURCES: Readonly<Record<string, ContentEvidenceSource>> = {
   [PRE_T51_CONTENT_IDENTITY]: {
     contentIdentity: PRE_T51_CONTENT_IDENTITY,
     engineBuild: "0.8.0-t2.5",
     sessionVersions: [1, 2, 3],
-    events: PRE_T51_EVENT_EVIDENCE
+    events: PRE_T51_EVENT_EVIDENCE,
+    offerBridges: FROZEN_OFFER_BRIDGE_SOURCES[PRE_T51_CONTENT_IDENTITY] ?? {}
   },
-  ...POST_T51_CONTENT_SOURCES
+  ...postLegacySourcesWithBridgeEvidence
 };
 
 export const T51_B1A_CONTENT_IDENTITY = "1a8a5e2006fe7160f4fbc02060568d3abec99df038fe3a1a7799c8a0e802eac7";
@@ -195,6 +210,25 @@ export async function buildActiveEventEvidence(
   const evidence = Object.fromEntries(rows) as Readonly<Record<string, LegacyEventEvidence>>;
   activeEvidenceCache.set(identity, evidence);
   return evidence;
+}
+
+/** Build validation-only offer bridge semantics from the exact active definitions. */
+export function buildActiveOfferBridgeEvidence(
+  events: readonly EventDefinition[],
+  activeEvidence: Readonly<Record<string, LegacyEventEvidence>>
+): Readonly<Record<string, FrozenOfferBridgeEventEvidence>> {
+  const rows: Record<string, FrozenOfferBridgeEventEvidence> = {};
+  for (const event of events) {
+    const bridge = offerBridgeSpec(event);
+    if (!bridge) continue;
+    const evidence = activeEvidence[event.id];
+    if (!evidence) throw new Error(`Missing active evidence for offer bridge ${event.id}`);
+    rows[event.id] = {
+      eventFingerprint: evidence.fingerprint,
+      choiceActions: { ...bridge.choiceActions }
+    };
+  }
+  return rows;
 }
 
 function completedEventIds(state: GameState): Set<string> {
