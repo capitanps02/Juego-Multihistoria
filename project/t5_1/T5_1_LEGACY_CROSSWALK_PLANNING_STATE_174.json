@@ -7,29 +7,30 @@
     "principalLegacyExtras": 87,
     "conditionalLegacyExtras": 87,
     "principalAssignedToBatch": 87,
-    "principalFinalDispositionReviewed": 13,
-    "principalRetireTechnicalKeepHistoryOnly": 13,
-    "principalStillPendingDisposition": 74,
+    "principalFinalDispositionReviewed": 17,
+    "principalRetireTechnicalKeepHistoryOnly": 17,
+    "principalStillPendingDisposition": 70,
     "conditionalDispositionReviewed": 87,
     "conditionalRetireTechnicalKeepHistoryOnly": 86,
     "conditionalUnresolved": 1,
     "approvedSameSceneMigrationsAcrossAllLegacyExtras": 0,
-    "totalLegacyExtrasWithFinalReviewedDisposition": 99,
-    "totalStillBlockingFinalCrosswalk": 75
+    "totalLegacyExtrasWithFinalReviewedDisposition": 103,
+    "totalStillBlockingFinalCrosswalk": 71
   },
   "principal": {
     "inventory": "project/t5_1/T5_1_PRINCIPAL_LEGACY_EXTRA_87_INVENTORY.json",
     "canonicalCounterpartBatchManifest": "project/t5_1/T5_1_PRINCIPAL_87_BATCH_MANIFEST.json",
     "reviewedPr3LegacyExtras": "project/t5_1/T5_1_PR3_PRINCIPAL_LEGACY_DISPOSITIONS.json",
+    "reviewedPr7LegacyExtras": "project/t5_1/T5_1_PR7_PRINCIPAL_LEGACY_DISPOSITIONS.json",
     "reviewed30PlusTitleCandidates": "project/t5_1/T5_1_PRINCIPAL_TITLE_CANDIDATES_30_PLUS_DISPOSITIONS.json",
     "reviewed30PlusTitleCandidateDetail": "project/t5_1/T5_1_PRINCIPAL_TITLE_CANDIDATES_30_PLUS_REVIEW.md",
     "reviewedPr5TitleCandidates": "project/t5_1/T5_1_PRINCIPAL_TITLE_CANDIDATES_PR5_FINAL_DISPOSITIONS.json",
-    "state": "all assigned to responsible batch; PR #3 six extras and all seven exact-title candidates have final planning dispositions; remaining principal extras require batch semantic review",
+    "state": "all assigned to responsible batch; PR #3 six extras, PR #7 four extras and all seven exact-title candidates have final planning dispositions; remaining principal extras require batch semantic review",
     "exactTitleCandidatesBaseline": 7,
     "exactTitleCandidatesReviewed": 7,
     "exactTitleCandidatesApprovedSameScene": 0,
     "exactTitleCandidateRule": "title/concept/seed lineage may guide authoring but does not authorize history or pending-scene ID migration",
-    "blockingCount": 74
+    "blockingCount": 70
   },
   "conditional": {
     "inventoryAndDisposition": "project/t5_1/T5_1_CONDITIONAL_LEGACY_DISPOSITION_OVERLAY_87.json",
