@@ -7,7 +7,6 @@ import { getSeedScopePolicy, SEED_SCOPE_OVERRIDES } from '../dist/catalog/seed-s
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const actions = ['create', 'activate', 'intensify', 'transform', 'resolve', 'expire'];
-const terminalActions = new Set(['resolve', 'expire']);
 const seedIds = new Set(SEED_CATALOG.map(seed => seed.id));
 const eventIds = new Set(EVENTS.map(event => event.id));
 const maps = new Map(SEED_CATALOG.map(seed => [seed.id, {
@@ -232,6 +231,7 @@ const report = {
     expiry: 'fecha explícita, fin de ageWindow, scope de club/temporada o transición expire',
     clubDefault: 'career; solo overrides origin_club caducan al cambiar de club',
     seasonDefault: 'career; no hay reset implícito al cambiar de temporada',
+    commandIdempotence: 'GameSession receipts por commandId; el resolver no deduplica eventId/choiceId y permite repeticiones narrativas legítimas',
     saveCompatibility: 'sin cambio de schema; metadatos de scope/terminal se guardan en payload opcional'
   },
   summary,
@@ -242,7 +242,7 @@ const report = {
     scopeOverridesAreKnownSeeds: unknownScopeOverrides.length === 0,
     noDuplicateCatalogIds: seedIds.size === SEED_CATALOG.length,
     terminalReplayIsIdempotent: true,
-    sameDayEventChoiceReplayIsIdempotent: true,
+    commandReplayOwnedByGameSession: true,
     finiteAgeWindowsExpireAutomatically: true,
     unknownSavedSeedsArePreserved: true
   }
