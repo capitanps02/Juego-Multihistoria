@@ -10,8 +10,16 @@ export function serializeEventDefinition(event: EventDefinition): string {
   return JSON.stringify(event);
 }
 
+export function serializeJournalSemantics(title: string, choiceLabel: string, messages: readonly string[]): string {
+  return JSON.stringify([title, choiceLabel, messages]);
+}
+
 export async function eventFingerprint(event: EventDefinition): Promise<string> {
   return sha256Text(serializeEventDefinition(event));
+}
+
+export async function journalSemanticsFingerprint(title: string, choiceLabel: string, messages: readonly string[]): Promise<string> {
+  return sha256Text(serializeJournalSemantics(title, choiceLabel, messages));
 }
 
 export async function eventFingerprintMap(events: readonly EventDefinition[]): Promise<Map<string, string>> {
