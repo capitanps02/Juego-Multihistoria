@@ -1,0 +1,113 @@
+{
+  "task": "T5.1/T5.2 integration",
+  "scope": "30_34",
+  "generatedAt": "2026-09-16",
+  "branch": "t51/canon-30-34",
+  "sources": [
+    "analysis/T5.1/canon-30-34.json",
+    "analysis/T5.2/README.md",
+    "src/content/events/30_34/principal-events.ts",
+    "src/content/events/30_34/canonical-reimplementations.ts",
+    "src/content/events/30_34/canonical-reimplementations-31b.ts",
+    "src/content/events/30_34/canonical-reimplementations-32a.ts",
+    "src/content/events/30_34/canonical-reimplementations-33a.ts"
+  ],
+  "policy": {
+    "noArtificialClosures": true,
+    "onlyProvenConsumers": true,
+    "legacySeedsRemainCompatible": true,
+    "crossBlockReadersAreDependenciesNotInventedLinks": true
+  },
+  "stableIdReimplementations": 27,
+  "confirmedChains": [
+    {
+      "seed": "SEED_AGE30_CONTRACT",
+      "writer": "EVT_30_CON_001",
+      "readers": ["EVT_31_MKT_001", "EVT_32_CON_001"],
+      "kind": "same_block_deferred_consequence"
+    },
+    {
+      "seed": "SEED_MATCH_SELECTIVITY",
+      "writer": "EVT_30_BODY_001",
+      "readers": ["EVT_33_BODY_001"],
+      "kind": "same_block_deferred_consequence"
+    },
+    {
+      "seed": "SEED_NATIONAL_PHASEDOWN",
+      "writer": "EVT_30_NAT_001",
+      "readers": ["EVT_32_NAT_001"],
+      "kind": "same_block_deferred_consequence"
+    },
+    {
+      "seed": "SEED_CAPTAIN_HANDOVER",
+      "writer": "EVT_30_CAP_001",
+      "readers": ["EVT_33_CAP_001"],
+      "kind": "same_block_deferred_consequence"
+    },
+    {
+      "seed": "SEED_AGENT_LAST_CONTRACT",
+      "writer": "EVT_30_MKT_001",
+      "readers": ["EVT_31_AGT_001"],
+      "kind": "same_block_deferred_consequence"
+    },
+    {
+      "seed": "SEED_SURGERY_31",
+      "writer": "EVT_31_MED_001",
+      "readers": ["EVT_31_RETURN_001"],
+      "kind": "same_block_recovery_chain"
+    },
+    {
+      "seed": "SEED_HOME_RETURN_31",
+      "writer": "EVT_31_HOME_001",
+      "readers": ["EVT_32_HOME_001"],
+      "kind": "same_block_deferred_consequence"
+    }
+  ],
+  "inboundReads": [
+    {
+      "seed": "SEED_SURGERY_TIMING",
+      "reader": "EVT_31_MED_001",
+      "status": "cross_block_dependency",
+      "note": "Writer belongs outside the owned 30-34 canonical block; this workstream does not fabricate it."
+    },
+    {
+      "seed": "SEED_EARLY_HOME_RETURN",
+      "reader": "EVT_31_HOME_001",
+      "status": "cross_block_dependency",
+      "note": "Writer belongs outside the owned 30-34 canonical block; this workstream does not fabricate it."
+    }
+  ],
+  "openWithinStableSet": [
+    "SEED_LAST_BIG_MOVE_WINDOW",
+    "SEED_FAMILY_ANCHOR",
+    "SEED_RELOCATION_LIMIT",
+    "SEED_MEDICAL_AUTHORITY",
+    "SEED_FALSE_RESURGENCE",
+    "SEED_LAST_BIG_MOVE_31",
+    "SEED_SELF_REPRESENTATION_PREP",
+    "SEED_LEGACY_ACADEMY",
+    "SEED_COMEBACK_PACING",
+    "SEED_ROLE_REINVENTION_32",
+    "SEED_NEW_COACH_RESET",
+    "SEED_CLUB_NT_LOAD_TENSION",
+    "SEED_MANAGED_FINAL_ROLE",
+    "SEED_ROLLING_CONTRACT",
+    "SEED_HOME_CAPTAIN_OFFER",
+    "SEED_SELF_REPRESENTATION",
+    "SEED_FAN_LEGACY_BUFFER",
+    "SEED_FINAL_NT_SQUAD",
+    "SEED_72H_LIMIT",
+    "SEED_VETERAN_LEADERSHIP_FINAL",
+    "SEED_FINAL_FOUR_WAYS",
+    "SEED_AGE34_PRIORITY",
+    "SEED_RETIREMENT_PUBLIC_TONE",
+    "SEED_HOME_PULL_PUBLIC"
+  ],
+  "openWithinStableSetMeaning": "No reader is proven among the 27 stable-ID reimplementations. This is not evidence that the seed should be consumed or expired here; T5.2 policy forbids artificial closure.",
+  "retirementSafety": {
+    "publicRetirementToneSeed": "SEED_RETIREMENT_PUBLIC_TONE",
+    "terminalFlag": "EARLY_RETIRED_30_34",
+    "rule": "Creating or reading retirement-related memory must not set the terminal club-retirement flag unless the player explicitly chooses the terminal retirement action."
+  },
+  "integrationStatus": "compatible_pending_full_topology_audit"
+}
