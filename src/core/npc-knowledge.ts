@@ -192,11 +192,12 @@ export function informNpcOfEventInPlace(state: GameState, npcId: string, eventId
   const entry = latestHistoryEntry(state, eventId);
   if (!entry) throw new Error(`Cannot inform ${npcId} about unknown world fact ${eventId}`);
   const factId = options.factId ?? eventId;
+  const sourceRecord = options.sourceNpcId ? getNpcKnowledgeRecord(state, options.sourceNpcId, factId) : undefined;
   return rememberNpcFactInPlace(state, npcId, {
     factId,
-    eventId,
-    choiceId: entry.choiceId,
-    outcomeId: entry.outcomeId,
+    eventId: sourceRecord?.eventId ?? eventId,
+    choiceId: sourceRecord?.choiceId ?? entry.choiceId,
+    outcomeId: sourceRecord?.outcomeId ?? entry.outcomeId,
     source: options.source ?? "informed",
     certainty: options.certainty ?? 80,
     memory: options.memory ?? "temporary",
