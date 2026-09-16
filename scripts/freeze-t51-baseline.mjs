@@ -5,7 +5,7 @@ import { EVENTS } from '../dist/content/events/index.js';
 import { ENGINE_BUILD } from '../dist/core/build.js';
 import { SESSION_VERSION } from '../dist/session/game-session.js';
 import { CURRENT_SCHEMA_VERSION } from '../dist/save/save.js';
-import { CONTENT_MIGRATION_ROUTES, findMigrationRoute } from '../dist/session/content-migration.js';
+import { CONTENT_MIGRATION_ROUTES, findMigrationPath } from '../dist/session/content-migration.js';
 import { PRE_T51_CONTENT_IDENTITY } from '../dist/session/pre-t51-legacy-registry.js';
 import { evaluateT51FreezeTransition } from './t51-freeze-policy.mjs';
 
@@ -65,7 +65,7 @@ if (check) {
     frozenContentIdentity: existingManifest.contentIdentity,
     activeContentIdentity: contentIdentity,
     preT51ContentIdentity: PRE_T51_CONTENT_IDENTITY,
-    findRoute: (from, to) => findMigrationRoute(from, to, CONTENT_MIGRATION_ROUTES)
+    findRoute: (from, to) => findMigrationPath(from, to, CONTENT_MIGRATION_ROUTES)
   });
 
   console.log(JSON.stringify({
@@ -74,6 +74,7 @@ if (check) {
     frozenContentIdentity: existingManifest.contentIdentity,
     activeContentIdentity: contentIdentity,
     migrationRouteRegistered: transition.migrationRouteRegistered,
+    migrationPathLength: Array.isArray(transition.route) ? transition.route.length : transition.route ? 1 : 0,
     sourceGitCommit: existingManifest.sourceGitCommit,
     activeGitCommit: gitCommit
   }, null, 2));

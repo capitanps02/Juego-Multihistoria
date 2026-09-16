@@ -1,7 +1,7 @@
 import type { EventDefinition } from "../core/types.js";
 import type { DecisionContentProvenance, SessionSnapshot } from "./game-session.js";
 import { eventFingerprint, journalSemanticsFingerprint } from "./content-identity.js";
-import { buildActiveEventEvidence, legacyContentSource } from "./content-migration.js";
+import { buildActiveEventEvidence, legacyContentSource, type ContentEvidenceSource } from "./content-migration.js";
 import type { LegacyEventEvidence } from "./pre-t51-legacy-registry.js";
 import { assertGameState, boolean, date, ensure, integer, list, oneOf, parseSaveJson, record, string, strings, validateData } from "../save/validation.js";
 
@@ -9,15 +9,17 @@ export interface SessionValidationContext {
   events: readonly EventDefinition[];
   activeContentIdentity: string;
   activeEvidence?: Readonly<Record<string, LegacyEventEvidence>>;
+  contentSources?: Readonly<Record<string, ContentEvidenceSource>>;
 }
 
 function evidenceSource(
   contentIdentity: string,
   activeContentIdentity: string,
-  activeEvidence: Readonly<Record<string, LegacyEventEvidence>>
+  activeEvidence: Readonly<Record<string, LegacyEventEvidence>>,
+  contentSources?: Readonly<Record<string, ContentEvidenceSource>>
 ): Readonly<Record<string, LegacyEventEvidence>> | undefined {
   if (contentIdentity === activeContentIdentity) return activeEvidence;
-  return legacyContentSource(contentIdentity)?.events;
+  return legacyContentSource(contentIdentity, contentSources)?.events;
 }
 
 function provenance(value: unknown, path: string): DecisionContentProvenance {
@@ -97,7 +99,7 @@ export async function assertSessionSnapshot(value: unknown, context: SessionVali
   ensure(receipts.filter(x => record(x, "receipt").type === "choose").length === journal.length, "receipts", "faltan confirmaciones de decisiones");
 
   const activeEvidence = context.activeEvidence ?? await buildActiveEventEvidence(context.events, context.activeContentIdentity);
-  const legacyOrActiveForSnapshot = evidenceSource(s.contentIdentity, context.activeContentIdentity, activeEvidence);
+  const legacyOrActiveForSnapshot = evidenceSource(s.contentIdentity, context.activeContentIdentity, activeEvidence, context.contentSources);
   if ((s.sessionVersion as number) < 3) {
     ensure(legacyOrActiveForSnapshot, "contentIdentity", "identidad de contenido no registrada");
     for (let i = 0; i < journal.length; i++) {
@@ -110,7 +112,7 @@ export async function assertSessionSnapshot(value: unknown, context: SessionVali
     ensure(rows.length === state.history.length, "decisionProvenance", "la procedencia no coincide con el historial");
     for (let i = 0; i < rows.length; i++) {
       const p = provenance(rows[i], `decisionProvenance[${i}]`), h = state.history[i]!;
-      const source = evidenceSource(p.sourceContentIdentity, context.activeContentIdentity, activeEvidence);
+      const source = evidenceSource(p.sourceContentIdentity, context.activeContentIdentity, activeEvidence, context.contentSources);
       ensure(source, `decisionProvenance[${i}].sourceContentIdentity`, "fuente de contenido no registrada");
       const event = source[h.eventId];
       ensure(event && event.fingerprint === p.eventFingerprint, `decisionProvenance[${i}]`, "fingerprint o evento no corresponde a la fuente declarada");
@@ -133,7 +135,7 @@ export async function assertSessionSnapshot(value: unknown, context: SessionVali
       sourceIdentity = pp.sourceContentIdentity;
       expectedFingerprint = pp.eventFingerprint;
     }
-    const source = evidenceSource(sourceIdentity, context.activeContentIdentity, activeEvidence);
+    const source = evidenceSource(sourceIdentity, context.activeContentIdentity, activeEvidence, context.contentSources);
     ensure(source, "pendingDecision.provenance", "fuente de contenido no registrada");
     const evidence = source[e.id];
     ensure(evidence, "pendingDecision.event", "la escena no existe en la fuente declarada");
