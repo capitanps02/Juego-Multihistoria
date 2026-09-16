@@ -1,0 +1,45 @@
+{
+  "task": "T5.1 Batch 04A principal legacy semantic dispositions",
+  "generatedAt": "2026-09-16",
+  "batch": "04A",
+  "phase": "34_plus",
+  "age": 34,
+  "reviewed": 11,
+  "approvedSameSceneMigrations": 0,
+  "defaultDisposition": "retire_technical_keep_history_only",
+  "evidence": {
+    "runtime": "src/content/events/34_plus/principal-events.ts",
+    "canonical": "analysis/2026-09-11/t1/principal-traceability.json",
+    "structuralFinding": "All eleven age-34 runtime-only rows are produced by the same generic() adapter: retirement.status=playing, common generic body/intel, and the same A/B/C/D choices (protect role / accept adaptation / prioritize body / explore market). The canonical age-34 scenes use scene-specific gates, visible/uncertain information, decisions and seed memory. No same-scene identity is established."
+  },
+  "entries": [
+    {"legacyId":"EVT_34_PRE_001","decision":"retire_technical_keep_history_only","lineageCanonicalId":null,"reason":"Generic preseason maturity scene; canonical age-34 bridge is a concrete contract/role negotiation with SEED_AGE34_REALITY."},
+    {"legacyId":"EVT_34_MKT_001","decision":"retire_technical_keep_history_only","lineageCanonicalId":null,"reason":"Generic veteran-market scene; no unique same-scene canonical counterpart among age-34 missing identities."},
+    {"legacyId":"EVT_34_NAT_001","decision":"retire_technical_keep_history_only","lineageCanonicalId":"EVT_34_NT_001","reason":"Broad national-cycle lineage only; canonical scene has explicit NT standing/cycle gate and four national-availability choices plus SEED_FINAL_NT_POSTURE."},
+    {"legacyId":"EVT_34_TEAM_001","decision":"retire_technical_keep_history_only","lineageCanonicalId":null,"reason":"Generic generation-change team scene; canonical mentor/succession scenes have concrete private requests and memory contracts."},
+    {"legacyId":"EVT_34_FAM_001","decision":"retire_technical_keep_history_only","lineageCanonicalId":null,"reason":"Generic relocation/family row; no age-34 canonical same-scene proof."},
+    {"legacyId":"EVT_34_IMG_001","decision":"retire_technical_keep_history_only","lineageCanonicalId":null,"reason":"Generic image/status row; canonical age-34 legacy/dorsal/fan scenes have distinct triggers and decisions."},
+    {"legacyId":"EVT_34_MED_001","decision":"retire_technical_keep_history_only","lineageCanonicalId":"EVT_34_LOAD_001","reason":"Broad load/recovery lineage only; canonical 28-match plan uses MATCH_SELECTIVITY and four plan-specific choices with SEED_28_MATCH_PLAN."},
+    {"legacyId":"EVT_34_COM_001","decision":"retire_technical_keep_history_only","lineageCanonicalId":"EVT_34_MATCH_001","reason":"Broad sporting-resurgence lineage only; generic protect/adapt/body/market choices cannot stand in for the canonical match-specific dilemma."},
+    {"legacyId":"EVT_34_LEG_001","decision":"retire_technical_keep_history_only","lineageCanonicalId":"EVT_34_MENTOR_001","reason":"Broad legacy/mentoring lineage only; canonical video-review request has successor gate, relationship uncertainty and SEED_SUCCESSOR_ALLIANCE."},
+    {"legacyId":"EVT_34_END_001","decision":"retire_technical_keep_history_only","lineageCanonicalId":null,"reason":"Generic summer continuation row; no unique canonical identity and it must not become a hidden retirement/bridge substitute."},
+    {"legacyId":"EVT_34_PRS_001","decision":"retire_technical_keep_history_only","lineageCanonicalId":null,"reason":"Generic retirement-question press row; no unique same-scene canonical age-34 counterpart."}
+  ],
+  "representativeCanonicalContrasts": [
+    "EVT_34_BRIDGE_001: contract-active/negotiable gate, specific one-year/role/wait/exit choices, SEED_AGE34_REALITY + SEED_AGE34_PRIORITY",
+    "EVT_34_NT_001: NT_STANDING/cycle gate, national availability/retirement choices, SEED_FINAL_NT_POSTURE",
+    "EVT_34_LOAD_001: MATCH_SELECTIVITY gate, explicit 28-32 match plan choices, SEED_28_MATCH_PLAN",
+    "EVT_34_DORSAL_001: iconic-number/successor gate, explicit dorsal choices, SEED_FINAL_DORSAL",
+    "EVT_34_MENTOR_001: successor/private request, explicit mentoring boundaries, SEED_SUCCESSOR_ALLIANCE",
+    "EVT_34_TRAVEL_001: omitted-trip consequence, explicit travel choices, SEED_TEAM_WINS_WITHOUT_YOU + SEED_TRAVEL_LOAD"
+  ],
+  "migrationRules": {
+    "rewriteCompletedHistoryIds": false,
+    "rewritePendingIdsDirectly": false,
+    "manufactureCanonicalSeenFlags": false,
+    "rewriteHistoricalSeedOriginAutomatically": false,
+    "legacyCompatibilityMayResolvePendingOldChoiceContract": true,
+    "legacyCompatibilityDefinitionsMaySchedule": false
+  },
+  "status": "04A_LEGACY_REVIEW_COMPLETE"
+}
