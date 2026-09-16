@@ -1,0 +1,213 @@
+{
+  "task": "T5.1 principal legacy runtime-only inventory",
+  "generatedAt": "2026-09-16",
+  "source": "original T5_1_LEGACY_ID_CROSSWALK_TEMPLATE.json handoff artifact",
+  "baseline": "P1_MATRIZ_EVENTOS_v0.14.csv",
+  "count": 87,
+  "purpose": "Assign each baseline runtime-only principal ID to the batch responsible for semantic disposition. No mapping is approved by this inventory.",
+  "rules": {
+    "defaultDecision": "unresolved",
+    "exactTitleCandidateIsNotApprovedMapping": true,
+    "historyRewriteBeforeSameSceneProof": false,
+    "pendingDirectRewriteBeforeSameSceneProof": false,
+    "finalActiveCanonicalCatalogAllowsUnreviewedRuntimeOnlyPrincipal": false
+  },
+  "batches": [
+    {
+      "batch": "PR#3",
+      "phase": "20_23",
+      "count": 6,
+      "legacyIds": [
+        {"id":"EVT_20_MATCH_001","title":"Tres partidos que pesan más"},
+        {"id":"EVT_21_AGT_002","title":"Una llamada que no escuchaste"},
+        {"id":"EVT_21_ABR_001","title":"Navidad lejos"},
+        {"id":"EVT_21_CCH_001","title":"Un banquillo después de una promesa"},
+        {"id":"EVT_22_LIFE_001","title":"Tu entorno ya es una decisión"},
+        {"id":"EVT_22_END_001","title":"Cumples 23"}
+      ]
+    },
+    {
+      "batch": "PR#7",
+      "phase": "26_30",
+      "age": 26,
+      "count": 4,
+      "legacyIds": [
+        {"id":"EVT_26_IDN_001","title":"Ahora te compran por lo que ya eres"},
+        {"id":"EVT_26_CLB_001","title":"Ser la cara del proyecto"},
+        {"id":"EVT_26_PRS_001","title":"La entrevista del pico"},
+        {"id":"EVT_26_JAN_001","title":"Enero: comprar tu siguiente versión"}
+      ]
+    },
+    {
+      "batch": "PR#5",
+      "phase": "26_30",
+      "count": 3,
+      "legacyIds": [
+        {"id":"EVT_28_TEAM_001","title":"Dos estrellas, un foco","exactTitleCanonicalCandidate":"EVT_27_STAR_001"},
+        {"id":"EVT_28_GALA_001","title":"La gala","exactTitleCanonicalCandidate":"EVT_27_AWARD_001"},
+        {"id":"EVT_29_MKT_001","title":"La oferta financieramente absurda","exactTitleCanonicalCandidate":"EVT_28_RICH_001"}
+      ]
+    },
+    {
+      "batch": "02C",
+      "phase": "26_30",
+      "age": 27,
+      "count": 4,
+      "legacyIds": [
+        {"id":"EVT_27_REC_001","title":"El récord empieza a estar cerca"},
+        {"id":"EVT_27_RIV_001","title":"Otra vez comparados"},
+        {"id":"EVT_27_MENT_001","title":"¿Qué le dirías al de 19?"},
+        {"id":"EVT_27_FINAL_001","title":"La final empieza en el banquillo"}
+      ]
+    },
+    {
+      "batch": "02D",
+      "phase": "26_30",
+      "age": 28,
+      "count": 7,
+      "legacyIds": [
+        {"id":"EVT_28_PRS_001","title":"La presión pública para salir"},
+        {"id":"EVT_28_MONEY_001","title":"Tu dinero ya es una empresa"},
+        {"id":"EVT_28_IMG_001","title":"Tu marca ya no quiere llevar el escudo"},
+        {"id":"EVT_28_TACT_001","title":"Tu nueva posición"},
+        {"id":"EVT_28_FINAL_001","title":"Una final no garantiza protagonismo"},
+        {"id":"EVT_28_BODY_001","title":"La recuperación tarda un día más"},
+        {"id":"EVT_28_JAN_001","title":"El invierno del segundo gran proyecto"}
+      ]
+    },
+    {
+      "batch": "02E",
+      "phase": "26_30",
+      "age": 29,
+      "count": 8,
+      "legacyIds": [
+        {"id":"EVT_29_CCH_001","title":"El entrenador y tu poder"},
+        {"id":"EVT_29_FAN_001","title":"El estadio ya no está de acuerdo contigo"},
+        {"id":"EVT_29_MED_001","title":"Operarte ahora o convivir con ello"},
+        {"id":"EVT_29_NAT_001","title":"El brazalete de la selección"},
+        {"id":"EVT_29_EUR_001","title":"Sacrificar números para ganar"},
+        {"id":"EVT_29_REC_001","title":"El récord y el mal día del equipo"},
+        {"id":"EVT_29_HOME_001","title":"Volver antes de que sea una despedida"},
+        {"id":"EVT_29_FORM_001","title":"Tu primer bajón que no dura dos semanas"}
+      ]
+    },
+    {
+      "batch": "03A",
+      "phase": "30_34",
+      "age": 30,
+      "count": 5,
+      "legacyIds": [
+        {"id":"EVT_30_IDN_001","title":"La palabra veterano","exactTitleCanonicalCandidate":"EVT_30_BRIDGE_001"},
+        {"id":"EVT_30_AGT_001","title":"El incentivo del último gran contrato"},
+        {"id":"EVT_30_TEAM_001","title":"Tu dorsal ya tiene heredero"},
+        {"id":"EVT_30_LIFE_001","title":"Otra ciudad ya no cuesta lo mismo"},
+        {"id":"EVT_30_FINAL_001","title":"La gran noche desde otro rol"}
+      ]
+    },
+    {
+      "batch": "03B",
+      "phase": "30_34",
+      "ages": [31,32,33],
+      "count": 17,
+      "legacyIds": [
+        {"id":"EVT_31_REC_001","title":"Quinientos partidos"},
+        {"id":"EVT_31_MENT_001","title":"Mentor por contrato"},
+        {"id":"EVT_32_IMG_001","title":"La crisis de tu socio"},
+        {"id":"EVT_32_MKT_001","title":"La oferta que paga por tu nombre"},
+        {"id":"EVT_32_CLB_001","title":"Rotación en un candidato"},
+        {"id":"EVT_32_TACT_001","title":"Menos números, más juego"},
+        {"id":"EVT_32_TEAM_001","title":"Tu sustituto despega"},
+        {"id":"EVT_32_BODY_001","title":"El viaje pesa dos días"},
+        {"id":"EVT_32_BOS_001","title":"Enero con seis meses"},
+        {"id":"EVT_33_REC_001","title":"El récord o el descanso"},
+        {"id":"EVT_33_NAT_001","title":"El último torneo"},
+        {"id":"EVT_33_HOME_001","title":"Prometer Valdoria"},
+        {"id":"EVT_33_CON_001","title":"El contrato que puede ser el último"},
+        {"id":"EVT_33_MED_001","title":"Dolor sin imagen"},
+        {"id":"EVT_33_NET_001","title":"Una llamada de hace quince años"},
+        {"id":"EVT_33_RET_001","title":"Parar todavía siendo futbolista"},
+        {"id":"EVT_33_END_001","title":"A los 34, ¿qué estás protegiendo?"}
+      ]
+    },
+    {
+      "batch": "04A",
+      "phase": "34_plus",
+      "age": 34,
+      "count": 11,
+      "legacyIds": [
+        {"id":"EVT_34_PRE_001","title":"La pretemporada ya no es igual"},
+        {"id":"EVT_34_MKT_001","title":"Todavía llaman"},
+        {"id":"EVT_34_NAT_001","title":"La selección ya mira al siguiente ciclo"},
+        {"id":"EVT_34_TEAM_001","title":"El vestuario tiene otra generación"},
+        {"id":"EVT_34_FAM_001","title":"Mover a todos otra vez"},
+        {"id":"EVT_34_IMG_001","title":"Tu nombre vale más que algunos minutos"},
+        {"id":"EVT_34_MED_001","title":"La recuperación tarda un día más"},
+        {"id":"EVT_34_COM_001","title":"Una racha que nadie esperaba"},
+        {"id":"EVT_34_LEG_001","title":"Qué dejar en el vestuario"},
+        {"id":"EVT_34_END_001","title":"Otro verano por delante"},
+        {"id":"EVT_34_PRS_001","title":"Te preguntan cuánto te queda"}
+      ]
+    },
+    {
+      "batch": "04B",
+      "phase": "34_plus",
+      "age": 35,
+      "count": 10,
+      "legacyIds": [
+        {"id":"EVT_35_PRE_001","title":"Una pretemporada más corta"},
+        {"id":"EVT_35_OPT_001","title":"Opción unilateral"},
+        {"id":"EVT_35_ROLE_001","title":"Titular ya no significa siempre empezar"},
+        {"id":"EVT_35_NAT_001","title":"El último ciclo internacional"},
+        {"id":"EVT_35_MENT_001","title":"El joven quiere tu sitio y tu consejo"},
+        {"id":"EVT_35_MED_001","title":"El parte médico cambia el lenguaje"},
+        {"id":"EVT_35_PRS_001","title":"¿Te irás arriba?"},
+        {"id":"EVT_35_END_001","title":"Otra decisión de junio"},
+        {"id":"EVT_35_BUS_001","title":"El patrimonio empieza a hablar por ti"},
+        {"id":"EVT_35_CAP_001","title":"Capitán sin jugar todos los minutos"}
+      ]
+    },
+    {
+      "batch": "04C",
+      "phase": "34_plus",
+      "ages": [36,37,38],
+      "count": 10,
+      "legacyIds": [
+        {"id":"EVT_36_COM_001","title":"Volver a sentirte jugador"},
+        {"id":"EVT_36_MENT_001","title":"El vestuario ya te escucha distinto"},
+        {"id":"EVT_36_RICH_001","title":"Una última oferta enorme","exactTitleCanonicalCandidate":"EVT_38_RICH_001"},
+        {"id":"EVT_36_HOME_001","title":"Volver para competir, no para homenajes"},
+        {"id":"EVT_36_END_001","title":"Seguir no es automático"},
+        {"id":"EVT_37_PRE_001","title":"La pretemporada número veinte"},
+        {"id":"EVT_37_DERBY_001","title":"El derbi todavía importa"},
+        {"id":"EVT_37_PRIVATE_001","title":"Una conversación que no sale en prensa"},
+        {"id":"EVT_38_MKT_001","title":"El teléfono todavía suena"},
+        {"id":"EVT_38_CON_001","title":"Seis meses más"}
+      ]
+    },
+    {
+      "batch": "04D",
+      "phase": "34_plus",
+      "kind": "retirement",
+      "count": 2,
+      "legacyIds": [
+        {"id":"EVT_RET_HOME_001","title":"La conversación en casa","exactTitleCanonicalCandidate":"EVT_RET_FAM_001"},
+        {"id":"EVT_RET_LAST_001","title":"El último partido no está garantizado","exactTitleCanonicalCandidate":"EVT_RET_LASTMATCH_001"}
+      ]
+    }
+  ],
+  "exactTitleCandidates": [
+    {"legacyId":"EVT_28_TEAM_001","canonicalId":"EVT_27_STAR_001"},
+    {"legacyId":"EVT_28_GALA_001","canonicalId":"EVT_27_AWARD_001"},
+    {"legacyId":"EVT_29_MKT_001","canonicalId":"EVT_28_RICH_001"},
+    {"legacyId":"EVT_30_IDN_001","canonicalId":"EVT_30_BRIDGE_001"},
+    {"legacyId":"EVT_36_RICH_001","canonicalId":"EVT_38_RICH_001"},
+    {"legacyId":"EVT_RET_HOME_001","canonicalId":"EVT_RET_FAM_001"},
+    {"legacyId":"EVT_RET_LAST_001","canonicalId":"EVT_RET_LASTMATCH_001"}
+  ],
+  "totals": {
+    "entries": 87,
+    "assignedToBatch": 87,
+    "semanticDispositionApproved": 0,
+    "exactTitleCandidatesRequiringReview": 7
+  }
+}
