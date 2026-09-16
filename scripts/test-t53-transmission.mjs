@@ -75,3 +75,34 @@ test('T5.3 transmission: un NPC no puede declararse fuente de sí mismo', () => 
   );
   assert.equal(getNpcKnowledgeRecord(state, 'NPC_PLR_14', 'EVT_18_PRE_001')?.source, 'informed');
 });
+
+test('T5.3 transmission: NPC→NPC conserva la versión de la fuente y no consulta la verdad omnisciente', () => {
+  const state = createInitialState(123);
+  resolveChoiceInPlace(state, byId('EVT_18_PRE_001'), 'CALL_NANO');
+  const worldFact = state.history.at(-1);
+  assert.ok(worldFact);
+
+  const rivasVersion = rememberNpcFactInPlace(state, 'NPC_ACA_01', {
+    factId: 'EVT_18_PRE_001',
+    eventId: 'EVT_18_PRE_001',
+    choiceId: 'RUMORED_CHOICE',
+    outcomeId: 'RUMORED_OUTCOME',
+    source: 'reported',
+    certainty: 45,
+    memory: 'strong'
+  });
+  assert.notEqual(rivasVersion.choiceId, worldFact.choiceId);
+  assert.notEqual(rivasVersion.outcomeId, worldFact.outcomeId);
+
+  const coach = informNpcOfEventInPlace(state, 'NPC_CCH_01', 'EVT_18_PRE_001', {
+    source: 'reported',
+    sourceNpcId: 'NPC_ACA_01',
+    certainty: 90,
+    memory: 'strong'
+  });
+  assert.equal(coach.choiceId, rivasVersion.choiceId);
+  assert.equal(coach.outcomeId, rivasVersion.outcomeId);
+  assert.equal(coach.certainty, 45);
+  assert.notEqual(coach.choiceId, worldFact.choiceId);
+  assert.notEqual(coach.outcomeId, worldFact.outcomeId);
+});
