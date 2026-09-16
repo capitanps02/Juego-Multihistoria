@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { createInitialState } from '../dist/content/initial-state.js';
-import { expireDueSeedsInPlace, resolveChoiceInPlace } from '../dist/narrative/resolver.js';
+import { expireDueSeedsInPlace, resolveChoiceInPlace, syncSeedPresenceFlagsInPlace } from '../dist/narrative/resolver.js';
 import { loadSave, serializeSave } from '../dist/save/save.js';
 import { GameSession } from '../dist/session/game-session.js';
 
@@ -75,6 +75,14 @@ test('T5.2 inventario: las 210 seeds quedan trazadas sin referencias desconocida
   for (const category of ['promises','injuries','operations','conflicts','relationships','reputation','contracts','money','family','agent','club','selection','careerDecisions']) {
     assert.ok(Array.isArray(report.categoryCoverage[category]), `Falta cobertura ${category}`);
   }
+});
+
+test('T5.2 presencia: sincronizar limpia un HAS_SEED conocido sin instancia viva', () => {
+  const state = createInitialState(5200);
+  state.seeds = state.seeds.filter(seed => seed.id !== 'SEED_NANO_SHADOW');
+  state.flags.HAS_SEED_NANO_SHADOW = true;
+  syncSeedPresenceFlagsInPlace(state);
+  assert.equal(state.flags.HAS_SEED_NANO_SHADOW, false);
 });
 
 test('T5.2 creación y persistencia: create abre una única instancia viva y conserva memoria', () => {
