@@ -1,9 +1,9 @@
 {
-  "schemaVersion": 3,
+  "schemaVersion": 4,
   "workstream": "T5.1 canon 23-30",
   "repository": "capitanps02/Juego-Multihistoria",
   "branch": "t51/canon-23-30",
-  "baseMainSha": "d3dc842f9e6cc0397f1e95bed57b5259ecfd4877",
+  "baseMainSha": "24c176474bb17a8c271f52bac7bf41e08a929c72",
   "generatedAt": "2026-09-16",
   "authority": {
     "principals": "analysis/2026-09-11/t1/principal-traceability.json",
@@ -52,14 +52,23 @@
         "EVT_25_MKT_001", "EVT_25_NAT_001"
       ],
       "conditionalPlanning": {
-        "canonical": 20, "exactIds": 20, "runtimeOnlyIds": 0, "planningReviewed": 20,
-        "runtimeCertifiedFull": 0, "semanticRewriteRequired": 20, "conditionContradiction": ["CEVT_24_TOURN_02"]
+        "canonical": 20,
+        "exactIds": 20,
+        "runtimeOnlyIds": 0,
+        "planningReviewed": 20,
+        "runtimeCertifiedFull": 0,
+        "semanticRewriteRequired": 20,
+        "conditionContradiction": ["CEVT_24_TOURN_02"]
       }
     },
     "26_30": {
       "inventory": {
-        "canonicalPrincipals": 51, "enginePrincipals": 51, "literalIdMatches": 25,
-        "canonicalMissingIds": 26, "engineOnlyIds": 26, "engineConditionals": 24
+        "canonicalPrincipals": 51,
+        "enginePrincipals": 51,
+        "literalIdMatches": 25,
+        "canonicalMissingIds": 26,
+        "engineOnlyIds": 26,
+        "engineConditionals": 24
       },
       "needs_reimplementation": [
         "EVT_26_AGT_001", "EVT_26_BODY_001", "EVT_26_CON_001", "EVT_26_EUR_001", "EVT_26_HOME_001",
@@ -89,31 +98,52 @@
         "EVT_29_NAT_001", "EVT_29_REC_001"
       ],
       "conditionalPlanning": {
-        "canonical": 24, "exactIds": 5, "runtimeOnlyIds": 19, "planningReviewed": 24,
-        "runtimeCertifiedFull": 0, "semanticRewriteOrImplementationRequired": 24, "safeDirectSameSceneIdMigrations": 0
+        "canonical": 24,
+        "exactIds": 5,
+        "runtimeOnlyIds": 19,
+        "planningReviewed": 24,
+        "runtimeCertifiedFull": 0,
+        "semanticRewriteOrImplementationRequired": 24,
+        "safeDirectSameSceneIdMigrations": 0
       }
     }
   },
   "implementationBatches": {
     "T5.10": {
-      "status": "implemented_pr_open_ci_pending",
+      "status": "implemented_lineage_frozen_final_ci_pending",
       "pullRequest": 62,
       "events": ["EVT_23_BRIDGE_001", "EVT_23_AGT_001", "EVT_23_BODY_001"],
-      "sourceContentIdentity": "2e07efd2ea99c4e9ec4c2b20ae89664204f76db2c55a72d567208799c01bccff",
-      "targetContentIdentity": "5f6a871e4124498aab29903327739037a52b50e6505026bd95824d275d92eaae",
+      "preT51ContentIdentity": "2e07efd2ea99c4e9ec4c2b20ae89664204f76db2c55a72d567208799c01bccff",
+      "sourceContentIdentity": "1a8a5e2006fe7160f4fbc02060568d3abec99df038fe3a1a7799c8a0e802eac7",
+      "targetContentIdentity": "fee2ff875bac7979d3907f5ee1004ef736efa9a257237c6dee629dd8687fe136",
+      "migrationPath": [
+        "2e07efd2ea99c4e9ec4c2b20ae89664204f76db2c55a72d567208799c01bccff",
+        "1a8a5e2006fe7160f4fbc02060568d3abec99df038fe3a1a7799c8a0e802eac7",
+        "fee2ff875bac7979d3907f5ee1004ef736efa9a257237c6dee629dd8687fe136"
+      ],
+      "preToTargetShortcut": false,
       "schedulerMappings": 3,
       "migrationKind": "distinct_scene",
       "clearCanonicalSeen": true,
       "clearCanonicalCooldown": true,
       "seedOriginMappings": 0,
+      "targetEvidence": "qa/fixtures/t5.1/post-t51-sources/fee2ff875bac7979d3907f5ee1004ef736efa9a257237c6dee629dd8687fe136.json",
+      "targetEvidenceFrozen": true,
+      "postLegacyRegistryGenerated": true,
       "directedTests": "7/7 PASS",
-      "fullRegressionBeforeFinalReground": "PASS",
-      "latestRegroundAdds": "T5.2 OR-gate deferred-consumer audit plus HAS_SEED condition polarity",
+      "lineageAndMigrationTests": "16/16 PASS",
+      "routeCheck": "PASS",
+      "contentReferences": "PASS hardErrors=[]",
+      "lastFullRegression": "FAILED_ONLY_STALE_B1A_ACTIVE_IDENTITY_ASSERTION",
+      "staleB1aTestFix": "scripts/test-t51-b1a-intel.mjs now validates frozen B1a evidence and PRE->B1a route without requiring B1a to remain the active catalog",
+      "latestRegroundAdds": "T5.1 offer/session authority bridge on main@24c176474bb17a8c271f52bac7bf41e08a929c72",
       "notes": [
         "EVT_23_BRIDGE_001 no firma ni modifica contrato.",
-        "EVT_23_AGT_001 no crea oferta formal mediante efectos narrativos.",
+        "EVT_23_AGT_001 no crea oferta formal mediante efectos narrativos y queda subordinado a la autoridad integrada de ofertas/sesión.",
         "EVT_23_BODY_001 usa OR causal real: bodyLoad alto o SEED_BODY_PRECEDENT.",
-        "La migración preserva history/provenance y libera la supresión legacy SEEN/cooldown para las tres escenas.",
+        "B1a->C preserva history/provenance y libera SEEN/cooldown para las tres colisiones exact-ID reescritas.",
+        "PRE->C no existe: PRE migra por la ruta única PRE->B1a->C.",
+        "No se reescribe ningún originEvent de seed.",
         "No se inventa conocimiento del agente activo: la deuda epistemológica queda fail-closed para T5.3."
       ]
     }
@@ -140,12 +170,18 @@
   "currentBatchFiles": [
     "analysis/T5.1/canon-23-30.json",
     "project/workstreams/T51_CANON_23_30.md",
-    "scripts/test-t51-content-migration.mjs",
+    "qa/fixtures/t5.1/post-t51-sources/fee2ff875bac7979d3907f5ee1004ef736efa9a257237c6dee629dd8687fe136.json",
+    "scripts/test-t51-b1a-intel.mjs",
     "scripts/test-t51-t510-23-26.mjs",
     "src/content/events/23_26/index.ts",
     "src/content/events/23_26/t510-principal-events.ts",
-    "src/session/content-migration.ts"
+    "src/session/content-migration.ts",
+    "src/session/post-t51-legacy-registry.ts"
   ],
-  "temporaryWorkflowExcluded": ".github/workflows/t510-content-probe.yml",
+  "temporaryWorkflowsExcluded": [
+    ".github/workflows/t510-content-probe.yml",
+    ".github/workflows/t510-b1a-probe.yml",
+    ".github/workflows/t510-freeze-c.yml"
+  ],
   "nextImplementationBatches": {"23_26": "T5.11-T5.14", "26_30": "T5.15-T5.21"}
 }
