@@ -12,7 +12,8 @@ const localAdb = path.join(root, '.android-tools/sdk/platform-tools/adb');
 const sdkRoot = process.env.ANDROID_HOME || process.env.ANDROID_SDK_ROOT;
 const sdkAdb = sdkRoot ? path.join(sdkRoot, 'platform-tools', process.platform === 'win32' ? 'adb.exe' : 'adb') : null;
 const adb = fs.existsSync(localAdb) ? localAdb : (sdkAdb && fs.existsSync(sdkAdb) ? sdkAdb : 'adb');
-const apk = path.join(root, 'android/app/build/outputs/apk/debug/app-debug.apk');
+const defaultApk = path.join(root, 'android/app/build/outputs/apk/debug/app-debug.apk');
+const apk = process.argv[3] ? path.resolve(process.argv[3]) : defaultApk;
 const reportPath = path.join(root, 'analysis/2026-09-15/T3.4-physical-evidence.json');
 const call = (...args) => execFileSync(adb, ['-s', serial, ...args], {encoding: 'utf8', timeout: 120000});
 const prop = key => call('shell', 'getprop', key).trim();
@@ -26,6 +27,21 @@ const parsePackage = output => ({
   versionCode: output.match(/versionCode=(\d+)/)?.[1] ?? null
 });
 const firstLineMatching = (text, pattern) => text.split(/\r?\n/).map(line => line.trim()).find(line => pattern.test(line)) ?? null;
+const installedApkPath = output => output.split(/\r?\n/).map(line => line.trim()).find(line => line.startsWith('package:'))?.slice('package:'.length) || null;
+const installedSha256 = apkPath => {
+  if (!apkPath) return null;
+  try {
+    const output = call('shell', 'sha256sum', apkPath).trim();
+    return output.match(/^([0-9a-f]{64})\b/i)?.[1]?.toLowerCase() ?? null;
+  } catch {
+    try {
+      const output = call('shell', 'toybox', 'sha256sum', apkPath).trim();
+      return output.match(/^([0-9a-f]{64})\b/i)?.[1]?.toLowerCase() ?? null;
+    } catch {
+      return null;
+    }
+  }
+};
 
 const report = {
   pass: 'T3.4-physical-evidence',
@@ -75,7 +91,9 @@ try {
 
   const packageDump = call('shell', 'dumpsys', 'package', 'com.multihistoria');
   report.installedPackage = parsePackage(packageDump);
-  report.installedPackage.path = call('shell', 'pm', 'path', 'com.multihistoria').trim() || null;
+  const packagePathOutput = call('shell', 'pm', 'path', 'com.multihistoria').trim();
+  report.installedPackage.path = installedApkPath(packagePathOutput);
+  report.installedPackage.sha256 = installedSha256(report.installedPackage.path);
 
   if (fs.existsSync(apk)) {
     const bytes = fs.readFileSync(apk);
@@ -85,6 +103,10 @@ try {
       sha256: createHash('sha256').update(bytes).digest('hex')
     };
   }
+  report.installedPackage.matchesLocalCandidate = Boolean(
+    report.apk?.sha256 && report.installedPackage.sha256 && report.apk.sha256 === report.installedPackage.sha256
+  );
+  report.installedPackage.identityCheckAvailable = Boolean(report.apk?.sha256 && report.installedPackage.sha256);
 
   call('shell', 'am', 'force-stop', 'com.multihistoria');
   report.startup.cold = parseStartup(call('shell', 'am', 'start', '-W', '-n', 'com.multihistoria/.MainActivity'));
@@ -98,5 +120,11 @@ try {
 } finally {
   fs.mkdirSync(path.dirname(reportPath), {recursive: true});
   fs.writeFileSync(reportPath, JSON.stringify(report, null, 2) + '\n');
-  console.log(JSON.stringify({status: report.status, physicalDevice: report.physicalDevice, t34Closed: report.t34Closed, report: path.relative(root, reportPath)}));
+  console.log(JSON.stringify({
+    status: report.status,
+    physicalDevice: report.physicalDevice,
+    installedApkMatchesLocalCandidate: report.installedPackage.matchesLocalCandidate ?? false,
+    t34Closed: report.t34Closed,
+    report: path.relative(root, reportPath)
+  }));
 }
