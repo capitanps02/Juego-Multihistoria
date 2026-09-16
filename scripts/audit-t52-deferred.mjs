@@ -94,6 +94,13 @@ export function buildDeferredConsequenceReport(events = EVENTS, seeds = SEED_CAT
     collectConditions(event, event.gates, 'gate');
     collectConditions(event, event.exclusions, 'exclusion');
 
+    // Choice eligibility is a first-class runtime gate. A seed used only to expose one
+    // canonical option is still being consumed by behavior and must not be misclassified
+    // as metadata-only just because the event itself is schedulable without the seed.
+    for (const choice of event.choices ?? []) {
+      collectConditions(event, choice.eligibility, `choice:${choice.id}`);
+    }
+
     for (const outcome of event.outcomes) {
       collectConditions(event, outcome.conditions, `outcome:${outcome.id}`);
       for (const modifier of outcome.modifiers ?? []) {
@@ -226,7 +233,7 @@ export function buildDeferredConsequenceReport(events = EVENTS, seeds = SEED_CAT
     generatedAt: new Date().toISOString(),
     model: {
       purpose: 'prove necessary temporal feasibility for runtime producer→consumer seed chains without inventing canonical semantics',
-      consumerEvidence: 'runtime HAS_SEED_* conditions plus resolve/expire transitions; seedsRead-only metadata is reported separately',
+      consumerEvidence: 'runtime HAS_SEED_* conditions in events/outcomes/modifiers/choice eligibility plus resolve/expire transitions; seedsRead-only metadata is reported separately',
       ageExpiry: 'catalog max age is treated as terminal because expireDueSeedsInPlace expires live seeds when state.age > maxAge',
       chronology: 'a consumer must be schedulable at the same or later age than at least one producer occurrence',
       clubSeasonDate: 'reported as proof obligations, not inferred statically',
