@@ -2,18 +2,18 @@
 
 Branch: `presentation/android-playcanvas`  
 PR: #14 `presentation/android-playcanvas` → `main`  
-Estado PR: **DRAFT / pendiente del contrato público de Relaciones**.
+Estado PR: **DRAFT / pendiente del contrato público de Relaciones y de la evidencia física T3.4**.
 
 ## Estado ejecutivo
 
 - T3.1: cerrada.
 - T3.2: cerrada.
-- T3.3: cerrada técnicamente; paquete Android offline y APK reproducible disponibles.
+- T3.3: cerrada técnicamente; paquete Android offline y candidato APK verificable disponibles.
 - T3.4: **pendiente de evidencia en teléfono Android físico**. Emulador y CI no la cierran.
 - T4.6: flujo Inicio → Carrera → Mundo → Relaciones → Perfil → Tu partida revisado.
-- Base integrada y merge-base de la rama: `main@cd39dfc387713ee43cd5b80c34a0e32a0cc996c0`.
-- HEAD de código validado en CI: `f334a95942826e59ba33fb7a5e214ce0beadaa41`.
-- Diff contra `main`: **20 archivos**, todos dentro del perímetro presentación/Android/CI/documentación propia; `behind_by: 0` en la reconciliación.
+- Base integrada: `main@edfda9e2cd8b70a421491b8be31507745da0f59b` (T5.2 + T5.3).
+- HEAD de código validado en CI: `c865c74f1595509e4b24b19b257b1810a47b695f`.
+- Diff tras la reconciliación: **21 archivos**, todos dentro del perímetro presentación/Android/CI/documentación propia; `behind_by: 0`.
 
 ## Cambios de producto
 
@@ -42,13 +42,13 @@ No se muestra seed ID, RNG, flags internas, agendas/conocimiento secreto NPC ni 
 
 ## Contrato público de Relaciones / T5.3
 
-`PlayerView.contacts` sigue publicando las 20 identidades básicas del catálogo.
+T5.3 ya está **integrado en `main`** mediante `edfda9e2...`.
 
-PR #9 de T5.3 continúa abierto. Su propia frontera de presentación confirma que T5.3 protege `knowledge`, memoria y relaciones privadas, pero **no redefine unilateralmente qué NPC conoce el protagonista** y mantiene las 20 entradas de `contacts`.
+Su frontera de presentación mantiene deliberadamente `PlayerView.contacts` con las 20 identidades básicas del catálogo y declara fuera de alcance redefinir qué NPC conoce el protagonista. T5.3 sí protege conocimiento, memoria, transmisión causal y relaciones privadas, pero no añade una señal pública de introducción/conocimiento del protagonista.
 
-Por tanto, la UI todavía no dispone de una señal pública fiable para filtrar Relaciones. Presentación no inferirá esa condición desde memoria secreta, flags, seeds, `npcRefs` ni relaciones internas.
+Por tanto, la UI todavía no dispone de una señal pública fiable para filtrar Relaciones. Presentación no inferirá esa condición desde memoria secreta, flags, seeds, `npcRefs`, conocimiento NPC ni relaciones internas.
 
-Contrato esperado:
+Contrato todavía requerido:
 
 - `contacts` filtrado por el motor; o
 - un campo público equivalente como `knownContacts` / `introducedContacts`.
@@ -70,6 +70,84 @@ Se conserva:
 
 La versión instalada se obtiene con `PackageManager`; no depende de `BuildConfig`.
 
+## Evidencia de APK: artefacto firmado vs payload
+
+Los runs Android #29 y #30 demostraron una propiedad importante del build debug de CI: dos ejecuciones con el mismo payload podían producir SHA exactos distintos porque un runner limpio genera un certificado debug efímero nuevo. La comparación entrada a entrada mostró que la única diferencia era `META-INF/CERT.RSA`; `CERT.SF`, `MANIFEST.MF` y el resto del APK eran idénticos.
+
+No se ha introducido una clave privada fija en el repositorio.
+
+`scripts/build-android-apk.mjs` registra ahora dos huellas:
+
+1. `apk.sha256`: SHA-256 exacto del APK firmado de ese run;
+2. `apk.payloadSha256`: huella estable de los contenidos ZIP ordenados excluyendo únicamente contenedores de certificado `META-INF/*.RSA|*.DSA|*.EC`.
+
+`CERT.SF` y `MANIFEST.MF` **sí** forman parte del fingerprint estable. El workflow exige ambas huellas para considerar válido el candidato.
+
+Validación retrospectiva #29/#30 con esta política:
+
+- 196 entradas de payload;
+- única exclusión: `META-INF/CERT.RSA`;
+- `payloadSha256` idéntico: `48eee5e6c8683091f003063bd761819f04de984176bd36acee235f48fd55cbfb`.
+
+El cambio de payload posterior a T5.2/T5.3 es esperado y queda identificado por una huella nueva.
+
+## APK candidato del HEAD `c865c74f...`
+
+Workflow `Android presentation candidate` run **#34** (`35113965506`): **SUCCESS**.
+
+- versión: `0.8.0`, versionCode `1`;
+- tamaño: **8.547.466 bytes**;
+- SHA-256 exacto del APK firmado: `75151abe778e10137abd96e14f4b97658955c5f9ff9f263d2bdcfa40c894fbea`;
+- `payloadSha256`: `01cf73900bba00f54b9289c4ce84888d1be80cb28d053cf5e2f448fdaaf756c2`;
+- entradas incluidas en payload: **200**;
+- contenedor de firma excluido: `META-INF/CERT.RSA`;
+- SHA exacto y payload recalculados de forma independiente tras descargar el artefacto y coinciden con `analysis/2026-09-15/T3.3-apk-build.json`.
+
+ZIP de artefacto GitHub: `sha256:5ce8cee77d66cebbb8bafaa2f8e1ed25349d5bbfcc0737bbec824cc2e55bc548`.
+
+Este APK es candidato técnico para la prueba física; **no** constituye evidencia de T3.4 completada.
+
+## CI / QA del HEAD `c865c74f...`
+
+### Repository integrity
+
+Run **#516** (`35113965409`): **SUCCESS**.
+
+Pasan:
+
+- estructura del repositorio;
+- `npm ci`;
+- `npm test`, incluidos T5.2 handoff, T5.3 epistemic/transmission y baseline schema-8 de saves;
+- build T5;
+- freeze sentinel T5.1;
+- determinismo y aislamiento RNG;
+- límites de edad;
+- referencias de contenido;
+- carreras largas;
+- lifecycle audit;
+- probes cross-workstream;
+- simulación estratificada;
+- `qa:presentation` completo: presentación + PlayCanvas + Android offline.
+
+### Android presentation candidate
+
+Run **#34**: **SUCCESS**.
+
+Pasan:
+
+- regresión de presentación;
+- paquete Android offline;
+- compilación APK con Java 17 / Gradle 8.9 / API 35;
+- informe T3.3;
+- verificación de SHA exacto y `payloadSha256`;
+- publicación de artefactos de diagnóstico y candidato.
+
+## #22 · save baseline v8
+
+**RESUELTO / CERRADO. Ya no bloquea presentación.**
+
+`main` contiene la corrección del baseline v8 y el hardening que hace el gate v8 de solo lectura y bloquea el hash exacto del save comprometido. Presentación no modifica runtime de saves ni relaja tests.
+
 ## T3.4 · recolector físico no destructivo
 
 Comando:
@@ -90,64 +168,7 @@ El recolector:
 
 El gate `physical T3.4 evidence collection is hardware-only and non-destructive` pasa en CI.
 
-## APK candidato exacto del HEAD `f334a959...`
-
-Workflow `Android presentation candidate` run **#29** (`35112209256`): **SUCCESS**.
-
-- versión: `0.8.0`, versionCode `1`;
-- tamaño del APK: **8.540.096 bytes**;
-- SHA-256 del APK: `7356eb01f6e702e395f87612ff2e314799634d6703cb9794ccad656b2f68b23f`;
-- hash recalculado de forma independiente sobre el APK descargado de CI;
-- coincide exactamente con `analysis/2026-09-15/T3.3-apk-build.json`.
-
-El ZIP del artefacto de GitHub tiene digest `sha256:bb194784343cafd947fdb359e8b2e5ff3522f54484309668646f8c1c457b8d79`.
-
-Este APK es candidato técnico para la prueba física; **no** constituye evidencia de T3.4 completada.
-
-## CI / QA del HEAD `f334a959...`
-
-### Repository integrity
-
-Run **#474** (`35112209445`): **SUCCESS**.
-
-Pasan:
-
-- estructura del repositorio;
-- `npm ci`;
-- `npm test`, incluido baseline/schema-8 de saves;
-- build T5;
-- freeze sentinel T5.1;
-- determinismo y aislamiento RNG;
-- límites de edad;
-- referencias de contenido;
-- carreras largas;
-- lifecycle audit;
-- probes cross-workstream;
-- simulación estratificada;
-- `qa:presentation` completo: presentación + PlayCanvas + Android offline.
-
-### Android presentation candidate
-
-Run **#29**: **SUCCESS**.
-
-Pasan:
-
-- regresión de presentación;
-- paquete Android offline;
-- compilación APK con Java 17 / Gradle 8.9 / API 35;
-- informe T3.3;
-- verificación de SHA del APK;
-- publicación de artefactos de diagnóstico y candidato.
-
-## #22 · save baseline v8
-
-**RESUELTO / CERRADO. Ya no bloquea presentación.**
-
-`main` incorporó la corrección del baseline v8 y posteriormente el hardening `cd39dfc...`, que hace el gate v8 de solo lectura y bloquea el hash exacto del save comprometido. El workstream de presentación no modificó runtime de saves ni relajó tests.
-
-El resultado observable tras el re-ground es `npm test` + `Repository integrity` completamente verde.
-
-## Evidencia física pendiente
+### Evidencia física pendiente
 
 Para cerrar T3.4 aún hay que registrar en un teléfono real:
 
@@ -168,19 +189,20 @@ Para cerrar T3.4 aún hay que registrar en un teléfono real:
 
 - no se modifica canon narrativo;
 - no se editan `project/PLAN_PASADAS.md` ni `analysis/2026-09-11/plan-seguimiento.json`;
-- no se corrige save/lifecycle desde presentación;
-- no se incorpora código de PR T5.3 no mergeado;
+- no se corrige save/lifecycle/NPC memory desde presentación;
+- no se infiere conocimiento del protagonista desde estado privado;
 - no se hace merge desde este workstream.
 
 ## PR
 
 PR #14 permanece **DRAFT**.
 
-Situación tras `f334a959...`:
+Situación actual:
 
-1. ~~resolver #22 / save QA~~ → **resuelto y CI verde**;
-2. resolver el contrato público de contactos de Relaciones → **pendiente**;
-3. Android candidate sobre el código reconciliado → **verde**;
-4. T3.4 física → **sigue abierta y requiere hardware real**.
+1. save QA #22 → **resuelto**;
+2. integración T5.2/T5.3 en la rama → **resuelta y verde**;
+3. Android candidate con fingerprint de payload → **verde**;
+4. contrato público de contactos de Relaciones → **pendiente**;
+5. T3.4 física → **pendiente y requiere hardware real**.
 
 La deuda de seed fija de primera partida permanece **resuelta y validada**.
