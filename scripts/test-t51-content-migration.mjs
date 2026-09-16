@@ -256,6 +256,7 @@ test('mixed legacy and current history remains valid across migration, command c
   synthetic.cooldown = 0;
   synthetic.repeatable = false;
   synthetic.weight = 1_000_000;
+  synthetic.tags = ['hard_deadline'];
   synthetic.text = { title: 'Current catalog marker', body: 'Synthetic directed migration test event.' };
   synthetic.choices = [{ id: 'CONTINUE', label: 'Continue', intentTags: [], outcomeIds: ['DONE'] }];
   synthetic.outcomes = [{ id: 'DONE', baseWeight: 1, effects: [], messages: ['Current event resolved.'] }];
