@@ -17,11 +17,9 @@ Machine-readable assignment:
 - `project/t5_1/T5_1_PRINCIPAL_87_BATCH_MANIFEST.json`
 - `project/t5_1/T5_1_PRINCIPAL_LEGACY_EXTRA_87_INVENTORY.json`
 
-## Complete 87-ID canonical-side assignment
+## Complete canonical-side assignment
 
-Every baseline missing canonical principal ID is assigned to exactly one planned/active batch:
-
-| Batch | Status | Scope | IDs |
+| Batch | Status | Scope | Missing canonical IDs |
 |---|---|---:|---:|
 | PR #3 | READY | ages 20–23 | 6 |
 | PR #7 | READY | age 26 | 9 |
@@ -37,131 +35,133 @@ Every baseline missing canonical principal ID is assigned to exactly one planned
 | 04D | DRAFT | retirement principal IDs | 2 |
 | **Total** |  |  | **87** |
 
-Active PR coverage: **18**  
-Future DRAFT coverage: **69**  
-Total: **87**
+Every missing canonical principal ID and every runtime-only principal ID is assigned to exactly one responsible batch. Assignment is not semantic identity proof.
 
-The complementary 87 runtime-only principal IDs are also assigned to the batch responsible for deciding their semantic disposition. Assignment is not proof of same-scene identity.
+## Exact-title candidates — 7/7 reviewed
 
-## Prepared implementation contracts
+Approved same-scene migrations: **0/7**.
 
-Common principal rules:
-- `T5_1_PRINCIPAL_BATCH_IMPLEMENTATION_RULES.md`
-
-DRAFT task prompts:
-- `T5_1_02C_CODEX_PROMPT_DRAFT.md`
-- `T5_1_02D_CODEX_PROMPT_DRAFT.md`
-- `T5_1_02E_CODEX_PROMPT_DRAFT.md`
-- `T5_1_03A_CODEX_PROMPT_DRAFT.md`
-- `T5_1_03B_CODEX_PROMPT_DRAFT.md`
-- `T5_1_04A_CODEX_PROMPT_DRAFT.md`
-- `T5_1_04B_CODEX_PROMPT_DRAFT.md`
-- `T5_1_04C_CODEX_PROMPT_DRAFT.md`
-- `T5_1_04D_CODEX_PROMPT_DRAFT.md`
-- `T5_1_04E_CODEX_PROMPT_DRAFT.md`
-
-Conditional DRAFT prompts are separately prepared for 05A–05E.
-
-## Exact-title candidate review state — 7/7 complete
-
-Baseline exact-title candidates: **7**.  
-Reviewed: **7/7**.  
-Approved same-scene ID migrations: **0/7**.
-
-All seven runtime IDs have final planning disposition `retire_technical_keep_history_only`.
-
-This means:
-- implement the canonical scene under the canonical ID;
-- remove the technical predecessor from active canonical scheduling after replacement;
-- keep old completed history under the technical ID;
-- never translate `SEEN_old` into `SEEN_canonical` from title/concept similarity;
-- pending old content resolves through supported content-version compatibility only;
-- seed catalog origin metadata may move to the canonical creator for future content without relabeling the player's old historical origin unless a separate reviewed migration explicitly proves that fact.
+All seven legacy IDs have final planning disposition `retire_technical_keep_history_only`.
 
 Evidence:
 - `T5_1_PRINCIPAL_TITLE_CANDIDATES_30_PLUS_REVIEW.md`
 - `T5_1_PRINCIPAL_TITLE_CANDIDATES_30_PLUS_DISPOSITIONS.json`
 - `T5_1_PRINCIPAL_TITLE_CANDIDATES_PR5_FINAL_DISPOSITIONS.json`
 
-## Active-PR legacy dispositions
+Title/concept/seed lineage may guide implementation but never authorizes rewriting completed history, pending content or canonical `SEEN_*`.
 
-### PR #3 — 6/6 complete
+## Reviewed runtime-only principal dispositions
 
-`T5_1_PR3_PRINCIPAL_LEGACY_DISPOSITIONS.json`
+### PR #3 — 6/6
 
-All six runtime-only IDs are `retire_technical_keep_history_only`.
+Evidence: `T5_1_PR3_PRINCIPAL_LEGACY_DISPOSITIONS.json`.
 
-Important finding: `EVT_22_END_001` is not the functional 22→23 transition gate. `world-simulator.ts` derives phase from age. Its scheduler `budgetExempt` role is legacy narrative-priority plumbing; canonical `EVT_23_BRIDGE_001` is a different scene and should own any required start-of-phase narrative priority.
+All six = `retire_technical_keep_history_only`.
 
-### PR #7 — 4/4 complete
+Important finding: `EVT_22_END_001` does not drive the technical 22→23 phase transition; phase is age-derived. Its legacy scheduler priority must not be mistaken for canonical identity with `EVT_23_BRIDGE_001`.
 
-`T5_1_PR7_PRINCIPAL_LEGACY_DISPOSITIONS.json`
+### PR #7 — 4/4
 
-All four runtime-only age-26 IDs are `retire_technical_keep_history_only`:
-- `EVT_26_IDN_001`
-- `EVT_26_CLB_001`
-- `EVT_26_PRS_001`
-- `EVT_26_JAN_001`
+Evidence: `T5_1_PR7_PRINCIPAL_LEGACY_DISPOSITIONS.json`.
 
-Additional chronology finding:
-- baseline `SEED_PROJECT_FACE` points to technical `EVT_26_CLB_001`;
-- canonical traceability for existing `EVT_26_MKT_001` explicitly creates `SEED_PROJECT_FACE`;
-- PR #7 future seed catalog responsibility therefore includes this eleventh origin repair.
+All four age-26 extras = `retire_technical_keep_history_only`.
 
-PR #7 task scope has been tightened so it may remove false seed-writer responsibility from age-27/28 events but cannot retire IDs assigned to 02C/02D.
+PR #7 also owns the causal correction that future `SEED_PROJECT_FACE` originates from canonical `EVT_26_MKT_001`, not technical `EVT_26_CLB_001`. PR #7 may remove false seed-writer responsibility from later rows, but it must not retire IDs owned by 02C/02D.
 
-### PR #5 — 3/3 exact-title legacy candidates complete at planning level
+### PR #5 — 3/3 title candidates
 
-`T5_1_PRINCIPAL_TITLE_CANDIDATES_PR5_FINAL_DISPOSITIONS.json`
+Evidence: `T5_1_PRINCIPAL_TITLE_CANDIDATES_PR5_FINAL_DISPOSITIONS.json`.
 
-All three = `retire_technical_keep_history_only`; PR #5 remains blocked by PR #7 before implementation because seed chronology must settle first.
+All three = `retire_technical_keep_history_only`; implementation remains blocked by PR #7 seed chronology.
+
+### Batch 02C — 4/4
+
+Evidence:
+- `T5_1_02C_PRINCIPAL_LEGACY_REVIEW.md`
+- `T5_1_02C_PRINCIPAL_LEGACY_DISPOSITIONS.json`
+
+All four = `retire_technical_keep_history_only`; 0 aliases.
+
+The old age-27 rows are technical precursors/displaced causal writers, not the seven missing canonical age-27 scenes.
+
+### Batch 02D — 7/7
+
+Evidence:
+- `T5_1_02D_PRINCIPAL_LEGACY_REVIEW.md`
+- `T5_1_02D_PRINCIPAL_LEGACY_DISPOSITIONS.json`
+
+All seven = `retire_technical_keep_history_only`; 0 aliases.
+
+Key displaced writers:
+- `EVT_28_PRS_001` -> canonical age-27 `SEED_PUBLIC_EXIT_PRESSURE` owner;
+- `EVT_28_MONEY_001` -> age-27 `SEED_WEALTH_STRUCTURE` owner;
+- `EVT_28_IMG_001` -> age-27 `SEED_PERSONAL_BRAND_INDEPENDENCE` owner;
+- `EVT_28_TACT_001` -> age-27 `SEED_POSITIONAL_REINVENTION` owner;
+- `EVT_28_FINAL_001` -> age-26 `SEED_FINAL_BENCH` chain restored by PR #7.
+
+### Batch 02E — 8/8
+
+Evidence:
+- `T5_1_02E_PRINCIPAL_LEGACY_REVIEW.md`
+- `T5_1_02E_PRINCIPAL_LEGACY_DISPOSITIONS.json`
+
+All eight = `retire_technical_keep_history_only`; 0 aliases.
+
+They are displaced writers for canonical memories created at ages 27/28. None is one of the two missing canonical age-29 scenes (`EVT_29_TACT_001`, `EVT_29_NAT_002`). `EVT_29_FIN_001` remains sole owner of `SEED_AGE30_PRIORITY` / `world.age30Priority` hard-deadline responsibility.
 
 ## Current legacy-side disposition progress
 
 Runtime-only principal IDs: **87**.
 
-- final planning disposition reviewed: **17**;
-- reviewed `retire_technical_keep_history_only`: **17**;
+- final planning disposition reviewed: **36/87**;
+- reviewed `retire_technical_keep_history_only`: **36**;
 - approved direct same-scene migrations: **0**;
-- remaining principal legacy IDs requiring semantic disposition: **70**.
+- remaining principal legacy IDs requiring semantic disposition: **51**.
 
-See global crosswalk state:
-- `T5_1_LEGACY_CROSSWALK_PLANNING_STATE_174.json`.
+Global crosswalk:
+- `T5_1_LEGACY_CROSSWALK_PLANNING_STATE_174.json`;
+- total legacy final dispositions: **122/174** when the 86 resolved conditional legacy rows are included;
+- remaining global blockers: **52** = 51 principal + `CEVT_RET_RECONSIDER`.
 
 ## Causal chain ownership
 
-The batch sequence deliberately protects long-range state:
+The ordered batches deliberately protect long-range memory:
 
-- PR #7 / 02C / 03B: record chain 26 → 27 → 33
-- 02C / 02D / 03B: successor chain 27 → 28 → 31/32
-- 02C / 03B / 04B: agent/parallel negotiation → Bosman → age-35 January
-- PR #7 / 02D: documentary origin → age-28 consequence
-- 03A / 04A: dorsal/status → age-34 legacy/dorsal scene
-- 03B / 04A: travel/load → age-34 load/travel scenes
-- 02E / 03A: age-29 priority → age-30 bridge
-- 03B / 04A: age-33 priority → age-34 bridge
-- 04A–04C: career remains playable until explicit canonical retirement decisions handled in 04D
+- PR #7 / 02C / 03B: record chain 26 → 27 → 33;
+- 02C / 02D / 03B: successor chain 27 → 28 → 31/32;
+- 02C / 03B / 04B: agent parallel negotiation → Bosman → age-35 January;
+- PR #7 / 02D: documentary origin → age-28 fallout;
+- 02D / 03B: load and succession decisions into maturity;
+- 02E / 03A: age-29 priority → age-30 bridge;
+- 03A / 04A: dorsal/status → age-34 legacy/dorsal context;
+- 03B / 04A: travel/load → age-34 maturity context;
+- 03B / 04A: age-33 priority → age-34 bridge;
+- 04A–04C: career remains playable until explicit canonical retirement responsibility in 04D.
+
+## Save/content boundary
+
+The pre-T5.1 active catalog is now frozen in `main`, so future content migration has an exact legacy identity. The freeze does not authorize aliasing.
+
+For reviewed retire-history-only rows:
+- completed history keeps the legacy ID;
+- pending legacy choice contracts are preserved through supported compatibility or resume fails explicitly;
+- canonical `SEEN_*` is never synthesized;
+- future seed catalog ownership can move to the canonical creator without silently rewriting historical `seed.originEvent`;
+- compatibility-only definitions do not schedule.
 
 ## Retirement boundary
 
 Principal batches through 04C must not use age, low market, body pressure, peer retirement, farewell marketing, home return, lower leagues, short contracts or rich offers as implicit retirement decisions.
 
-04D owns terminal state-machine reconciliation. Current known blocker:
-- canonical conditional `CEVT_38_RETIREMENT_REVERSAL` vs monotonic retirement contract / `closed -> *` prohibition.
-
-`T5_1_CANON_DECISION_REQUIRED_RETIREMENT_REVERSAL.md` documents Option E as the current strongest source-fit planning recommendation while explicitly leaving it **unapproved** pending Pedro's decision.
+04D owns terminal FSM reconciliation. The unresolved canonical conflict remains `CEVT_38_RETIREMENT_REVERSAL`; Option E in `T5_1_CANON_DECISION_REQUIRED_RETIREMENT_REVERSAL.md` is a planning recommendation, not approved canon.
 
 ## Current status
 
-Planning completeness does **not** mean runtime completeness.
-
-- Canonical principal missing-ID assignment: **87/87 complete**
-- Runtime-only principal responsibility assignment: **87/87 complete**
-- Exact-title principal semantic dispositions: **7/7 complete**
-- Runtime-only principal final dispositions overall: **17/87 complete**
-- Future principal task prompts: **02C–04E prepared**
+- Canonical missing principal assignment: **87/87 complete**
+- Runtime-only principal ownership assignment: **87/87 complete**
+- Runtime-only principal final dispositions: **36/87 complete**
+- Exact-title candidates: **7/7 complete, 0 aliases**
 - Conditional semantic planning review: **134/134 complete**
-- Conditional task prompts: **05A–05E prepared**
 - Runtime T5.1 completion: **NOT_READY**
 
-The next executable item remains the first `READY` entry in `project/CODEX_QUEUE.md`; nothing here authorizes automatic Codex execution or merge.
+Queue authority remains `project/CODEX_QUEUE.md`. Nothing in this planning summary authorizes Codex execution or merge.
