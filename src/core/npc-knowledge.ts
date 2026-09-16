@@ -28,6 +28,7 @@ export interface RememberNpcFactOptions {
   expiresAfterDays?: number;
   sourceNpcId?: string;
   relationshipMemory?: boolean;
+  club?: string;
 }
 
 export interface InformNpcOptions {
@@ -106,7 +107,7 @@ export function rememberNpcFactInPlace(state: GameState, npcId: string, options:
     source: options.source,
     certainty: clamp(options.certainty ?? 100),
     memory,
-    club: state.club
+    club: options.club ?? state.club
   };
   if (expiryDays !== undefined) record.expiresAfter = addDays(state.date, expiryDays);
   if (options.sourceNpcId) record.sourceNpcId = options.sourceNpcId;
