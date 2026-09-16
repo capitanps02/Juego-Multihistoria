@@ -1,8 +1,33 @@
 plugins { id 'com.android.application' }
 dependencies { implementation 'androidx.webkit:webkit:1.12.1' }
 
+def releaseVersionCode = (project.findProperty('MULTIHISTORIA_VERSION_CODE') ?: System.getenv('MULTIHISTORIA_VERSION_CODE') ?: '1').toString().toInteger()
+def releaseVersionName = (project.findProperty('MULTIHISTORIA_VERSION_NAME') ?: System.getenv('MULTIHISTORIA_VERSION_NAME') ?: '0.8.0').toString()
+def signingKeys = ['MULTIHISTORIA_KEYSTORE_PATH', 'MULTIHISTORIA_KEYSTORE_PASSWORD', 'MULTIHISTORIA_KEY_ALIAS', 'MULTIHISTORIA_KEY_PASSWORD']
+def signingValues = signingKeys.collectEntries { key -> [(key): System.getenv(key)] }
+def releaseSigningReady = signingKeys.every { key -> signingValues[key] != null && !signingValues[key].trim().isEmpty() }
+def partialSigning = signingKeys.any { key -> signingValues[key] != null && !signingValues[key].trim().isEmpty() } && !releaseSigningReady
+if (partialSigning) throw new GradleException('Release signing configuration is incomplete. Provide all MULTIHISTORIA_KEYSTORE_* variables or none of them.')
+
 android { namespace 'com.multihistoria'; compileSdk 35
-    defaultConfig { applicationId 'com.multihistoria'; minSdk 23; targetSdk 35; versionCode 1; versionName '0.8.0'; testInstrumentationRunner 'com.multihistoria.OfflineProbe' }
-    buildTypes { release { minifyEnabled false; shrinkResources false; proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro' } }
+    defaultConfig { applicationId 'com.multihistoria'; minSdk 23; targetSdk 35; versionCode releaseVersionCode; versionName releaseVersionName; testInstrumentationRunner 'com.multihistoria.OfflineProbe' }
+    signingConfigs {
+        if (releaseSigningReady) {
+            release {
+                storeFile file(signingValues['MULTIHISTORIA_KEYSTORE_PATH'])
+                storePassword signingValues['MULTIHISTORIA_KEYSTORE_PASSWORD']
+                keyAlias signingValues['MULTIHISTORIA_KEY_ALIAS']
+                keyPassword signingValues['MULTIHISTORIA_KEY_PASSWORD']
+            }
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            shrinkResources false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            if (releaseSigningReady) signingConfig signingConfigs.release
+        }
+    }
     compileOptions { sourceCompatibility JavaVersion.VERSION_1_8; targetCompatibility JavaVersion.VERSION_1_8 }
 }
