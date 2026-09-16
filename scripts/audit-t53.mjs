@@ -1,4 +1,7 @@
-import { NPC_EVENT_KNOWLEDGE_RULES } from '../dist/catalog/npc-knowledge-rules.js';
+import {
+  NPC_EVENT_KNOWLEDGE_REQUIREMENTS,
+  NPC_EVENT_KNOWLEDGE_RULES
+} from '../dist/catalog/npc-knowledge-rules.js';
 import { NPC_CATALOG } from '../dist/catalog/npcs.js';
 import { SEED_CATALOG } from '../dist/catalog/seeds.js';
 import { EVENTS } from '../dist/content/events/index.js';
@@ -33,6 +36,13 @@ for (const rule of NPC_EVENT_KNOWLEDGE_RULES) {
   }
 }
 
+const invalidKnowledgeRequirements = [];
+for (const requirement of NPC_EVENT_KNOWLEDGE_REQUIREMENTS) {
+  if (!eventIds.has(requirement.eventId)) invalidKnowledgeRequirements.push(`${requirement.eventId}:unknown-callback`);
+  if (!npcIds.has(requirement.npcId)) invalidKnowledgeRequirements.push(`${requirement.eventId}:${requirement.npcId}:unknown-npc`);
+  if (!eventIds.has(requirement.factId)) invalidKnowledgeRequirements.push(`${requirement.eventId}:${requirement.factId}:unknown-fact-event`);
+}
+
 const npcs = NPC_CATALOG.map(npc => ({
   id: npc.id,
   name: npc.name,
@@ -40,7 +50,8 @@ const npcs = NPC_CATALOG.map(npc => ({
   initialClub: npc.initialClub,
   eventIds: EVENTS.filter(event => event.npcRefs?.includes(npc.id)).map(event => event.id),
   seedIds: SEED_CATALOG.filter(seed => seed.npcRefs?.includes(npc.id)).map(seed => seed.id),
-  knowledgeRuleEvents: [...new Set(NPC_EVENT_KNOWLEDGE_RULES.filter(rule => rule.npcIds.includes(npc.id)).map(rule => rule.eventId))]
+  knowledgeRuleEvents: [...new Set(NPC_EVENT_KNOWLEDGE_RULES.filter(rule => rule.npcIds.includes(npc.id)).map(rule => rule.eventId))],
+  knowledgeRequiredForEvents: NPC_EVENT_KNOWLEDGE_REQUIREMENTS.filter(rule => rule.npcId === npc.id).map(rule => rule.eventId)
 }));
 
 const unreferencedNpcIds = npcs.filter(npc => npc.eventIds.length === 0 && npc.seedIds.length === 0).map(npc => npc.id);
@@ -51,12 +62,14 @@ const report = {
   eventCount: EVENTS.length,
   seedCount: SEED_CATALOG.length,
   knowledgeRuleCount: NPC_EVENT_KNOWLEDGE_RULES.length,
+  knowledgeRequirementCount: NPC_EVENT_KNOWLEDGE_REQUIREMENTS.length,
   unknownEventNpcRefs,
   unknownSeedNpcRefs,
   invalidKnowledgeRules,
+  invalidKnowledgeRequirements,
   unreferencedNpcIds,
   npcs,
-  passed: NPC_CATALOG.length === 20 && unknownEventNpcRefs.length === 0 && unknownSeedNpcRefs.length === 0 && invalidKnowledgeRules.length === 0
+  passed: NPC_CATALOG.length === 20 && unknownEventNpcRefs.length === 0 && unknownSeedNpcRefs.length === 0 && invalidKnowledgeRules.length === 0 && invalidKnowledgeRequirements.length === 0
 };
 
 console.log(JSON.stringify(report, null, 2));
