@@ -1,6 +1,7 @@
 import { conditionsPass } from "../core/conditions.js";
 import type { Condition, EventDefinition, GameState } from "../core/types.js";
 import { narrativeConditionRoot } from "../simulation/club-contract-intent.js";
+import { lockerLeadershipFacts } from "../simulation/locker-leadership.js";
 
 /**
  * Optional event-level OR contract.
@@ -23,8 +24,17 @@ export function gateAlternatives(event: EventDefinition): Condition[][] | undefi
   return (event as EventWithGateAlternatives).gateAlternatives;
 }
 
+function narrativeGateRoot(state: GameState): ReturnType<typeof narrativeConditionRoot> & {
+  facts: ReturnType<typeof narrativeConditionRoot>["facts"] & ReturnType<typeof lockerLeadershipFacts>;
+} {
+  const contractRoot = narrativeConditionRoot(state);
+  return Object.assign({}, contractRoot, {
+    facts: Object.assign({}, contractRoot.facts, lockerLeadershipFacts(state))
+  });
+}
+
 export function eventGatesPass(state: GameState, event: EventDefinition): boolean {
-  const root = narrativeConditionRoot(state);
+  const root = narrativeGateRoot(state);
   if (!conditionsPass(root, event.gates)) return false;
 
   const alternatives = gateAlternatives(event);
