@@ -1,31 +1,29 @@
 {
-  "schemaVersion": 3,
+  "schemaVersion": 4,
   "workstream": "T5.1 Agent 11 18-20 B1b migration handoff",
   "generatedAt": "2026-09-16",
   "sourceMainSha": "6cb81b63f03ce55776ca97075012cfaa22ac228d",
   "sourceContentIdentity": "88751a2107c035826162968991e3a1808b2f4573afa3a3a20a3efa376fa8af1f",
-  "observedRuntimeHead": "f2638d1733ddc7988891d90ae688064d004816a5",
   "observedTargetContentIdentity": "f64a32e02cf3746b83a7d084e999ed987f1a27951bc1dc60d8b252b463c90d52",
   "targetIdentityEvidence": {
-    "workflowRun": 35152954048,
-    "workflowJob": 104985499338,
-    "source": "Repository Integrity on PR #111 after synchronizing main@6cb81b63f03ce55776ca97075012cfaa22ac228d; freeze-t51-active-source --check reported the exact active catalog identity after build.",
-    "rule": "Recalculate after any further re-ground or composition change. Documentation/test-only commits after the observed runtime head do not change EVENTS identity, but any active event-definition change does."
+    "source": "Repository Integrity freeze-t51-active-source --check on PR #111 after synchronizing main@6cb81b63f03ce55776ca97075012cfaa22ac228d.",
+    "rule": "Recalculate after any re-ground or active event-definition composition change. Analysis/test-only commits do not change EVENTS identity."
   },
   "focusedValidation": {
-    "workflowRun": 35152954039,
+    "head": "45ad1d75dc9bb6eba1991f1996c56e181b97d74d",
+    "workflowRun": 35153651338,
     "result": "success",
     "coverage": [
       "TypeScript build",
-      "Agent 11 EVT_18_PRS_002 focused regressions",
-      "Agent 11 EVT_19_SUM_001 acute-injury gate regressions",
-      "shared gateAlternatives OR contract"
-    ],
-    "followup": "The branch additionally contains a focused hypothetical same_scene migration regression; integration should require its latest workflow run to pass before consuming this handoff."
+      "EVT_18_PRS_002 Clara/public-heat OR regressions",
+      "EVT_19_SUM_001 acute-injury gate regressions",
+      "shared gateAlternatives OR contract",
+      "same_scene scheduler migration regression for both repaired IDs"
+    ]
   },
   "repositoryIntegrity": {
-    "workflowRun": 35152954048,
-    "workflowJob": 104985499338,
+    "head": "45ad1d75dc9bb6eba1991f1996c56e181b97d74d",
+    "workflowRun": 35153651479,
     "result": "expected_content_freeze_failure",
     "passedBeforeSentinel": [
       "TypeScript build",
@@ -50,7 +48,11 @@
   },
   "invariants": {
     "approvedAliases": [],
-    "approvedSameSceneMappings": [],
+    "sameSceneMappingsProposed": [
+      "EVT_18_PRS_002",
+      "EVT_19_SUM_001"
+    ],
+    "finalMappingApprovalOwner": "coordination/integration",
     "unknownIdentityAccepted": false,
     "legacyHistoryRewrittenAsCanonical": false,
     "legacyPendingReboundToNewDefinition": false,
@@ -69,40 +71,41 @@
       "EVT_19_SUM_001"
     ],
     "journalDecisionSemanticsChanged": [],
-    "sameSceneMappingsCandidate": [
-      {
-        "legacyEventId": "EVT_18_PRS_002",
-        "canonicalEventId": "EVT_18_PRS_002",
-        "evidence": "Only reachability metadata changes; title, choices, outcomes, effects, seeds, NPC refs and journal messages are byte-equivalent after stripping gates/gateAlternatives. A player who already resolved this decision must not be offered it again."
-      },
-      {
-        "legacyEventId": "EVT_19_SUM_001",
-        "canonicalEventId": "EVT_19_SUM_001",
-        "evidence": "Only the missing acute-injury gate is added; the complete decision and journal semantics are unchanged. A historical resolution remains the same scene and must continue to suppress repetition."
-      }
-    ],
     "schedulerMappingsCandidate": [
       {
         "kind": "same_scene",
         "legacyEventId": "EVT_18_PRS_002",
-        "canonicalEventId": "EVT_18_PRS_002"
+        "canonicalEventId": "EVT_18_PRS_002",
+        "reason": "Only reachability changes; all player-facing decision/journal semantics are preserved."
       },
       {
         "kind": "same_scene",
         "legacyEventId": "EVT_19_SUM_001",
-        "canonicalEventId": "EVT_19_SUM_001"
+        "canonicalEventId": "EVT_19_SUM_001",
+        "reason": "Only the missing acute-injury prerequisite is added; the decision/journal semantics are preserved."
       }
     ],
     "seedOriginMappingsCandidate": [],
-    "pendingPolicy": "Preserve any already-pending source-88751a definition using its frozen source definition and fingerprint. Do not silently rebound a pending EVT_18_PRS_002 or EVT_19_SUM_001 decision to the repaired active definition. After resolving that preserved pending source scene, same_scene scheduler semantics should mark the active ID as SEEN rather than releasing it for a duplicate decision.",
-    "historyPolicy": "Existing source-88751a history remains source-88751a provenance/fingerprint. Scheduler equivalence does not rewrite the historical definition; it only preserves the fact that the player already resolved the same narrative decision.",
-    "routeSemantics": "The event-definition fingerprints change because eligibility changes, but the player-facing decision/journal semantics do not. Exact string-ID equality alone is not the proof: the overlay regressions prove that all non-gate event semantics are unchanged. Therefore same_scene is the safe scheduler candidate; distinct_scene would incorrectly permit duplicate scenes. Final approval remains with coordination/integration."
+    "pendingPolicy": "Preserve an already-pending source-88751a definition using its frozen source definition/fingerprint. Do not silently rebound pending exact-ID content to the repaired active definition. After resolving the preserved pending scene, same_scene scheduler semantics keep the active equivalent scene suppressed.",
+    "historyPolicy": "Existing source-88751a history retains its original provenance/fingerprint. same_scene equivalence preserves completion without rewriting historical content.",
+    "routeSemantics": "The fingerprints change because eligibility/reachability changes, not because a new player-facing decision replaces the old one. The focused regressions prove non-gate semantics are unchanged, so distinct_scene would incorrectly permit duplicate decisions."
+  },
+  "remainingBacklogEvidence": {
+    "blockerMatrix": "analysis/T5.1/agent11-18-20-blocker-matrix.json",
+    "principalRowsStillBlocked": 7,
+    "conditionalRowsStillBlocked": 9,
+    "prioritySharedContracts": [
+      "age-18 authoritative market alternatives/offers",
+      "competition/match context facts",
+      "canonical coach-continuity fact",
+      "seed-to-function adapters for 18-20 conditionals"
+    ]
   },
   "deferredWork": {
-    "EVT_18_JAN_001": "Choice eligibility requires authoritative real loan and buyer availability facts. Current main exposes no production fact that proves those age-18 alternatives exist; marketHeat is not a substitute.",
-    "EVT_18_SUM_001": "REQUEST_EXIT eligibility requires an authoritative actual-offer fact for the age-18 summer. Current main exposes no demonstrated age-18 offer materialization path suitable for this canonical gate.",
-    "CEVT_19_SOCIAL_01": "Canonical OR requires NIGHT_PHOTO or high exposure plus a causal recent-conflict predicate. No exact recent-conflict product state has yet been proven safe to use.",
-    "CEVT_18_EARLY_01": "The current EARLY_BREAKOUT writer adds form>=60 plus a football RNG materialization. Audit explicitly marks those as extra restrictions. Repairing the writer would alter simulation RNG sequencing; bypassing it with an approximate direct gate would not prove goal/assist routes. Keep blocked until a deterministic canonical breakout fact is defined.",
-    "other18_20": "Remaining candidates require match context, calendar context, coach-status semantics or seed-driven functions that are not safely represented by an already-authoritative fact. They must not be approximated with unrelated heat/role flags."
+    "EVT_18_JAN_001": "LOAN/TRANSFER require authoritative real alternatives; marketHeat is not an offer.",
+    "EVT_18_SUM_001": "REQUEST_EXIT requires an authoritative actual offer before the decision.",
+    "CEVT_19_SOCIAL_01": "Canonical OR requires NIGHT_PHOTO or high exposure plus a causal recent-conflict fact.",
+    "CEVT_18_EARLY_01": "Current EARLY_BREAKOUT adds form>=60 and football RNG materialization; changing that without a canonical breakout fact would alter causal/RNG semantics.",
+    "other18_20": "Remaining candidates depend on match/calendar/competition/coach facts or real seed consumers documented in the blocker matrix."
   }
 }
