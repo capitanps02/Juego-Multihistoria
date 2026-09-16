@@ -11,6 +11,7 @@ const indexSource = fs.readFileSync('src/content/events/30_34/index.ts', 'utf8')
 const overrideSource = fs.readFileSync('src/content/events/30_34/canonical-reimplementations.ts', 'utf8');
 const override31bSource = fs.readFileSync('src/content/events/30_34/canonical-reimplementations-31b.ts', 'utf8');
 const override32aSource = fs.readFileSync('src/content/events/30_34/canonical-reimplementations-32a.ts', 'utf8');
+const override33aSource = fs.readFileSync('src/content/events/30_34/canonical-reimplementations-33a.ts', 'utf8');
 const state34Source = fs.readFileSync('src/simulation/state34-classifier.ts', 'utf8');
 const schedulerSource = fs.readFileSync('src/narrative/scheduler.ts', 'utf8');
 const byId = new Map(EVENTS.map(event => [event.id, event]));
@@ -21,7 +22,8 @@ const reimplementedIds = [
   'EVT_31_MED_001','EVT_31_MKT_001','EVT_31_HOME_001','EVT_31_AGT_001',
   'EVT_31_LEGACY_001','EVT_31_RETURN_001','EVT_31_TACT_001','EVT_31_CCH_001',
   'EVT_31_NAT_001','EVT_31_FINAL_001',
-  'EVT_32_CON_001','EVT_32_HOME_001','EVT_32_AGT_001','EVT_32_FAN_001','EVT_32_NAT_001'
+  'EVT_32_CON_001','EVT_32_HOME_001','EVT_32_AGT_001','EVT_32_FAN_001','EVT_32_NAT_001',
+  'EVT_33_BODY_001','EVT_33_CAP_001','EVT_33_MKT_001','EVT_33_PRS_001'
 ];
 
 const assertCanonicalCases = (cases) => {
@@ -63,6 +65,7 @@ test('T5.1 30-34 clasifica todo el inventario sin aliases silenciosos', () => {
   assert.equal(veteranReport.counts.engineOnlyNoncanonical, 5);
   assert.equal((principalSource.match(/\{id:"EVT_/g) ?? []).length, 50);
   assert.equal(veteranReport.implementationProgress.count,reimplementedIds.length);
+  assert.equal(veteranReport.implementationProgress.safeStableIdSetComplete,true);
   assert.deepEqual([...veteranReport.implementationProgress.stableIdReimplemented].sort(),[...reimplementedIds].sort());
 
   const statuses = new Set(['verified_same_identity', 'approved_alias', 'needs_reimplementation', 'canonical_missing', 'requires_manual_review']);
@@ -74,7 +77,7 @@ test('T5.1 30-34 clasifica todo el inventario sin aliases silenciosos', () => {
 
 test('T5.1 30-34 no presenta reimplementaciones parciales como canon verificado', () => {
   assert.match(indexSource, /canonStatus:"technical_adaptation"/);
-  assert.equal(reimplementedIds.length,23);
+  assert.equal(reimplementedIds.length,27);
   for (const id of reimplementedIds) {
     const event = byId.get(id);
     assert.ok(event, `${id}: falta del catálogo final`);
@@ -115,6 +118,21 @@ test('T5.1 30-34 conserva opciones canónicas del lote estable de edad 32', () =
   assert.match(override32aSource,/SEED_ROLLING_CONTRACT/);
   assert.match(override32aSource,/SEED_HOME_CAPTAIN_OFFER/);
   assert.match(override32aSource,/NATIONAL_RETIRED/);
+  assert.doesNotMatch(override32aSource,/EARLY_RETIRED_30_34/);
+});
+
+test('T5.1 30-34 conserva opciones canónicas del lote estable de edad 33 sin auto-retirada', () => {
+  assertCanonicalCases([
+    ['EVT_33_BODY_001','Dos partidos en 72 horas',['Aceptar como regla general','Decidir caso a caso','Ignorar mientras te sientas bien','Cambiar rol para intentar sostener ambos partidos']],
+    ['EVT_33_CAP_001','Entregar el brazalete',['Apoyar transición pública','Pedir compartir capitanía','Rechazar cargo ceremonial y ser uno más','Posponer anuncio hasta saber si renuevas']],
+    ['EVT_33_MKT_001','Cuatro futuros',['Continuidad','Última carrera por títulos','Maximizar seguridad económica','Volver a Valdoria','Esperar y considerar incluso parar']],
+    ['EVT_33_PRS_001','¿Estás pensando en retirarte?',['«No pienso en ello»','«Lo evalúo cada verano»','«Quiero terminar en Valdoria»','Negarte a responder']]
+  ]);
+  for(const id of reimplementedIds.filter(id=>id.startsWith('EVT_33_'))) assert.deepEqual(byId.get(id).ageWindow,[33,33]);
+  assert.match(override33aSource,/SEED_72H_LIMIT/);
+  assert.match(override33aSource,/SEED_AGE34_PRIORITY/);
+  assert.match(override33aSource,/professional\.retirementDistance/);
+  assert.doesNotMatch(override33aSource,/EARLY_RETIRED_30_34/);
 });
 
 test('T5.1 30-34 mantiene condicionales en revisión hasta inventario canónico', () => {
