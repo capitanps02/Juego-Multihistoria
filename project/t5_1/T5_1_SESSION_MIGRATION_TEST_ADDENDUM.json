@@ -1,0 +1,112 @@
+{
+  "task": "T5.1-session-content-migration-test-addendum",
+  "generated": "2026-09-16",
+  "extends": "project/t5_1/T5_1_MIGRATION_TEST_MATRIX.json",
+  "purpose": "Additional cases required after runtime inspection of SessionSnapshot contentIdentity, pending EventDefinition storage and journal validation.",
+  "developmentPolicy": {
+    "intermediateBranchCatalogsNeedMigration": false,
+    "intermediateBranchBehavior": "Explicit CONTENT_CHANGED incompatibility is acceptable during development when documented; do not weaken validation merely to resume old sessions on every intermediate batch.",
+    "finalRequirement": "Final/release T5.1 must register explicit migration routes from supported released source content identities to the final canonical catalog identity.",
+    "currentEngineBuildObserved": "0.8.0-t2.5"
+  },
+  "cases": [
+    {
+      "id": "S01_current_identity_fast_path",
+      "setup": "Session snapshot contentIdentity already equals the active catalog identity.",
+      "expected": [
+        "Resume follows the strict current path without migration.",
+        "Snapshot state, pending screen, receipts, journal and RNG remain unchanged except already-supported envelope normalization.",
+        "No migration provenance is fabricated."
+      ]
+    },
+    {
+      "id": "S02_exact_id_changed_completed_history",
+      "setup": "Legacy completed event has the same string eventId as the new canonical event, but its old title/choices/outcomes differ.",
+      "expected": [
+        "Historical entry remains attributable to the legacy definition via source content identity/event fingerprint.",
+        "Saved journal text remains exactly what the player saw.",
+        "Validator does not compare the legacy journal against the new canonical definition merely because the ID matches.",
+        "No canonical semantic fact beyond an explicitly reviewed equivalence is inferred."
+      ]
+    },
+    {
+      "id": "S03_mixed_catalog_history",
+      "setup": "A migrated session contains completed legacy decisions, then continues and records new canonical decisions.",
+      "expected": [
+        "Both legacy and canonical entries validate after subsequent save/resume cycles.",
+        "Per-decision provenance disambiguates which definition produced each entry.",
+        "Legacy definitions remain excluded from active scheduling.",
+        "New canonical decisions use the active catalog definition/fingerprint."
+      ]
+    },
+    {
+      "id": "S04_pending_full_definition_legacy_resolution",
+      "setup": "A recognized old session is saved on a pending legacy event whose full EventDefinition is embedded in pendingDecision.",
+      "expected": [
+        "Migration validates the embedded definition against the registered source catalog.",
+        "The exact same body, visible/uncertain information, choices, labels and outcomes remain pending.",
+        "The pending instanceId is preserved.",
+        "Choosing resolves the stored legacy definition without scheduling another event or drawing narrative RNG for reconstruction.",
+        "After result lifecycle completion, future scheduling uses only the canonical active catalog."
+      ]
+    },
+    {
+      "id": "S05_pending_same_id_new_semantics",
+      "setup": "Pending legacy event has the same eventId as a rewritten canonical event but a different serialized definition.",
+      "expected": [
+        "The new canonical definition is not substituted automatically.",
+        "Legacy pending definition remains resolvable if its source catalog is recognized and exact.",
+        "Tampered or unrecognized definition fails explicitly.",
+        "No new canonical SEEN fact is manufactured unless a reviewed same-scene equivalence allows it."
+      ]
+    },
+    {
+      "id": "S06_legacy_compat_catalog_not_schedulable",
+      "setup": "Migration runtime has access to old event definitions for historical/pending validation.",
+      "expected": [
+        "EventIndex/scheduler candidates contain only active canonical runtime content.",
+        "Legacy compatibility definitions cannot be selected by scheduleEvent.",
+        "Retired technical IDs can still validate/render old history and resolve an already-presented pending scene."
+      ]
+    },
+    {
+      "id": "S07_registered_identity_route_only",
+      "setup": "Resume receives snapshots with current, supported legacy and random/unknown content identities.",
+      "expected": [
+        "Current identity uses no-op fast path.",
+        "Supported legacy identity uses the explicit registered migration route.",
+        "Unknown identity is rejected with a clear compatibility error.",
+        "There is no wildcard old-hash acceptance path."
+      ]
+    },
+    {
+      "id": "S08_migration_atomicity",
+      "setup": "A supported legacy session migration succeeds in memory but persistence of the next operation fails.",
+      "expected": [
+        "No partially migrated/published session state leaks through a failed commit.",
+        "Retry from the same original snapshot produces identical migrated state and RNG.",
+        "Migration is deterministic and idempotent."
+      ]
+    },
+    {
+      "id": "S09_event_fingerprint_collision_guard",
+      "setup": "Two semantic versions share the same eventId across catalog identities.",
+      "expected": [
+        "Compatibility lookup uses source content identity and/or exact event-definition fingerprint, never eventId alone.",
+        "Old and new definitions cannot validate as each other.",
+        "Historical choice/outcome validation resolves against the producing definition."
+      ]
+    },
+    {
+      "id": "S10_retirement_historical_state_not_reinterpreted",
+      "setup": "A legacy schema/session already contains historical retirement facts produced by pre-T5.1 logic, including v7→v8 early-retirement closure behavior.",
+      "expected": [
+        "Migration does not silently replay history under the corrected future FSM.",
+        "Existing closed factual state remains historical truth unless an explicit incompatible-migration policy says otherwise.",
+        "Future sessions follow the repaired canonical FSM after migration/continuation where still playable.",
+        "Epilogue is not regenerated into a different more-cinematic history solely because terminal logic changed."
+      ]
+    }
+  ],
+  "requiredForFinalT51Compatibility": true
+}
