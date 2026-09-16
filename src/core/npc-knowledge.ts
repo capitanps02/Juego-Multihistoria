@@ -94,8 +94,22 @@ export function npcKnows(state: GameState, npcId: string, factId: string, asOfDa
   return !record.expiresAfter || record.expiresAfter > asOfDate;
 }
 
+function assertKnowledgeSourceCanTransmit(state: GameState, targetNpcId: string, factId: string, sourceNpcId?: string): void {
+  if (!sourceNpcId) return;
+  if (!state.npcs.some(candidate => candidate.id === sourceNpcId)) {
+    throw new Error(`Unknown NPC knowledge source: ${sourceNpcId}`);
+  }
+  if (sourceNpcId === targetNpcId) {
+    throw new Error(`NPC ${targetNpcId} cannot be its own knowledge source for ${factId}`);
+  }
+  if (!npcKnows(state, sourceNpcId, factId)) {
+    throw new Error(`Cannot transmit ${factId} from uninformed NPC source ${sourceNpcId}`);
+  }
+}
+
 export function rememberNpcFactInPlace(state: GameState, npcId: string, options: RememberNpcFactOptions): NpcKnowledgeRecord {
   const npc = npcFor(state, npcId);
+  assertKnowledgeSourceCanTransmit(state, npcId, options.factId, options.sourceNpcId);
   const memory = options.memory ?? "temporary";
   const expiryDays = options.expiresAfterDays ?? defaultExpiryDays(memory);
   const record: NpcKnowledgeRecord = {
@@ -130,13 +144,6 @@ export function informNpcOfEventInPlace(state: GameState, npcId: string, eventId
   const entry = latestHistoryEntry(state, eventId);
   if (!entry) throw new Error(`Cannot inform ${npcId} about unknown world fact ${eventId}`);
   const factId = options.factId ?? eventId;
-  if (
-    options.sourceNpcId &&
-    !npcKnows(state, options.sourceNpcId, factId) &&
-    (factId === eventId || !npcKnows(state, options.sourceNpcId, eventId))
-  ) {
-    throw new Error(`Cannot inform ${npcId} about ${factId} from uninformed NPC source ${options.sourceNpcId}`);
-  }
   return rememberNpcFactInPlace(state, npcId, {
     factId,
     eventId,
