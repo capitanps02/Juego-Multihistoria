@@ -42,3 +42,6 @@ jobs:
 
       - name: Run project validation
         run: npm test
+
+      - name: Run presentation, PlayCanvas and offline Android regression
+        run: npm run qa:presentation
