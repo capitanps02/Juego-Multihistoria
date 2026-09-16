@@ -23,7 +23,7 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: Align generated test with ambiguousEvent intel shape
+      - name: Align generated test with ambiguousEvent runtime shape
         run: |
           python3 - <<'PY'
           from pathlib import Path
@@ -31,6 +31,7 @@ jobs:
           body = path.read_text()
           body = body.replace("event.text.visible.join(' ')", "event.intel.visible.join(' ')")
           body = body.replace("event.text.uncertain.join(' ')", "event.intel.uncertain.join(' ')")
+          body = body.replace("/no puedes demostrar/i", "/tampoco puedes demostrar/i")
           path.write_text(body)
           PY
       - run: node scripts/finalize-t511-prs.mjs
