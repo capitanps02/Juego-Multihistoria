@@ -48,10 +48,12 @@ La seed se cierra por una política de expiración canónica.
 
 - `age` — solo si existe age window finita;
 - `date` — solo si runtime asigna expiry explícito;
-- `club` — solo si la seed es `origin_club`;
-- `season` — solo si la seed es `origin_season`.
+- `club` — solo si la seed es `origin_club` **y existe una prueba de scope registrada**;
+- `season` — solo si la seed es `origin_season` **y existe una prueba de scope registrada**.
 
-El registry no puede inventar un basis que el runtime no implemente. Las pruebas de continuidad de scope siguen siendo una obligación independiente cuando correspondan.
+El registry no puede inventar un basis que el runtime no implemente. Además, el simple metadato `origin_club` / `origin_season` no demuestra por sí solo continuidad causal: las clasificaciones `club`/`season` fallan con `canonical_expiry_scope_proof_required` hasta que una evidencia de scope confiable sea suministrada al validator.
+
+El contrato del validator acepta `scopeProofs` explícitos. Mientras #99 (`t5/deferred-scope-proofs`) no esté integrado y cableado a `closure-readiness`, el audit real suministra cero pruebas y por tanto **ningún cierre club/season puede acreditarse**. Esto es intencional y fail-closed.
 
 ### `retired_compatible`
 
@@ -100,6 +102,7 @@ Una entrada invalida `structuralPass` si:
 - una `canonical_chain` no coincide con una pareja verified viable;
 - una persistencia no es realmente open-ended;
 - un expiry usa un basis no implementado;
+- un expiry `club`/`season` carece de prueba de scope registrada;
 - un retiro no está unwired o carece de evidencia mínima.
 
 ## Progreso
