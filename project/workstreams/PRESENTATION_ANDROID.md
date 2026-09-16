@@ -2,7 +2,7 @@
 
 Branch: `presentation/android-playcanvas`  
 PR: #14 `presentation/android-playcanvas` → `main`  
-Estado PR: **DRAFT / bloqueado por save QA #22 y contrato público de Relaciones**.
+Estado PR: **DRAFT / pendiente del contrato público de Relaciones**.
 
 ## Estado ejecutivo
 
@@ -11,14 +11,15 @@ Estado PR: **DRAFT / bloqueado por save QA #22 y contrato público de Relaciones
 - T3.3: cerrada técnicamente; paquete Android offline y APK reproducible disponibles.
 - T3.4: **pendiente de evidencia en teléfono Android físico**. Emulador y CI no la cierran.
 - T4.6: flujo Inicio → Carrera → Mundo → Relaciones → Perfil → Tu partida revisado.
-- Base integrada: `main@4d547ea9c070d9879d812861ed0abb6493ff1d75`.
-- Último HEAD de código validado en CI: `c0fc499f6fa2bd4db54420ce0f8ebe10dbd7f566`.
+- Base integrada y merge-base de la rama: `main@cd39dfc387713ee43cd5b80c34a0e32a0cc996c0`.
+- HEAD de código validado en CI: `f334a95942826e59ba33fb7a5e214ce0beadaa41`.
+- Diff contra `main`: **20 archivos**, todos dentro del perímetro presentación/Android/CI/documentación propia; `behind_by: 0` en la reconciliación.
 
 ## Cambios de producto
 
 - eliminada la seed visible/editable de **Tu partida**;
-- tanto la primera carrera de una instalación nueva como **Empezar otra carrera** obtienen ahora origen interno aleatorio en la frontera de presentación;
-- el motor `GameSession` permanece determinista cuando QA/headless le entrega una seed explícita;
+- tanto la primera carrera de una instalación nueva como **Empezar otra carrera** obtienen origen interno aleatorio en la frontera de presentación;
+- el motor `GameSession` permanece determinista cuando QA/headless entrega una seed explícita;
 - eliminada `ageMilestone.signature` de la representación visual para no mostrar `STATE*` internos;
 - `IndexedDB` sustituido por lenguaje de producto (`Guardado local protegido`);
 - safe areas, `viewport-fit=cover`, objetivos táctiles de 44 px, <=380 px, landscape, overscroll y `prefers-reduced-motion`;
@@ -39,15 +40,15 @@ No se muestra seed ID, RNG, flags internas, agendas/conocimiento secreto NPC ni 
 - Web, PlayCanvas y Android empaquetan el mismo adaptador.
 - Los tests del motor siguen llamando a `GameSession` directamente y conservan reproducibilidad.
 
-CI confirma el contrato con tests funcionales y de empaquetado.
-
 ## Contrato público de Relaciones / T5.3
 
-`PlayerView.contacts` sigue construyéndose desde todo `NPC_CATALOG`.
+`PlayerView.contacts` sigue publicando las 20 identidades básicas del catálogo.
 
-PR #9 de T5.3 protege correctamente `NPCState.knowledge`, memorias y agendas, pero no modifica `GameSession.getView()`. La UI, por tanto, no tiene una señal pública fiable para saber qué NPC ha conocido el protagonista.
+PR #9 de T5.3 continúa abierto. Su propia frontera de presentación confirma que T5.3 protege `knowledge`, memoria y relaciones privadas, pero **no redefine unilateralmente qué NPC conoce el protagonista** y mantiene las 20 entradas de `contacts`.
 
-Presentación no inferirá esa condición desde memoria secreta, flags, seeds ni `npcRefs`. Se dejó review COMMENT en PR #9 solicitando:
+Por tanto, la UI todavía no dispone de una señal pública fiable para filtrar Relaciones. Presentación no inferirá esa condición desde memoria secreta, flags, seeds, `npcRefs` ni relaciones internas.
+
+Contrato esperado:
 
 - `contacts` filtrado por el motor; o
 - un campo público equivalente como `knownContacts` / `introducedContacts`.
@@ -71,7 +72,7 @@ La versión instalada se obtiene con `PackageManager`; no depende de `BuildConfi
 
 ## T3.4 · recolector físico no destructivo
 
-Se añadió `scripts/collect-android-physical-evidence.mjs` y el comando:
+Comando:
 
 ```bash
 npm run android:physical:evidence -- <SERIAL_FISICO>
@@ -79,70 +80,72 @@ npm run android:physical:evidence -- <SERIAL_FISICO>
 
 El recolector:
 
-- rechaza seriales `emulator-*`;
-- comprueba además `ro.kernel.qemu` / `ro.boot.qemu`;
+- rechaza seriales `emulator-*` y señales `ro.kernel.qemu` / `ro.boot.qemu`;
 - no instala APK, no ejecuta `pm clear`, no desinstala ni cambia modo avión;
 - registra fabricante/modelo, Android/SDK/fingerprint, WebView y versión del paquete instalado;
 - calcula SHA-256 del APK local si está disponible;
 - mide arranque frío/caliente con `am start -W`;
 - escribe `analysis/2026-09-15/T3.4-physical-evidence.json`;
-- deja expresamente `t34Closed: false` y todos los checks manuales a `false`.
-
-La comparación automática entre el hash local y el `base.apk` instalado se intentó como endurecimiento adicional, pero el control de escritura del conector no aceptó ese cambio y **no forma parte del código actual**.
+- deja expresamente `t34Closed: false` y los checks manuales a `false`.
 
 El gate `physical T3.4 evidence collection is hardware-only and non-destructive` pasa en CI.
 
-## APK candidato exacto del HEAD `c0fc499...`
+## APK candidato exacto del HEAD `f334a959...`
 
-Workflow `Android presentation candidate` run #27: **PASS**.
+Workflow `Android presentation candidate` run **#29** (`35112209256`): **SUCCESS**.
 
 - versión: `0.8.0`, versionCode `1`;
-- tamaño: **8.540.096 bytes**;
-- SHA-256: `a5159defb76620e9833e6858755fdddfe82644dcdda598b64552bad26d2a9784`;
-- hash recalculado sobre el APK descargado y coincidente con `T3.3-apk-build.json`.
+- tamaño del APK: **8.540.096 bytes**;
+- SHA-256 del APK: `7356eb01f6e702e395f87612ff2e314799634d6703cb9794ccad656b2f68b23f`;
+- hash recalculado de forma independiente sobre el APK descargado de CI;
+- coincide exactamente con `analysis/2026-09-15/T3.3-apk-build.json`.
 
-Este APK es candidato técnico para la prueba física; no es evidencia de T3.4 completada.
+El ZIP del artefacto de GitHub tiene digest `sha256:bb194784343cafd947fdb359e8b2e5ff3522f54484309668646f8c1c457b8d79`.
 
-## CI / QA del HEAD `c0fc499...`
+Este APK es candidato técnico para la prueba física; **no** constituye evidencia de T3.4 completada.
 
-`Android presentation candidate` run #27: **PASS**.
+## CI / QA del HEAD `f334a959...`
 
-`Repository integrity` run #351:
+### Repository integrity
 
-- build: PASS;
-- `npm test` + T5.2: PASS;
-- determinismo/RNG: PASS;
-- límites de edad: PASS;
-- referencias: PASS;
-- carreras largas: PASS;
-- lifecycle audit: PASS;
-- simulación estratificada: PASS;
-- `test:presentation`: **8/8 PASS**;
-- adaptación de primera carrera aleatoria: PASS;
-- empaquetado común web/PlayCanvas/Android del adaptador: PASS;
-- PlayCanvas equivalencia de estado/RNG: PASS;
-- PlayCanvas privacidad/offline/self-contained: PASS;
-- resultado final: **FAIL únicamente por #22** dentro de `test:saves`.
+Run **#474** (`35112209445`): **SUCCESS**.
 
-## #22 · baseline v8 histórico desfasado
+Pasan:
 
-Issue: **`Save QA: imported v8 migration baseline is stale`**.
+- estructura del repositorio;
+- `npm ci`;
+- `npm test`, incluido baseline/schema-8 de saves;
+- build T5;
+- freeze sentinel T5.1;
+- determinismo y aislamiento RNG;
+- límites de edad;
+- referencias de contenido;
+- carreras largas;
+- lifecycle audit;
+- probes cross-workstream;
+- simulación estratificada;
+- `qa:presentation` completo: presentación + PlayCanvas + Android offline.
 
-Esperado histórico:
-`7136e3239ba5a5c71a85239401e790d8deb9292d4d49f7d4e2cd8d4359f9ca51`
+### Android presentation candidate
 
-Actual reproducible:
-`973721941c79d61ee4a08045778c604641fc87db7d8423533505f8d13fe3db1b`
+Run **#29**: **SUCCESS**.
 
-La investigación descarta que T5.2 lo introdujera:
+Pasan:
 
-- T5.2 no modifica `src/save/*`, el fixture v8 ni `migration-baselines.json`;
-- fixture y baseline solo tienen el commit de importación inicial `6c9d7fb...`;
-- en ese import, `src/save/save.ts` y `dist/save/save.js` ya devuelven un save schema 8 validado sin migrarlo.
+- regresión de presentación;
+- paquete Android offline;
+- compilación APK con Java 17 / Gradle 8.9 / API 35;
+- informe T3.3;
+- verificación de SHA del APK;
+- publicación de artefactos de diagnóstico y candidato.
 
-Conclusión: el hash esperado ya estaba desfasado respecto al fixture importado. `qa:presentation` hizo visible la deuda al incorporar `test:saves` al gate global.
+## #22 · save baseline v8
 
-Este workstream no modificará el runtime ni relajará el test. Save/QA debe recalcular el baseline v8 con evidencia reproducible y verificar history/seeds/RNG/round-trip.
+**RESUELTO / CERRADO. Ya no bloquea presentación.**
+
+`main` incorporó la corrección del baseline v8 y posteriormente el hardening `cd39dfc...`, que hace el gate v8 de solo lectura y bloquea el hash exacto del save comprometido. El workstream de presentación no modificó runtime de saves ni relajó tests.
+
+El resultado observable tras el re-ground es `npm test` + `Repository integrity` completamente verde.
 
 ## Evidencia física pendiente
 
@@ -171,12 +174,13 @@ Para cerrar T3.4 aún hay que registrar en un teléfono real:
 
 ## PR
 
-PR #14 permanece **DRAFT**. Para marcarlo listo se requiere:
+PR #14 permanece **DRAFT**.
 
-1. resolver #22 y obtener `Repository integrity` verde;
-2. resolver el contrato público de contactos en Relaciones;
-3. obtener `Android presentation candidate` verde sobre el HEAD de código final.
+Situación tras `f334a959...`:
 
-La deuda de seed fija de la primera partida queda **resuelta y validada** en `c0fc499...`.
+1. ~~resolver #22 / save QA~~ → **resuelto y CI verde**;
+2. resolver el contrato público de contactos de Relaciones → **pendiente**;
+3. Android candidate sobre el código reconciliado → **verde**;
+4. T3.4 física → **sigue abierta y requiere hardware real**.
 
-T3.4 seguirá abierta incluso después del merge técnico hasta existir evidencia real en teléfono Android físico.
+La deuda de seed fija de primera partida permanece **resuelta y validada**.
