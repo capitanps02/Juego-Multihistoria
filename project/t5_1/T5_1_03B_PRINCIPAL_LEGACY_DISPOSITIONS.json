@@ -1,0 +1,43 @@
+{
+  "task": "T5.1 Batch 03B principal legacy semantic dispositions",
+  "generatedAt": "2026-09-16",
+  "batch": "03B",
+  "phase": "30_34",
+  "ages": [31, 32, 33],
+  "reviewed": 17,
+  "approvedSameSceneMigrations": 0,
+  "defaultDisposition": "retire_technical_keep_history_only",
+  "evidence": {
+    "runtime": "src/content/events/30_34/principal-events.ts",
+    "canonical": "analysis/2026-09-11/t1/principal-traceability.json",
+    "runtimeGeneratorFinding": "Except EVT_33_RET_001, all reviewed legacy rows use the same generic maturity body, visible/uncertain text and four generic choices. Seed/title lineage therefore cannot establish canonical scene identity. EVT_33_RET_001 is a special technical terminal candidate and conflicts with the reviewed retirement boundary rather than proving a canonical 31-33 scene."
+  },
+  "entries": [
+    {"legacyId":"EVT_31_REC_001","decision":"retire_technical_keep_history_only","lineageCanonicalId":"EVT_30_RECORD_001","reason":"Late duplicate writer of SEED_MILESTONE_CHASE_500; canonical Partido 500 is age 30 with specific rest-vs-record choices."},
+    {"legacyId":"EVT_31_MENT_001","decision":"retire_technical_keep_history_only","lineageCanonicalId":"EVT_31_TEAM_001","reason":"Technical duplicate writer of SEED_FORMAL_MENTOR; canonical Mentor oficial has specific mentoring-contract choices."},
+    {"legacyId":"EVT_32_IMG_001","decision":"retire_technical_keep_history_only","lineageCanonicalId":"EVT_31_BIZ_001","reason":"One-year-late technical writer of SEED_BUSINESS_REPUTATION_SHOCK; canonical business-partner crisis is age 31."},
+    {"legacyId":"EVT_32_MKT_001","decision":"retire_technical_keep_history_only","lineageCanonicalId":"EVT_32_RICH_001","reason":"Seed/title lineage to late rich offer but generic market choices do not match canonical money/duration/competition dilemma."},
+    {"legacyId":"EVT_32_CLB_001","decision":"retire_technical_keep_history_only","lineageCanonicalId":"EVT_32_ELITE_001","reason":"Writes SEED_LATE_CONTENDER_BENCH but lacks canonical explicit 12th-man role and choices."},
+    {"legacyId":"EVT_32_TACT_001","decision":"retire_technical_keep_history_only","lineageCanonicalId":"EVT_32_IMPACT_001","reason":"Writes SEED_LOW_STATS_HIGH_IMPACT but generic maturity choices are not the canonical metrics/role dilemma."},
+    {"legacyId":"EVT_32_TEAM_001","decision":"retire_technical_keep_history_only","lineageCanonicalId":"EVT_32_SUCCESSOR_001","reason":"Writes SEED_REPLACEMENT_BREAKOUT but lacks the canonical injury/return/successor scenario and choices."},
+    {"legacyId":"EVT_32_BODY_001","decision":"retire_technical_keep_history_only","lineageCanonicalId":"EVT_32_LOAD_001","reason":"Writes SEED_TRAVEL_LOAD but generic medical choices are not the canonical no-travel/load-management dilemma."},
+    {"legacyId":"EVT_32_BOS_001","decision":"retire_technical_keep_history_only","lineageCanonicalId":"EVT_32_BOSMAN_001","reason":"Writes SEED_BOSMAN_33 but lacks the canonical free-precontract choices and parallel-negotiation chronology."},
+    {"legacyId":"EVT_33_REC_001","decision":"retire_technical_keep_history_only","lineageCanonicalId":"EVT_33_RECORD_001","reason":"Writes SEED_RECORD_VS_BODY but generic record row is not the canonical six-appearances-vs-managed-role scene."},
+    {"legacyId":"EVT_33_NAT_001","decision":"retire_technical_keep_history_only","lineageCanonicalId":"EVT_33_FIN_001","reason":"Technical writer of SEED_RETIREMENT_DISTANCE_PROFILE; canonical creation belongs to the age-34 priority/transition scene, not a generic national-team row."},
+    {"legacyId":"EVT_33_HOME_001","decision":"retire_technical_keep_history_only","lineageCanonicalId":"EVT_33_PRS_001","reason":"Technical split of home-pull/public-retirement tone; canonical press scene owns SEED_HOME_PULL_PUBLIC in context."},
+    {"legacyId":"EVT_33_CON_001","decision":"retire_technical_keep_history_only","lineageCanonicalId":"EVT_33_MKT_001","reason":"Duplicate writer of SEED_AGE34_PRIORITY; canonical market scene creates that priority and EVT_33_FIN_001 consumes/synthesizes it."},
+    {"legacyId":"EVT_33_MED_001","decision":"retire_technical_keep_history_only","lineageCanonicalId":"EVT_30_PAIN_001","reason":"Late duplicate writer of SEED_PAIN_WITHOUT_SCAN; canonical origin is the age-30 pain-with-clean-imaging scene."},
+    {"legacyId":"EVT_33_NET_001","decision":"retire_technical_keep_history_only","lineageCanonicalId":"EVT_30_NANO_001","reason":"Late duplicate writer of SEED_OLD_NETWORK_FAVOR; canonical origin is Nano's age-30 call request."},
+    {"legacyId":"EVT_33_RET_001","decision":"retire_technical_keep_history_only","lineageCanonicalId":null,"reason":"Technical terminal candidate can set EARLY_RETIRED_30_34 from a generic retirement scene; no same-scene canonical identity is established and terminal semantics belong to reviewed retirement reconciliation."},
+    {"legacyId":"EVT_33_END_001","decision":"retire_technical_keep_history_only","lineageCanonicalId":"EVT_33_FIN_001","reason":"Technical hard-deadline row writes SEED_AGE34_PRIORITY but uses four generic maturity choices; canonical Cumples 34 exposes six explicit priority choices and creates retirement-distance profile."}
+  ],
+  "migrationRules": {
+    "rewriteCompletedHistoryIds": false,
+    "rewritePendingIdsDirectly": false,
+    "manufactureCanonicalSeenFlags": false,
+    "rewriteHistoricalSeedOriginAutomatically": false,
+    "legacyCompatibilityMayResolvePendingOldChoiceContract": true,
+    "legacyCompatibilityDefinitionsMaySchedule": false
+  },
+  "status": "03B_LEGACY_REVIEW_COMPLETE"
+}
