@@ -10,8 +10,8 @@
     "runtimeOnlyLegacyIds": 87,
     "canonicalSemanticRowsReviewed": 134,
     "runtimeOnlyDispositionReviewed": 87,
-    "runtimeOnlyRetireTechnicalKeepHistoryOnly": 86,
-    "runtimeOnlyUnresolved": 1,
+    "runtimeOnlyRetireTechnicalKeepHistoryOnly": 87,
+    "runtimeOnlyUnresolved": 0,
     "exactIdAutomaticallyCanonicalVerifiedFull": 0
   },
   "phaseReview": [
@@ -31,14 +31,16 @@
   },
   "runtimeOnlyDispositionSource": "project/t5_1/T5_1_CONDITIONAL_LEGACY_DISPOSITION_OVERLAY_87.json",
   "runtimeOnlyDisposition": {
-    "retire_technical_keep_history_only": 86,
-    "unresolved": ["CEVT_RET_RECONSIDER"],
+    "retire_technical_keep_history_only": 87,
+    "unresolved": [],
     "same_scene_rewrite_and_id_migration": 0,
     "retain_noncanonical_outside_canonical_set": 0,
     "no_mapping": 0
   },
-  "unresolvedReason": {
-    "CEVT_RET_RECONSIDER": "Candidate lineage to CEVT_38_RETIREMENT_REVERSAL is blocked by source-level state-model tension: runtime announced/decided -> playing versus monotonic playing -> decided -> announced -> closed authority / closed -> * prohibition."
+  "retirementReversalSeparation": {
+    "legacyIdentityDecision": "CEVT_RET_RECONSIDER is retire_technical_keep_history_only and must not be rewritten into canonical history or pending content.",
+    "futureCanonicalBehavior": "CEVT_38_RETIREMENT_REVERSAL remains a distinct design decision. The strongest current source-fit preserves announced status and immutable announcement history during a bounded extension, but this behavior is not canonically approved by crosswalk closure.",
+    "closedRemainsTerminal": true
   },
   "exactIdCompatibility": {
     "rule": "Same string ID does not make old pending/history content compatible after semantic rewrite. Validate/migrate by source content identity and exact event-definition provenance.",
@@ -81,8 +83,8 @@
   ],
   "remainingBeforeRuntimeCompletion": [
     "implement/certify all 134 canonical callbacks",
-    "remove runtime-only conditional IDs from active canonical scheduling",
-    "resolve CEVT_RET_RECONSIDER / CEVT_38_RETIREMENT_REVERSAL state authority",
+    "remove all 87 runtime-only conditional IDs from active canonical scheduling while preserving old history/pending compatibility",
+    "explicitly approve and implement future CEVT_38_RETIREMENT_REVERSAL behavior",
     "implement final supported-release session content migration",
     "run identity/semantic/migration/causal/retirement/RNG gates"
   ]
