@@ -1,0 +1,39 @@
+:host{--mh-safe-top:env(safe-area-inset-top,0px);--mh-safe-right:env(safe-area-inset-right,0px);--mh-safe-bottom:env(safe-area-inset-bottom,0px);--mh-safe-left:env(safe-area-inset-left,0px)}
+.mh{padding-top:max(12px,var(--mh-safe-top));padding-right:max(12px,var(--mh-safe-right));padding-bottom:max(12px,var(--mh-safe-bottom));padding-left:max(12px,var(--mh-safe-left))}
+@media(max-width:740px){
+  .mh{padding-top:max(8px,var(--mh-safe-top));padding-right:max(8px,var(--mh-safe-right));padding-bottom:max(8px,var(--mh-safe-bottom));padding-left:max(8px,var(--mh-safe-left))}
+  .topbar{min-width:0}
+  .brand{min-width:0}
+  .brand>div{min-width:0}
+  .brand strong,.brand small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .date-button{min-width:44px;max-width:31vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .navigation{overscroll-behavior:contain}
+  .nav-button{min-width:44px}
+  main{overscroll-behavior:contain}
+  .dialog{max-width:calc(100vw - var(--mh-safe-left) - var(--mh-safe-right) - 24px)}
+  .alert{left:max(12px,var(--mh-safe-left));right:max(12px,var(--mh-safe-right));bottom:max(78px,calc(var(--mh-safe-bottom) + 70px))}
+  .busy-status{right:max(12px,var(--mh-safe-right));bottom:max(78px,calc(var(--mh-safe-bottom) + 70px))}
+  .pause-status{bottom:max(74px,calc(var(--mh-safe-bottom) + 66px));max-width:calc(100vw - 32px);overflow:hidden;text-overflow:ellipsis}
+}
+@media(max-width:380px){
+  .brand small{display:none}
+  .brand-mark{font-size:24px}
+  .pause-button{min-width:64px}
+  .topbar{gap:7px;padding-left:10px;padding-right:10px}
+  .nav-button{font-size:8px}
+}
+@media(max-width:740px) and (orientation:landscape){
+  .mh{grid-template-rows:58px minmax(0,1fr) 58px}
+  .topbar{border-radius:16px}
+  .navigation{border-radius:16px}
+  .nav-button{min-height:45px;flex-direction:row;font-size:9px;gap:3px}
+  .nav-button svg{width:17px;height:17px}
+  .hero{min-height:290px}
+  .cinema-top{margin-bottom:28px}
+  .decision-sheet{max-height:none}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  .cinema-bg{animation:none!important;transform:none!important}
+  button:hover:not(:disabled),button:active:not(:disabled){transform:none}
+}

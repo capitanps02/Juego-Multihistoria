@@ -16,4 +16,6 @@ test('T4.6 ciclo de juego: tutorial, pantallas esenciales y resumen de partido',
   assert.match(css, /\.tutorial\{/);
   assert.match(css, /\.match-summary\{/);
   assert.doesNotMatch(ui, /SEED_[A-Z0-9_]+|EVT_[0-9A-Z_]+|CEVT_[0-9A-Z_]+/);
+  assert.doesNotMatch(ui, /semilla/i, 'la interfaz no debe explicar ni pedir seeds al jugador');
+  assert.match(ui, /crypto\.getRandomValues/, 'una carrera nueva debe obtener su origen interno sin pedirlo al jugador');
 });
