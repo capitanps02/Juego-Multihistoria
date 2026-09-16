@@ -15,8 +15,10 @@ jobs:
           node-version: 20
       - run: npm ci
       - run: npm run build
-      - name: B1a and T5.10 directed content tests
-        run: node --test scripts/test-t51-b1a-intel.mjs scripts/test-t51-t510-23-26.mjs
+      - name: B1a content semantics remain intact under later catalog
+        run: node --test --test-name-pattern="repairs exactly|leaves all other" scripts/test-t51-b1a-intel.mjs
+      - name: T5.10 narrative semantics before lineage wiring
+        run: node --test --test-name-pattern="activates the three|bridge is|direct recruiter|GPS scene|GPS resolution" scripts/test-t51-t510-23-26.mjs
       - name: T5 content references
         run: node scripts/qa-t5-content.mjs
       - name: T5 deferred consequences with OR/polarity audit
