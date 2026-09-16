@@ -28,7 +28,7 @@
     "test:t46": "npm run build && node --test scripts/test-t46.mjs",
     "test:t47": "npm run build && node --test scripts/test-t47.mjs",
     "audit:t51": "npm run build && node scripts/audit-t51.mjs",
-    "test:t51": "npm run audit:t51 && node --test scripts/test-t51.mjs",
+    "test:t51": "npm run audit:t51 && node --test scripts/test-t51.mjs scripts/test-t51-canon-23-30.mjs",
     "test:offers": "npm run build:playcanvas && node --test scripts/test-offers.mjs scripts/test-playcanvas.mjs",
     "qa:offers:fixture": "npm run build && node scripts/build-offer-fixture.mjs",
     "android:offline": "npm run build && node scripts/build-android-offline.mjs",
