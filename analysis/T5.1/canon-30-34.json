@@ -518,7 +518,7 @@
     {
       "id": "DEP_T51_EVENT_ID_MIGRATION",
       "kind": "save_continuity",
-      "description": "Shared multigeneration contentIdentity migration architecture exists in main. For this 30–34 batch, integration must first freeze active target 163b5823… as post-T5.1 source evidence and then register/certify the unique T51_B1A -> target edge with the 27 exact-ID distinct_scene mappings. Shifted IDs remain deferred."
+      "description": "Shared multigeneration migration lineage is available through T5.10 (fee2ff87…). Integration must freeze active 30-34 target b7483243… as post-T5.1 source evidence, then register/certify the unique latest-upstream -> target edge with the 27 exact-ID distinct_scene mappings. Shifted IDs remain deferred."
     },
     {
       "id": "DEP_T51_BRIDGE_PRIORITY",
@@ -536,9 +536,9 @@
       "description": "Event-level OR composition is available in main. EVT_30_CON_001 still cannot reach strict trigger parity because GameState has no authoritative produced fact meaning club wants renewal; do not invent an ad-hoc flag."
     },
     {
-      "id": "DEP_T51_B1A_TEST_LINEAGE_STALENESS",
+      "id": "DEP_T51_T510_TEST_LINEAGE_STALENESS",
       "kind": "shared_test_contract",
-      "description": "scripts/test-t51-b1a-intel.mjs still asserts contentIdentity(EVENTS) === T51_B1A_CONTENT_IDENTITY. That assertion is valid only at the B1a boundary and becomes false for later canonical batches. Shared integration must make this test lineage-aware; the 30–34 workstream must not weaken or rewrite the shared contract."
+      "description": "scripts/test-t51-t510-23-26.mjs validates T5.10 by assuming contentIdentity(EVENTS) remains T51_T510_CONTENT_IDENTITY and by resuming historical snapshots directly into that identity. A downstream canonical batch legitimately changes the active target, so shared integration must make the two lineage tests historical-node aware without weakening T5.10 content assertions."
     }
   ],
   "verifiedBehavior": [
@@ -560,23 +560,25 @@
     }
   ],
   "integrationStatus": {
-    "syncedBaselineMain": "24c176474bb17a8c271f52bac7bf41e08a929c72",
+    "syncedBaselineMain": "de2af6b698d22343a1b7dadf63fb857ddeef5aec",
     "sharedChoiceEligibility": "available_in_main",
     "sharedOrGateContract": "available_in_main",
     "contentMigrationArchitecture": "available_in_main",
-    "contentMigrationRoute": "handoff_B1A_to_163b_freeze_and_registration_pending",
+    "contentMigrationRoute": "handoff_latest_upstream_to_target_freeze_and_registration_pending",
     "frozenSaveCompatibility": "passing_before_route_gate",
-    "targetedT51Run": 35127976484,
-    "targetedT51Result": "29/29_focused_pass",
+    "targetedT51Run": 35128517165,
+    "targetedT51Result": "30_34_plus_b1a_focused_pass",
     "temporaryValidationWorkflowRemoved": true,
     "mergeReady": false,
-    "contentMigrationLineage": "PRE_T51_to_T51_B1A_available_in_main",
-    "targetContentIdentity": "163b582315bb8d08ac4a03f13719b89c0d76c130a2b33f3e32fa53af5474d8dc",
-    "sharedB1aTest": "known_lineage_stale_1_of_3_fails",
+    "contentMigrationLineage": "PRE_T51_to_B1A_to_T510_available_in_main",
+    "targetContentIdentity": "b7483243816fd4e2e8cf1774a4ece699f47b6a03637de50c31347109512f4446",
+    "sharedB1aTest": "resolved_in_main_lineage_aware",
     "offerSessionBridge": "available_in_main",
     "contentMigrationTargetFreeze": "pending_post_t51_source_fixture",
     "offerSessionBridgeValidation": "pass",
-    "contentMigrationChecker": "expected_missing_target_freeze_before_route_registration"
+    "contentMigrationChecker": "expected_missing_target_freeze_before_route_registration",
+    "contentMigrationSourceIdentity": "fee2ff875bac7979d3907f5ee1004ef736efa9a257237c6dee629dd8687fe136",
+    "sharedT510Test": "known_downstream_lineage_stale_2_tests"
   },
   "implementationProgress": {
     "stableIdReimplemented": [

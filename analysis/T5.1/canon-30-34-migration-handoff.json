@@ -2,13 +2,13 @@
   "schemaVersion": 1,
   "workstream": "T5.1 canon 30-34 migration handoff",
   "generatedAt": "2026-09-16",
-  "sourceMainSha": "24c176474bb17a8c271f52bac7bf41e08a929c72",
-  "sourceContentIdentity": "1a8a5e2006fe7160f4fbc02060568d3abec99df038fe3a1a7799c8a0e802eac7",
-  "observedTargetContentIdentity": "163b582315bb8d08ac4a03f13719b89c0d76c130a2b33f3e32fa53af5474d8dc",
+  "sourceMainSha": "de2af6b698d22343a1b7dadf63fb857ddeef5aec",
+  "sourceContentIdentity": "fee2ff875bac7979d3907f5ee1004ef736efa9a257237c6dee629dd8687fe136",
+  "observedTargetContentIdentity": "b7483243816fd4e2e8cf1774a4ece699f47b6a03637de50c31347109512f4446",
   "targetIdentityEvidence": {
-    "workflowRun": 35127976484,
-    "source": "T5.1 30-34 post-offer focused validation / runtime contentIdentity(EVENTS)",
-    "rule": "Target must equal contentIdentity(EVENTS) on this branch after inheriting current main; copied historical target identities are invalid."
+    "workflowRun": 35128517165,
+    "source": "T5.1 30-34 T5.10-lineage focused validation / runtime contentIdentity(EVENTS)",
+    "rule": "Target is calculated from the active branch after syncing current main; historical copied target identities are invalid."
   },
   "consumer": {
     "implementationOwner": "coordination/integration",
@@ -16,7 +16,7 @@
     "routeRegistry": "CONTENT_MIGRATION_ROUTES",
     "workstreamMayRegisterRoute": false,
     "targetFreezeRequiredBeforeRouteRegistration": true,
-    "targetFreezeFixture": "qa/fixtures/t5.1/post-t51-sources/163b582315bb8d08ac4a03f13719b89c0d76c130a2b33f3e32fa53af5474d8dc.json"
+    "targetFreezeFixture": "qa/fixtures/t5.1/post-t51-sources/b7483243816fd4e2e8cf1774a4ece699f47b6a03637de50c31347109512f4446.json"
   },
   "authorities": [
     "analysis/T5.1/canon-30-34.json",
@@ -262,7 +262,7 @@
       }
     ],
     "seedOriginMappingsCandidate": [],
-    "routeSemantics": "A completed or pending T51_B1A source event with one of these same string IDs remains source provenance. Because no identity is verified same-scene, source SEEN/cooldown must not suppress the repaired canonical definition."
+    "routeSemantics": "Completed or pending events from the latest frozen upstream identity remain source provenance. Because no 30-34 identity is verified same-scene, upstream SEEN/cooldown must not suppress the repaired canonical definitions."
   },
   "futureShiftedIdentityWork": {
     "status": "not_in_current_route",
@@ -388,7 +388,7 @@
   },
   "requiredCurrentRouteAssertions": [
     "runtime target contentIdentity equals the target identity used by the registered route",
-    "source identity is the frozen post-T5.1 B1a identity",
+    "source identity is the latest frozen upstream post-T5.1 identity",
     "there are exactly 27 current-batch scheduler mappings",
     "all 27 current-batch mappings are exact-ID distinct_scene mappings",
     "all 27 clear canonical SEEN state",
@@ -403,12 +403,12 @@
     "18 shifted pairs receive no mapping in the current route",
     "5 canonical-missing IDs receive no synthesized history/SEEN/cooldown in the current route",
     "5 engine-only IDs remain schedulable in this current batch because this PR has not removed them from EVENTS",
-    "registered edge extends the existing PRE_T51 -> T51_B1A lineage without shortcut or ambiguity",
-    "target identity is frozen as post-T5.1 source evidence before the B1a-to-target route is registered"
+    "registered edge extends the existing upstream lineage without shortcut or ambiguity",
+    "target identity is frozen as post-T5.1 source evidence before the upstream-to-target route is registered"
   ],
   "sourceIdentityEvidence": {
-    "source": "src/session/content-migration.ts#T51_B1A_CONTENT_IDENTITY",
-    "fixture": "qa/fixtures/t5.1/post-t51-sources/1a8a5e2006fe7160f4fbc02060568d3abec99df038fe3a1a7799c8a0e802eac7.json",
-    "policy": "This batch extends the frozen post-T5.1 B1a lineage; it must not add a PRE_T51 shortcut."
+    "source": "src/session/content-migration.ts#T51_T510_CONTENT_IDENTITY",
+    "fixture": "qa/fixtures/t5.1/post-t51-sources/fee2ff875bac7979d3907f5ee1004ef736efa9a257237c6dee629dd8687fe136.json",
+    "policy": "The 30-34 batch extends the latest frozen upstream lineage node; it must not add shortcuts from older generations."
   }
 }
