@@ -168,6 +168,26 @@ export const NPC_EVENT_KNOWLEDGE_RULES: NpcEventKnowledgeRule[] = [
     relationshipMemory: true
   },
   {
+    eventId: "CEVT_18_VELA_01",
+    choiceIds: ["DISTANCE"],
+    outcomeIds: ["DISTANCE__SECONDARY"],
+    npcIds: ["NPC_PLR_10"],
+    source: "witnessed",
+    certainty: 100,
+    memory: "strong",
+    relationshipMemory: true
+  },
+  {
+    eventId: "EVT_19_JAN_001",
+    choiceIds: ["FORCE_EXIT"],
+    outcomeIds: ["FORCE_EXIT__SECONDARY"],
+    npcIds: ["NPC_DIR_02"],
+    source: "witnessed",
+    certainty: 100,
+    memory: "strong",
+    relationshipMemory: true
+  },
+  {
     eventId: "EVT_19_TEAM_001",
     choiceIds: ["MOVE_CONTACT"],
     outcomeIds: ["MOVE_CONTACT__SECONDARY"],
