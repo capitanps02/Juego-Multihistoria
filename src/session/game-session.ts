@@ -1,4 +1,4 @@
-import { marketState, respondToOffer, type CareerOffer, type OfferAction, type OfferDecision } from "../simulation/offers.js";
+import { careerTerms, marketState, respondToOffer, type CareerOffer, type OfferAction, type OfferDecision } from "../simulation/offers.js";
 import type { AgeMilestone } from "../simulation/age-milestones.js";
 import type { EventDefinition, GameState } from "../core/types.js";
 import { EVENTS } from "../content/events/index.js";
@@ -6,6 +6,7 @@ import { createInitialState } from "../content/initial-state.js";
 import { EventIndex } from "../narrative/event-index.js";
 import { scheduleEvent } from "../narrative/scheduler.js";
 import { eligibleChoices, isChoiceEligible } from "../narrative/choice-eligibility.js";
+import { offerDispositionForChoice, selectOfferBridgeEvent } from "../narrative/offer-bridge.js";
 import { resolveChoiceInPlace } from "../narrative/resolver.js";
 import { advanceWorldDayInPlace } from "../simulation/world-simulator.js";
 import { maybeEmitMicroFeed } from "../simulation/microfeed.js";
@@ -356,8 +357,27 @@ export class GameSession {
       requireThat(pending && pending.instanceId === command.pendingInstanceId, "STALE_DECISION", "Esta escena ya no está pendiente.");
       const choice = pending.event.choices.find(c => c.id === command.choiceId);
       requireThat(choice && isChoiceEligible(next.state, choice), "INVALID_CHOICE", "La elección no pertenece a esta escena o no está disponible.");
+      const bridgeDisposition = offerDispositionForChoice(pending.event, choice.id);
+      const beforeOfferTerms = bridgeDisposition ? careerTerms(next.state) : null;
+      if (bridgeDisposition) requireThat(next.state.market?.pending, "STALE_OFFER", "La oferta asociada a esta escena ya no está pendiente.");
       const result = resolveChoiceInPlace(next.state, pending.event, choice.id);
-      next.pendingResult = { title: pending.event.text.title, choiceLabel: choice.label, messages: result.messages };
+      let messages = result.messages;
+      if (bridgeDisposition) {
+        requireThat(JSON.stringify(careerTerms(next.state)) === JSON.stringify(beforeOfferTerms), "INVALID_OFFER_BRIDGE", "Una escena de oferta no puede modificar términos contractuales mediante efectos narrativos.");
+        const historyIndex = next.state.history.length - 1;
+        const historyEntry = next.state.history[historyIndex];
+        requireThat(historyEntry?.eventId === pending.event.id && historyEntry.choiceId === choice.id, "INVALID_OFFER_BRIDGE", "La decisión narrativa no coincide con el historial recién resuelto.");
+        const offerId = next.state.market?.pending?.id;
+        requireThat(offerId, "STALE_OFFER", "La oferta asociada desapareció antes de confirmar la elección.");
+        const offerDecision = respondToOffer(next.state, offerId, bridgeDisposition, {
+          kind: "narrative_choice",
+          historyIndex,
+          eventId: pending.event.id,
+          choiceId: choice.id
+        });
+        messages = [...result.messages, offerDecision.explanation];
+      }
+      next.pendingResult = { title: pending.event.text.title, choiceLabel: choice.label, messages };
       next.journal.push({ date: next.state.date, ...structuredClone(next.pendingResult) });
       next.decisionProvenance.push(structuredClone(pending.provenance));
       next.pendingDecision = null;
@@ -389,6 +409,17 @@ export class GameSession {
     generateEpilogue(next.state);
   }
 
+  #presentEvent(next: SessionSnapshot, eventId: string): void {
+    const evidence = requireEvidence(this.#activeEvidence, eventId, "CONTENT_CHANGED");
+    const canonicalEvent = this.#index.events.find(event => event.id === eventId);
+    requireThat(canonicalEvent, "CONTENT_CHANGED", "La escena programada ya no existe en el catálogo activo.");
+    next.pendingDecision = {
+      instanceId: `${next.sessionId}:${next.revision + 1}`,
+      event: structuredClone(canonicalEvent),
+      provenance: { sourceContentIdentity: next.contentIdentity, eventFingerprint: evidence.fingerprint }
+    };
+  }
+
   #advance(next: SessionSnapshot, maxDays: number): void {
     let days = 0;
     if (next.needsWorldAdvance) {
@@ -398,17 +429,14 @@ export class GameSession {
     }
     // No unbounded autoplay. If no event appears, commit progress and let the UI yield.
     while (next.state.retirement.status !== "closed") {
-      if(next.state.market?.pending)return;
+      if (next.state.market?.pending) {
+        const bridge = selectOfferBridgeEvent(next.state, this.#index.events);
+        if (bridge) this.#presentEvent(next, bridge.id);
+        return;
+      }
       const scheduled = scheduleEvent(next.state, this.#index);
       if (scheduled) {
-        const evidence = requireEvidence(this.#activeEvidence, scheduled.event.id, "CONTENT_CHANGED");
-        const canonicalEvent = this.#index.events.find(event => event.id === scheduled.event.id);
-        requireThat(canonicalEvent, "CONTENT_CHANGED", "La escena programada ya no existe en el catálogo activo.");
-        next.pendingDecision = {
-          instanceId: `${next.sessionId}:${next.revision + 1}`,
-          event: structuredClone(canonicalEvent),
-          provenance: { sourceContentIdentity: next.contentIdentity, eventFingerprint: evidence.fingerprint }
-        };
+        this.#presentEvent(next, scheduled.event.id);
         return;
       }
       if (days >= maxDays) return;
