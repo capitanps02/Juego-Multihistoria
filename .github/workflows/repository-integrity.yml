@@ -49,6 +49,9 @@ jobs:
       - name: Build T5 QA target
         run: npm run build
 
+      - name: T5 authoritative sport model
+        run: node --test scripts/test-t5-match-model.mjs scripts/test-t5-sport-context.mjs
+
       - name: T5 pre-content freeze sentinel
         run: node scripts/freeze-t51-baseline.mjs --check
 
