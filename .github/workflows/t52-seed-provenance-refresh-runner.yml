@@ -1,0 +1,91 @@
+name: T5.2 seed provenance refresh runner
+
+on:
+  push:
+    branches:
+      - t5/seed-provenance-refresh-runner
+    paths:
+      - '.github/workflows/t52-seed-provenance-refresh-runner.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact main source
+        uses: actions/checkout@v4
+        with:
+          ref: cfb9459934fcd09e52300027f47935f773e60823
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Run focused T5.2 gates
+        run: npm run test:t52
+
+      - name: Regenerate Codex seed evidence from exact main
+        shell: bash
+        run: |
+          set -euo pipefail
+          SOURCE_SHA="$(git rev-parse HEAD)"
+          test "${SOURCE_SHA}" = "cfb9459934fcd09e52300027f47935f773e60823"
+          CODEX_BASE_COMMIT="${SOURCE_SHA}" node scripts/generate-codex-seed-handoff.mjs
+
+      - name: Remove stale provenance markers
+        shell: bash
+        run: |
+          rm -f \
+            analysis/CODEX/seeds/.provenance-refresh-required \
+            analysis/CODEX/seeds/.refresh-owner \
+            analysis/CODEX/seeds/.refresh-status \
+            analysis/CODEX/seeds/PROVENANCE_REFRESH.md \
+            analysis/CODEX/seeds/PROVENANCE_REFRESH_TASK.json \
+            analysis/CODEX/seeds/README_REFRESH_NOTICE.md
+
+      - name: Verify generated invariants
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const expected = 'cfb9459934fcd09e52300027f47935f773e60823';
+          const matrix = JSON.parse(fs.readFileSync('analysis/CODEX/seeds/SEED_CONSUMER_MATRIX.json', 'utf8'));
+          const ready = JSON.parse(fs.readFileSync('analysis/CODEX/seeds/implementation-ready.json', 'utf8'));
+          if (matrix.baseCommit !== expected) throw new Error(`matrix baseCommit ${matrix.baseCommit} != ${expected}`);
+          if (ready.baseCommit !== expected) throw new Error(`ready baseCommit ${ready.baseCommit} != ${expected}`);
+          if (matrix.counts.totalSeeds !== 210 || matrix.seeds.length !== 210) throw new Error('seed matrix is not 210/210');
+          if (matrix.counts.codexReadyEvents !== 5 || ready.tasks.length !== 5) throw new Error('Codex-ready event count changed');
+          if (matrix.counts.historicalConsumerRegistrations !== 0) throw new Error('historical consumer registry changed unexpectedly');
+          console.log(JSON.stringify({
+            baseCommit: matrix.baseCommit,
+            totalSeeds: matrix.counts.totalSeeds,
+            liveConsumerRegistrations: matrix.counts.liveConsumerRegistrations,
+            historicalConsumerRegistrations: matrix.counts.historicalConsumerRegistrations,
+            codexReadyEvents: matrix.counts.codexReadyEvents,
+            blockedDeclaredReadOnlyConsumers: matrix.counts.blockedDeclaredReadOnlyConsumers
+          }, null, 2));
+          NODE
+
+      - name: Commit generated evidence to review branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git switch -C t5/seed-provenance-refresh
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add analysis/CODEX/seeds
+          if git diff --cached --quiet; then
+            echo 'No generated provenance changes found.'
+            exit 1
+          fi
+          git commit -m 'docs(t5.2): refresh seed matrix provenance from exact main'
+          git push origin HEAD:t5/seed-provenance-refresh
