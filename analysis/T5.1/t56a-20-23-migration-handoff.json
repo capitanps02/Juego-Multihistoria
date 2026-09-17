@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "workstream": "T51_CANON_20_23",
+  "microbatch": "T5.6-A",
+  "generatedAt": "2026-09-17",
+  "routeOwner": "coordinator/integrator",
+  "registerGlobalRouteHere": false,
+  "lineagePolicy": "adjacent_edges_only",
+  "sourceContentIdentity": "6e552f606ace400d7b535747fbf7ba6078c60fd92889d4a360eb4db0bfb1013a",
+  "targetContentIdentity": "ce2f30ea24934787fb116627c727e4adf6c7bd05f8b8e79f415a20643e3fd58f",
+  "sourceGeneration": "T5.5-B canonical 20-23 frozen generation",
+  "targetGeneration": "T5.6-A canonical 20-23 status/locker generation",
+  "sourceEvidence": {
+    "fixture": "qa/fixtures/t5.1/post-t51-sources/6e552f606ace400d7b535747fbf7ba6078c60fd92889d4a360eb4db0bfb1013a.json",
+    "registry": "POST_T51_CONTENT_SOURCES[6e552f606ace400d7b535747fbf7ba6078c60fd92889d4a360eb4db0bfb1013a]",
+    "frozenIdentityRequired": true
+  },
+  "targetEvidence": {
+    "reporter": "scripts/report-t51-t56a-20-23-identity.mjs",
+    "ciRun": 35208188756,
+    "focusedTestsPassed": 28,
+    "microbatchTestsPassed": 8,
+    "t5ContentHardErrors": 0,
+    "inventoryAtCertification": {
+      "events": 388,
+      "seeds": 210,
+      "npcs": 20
+    }
+  },
+  "invariants": {
+    "preserveHistory": true,
+    "preserveDecisionProvenance": true,
+    "preserveLegacyPendingDefinition": true,
+    "preserveSeedsUnlessExplicitlyMapped": true,
+    "seedOriginMappings": [],
+    "consumeRng": false,
+    "reinterpretPendingByStringId": false,
+    "clearSeenGlobally": false,
+    "clearCooldownGlobally": false,
+    "mutateContractDuringMigration": false,
+    "synthesizeNpcIdentity": false
+  },
+  "mappings": [
+    {
+      "kind": "distinct_scene",
+      "legacyEventId": "EVT_20_STATUS_001",
+      "canonicalEventId": "EVT_20_STATUS_001",
+      "sourceFingerprint": "5703fb14349b52a8453b55cbea3fd1dfee91c3db510a0e30e7ee8d8ed3ebdf44",
+      "targetFingerprint": "d64586ef0b30a8b801281e048381bbe313e86b606d9e145f3287f47a8dcf8a68",
+      "clearCanonicalSeen": true,
+      "clearCanonicalCooldown": true,
+      "pendingBehavior": "preserve_source_definition_by_saved_source_identity_and_fingerprint",
+      "historyBehavior": "preserve_history_and_provenance"
+    },
+    {
+      "kind": "distinct_scene",
+      "legacyEventId": "EVT_20_LOCK_001",
+      "canonicalEventId": "EVT_20_LOCK_001",
+      "sourceFingerprint": "1e85deb4c7868a134015897504e085cc6d29c1293b30ba214f7b21c65054188a",
+      "targetFingerprint": "d76d3d2599d63c462fdfc1c74fd6a89ede6cafce459b511e8db7551dfdbc2915",
+      "clearCanonicalSeen": true,
+      "clearCanonicalCooldown": true,
+      "pendingBehavior": "preserve_source_definition_by_saved_source_identity_and_fingerprint",
+      "historyBehavior": "preserve_history_and_provenance"
+    },
+    {
+      "kind": "distinct_scene",
+      "legacyEventId": "EVT_20_LOCK_002",
+      "canonicalEventId": "EVT_20_LOCK_002",
+      "sourceFingerprint": "be40f9f6b95a880a598a5c574f4cf6a74c90c02c3b2b94b5cd1e07f16f5c5f6c",
+      "targetFingerprint": "af508136856c088d994ac10a9b6429f34ae3df531a4ca4ecabd624e0df152b7e",
+      "clearCanonicalSeen": true,
+      "clearCanonicalCooldown": true,
+      "pendingBehavior": "preserve_source_definition_by_saved_source_identity_and_fingerprint",
+      "historyBehavior": "preserve_history_and_provenance",
+      "seedBehavior": "SEED_TEAMMATE_COVER is created with stance/provenance payload; no terminal consumer is invented here.",
+      "knowledgeNote": "Marcos is an incidental teammate in this canonical scene. No persistent NPC is guessed and no NPC learns the event without an explicit future epistemic channel."
+    }
+  ],
+  "integrationInstructions": [
+    "Freeze targetContentIdentity before any later 20-23 microbatch changes EVENTS.",
+    "Coordinator should add exactly one adjacent source→target migration edge; do not add earlier-generation shortcuts.",
+    "Apply SEEN/cooldown release only to the three mappings above and only for target canonical scheduling state.",
+    "Pending/history rows must resolve through saved source identity and fingerprint evidence.",
+    "Do not synthesize a persistent NPC identity for Marcos solely to attach memory.",
+    "Do not invent a terminal consumer for SEED_TEAMMATE_COVER to improve lifecycle metrics."
+  ]
+}
