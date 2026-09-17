@@ -5,6 +5,7 @@ import { createInitialState } from '../dist/content/initial-state.js';
 import { eventGatesPass } from '../dist/narrative/event-gates.js';
 import { offerBridgeSpec } from '../dist/narrative/offer-bridge.js';
 import { narrativeConditionRoot } from '../dist/simulation/club-contract-intent.js';
+import { LOCKER_LEADERSHIP_ASSIGNMENTS } from '../dist/simulation/locker-leadership.js';
 import { careerTerms, getActiveCareerOffers, getEligibleCareerOffers } from '../dist/simulation/offers.js';
 import { certifyPlayerClubLeadershipInPlace } from '../dist/simulation/player-leadership-authority.js';
 
@@ -98,6 +99,22 @@ test('multi-offer veteran scenes remain outside offerBridge while market authori
     assert.equal(offerBridgeSpec(event), undefined, `${id} must not pretend one pending offer proves a multi-offer scene`);
     assert.equal(event.canonStatus, 'technical_adaptation');
   }
+});
+
+test('shared locker leadership currently has no authoritative 30_34 slot assignment', () => {
+  assert.equal(
+    LOCKER_LEADERSHIP_ASSIGNMENTS.some(assignment => assignment.phases.includes('30_34')),
+    false,
+    'a future authoritative 30_34 assignment must force this blocker to be reviewed rather than silently ignored'
+  );
+
+  const state = veteranState(30);
+  state.professional.lockerPower = 100;
+  state.professional.roleSecurity = 100;
+  const root = narrativeConditionRoot(state);
+  assert.equal(root.facts.lockerCaptainAffinity, null);
+  assert.equal(root.facts.lockerStarAffinity, null);
+  assert.equal(byId('EVT_30_CAP_001').canonStatus, 'technical_adaptation');
 });
 
 test('leadership narrative facts ignore influence, captaincy flags and seeds', () => {
