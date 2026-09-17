@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "ebef17057156c7721fc4a041552c9cf1b3fdb6ba",
+  "baseCommit": "782b92c9a496293aeb33ad8b39f522a927374d6f",
   "branch": "t5/sport-context",
   "tasks": [
     {
@@ -9,9 +9,9 @@
       "eventId": null,
       "requiredFacts": ["currentSeason", "sportingClub", "careerAppearances", "officialDebutRecorded"],
       "requiredApis": ["getSportContext", "getCurrentMatchContext"],
-      "allowedFiles": ["src/simulation/sport-context.ts", "scripts/test-t5-sport-context.mjs"],
+      "allowedFiles": ["src/simulation/sport-context.ts", "src/simulation/club-contract-intent.ts", "scripts/test-t5-sport-context.mjs"],
       "forbiddenFiles": ["src/content/events/**"],
-      "acceptanceTests": ["read consumes 0 RNG", "read mutates 0 state", "registration club drives sportingClub", "unavailable match facts stay null even when proxies are high"]
+      "acceptanceTests": ["read consumes 0 RNG", "read mutates 0 state", "registration club drives sportingClub", "narrativeConditionRoot exposes facts.sport/facts.match", "unavailable match facts stay null even when proxies are high"]
     },
     {
       "id": "CODEX-FOOTBALL-001",
@@ -21,7 +21,7 @@
       "requiredApis": ["resolvePenaltyMomentInPlace", "playerPenaltyAttempt"],
       "allowedFiles": ["src/simulation/football-moments.ts", "scripts/test-t5-football-moments.mjs"],
       "forbiddenFiles": ["src/content/events/**"],
-      "acceptanceTests": ["football RNG only", "exactly one draw on first resolution", "same moment ID replays", "different inputs for resolved ID fail", "no stat mutation"]
+      "acceptanceTests": ["football RNG only", "exactly one draw on first resolution", "same moment ID replays", "different inputs for resolved ID fail", "unknown namespaces fail before RNG", "no stat mutation"]
     },
     {
       "id": "CODEX-SPORT-SAVE-001",
@@ -31,7 +31,7 @@
       "requiredApis": ["inspectFootballMomentStore", "assertGameState"],
       "allowedFiles": ["src/save/validation.ts", "scripts/test-saves.mjs", "scripts/test-t5-football-moments.mjs"],
       "forbiddenFiles": ["src/content/events/**"],
-      "acceptanceTests": ["unknown outcome rejected", "probability out of range rejected", "malformed store rejected", "unsupported row version rejected", "session restore rejects corrupt row", "validation consumes 0 RNG"]
+      "acceptanceTests": ["unknown moment ID rejected", "unknown outcome rejected", "malformed store rejected", "unsupported row version rejected", "non-canonical input signature rejected", "actor/signature mismatch rejected", "probability inconsistent with persisted inputs rejected", "future resolvedAt rejected", "session restore rejects corrupt row", "validation consumes 0 RNG"]
     },
     {
       "id": "CODEX-SPORT-MODEL-001",
