@@ -1,6 +1,7 @@
 import type { GameState } from "../core/types.js";
 import { advanceWorldDayInPlace as advanceCoreWorldDayInPlace } from "./world-simulator-core.js";
 import { closeLeagueObjectiveInPlace, recordOfficialMatchInPlace, remainingLeagueFixtures } from "./match-model.js";
+import { materializeAge18MarketOfferInPlace } from "./early-career-market.js";
 
 const num = (value: unknown, fallback = 0): number =>
   typeof value === "number" && Number.isFinite(value) ? value : fallback;
@@ -8,7 +9,7 @@ const num = (value: unknown, fallback = 0): number =>
 /**
  * Public world-simulation boundary.
  * The established simulator stays single-sourced in world-simulator-core.ts;
- * this wrapper materializes authoritative sporting facts after that exact tick
+ * this wrapper materializes authoritative sporting and market facts after that exact tick
  * and consumes zero additional RNG draws.
  */
 export function advanceWorldDayInPlace(next: GameState): GameState {
@@ -42,6 +43,11 @@ export function advanceWorldDayInPlace(next: GameState): GameState {
       closeLeagueObjectiveInPlace(next, outcome);
     }
   }
+
+  // Market materialisation runs after the complete world/sport tick so its
+  // eligibility sees the authoritative causal state for the new date. It is
+  // deterministic and advances no RNG stream.
+  materializeAge18MarketOfferInPlace(next);
 
   return next;
 }
