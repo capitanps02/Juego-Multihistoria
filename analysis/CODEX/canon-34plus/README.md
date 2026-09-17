@@ -1,114 +1,84 @@
 # Canon 34+ — Agent 8
 
-Runtime re-grounded on `main@fa3c8bae524fef62e4eb9802e895df88588998c4` on 2026-09-17. Current main includes certified canonical 18–23 **generation H**, shared player-club-leadership authority, hardened `CareerOffer` lifecycle and exact eligible-offer facts on the narrative read surface. These are real shared-authority improvements, but 34+ still cannot freeze because its immediate predecessor — final canonical 30–34 — is not yet authoritative.
+Base audit: `main@fa3c8bae524fef62e4eb9802e895df88588998c4` (2026-09-17). Agent 8 owns ordinary late-career 34+ content; terminal protagonist retirement/last-match closure/epilogues remain Agent 9 / PR #118.
 
-## Scope
-- Canonical principals in source block 34+: **50**.
-- Agent 8 ordinary late-career ownership: **43**.
-- Agent 9 terminal/retirement ownership: **7** (`EVT_37_ANNOUNCE_001` plus six `EVT_RET_*`).
-- Canonical Pasada-7 conditionals: **32 exact IDs** from section 25.13 of the Documento Maestro.
-- Engine 34+ conditionals: **32**, but count equality is misleading: only **5 IDs overlap exactly**, **27 canonical IDs are absent**, **27 engine technical IDs are not canonical**, and **0/32 canonical conditionals are semantically accredited in runtime**.
-- Historical engine-only principal extras: **30**.
-- Principal identity reconciliation: **50/50 classified** (4 same-identity, 3 replacements, 13 needs-reimplementation, 30 canonical-missing).
-- Conditional identity reconciliation: **32/32 canonical IDs identified**; implementation remains **0/32 accredited** under issue **#192**.
+## Canon scope
+- principal canon: **50** = 43 ordinary Agent 8 + 7 terminal Agent 9;
+- principal identity reconciliation: **50/50**;
+- ordinary principal cards prepared: **43/43**;
+- ordinary runtime active on this branch: **0/43**;
+- conditional canon (Documento Maestro 25.13): **32 exact IDs**;
+- conditional identities reconciled: **32/32**;
+- canonical conditionals runtime-accredited: **0/32**;
+- exact Pasada-7 seeds classified: **54/54** = 45 ordinary + 9 terminal, plus 14 inherited/derived bridge concepts.
 
-## Runtime vs preparation
-This branch intentionally contains **no new active 34+ canonical principal implementation yet**. Terminal career retirement remains owned by Agent 9 / PR #118.
+Preparation is intentionally ahead of runtime activation. This branch must not register a 34+ content generation until the serialized lineage turn is real.
 
-- ordinary canonical principals runtime implemented on Agent-8 branch: **0/43**;
-- strict principal integration/Codex-ready: **0/43** while Wave 0 remains incomplete;
-- canonical principal-card preparation: **43/43 = 100%**;
-- principal authority classification: **43/43**;
-- canonical conditional identities reconciled: **32/32**;
-- canonical conditional runtime accreditation: **0/32**;
-- exact Pasada-7 seed ownership classified: **54/54** plus 14 inherited/derived bridge-memory concepts.
+## Lineage — current authority
+Issue **#59** no longer lacks a multi-hop migration engine: the graph/path contract is already on `main`. Its remaining role is serialized generation ownership.
 
-Principal preparation is complete; activation is blocked by shared lineage/seed migration and scene-specific authorities. Conditional identity reconciliation is also complete, but exact canonical conditional content still requires reimplementation under #192.
+Current active chain is `PRE -> B1a -> C -> D -> E -> F -> G -> H`, active identity `84871fae2bec92d74d1e607e0a48943e2e530a062d315a829cfe75eda9fe0886`.
 
-## Conditional deck correction
-The Documento Maestro section **25.13 — Baraja condicional, 32 eventos que pueden alterar el final** is the authoritative conditional inventory.
+Coordination explicitly states that **34+ is not authorized to register a successor from H now**. Earlier repairs and the intervening 26–30 / 30–34 content must serialize first. When 34+ finally becomes next:
+1. re-ground on the exact authoritative final 30–34 predecessor;
+2. calculate the active catalog then;
+3. add only the adjacent predecessor→34+ route;
+4. preserve history, pending fingerprints and seed provenance;
+5. never reuse a provisional target from this handoff branch.
 
-Current engine `src/content/events/34_plus/conditional-events.ts` also contains 32 rows, but 29 are generated through a generic helper with `canonStatus:"technical_adaptation"`. Generic body/choices/effects and proxy-style gates do not establish canonical equivalence.
+## Wave 0
+Runtime activation requires both:
+1. **#59** — actual serialized 34+ turn with authoritative final 30–34 predecessor;
+2. **#180 / PR #191** — exact Pasada-7 seed catalog integrated in `main`.
 
-Exact-ID overlap is only:
-- `CEVT_34_MAJOR_COMEBACK`;
-- `CEVT_36_NO_MEDICAL_CLEARANCE`;
-- `CEVT_38_OFFER_AFTER_RETIREMENT_ANNOUNCED`;
-- `CEVT_RET_NO_LAST_MATCH`;
-- `CEVT_RET_STORYBOOK_LAST_GOAL`.
+PR #191 is already ready for review and green: it implements 54 exact canonical seed IDs, 45+9 ownership, 14 bridge dispositions, exact producer provenance and no fuzzy technical aliases. It is **not yet integrated**, so Wave 0 remains incomplete.
 
-All five still require canonical reimplementation because their current gates/effects can fabricate or proxy facts that canon requires to be factual. In particular, `CEVT_RET_STORYBOOK_LAST_GOAL` cannot create a goal from a narrative choice, and `CEVT_RET_NO_LAST_MATCH` cannot infer an unavailable last match merely from elapsed retirement time.
+## Shared runtime dependency order
+For market/free-agency content, use this order rather than building compatibility shims:
 
-`CEVT_RET_RECONSIDER` is not one of the 32 canonical IDs. The canonical reconsideration identity is `CEVT_38_RETIREMENT_REVERSAL`; no automatic alias/rewrite is authorized. See `CONDITIONAL_RECONCILIATION.json`, `CONDITIONAL_HANDOFF.md` and issue **#192**.
+`PR #156 sport boundary -> #157 MarketState v2 -> #130 employment/unattached -> #176 veteran producer`
 
-## Current lineage position
-Main remains on certified generation H for active content. The newer leadership and market-authority commits do not change `EVENTS`, content identity, RNG or schema. Agent 8 must still wait for all intervening canonical generations, especially 23–30 and final 30–34, to become authoritative. Issue #59 owns the multigeneration migration/evidence contract.
+- **#156 / #124**: authoritative weekly club fixture/usage history candidate. It can provide fixture identity, call/bench/start/appearance/minutes and calendar facts. It still does not provide final results, goals/assists/cards, awards or generic records.
+- **#157**: future single authoritative 0..N formal-offer collection with exact offer identity and v1→v2 migration.
+- **#130**: implementation-ready employment contract after #156; authoritative states `contracted | unattached | expired_pending_resolution`; natural new-game expiry is a deterministic 0-RNG `contracted -> unattached` transition.
+- **#176**: veteran 34+ offer production and representable late-career market semantics after #157/#130. It also owns factual veteran market approach/medical-assessment records; a failed medical is not a synthetic `CareerOffer`.
 
-When 34+ genuinely becomes the next generation:
-1. re-ground on that exact predecessor;
-2. calculate the then-current content identity;
-3. register only the adjacent predecessor→34+ edge;
-4. preserve historical/pending/seed provenance;
-5. never reuse a provisional hash from this handoff branch.
+## Other factual owners
+- **#174** — concrete ordinary/tournament national-selection publications; implement after #156.
+- **#199** — rich sporting history: results/goals/assists/cards where produced, awards and record authority.
+- **#200** — persistent injury/rehab episodes and factual return chronology.
+- **#201** — factual club-world incidents for finance, sponsors, stadium/closed-door and staff-crisis/player-coach context.
+- **#169** — factual coach tenure/change/profile.
+- **#177** — now a routing guard, not a new shared NPC subsystem.
 
-## Authorities available on current main
-- Market: persisted `CareerOffer`, offer bridge and `respondToOffer()` are authoritative. Current main now also provides stale-offer eligibility fail-closed, deterministic pending-offer kind, renewal-reason authority cleanup, direct-market-mutation auditing **and detached exact eligible `CareerOffer` facts on the narrative read surface**. Wave B may consume those exact factual rows instead of reconstructing offer truth. This still does not generate the missing veteran 34+ renewals/transfers or make unsupported late-career terms real; **issue #176** remains the owner for generation and representability.
-- Contract employment: `contractEmploymentStatus()` exists, but `monthsRemaining <= 0` is still `expired_pending_resolution`, not authoritative free agency; **issue #130** owns the unattached-player contract.
-- Sport: `getSportContext()` / `getCurrentMatchContext()` fail closed for unsupported fixture, starts, recent minutes, bench, goals/results and other concrete match facts. Shared factual match/calendar work is tracked by **#124** and PR #156.
-- National team: `resolveNationalTeamAuthority()` safely exposes historical/pool/cycle/international-retirement facts. It deliberately exposes `concreteCallupKnown=false` and `tournamentSquadKnown=false`; **issue #174** owns concrete preselection/final-squad authority.
-- Agent identity: `resolveActiveAgent()` is authoritative and may return null.
-- Player club leadership: `resolveCurrentPlayerClubLeadership()` and historical leadership facts are authoritative and fail closed. `resolveCertifiedPlayerLeadershipSuccessor()` may return a named same-club successor only when an explicit certification exists; the shared contract explicitly forbids inferring a successor from relationships, `npcRefs`, prominence, role text or recency.
-- Leadership limitation for Wave D: the audited earlier canon supplies captaincy-group/secondary-captain facts but no general main-captain writer, and its audited succession actors are generic/non-persistent unless future canon explicitly identifies one. Therefore `EVT_34_DORSAL_001` and `EVT_34_MENTOR_001` remain blocked until their actual young signing/competitor/successor context exists; the new resolver is safe to consume but cannot manufacture that context.
-- Other late-career NPC authority: current coach, veteran peer and ordinary institutional counterparty remain tracked by **#177** / #169.
-- Football moments: only explicitly registered moment IDs are factual; no generic 34+ cinematic moment authority exists.
-- Seeds: scope-aware live/historical projections and owner-classification infrastructure exist. The 54 exact Pasada-7 identities still require T5.2 application under **#180**.
+## NPC / actor routing refinement
+The 43-card matrix no longer assumes every Wave-D scene needs a persistent NPC.
+- `EVT_35_AGT_001`: use existing `resolveActiveAgent()` or explicit null; no #177 implementation work.
+- `EVT_35_DUAL_001`: generic club voice is acceptable unless canon explicitly requires a named actor; contract/institutional truth routes through #157/#176.
+- `EVT_36_CCH_001`: coach tenure/profile routes to #169; do not force a persistent NPC identity.
+- `EVT_34_DORSAL_001` / `EVT_34_MENTOR_001`: a generic non-persistent young actor is allowed only where canon requires no named continuity or T5.3 relationship/knowledge effects.
+- `EVT_35_RECORD_001`: factual record truth routes to #199; persistent identity is needed only if canon explicitly requires named continuity.
+- `EVT_36_PEER_001`: remains fail-closed until an exact peer identity and causal peer-retirement history exist.
 
-## Complete ordinary dependency coverage
-`CANONICAL_CARD_COVERAGE.json`, `UNLOCK_WAVES.md`, `AUTHORITY_MATRIX.json` and `SHARED_OWNER_ROUTING.json` cover all **43/43** ordinary principals and their current downstream owners.
+## Conditional canon
+The engine also has 32 34+ conditional rows, but count equality is not canonical coverage. Canon has 32 exact IDs; only 5 current IDs overlap exactly, 27 canonical IDs are absent, 27 engine technical IDs are non-canonical, and **0/32** are semantically accredited.
 
-Wave membership counts are dependency counts, so overlaps are intentional:
-- Wave A — **4** context/body/family/image scenes;
-- Wave B — **18** market/contract-dependent scenes;
-- Wave C — **16** sport/usage/selection-dependent scenes;
-- Wave D — **7** NPC/squad-identity-dependent scenes;
-- Wave E — **2** free-agency-dependent scenes.
+Issue **#192** owns exact conditional implementation. The former eight missing factual domains from #195 are now fully routed; **#195 is closed as a coordination issue**, not as runtime implementation:
+- award + record facts -> **#199**;
+- major injury/rehab -> **#200**;
+- finance/sponsor/stadium/staff crisis -> **#201**;
+- club medical evaluation -> **#176**.
 
-Cross-wave scenes:
-- `EVT_35_AGT_001` = B + D;
-- `EVT_35_DUAL_001` = B + D;
-- `EVT_35_RECORD_001` = C + D;
-- `EVT_37_SHORT_001` = B + E.
+`CEVT_RET_RECONSIDER` is not canonical Pasada-7 identity. Canon uses `CEVT_38_RETIREMENT_REVERSAL`; no silent alias/history rewrite is authorized.
 
-Detailed canonical cards and QA packages exist for Waves A–E. `WAVE_B_COMPLETE_INDEX.json` composes the market wave without duplicating the full `EVT_35_DUAL_001` card stored in Wave D.
-
-## Wave 0 — mandatory before runtime activation
-No ordinary 34+ principal or canonical conditional should be registered until all common prerequisites are satisfied:
-1. issue #59 reaches the actual authoritative immediate predecessor;
-2. T5.2 / **#180** applies `T52_SEED_HANDOFF.json` and preserves provenance/migration semantics;
-3. predecessor memories consumed by 34+ are canonical and use correct live/historical semantics;
-4. pending/history/event fingerprints remain migration-safe.
-
-## First activation batch after Wave 0
-Wave A remains the first safe principal target:
+## First Agent-8 activation after Wave 0
+The first prepared principal batch remains:
 - `EVT_35_FAM_001`;
 - `EVT_35_BODY_001`;
 - `EVT_35_IMG_001`;
 - `EVT_36_MED_001`.
 
-They are fully specified in `WAVE_A_IMPLEMENTATION.json` and `WAVE_A_TEST_MATRIX.md`, but remain inactive until Wave 0 lands.
-
-Conditional work is tracked separately in **#192** and must use exact Pasada-7 identities rather than treating the existing technical deck as canonical.
-
-## Shared owner routing
-- lineage: **#59**;
-- 34+ seed catalog/provenance: **#180**;
-- 34+ exact conditional deck: **#192**;
-- match/calendar/competition facts: **#124** + PR #156;
-- concrete national selection: **#174**;
-- veteran 34+ offers/terms: **#176**;
-- free agency: **#130**;
-- late-career NPC identity: **#177** (player leadership/successor resolver partially integrated; remaining identity facts still fail closed);
-- terminal career retirement: **PR #118 / Agent 9**.
+Do not activate them yet: #59 still forbids a 34+ successor and PR #191 is not in main.
 
 ## Hard boundary
-Agent 8 may create veteran pressure, uncertainty, adaptation, international-retirement choices and explicit decisions to continue. It must not announce/close **career** retirement, fabricate last match/goal/selection, turn no-offer into retirement, infer NPC identities, or mutate club/contract outside authoritative market APIs. Existing technical conditionals must not be relabeled canonical without exact identity, factual trigger and semantic proof.
+No narrative proxy may manufacture formal offers, free agency, match facts, selection, records, awards, injuries, sponsor/finance incidents, persistent NPC identity or retirement state. Missing factual authority means fail closed. No auto-merge and no provisional 34+ contentIdentity freeze.
