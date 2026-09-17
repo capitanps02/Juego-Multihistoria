@@ -5,7 +5,7 @@ import { createInitialState } from '../dist/content/initial-state.js';
 import { eventGatesPass } from '../dist/narrative/event-gates.js';
 import { offerBridgeSpec } from '../dist/narrative/offer-bridge.js';
 import { narrativeConditionRoot } from '../dist/simulation/club-contract-intent.js';
-import { careerTerms, getActiveCareerOffers } from '../dist/simulation/offers.js';
+import { careerTerms, getActiveCareerOffers, getEligibleCareerOffers } from '../dist/simulation/offers.js';
 import { certifyPlayerClubLeadershipInPlace } from '../dist/simulation/player-leadership-authority.js';
 
 const byId = id => {
@@ -38,6 +38,7 @@ test('formal CareerTerms cannot yet prove the minutes-based renewal clause asser
 test('shared market authority exposes at most the single persisted pending CareerOffer', () => {
   const state = createInitialState(313133);
   assert.deepEqual(getActiveCareerOffers(state), []);
+  assert.deepEqual(getEligibleCareerOffers(state), []);
 
   const before = careerTerms(state);
   state.market = {
@@ -54,9 +55,41 @@ test('shared market authority exposes at most the single persisted pending Caree
   };
 
   const active = getActiveCareerOffers(state);
+  const eligible = getEligibleCareerOffers(state);
   assert.equal(active.length, 1);
+  assert.equal(eligible.length, 1);
   assert.equal(active[0].id, 'offer:single-authority-proof');
+  assert.equal(eligible[0].id, 'offer:single-authority-proof');
   assert.equal(Array.isArray(state.market.pending), false);
+});
+
+test('plural eligible-offer read API does not imply persisted multi-offer authority', () => {
+  const state = veteranState(31);
+  const before = careerTerms(state);
+  state.market = {
+    version: 1,
+    sequence: 4,
+    history: [],
+    pending: {
+      id: 'offer:only-persisted-candidate',
+      date: state.date,
+      reason: 'Oferta formal exacta',
+      before,
+      terms: {
+        ...before,
+        club: 'ELITE_A',
+        ownerClub: 'ELITE_A',
+        registrationClub: 'ELITE_A',
+        months: 12
+      }
+    }
+  };
+
+  const eligible = getEligibleCareerOffers(state);
+  assert.equal(eligible.length, 1, 'eligible API is plural-shaped but backed by the singleton pending field');
+  assert.equal(eligible[0].id, 'offer:only-persisted-candidate');
+  assert.equal(narrativeConditionRoot(state).facts.pendingCareerOffer?.id, 'offer:only-persisted-candidate');
+  assert.equal(Object.hasOwn(state.market, 'offers'), false, 'no persisted simultaneous-offer collection exists');
 });
 
 test('multi-offer veteran scenes remain outside offerBridge while market authority is single-offer', () => {
