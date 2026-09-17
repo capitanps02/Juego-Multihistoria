@@ -1,0 +1,155 @@
+{
+  "schemaVersion": 1,
+  "baseCommit": "ebef17057156c7721fc4a041552c9cf1b3fdb6ba",
+  "authorityFile": "src/simulation/offers.ts",
+  "transitions": [
+    {
+      "transition": "materialize_formal_offer",
+      "authority": "proposeCareerChange",
+      "preconditions": ["retirement.status == playing", "market.pending == null", "proposed CareerTerms differ from current CareerTerms"],
+      "mutations": ["market.sequence", "market.pending"],
+      "history": [],
+      "rng": "none inside authority; caller generation may use an authorised world RNG stream",
+      "saveSafe": true,
+      "tests": ["scripts/test-offers.mjs", "scripts/test-t5-market-contract-authority.mjs"]
+    },
+    {
+      "transition": "accept_renewal_offer",
+      "authority": "respondToOffer",
+      "preconditions": ["market.pending exists", "careerOfferKind(pending) == renewal", "current CareerTerms == pending.before"],
+      "mutations": ["contract.monthsRemaining", "contract.salaryMonthly", "contract.releaseClause", "market.history", "market.pending"],
+      "history": ["OfferDecision with full offer snapshot"],
+      "rng": "none",
+      "saveSafe": true,
+      "tests": ["scripts/test-offers.mjs", "scripts/test-t5-market-contract-authority.mjs"]
+    },
+    {
+      "transition": "reject_formal_offer",
+      "authority": "respondToOffer",
+      "preconditions": ["market.pending exists", "current CareerTerms == pending.before"],
+      "mutations": ["market.history", "market.pending"],
+      "history": ["OfferDecision action=reject accepted=false"],
+      "rng": "none",
+      "saveSafe": true,
+      "tests": ["scripts/test-offers.mjs"]
+    },
+    {
+      "transition": "counter_formal_offer",
+      "authority": "respondToOffer",
+      "preconditions": ["market.pending exists", "narrative source supplied", "offer bridge maps choice to counter"],
+      "mutations": ["market.history", "market.pending"],
+      "history": ["OfferDecision action=reject", "source.disposition=counter"],
+      "rng": "none",
+      "saveSafe": true,
+      "tests": ["scripts/test-t51-offer-bridge.mjs", "scripts/test-t51-offer-bridge-provenance.mjs"]
+    },
+    {
+      "transition": "defer_formal_offer",
+      "authority": "respondToOffer",
+      "preconditions": ["market.pending exists", "narrative source supplied", "offer bridge maps choice to defer"],
+      "mutations": ["market.history", "market.pending"],
+      "history": ["OfferDecision action=reject", "source.disposition=defer"],
+      "rng": "none",
+      "saveSafe": true,
+      "tests": ["scripts/test-t51-offer-bridge.mjs", "scripts/test-t51-offer-bridge-provenance.mjs"]
+    },
+    {
+      "transition": "accept_transfer_offer",
+      "authority": "respondToOffer -> applyTerms",
+      "preconditions": ["market.pending exists", "careerOfferKind(pending) == transfer", "current CareerTerms == pending.before"],
+      "mutations": ["club", "tier", "contract.*", "professional.ownerClub", "professional.registrationClub", "professional.leagueTier", "professional prestige/route", "world.ownerClub", "ABROAD_ROUTE", "LOAN_ACTIVE", "BIG_CLUB", "market.history", "market.pending"],
+      "history": ["OfferDecision accepted=true"],
+      "rng": "none",
+      "saveSafe": true,
+      "tests": ["scripts/test-offers.mjs"]
+    },
+    {
+      "transition": "accept_loan_offer",
+      "authority": "respondToOffer -> applyTerms",
+      "preconditions": ["market.pending exists", "careerOfferKind(pending) == loan", "terms.ownerClub preserves parent", "terms.registrationClub is loan club"],
+      "mutations": ["club", "contract.*", "professional.registrationClub", "professional.route", "LOAN_ACTIVE", "market.history", "market.pending"],
+      "history": ["OfferDecision accepted=true with parent owner in terms"],
+      "rng": "none",
+      "saveSafe": true,
+      "tests": ["scripts/test-t5-market-contract-authority.mjs"]
+    },
+    {
+      "transition": "return_from_loan",
+      "authority": "respondToOffer -> applyTerms",
+      "preconditions": ["player currently on loan", "market.pending kind == loan_return"],
+      "mutations": ["club back to parent", "registrationClub back to parent", "ownerClub preserved", "LOAN_ACTIVE=false", "contract terms", "market.history", "market.pending"],
+      "history": ["OfferDecision accepted=true"],
+      "rng": "none for response; proposal generation may use world RNG",
+      "saveSafe": true,
+      "tests": ["scripts/test-t5-market-contract-authority.mjs"]
+    },
+    {
+      "transition": "convert_loan_permanent",
+      "authority": "respondToOffer -> applyTerms",
+      "preconditions": ["player currently on loan", "market.pending kind == loan_conversion"],
+      "mutations": ["ownerClub becomes registration club", "world.ownerClub", "LOAN_ACTIVE=false", "contract terms", "market.history", "market.pending"],
+      "history": ["OfferDecision accepted=true"],
+      "rng": "none for response; proposal generation may use world RNG",
+      "saveSafe": true,
+      "tests": ["scripts/test-t5-market-contract-authority.mjs"]
+    },
+    {
+      "transition": "contract_month_tick",
+      "authority": "monthlyContractTick",
+      "preconditions": ["calendar month changed"],
+      "mutations": ["contract.monthsRemaining = max(0, months-1)"],
+      "history": [],
+      "rng": "none",
+      "saveSafe": true,
+      "tests": ["scripts/test-offers.mjs"]
+    },
+    {
+      "transition": "contract_reaches_zero",
+      "authority": "contractEmploymentStatus (classification only)",
+      "preconditions": ["contract.monthsRemaining <= 0", "retirement.status == playing"],
+      "mutations": [],
+      "history": [],
+      "rng": "none",
+      "saveSafe": true,
+      "status": "BLOCKED_FOR_RESOLUTION",
+      "reason": "Runtime has no authoritative free-agent/unattached representation; issue #130 confirms zombie employment state.",
+      "tests": ["scripts/test-t5-market-contract-authority.mjs"]
+    },
+    {
+      "transition": "enter_free_agency",
+      "authority": null,
+      "preconditions": [],
+      "mutations": [],
+      "history": [],
+      "rng": "none required by contract",
+      "saveSafe": false,
+      "status": "NOT_MODELLED",
+      "reason": "Requires approved shared save/employment/calendar/football semantics before implementation.",
+      "tests": []
+    },
+    {
+      "transition": "withdraw_offer",
+      "authority": null,
+      "preconditions": [],
+      "mutations": [],
+      "history": [],
+      "rng": "none required by contract",
+      "saveSafe": false,
+      "status": "NOT_MODELLED",
+      "reason": "No withdrawal lifecycle exists; narrative must not clear market.pending ad hoc.",
+      "tests": []
+    },
+    {
+      "transition": "expire_offer",
+      "authority": null,
+      "preconditions": [],
+      "mutations": [],
+      "history": [],
+      "rng": "none required by contract",
+      "saveSafe": false,
+      "status": "NOT_MODELLED",
+      "reason": "CareerOffer has no persisted expiresAt and world advance stops while pending.",
+      "tests": []
+    }
+  ]
+}
