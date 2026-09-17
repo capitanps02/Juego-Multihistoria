@@ -1,16 +1,17 @@
 # Unblocked / blocked market content
 
-Base: `main@ebef17057156c7721fc4a041552c9cf1b3fdb6ba`.
+Runtime audit base: `main@ebef17057156c7721fc4a041552c9cf1b3fdb6ba`.  
+Implementation queue re-grounded over: `main@adf1bffa7298bff6d7cebab88a3388c559cd3588`.
 
 `Codex ready` here means that the technical market/contract dependency is sufficiently specified to implement the content without inventing a second authority. It does **not** grant permission to skip the active content-identity lineage; Codex must re-read the coordinator queue immediately before touching `EVENTS`.
 
 | Event | Age | Type | Previous blocker | Authority available | Codex ready |
 |---|---:|---|---|---|---|
-| `EVT_18_JAN_001` | 18 | loan / market | #123: proxy interest + direct club mutation, no proven formal age-18 offer | Query APIs exist, but generation does not | **No — blocked** |
-| `EVT_18_SUM_001` | 18 | renewal / exit | #123: direct contract duration effects; external exit requires real offer | Renewal/transfer query + response APIs exist, but age-18 materialisation does not | **No — blocked** |
+| `EVT_18_JAN_001` | 18 | loan / market | #123: proxy interest + direct club mutation, no proven formal age-18 offer | Query APIs exist; generation/bridge must still be integrated atomically | **No — blocked** |
+| `EVT_18_SUM_001` | 18 | renewal / exit | #123: direct contract duration effects; external exit requires real offer | Renewal/transfer query + response APIs exist; age-18 materialisation still absent | **No — blocked** |
 | `EVT_20_MKT_001` | 20 | market | current generic scene uses `marketHeat`; formal-offer premise not reconciled | transfer query/bridge available | **No — needs canon** |
 | `EVT_22_CON_001` | 22 | contract talk | unclear whether the conversation is a formal signable renewal | renewal query/bridge available | **No — needs canon** |
-| `EVT_22_CON_002` | 22 | contract expiry | depends on real expiry/free-agency semantics | `expired_pending_resolution` is visible; free agency not modelled | **No — #130** |
+| `EVT_22_CON_002` | 22 | contract expiry | depends on real expiry/free-agency semantics | `expired_pending_resolution` is visible; `route="free_agent"` is only partial scaffolding, not an authoritative employment transition | **No — #130** |
 | `EVT_23_MKT_001` | 23 | formal transfer offer | #83 needed an authoritative offer/session bridge | `getEligibleTransferOffers` + `offerBridge` + `respondToOffer` | **Yes** |
 | `EVT_23_CON_001` | 23 | formal renewal | #83 needed formal same-club terms and safe counter/reject | `getEligibleRenewalOffers` + bridge + response | **Yes** |
 | `EVT_24_MKT_001` | 24 | three simultaneous offers | singular `market.pending` cannot back three destinations | no approved multi-offer authority | **No — blocked** |
