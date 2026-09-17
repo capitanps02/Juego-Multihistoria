@@ -7,6 +7,7 @@ import { advanceWorldDayInPlace } from '../dist/simulation/world-simulator.js';
 import { respondToOffer } from '../dist/simulation/offers.js';
 import { closeCareer } from '../dist/simulation/late-career-engine.js';
 import { generateEpilogue } from '../dist/epilogue/generator.js';
+import { validateGameStateQa } from './qa-t5-state-validator.mjs';
 
 const profiles = [
   { id: 'ambitious', offer: 'accept', weights: { ambition: 6, competition: 5, initiative: 4, career: 3, elite: 5, risk: 1 }, fallback: 'first' },
@@ -40,21 +41,8 @@ function choose(profile, event, decisionIndex) {
   return event.choices[bestIndex].id;
 }
 
-const segmentForAge = age => age < 20 ? '18_20' : age < 23 ? '20_23' : age < 26 ? '23_26' : age < 30 ? '26_30' : age < 34 ? '30_34' : '34_plus';
+const segmentForAge = age => age < 20 ? '18_20' : age < 23 ? '20_23' : age < 26 ? '23_26' : age < 30 ? '30_34' : age < 34 ? '30_34' : '34_plus';
 const liveSeed = seed => !['resolved', 'expired'].includes(seed.state);
-
-function impossibleStates(state) {
-  const issues = [];
-  if (state.phase !== segmentForAge(state.age)) issues.push(`phase:${state.phase}/age:${state.age}`);
-  if (Number(state.contract.monthsRemaining) < 0) issues.push('negative_contract_months');
-  if (Number(state.contract.salaryMonthly) < 0) issues.push('negative_salary');
-  if (state.epilogue.generated && state.retirement.status !== 'closed') issues.push('epilogue_before_retirement_closed');
-  const live = new Map();
-  for (const seed of state.seeds.filter(liveSeed)) live.set(seed.id, (live.get(seed.id) ?? 0) + 1);
-  for (const [id, count] of live) if (count > 1) issues.push(`duplicate_live_seed:${id}:${count}`);
-  if (state.market?.pending && state.retirement.status === 'closed') issues.push('pending_offer_after_retirement');
-  return issues;
-}
 
 function runProfile(profile, seed, maxAge = 55) {
   const state = createInitialState(seed);
@@ -93,7 +81,7 @@ function runProfile(profile, seed, maxAge = 55) {
     openSeeds: state.seeds.filter(liveSeed).map(seed => seed.id),
     epilogues: state.epilogue.families,
     marketDecisions: state.market?.history.length ?? 0,
-    impossibleStates: impossibleStates(state)
+    impossibleStates: validateGameStateQa(state)
   };
 }
 
