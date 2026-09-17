@@ -41,6 +41,8 @@ function withoutCareerTermEffects(outcome: OutcomeDefinition): OutcomeDefinition
 
 function rewriteOutcomeMessage(outcome: OutcomeDefinition): OutcomeDefinition {
   const messages: Record<string, string> = {
+    WAIT_DEADLINE__PRIMARY: "Aplazas la propuesta y mantienes tus condiciones actuales. Sigues escuchando al mercado, pero esta oferta deja de estar reservada para ti.",
+    WAIT_DEADLINE__SECONDARY: "La propuesta deja de estar pendiente y enero puede cerrarse sin una alternativa formal que la sustituya.",
     FLEXIBILITY__PRIMARY: "Planteas una estructura más flexible. El club toma la contraoferta y tu contrato actual sigue vigente mientras no exista una nueva propuesta formal.",
     FLEXIBILITY__SECONDARY: "Ferrer endurece la negociación. La contraoferta cierra esta propuesta sin cambiar tus condiciones actuales.",
     WAIT__PRIMARY: "Aplazas la firma y conservas tus condiciones actuales, aceptando el riesgo de que la siguiente propuesta sea distinta.",
@@ -58,7 +60,9 @@ function repairJanuary(event: EventDefinition): EventDefinition {
     if (choice.id === "TRANSFER") return choiceWithEligibility(choice, [kindIs("transfer")]);
     return choice;
   });
-  const outcomes = event.outcomes.map(withoutCareerTermEffects);
+  const outcomes = event.outcomes
+    .map(withoutCareerTermEffects)
+    .map(rewriteOutcomeMessage);
   return {
     ...event,
     gates: [...event.gates, kindIs("loan", "transfer")],
