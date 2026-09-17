@@ -17,13 +17,15 @@ Commit:
 
 `T5 market: exact eligible CareerOffer facts`
 
-Desde la última sincronización se han integrado, sin cambiar `EVENTS` ni `contentIdentity`:
+Shared runtime integrado después de la última generación narrativa:
 
-- autoridad fail-closed de liderazgo de club del jugador;
+- liderazgo de club del jugador fail-closed;
 - hardening de ofertas stale;
 - `pendingCareerOfferKind` determinista;
 - auditoría permanente de mutaciones directas de mercado;
-- facts detached de `CareerOffer` elegibles en la read surface narrativa.
+- facts detached/read-only de `CareerOffer` elegibles.
+
+Ninguno de esos commits cambia `EVENTS` ni `contentIdentity`.
 
 ## Content identity / migraciones
 
@@ -35,34 +37,34 @@ Identidad activa:
 
 `H = 84871fae2bec92d74d1e607e0a48943e2e530a062d315a829cfe75eda9fe0886`
 
-La generación H fue integrada por el batch canónico 18–23. Ningún commit posterior observado en `main@fa3c8bae...` cambia `EVENTS` ni la identidad de contenido.
+La generación H fue integrada por el batch canónico 18–23. En `main@fa3c8bae...` H sigue siendo la identidad activa.
 
 Reglas obligatorias:
 
 1. una sola sucesora adyacente por turno de integración;
 2. nunca crear shortcuts ni dos sucesoras paralelas desde H;
-3. recalcular la fuente real inmediatamente antes de integrar cualquier PR que cambie `EVENTS`;
-4. no reutilizar hashes históricos de PRs viejos como si fueran autoridad viva;
-5. pending/history/provenance legacy se preservan; las freezes históricas no se regeneran ni reinterpretan;
-6. migración explícita, 0 RNG, 0 scheduling, 0 decisiones, 0 contratos y 0 resultados deportivos sintéticos.
+3. recalcular la fuente real inmediatamente antes de integrar cualquier cambio de `EVENTS`;
+4. no reutilizar hashes históricos de PRs viejos como autoridad viva;
+5. pending/history/provenance legacy se preservan y las freezes históricas no se reinterpretan;
+6. migración explícita: 0 RNG, 0 scheduling, 0 decisiones, 0 firmas y 0 resultados deportivos sintéticos.
 
 ## P0 — autoridad deportiva compartida
 
 ### PR #156 — `t5/authoritative-match-model`
 
-Objetivo: productor autoritativo de calendario/fixtures/participación y read surface deportiva para desbloquear #124.
+Objetivo: productor autoritativo de calendario/fixtures/participación y read surface deportiva para desbloquear #124 y consumidores posteriores.
 
 Estado exacto observado:
 
 - base: `main@fa3c8bae524fef62e4eb9802e895df88588998c4`;
-- HEAD: `91b3f0a151a7c547ef00cee42e823e9920b244cf`;
-- padre directo: `fa3c8bae...`;
-- tree: `09d26d4edc6c6607db739adff05fdf519c6a9364`;
-- write-set efectivo: 12 archivos de sport/save/QA;
+- HEAD: `54a84694ffa6dcd42a7d87b985db2db95047b9e4`;
+- padre funcional re-ground: `fa3c8bae...`;
+- el segundo commit del HEAD solo eleva el timeout de Repository Integrity a 60 minutos;
+- write-set efectivo: 12 archivos sport/save/QA/workflow;
 - `EVENTS`: sin cambios;
 - `contentIdentity`: sin cambios;
 - `schemaVersion`: sin cambios;
-- orden/recuento de draws RNG: sin cambios.
+- orden/recuento global de draws RNG: sin cambios.
 
 Produce/persiste:
 
@@ -84,212 +86,302 @@ No inventa todavía:
 - goles/asistencias/tarjetas;
 - `firstGoal`.
 
-CI exact-head:
+CI exact-head vigente:
 
-- Repository Integrity run `35245632330`: en curso al redactar este panel.
+- Repository Integrity run `35258290496` / job `105327322933`;
+- `npm test` ya completado con éxito;
+- PlayCanvas estaba en curso en la última observación;
+- ningún run anterior certifica este HEAD si el HEAD vuelve a moverse.
 
-No integrar con evidencia de runs anteriores. Mantener #124 abierto hasta que sus consumidores también estén activos en `main`.
+No integrar con evidencia stale. Mantener #124 abierto hasta que sus consumers estén también activos.
 
-## P1 — siguiente generación narrativa candidata
+## P1 — próxima generación narrativa combinada
 
-### PR #186 — `t51/124-authoritative-18-20-wiring`
+No gastar varias sucesoras para reparaciones ya preparadas. Después de integrar/estabilizar #156, construir una única sucesora desde la identidad realmente activa que combine **8 reparaciones semánticas** y el hook compartido age-18 que necesitan dos de ellas.
 
-Consumidor de #156 para cerrar las cuatro escenas bloqueadas de #124.
+### #124 / PR #186 — cuatro consumers de sport facts
 
-Estado exacto apilado:
+PR #186 está apilado sobre la rama de #156.
+
+Estado observado:
 
 - base branch: `t5/authoritative-match-model`;
-- base SHA: `91b3f0a151a7c547ef00cee42e823e9920b244cf`;
-- HEAD: `822bc18c7e89253aa1220ef378ee4f5197854b81`;
-- padre directo: #156 HEAD;
-- tree: `dfd12194dadb98a4bb4efc3f14a7502fb693e6fd`;
-- delta propio: 7 archivos;
-- T51 Content Migration run `35245912990`: SUCCESS;
-- Repository Integrity run `35245912975`: en curso al redactar este panel.
+- base SHA actual: `54a84694ffa6dcd42a7d87b985db2db95047b9e4`;
+- HEAD observado: `dd69905d0c865365bb90779044f5989600f045ec`;
+- T51 Content Migration run `35258689763`: SUCCESS;
+- Repository Integrity run `35258689623`: en curso en la última observación.
 
 Reparaciones:
 
-- `EVT_18_MATCH_001`: requiere `facts.match.debutDecisionContext === true`;
-- `EVT_18_PRS_001`: atención local + `OFFICIAL_DEBUT` o primera convocatoria oficial persistida;
+- `EVT_18_MATCH_001`: requiere contexto de debut canónico persistido;
+- `EVT_18_PRS_001`: atención local + debut oficial o primera convocatoria real persistida;
 - `EVT_18_SOC_001`: threshold mediático + entrenamiento futuro + ningún fixture dentro de 24 h;
 - `EVT_18_END_001`: 1–4 fixtures de liga restantes + objetivo abierto.
 
-Proxies prohibidos para estas verdades:
-
-- `roleScore`;
-- `form`;
-- reputación;
-- mes;
-- `seasonDay` aproximado;
-- `FIRST_TEAM_ATTENTION` como sustituto de convocatoria/partido.
-
-Como cambia `EVENTS`, #186 propone una generación sucesora de H. Target preparado:
+El target preparado históricamente por #186:
 
 `99ec70cdb10e20069e5281dac5b56e2146779cc462add1c47fc7d8ea6fa5ef28`
 
-No autorizar H -> `99ec70cd...` hasta que:
+ya **no debe usarse como target final** si se componen las reparaciones adicionales listadas abajo. Pasa a ser evidencia de la variante de cuatro escenas. El target final debe recalcularse desde el catálogo combinado.
 
-1. #156 esté realmente integrado en `main`;
-2. se vuelva a comprobar que H sigue siendo la identidad activa;
-3. no exista otra generación narrativa integrada o preparada como sucesora paralela;
-4. #186 se retarget/re-groundee al `main` exacto;
-5. focused migration/content tests + Repository Integrity estén verdes en el HEAD exacto final.
+### #123 / PR #189 — mercado formal age-18
 
-Cerrar #124 solo después de integrar y probar los cuatro consumers.
+Staging inactivo y separado del catálogo activo:
 
-## Shared runtime ya integrado tras H
+- productor `early-career-market` usa exclusivamente `proposeCareerChange()`;
+- 0 draws RNG adicionales; derivación estable keyed;
+- enero materializa como máximo una oferta real compatible de cesión o traspaso;
+- verano materializa renovación o traspaso real compatible;
+- `EVT_18_JAN_001` y `EVT_18_SUM_001` consumen `CareerOffer` formal mediante offer bridge;
+- narrative outcomes dejan de firmar directamente club/contrato;
+- productor + overlay deben activarse atómicamente.
 
-### Liderazgo de club del jugador
+No activar el productor sin el overlay ni viceversa.
 
-Autoridad fail-closed integrada en `main`.
+### #152 — `EVT_25_CAP_001`
 
-Consecuencia:
+Shared leadership ya está integrado.
 
-- #148 cerrado;
-- #152 / `EVT_25_CAP_001` queda content-ready para su turno serializado de generación;
+Wiring exacto:
+
 - A -> `captain_group`;
 - C -> `secondary_captain`;
-- B/D -> sin write de autoridad formal.
+- B/D -> sin write de liderazgo formal;
+- nunca inferir `captain` principal.
 
-No crear una generación paralela para #152 mientras #186 sea la siguiente candidata activa.
+### #133 — `EVT_23_LOCK_001`
 
-### Mercado / CareerOffer
+Reimplementar desde catálogo actual, no revivir PR #122 ni su lineage histórica.
 
-Integrado:
+- choice D «avisar al capitán» solo si el captain slot autoritativo resuelve;
+- A/B/C siguen disponibles por STAR/same-origin teammate-cover cuando no hay capitán;
+- no fixed UDV leakage ni identidad heurística;
+- resolución/read projection 0 RNG.
 
-- stale offers fallan cerrado;
-- tipo de oferta pendiente determinista;
-- exact eligible `CareerOffer` facts detached/read-only;
-- direct-market-mutation audit;
-- `CareerOffer + respondToOffer()` sigue siendo la única autoridad formal.
+### Contrato de la sucesora
 
-No equivale todavía a:
+El batch combinado cambia semántica activa de:
 
-- materialización age-18 requerida por #123;
-- selección de múltiples ofertas #157;
-- lifecycle de expiración #165;
-- generación veteran 34+ #176;
-- free-agency real #130.
+1. `EVT_18_MATCH_001`
+2. `EVT_18_PRS_001`
+3. `EVT_18_SOC_001`
+4. `EVT_18_END_001`
+5. `EVT_18_JAN_001`
+6. `EVT_18_SUM_001`
+7. `EVT_25_CAP_001`
+8. `EVT_23_LOCK_001`
+
+Reglas de integración:
+
+- re-ground desde exact `main` después de #156;
+- comprobar identidad activa real;
+- una única arista adyacente;
+- freeze/registry/evidence del target combinado una sola vez;
+- no reinterpretar pending/history por igualdad de ID;
+- focused tests + Repository Integrity exact-head;
+- no auto-merge.
 
 ## T5.2 — seeds
 
-No confundir seeds declaradas con consecuencias causales cerradas.
+### PR #184 — causal seed facts audit
 
-Obligatorio por seed:
+Ready for review; tooling-only.
 
-- producer;
-- consumer vivo o histórico correctamente tipado;
-- origen/provenance;
-- scope;
-- terminalidad;
+- 5 archivos;
+- 0 gameplay / `EVENTS` / RNG / schema / contentIdentity;
+- distingue `live_presence` de `causal_fact`;
+- reconoce los cinco consumidores causales ya integrados de la generación H.
+
+### PR #191 / #180 — catálogo/provenance 34+
+
+Ready for review; 6 archivos; 0 `EVENTS`/contentIdentity/RNG/schema.
+
+Contrato:
+
+- 54 identidades canónicas exactas Pasada 7 = 45 ordinarias + 9 terminales;
+- 14 bridge-memory compatibility rows;
+- 13 proyecciones derivadas clasificadas `retired_compatible` con respaldo owner;
+- `SEED_FORM_VS_PLAN` sigue pendiente;
+- 210/210 seeds cubiertas estructuralmente;
+- cierre canónico: 13 classified / 197 pending.
+
+T5.2 no está oficialmente cerrada: el catálogo estructural completo no autoriza inventar consumers, expiry o terminalidad para las 197 pendientes.
+
+## T5.3 — NPC / conocimiento
+
+La arquitectura principal está integrada en `main`:
+
+- conocimiento deny-by-default;
+- canales witnessed/informed/public/reported;
+- transmisión causal;
 - persistencia/save;
-- timing;
-- cierre/expiry solo si está certificado por owner/canon.
+- reconciliación histórica provenance-safe;
+- dynamic target slots fail-closed;
+- backfill histórico v1 congelado/versionado.
 
-Los historical consumers no entran en el live deferred graph.
+`npcRefs`, seed, relación, trust o shared club no equivalen a conocimiento.
 
-Wave 0 34+ sigue dependiendo de #180. No activar 34+ runtime hasta que catálogo/provenance y predecesor real estén cerrados.
+T5.3 está mucho más cerca de cierre formal que de reimplementación; falta acreditar el criterio global contra el contenido final, no reconstruir el subsistema.
 
-## NPC / conocimiento
+Active-agent representation sigue siendo un gap canónico (#134): no inferir Héctor/Lucía sin acción explícita de contratación/cambio/terminación.
 
-Regla permanente: world occurrence != NPC knowledge.
+## Shared runtime posterior a #156
 
-Canales válidos:
+### #130 — empleo / contrato vencido
 
-- witnessed;
-- informed;
-- public;
-- reported.
+Defecto confirmado: contrato a 0 meses puede seguir años con club, salario y apariciones normales.
 
-`npcRefs`, relación, confianza, shared club o seed no autorizan conocimiento por sí solos.
+Contrato de implementación ya fijado para después de #156:
 
-Identidades dinámicas se resuelven por autoridad explícita. Si no existe autoridad:
+- autoridad laboral explícita con semántica `contracted`, `unattached`, `expired_pending_resolution`;
+- nueva expiración real `contracted -> unattached` una vez, determinista, 0 RNG;
+- unattached: sin salario de club, sin apariciones/minutos/fixture de club, sin renovación ordinaria ni current-club identity heredada;
+- reenganche solo por `CareerOffer` aceptada con `respondToOffer()`;
+- saves antiguos ambiguos a 0 meses no reciben backfill heurístico;
+- 0 `EVENTS`/contentIdentity en este shared PR.
 
-- devolver `null`;
-- usar actor genérico solo si el canon lo permite;
-- nunca inferir por first compatible / trust / role heurístico.
+### #174 — selección nacional concreta
 
-Active-agent representation sigue bloqueada por #134 salvo acción canónica explícita de contratación/cambio/terminación.
+Implementar después de #156 reutilizando `national-team-authority.ts`, no creando una autoridad paralela.
 
-## 18–23
+Store opcional/versionado de publicaciones concretas:
 
-Generación H ya integrada.
+- lista ordinaria: publication ID/date/status `called_up | omitted`;
+- torneo: preselección y lista final separadas, con tamaños/fechas/status factual;
+- preselección no implica final;
+- retirada internacional bloquea futuros ciclos pero conserva historial;
+- old saves sin store => concrete selection unknown;
+- read/validation 0 RNG y fail-closed;
+- shared PR sin `EVENTS`/contentIdentity.
 
-No hay actualmente otro PR abierto que contenga el batch preparado:
+Consumers posteriores:
 
-- `EVT_20_BRIDGE_001`;
-- `EVT_20_CCH_001`;
-- `EVT_21_SOC_001`;
-- `EVT_21_PRS_002`;
-- `CEVT_18_PLAYOFF_01`.
+- `EVT_21_NAT_001` requiere omisión publicada real;
+- `EVT_32_NAT_001` requiere preselección/final real;
+- escenas 34+ consumen la misma autoridad.
 
-Si se reconstruye antes de integrar #186, coordinación debe decidir si se combina con la misma sucesora o si queda después. Nunca crear dos sucesoras paralelas desde H.
+## Estado por tramos canónicos
 
-## 23–30 / 30–34 / 34+
+### 18–23
 
-Todos los PRs históricos de estas franjas son fuentes de semántica/handoff, no autoridad automática de lineage.
+Generación H integrada.
 
-Antes de promover runtime:
+Snapshot de Agent 5 tras H:
 
-1. re-ground al `main` real;
-2. usar la identidad activa real como source;
-3. descartar wiring de freeze/migration provisional viejo;
-4. preservar solo el contenido/canon certificado;
-5. crear una única sucesora adyacente;
-6. exact-head CI.
+- 45/95 escenas funcionales;
+- +5 Codex-ready;
+- 50/95 preparadas en ese snapshot.
+
+La próxima generación combinada resuelve seis reparaciones 18–20 adicionales (#124 + #123), pero queda deuda principal/condicional posterior. No equiparar “card preparada” con escena integrada.
+
+### 23–26
+
+Ya integrados/reconciliados funcionalmente, entre otros:
+
+- T5.10: `EVT_23_BRIDGE_001`, `EVT_23_AGT_001`, `EVT_23_BODY_001`;
+- MONEY/HOME/EUR;
+- PRS y su causalidad/provenance.
+
+La próxima generación combinada añade LOCK23 y `EVT_25_CAP_001`.
+
+Quedan consumers de mercado/contrato, match y selección nacional que dependen de autoridades compartidas exactas.
+
+### 26–30
+
+Readiness/canon preparado, runtime todavía temprano.
+
+Inventario de owner histórico:
+
+- 25 principales `needs_reimplementation`;
+- 22 principales `canonical_missing`;
+- 4 pares candidatos sin alias aprobado;
+- 24 condicionales revisados semánticamente, ninguno certificado por exact-ID de forma automática.
+
+Cualquier generación futura parte de la identidad viva que exista después de los batches anteriores.
+
+### 30–34
+
+Owner PR #13 contiene trabajo semántico significativo pero no es una generación autorizada todavía.
+
+Inventario vigente de la rama:
+
+- 50 principales;
+- 27 stable-ID reimplementations;
+- 18 shifted identities con migración explícita pendiente;
+- 5 principales canónicos missing;
+- 26 condicionales pendientes de identidad/autoridad;
+- blockers compartidos: multi-offer, renewal-by-minutes, sport facts y selección concreta.
+
+No congelar el target provisional de esa rama hasta que sea realmente su turno serializado.
 
 ### 34+
 
-Issue #168 mantiene el handoff canónico ordinario.
+Agent 8 tiene:
+
+- 43/43 principales ordinarios preparados en cards;
+- 32/32 condicionales reconciliados/ruteados;
+- 0 principales/condicionales ordinarios nuevos activados en `EVENTS` desde esa rama.
 
 Wave 0 obligatoria:
 
 - #59 predecesor/lineage real;
-- #180 seeds/provenance 34+;
-- memorias predecessor con live/historical semantics correctas;
-- pending/history/fingerprints migration-safe.
+- #180 catálogo/provenance 34+;
+- #192 identidad canónica de conditionals;
+- #195 autoridades factuales condicionales;
+- shared sport/national/market/free-agency/NPC facts cuando aplique.
 
 No congelar una identidad provisional 34+.
 
 ## Retirada / epílogos
 
-PR #118 sigue siendo owner del terminal state machine y epílogos.
+PR #118 conserva implementación sustancial:
 
-Estado objetivo:
+- state machine `playing -> decided -> announced -> closed`;
+- única reconsideración normal `decided -> playing`;
+- anuncio público integrado con T5.3;
+- cierre sin synthetic sport;
+- CareerSummary factual;
+- 20 familias de epílogo evidence-gated e idempotentes;
+- save/legacy compatibility.
 
-`playing -> decided -> announced -> closed`
+Bloqueos terminales principales:
 
-Única reconsideración permitida:
+- fixture/season-end facts de #156;
+- richer `LastMatchFact` aún requiere result/goals/assists y query de última aparición real;
+- predecessor ordinario 34+ completo/frozen antes de terminal contentIdentity.
 
-`decided -> playing`
+Prohibido: age auto-retirement, announced->playing, synthetic last appearance/goal, no-market auto-retirement.
 
-Prohibido:
+## Previsión operativa de cierre T5
 
-- `announced -> playing`;
-- auto-retirada por edad;
-- auto-anuncio por timer;
-- retirada automática por falta de mercado;
-- contratos artificiales;
-- última aparición/gol sintéticos.
+El tracker oficial conserva 38 nombres T5.1–T5.38 sin re-acreditación formal. Eso **no** significa 38 pasadas nuevas de trabajo.
 
-El último partido y los epílogos deben derivar de historial real.
+Previsión operativa actual:
 
-## Blockers compartidos explícitos
+**25–33 pasadas efectivas restantes; centro aproximado: 29.**
 
-Mantener fail-closed ownership para:
+Desglose:
 
-- #123 — alternativas formales de mercado age-18;
-- #130 — expiry contractual / free-agency real;
-- #133 — LOCK23 captain semantics donde siga aplicando;
-- #134 — active-agent representation;
-- #157 — multi-offer selection;
-- #165 — offer expiry lifecycle;
-- #169 — coach chronology;
-- #172 — pain/imaging medical authority;
-- #174 — concrete national call-up/preselection/final squad;
-- #176 — veteran 34+ offers/terms;
-- #177 — late-career successor/coach/peer identities;
-- #180 — 34+ seed catalog/provenance.
+- shared runtime / T5.2–T5.4: 5–7;
+- 18–23: 4–5;
+- 23–26: 2–3;
+- 26–30: 4–5;
+- 30–34: 3–4;
+- 34+: 5–6;
+- retirada + epílogos: 1–2;
+- auditoría cruzada T5.38: 1.
+
+Estas pasadas no son todas seriales: tooling/shared runtime pueden avanzar en paralelo. Solo `EVENTS`/contentIdentity se serializa.
+
+Recalibrar después de:
+
+1. #156 integrado;
+2. generación combinada de 8 reparaciones integrada;
+3. #130 + #174 integrados;
+4. primera generación autoritativa 26–30;
+5. primera generación autoritativa 34+.
+
+Si dos pasadas consecutivas no cierran un deliverable o la previsión crece >20 %, recalibrar con evidencia.
 
 ## QA / integración
 
@@ -301,7 +393,7 @@ Antes de integrar cualquier PR:
 4. preservar invariants compartidos ya integrados;
 5. re-ground si `main` cambió;
 6. focused tests;
-7. Repository Integrity completo sobre el HEAD exacto;
+7. Repository Integrity completo sobre HEAD exacto;
 8. si `EVENTS` cambia, verificar source identity real y una sola edge adyacente;
 9. registrar SHA y workflow IDs;
 10. no debilitar tests para conseguir verde;
@@ -313,4 +405,4 @@ Issue de coordinación:
 
 `#138 — Coordination v2`
 
-Usar #138 para la cola operativa de Codex y este documento como snapshot versionado. Si ambos difieren, GitHub actual y la actualización más reciente prevalecen.
+Usar #138 para la cola operativa y este documento como snapshot versionado. Si difieren, GitHub actual y la actualización más reciente prevalecen.
