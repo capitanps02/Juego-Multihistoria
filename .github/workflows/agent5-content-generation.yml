@@ -123,7 +123,30 @@ jobs:
           node scripts/generate-t51-offer-bridge-evidence.mjs
 
       - name: Validate full repository gates
-        run: npm test
+        id: full_repository_gates
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          npm test 2>&1 | tee agent5-npm-test.log
+
+      - name: Upload full repository gate log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: agent5-npm-test-${{ github.run_id }}
+          path: agent5-npm-test.log
+          if-no-files-found: error
+          retention-days: 3
+
+      - name: Enforce full repository gate result
+        if: always()
+        shell: bash
+        run: |
+          if [ "${{ steps.full_repository_gates.outcome }}" != "success" ]; then
+            echo "Full repository gates failed; diagnostic log uploaded."
+            exit 1
+          fi
 
       - name: Validate Agent 5 focused suites
         run: node --test scripts/test-t51-agent11-18-20.mjs scripts/test-t51-early-seed-consumers.mjs scripts/test-t51-t55a-20-23.mjs scripts/test-t51-t55b-20-23.mjs scripts/test-t51-t56a-20-23.mjs
