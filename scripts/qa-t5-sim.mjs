@@ -41,7 +41,7 @@ function choose(profile, event, decisionIndex) {
   return event.choices[bestIndex].id;
 }
 
-const segmentForAge = age => age < 20 ? '18_20' : age < 23 ? '20_23' : age < 26 ? '23_26' : age < 30 ? '30_34' : age < 34 ? '30_34' : '34_plus';
+const segmentForAge = age => age < 20 ? '18_20' : age < 23 ? '20_23' : age < 26 ? '23_26' : age < 30 ? '26_30' : age < 34 ? '30_34' : '34_plus';
 const liveSeed = seed => !['resolved', 'expired'].includes(seed.state);
 
 function runProfile(profile, seed, maxAge = 55) {
