@@ -1,5 +1,5 @@
 {
-  "version": 5,
+  "version": 6,
   "generatedAt": "2026-09-17",
   "baseMain": "5f4d14bca4d696cfafadb58b64034c7cd40cc147",
   "ownerBranch": "t51/canon-34plus",
@@ -14,13 +14,14 @@
   },
   "wave0": {
     "lineage":{"issue":59,"state":"blocking_serialized_turn"},
-    "seedCatalog":{"issue":180,"pullRequest":191,"state":"ready_for_review_green_not_integrated"}
+    "seedCatalog":{"issue":180,"pullRequest":191,"state":"green_ready_not_integrated_on_current_main"}
   },
   "sharedRuntimeOrder": [
     {"step":1,"owner":"sport_boundary","issue":124,"pullRequest":156,"state":"integrated","mainCommit":"5f4d14bca4d696cfafadb58b64034c7cd40cc147"},
-    {"step":2,"owner":"market_state_v2","issue":157,"state":"unblocked_to_start"},
-    {"step":3,"owner":"employment_unattached","issue":130,"state":"unblocked_to_start_coordinate_with_157"},
-    {"step":4,"owner":"veteran_market_producer","issue":176,"state":"waiting_157_130"}
+    {"step":2,"owner":"rich_offer_context","issue":175,"pullRequest":207,"state":"green_ready_not_integrated","reason":"MarketState v2 must preserve CareerOffer.context natively"},
+    {"step":3,"owner":"market_state_v2","issue":157,"state":"wait_for_207_then_implement"},
+    {"step":4,"owner":"employment_unattached","issue":130,"state":"contract_ready_coordinate_with_157"},
+    {"step":5,"owner":"veteran_market_producer","issue":176,"state":"wait_for_157_130"}
   ],
   "routes": [
     {
@@ -33,15 +34,23 @@
       "doesNotProvide":["per_match_final_result","goals","assists","cards","awards","records","concrete_national_selection","stadium_incidents"]
     },
     {
+      "domain":"rich_offer_context",
+      "ownerIssue":175,
+      "pullRequest":207,
+      "state":"green_ready_not_integrated",
+      "contract":"optional validated CareerOffer.context for explicit rich late-career side terms; factual context only, no synthetic offer production",
+      "downstreamReason":"#157 must preserve context through v2 migration/open-offer collection rather than forcing a second migration"
+    },
+    {
       "domain":"market_state_v2",
       "ownerIssue":157,
-      "state":"unblocked_to_start",
-      "contract":"authoritative 0..N open CareerOffer collection, stable IDs, deterministic v1 migration, durable system-closure provenance and ambiguity-fail-closed narrative selection"
+      "state":"waiting_207",
+      "contract":"authoritative 0..N open CareerOffer collection, stable IDs, deterministic v1 migration including CareerOffer.context, durable system-closure provenance and ambiguity-fail-closed narrative selection"
     },
     {
       "domain":"employment_unattached",
       "ownerIssue":130,
-      "state":"unblocked_to_start",
+      "state":"contract_ready_coordinate_with_157",
       "contract":"persist contracted|unattached|expired_pending_resolution; new-game natural expiry contracted->unattached once and 0-RNG; ambiguous old zero-month saves fail closed"
     },
     {
@@ -49,7 +58,7 @@
       "ownerIssue":176,
       "state":"waiting_157_130",
       "alreadyIntegrated":["exact eligible CareerOffer reads","offer bridge","stale-offer fail-closed eligibility","direct market mutation audit"],
-      "remaining":["34plus veteran offer production","supported late-career terms","veteran market approach and medical-assessment facts"]
+      "remaining":["34plus veteran offer production","supported late-career terms/context","veteran market approach and medical-assessment facts"]
     },
     {
       "domain":"concrete_national_selection",
@@ -82,14 +91,13 @@
       "ownerIssue":192,
       "state":"identity_and_authority_routed_runtime_0_of_32",
       "formerCoordinationGap":{"issue":195,"state":"closed_completed"},
-      "factOwners":[176,199,200,201],
-      "handoff":["CONDITIONAL_RECONCILIATION.json","CONDITIONAL_HANDOFF.md","CONDITIONAL_AUTHORITY_MATRIX.json"]
+      "factOwners":[176,199,200,201]
     },
     {
       "domain":"seed_catalog_provenance",
       "ownerIssue":180,
       "pullRequest":191,
-      "state":"ready_for_review_green_not_integrated",
+      "state":"green_ready_not_integrated_on_current_main",
       "contract":"54 exact Pasada-7 IDs, 45+9 ownership, 14 bridge dispositions, no fuzzy aliases"
     },
     {
@@ -99,7 +107,7 @@
       "state":"routing_guard_not_standalone_runtime_pass",
       "decisions": {
         "EVT_35_AGT_001":"existing resolveActiveAgent or null",
-        "EVT_35_DUAL_001":"generic club voice allowed",
+        "EVT_35_DUAL_001":"generic club voice allowed; factual offer/context authority comes from #207/#157/#176",
         "EVT_36_CCH_001":"coach tenure/profile -> #169; persistent NPC not required",
         "EVT_34_DORSAL_001":"generic young actor allowed if no named continuity/T5.3 mutation",
         "EVT_34_MENTOR_001":"same boundary",
@@ -107,9 +115,10 @@
         "EVT_36_PEER_001":"blocked until exact peer plus causal retirement history"
       }
     },
-    {"domain":"terminal_career_retirement","ownerPullRequest":118,"owner":"agent9","state":"open_draft","rule":"terminal career transition/announcement/closure/epilogues stay outside Agent 8"},
-    {"domain":"agent8_context_specific","owner":"agent8_after_wave0","events":["EVT_35_FAM_001","EVT_35_BODY_001","EVT_35_IMG_001","EVT_36_MED_001"],"rule":"first prepared principal batch once serialized Wave 0 is real"}
+    {"domain":"terminal_career_retirement","ownerPullRequest":118,"owner":"agent9","state":"open_draft"},
+    {"domain":"agent8_context_specific","owner":"agent8_after_wave0","events":["EVT_35_FAM_001","EVT_35_BODY_001","EVT_35_IMG_001","EVT_36_MED_001"]}
   ],
-  "newlyUnblockedBy156": [157,130,174,199,200],
-  "codexRule":"Integrated #156 removes the basic fixture/usage blocker only. Re-evaluate every scene's exact remaining facts plus #59/#191; unavailable facts still fail closed."
+  "independentWorkAfter156": [174,199,200],
+  "marketChain": [207,157,130,176],
+  "codexRule":"Do not start #157 against a model that lacks #207 context support. Integrated #156 removes basic fixture/usage blocker only. Re-evaluate every scene's exact remaining facts plus #59/#191; unavailable facts fail closed."
 }
