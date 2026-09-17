@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "ebef17057156c7721fc4a041552c9cf1b3fdb6ba",
+  "baseCommit": "782b92c9a496293aeb33ad8b39f522a927374d6f",
   "facts": [
     {
       "fact": "currentSeason",
