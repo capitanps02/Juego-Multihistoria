@@ -1,5 +1,5 @@
 // Machine-readable T5 conditional canon matrix.
-// Baseline: main@6cb81b63f03ce55776ca97075012cfaa22ac228d on 2026-09-16.
+// Baseline: main@99b1cd56f199bda657fb9fb1c757b003265892b6 on 2026-09-17.
 // Do not infer semantic identity from an equal string ID.
 
 export const CONDITIONAL_CANON_FIELDS = [
@@ -57,43 +57,16 @@ const blocked3034 = ["CEVT_30_BODY_01","CEVT_30_PROJECT_01","CEVT_30_HOME_01","C
 const blocked34Career = ["CEVT_34_MAJOR_COMEBACK","CEVT_34_RENEWAL_GHOST","CEVT_34_ROLE_COLLAPSE","CEVT_34_HOME_CALL","CEVT_34_FAMILY_STOP","CEVT_34_MEDIA_END","CEVT_34_CAPTAIN_WITHOUT_MINUTES","CEVT_34_MARKET_DOWNGRADE","CEVT_35_BODY_SETBACK","CEVT_35_YOUNG_STARTER","CEVT_35_NT_EXCLUSION","CEVT_35_LATE_FINAL","CEVT_35_AGENT_SPLIT","CEVT_35_CLUB_LEGACY","CEVT_35_RICH_LAST","CEVT_35_INJURY_RETURN","CEVT_36_NO_MEDICAL_CLEARANCE","CEVT_36_COMEBACK_FINAL","CEVT_36_MARKET_SILENCE","CEVT_36_MENTOR_CONFLICT","CEVT_36_FAMILY_RETURN","CEVT_36_SELECTION_GOODBYE","CEVT_37_NO_LAST_DERBY","CEVT_37_RECORD_WINDOW","CEVT_37_HOME_CROWD","CEVT_37_PRIVATE_DOUBT"];
 const terminal34 = ["CEVT_38_OFFER_AFTER_RETIREMENT_ANNOUNCED","CEVT_38_MEDIA_FAREWELL","CEVT_38_FAMILY_REVERSAL","CEVT_RET_RECONSIDER","CEVT_RET_STORYBOOK_LAST_GOAL","CEVT_RET_NO_LAST_MATCH"];
 
-const exact2023 = [
-  row("CEVT_21_ABR_01","20_23","needs_reimplementation",{
-    canonicalSource:C18,runtimeSource:R2023,title:"Navidad solo",
-    trigger:["ABROAD_ROUTE","foreignAdaptation < 60","short Christmas break"],
-    timeWindow:{months:[12,1]},seedReads:["SEED_FOREIGN_ADAPT"],publicPrivateStatus:"private/social",
-    choices:["return_home","stay_and_integrate","invite_or_create_local_company"],legacyIdentity:"same_id_distinct_scene",
-    migrationStatus:"adjacent_contentIdentity_edge_required; preserve frozen legacy pending/history"
-  }),
-  row("CEVT_21_MEDIA_01","20_23","needs_reimplementation",{
-    canonicalSource:C18,runtimeSource:R2023,title:"La frase recortada",
-    trigger:["SEED_CLARA_CHANNEL OR PUBLIC/NATIONAL_HEAT high"],seedReads:["SEED_CLARA_CHANNEL"],npc:["NPC_PRS_01"],
-    publicPrivateStatus:"public headline; private channel only if player uses it",
-    choices:["publish_full_context","use_Clara_channel","do_not_amplify"],legacyIdentity:"same_id_distinct_scene",
-    migrationStatus:"adjacent_contentIdentity_edge_required; preserve frozen legacy pending/history"
-  }),
-  row("CEVT_22_FREE_01","20_23","needs_reimplementation",{
-    canonicalSource:C18,runtimeSource:R2023,title:"Oferta de enero para julio",
-    trigger:["contract near expiry","formal interest required","buyer sporting crisis required"],
-    contractRequirements:["contract.monthsRemaining <= 7","authoritative CareerOffer/formal interest"],
-    incompatibilities:["monthsRemaining alone is insufficient"],legacyIdentity:"same_id_distinct_scene",
-    migrationStatus:"shared_dependency: authoritative offer + buyer crisis facts required"
-  })
-];
-
 const records = [
-  ...verified18.map(id => row(id,"18_20","verified_same_identity",{
-    canonicalSource:C18,runtimeSource:R1820,legacyIdentity:"same_string_id",migrationStatus:"none_required_while_definition_unchanged",
-    ...(id==="CEVT_19_NANO_01" ? {title:"No me llames para arreglarme la vida",trigger:["UNSOLICITED_NANO_HELP","HAS_SEED_NANO_SHADOW"],seedReads:["SEED_NANO_SHADOW"],seedCreates:["SEED_NANO_SHADOW"],npc:["NPC_PLR_14"],knowledgeRequirements:["NPC_PLR_14 knows EVT_19_TEAM_001"],publicPrivateStatus:"private",choices:["APOLOGIZE","DEFEND","WITHDRAW"]} : {})
-  })),
-  ...reimplement18.map(id => row(id,"18_20","needs_reimplementation",{canonicalSource:C18,runtimeSource:R1820,legacyIdentity:"same_id_content_sensitive",migrationStatus:"same_id_rewrite_requires_adjacent_contentIdentity_edge_and_frozen_pending_legacy"})),
-  ...runtimeLegacy2023.map(id => row(id,"20_23","engine_only_noncanonical",{canonicalSource:C18,runtimeSource:R2023,legacyIdentity:"runtime_only_legacy",migrationStatus:"retire_or_replace_safely; preserve history/pending"})),
-  ...exact2023,
-  ...canonicalMissing2023.map(id => row(id,"20_23","canonical_missing",{canonicalSource:C18,runtimeSource:null,legacyIdentity:"canonical_only",migrationStatus:"new_definition_requires_adjacent_contentIdentity_edge"})),
-  ...reimplement2326.map(id => row(id,"23_26","needs_reimplementation",{canonicalSource:C2330,runtimeSource:R2326,legacyIdentity:"exact_id_runtime_not_certified",migrationStatus:"same_id_rewrite_requires_adjacent_contentIdentity_edge_and_pending_fingerprint"})),
-  ...exactRewrite2630.map(id => row(id,"26_30","needs_reimplementation",{canonicalSource:C2330,runtimeSource:R2630,legacyIdentity:"exact_id_semantic_rewrite",migrationStatus:"same_id_distinct_scene_requires_frozen_pending_legacy"})),
-  ...canonicalMissing2630.map(id => row(id,"26_30","canonical_missing",{canonicalSource:C2330,runtimeSource:null,legacyIdentity:"canonical_only_nonmapped",migrationStatus:"new_definition_requires_adjacent_contentIdentity_edge"})),
-  ...runtimeOnly2630.map(id => row(id,"26_30","engine_only_noncanonical",{canonicalSource:C2330,runtimeSource:R2630,legacyIdentity:"runtime_lineage_candidate_or_legacy_only",migrationStatus:"no_alias; retire_or_replace_only_after_explicit_mapping"})),
+  ...verified18.map(id => row(id,id.startsWith("CEVT_18")||id.startsWith("CEVT_19")?"18_20":"20_23","verified_same_identity",{canonicalSource:C18,runtimeSource:R1820,legacyIdentity:"same_scene_certified",migrationStatus:"no_semantic_migration_needed"})),
+  ...reimplement18.map(id => row(id,"18_20","needs_reimplementation",{canonicalSource:C18,runtimeSource:R1820,legacyIdentity:"same_id_distinct_or_incomplete_scene",migrationStatus:"explicit_adjacent_migration_required_if_runtime_changes"})),
+  ...["CEVT_21_ABR_01","CEVT_21_MEDIA_01","CEVT_22_FREE_01"].map(id => row(id,"20_23","needs_reimplementation",{canonicalSource:C18,runtimeSource:R2023,legacyIdentity:"same_id_semantic_collision",migrationStatus:"distinct_scene_pending_legacy_protection_required"})),
+  ...canonicalMissing2023.map(id => row(id,"20_23","canonical_missing",{canonicalSource:C18,runtimeSource:null,legacyIdentity:"new_canonical_identity",migrationStatus:"new_active_identity_requires_adjacent_lineage"})),
+  ...runtimeLegacy2023.map(id => row(id,"20_23","engine_only_noncanonical",{canonicalSource:C18,runtimeSource:R2023,legacyIdentity:"legacy_runtime_only",migrationStatus:"retire_or_history_only_after_canonical_replacement"})),
+  ...reimplement2326.map(id => row(id,"23_26","needs_reimplementation",{canonicalSource:C2330,runtimeSource:R2326,legacyIdentity:"exact_id_scene_specific_rewrite_required",migrationStatus:"pending_legacy_protection_required"})),
+  ...exactRewrite2630.map(id => row(id,"26_30","needs_reimplementation",{canonicalSource:C2330,runtimeSource:R2630,legacyIdentity:"exact_id_semantic_collision",migrationStatus:"distinct_scene_pending_legacy_protection_required"})),
+  ...canonicalMissing2630.map(id => row(id,"26_30","canonical_missing",{canonicalSource:C2330,runtimeSource:null,legacyIdentity:"canonical_identity_without_safe_runtime_mapping",migrationStatus:"new_identity_or_non_alias_replacement_required"})),
+  ...runtimeOnly2630.map(id => row(id,"26_30","engine_only_noncanonical",{canonicalSource:C2330,runtimeSource:R2630,legacyIdentity:"runtime_lineage_only_or_no_canonical_identity",migrationStatus:"history_only_or_retire_after_replacement"})),
   ...blocked3034.map(id => row(id,"30_34","blocked",{canonicalSource:"PR#13: authoritative conditional canon unavailable",runtimeSource:R3034,legacyIdentity:"runtime_identity_unresolved",migrationStatus:"blocked_until_authoritative_canonical_inventory"})),
   ...blocked34Career.map(id => row(id,"34_plus","blocked",{canonicalSource:"No authoritative nonterminal 34+ conditional canon artifact located",runtimeSource:R34,legacyIdentity:"runtime_identity_unresolved",migrationStatus:"blocked_until_authoritative_canonical_inventory"})),
   ...terminal34.map(id => row(id,"34_plus","terminal_owned_elsewhere",{canonicalSource:"Agent 14 / retirement terminal ownership",runtimeSource:R34,owner:"t5/retirement-epilogues (Agent 14)",legacyIdentity:"terminal_runtime_identity",migrationStatus:"terminal_owner_controls_migration"}))
@@ -103,14 +76,12 @@ const byStatus = Object.fromEntries([...new Set(records.map(r => r.implementatio
 
 export const CONDITIONAL_CANON_MATRIX = {
   schemaVersion: 1,
-  generatedAt: "2026-09-16",
+  generatedAt: "2026-09-17",
   repository: "capitanps02/Juego-Multihistoria",
-  branch: "t51/canon-conditionals",
-  baselineMainSha: "6cb81b63f03ce55776ca97075012cfaa22ac228d",
-  runtimeActiveCount: 134,
+  baselineMainSha: "99b1cd56f199bda657fb9fb1c757b003265892b6",
+  activeRuntimeCount: 134,
   reconciliationUniverseCount: 168,
-  reconciliationUniverseRule: "Union of identifiable canonical and runtime conditional identities. 30–34 and nonterminal 34+ are blocked rather than guessed, so 168 is the currently identifiable reconciliation universe.",
-  phaseSummary: {
+  phaseCounts: {
     "18_23": {runtimeActive:32,canonical:32,union:47},
     "23_26": {runtimeActive:20,canonical:20,union:20},
     "26_30": {runtimeActive:24,canonical:24,union:43},
