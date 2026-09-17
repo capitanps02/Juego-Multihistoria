@@ -1,0 +1,199 @@
+{
+  "version": 1,
+  "generatedAt": "2026-09-17",
+  "owner": "t51/canon-34plus",
+  "canonicalSource": "analysis/2026-09-11/guion-extraido.txt",
+  "scope": "Wave D — 7 ordinary 34+ NPC/squad-identity principals",
+  "summary": {
+    "events": 7,
+    "canonicalCardsExtracted": 7,
+    "runtimeActivated": 0,
+    "strictCodexReady": 0,
+    "marketOverlap": ["EVT_35_AGT_001", "EVT_35_DUAL_001"],
+    "sportOverlap": ["EVT_35_RECORD_001"]
+  },
+  "globalRules": [
+    "A named or persistent actor must be resolved from certified identity/affiliation/career authority; npcRefs, relationship score, age, lockerPower or a seed are not identity authority.",
+    "resolveActiveAgent() or null is authoritative for the current representative.",
+    "Successor, current coach, institutional club actor and veteran peer are distinct roles and may not be substituted for one another.",
+    "If canon permits a generic one-scene professional/medical/legal actor, do not silently promote that actor into a persistent NPC identity.",
+    "Market/contract or sport facts required by overlap scenes remain independently authoritative.",
+    "Another NPC retiring is a factual career event about that NPC; it does not terminally retire the protagonist.",
+    "All events additionally require Wave 0 lineage, canonical seed catalog/provenance and save/pending/history compatibility."
+  ],
+  "events": [
+    {
+      "eventId": "EVT_34_DORSAL_001",
+      "sourceHeading": "25.6.7. Tu dorsal en la tienda",
+      "sourceBlock": "B1264-B1266",
+      "title": "Tu dorsal en la tienda",
+      "premise": "El club pregunta si aceptarías ceder tu dorsal histórico a un fichaje joven por razones comerciales y de sucesión.",
+      "trigger": "Dorsal icónico + sucesor fuerte.",
+      "visible": ["Petición", "jugador", "campaña prevista"],
+      "imperfect": ["No sabes si es gesto aislado", "puede ser señal de que el club quiere pasar página"],
+      "hiddenState": ["DORSAL_SUCCESSION", "LEGACY_CAPITAL", "SUCCESSION_PRESSURE", "PUBLIC_MYTH"],
+      "options": [
+        {"id":"A","label":"Cederlo públicamente."},
+        {"id":"B","label":"Mantenerlo mientras sigas."},
+        {"id":"C","label":"Hablar primero con el joven."},
+        {"id":"D","label":"Proponer cambio la próxima temporada."}
+      ],
+      "canonicalSeeds": ["SEED_FINAL_DORSAL"],
+      "authority": {
+        "requires": ["authoritative_historical_shirt_number", "certified_young_signing_or_successor_identity", "current_club_affiliation", "factual_club_request_or_campaign_context"],
+        "forbidden": ["npcRefs_as_successor", "invented_signing", "lockerPower_as_dorsal_authority"]
+      },
+      "status": "blocked_shared_authority",
+      "outcomeEffects": "implementation_pending"
+    },
+    {
+      "eventId": "EVT_34_MENTOR_001",
+      "sourceHeading": "25.7.2. El joven te pide tus vídeos",
+      "sourceBlock": "B1275-B1277",
+      "title": "El joven te pide tus vídeos",
+      "premise": "Tu principal competidor te pide revisar juntos movimientos y vídeos.",
+      "trigger": "Sucesor joven + convivencia razonable.",
+      "visible": ["Petición privada", "relación previa"],
+      "imperfect": ["No sabes si te admira", "puede buscar ventaja", "puede ser una sugerencia del club"],
+      "hiddenState": ["FORMAL_MENTOR", "SUCCESSION_PRESSURE", "LOCKER_WEIGHT", "EGO"],
+      "options": [
+        {"id":"A","label":"Ayudar sin reservas."},
+        {"id":"B","label":"Ayudar solo en aspectos no competitivos."},
+        {"id":"C","label":"Negarte con respeto."},
+        {"id":"D","label":"Convertirlo en trabajo conjunto con el staff."}
+      ],
+      "canonicalSeeds": ["SEED_SUCCESSOR_ALLIANCE"],
+      "authority": {
+        "requires": ["certified_current_younger_teammate", "authoritative_competitor_or_successor_relation", "real_prior_relationship_context"],
+        "forbidden": ["invented_young_player", "relationship_score_as_identity", "age_only_successor"]
+      },
+      "status": "blocked_shared_authority",
+      "outcomeEffects": "implementation_pending"
+    },
+    {
+      "eventId": "EVT_35_DUAL_001",
+      "sourceHeading": "25.8.5. Te ofrecen ser jugador y enlace",
+      "sourceBlock": "B1310-B1312",
+      "title": "Te ofrecen ser jugador y enlace",
+      "premise": "UDV u otro club propone jugar y participar informalmente en captación/vestuario.",
+      "trigger": "Legado alto + mercado reducido/retorno.",
+      "visible": ["Funciones", "salario"],
+      "imperfect": ["No sabes si el doble rol ampliará influencia", "puede convertirte en jugador a medias"],
+      "hiddenState": ["POST_CAREER_READINESS", "FORMAL_MENTOR", "ROLE_ACCEPTANCE", "NETWORK_POWER"],
+      "options": [
+        {"id":"A","label":"Aceptar."},
+        {"id":"B","label":"Jugar sin función institucional."},
+        {"id":"C","label":"Pedir rol formal separado al retirarte."},
+        {"id":"D","label":"Rechazar por conflicto de intereses."}
+      ],
+      "canonicalSeeds": ["SEED_PLAYER_LIAISON_ROLE"],
+      "authority": {
+        "requires": ["certified_offering_club_or_institutional_counterparty", "real_formal_playing_offer_or_authoritative_negotiation", "salary_terms", "factual_informal_liaison_functions"],
+        "forbidden": ["invented_institutional_role", "legacy_as_offer", "direct_contract_mutation", "promise_of_postcareer_job_as_fact_without_authority"],
+        "waveOverlap": ["B", "D"],
+        "representabilityGap": "Player-liaison and post-career institutional roles are not ordinary CareerTerms; preserve them as explicit institutional facts/promises only if shared authority supports them."
+      },
+      "status": "blocked_shared_authority",
+      "outcomeEffects": "implementation_pending"
+    },
+    {
+      "eventId": "EVT_35_AGT_001",
+      "sourceHeading": "25.8.7. Sin agente por primera vez",
+      "sourceBlock": "B1316-B1318",
+      "title": "Sin agente por primera vez",
+      "premise": "Una negociación sencilla podría cerrarse sin agente. Tu representante histórico insiste en que el último contrato es precisamente cuando más le necesitas.",
+      "trigger": "SELF_REPRESENTATION o relación de agencia desgastada.",
+      "visible": ["Oferta", "honorarios"],
+      "imperfect": ["No sabes qué conversaciones invisibles perderás", "no sabes cuánto sesgo tiene el agente al defender su utilidad"],
+      "hiddenState": ["SELF_REPRESENTATION", "AGENT_POWER", "VETERAN_LEVERAGE", "NETWORK_POWER"],
+      "options": [
+        {"id":"A","label":"Negociar tú con abogado."},
+        {"id":"B","label":"Mantener agente."},
+        {"id":"C","label":"Pagar tarifa fija sin comisión."},
+        {"id":"D","label":"Cambiar de agente para el cierre."}
+      ],
+      "canonicalSeeds": ["SEED_FINAL_AGENT_STRUCTURE"],
+      "authority": {
+        "requires": ["certified_active_agent_or_explicit_no_agent_state", "real_offer_or_negotiation_context", "authoritative_agent_relationship_history"],
+        "forbidden": ["agentControl_as_identity", "invented_replacement_agent", "invented_persistent_lawyer_NPC", "direct_contract_mutation"],
+        "waveOverlap": ["B", "D"]
+      },
+      "status": "blocked_shared_authority",
+      "outcomeEffects": "implementation_pending"
+    },
+    {
+      "eventId": "EVT_35_RECORD_001",
+      "sourceHeading": "25.9.3. El canterano rompe tu récord",
+      "sourceBlock": "B1327-B1329",
+      "title": "El canterano rompe tu récord",
+      "premise": "Un joven del club supera un récord de precocidad o una marca que durante años se asoció contigo.",
+      "trigger": "Legado/club + sucesor.",
+      "visible": ["Récord", "celebración"],
+      "imperfect": ["No sabes si la prensa busca homenaje", "puede buscar conflicto generacional"],
+      "hiddenState": ["LEGACY_ANXIETY", "PUBLIC_MYTH", "SUCCESSION_PRESSURE", "MENTOR_ADVICE"],
+      "options": [
+        {"id":"A","label":"Felicitarlo con entusiasmo."},
+        {"id":"B","label":"Respuesta breve."},
+        {"id":"C","label":"Recordar que los récords cambian."},
+        {"id":"D","label":"Invitarlo a hablar en privado."}
+      ],
+      "canonicalSeeds": ["SEED_RECORD_PASSED"],
+      "authority": {
+        "requires": ["authoritative_record_definition_and_value", "real_record_surpass_fact", "certified_young_club_player_identity"],
+        "forbidden": ["invented_record", "npcRefs_as_successor_identity", "age_as_identity"],
+        "waveOverlap": ["C", "D"]
+      },
+      "status": "blocked_shared_authority",
+      "outcomeEffects": "implementation_pending"
+    },
+    {
+      "eventId": "EVT_36_CCH_001",
+      "sourceHeading": "25.10.3. Un entrenador más joven que tú",
+      "sourceBlock": "B1353-B1355",
+      "title": "Un entrenador más joven que tú",
+      "premise": "Llega un técnico de 35 años con ideas fuertes sobre intensidad y jerarquías.",
+      "trigger": "Cambio de entrenador 36+.",
+      "visible": ["Edad", "discurso", "primeros entrenamientos"],
+      "imperfect": ["No sabes si te ve como recurso táctico", "puede verte como problema cultural", "puede verte como aliado"],
+      "hiddenState": ["NEW_COACH_RESET", "STATUS_INERTIA", "ROLE_REINVENTION", "LOCKER_WEIGHT"],
+      "options": [
+        {"id":"A","label":"Adaptarte sin mencionar edad."},
+        {"id":"B","label":"Hablar pronto sobre carga."},
+        {"id":"C","label":"Ofrecer liderazgo."},
+        {"id":"D","label":"Esperar a que él defina relación."}
+      ],
+      "canonicalSeeds": ["SEED_YOUNGER_COACH"],
+      "authority": {
+        "requires": ["authoritative_current_coach_change", "certified_current_coach_identity", "coach_age_or_generation_fact", "current_club_affiliation"],
+        "forbidden": ["invented_coach", "role_text_as_identity", "player_age_as_proof_coach_is_younger"]
+      },
+      "status": "blocked_shared_authority",
+      "outcomeEffects": "implementation_pending"
+    },
+    {
+      "eventId": "EVT_36_PEER_001",
+      "sourceHeading": "25.10.5. El compañero se retira antes que tú",
+      "sourceBlock": "B1359-B1361",
+      "title": "El compañero se retira antes que tú",
+      "premise": "Un rival/compañero de tu generación anuncia retirada y te pregunta si tú también lo piensas.",
+      "trigger": "Edad 36+ + relación veterana.",
+      "visible": ["Su decisión", "conversación privada"],
+      "imperfect": ["No sabes si su alivio te influye más de lo que admitirías"],
+      "hiddenState": ["RETIREMENT_DISTANCE", "MOTIVATION_RESERVE", "POST_CAREER_READINESS", "PEER_COMPARISON"],
+      "options": [
+        {"id":"A","label":"Reconocer dudas."},
+        {"id":"B","label":"Decir que aún no."},
+        {"id":"C","label":"Pedirle que te cuente el proceso."},
+        {"id":"D","label":"Evitar compararte."}
+      ],
+      "canonicalSeeds": ["SEED_PEER_RETIREMENT_MIRROR"],
+      "authority": {
+        "requires": ["certified_veteran_peer_identity", "authoritative_peer_retirement_announcement_or_career_state", "real_prior_relationship_or_peer_context"],
+        "forbidden": ["invented_peer", "relationship_score_as_identity", "age_as_peer_identity", "peer_retirement_as_protagonist_retirement"],
+        "boundary": "The peer's retirement may change protagonist pressure/readiness only; protagonist retirement.status stays playing."
+      },
+      "status": "blocked_shared_authority",
+      "outcomeEffects": "implementation_pending"
+    }
+  ]
+}
