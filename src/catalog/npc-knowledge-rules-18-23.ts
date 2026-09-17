@@ -50,6 +50,16 @@ export const NPC_EVENT_KNOWLEDGE_RULES_18_23: NpcEventKnowledgeRule[] = [
   {
     eventId: "EVT_21_CAP_001",
     choiceIds: ["PARTICIPATE_VOTE", "LISTEN_NO_NAME", "DISSENT_MINORITY", "DECLINE_FOR_NOW"],
+    outcomeIds: [
+      "PARTICIPATE_VOTE__PRIMARY",
+      "PARTICIPATE_VOTE__SECONDARY",
+      "LISTEN_NO_NAME__PRIMARY",
+      "LISTEN_NO_NAME__SECONDARY",
+      "DISSENT_MINORITY__PRIMARY",
+      "DISSENT_MINORITY__SECONDARY",
+      "DECLINE_FOR_NOW__PRIMARY",
+      "DECLINE_FOR_NOW__SECONDARY"
+    ],
     npcIds: [],
     targetSlots: ["captain"],
     source: "witnessed",
