@@ -6,6 +6,7 @@ import { createInitialState } from '../dist/content/initial-state.js';
 import { simulateCareer } from '../dist/simulation/career-simulator.js';
 import { advanceWorldDayInPlace } from '../dist/simulation/world-simulator.js';
 import { respondToOffer } from '../dist/simulation/offers.js';
+import { buildDeferredConsequenceReport } from './audit-t52-deferred.mjs';
 
 const LIVE_SEED_STATES = new Set(['dormant', 'active', 'transformed']);
 const TERMINAL_SEED_STATES = new Set(['resolved', 'expired']);
@@ -30,23 +31,12 @@ function assertSeedRuntimeInvariants(state, label) {
   for (const [id, rows] of grouped) {
     const live = rows.filter(seed => LIVE_SEED_STATES.has(seed.state));
     assert.ok(live.length <= 1, `${label}: ${id} tiene ${live.length} instancias vivas`);
-
-    // A seed puede cerrarse, reabrirse y conservar generaciones terminales históricas.
-    // Lo inválido es duplicar exactamente el mismo cierre, no tener >1 resolved de por vida.
     const terminalFingerprints = new Set();
     for (const seed of rows.filter(seed => TERMINAL_SEED_STATES.has(seed.state))) {
-      const fingerprint = [
-        seed.state,
-        seed.originEvent,
-        seed.originSeason,
-        seed.lastTouchedDate ?? '',
-        seed.consumedBy ?? '',
-        seed.payload?.__t52TerminalReason ?? ''
-      ].join('|');
+      const fingerprint = [seed.state, seed.originEvent, seed.originSeason, seed.lastTouchedDate ?? '', seed.consumedBy ?? '', seed.payload?.__t52TerminalReason ?? ''].join('|');
       assert.ok(!terminalFingerprints.has(fingerprint), `${label}: ${id} contiene un cierre terminal duplicado (${fingerprint})`);
       terminalFingerprints.add(fingerprint);
     }
-
     assert.equal(state.flags[`HAS_${id}`] === true, live.length > 0, `${label}: flag HAS_${id} no coincide con el lifecycle real`);
   }
 }
@@ -76,17 +66,12 @@ function assertEpilogueBackedByHistory(state, label) {
   assert.equal(state.epilogue.generated, true, `${label}: carrera cerrada sin epílogo`);
   assert.ok(state.epilogue.families.length >= 2 && state.epilogue.families.length <= 5, `${label}: familias de epílogo fuera de rango`);
   assert.equal(new Set(state.epilogue.families).size, state.epilogue.families.length, `${label}: familias de epílogo duplicadas`);
-
-  // Soporta el formato histórico y el formato T5.1 34+ enriquecido con club/outcome.
-  // En ambos casos el hito tiene que ser demostrable por una HistoryEntry real.
   const historyMilestones = new Set();
   for (const h of state.history) {
     historyMilestones.add(`${h.season} · ${h.eventId} · ${h.choiceId}`);
     historyMilestones.add(`${h.season} · ${h.club || 'club desconocido'} · ${h.eventId} · ${h.choiceId}/${h.outcomeId}`);
   }
-  for (const milestone of state.epilogue.milestones) {
-    assert.ok(historyMilestones.has(milestone), `${label}: hito de epílogo no existe en historial: ${milestone}`);
-  }
+  for (const milestone of state.epilogue.milestones) assert.ok(historyMilestones.has(milestone), `${label}: hito de epílogo no existe en historial: ${milestone}`);
 }
 
 test('T5 determinism matrix: same seed/options are byte-stable and microfeeds cannot perturb strong narrative', () => {
@@ -140,6 +125,29 @@ test('T5 content references: events, seeds and NPC references are structurally c
   for (const seed of SEED_CATALOG) for (const npcId of seed.npcRefs ?? []) if (!npcSet.has(npcId)) unknownNpcRefs.push(`${seed.id}:${npcId}`);
   assert.deepEqual(unknownSeedRefs, [], `referencias a seeds inexistentes: ${unknownSeedRefs.join(', ')}`);
   assert.deepEqual(unknownNpcRefs, [], `referencias a NPC inexistentes: ${unknownNpcRefs.join(', ')}`);
+});
+
+test('T5-QA-012 regression: absence seed conditions never create positive deferred edges', () => {
+  const seed = { id: 'SEED_NANO_SHADOW', ageWindow: [18, 26] };
+  const producer = { id: 'T5_QA_012_PRODUCER', ageWindow: [18, 18], phase: '18_20', family: 'career', seedsRead: [], choices: [], outcomes: [{ id: 'CREATE', seedTransitions: [{ seedId: seed.id, action: 'create' }] }] };
+  const consumer = { id: 'T5_QA_012_ABSENCE', ageWindow: [19, 19], phase: '18_20', family: 'career', seedsRead: [seed.id], gates: [], choices: [{ id: 'ONLY_WHEN_ABSENT', eligibility: [{ path: `flags.HAS_${seed.id}`, op: 'eq', value: false }], outcomeIds: [] }], outcomes: [] };
+  const report = buildDeferredConsequenceReport([producer, consumer], [seed]);
+  const row = report.rows.find(candidate => candidate.id === seed.id);
+  assert.ok(row, 'synthetic seed missing from deferred report');
+  assert.equal(row.runtimeConsumerCount, 0, 'absence predicate was counted as positive consumer');
+  assert.equal(row.feasiblePairCount, 0, 'absence predicate created a positive producer→consumer edge');
+  assert.equal(report.negativeDependencies?.some(dep => dep.eventId === consumer.id && dep.seedId === seed.id), true, 'negative dependency was not retained separately');
+});
+
+test('T5-QA-013 regression: gateAlternatives HAS_SEED_* conditions are runtime consumers', () => {
+  const seed = { id: 'SEED_NANO_SHADOW', ageWindow: [18, 26] };
+  const producer = { id: 'T5_QA_013_PRODUCER', ageWindow: [18, 18], phase: '18_20', family: 'career', seedsRead: [], choices: [], outcomes: [{ id: 'CREATE', seedTransitions: [{ seedId: seed.id, action: 'create' }] }] };
+  const consumer = { id: 'T5_QA_013_CONSUMER', ageWindow: [19, 19], phase: '18_20', family: 'career', seedsRead: [seed.id], gates: [], gateAlternatives: [[{ path: `flags.HAS_${seed.id}`, op: 'eq', value: true }]], choices: [], outcomes: [] };
+  const report = buildDeferredConsequenceReport([producer, consumer], [seed]);
+  const row = report.rows.find(candidate => candidate.id === seed.id);
+  assert.ok(row, 'synthetic seed missing from deferred report');
+  assert.equal(row.runtimeConsumerCount, 1, 'gateAlternatives consumer disappeared from deferred audit');
+  assert.equal(row.runtimeConsumers[0]?.eventId, consumer.id);
 });
 
 test('T5 long careers: no terminal lock, absurd repeats, double-consumed seeds, market corruption or fictional epilogue milestones', () => {

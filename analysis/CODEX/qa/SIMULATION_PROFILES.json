@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "sourceHarness": "scripts/qa-t5-sim.mjs",
+  "profiles": [
+    {"profileId":"ambitious","purpose":"stress career/elite/competition choices and accepting offers","expectedInvariants":["career closes or reports blocker","no impossible state","deterministic"]},
+    {"profileId":"conservative","purpose":"stress stability/safety and delegated offers","expectedInvariants":["no offer lifecycle corruption","deterministic"]},
+    {"profileId":"loyal","purpose":"stress rejection/continuity and renewal cadence","expectedInvariants":["no repeated identical renewal loop","no contract corruption"]},
+    {"profileId":"mercenary","purpose":"stress money/market/leverage and frequent accepts","expectedInvariants":["club/contract/owner registration coherent","no duplicate offer IDs"]},
+    {"profileId":"risky","purpose":"stress aggressive/high-variance narrative choices","expectedInvariants":["no impossible state","RNG deterministic"]},
+    {"profileId":"health-first","purpose":"stress body/recovery/rest decisions","expectedInvariants":["career remains schedulable","no negative contract/salary"]},
+    {"profileId":"fame-first","purpose":"stress media/image/public routes","expectedInvariants":["microfeed does not perturb strong narrative RNG","history append-only"]},
+    {"profileId":"stability","purpose":"stress continuity/team/family choices","expectedInvariants":["no deadlock","contract lifecycle coherent"]},
+    {"profileId":"contradictory","purpose":"alternate first/last choices to exercise uncommon combinations","expectedInvariants":["no impossible state","career remains reproducible"]}
+  ],
+  "runTiers":{"single":1,"profileSmoke":9,"medium":150,"scheduled":1500,"historicalExpensive":225}
+}

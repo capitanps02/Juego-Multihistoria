@@ -4,6 +4,7 @@ import { EVENTS } from '../dist/content/events/index.js';
 import { createInitialState } from '../dist/content/initial-state.js';
 import { conditionsPass } from '../dist/core/conditions.js';
 import { getPath, setPath } from '../dist/core/path.js';
+import { loadSave, serializeSave } from '../dist/save/save.js';
 import { assertGameState } from '../dist/save/validation.js';
 import * as resolver from '../dist/narrative/resolver.js';
 
@@ -140,6 +141,38 @@ test('T5 integration/T5.3: conocimiento persistido malformado no puede satisface
       npcKnowledge.npcKnows(state, 'NPC_CCH_01', 'T53_CORRUPT'),
       false,
       'T5-QA-008: un registro knowledge malformado aceptado por save validation se convirtió en conocimiento verdadero'
+    );
+  }
+});
+
+test('T5 integration/T5-QA-022: football moment corrupto se rechaza en loadSave', async t => {
+  const footballMoments = await optionalImport('../dist/simulation/football-moments.js');
+  if (!footballMoments || typeof footballMoments.resolvePenaltyMomentInPlace !== 'function') {
+    t.skip('football moment persistence todavía no está integrado en main');
+    return;
+  }
+
+  const state = createInitialState(55922);
+  const momentId = 'QA_T5_SAVE_BOUNDARY_PENALTY';
+  const input = footballMoments.playerPenaltyAttempt(state, momentId, 80);
+  footballMoments.resolvePenaltyMomentInPlace(state, input);
+
+  const validParsed = JSON.parse(serializeSave(state));
+  const validRow = validParsed.world?.footballMomentResults?.[momentId];
+  assert.ok(validRow && typeof validRow === 'object', 'fixture inválido: el momento no quedó persistido');
+
+  const corruptions = [
+    ['outcome', 'teleported'],
+    ['probability', 2],
+    ['inputSignature', 42]
+  ];
+  for (const [field, value] of corruptions) {
+    const corrupted = structuredClone(validParsed);
+    corrupted.world.footballMomentResults[momentId][field] = value;
+    assert.throws(
+      () => loadSave(JSON.stringify(corrupted)),
+      undefined,
+      `T5-QA-022: loadSave aceptó footballMomentResults.${momentId}.${field} corrupto`
     );
   }
 });
