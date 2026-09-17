@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import path from 'node:path';
 import { EVENTS } from '../dist/content/events/index.js';
 import { createInitialState } from '../dist/content/initial-state.js';
 import { resolveChoiceInPlace } from '../dist/narrative/resolver.js';
@@ -44,10 +45,36 @@ function choose(profile, event, decisionIndex) {
 const segmentForAge = age => age < 20 ? '18_20' : age < 23 ? '20_23' : age < 26 ? '23_26' : age < 30 ? '26_30' : age < 34 ? '30_34' : '34_plus';
 const liveSeed = seed => !['resolved', 'expired'].includes(seed.state);
 
+function diagnosticSnapshot(state) {
+  return {
+    date: state.world?.date ?? state.date ?? null,
+    age: state.age,
+    phase: state.phase,
+    club: state.club ?? null,
+    ownerClub: state.professional?.ownerClub ?? state.world?.ownerClub ?? null,
+    registrationClub: state.professional?.registrationClub ?? null,
+    professionalRoute: state.professional?.route ?? null,
+    contract: {
+      monthsRemaining: state.contract?.monthsRemaining ?? null,
+      salaryMonthly: state.contract?.salaryMonthly ?? null
+    },
+    retirement: {
+      status: state.retirement?.status ?? null,
+      decisionAge: state.retirement?.decisionAge ?? null,
+      closureType: state.retirement?.closureType ?? null
+    },
+    pendingOfferId: state.market?.pending?.id ?? null,
+    marketHistoryCount: state.market?.history?.length ?? 0,
+    historyCount: state.history?.length ?? 0,
+    liveSeedCount: (state.seeds ?? []).filter(liveSeed).length
+  };
+}
+
 function runProfile(profile, seed, maxAge = 55) {
   const state = createInitialState(seed);
   let decisions = 0;
   let days = 0;
+  let firstImpossibleState = null;
   const maxDays = 14000;
   for (; days < maxDays; days++) {
     if (state.market?.pending) respondToOffer(state, state.market.pending.id, profile.offer);
@@ -59,6 +86,12 @@ function runProfile(profile, seed, maxAge = 55) {
     if (state.flags.EARLY_RETIRED_30_34 && state.retirement.status !== 'closed') closeCareer(state, 'early_retirement_30_34', 'early_retirement');
     if (state.retirement.status === 'closed') { generateEpilogue(state); break; }
     advanceWorldDayInPlace(state);
+
+    if (!firstImpossibleState) {
+      const issues = validateGameStateQa(state);
+      if (issues.length) firstImpossibleState = { day: days + 1, issues, snapshot: diagnosticSnapshot(state) };
+    }
+
     if (state.age >= maxAge) break;
   }
   const eventsBySegment = {};
@@ -75,13 +108,16 @@ function runProfile(profile, seed, maxAge = 55) {
     closureType: state.retirement.closureType,
     finalAge: state.age,
     days,
+    stopReason: state.retirement.status === 'closed' ? 'retirement_closed' : state.age >= maxAge ? 'max_age' : days >= maxDays ? 'max_days' : 'loop_exit',
     decisions,
     eventsBySegment,
     historyEvents: state.history.length,
     openSeeds: state.seeds.filter(liveSeed).map(seed => seed.id),
     epilogues: state.epilogue.families,
     marketDecisions: state.market?.history.length ?? 0,
-    impossibleStates: validateGameStateQa(state)
+    impossibleStates: validateGameStateQa(state),
+    firstImpossibleState,
+    finalSnapshot: diagnosticSnapshot(state)
   };
 }
 
@@ -96,13 +132,17 @@ const report = {
   totalRuns: results.length,
   metrics: {
     careersClosed: results.filter(row => row.closed).length,
-    blockedCareers: results.filter(row => !row.closed).map(row => ({ profile: row.profile, seed: row.seed, finalAge: row.finalAge })),
+    blockedCareers: results.filter(row => !row.closed).map(row => ({ profile: row.profile, seed: row.seed, finalAge: row.finalAge, stopReason: row.stopReason, finalSnapshot: row.finalSnapshot })),
     impossibleStates: results.flatMap(row => row.impossibleStates.map(issue => ({ profile: row.profile, seed: row.seed, issue }))),
+    firstImpossibleStates: results.filter(row => row.firstImpossibleState).map(row => ({ profile: row.profile, seed: row.seed, ...row.firstImpossibleState })),
     retirementAges: results.filter(row => row.retirementAge !== null).map(row => row.retirementAge),
     epilogueFamilies: [...new Set(results.flatMap(row => row.epilogues))]
   },
   results
 };
-if (process.env.T5_QA_OUTPUT) fs.writeFileSync(process.env.T5_QA_OUTPUT, JSON.stringify(report, null, 2) + '\n');
+if (process.env.T5_QA_OUTPUT) {
+  fs.mkdirSync(path.dirname(process.env.T5_QA_OUTPUT), { recursive: true });
+  fs.writeFileSync(process.env.T5_QA_OUTPUT, JSON.stringify(report, null, 2) + '\n');
+}
 console.log(JSON.stringify(report, null, 2));
 if (report.metrics.blockedCareers.length || report.metrics.impossibleStates.length) process.exitCode = 1;
