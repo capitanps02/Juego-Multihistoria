@@ -1,0 +1,32 @@
+name: T5 Market Contract Authority
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/simulation/offers.ts'
+      - 'scripts/test-offers.mjs'
+      - 'scripts/test-t5-market-contract-authority.mjs'
+      - 'analysis/CODEX/market-contracts/**'
+      - '.github/workflows/t5-market-contract-authority.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  authority:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Focused market and loan invariants
+        run: node --test scripts/test-offers.mjs scripts/test-t5-market-contract-authority.mjs
+      - name: Offer bridge and save regressions
+        run: node --test scripts/test-t51-offer-bridge.mjs scripts/test-t51-offer-bridge-provenance.mjs scripts/test-saves.mjs
