@@ -1,11 +1,11 @@
 # Codex implementation queue — Canon 30–34
 
-Baseline vigente: `main@c41e7de20daf3bd672ae54646428e921761008c8`.
+Baseline vigente: `main@fa3c8bae524fef62e4eb9802e895df88588998c4`.
 
 Lineage de integración actual:
 
 - fuente upstream congelada: `84871fae2bec92d74d1e607e0a48943e2e530a062d315a829cfe75eda9fe0886`;
-- target 30–34: `3ecee9e2329be03cb566c459fc1aecd0c32d759354aadf40061494873e392ba5`;
+- target 30–34: `9151d6620739f5f63face23f412abdeca9898cac8e510cc44d86c1468da8d0f4`;
 - este workstream **no** crea el freeze target ni registra `CONTENT_MIGRATION_ROUTES`.
 
 El Documento Maestro es autoridad. Un dato compartido `null`/`unavailable` implica fail-closed; no autoriza proxies.
@@ -58,6 +58,20 @@ Los siete `declaredReadMismatches` owner 30–34 sí son consumidores runtime po
 
 Guard: `scripts/test-t51-30-34-conditional-seed-reads.mjs`.
 
+### C30-34-CODEX-015 — convergencia raw-source con Career Authority
+
+Se eliminaron 17 escrituras directas a club/contrato de las definiciones raw 30–34 que el guard de autoridad ya descartaba en runtime. La limpieza no eleva deuda compartida ni cambia semántica activa.
+
+Se preservó explícitamente el orden estable de tags del offer bridge. Una comparación determinista del catálogo antes/después terminó con `DIFFERING_EVENTS=0`, por lo que el target permanece exactamente en `9151d662…8d0f4`.
+
+`T5 Market Contract Authority` run `35247718165` — **SUCCESS**.
+
+### Autoridad de liderazgo — `EVT_33_CAP_001`
+
+`EVT_33_CAP_001` consume la autoridad explícita de liderazgo del jugador en su club actual y falla cerrado ante proxies: influencia, seeds, `captain_group`, `secondary_captain` o autoridad obsoleta de un club anterior no bastan.
+
+`EVT_30_CAP_001` permanece con paridad parcial: el canon exige un umbral alto de `LOCKER_WEIGHT` que aún no está cuantificado por una autoridad compartida.
+
 ## Implementable / bloqueado para Codex
 
 ### C30-34-CODEX-005 — sport authority scene-by-scene
@@ -90,7 +104,7 @@ Deben entrar como batch coordinado posterior al freeze/edge actual; su alta prod
 
 Precondiciones:
 
-1. integración congela y registra el target actual `3ecee9e2…92ba5`;
+1. integración congela y registra el target actual `9151d662…8d0f4`;
 2. existe decisión autoritativa sobre la identidad de los condicionales implicados.
 
 Solo entonces añadir `seedsRead` exacto donde proceda y generar un nuevo freeze/edge explícito.
@@ -120,18 +134,19 @@ Fuente congelada vigente del handoff:
 
 Target:
 
-`3ecee9e2329be03cb566c459fc1aecd0c32d759354aadf40061494873e392ba5`
+`9151d6620739f5f63face23f412abdeca9898cac8e510cc44d86c1468da8d0f4`
 
 Freeze que coordinación/integración deberá crear antes de registrar la ruta:
 
-`qa/fixtures/t5.1/post-t51-sources/3ecee9e2329be03cb566c459fc1aecd0c32d759354aadf40061494873e392ba5.json`
+`qa/fixtures/t5.1/post-t51-sources/9151d6620739f5f63face23f412abdeca9898cac8e510cc44d86c1468da8d0f4.json`
 
 ## Validación
 
-- focused re-grounded `35242943034` — **SUCCESS**, 10/10 guards;
-- repository integrity del mismo HEAD: `35242943066` en ejecución al redactar esta actualización.
+- T5.1 canon 30–34 run `35247718346` — **SUCCESS**;
+- T5 Market Contract Authority run `35247718165` — **SUCCESS**;
+- Repository Integrity run `35247718142` — **FAILURE únicamente esperada** en `freeze-t51-active-source --check`, porque todavía no existe el fixture de `9151d662…8d0f4`.
 
-La pasada anterior `35242289109` quedó 54/55 únicamente porque conservaba el target anterior; ese mismatch fue corregido a `3ecee9e2…92ba5`.
+Antes de ese sentinel, `npm test` completó correctamente build, T5.2, saves, T5.3, registries, offer bridges y los guards compartidos. No existe un fallo adicional de manifests ni runtime que deba silenciarse en esta rama.
 
 ## Invariantes
 
@@ -142,4 +157,5 @@ La pasada anterior `35242289109` quedó 54/55 únicamente porque conservaba el t
 - no terminalidad artificial de seeds;
 - `seedsRead` no certifica causalidad;
 - consumo runtime no certifica identidad canónica;
-- historia legacy no se reescribe como canon nuevo.
+- historia legacy no se reescribe como canon nuevo;
+- este workstream no crea el freeze target ni registra la migration route.
