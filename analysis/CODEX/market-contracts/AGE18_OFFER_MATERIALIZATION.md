@@ -2,7 +2,7 @@
 
 Status: **architecture specified; runtime generation + EVENTS integration still blocked on allocated 18–20 content generation**.
 
-Integration baseline when this contract was written: `main@6d2239ae1f89be97a7c5cf117d456cff9218aade`.
+Integration baseline when this contract was last re-grounded: `main@d9cd3cf3b9d1f23ab2f082b66ef4a01f6177e7f2`.
 
 ## Root cause
 
