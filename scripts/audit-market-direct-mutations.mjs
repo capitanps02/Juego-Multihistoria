@@ -83,9 +83,15 @@ function classify(file, node) {
   // snapshots CareerTerms, calls adaptProfessionalContext, restores `before` with
   // applyTerms(), then materialises the proposed terms through CareerOffer.
   if (p === 'src/simulation/professional-adapter.ts' && fn === 'adaptProfessionalContext') return 'transition_proposal_builder';
-  // Contract time erosion belongs to calendar authority. Reaching zero is *not* free
-  // agency; #130 owns the still-blocked employment-resolution transition.
-  if (p === 'src/simulation/world-simulator.ts' && fn === 'monthlyContractTick') return 'calendar_contract_tick';
+  // Contract time erosion belongs to calendar authority. PR #156 relocates the
+  // established simulator body byte-for-byte into world-simulator-core.ts while the
+  // public wrapper remains world-simulator.ts, so both paths represent the same owned
+  // monthlyContractTick authority. Reaching zero is *not* free agency; #130 owns the
+  // still-blocked employment-resolution transition.
+  if (
+    (p === 'src/simulation/world-simulator.ts' || p === 'src/simulation/world-simulator-core.ts')
+    && fn === 'monthlyContractTick'
+  ) return 'calendar_contract_tick';
   // resolveChoiceCore currently repairs owner/registration after legacy event effects
   // mutate club. This is compatibility debt, not a permitted signing authority, and
   // must disappear as those scenes are converted to CareerOffer bridges.
