@@ -64,13 +64,25 @@ Se eliminaron 17 escrituras directas a club/contrato de las definiciones raw 30�
 
 Se preservó explícitamente el orden estable de tags del offer bridge. Una comparación determinista del catálogo antes/después terminó con `DIFFERING_EVENTS=0`, por lo que el target permanece exactamente en `9151d662…8d0f4`.
 
-`T5 Market Contract Authority` run `35247718165` — **SUCCESS**.
-
-### Autoridad de liderazgo — `EVT_33_CAP_001`
+### Autoridad de liderazgo — `EVT_33_CAP_001` / `EVT_30_CAP_001`
 
 `EVT_33_CAP_001` consume la autoridad explícita de liderazgo del jugador en su club actual y falla cerrado ante proxies: influencia, seeds, `captain_group`, `secondary_captain` o autoridad obsoleta de un club anterior no bastan.
 
-`EVT_30_CAP_001` permanece con paridad parcial: el canon exige un umbral alto de `LOCKER_WEIGHT` que aún no está cuantificado por una autoridad compartida.
+`EVT_30_CAP_001` permanece con paridad parcial. `LOCKER_LEADERSHIP_ASSIGNMENTS` no contiene ninguna asignación `30_34`, por lo que los hechos de afinidad de capitán/estrella fallan cerrado. El canon exige un `LOCKER_WEIGHT` alto y no existe un mapeo autoritativo que permita sustituirlo por `professional.lockerPower` o una relación NPC arbitraria.
+
+Guard: `scripts/test-t51-30-34-authority-gaps.mjs`.
+
+### C30-34-CODEX-016 — lineage de paridad y seed canónica ausente
+
+`canon-30-34-parity-evidence.json` ya está reconciliado con el handoff vigente `84871fae… → 9151d662…`.
+
+El Documento Maestro de `EVT_30_CON_001` referencia además `SEED_LAST_PEAK_CONTRACT`, pero ese ID no existe actualmente en `src/catalog/seeds.ts`. No se crea, renombra ni mapea a `SEED_AGE30_CONTRACT`, `SEED_LAST_BIG_MOVE_WINDOW` u otra seed por semejanza semántica.
+
+`test-t51-30-34-readiness.mjs` exige simultáneamente:
+
+- que source/target de la evidencia de paridad coincidan con el migration handoff;
+- que `SEED_LAST_PEAK_CONTRACT` siga marcada como missing/unclassified mientras no exista una definición runtime aprobada;
+- que esta deuda no permita promover `EVT_30_CON_001` a identidad canónica verificada.
 
 ## Implementable / bloqueado para Codex
 
@@ -86,7 +98,9 @@ Pendientes que requieren hechos exactos, no proxies:
 
 ### C30-34-CODEX-006 — autoridad multi-oferta
 
-`EVT_31_MKT_001` necesita dos ofertas simultáneas; `EVT_33_MKT_001`, cuatro rutas/propuestas. Requiere diseño compartido persistible multi-oferta.
+`EVT_31_MKT_001` necesita dos ofertas simultáneas; `EVT_33_MKT_001`, cuatro rutas/propuestas. `getEligibleCareerOffers()` ya existe, pero deriva del único `MarketState.pending`, por lo que hoy devuelve como máximo una oferta. El nombre plural no cierra este blocker.
+
+Requiere diseño compartido persistible multi-oferta con identidad/provenance por oferta.
 
 ### C30-34-CODEX-007 — renovación automática por minutos
 
@@ -113,16 +127,30 @@ Solo entonces añadir `seedsRead` exacto donde proceda y generar un nuevo freeze
 
 18 parejas siguen `sameSceneMigrationAllowed:false`. No resolver por similitud de nombres ni string matching; requieren revisión/migración explícita.
 
+### C30-34-CODEX-017 — definición canónica de `SEED_LAST_PEAK_CONTRACT`
+
+Bloqueado en T5.2/canon. Antes de materializar esa seed deben quedar definidos al menos:
+
+- identidad exacta del seed ID;
+- scope y edad/expiración si procede;
+- payload semántico;
+- productor(es) canónicos;
+- si `EVT_30_CON_001` la crea siempre o solo en outcomes concretos;
+- consumidores/terminalidad solo si existe evidencia real.
+
+Hasta entonces, Codex debe preservar la ausencia runtime y no sustituirla por otra seed existente.
+
 ## Estado de seeds owner 30–34
 
-- 52 asignadas;
+- 52 asignadas en el catálogo runtime actual;
 - 48 con productor runtime;
 - 4 sin productor;
 - 13 con algún consumidor estructural;
 - 39 sin consumidor;
 - 0 terminales explícitos;
 - 52 open-ended;
-- 7 `declaredReadMismatches` clasificados como consumo runtime real + metadata pendiente.
+- 7 `declaredReadMismatches` clasificados como consumo runtime real + metadata pendiente;
+- `SEED_LAST_PEAK_CONTRACT` es una referencia canónica adicional ausente del catálogo runtime y por tanto no se suma artificialmente a esas 52.
 
 `withAnyConsumer = 13` no equivale a 13 consecuencias canónicas certificadas.
 
@@ -142,11 +170,7 @@ Freeze que coordinación/integración deberá crear antes de registrar la ruta:
 
 ## Validación
 
-- T5.1 canon 30–34 run `35247718346` — **SUCCESS**;
-- T5 Market Contract Authority run `35247718165` — **SUCCESS**;
-- Repository Integrity run `35247718142` — **FAILURE únicamente esperada** en `freeze-t51-active-source --check`, porque todavía no existe el fixture de `9151d662…8d0f4`.
-
-Antes de ese sentinel, `npm test` completó correctamente build, T5.2, saves, T5.3, registries, offer bridges y los guards compartidos. No existe un fallo adicional de manifests ni runtime que deba silenciarse en esta rama.
+La rama mantiene como regla que Repository Integrity puede fallar únicamente en el sentinel de freeze target propiedad de coordinación/integración. Los guards focales cubren trigger, autoridad de carrera, ofertas, liderazgo, deporte, seeds, readiness y migration handoff.
 
 ## Invariantes
 
@@ -157,5 +181,6 @@ Antes de ese sentinel, `npm test` completó correctamente build, T5.2, saves, T5
 - no terminalidad artificial de seeds;
 - `seedsRead` no certifica causalidad;
 - consumo runtime no certifica identidad canónica;
+- una referencia canónica ausente no autoriza crear/mutuar una seed por similitud;
 - historia legacy no se reescribe como canon nuevo;
 - este workstream no crea el freeze target ni registra la migration route.
