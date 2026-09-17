@@ -40,6 +40,27 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # CI-only helper for PR #188. Generate the exact post-T5.1 evidence from
+      # the product tree before the normal checks, then export it for promotion
+      # into stacked PR #186. This branch is never merged.
+      - name: Generate T5.1 #124 migration evidence
+        run: |
+          npm run build
+          node scripts/freeze-t51-active-source.mjs
+          node scripts/generate-t51-post-legacy-registry.mjs
+          node scripts/generate-t51-offer-bridge-evidence.mjs
+
+      - name: Upload T5.1 #124 generated evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: t51-124-generated-evidence
+          if-no-files-found: error
+          retention-days: 1
+          path: |
+            qa/fixtures/t5.1/post-t51-sources/
+            src/session/post-t51-legacy-registry.ts
+            src/session/frozen-offer-bridge-evidence.ts
+
       - name: Run project validation
         run: npm test
 
