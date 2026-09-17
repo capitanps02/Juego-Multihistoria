@@ -2,14 +2,25 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { EVENTS } from '../dist/content/events/index.js';
 import { createInitialState } from '../dist/content/initial-state.js';
+import { eventGatesPass } from '../dist/narrative/event-gates.js';
 import { offerBridgeSpec } from '../dist/narrative/offer-bridge.js';
+import { narrativeConditionRoot } from '../dist/simulation/club-contract-intent.js';
 import { careerTerms, getActiveCareerOffers } from '../dist/simulation/offers.js';
+import { certifyPlayerClubLeadershipInPlace } from '../dist/simulation/player-leadership-authority.js';
 
 const byId = id => {
   const event = EVENTS.find(row => row.id === id);
   assert.ok(event, `${id} must exist in active catalog`);
   return event;
 };
+
+function veteranState(age = 33) {
+  const state = createInitialState(330034 + age);
+  state.age = age;
+  state.phase = '30_34';
+  state.professional.initializedAt30 = true;
+  return state;
+}
 
 test('formal CareerTerms cannot yet prove the minutes-based renewal clause asserted by EVT_32_CON_001', () => {
   const state = createInitialState(320032);
@@ -54,4 +65,59 @@ test('multi-offer veteran scenes remain outside offerBridge while market authori
     assert.equal(offerBridgeSpec(event), undefined, `${id} must not pretend one pending offer proves a multi-offer scene`);
     assert.equal(event.canonStatus, 'technical_adaptation');
   }
+});
+
+test('leadership narrative facts ignore influence, captaincy flags and seeds', () => {
+  const state = veteranState();
+  state.professional.lockerPower = 100;
+  state.professional.successionPressure = 100;
+  state.flags.CAPTAINCY_WINDOW = true;
+  state.flags.HAS_SEED_CAPTAINCY_STYLE = true;
+  state.flags.HAS_SEED_CAPTAIN_HANDOVER = true;
+  const before = structuredClone(state);
+
+  const root = narrativeConditionRoot(state);
+  assert.deepEqual(root.facts.playerClubLeadership, {
+    currentRole: null,
+    hasCertifiedMainCaptainHistory: false
+  });
+  assert.deepEqual(state, before, 'leadership fact projection must be read-only and consume no RNG');
+});
+
+test('EVT_33_CAP_001 fails closed on succession pressure until current main-club captaincy is certified', () => {
+  const state = veteranState();
+  state.professional.successionPressure = 100;
+  state.professional.lockerPower = 100;
+  const event = byId('EVT_33_CAP_001');
+
+  assert.ok(event.tags?.includes('t51_leadership_authority_required'));
+  assert.ok(event.gates.some(g =>
+    g.path === 'facts.playerClubLeadership.currentRole'
+    && g.op === 'eq'
+    && g.value === 'captain'
+  ));
+  assert.equal(eventGatesPass(state, event), false);
+
+  certifyPlayerClubLeadershipInPlace(state, 'captain', 'TEST_FORMAL_APPOINTMENT', 'ACCEPT');
+  assert.equal(eventGatesPass(state, event), true);
+});
+
+test('EVT_33_CAP_001 does not collapse captain-group or secondary-captain authority into main captaincy', () => {
+  for (const role of ['captain_group', 'secondary_captain']) {
+    const state = veteranState();
+    state.professional.successionPressure = 100;
+    certifyPlayerClubLeadershipInPlace(state, role, 'EVT_25_CAP_001', role === 'captain_group' ? 'A' : 'C');
+    assert.equal(eventGatesPass(state, byId('EVT_33_CAP_001')), false, `${role} must not satisfy main-captain gate`);
+  }
+});
+
+test('EVT_33_CAP_001 loses current captain authority immediately after a club change', () => {
+  const state = veteranState();
+  state.professional.successionPressure = 100;
+  certifyPlayerClubLeadershipInPlace(state, 'captain', 'TEST_FORMAL_APPOINTMENT', 'ACCEPT');
+  assert.equal(eventGatesPass(state, byId('EVT_33_CAP_001')), true);
+
+  state.club = 'NEW_CLUB';
+  assert.equal(narrativeConditionRoot(state).facts.playerClubLeadership.currentRole, null);
+  assert.equal(eventGatesPass(state, byId('EVT_33_CAP_001')), false);
 });
