@@ -1,0 +1,126 @@
+{
+  "version": 1,
+  "generatedAt": "2026-09-17",
+  "status": "prepared_not_registered",
+  "activationBoundary": "Do not add these definitions to EVENTS or freeze contentIdentity until Wave 0 is integrated.",
+  "commonPrerequisites": [
+    "issue #59 successive content lineage is available for the real predecessor generation",
+    "T5.2 has applied SEED_OWNERSHIP.md so the canonical Pasada-7 seed identities exist with safe provenance",
+    "required inherited seed/history facts are canonical and scope-aware",
+    "legacy SEEN/cooldown/pending fingerprints cannot suppress these distinct canonical scenes"
+  ],
+  "commonForbidden": [
+    "set retirement.status to decided, announced or closed",
+    "invent a club offer or mutate club/contract directly",
+    "invent fixture, lineup, minutes, result, goal or selection facts",
+    "infer spouse, child, coach, captain, doctor or agent identity",
+    "create a seed with originEvent PASADA_7_34_PLUS"
+  ],
+  "events": [
+    {
+      "eventId": "EVT_35_FAM_001",
+      "age": 35,
+      "title": "Tu familia quiere una ciudad",
+      "family": "family",
+      "identityStatus": "needs_reimplementation",
+      "canonicalSeed": "SEED_FINAL_RELOCATION_TRADEOFF",
+      "requiredFacts": [
+        "canonical historical/live semantics for SEED_RELOCATION_LIMIT",
+        "an established relevant family/relationship context already present in the save"
+      ],
+      "failClosedWhen": [
+        "no relevant family context exists",
+        "relocation memory is absent or its scope/history semantics do not authorize this callback"
+      ],
+      "choices": [
+        {"id":"STABLE_CITY","label":"Priorizar una ciudad estable","seedPayload":{"stance":"stable_city"}},
+        {"id":"ONE_LAST_YEAR","label":"Pedir un último año de libertad geográfica","seedPayload":{"stance":"one_last_year"}},
+        {"id":"TEMPORARY_SPLIT","label":"Vivir separados temporalmente","seedPayload":{"stance":"temporary_split"}},
+        {"id":"FOOTBALL_ONLY","label":"Elegir solo por fútbol","seedPayload":{"stance":"football_only"}}
+      ],
+      "effectPolicy": {
+        "allowed": ["family/relocation preference memory", "motivation or future-eligibility consequences supported by existing fields"],
+        "forbidden": ["move club", "sign/reject a CareerOffer", "invent spouse/children", "retire player"]
+      }
+    },
+    {
+      "eventId": "EVT_35_BODY_001",
+      "age": 35,
+      "title": "El cuerpo pide seis semanas",
+      "family": "medical",
+      "identityStatus": "needs_reimplementation",
+      "canonicalSeed": "SEED_SLOW_PRESEASON_35",
+      "requiredFacts": [
+        "factual accumulated body/recovery history",
+        "BODY_REDLINE-equivalent evidence derived from persisted body/recovery/availability facts rather than age"
+      ],
+      "failClosedWhen": [
+        "age is the only evidence of physical burden",
+        "the scene would need to fabricate a diagnosis, scan or current missed match"
+      ],
+      "choices": [
+        {"id":"SIX_WEEKS","label":"Aceptar seis semanas","seedPayload":{"preseasonPlan":"six_weeks"}},
+        {"id":"THREE_WEEKS","label":"Reducirlo a tres","seedPayload":{"preseasonPlan":"three_weeks"}},
+        {"id":"PERSONAL_PLAN","label":"Hacer un plan propio","seedPayload":{"preseasonPlan":"personal_plan"}},
+        {"id":"NORMAL_REASSESS","label":"Entrenar normal y reevaluar","seedPayload":{"preseasonPlan":"normal_reassess"}}
+      ],
+      "effectPolicy": {
+        "allowed": ["load/recovery/preseason-planning consequences", "future availability probability inputs when owned by simulation"],
+        "forbidden": ["write current starts/minutes", "create a new injury", "retire player"]
+      }
+    },
+    {
+      "eventId": "EVT_35_IMG_001",
+      "age": 35,
+      "title": "Te ofrecen un último gran patrocinio",
+      "family": "image",
+      "identityStatus": "canonical_missing",
+      "canonicalSeed": "SEED_RETIREMENT_MARKETING",
+      "requiredFacts": [
+        "factual qualifying global/public image context",
+        "a real commercial proposal context distinct from CareerOffer",
+        "canonical SEED_RETIREMENT_PUBLIC_TONE semantics if that predecessor memory is consumed"
+      ],
+      "failClosedWhen": [
+        "there is no qualifying image/commercial context",
+        "the implementation would treat campaign wording as a retirement announcement"
+      ],
+      "choices": [
+        {"id":"FAREWELL_FRAME","label":"Aceptar el concepto de despedida","seedPayload":{"campaignFrame":"farewell"}},
+        {"id":"LONGEVITY_FRAME","label":"Reformular la campaña alrededor de la longevidad","seedPayload":{"campaignFrame":"longevity"}},
+        {"id":"REJECT","label":"Rechazarla","seedPayload":{"campaignFrame":"rejected"}},
+        {"id":"ONE_YEAR","label":"Firmar solo un año","seedPayload":{"campaignFrame":"one_year"}}
+      ],
+      "effectPolicy": {
+        "allowed": ["public/image/economic-pressure consequences", "future media interpretation through explicit memory payload"],
+        "forbidden": ["set retirement announced/closed", "create football CareerOffer", "prove market decline", "moral reward for rejection"]
+      }
+    },
+    {
+      "eventId": "EVT_36_MED_001",
+      "age": 36,
+      "title": "El médico te habla de después",
+      "family": "medical",
+      "identityStatus": "needs_reimplementation",
+      "canonicalSeed": "SEED_POST_CAREER_BODY_RISK",
+      "requiredFacts": [
+        "explicit accumulated medical/body history",
+        "canonical SEED_MEDICAL_AUTHORITY semantics when such memory exists"
+      ],
+      "failClosedWhen": [
+        "high age is the only evidence of risk",
+        "the scene would require a named doctor who is not certified"
+      ],
+      "choices": [
+        {"id":"REDUCE_EXPOSURE","label":"Reducir exposición","seedPayload":{"riskStance":"reduce_exposure"}},
+        {"id":"CONTINUE_CLEARED","label":"Seguir mientras tengas permiso médico","seedPayload":{"riskStance":"continue_if_cleared"}},
+        {"id":"MORE_OPINIONS","label":"Buscar más opiniones","seedPayload":{"riskStance":"seek_more_opinions"}},
+        {"id":"TENTATIVE_DATE","label":"Fijar una fecha tentativa de retirada","seedPayload":{"riskStance":"tentative_retirement_date"}}
+      ],
+      "effectPolicy": {
+        "allowed": ["medical-authority/preference memory", "retirement pressure/readiness without terminal transition", "load/exposure preference"],
+        "forbidden": ["predict future disability as fact", "announce retirement", "set retirement.status away from playing", "invent diagnosis"]
+      }
+    }
+  ]
+}
