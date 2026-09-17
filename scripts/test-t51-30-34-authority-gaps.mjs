@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import { EVENTS } from '../dist/content/events/index.js';
 import { createInitialState } from '../dist/content/initial-state.js';
 import { eventGatesPass } from '../dist/narrative/event-gates.js';
@@ -8,6 +9,8 @@ import { narrativeConditionRoot } from '../dist/simulation/club-contract-intent.
 import { LOCKER_LEADERSHIP_ASSIGNMENTS } from '../dist/simulation/locker-leadership.js';
 import { careerTerms, getActiveCareerOffers, getEligibleCareerOffers } from '../dist/simulation/offers.js';
 import { certifyPlayerClubLeadershipInPlace } from '../dist/simulation/player-leadership-authority.js';
+
+const authorityDebt = JSON.parse(fs.readFileSync('analysis/T5.1/canon-30-34-authority-debt.json', 'utf8'));
 
 const byId = id => {
   const event = EVENTS.find(row => row.id === id);
@@ -22,6 +25,26 @@ function veteranState(age = 33) {
   state.professional.initializedAt30 = true;
   return state;
 }
+
+test('authority-debt registry covers every currently classified 30-34 scene blocker exactly once', () => {
+  const expected = [
+    'EVT_30_CAP_001',
+    'EVT_30_FORM_001',
+    'EVT_31_FINAL_001',
+    'EVT_31_MKT_001',
+    'EVT_31_RETURN_001',
+    'EVT_31_ROLE_001',
+    'EVT_32_CON_001',
+    'EVT_32_FAN_001',
+    'EVT_32_NAT_001',
+    'EVT_33_BODY_001',
+    'EVT_33_MKT_001'
+  ];
+  const actual = authorityDebt.scenes.map(scene => scene.eventId).sort();
+  assert.equal(new Set(actual).size, actual.length, 'authority debt must not duplicate scene ids');
+  assert.deepEqual(actual, expected.sort());
+  assert.equal(authorityDebt.sourceMainSha, 'fa3c8bae524fef62e4eb9802e895df88588998c4');
+});
 
 test('formal CareerTerms cannot yet prove the minutes-based renewal clause asserted by EVT_32_CON_001', () => {
   const state = createInitialState(320032);
