@@ -1,4 +1,4 @@
-import { knowledgeRulesFor } from "../catalog/npc-knowledge-rules.js";
+import { historicalKnowledgeRulesFor } from "../catalog/npc-knowledge-backfill-v1.js";
 import { getNpcKnowledgeRecord, npcKnows, rememberNpcFactInPlace } from "../core/npc-knowledge.js";
 const pairKey = (npcId, factId) => `${npcId}\u0000${factId}`;
 function certificationMatches(certification, provenance, entry) {
@@ -25,9 +25,14 @@ function historyEntryHasEpistemicAuthority(entry, index, context) {
  * or by an exact explicit legacy certification. This fails closed on exact-id
  * semantic collisions introduced by content migrations (T5-QA-017).
  *
+ * Historical rule semantics are also frozen independently from the live registry.
+ * Reconciliation uses the immutable v1 backfill baseline rather than
+ * NPC_EVENT_KNOWLEDGE_RULES, so a future live-rule change cannot reinterpret an
+ * old save whose event fingerprint stayed unchanged (T5-QA-021).
+ *
  * Valid persisted rows are authoritative and are never rewritten. Missing rows,
  * including invalid legacy rows that cannot satisfy npcKnows(), are reconstructed
- * only through explicit event rules after semantic provenance has been established.
+ * only through frozen explicit event rules after semantic provenance has been established.
  *
  * The operation is deterministic, consumes no RNG, does not rewrite history and
  * is idempotent once the canonical rows have been reconstructed.
@@ -44,7 +49,7 @@ export function reconcileNpcKnowledgeFromHistoryInPlace(state, context) {
     for (const [index, entry] of state.history.entries()) {
         if (!historyEntryHasEpistemicAuthority(entry, index, context))
             continue;
-        for (const rule of knowledgeRulesFor(entry.eventId, entry.choiceId, entry.outcomeId)) {
+        for (const rule of historicalKnowledgeRulesFor(entry.eventId, entry.choiceId, entry.outcomeId)) {
             const factId = rule.factId ?? entry.eventId;
             for (const npcId of rule.npcIds) {
                 const key = pairKey(npcId, factId);

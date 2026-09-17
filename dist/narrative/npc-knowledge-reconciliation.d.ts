@@ -26,9 +26,14 @@ export interface NpcKnowledgeReconciliationContext {
  * or by an exact explicit legacy certification. This fails closed on exact-id
  * semantic collisions introduced by content migrations (T5-QA-017).
  *
+ * Historical rule semantics are also frozen independently from the live registry.
+ * Reconciliation uses the immutable v1 backfill baseline rather than
+ * NPC_EVENT_KNOWLEDGE_RULES, so a future live-rule change cannot reinterpret an
+ * old save whose event fingerprint stayed unchanged (T5-QA-021).
+ *
  * Valid persisted rows are authoritative and are never rewritten. Missing rows,
  * including invalid legacy rows that cannot satisfy npcKnows(), are reconstructed
- * only through explicit event rules after semantic provenance has been established.
+ * only through frozen explicit event rules after semantic provenance has been established.
  *
  * The operation is deterministic, consumes no RNG, does not rewrite history and
  * is idempotent once the canonical rows have been reconstructed.

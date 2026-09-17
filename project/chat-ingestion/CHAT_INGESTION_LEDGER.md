@@ -26,3 +26,9 @@
 
 - Las escenas T5 posteriores que aún siguen en PRs draft no se han integrado: no están autorizadas por el lineage actual ni por `main`.
 - T3.4 continúa pendiente de prueba en Android físico, tal como establece el plan canónico.
+
+## Seguimiento posterior
+
+- 17 de septiembre de 2026: se integró T5.3 (`408f38f`), que congela el baseline histórico de conocimiento de NPC para que las reglas vivas posteriores no reescriban replays anteriores. No altera la identidad del catálogo ni las rutas de migración de partida.
+- El bundle actualizado se publicó de nuevo en el asset `306862614`. Un Launch nuevo de la escena `2593315` recuperó la partida existente en 1 nov 2026 con 6 decisiones y sin errores ni avisos de consola.
+- La batería focal de T5.3, adaptador de jugador y PlayCanvas terminó con 66 pruebas correctas.

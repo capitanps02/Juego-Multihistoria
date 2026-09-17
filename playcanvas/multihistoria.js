@@ -3761,7 +3761,7 @@ function selectOfferBridgeEvent(state, source) {
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.reconcileNpcKnowledgeFromHistoryInPlace = reconcileNpcKnowledgeFromHistoryInPlace;
-const npc_knowledge_rules_js_1 = require("../catalog/npc-knowledge-rules.js");
+const npc_knowledge_backfill_v1_js_1 = require("../catalog/npc-knowledge-backfill-v1.js");
 const npc_knowledge_js_1 = require("../core/npc-knowledge.js");
 const pairKey = (npcId, factId) => `${npcId}\u0000${factId}`;
 function certificationMatches(certification, provenance, entry) {
@@ -3788,9 +3788,14 @@ function historyEntryHasEpistemicAuthority(entry, index, context) {
  * or by an exact explicit legacy certification. This fails closed on exact-id
  * semantic collisions introduced by content migrations (T5-QA-017).
  *
+ * Historical rule semantics are also frozen independently from the live registry.
+ * Reconciliation uses the immutable v1 backfill baseline rather than
+ * NPC_EVENT_KNOWLEDGE_RULES, so a future live-rule change cannot reinterpret an
+ * old save whose event fingerprint stayed unchanged (T5-QA-021).
+ *
  * Valid persisted rows are authoritative and are never rewritten. Missing rows,
  * including invalid legacy rows that cannot satisfy npcKnows(), are reconstructed
- * only through explicit event rules after semantic provenance has been established.
+ * only through frozen explicit event rules after semantic provenance has been established.
  *
  * The operation is deterministic, consumes no RNG, does not rewrite history and
  * is idempotent once the canonical rows have been reconstructed.
@@ -3807,7 +3812,7 @@ function reconcileNpcKnowledgeFromHistoryInPlace(state, context) {
     for (const [index, entry] of state.history.entries()) {
         if (!historyEntryHasEpistemicAuthority(entry, index, context))
             continue;
-        for (const rule of (0, npc_knowledge_rules_js_1.knowledgeRulesFor)(entry.eventId, entry.choiceId, entry.outcomeId)) {
+        for (const rule of (0, npc_knowledge_backfill_v1_js_1.historicalKnowledgeRulesFor)(entry.eventId, entry.choiceId, entry.outcomeId)) {
             const factId = rule.factId ?? entry.eventId;
             for (const npcId of rule.npcIds) {
                 const key = pairKey(npcId, factId);
@@ -3849,6 +3854,212 @@ function reconcileNpcKnowledgeFromHistoryInPlace(state, context) {
             relation.memories = relation.memories.filter(id => id !== factId);
     }
     return [...reconstructed].sort();
+}
+
+},
+"src/catalog/npc-knowledge-backfill-v1.ts": function(module,exports,require){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.NPC_KNOWLEDGE_BACKFILL_RULES_V1 = exports.NPC_KNOWLEDGE_BACKFILL_V1_SHA256 = void 0;
+exports.historicalKnowledgeRulesFor = historicalKnowledgeRulesFor;
+/**
+ * Immutable semantic baseline used only to reconstruct missing T5.3 knowledge
+ * from historical saves. Live event resolution MUST continue to use
+ * NPC_EVENT_KNOWLEDGE_RULES from npc-knowledge-rules.ts.
+ *
+ * Do not edit this v1 baseline in place when live rules evolve. If historical
+ * backfill semantics must intentionally expand, add a new explicitly versioned
+ * baseline/provenance decision instead. The SHA-256 ratchet is asserted by QA.
+ */
+exports.NPC_KNOWLEDGE_BACKFILL_V1_SHA256 = "80187bea933b80035e0c5c02d28fffe2d5d7bea84df0f478288461214aaee4d6";
+exports.NPC_KNOWLEDGE_BACKFILL_RULES_V1 = [
+    {
+        eventId: "EVT_18_PRE_001",
+        choiceIds: ["CALL_NANO"],
+        npcIds: ["NPC_PLR_14"],
+        source: "informed",
+        certainty: 100,
+        memory: "strong",
+        relationshipMemory: true
+    },
+    {
+        eventId: "EVT_18_PRE_001",
+        choiceIds: ["CALL_RIVAS"],
+        npcIds: ["NPC_ACA_01"],
+        source: "informed",
+        certainty: 100,
+        memory: "strong",
+        relationshipMemory: true
+    },
+    {
+        eventId: "EVT_18_PRE_002",
+        npcIds: ["NPC_PLR_10", "NPC_PLR_12", "NPC_MED_01"],
+        source: "witnessed",
+        certainty: 100,
+        memory: "temporary",
+        relationshipMemory: true
+    },
+    {
+        eventId: "EVT_18_PRE_003",
+        npcIds: ["NPC_CCH_02", "NPC_PLR_12"],
+        source: "witnessed",
+        certainty: 100,
+        memory: "temporary",
+        relationshipMemory: true
+    },
+    {
+        eventId: "EVT_18_AGT_001",
+        choiceIds: ["HECTOR_FIRST"],
+        npcIds: ["NPC_AGT_01"],
+        source: "informed",
+        certainty: 100,
+        memory: "temporary",
+        relationshipMemory: true
+    },
+    {
+        eventId: "EVT_18_AGT_001",
+        choiceIds: ["LUCIA_FIRST"],
+        npcIds: ["NPC_AGT_02"],
+        source: "informed",
+        certainty: 100,
+        memory: "temporary",
+        relationshipMemory: true
+    },
+    {
+        eventId: "EVT_18_AGT_001",
+        choiceIds: ["COMPARE"],
+        npcIds: ["NPC_AGT_01", "NPC_AGT_02"],
+        source: "informed",
+        certainty: 100,
+        memory: "temporary",
+        relationshipMemory: true
+    },
+    {
+        eventId: "EVT_18_CAP_001",
+        choiceIds: ["PUBLIC_SUPPORT"],
+        outcomeIds: ["PUBLIC_SUPPORT__PRIMARY"],
+        npcIds: ["NPC_PLR_10"],
+        source: "witnessed",
+        certainty: 100,
+        memory: "strong",
+        relationshipMemory: true
+    },
+    {
+        eventId: "EVT_18_MED_001",
+        choiceIds: ["TELL_COACH"],
+        outcomeIds: ["TELL_COACH__SECONDARY"],
+        npcIds: ["NPC_MED_01"],
+        source: "reported",
+        certainty: 100,
+        memory: "strong",
+        relationshipMemory: true
+    },
+    {
+        eventId: "EVT_18_PRS_002",
+        choiceIds: ["DENY"],
+        outcomeIds: ["DENY__SECONDARY"],
+        npcIds: ["NPC_PRS_01"],
+        source: "witnessed",
+        certainty: 100,
+        memory: "strong",
+        relationshipMemory: true
+    },
+    {
+        eventId: "EVT_18_TEAM_001",
+        choiceIds: ["HELP_REASONABLE"],
+        outcomeIds: ["HELP_REASONABLE__PRIMARY"],
+        npcIds: ["NPC_PLR_12"],
+        source: "witnessed",
+        certainty: 100,
+        memory: "strong",
+        relationshipMemory: true
+    },
+    {
+        eventId: "EVT_18_TEAM_001",
+        choiceIds: ["AGREE_BUT_SELF"],
+        outcomeIds: ["AGREE_BUT_SELF__SECONDARY"],
+        npcIds: ["NPC_PLR_12"],
+        source: "witnessed",
+        certainty: 100,
+        memory: "strong",
+        relationshipMemory: true
+    },
+    {
+        eventId: "EVT_18_TEAM_001",
+        choiceIds: ["TELL_MENA"],
+        outcomeIds: ["TELL_MENA__SECONDARY"],
+        npcIds: ["NPC_PLR_12"],
+        source: "reported",
+        certainty: 100,
+        memory: "strong",
+        relationshipMemory: true
+    },
+    {
+        eventId: "EVT_18_END_002",
+        choiceIds: ["DEFEND"],
+        outcomeIds: ["DEFEND__PRIMARY"],
+        npcIds: ["NPC_CCH_01"],
+        source: "public",
+        certainty: 100,
+        memory: "strong",
+        relationshipMemory: true
+    },
+    {
+        eventId: "EVT_18_MKT_001",
+        choiceIds: ["SOFT_LEVERAGE"],
+        outcomeIds: ["SOFT_LEVERAGE__SECONDARY"],
+        npcIds: ["NPC_DIR_02"],
+        source: "witnessed",
+        certainty: 100,
+        memory: "temporary",
+        relationshipMemory: true
+    },
+    {
+        eventId: "CEVT_18_VELA_01",
+        choiceIds: ["DISTANCE"],
+        outcomeIds: ["DISTANCE__SECONDARY"],
+        npcIds: ["NPC_PLR_10"],
+        source: "witnessed",
+        certainty: 100,
+        memory: "strong",
+        relationshipMemory: true
+    },
+    {
+        eventId: "EVT_19_JAN_001",
+        choiceIds: ["FORCE_EXIT"],
+        outcomeIds: ["FORCE_EXIT__SECONDARY"],
+        npcIds: ["NPC_DIR_02"],
+        source: "witnessed",
+        certainty: 100,
+        memory: "strong",
+        relationshipMemory: true
+    },
+    {
+        eventId: "EVT_19_TEAM_001",
+        choiceIds: ["MOVE_CONTACT"],
+        outcomeIds: ["MOVE_CONTACT__SECONDARY"],
+        npcIds: ["NPC_PLR_14"],
+        source: "reported",
+        certainty: 100,
+        memory: "strong",
+        relationshipMemory: true
+    }
+];
+for (const rule of exports.NPC_KNOWLEDGE_BACKFILL_RULES_V1) {
+    Object.freeze(rule.npcIds);
+    if (rule.choiceIds)
+        Object.freeze(rule.choiceIds);
+    if (rule.outcomeIds)
+        Object.freeze(rule.outcomeIds);
+    if (rule.targetSlots)
+        Object.freeze(rule.targetSlots);
+    Object.freeze(rule);
+}
+Object.freeze(exports.NPC_KNOWLEDGE_BACKFILL_RULES_V1);
+function historicalKnowledgeRulesFor(eventId, choiceId, outcomeId) {
+    return exports.NPC_KNOWLEDGE_BACKFILL_RULES_V1.filter(rule => rule.eventId === eventId
+        && (!rule.choiceIds || rule.choiceIds.includes(choiceId))
+        && (!rule.outcomeIds || rule.outcomeIds.includes(outcomeId)));
 }
 
 },

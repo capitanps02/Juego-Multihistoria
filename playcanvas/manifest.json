@@ -1,9 +1,9 @@
 {
   "integration": "T3.2",
   "targetScene": 2593315,
-  "moduleCount": 75,
-  "bundleBytes": 11482214,
-  "bundleSha256": "5808bac9df397c6772e1147eaa62144ea4debb1c2588146d2b4c66326a32c586",
+  "moduleCount": 76,
+  "bundleBytes": 11488759,
+  "bundleSha256": "0f12e7ff8870a5a53d7fd5b92a129d5586580c0a85c4d8b280bca4c2a2b6f060",
   "appVersion": "0.8.0",
   "inputs": {
     "src/session/game-session.ts": "ca5991f69f4c46d783d39e1643d27c34c909c03001d0a45951a00c360c587fad",
@@ -47,7 +47,8 @@
     "src/narrative/event-gates.ts": "708f2f4a6f8fac4b04f2ee6dbfb2ef1947b966c790f273dc212c82a6f96e6d01",
     "src/narrative/transition-priority.ts": "a1600a10eb2fde1a68640efd42170ed07992a3aa792a011229986b67f3e06733",
     "src/narrative/offer-bridge.ts": "dc9116eba3e8b85f0fbbfe28625bb79dbe39d2f2906a495853bee2e2f99059cc",
-    "src/narrative/npc-knowledge-reconciliation.ts": "a5c79fb963dd37b9ab6ff8743bec0fa43d897d7c7a4ce1f2ddae6e74603ad453",
+    "src/narrative/npc-knowledge-reconciliation.ts": "fc8a558dbd392499ee0e5d9a22ac8348f01a446babdf9b71f9fc8d4963527262",
+    "src/catalog/npc-knowledge-backfill-v1.ts": "f686f5bdeafe3536f24c980c9d9f512460d53e6ce97920d491187b4f1b4b74ca",
     "src/narrative/resolver.ts": "dc72c8a06586f07d21f0b61ffc7d2e03516ed995fae3e9d3e708a4e312d18e16",
     "src/catalog/seeds.ts": "32d684f3cb6bc61c57033247652ee224e7c4f299f7dcf23e1b003c222d1d7d10",
     "src/catalog/seed-scope.ts": "9dee2c53d2652527ac59686e4cab5e98adf6de17539c3bb87dc6aabc8bf947b3",
