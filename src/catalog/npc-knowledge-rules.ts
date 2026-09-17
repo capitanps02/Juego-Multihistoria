@@ -1,6 +1,6 @@
 import type { NpcKnowledgeSource, NpcMemoryClass } from "../core/npc-knowledge.js";
 
-export type NpcKnowledgeTargetSlot = "captain" | "star";
+export type NpcKnowledgeTargetSlot = "captain" | "star" | "activeAgent" | "currentClubInstitutional";
 
 export interface NpcEventKnowledgeRule {
   eventId: string;
