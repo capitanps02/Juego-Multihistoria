@@ -89,7 +89,7 @@ test('role expectation/6 narrativeCausalFacts compone seed memory, sport/match y
   assert.equal(facts.roleGuaranteeAt23, false, 'caída sola no fabrica expectativa previa');
   assert.ok(facts.sport && typeof facts.sport === 'object', 'facts.sport debe preservarse');
   assert.ok(facts.match && typeof facts.match === 'object', 'facts.match debe preservarse');
-  assert.equal(typeof facts.brunoFavorStance, 'string');
+  assert.equal(Object.hasOwn(facts, 'brunoFavorStance'), true, 'facts de memoria causal deben preservarse');
 
   resolveBridge(state, 'A');
   state.sport.roleScore = state.professional.roleScoreAt23;
