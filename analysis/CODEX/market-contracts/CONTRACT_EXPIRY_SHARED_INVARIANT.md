@@ -2,7 +2,7 @@
 
 Status: **design-blocked / not yet authorised for runtime implementation**.
 
-Current integration base when this follow-up was created: `main@06762a0557c4e92b189e52151c71d6c1af831ee5`.
+Current integration base for this follow-up: `main@176317c5708995bb72fa40af9dd45dffc9838093`.
 
 ## Confirmed failure
 
