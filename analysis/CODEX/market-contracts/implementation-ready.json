@@ -1,10 +1,19 @@
 {
-  "schemaVersion": 1,
-  "baseCommit": "06762a0557c4e92b189e52151c71d6c1af831ee5",
+  "schemaVersion": 2,
+  "baseCommit": "6d2239ae1f89be97a7c5cf117d456cff9218aade",
   "originalAuthorityMergeCommit": "782b92c9a496293aeb33ad8b39f522a927374d6f",
-  "runtimeAuditBaseCommit": "ebef17057156c7721fc4a041552c9cf1b3fdb6ba",
   "branch": "t5/market-contract-followup",
   "contentIdentityChangedByThisWorkstream": false,
+  "authority": {
+    "offerEntity": "CareerOffer",
+    "pendingPath": "market.pending",
+    "proposalApi": "proposeCareerChange",
+    "responseApi": "respondToOffer",
+    "kindApi": "eligibleCareerOfferKind",
+    "kindFact": "facts.pendingCareerOfferKind",
+    "employmentStatusApi": "contractEmploymentStatus",
+    "pendingCapacity": 1
+  },
   "readyCounts": {
     "18_20": 0,
     "20_23": 0,
@@ -17,49 +26,47 @@
     {
       "id": "CODEX-CONTRACT-EXPIRY-001",
       "status": "blocked",
+      "issue": 130,
       "eventId": null,
       "ageRange": "cross_age",
-      "requiredOfferType": "new_signing_after_expiry",
-      "blocker": "#130 P1 confirmed: zero-month contracts can remain ordinary same-club employment for years. Coordination has not yet approved the unattached employment representation across club/owner/registration/salary/football/save semantics.",
+      "blocker": "P1 zero-month zombie confirmed; unattached employment representation is not approved across club/owner/registration/salary/football/save semantics.",
       "requiredApis": ["contractEmploymentStatus"],
-      "allowedFiles": ["future shared employment/contract authority files after coordinator approval", "focused save/football/market regressions"],
-      "forbiddenFiles": ["route-only free_agent patch", "salary=0-only patch", "invented unattached club sentinel", "forced transfer", "forced retirement", "synthetic contract", "EVENTS in the shared-invariant PR"],
-      "acceptanceTests": ["deterministic zero-RNG expiry resolution", "idempotent resolution", "save/load stability", "no old-club appearances while truly unattached", "no previous-club institutional leakage", "later real CareerOffer re-establishes coherent employment atomically", "loyal/512000 no longer remains a multi-year ordinary zero-month zombie"]
+      "forbidden": ["route-only free_agent patch", "salary=0-only patch", "invented unattached club sentinel", "forced transfer", "forced retirement", "synthetic contract"],
+      "acceptanceTests": ["zero-RNG deterministic expiry resolution", "idempotent", "save/load stable", "no old-club appearances while unattached", "later real CareerOffer restores employment atomically", "loyal/512000 zombie eliminated"]
     },
     {
       "id": "CODEX-MKT-18-001",
-      "status": "blocked",
+      "status": "blocked_on_materialisation_and_content_generation",
+      "issue": 123,
       "eventId": "EVT_18_JAN_001",
       "ageRange": "18_20",
-      "requiredOfferType": "loan_or_transfer",
-      "blocker": "#123: no productive pre-age-20 formal offer materialisation path is proven before the scene; current LOAN choice directly writes club/tier/LOAN_ACTIVE. Generation must be integrated atomically with the canonical bridge so the generic offer screen cannot consume the proposal first.",
-      "requiredApis": ["getEligibleLoanOffers", "getEligibleTransferOffers", "respondToOffer"],
-      "allowedFiles": ["age-18 market generation owned by market authority", "18-20 content overlay owned by content agent", "focused tests"],
-      "forbiddenFiles": ["historical freeze fixtures unless allocated as the next content generation"],
-      "acceptanceTests": ["no compatible offer => LOAN/TRANSFER unavailable", "compatible CareerOffer => matching choice available", "accept consumes exact offer", "stale before terms => offer remains active evidence but is not eligible", "eligibility consumes 0 RNG", "no direct club/contract effects", "generic offer screen cannot steal the intended narrative proposal"]
+      "requiredOfferType": "one_of:loan|transfer",
+      "blocker": "professionalWeek offer generation is age>=20; no productive pre-20 CareerOffer path exists. Current MarketState supports one pending offer, so JAN cannot simultaneously prove loan and transfer without multi-offer support or a scene split/filter.",
+      "requiredApis": ["eligibleCareerOfferKind", "facts.pendingCareerOfferKind", "getEligibleLoanOffers", "getEligibleTransferOffers", "respondToOffer", "offerBridge"],
+      "allowedFiles": ["pre-20 market generation", "allocated 18-20 content generation", "focused tests"],
+      "forbidden": ["REAL_LOAN_AVAILABLE flag", "REAL_TRANSFER_AVAILABLE flag", "marketHeat as offer proof", "direct club/tier/owner/registration signing effects"],
+      "acceptanceTests": ["loan pending => kind loan and LOAN only formal route", "transfer pending => kind transfer and TRANSFER only formal route", "stale offer => kind null", "accept exact terms", "0 RNG eligibility", "save/load", "generic offer UI does not steal canonical bridge"]
     },
     {
       "id": "CODEX-MKT-18-002",
-      "status": "blocked",
+      "status": "blocked_on_materialisation_single_offer_canon_and_content_generation",
+      "issue": 123,
       "eventId": "EVT_18_SUM_001",
       "ageRange": "18_20",
-      "requiredOfferType": "renewal_and_optional_transfer",
-      "blocker": "#123: REQUEST_EXIT requires a real external offer; current renewal choices also write contract.monthsRemaining directly. Generation and content bridge must be integrated together.",
-      "requiredApis": ["getEligibleRenewalOffers", "getEligibleTransferOffers", "respondToOffer"],
-      "allowedFiles": ["age-18 market generation owned by market authority", "18-20 content overlay owned by content agent", "focused tests"],
-      "forbiddenFiles": ["content migration registry without coordinator allocation"],
-      "acceptanceTests": ["renewal signs only through CareerOffer", "REQUEST_EXIT requires real transfer offer", "WAIT does not sign", "save/resume preserves pending offer", "stale offer does not remain eligible"]
+      "requiredOfferType": "one_of:renewal|transfer",
+      "blocker": "No productive pre-20 offer path. The active scene mixes same-club renewal choices and external exit, but MarketState can persist only one formal proposal at a time.",
+      "requiredApis": ["eligibleCareerOfferKind", "facts.pendingCareerOfferKind", "getEligibleRenewalOffers", "getEligibleTransferOffers", "respondToOffer", "offerBridge"],
+      "forbidden": ["direct contract.monthsRemaining signing", "synthetic external-offer flag", "one pending CareerOffer represented as two independent deals"],
+      "acceptanceTests": ["renewal pending only backs renewal/counter/reject semantics", "transfer pending only backs external-exit semantics", "changed deal is a later CareerOffer", "stale kind null", "save/load"]
     },
     {
       "id": "CODEX-MKT-20-001",
       "status": "needs_canon",
       "eventId": "EVT_20_MKT_001",
       "ageRange": "20_23",
-      "requiredOfferType": "transfer",
-      "blocker": "Current scene is generic and gated by marketHeat; reconcile canonical semantics before deciding whether it is a formal-offer bridge.",
-      "requiredApis": ["getEligibleTransferOffers", "respondToOffer"],
-      "allowedFiles": ["20-23 content owner files after canon card approval"],
-      "forbiddenFiles": ["src/simulation/offers.ts unless shared authority actually changes"],
+      "requiredOfferType": "transfer_or_interest",
+      "blocker": "Current scene uses marketHeat; canon must decide whether this is interest or a signable proposal.",
+      "requiredApis": ["facts.pendingCareerOfferKind", "getEligibleTransferOffers", "respondToOffer"],
       "acceptanceTests": ["marketHeat alone never proves a formal offer"]
     },
     {
@@ -68,68 +75,42 @@
       "eventId": "EVT_22_CON_001",
       "ageRange": "20_23",
       "requiredOfferType": "renewal_or_non_signing_negotiation",
-      "blocker": "Scene text says the club wants to talk; determine from canon whether exact signable terms exist before converting to offerBridge.",
-      "requiredApis": ["getEligibleRenewalOffers", "respondToOffer"],
-      "allowedFiles": ["20-23 content owner files"],
-      "forbiddenFiles": [],
+      "blocker": "Club wants to talk does not prove exact signable terms.",
+      "requiredApis": ["facts.pendingCareerOfferKind", "getEligibleRenewalOffers", "respondToOffer"],
       "acceptanceTests": ["conversation without formal terms does not fabricate CareerOffer"]
     },
     {
       "id": "CODEX-MKT-22-002",
       "status": "blocked",
+      "issue": 130,
       "eventId": "EVT_22_CON_002",
       "ageRange": "20_23",
       "requiredOfferType": "renewal_or_expiry_path",
-      "blocker": "Depends on #130. professional.route accepts free_agent and classifiers reference it, but no production transition establishes authoritative unattached club/owner/registration/salary/football semantics; GameState.club remains required string.",
-      "requiredApis": ["contractEmploymentStatus", "getEligibleRenewalOffers"],
-      "allowedFiles": ["20-23 content owner files after #130 employment contract is approved"],
-      "forbiddenFiles": ["synthetic FREE_AGENT flags", "route-only free-agent patches", "invented unattached club sentinels"],
-      "acceptanceTests": ["narrative seed/tag is not used as employment state", "monthsRemaining==0 alone does not assert free agency"]
+      "blocker": "No authoritative unattached employment transition yet.",
+      "requiredApis": ["contractEmploymentStatus", "facts.pendingCareerOfferKind", "getEligibleRenewalOffers"],
+      "forbidden": ["seed/tag as employment state", "route-only free_agent patch"]
     },
     {
       "id": "CODEX-MKT-23-001",
       "status": "ready",
+      "issue": 83,
       "eventId": "EVT_23_MKT_001",
       "ageRange": "23_26",
       "requiredOfferType": "transfer",
-      "requiredApis": ["getEligibleTransferOffers", "careerOfferKind", "respondToOffer", "offerBridge"],
-      "allowedFiles": ["23-26 content overlay", "23-26 focused tests", "content migration files only when coordinator allocates the next adjacent generation"],
-      "forbiddenFiles": ["direct club/owner/registration/contract effects", "parallel offer state", "synthetic hasOffers flags"],
-      "acceptanceTests": ["bridge only with real compatible transfer offer", "offer.before must still match current CareerTerms", "stale pending offer is not eligible", "accept applies exact pending terms", "reject/counter/defer preserve before terms", "0 RNG in eligibility", "save/resume provenance preserved"],
-      "lineageNote": "Issue #83 historical generation labels are stale. Re-read current coordination immediately before implementation and register only the next adjacent generation."
+      "requiredApis": ["eligibleCareerOfferKind", "facts.pendingCareerOfferKind", "getEligibleTransferOffers", "respondToOffer", "offerBridge"],
+      "forbidden": ["direct club/contract mutations", "synthetic hasOffers flags"],
+      "acceptanceTests": ["kind transfer required", "stale => null/ineligible", "accept exact terms", "reject/counter/defer preserve current terms", "0 RNG", "save/resume provenance"]
     },
     {
       "id": "CODEX-MKT-23-002",
       "status": "ready",
+      "issue": 83,
       "eventId": "EVT_23_CON_001",
       "ageRange": "23_26",
       "requiredOfferType": "renewal",
-      "requiredApis": ["getEligibleRenewalOffers", "careerOfferKind", "respondToOffer", "offerBridge"],
-      "allowedFiles": ["23-26 content overlay", "focused tests", "migration/freeze only when coordinator allocates generation"],
-      "forbiddenFiles": ["direct contract.monthsRemaining/salary/releaseClause effects"],
-      "acceptanceTests": ["same-club formal renewal required", "offer.before must still match current CareerTerms", "accept signs exact terms", "counter does not edit pending terms into a new deal", "reject keeps current contract"]
-    },
-    {
-      "id": "CODEX-MKT-25-001",
-      "status": "ready",
-      "eventId": "EVT_25_CON_001",
-      "ageRange": "23_26",
-      "requiredOfferType": "renewal",
-      "requiredApis": ["getEligibleRenewalOffers", "respondToOffer", "offerBridge"],
-      "allowedFiles": ["23-26 content overlay", "focused tests", "migration/freeze only when coordinator allocates generation"],
-      "forbiddenFiles": ["direct contract effects"],
-      "acceptanceTests": ["12-30 month gate uses real state/before terms", "stale before terms make the formal renewal ineligible", "accept signs", "two defer choices remain narratively distinct but do not sign", "counter does not invent a clause"]
-    },
-    {
-      "id": "CODEX-MKT-25-002",
-      "status": "ready",
-      "eventId": "EVT_25_MKT_001",
-      "ageRange": "23_26",
-      "requiredOfferType": "none",
-      "requiredApis": ["getActiveCareerOffers only for negative assertion if needed"],
-      "allowedFiles": ["23-26 content overlay", "focused tests", "migration/freeze only when coordinator allocates generation"],
-      "forbiddenFiles": ["proposeCareerChange from choice resolution", "respondToOffer", "direct club/contract effects"],
-      "acceptanceTests": ["coach call remains interest/negotiation, not formal offer", "all choices leave CareerTerms and market.pending unchanged", "no promised coach tenure is invented"]
+      "requiredApis": ["eligibleCareerOfferKind", "facts.pendingCareerOfferKind", "getEligibleRenewalOffers", "respondToOffer", "offerBridge"],
+      "forbidden": ["direct contract duration/salary/release-clause signing"],
+      "acceptanceTests": ["kind renewal required", "stale => null/ineligible", "accept exact terms", "counter/reject do not rewrite current contract"]
     },
     {
       "id": "CODEX-MKT-24-001",
@@ -137,47 +118,57 @@
       "eventId": "EVT_24_MKT_001",
       "ageRange": "23_26",
       "requiredOfferType": "multiple_formal_offers",
-      "blocker": "Scene explicitly presents three offers while MarketState currently persists only one pending CareerOffer. Do not fake three destinations with choices.",
-      "requiredApis": [],
-      "allowedFiles": ["future approved multi-offer/session architecture"],
-      "forbiddenFiles": ["three narrative-only destinations backed by one/no CareerOffer"],
-      "acceptanceTests": ["every presented destination corresponds to a real formal offer"]
+      "blocker": "Scene presents three offers while MarketState pendingCapacity=1.",
+      "forbidden": ["three narrative destinations backed by one or zero CareerOffers"],
+      "acceptanceTests": ["every presented concrete deal has real formal authority"]
     },
     {
       "id": "CODEX-MKT-24-002",
       "status": "blocked",
       "eventId": "EVT_24_JAN_001",
       "ageRange": "23_26",
-      "requiredOfferType": "transfer",
-      "blocker": "Current choice effects modify salary directly; scene needs a real formal external offer and a separate renewal response if the player uses it as leverage.",
-      "requiredApis": ["getEligibleTransferOffers", "respondToOffer"],
-      "allowedFiles": ["23-26 content owner files after exact semantics are reconciled"],
-      "forbiddenFiles": ["n(contract.salaryMonthly, ...) as a signing substitute"],
-      "acceptanceTests": ["accept external move consumes transfer CareerOffer", "leverage choice does not silently rewrite current salary"]
+      "requiredOfferType": "transfer_plus_possible_new_renewal",
+      "blocker": "Current leverage path writes salary directly; an external offer cannot silently rewrite current contract.",
+      "requiredApis": ["facts.pendingCareerOfferKind", "getEligibleTransferOffers", "respondToOffer"]
+    },
+    {
+      "id": "CODEX-MKT-25-001",
+      "status": "ready",
+      "issue": 83,
+      "eventId": "EVT_25_CON_001",
+      "ageRange": "23_26",
+      "requiredOfferType": "renewal",
+      "requiredApis": ["eligibleCareerOfferKind", "facts.pendingCareerOfferKind", "getEligibleRenewalOffers", "respondToOffer", "offerBridge"],
+      "acceptanceTests": ["kind renewal required", "stale => null", "accept signs", "defer/counter do not sign"]
+    },
+    {
+      "id": "CODEX-MKT-25-002",
+      "status": "ready",
+      "issue": 81,
+      "eventId": "EVT_25_MKT_001",
+      "ageRange": "23_26",
+      "requiredOfferType": "none",
+      "requiredApis": ["getActiveCareerOffers only for negative assertion if needed"],
+      "forbidden": ["proposeCareerChange from narrative choice", "respondToOffer", "direct club/contract effects"],
+      "acceptanceTests": ["coach contact remains interest", "CareerTerms unchanged", "market.pending unchanged"]
     },
     {
       "id": "CODEX-MKT-29-001",
       "status": "blocked",
       "eventId": "EVT_29_HOME_001",
       "ageRange": "26_30",
-      "requiredOfferType": "transfer_or_free_agent_signing",
-      "blocker": "Current choice directly writes ownerClub, registrationClub and club=UDV; no compatible formal home-return offer is guaranteed at scene time.",
-      "requiredApis": ["getEligibleTransferOffers", "respondToOffer"],
-      "allowedFiles": ["26-30 content owner files after formal offer materialisation exists"],
-      "forbiddenFiles": ["direct club/owner/registration writes"],
-      "acceptanceTests": ["home return only occurs after accepting a real offer"]
+      "requiredOfferType": "transfer_or_future_free_agent_signing",
+      "blocker": "Current home return directly writes employment state; no guaranteed compatible offer.",
+      "requiredApis": ["facts.pendingCareerOfferKind", "getEligibleTransferOffers", "respondToOffer"]
     },
     {
       "id": "CODEX-MKT-32-001",
       "status": "blocked",
       "eventId": "EVT_32_HOME_001",
       "ageRange": "30_34",
-      "requiredOfferType": "transfer_or_free_agent_signing",
-      "blocker": "Current choice directly writes ownerClub, registrationClub and club=UDV; formal home-return offer is not guaranteed.",
-      "requiredApis": ["getEligibleTransferOffers", "respondToOffer"],
-      "allowedFiles": ["30-34 content owner files after formal offer materialisation exists"],
-      "forbiddenFiles": ["direct club/owner/registration writes"],
-      "acceptanceTests": ["home return consumes real offer and survives save/load"]
+      "requiredOfferType": "transfer_or_future_free_agent_signing",
+      "blocker": "Current home return directly writes employment state; no guaranteed compatible offer.",
+      "requiredApis": ["facts.pendingCareerOfferKind", "getEligibleTransferOffers", "respondToOffer"]
     },
     {
       "id": "CODEX-MKT-34-001",
@@ -185,23 +176,32 @@
       "eventId": "EVT_34_CON_001",
       "ageRange": "34_plus",
       "requiredOfferType": "renewal",
-      "blocker": "Authority can represent one- or two-year salary/duration terms, but the active event is still generic and contractual squad role is not part of CareerTerms.",
-      "requiredApis": ["getEligibleRenewalOffers", "respondToOffer"],
-      "allowedFiles": ["34+ content owner files after canon reconciliation"],
-      "forbiddenFiles": ["automatic retirement on contract expiry"],
-      "acceptanceTests": ["short renewal is formal", "reduced salary is formal", "role promise is not invented as a CareerTerms field"]
+      "blocker": "Duration/salary are representable but contractual squad role is not part of CareerTerms.",
+      "requiredApis": ["facts.pendingCareerOfferKind", "getEligibleRenewalOffers", "respondToOffer"],
+      "forbidden": ["automatic retirement on contract expiry"]
     },
     {
       "id": "CODEX-MKT-34-002",
       "status": "blocked",
+      "issue": 164,
       "eventId": "EVT_34_MKT_001",
       "ageRange": "34_plus",
       "requiredOfferType": "renewal_or_transfer",
-      "blocker": "Current late-career runtime generates VETERAN_OFFER_AVAILABLE + world.veteranOfferRole/months/salary instead of CareerOffer, and EVT_34_MKT_001 signs duration directly. Generation and content consumption must be converted atomically in an allocated 34+ content generation.",
-      "requiredApis": ["getEligibleRenewalOffers", "getEligibleTransferOffers", "getActiveCareerOffers", "respondToOffer"],
-      "allowedFiles": ["late-career market generation plus allocated 34+ content bridge and focused tests"],
-      "forbiddenFiles": ["new synthetic offer flags", "direct contract duration/salary signing effects", "automatic retirement when no offer exists"],
-      "acceptanceTests": ["veteran market creates a real CareerOffer", "exact generated salary/duration survive save/load", "accept/reject consume 0 RNG", "accept signs exact terms through respondToOffer", "no synthetic boolean proves a signable deal", "absence of market does not cross into retirement ownership automatically"]
+      "blocker": "late-career runtime creates VETERAN_OFFER_AVAILABLE + world.veteranOffer* instead of CareerOffer; event signs duration directly. Runtime generation and content bridge must convert atomically.",
+      "requiredApis": ["facts.pendingCareerOfferKind", "getEligibleRenewalOffers", "getEligibleTransferOffers", "respondToOffer", "offerBridge"],
+      "forbidden": ["synthetic offer flags", "direct contract signing effects", "market-owned automatic retirement"]
+    },
+    {
+      "id": "CODEX-MKT-LIFECYCLE-001",
+      "status": "blocked",
+      "issue": 165,
+      "eventId": null,
+      "ageRange": "cross_age",
+      "requiredOfferType": "offer_lifecycle",
+      "blocker": "CareerOffer has no authoritative expiry/withdrawal/supersession transition or provenance-safe close reason.",
+      "requiredApis": [],
+      "forbidden": ["encoding club-side expiry as player reject"],
+      "acceptanceTests": ["deterministic calendar expiry", "withdrawn cannot be accepted", "CareerTerms unchanged", "close reason save/load", "0 RNG"]
     }
   ]
 }
