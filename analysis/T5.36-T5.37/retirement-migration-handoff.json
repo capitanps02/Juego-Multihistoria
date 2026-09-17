@@ -5,6 +5,39 @@
   "lastSyncedMain": "99b1cd56f199bda657fb9fb1c757b003265892b6",
   "syncCommit": "fdfefc1ef3ea46449748577f37c65ba92d822f62",
   "isolatedQaWorkflow": ".github/workflows/t536-retirement-epilogues.yml",
+  "validation": {
+    "isolatedWorkflowRun": 35206907873,
+    "isolatedWorkflowConclusion": "success",
+    "terminalTests": 21,
+    "terminalTestsPassed": 21,
+    "terminalTestsFailed": 0,
+    "buildPassed": true,
+    "repositoryIntegrityRun": 35206907896,
+    "repositoryIntegrityPreFreeze": {
+      "finalGatePassed": true,
+      "buildErrors": 0,
+      "buildWarnings": 0,
+      "reproducible": true,
+      "saveTestsPassed": "38/38",
+      "t53TestsPassed": "53/53",
+      "catalogEvents": 388,
+      "catalogSeeds": 210,
+      "npcCount": 20
+    },
+    "expectedFreezeBlock": {
+      "contentIdentity": "af3a16e1d66fa5dc8a4509b63f375db4a78f6a35026ed405aebccad7645a75b8",
+      "frozen": false,
+      "intentional": true,
+      "reason": "Agent13 complete active 34+ generation has not landed; freezing this terminal identity now would register the wrong source lineage."
+    },
+    "agent13SeedEvidence": {
+      "owner": "t51/canon-34plus",
+      "assignedSeeds": 68,
+      "runtimeProduced": 0,
+      "withAnyConsumer": 0,
+      "noProducerAndNoConsumer": 68
+    }
+  },
   "status": "blocked_pending_agent13_active_34plus_generation",
   "doNotRegisterRouteYet": true,
   "requiredLineage": [
