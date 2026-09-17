@@ -5,10 +5,8 @@ const terminal = new Set(["CEVT_38_OFFER_AFTER_RETIREMENT_ANNOUNCED","CEVT_38_ME
 
 export const CONDITIONAL_OWNERSHIP = {
   schemaVersion: 1,
-  generatedAt: "2026-09-16",
-  repository: "capitanps02/Juego-Multihistoria",
+  generatedAt: "2026-09-17",
   branch: "t51/canon-conditionals",
-  baselineMainSha: "6cb81b63f03ce55776ca97075012cfaa22ac228d",
   records: CONDITIONAL_CANON_MATRIX.records.map(record => ({
     id: record.id,
     phase: record.phase,
