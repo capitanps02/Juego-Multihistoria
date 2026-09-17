@@ -43,12 +43,21 @@ function bridgeEvent(id = 'EVT_T51_OFFER_BRIDGE', overrides = {}) {
   };
 }
 
-async function advanceUntil(session, screen, limit = 6) {
+async function advanceUntil(session, screen, limit = 10) {
   for (let i = 0; i < limit; i++) {
-    if (session.getView().screen === screen) return session;
+    const view = session.getView();
+    if (view.screen === screen && view.age >= 20) return session;
+    // These fixtures exercise the generic age-20 bridge contract. #123 now creates
+    // legitimate formal offers at 18, so dispose of those through the real command
+    // instead of treating them as a blocked continue or bypassing market authority.
+    if (view.screen === 'offer' && view.age < 20) {
+      await session.dispatch(command(session, 'offer', { offerId: view.offer.id, action: 'reject' }));
+      continue;
+    }
     await session.dispatch(command(session, 'continue', { maxDays: 366 }));
   }
   assert.equal(session.getView().screen, screen, `No apareció la pantalla ${screen}`);
+  assert.ok(session.getView().age >= 20, `La pantalla ${screen} apareció antes de la edad del fixture`);
   return session;
 }
 
@@ -162,7 +171,12 @@ test('ambiguous eligible offer bridges fail the command and leave the session un
   const first = bridgeEvent('EVT_T51_OFFER_BRIDGE_A');
   const second = bridgeEvent('EVT_T51_OFFER_BRIDGE_B');
   const session = await GameSession.create(123, { events: [first, second] });
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < 10; i++) {
+    const view = session.getView();
+    if (view.screen === 'offer' && view.age < 20) {
+      await session.dispatch(command(session, 'offer', { offerId: view.offer.id, action: 'reject' }));
+      continue;
+    }
     const before = session.exportSnapshot();
     try {
       await session.dispatch(command(session, 'continue', { maxDays: 366 }));
