@@ -10,7 +10,7 @@ on:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 60
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -43,8 +43,14 @@ jobs:
       - name: Run project validation
         run: npm test
 
+      - name: PlayCanvas integration regression
+        run: npm run test:playcanvas
+
       - name: Build T5 QA target
         run: npm run build
+
+      - name: T5 authoritative sport model
+        run: node --test scripts/test-t5-match-model.mjs scripts/test-t5-sport-context.mjs
 
       - name: T5 pre-content freeze sentinel
         run: node scripts/freeze-t51-baseline.mjs --check
