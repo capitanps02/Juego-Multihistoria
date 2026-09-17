@@ -1,6 +1,6 @@
 # Codex implementation queue — Canon 30–34
 
-Re-grounded sobre `main@176317c5708995bb72fa40af9dd45dffc9838093`.
+Re-grounded sobre `main@6d2239ae1f89be97a7c5cf117d456cff9218aade`.
 
 El Documento Maestro sigue siendo autoridad canónica. Una API compartida que devuelva `null` / `unavailable` no autoriza proxies: la escena debe fallar cerrado.
 
@@ -52,7 +52,7 @@ Ambas reciben la etiqueta `t51_sport_authority_required` y fallan cerrado mientr
 
 No se han añadido gates genéricos a escenas ambiguas: cada dependencia deportiva debe poder defenderse por semántica exacta del evento.
 
-### C30-34-CODEX-004 — pruebas de fail-closed deportivo
+### C30-34-CODEX-004 — pruebas de fail-closed deportivo y de authority gaps
 
 `scripts/test-t51-30-34-sport-authority.mjs` demuestra:
 
@@ -61,7 +61,13 @@ No se han añadido gates genéricos a escenas ambiguas: cada dependencia deporti
 - `EVT_33_BODY_001` no pasa aunque se eleven recuperación y proxies deportivos históricos;
 - evaluar estos gates no muta estado.
 
-El workflow focal ejecuta ya esta suite. Último run documental validado `35228776102`: **SUCCESS**.
+`scripts/test-t51-30-34-authority-gaps.mjs` fija además que:
+
+- `CareerTerms` no puede representar aún una renovación automática por minutos;
+- el mercado autoritativo expone como máximo la única `CareerOffer` pendiente;
+- `EVT_31_MKT_001` y `EVT_33_MKT_001` deben permanecer fuera de `offerBridge` mientras esa cardinalidad no cambie.
+
+Tras re-ground a `main@6d2239a`, focused run `35229622659`: **SUCCESS**.
 
 ## Implementable ahora por Codex
 
@@ -77,6 +83,7 @@ Deuda ya caracterizada que **no** debe resolverse con proxies:
 - `EVT_31_RETURN_001`: `RECOVERING_INJURY` no demuestra alta médica, readiness de entrenamiento ni contexto inmediato de convocatoria.
 - `EVT_32_NAT_001`: `nationalStanding` no demuestra estar en una prelista 30→26 para un torneo.
 - `EVT_30_FORM_001`: no fabricar historial longitudinal de partidos desde una forma agregada.
+- `EVT_31_ROLE_001` (canonical missing, “Tres goles y al banquillo”): los nuevos `facts.roleDropSince23` y `facts.roleGuaranteeAt23` **no** prueban tres goles recientes ni una decisión real de banquillo. Sigue bloqueado por match history + squad authority y debe permanecer en el batch coordinado de missing IDs.
 
 ### C30-34-CODEX-006 — autoridad multi-oferta
 
@@ -109,6 +116,10 @@ Codex no debe certificar paridad de este evento hasta que una API compartida mod
 - convocatoria, banquillo, titularidad, minutos, goles, asistencias, resultado = `null`.
 
 Por tanto esta rama no debe fabricar hechos de partido. La read surface existe; el store autoritativo todavía no.
+
+### Role expectation facts recién integrados
+
+`main@6d2239a` añade `facts.roleDropSince23` y `facts.roleGuaranteeAt23`. Se han revisado contra el bloque 30–34 y no desbloquean por sí solos escenas que afirman producción o decisiones deportivas concretas. En particular no sustituyen los hechos que necesita `EVT_31_ROLE_001`.
 
 ### Market / contract authority
 
