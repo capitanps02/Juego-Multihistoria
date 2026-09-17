@@ -78,6 +78,7 @@ export const T51_T510_CONTENT_IDENTITY = "fee2ff875bac7979d3907f5ee1004ef736efa9
 export const T51_T511_CONTENT_IDENTITY = "5d3fd71a8df42ed5b93fdde63ed386e9d776693addd62a30293dbecad7aa56d2";
 export const T51_PRS_CONTENT_IDENTITY = "88751a2107c035826162968991e3a1808b2f4573afa3a3a20a3efa376fa8af1f";
 export const T51_EUR_ELIGIBILITY_CONTENT_IDENTITY = "de9ef2f501c015705a28d54afd140259356f15566d424511e6dbf67769c9bd19";
+export const T51_PRS_CAUSAL_CONTENT_IDENTITY = "303527efcc42c17e502257c3d7c613facafa10c8ed113810b64a1d7ebc6d0bb1";
 
 /**
  * Explicit identity-bound edges. Successive canonical batches extend this as a
@@ -164,17 +165,29 @@ export const CONTENT_MIGRATION_ROUTES: readonly ContentMigrationRoute[] = [
     seedOriginMappings: []
   },
   {
-  sourceContentIdentity: T51_PRS_CONTENT_IDENTITY,
-  targetContentIdentity: T51_EUR_ELIGIBILITY_CONTENT_IDENTITY,
-  schedulerMappings: [
-    {
-      kind: "same_scene",
-      legacyEventId: "EVT_23_EUR_001",
-      canonicalEventId: "EVT_23_EUR_001"
-    }
-  ],
-  seedOriginMappings: []
-}
+    sourceContentIdentity: T51_PRS_CONTENT_IDENTITY,
+    targetContentIdentity: T51_EUR_ELIGIBILITY_CONTENT_IDENTITY,
+    schedulerMappings: [
+      {
+        kind: "same_scene",
+        legacyEventId: "EVT_23_EUR_001",
+        canonicalEventId: "EVT_23_EUR_001"
+      }
+    ],
+    seedOriginMappings: []
+  },
+  {
+    sourceContentIdentity: T51_EUR_ELIGIBILITY_CONTENT_IDENTITY,
+    targetContentIdentity: T51_PRS_CAUSAL_CONTENT_IDENTITY,
+    schedulerMappings: [
+      {
+        kind: "same_scene",
+        legacyEventId: "EVT_23_PRS_001",
+        canonicalEventId: "EVT_23_PRS_001"
+      }
+    ],
+    seedOriginMappings: []
+  }
 ];
 
 const activeEvidenceCache = new Map<string, Readonly<Record<string, LegacyEventEvidence>>>();
