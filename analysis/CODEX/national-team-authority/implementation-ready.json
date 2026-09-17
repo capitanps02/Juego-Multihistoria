@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "baseCommit": "6d2239ae1f89be97a7c5cf117d456cff9218aade",
+  "issue": 162,
+  "branch": "t5/national-team-authority",
+  "authorityApi": "resolveNationalTeamAuthority",
+  "tasks": [
+    {
+      "id": "CODEX-NAT-001",
+      "status": "implemented_in_branch",
+      "scope": "shared_runtime",
+      "action": "international_retirement_invariant",
+      "notes": "NATIONAL_RETIRED blocks future simulated call-up gate, camps/caps, camp standing/role promotion and tournament-cycle availability while preserving historical national-team facts and club career progression."
+    },
+    {
+      "id": "CODEX-NAT-002",
+      "status": "implemented_in_branch",
+      "scope": "shared_runtime",
+      "action": "read_only_projection",
+      "api": "resolveNationalTeamAuthority(state)",
+      "notes": "Projects historical pool/caps/role/standing, retirement and aggregate gate/window signals. Concrete call-up and tournament squad remain unknown/fail-closed."
+    },
+    {
+      "id": "CODEX-NAT-003",
+      "status": "ready_on_30_34_owner_branch_after_integration",
+      "eventId": "EVT_30_NAT_001",
+      "sourceBlock": "B1060",
+      "action": "replace_nationalStanding_only_proxy",
+      "requiredApis": ["resolveNationalTeamAuthority", "hasNationalTeamHistory"],
+      "acceptance": [
+        "requires factual senior national-team history",
+        "must be unavailable when retired=true",
+        "must not claim a concrete current call-up",
+        "any extra threshold for 'historial suficiente' must be justified by content-owner canon"
+      ]
+    },
+    {
+      "id": "CODEX-NAT-004",
+      "status": "blocked_requires_squad_list_authority",
+      "eventId": "EVT_32_NAT_001",
+      "sourceBlock": "B1184",
+      "action": "preselection_30_to_final_26",
+      "notes": "NATIONAL_TOURNAMENT_CYCLE is only a cycle/window signal. Do not schedule the premise '30 preseleccionados para 26' until explicit preliminary-squad membership exists."
+    },
+    {
+      "id": "CODEX-NAT-005",
+      "status": "blocked_requires_match_selection_authority",
+      "scope": "national_match_specific_scenes",
+      "action": "specific_callup_bench_start_appearance",
+      "notes": "Aggregate caps/role/standing cannot identify a concrete fixture, call-up, bench/start state, tournament appearance or result."
+    },
+    {
+      "id": "CODEX-NAT-006",
+      "status": "owner_review_required",
+      "eventId": "EVT_33_NAT_001",
+      "action": "international_retirement_writer_semantics",
+      "notes": "Current 30-34 implementation contains a NATIONAL_RETIRED writer on one choice. Shared runtime now honors the flag, but event semantics/contentIdentity remain owned by the 30-34 content branch and must be canon-reconciled there."
+    }
+  ],
+  "forbiddenInference": [
+    "professional.nationalStanding => concrete callup",
+    "professional.nationalRole => specific match selection",
+    "flags.NATIONAL_TOURNAMENT_CYCLE => preliminary squad",
+    "flags.NATIONAL_TOURNAMENT_CYCLE => final squad",
+    "seed presence => selection fact",
+    "age/tournament cycle => roster membership",
+    "reputation => national-team selection"
+  ]
+}
