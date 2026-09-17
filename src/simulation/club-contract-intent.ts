@@ -6,6 +6,8 @@ import { getCurrentMatchContext, getSportContext, type CurrentMatchContext, type
 export const CLUB_WANTS_RENEWAL_FACT = "facts.clubWantsRenewal" as const;
 export const LOCKER_CAPTAIN_AFFINITY_FACT = "facts.lockerCaptainAffinity" as const;
 export const LOCKER_STAR_AFFINITY_FACT = "facts.lockerStarAffinity" as const;
+export const ROLE_DROP_SINCE_23_FACT = "facts.roleDropSince23" as const;
+export const ROLE_GUARANTEE_AT_23_FACT = "facts.roleGuaranteeAt23" as const;
 export const CLUB_RENEWAL_INTENT_MAX_MONTHS = 24;
 export const CLUB_RENEWAL_INTENT_THRESHOLD = 0.50;
 export const FORMAL_RENEWAL_REASON = "Renovación de contrato";
@@ -58,10 +60,35 @@ export function clubWantsRenewal(state: GameState): boolean {
   return clubRenewalPropensity(state) >= CLUB_RENEWAL_INTENT_THRESHOLD;
 }
 
+/**
+ * Raw factual drop from the role snapshot captured on entering age 23.
+ * This shared fact deliberately does not decide what drop is narratively material.
+ */
+export function roleDropSince23(state: GameState): number {
+  if (state.age < 23 || !state.professional.initializedAt23) return 0;
+  return Math.max(0, num(state.professional.roleScoreAt23) - num(state.sport.roleScore));
+}
+
+/**
+ * Persisted historical evidence that the age-23 bridge established a concrete role
+ * expectation. Generic SEED_ELITE_ROLE_BARGAIN presence is deliberately insufficient.
+ * Terminal seed state does not erase that the conversation occurred.
+ */
+export function hasRoleGuaranteeAt23(state: GameState): boolean {
+  if (state.age < 23) return false;
+  return state.seeds.some(seed =>
+    seed.id === "SEED_ELITE_ROLE_BARGAIN"
+    && seed.originEvent === "EVT_23_BRIDGE_001"
+    && seed.payload.stance === "role_guarantees"
+  );
+}
+
 export interface NarrativeCausalFacts extends EarlyCareerSeedFacts {
   clubWantsRenewal: boolean;
   lockerCaptainAffinity: number | null;
   lockerStarAffinity: number | null;
+  roleDropSince23: number;
+  roleGuaranteeAt23: boolean;
   /** Authoritative/read-only sporting projection. Unavailable sporting facts are null. */
   sport: SportContext;
   /** Current match projection. Fails closed until a real match producer exists. */
@@ -74,6 +101,8 @@ export function narrativeCausalFacts(state: GameState): NarrativeCausalFacts {
     clubWantsRenewal: clubWantsRenewal(state),
     lockerCaptainAffinity: lockerSlotAffinity(state, "captain"),
     lockerStarAffinity: lockerSlotAffinity(state, "star"),
+    roleDropSince23: roleDropSince23(state),
+    roleGuaranteeAt23: hasRoleGuaranteeAt23(state),
     sport: getSportContext(state),
     match: getCurrentMatchContext(state)
   };
