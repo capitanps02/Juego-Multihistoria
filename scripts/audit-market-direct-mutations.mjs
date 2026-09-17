@@ -20,6 +20,12 @@ const TARGET_PATHS = [
   'professional.registrationClub',
   'world.ownerClub'
 ];
+// Baseline captured on the PR #163 integration line. Debt is allowed to shrink as
+// content owners migrate scenes to CareerOffer bridges, but it must never grow.
+const DEBT_CEILINGS = Object.freeze({
+  legacy_debt: 46,
+  legacy_runtime_bridge: 3
+});
 
 function walk(dir) {
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap(entry => {
@@ -80,10 +86,10 @@ function classify(file, node) {
   // Contract time erosion belongs to calendar authority. Reaching zero is *not* free
   // agency; #130 owns the still-blocked employment-resolution transition.
   if (p === 'src/simulation/world-simulator.ts' && fn === 'monthlyContractTick') return 'calendar_contract_tick';
-  // Resolver currently repairs owner/registration after legacy event effects mutate club.
-  // This is compatibility debt, not a permitted signing authority, and must disappear as
-  // content is converted to CareerOffer bridges.
-  if (p === 'src/narrative/resolver.ts' && fn === 'resolveChoiceInPlace') return 'legacy_runtime_bridge';
+  // resolveChoiceCore currently repairs owner/registration after legacy event effects
+  // mutate club. This is compatibility debt, not a permitted signing authority, and
+  // must disappear as those scenes are converted to CareerOffer bridges.
+  if (p === 'src/narrative/resolver.ts' && fn === 'resolveChoiceCore') return 'legacy_runtime_bridge';
   if (p.startsWith('src/content/events/')) return 'legacy_debt';
   return 'unsafe_runtime';
 }
@@ -134,11 +140,20 @@ for (const file of walk(ROOT)) {
 
 findings.sort((a, b) => a.file.localeCompare(b.file) || a.line - b.line || a.target.localeCompare(b.target));
 const summary = Object.fromEntries([...new Set(findings.map(x => x.classification))].sort().map(k => [k, findings.filter(x => x.classification === k).length]));
-const report = { schemaVersion: 1, scannedRoot: 'src', summary, findings };
+const report = { schemaVersion: 1, scannedRoot: 'src', debtCeilings: DEBT_CEILINGS, summary, findings };
 console.log(JSON.stringify(report, null, 2));
 
+let failed = false;
 const unsafe = findings.filter(x => x.classification === 'unsafe_runtime');
 if (unsafe.length) {
   console.error(`\nFound ${unsafe.length} unclassified/unsafe runtime market-contract mutations.`);
-  process.exitCode = 1;
+  failed = true;
 }
+for (const [classification, ceiling] of Object.entries(DEBT_CEILINGS)) {
+  const count = summary[classification] ?? 0;
+  if (count > ceiling) {
+    console.error(`\n${classification} grew from ceiling ${ceiling} to ${count}. Convert new mutations to CareerOffer authority instead of expanding debt.`);
+    failed = true;
+  }
+}
+if (failed) process.exitCode = 1;
