@@ -19,9 +19,10 @@ Implement only ordinary late-career 34+ canon. Terminal career retirement, last-
 9. `analysis/CODEX/canon-34plus/AUTHORITY_MATRIX.json`
 10. Wave A–E implementation/test packages under the same directory.
 11. `analysis/CODEX/canon-34plus/VETERAN_LATE_STATE.md`
-12. `analysis/CODEX/canon-34plus/CONTINUITY_CHAINS.md`
-13. `analysis/CODEX/canon-34plus/RETIREMENT_HANDOFF.md`
-14. canonical source `analysis/2026-09-11/guion-extraido.txt`.
+12. `analysis/CODEX/canon-34plus/BLOCKERS.md`
+13. `analysis/CODEX/canon-34plus/CONTINUITY_CHAINS.md`
+14. `analysis/CODEX/canon-34plus/RETIREMENT_HANDOFF.md`
+15. canonical source `analysis/2026-09-11/guion-extraido.txt`.
 
 ## Current execution status
 Canonical preparation is complete but runtime activation is not:
@@ -44,8 +45,21 @@ Intentional overlaps:
 
 Unique ordinary coverage remains **43/43**. `AUTHORITY_MATRIX.json` is the machine-readable dependency contract. A cross-wave scene activates only when every required authority exists.
 
+## Shared owner routing
+Do not rebuild these contracts inside Agent 8. Use their owner workstreams:
+- successive content lineage: **issue #59**;
+- 34+ seed catalog/provenance: **T5.2 / Agent 2**, consuming `T52_SEED_HANDOFF.json`;
+- factual match/calendar/competition context: **issue #124** plus the shared authoritative match-model workstream;
+- concrete national preselection/final squad facts: **issue #174**;
+- veteran 34+ `CareerOffer` generation and late-career term representability: **issue #176**;
+- authoritative free agency / expired-employment transition: **issue #130**;
+- late-career coach/successor/peer/institutional identity: **issue #177**;
+- terminal career retirement/last-match closure/epilogues: **PR #118 / Agent 9**.
+
+If an owner contract is not integrated into the current base, leave the dependent 34+ scene blocked. Never implement a local proxy to bypass an upstream issue.
+
 ## Wave 0 — mandatory before any active 34+ registration
-1. issue #59 successive content lineage must identify the actual authoritative predecessor; do not freeze a provisional shortcut;
+1. issue #59 must identify the actual authoritative predecessor; do not freeze a provisional shortcut;
 2. final predecessor generations, especially 30–34, must be authoritative;
 3. T5.2 must apply `T52_SEED_HANDOFF.json` so the 54 exact Pasada-7 seeds exist with safe provenance/migration semantics;
 4. predecessor memories consumed by 34+ must use canonical live/historical semantics;
@@ -65,13 +79,14 @@ Use `WAVE_A_IMPLEMENTATION.json` and `WAVE_A_TEST_MATRIX.md` exactly. Do not reg
 ## Existing authorities to consume
 - formal offers: `CareerOffer`, eligible offer queries, `respondToOffer()`, offer bridge;
 - contract employment: `contractEmploymentStatus()`;
-- veteran-renewal limitation: `clubWantsRenewal()` still fails closed for `age >= 34`;
+- veteran-renewal limitation: `clubWantsRenewal()` still fails closed for `age >= 34`; #176 owns the shared fix/contract;
+- free agency: `monthsRemaining == 0` remains insufficient; #130 owns authoritative unattached state;
 - sport: `getSportContext()` / `getCurrentMatchContext()`; unavailable means unavailable;
 - football moments: only registered IDs are factual;
 - national team: `resolveNationalTeamAuthority()` for historical/pool/cycle/international-retirement facts;
-- national-team limitation: current resolver deliberately exposes `concreteCallupKnown=false` and `tournamentSquadKnown=false`; do not infer current prelist/call-up/omission/squad from standing, role, caps or cycle flags;
+- national-team limitation: current resolver deliberately exposes `concreteCallupKnown=false` and `tournamentSquadKnown=false`; #174 owns the concrete selection-cycle facts;
 - active agent: `resolveActiveAgent()`; null is meaningful;
-- institutional/locker actors: certified resolvers only;
+- coach/successor/peer/institutional identity: certified authority only; #177 owns the missing late-career contract;
 - seed memory: `projectSeedMemory()` / exact live/historical instances; never infer semantic payload from a seed name.
 
 ## Hard rules
@@ -79,7 +94,7 @@ Use `WAVE_A_IMPLEMENTATION.json` and `WAVE_A_TEST_MATRIX.md` exactly. Do not reg
 - Do not create veteran offers inside narrative content. Signable scenes require real compatible `CareerOffer` rows.
 - Rumors, `marketHeat` and narrative flags are not formal offers.
 - `monthsRemaining == 0` is not free agency.
-- `EVT_37_SHORT_001` requires actual free agency before its three-month offer premise can be valid.
+- `EVT_37_SHORT_001` requires actual free agency before its three-month-offer premise can be valid.
 - No age-only retirement or age-only sporting decline.
 - No synthetic fixture, minutes, start, bench, goal, final, record, call-up, omission, tournament squad, penalty or last-match fact.
 - International retirement is distinct from career retirement and must not change `retirement.status`.
