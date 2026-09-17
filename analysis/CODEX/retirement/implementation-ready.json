@@ -3,9 +3,14 @@
   "snapshot": {
     "date": "2026-09-17",
     "mainAtAudit": "fa3c8bae524fef62e4eb9802e895df88588998c4",
-    "runtimeHeadAtAudit": "c3afca7e63cdc7833518c5746814919998267dce",
-    "relationToMainAtAudit": "74_ahead_0_behind",
-    "note": "The metadata handoff may advance after runtimeHeadAtAudit. Re-read the real branch and exact-head CI before integration."
+    "branchHeadBeforeMetadataRefresh": "cb8e0b275a3ee70d92b88f66b4fea5f04b47fc83",
+    "relationToMainAtAudit": "75_ahead_0_behind",
+    "terminalWorkflowRun": 35259606532,
+    "terminalWorkflowResult": "success_45_of_45",
+    "repositoryIntegrityRun": 35259606562,
+    "repositoryIntegrityState": "expected_fail_closed_active_source_freeze_sentinel",
+    "provisionalTerminalContentIdentity": "06cebf93a642ff776670356449777255cb8afe009b424d9cb0a22b44e158dcb0",
+    "note": "Metadata commits may advance the branch after this snapshot. Re-read the real branch and exact-head CI before integration. Never freeze the provisional terminal identity before ordinary 34+ is final."
   },
   "rules": [
     "Do not duplicate tasks marked implemented.",
@@ -14,7 +19,8 @@
     "Do not treat exact conditional ID overlap or canonStatus metadata as proof of canonical semantic parity.",
     "Do not weaken or pre-freeze the terminal contentIdentity sentinel.",
     "Terminal lineage must be adjacent to the real frozen ordinary 34+ generation.",
-    "Current main already contains the multi-hop migration-path engine; #59 owns future serial edge/freeze registration."
+    "Current main already contains the multi-hop migration-path engine; #59 owns future serial edge/freeze registration.",
+    "For the eight #195 factual domains, unsupported/fail-closed is an explicit valid release state; never replace missing authority with local narrative proxies."
   ],
   "terminalConditionalAccreditation": {
     "guard": "src/content/events/34_plus/retirement-terminal-canonical-guard.ts",
@@ -71,15 +77,25 @@
     {
       "id": "CODEX-RET-005",
       "status": "blocked",
-      "readiness": "partially_unblocked_not_integration_ready",
+      "readiness": "partially_unblocked_shared_last_appearance_candidate_green_not_integrated",
       "task": "Replace aggregate post-announcement appearance observation with a rich authoritative LastMatchFact and factual terminal no-last-match/last-goal evidence.",
       "producer": {
         "pr": 156,
         "branch": "t5/authoritative-match-model",
-        "currentHead": "54a84694ffa6dcd42a7d87b985db2db95047b9e4",
-        "relationToMainAtAudit": "2_ahead_0_behind",
-        "state": "open_not_integrated_ci_in_progress",
-        "repositoryIntegrityRun": 35258290496,
+        "currentHead": "bbb491fac05fe4d981ae9e6c518c0a2c5aa57de7",
+        "relationToMainAtAudit": "4_ahead_0_behind",
+        "state": "open_not_integrated_repository_integrity_long_careers_in_progress",
+        "repositoryIntegrityRun": 35259511375,
+        "passedBeforeCurrentStep": [
+          "project validation",
+          "PlayCanvas integration regression",
+          "build T5 QA target",
+          "authoritative sport model",
+          "pre-content freeze sentinel",
+          "determinism and RNG isolation",
+          "age boundaries",
+          "content references"
+        ],
         "providesCandidate": [
           "fixture identity/date",
           "registration club/opponent/home-away/league competition",
@@ -87,20 +103,36 @@
           "next/previous fixture",
           "remaining official/league fixture counts",
           "save validation and deterministic replay contract"
-        ],
-        "stillMissing": [
-          "public read-only last persisted official match where player.appeared=true",
-          "authoritative per-match final result",
-          "authoritative goals",
-          "authoritative assists/cards",
-          "authoritative suspension fact when canon requires suspension"
         ]
       },
+      "sharedLastAppearanceCandidate": {
+        "pr": 202,
+        "branch": "t5/sport-retirement-read-optimization",
+        "base": "t5/authoritative-match-model",
+        "head": "e8a6585d7d47cf9089f161bf6a126d777dbd1444",
+        "mergeable": true,
+        "focusedRun": 35260631695,
+        "focusedResult": "success_18_of_18",
+        "api": "getLastPlayerAppearanceContext(state)",
+        "contract": [
+          "historical store absent => explicit unavailable",
+          "initialized store with no appearance => authoritative match:null",
+          "otherwise latest persisted official row where player.appeared=true, skipping newer non-appearances",
+          "read-only and zero RNG"
+        ],
+        "integrationState": "focused_green_stacked_not_integrated"
+      },
+      "stillMissing": [
+        "authoritative per-match final result",
+        "authoritative goals",
+        "authoritative assists/cards",
+        "authoritative suspension fact when canon requires suspension"
+      ],
       "canonicalConditionalDebt": [
         "CEVT_RET_NO_LAST_MATCH requires factual injury/suspension causing the career to end without a final on-field match; current timer closure is compatibility only.",
         "CEVT_RET_STORYBOOK_LAST_GOAL remains non-canonical until a real authoritative last-match goal fact exists."
       ],
-      "unblockContract": "Fully certify and integrate PR #156 or successor; expose the latest real player appearance and any scene-required unavailability facts; keep result/goals/assists/cards/suspension null or blocked until authority exists."
+      "unblockContract": "Accept #202 into the sport producer (or equivalent public API), fully certify/integrate the resulting #156 successor, then consume the public last-appearance read. Keep result/goals/assists/cards/suspension null or blocked until factual authority exists."
     },
     {
       "id": "CODEX-RET-006",
@@ -156,7 +188,6 @@
         "pr": 191,
         "branch": "t5/seed-34plus-catalog",
         "head": "d8f724893cfcb40d2b81f995d8ed08179bbd6f52",
-        "relationToMainAtAudit": "3_ahead_0_behind",
         "focusedRun": 35246851382,
         "focusedResult": "success",
         "repositoryIntegrityRun": 35246851472,
@@ -167,22 +198,26 @@
       "ordinary34plus": {
         "pr": 15,
         "branch": "t51/canon-34plus",
-        "headAtAudit": "0a199462e3b70791284796bcdfd4639a5f6b8a5b",
-        "relationToMainAtAudit": "73_ahead_0_behind",
+        "headAtAudit": "20f3b41cca5e4faf9f40d523ea256325891044da",
+        "relationToMainAtAudit": "79_ahead_0_behind",
         "preparedCards": "43/43",
         "runtimeImplemented": "0/43",
+        "repositoryIntegrityRun": 35259834450,
+        "repositoryIntegrityResult": "success",
         "conditionalOwner": 192,
         "canonicalConditionalCount": 32,
         "exactIdOverlap": 5,
         "exactIdSemanticallyAccredited": 0,
-        "contentState": "prepared_but_not_runtime_active"
+        "sharedAuthorityGapIssue": 195,
+        "sharedAuthorityGapDecision": "eight missing factual domains explicitly unsupported/fail-closed until real producers exist",
+        "contentState": "prepared_certified_but_not_runtime_active"
       },
-      "unblockContract": "Integrate the remaining predecessor generations in order; integrate #191 at the correct serial point; implement/accredit #192 conditionals and activate/integrate ordinary 34+ runtime; freeze that exact ordinary 34+ identity through #59; then re-ground retirement and register only the adjacent ordinary34plus->terminal edge. Never freeze a provisional terminal candidate early."
+      "unblockContract": "Integrate remaining predecessor generations in order; integrate #191 at the correct serial point; encode #195 fail-closed decisions, implement/accredit supported #192 conditionals and activate/integrate ordinary 34+ runtime; freeze that exact ordinary 34+ identity through #59; then re-ground retirement and register only the adjacent ordinary34plus->terminal edge. Never freeze a provisional terminal candidate early."
     }
   ],
   "implementedCount": 9,
   "readyCount": 0,
   "blockedCount": 2,
   "partiallyUnblockedCount": 1,
-  "codexNextAction": "Do not duplicate implemented retirement lots. RET-005 waits on certified rich match/last-appearance/unavailability authority. RET-011 waits on serial predecessor generations, #191 integration at the correct point, #192/PR #15 ordinary 34+ runtime and freeze, then the adjacent terminal migration edge."
+  "codexNextAction": "Do not duplicate implemented retirement lots. RET-005 now has a focused-green public last-appearance candidate in #202 but still waits on producer acceptance/integration plus factual result/goal/assist/suspension authority where canon requires them. RET-011 waits on serial predecessor generations, #191 integration at the correct point, #195 fail-closed matrix updates, #192/PR #15 ordinary 34+ runtime activation/freeze, then the adjacent terminal migration edge."
 }
