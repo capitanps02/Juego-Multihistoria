@@ -91,6 +91,51 @@
       "disposition": "retired_compatible",
       "rationale": "Agent 8 certifica que este concepto es una proyección derivada y no una nueva fuente persistida de verdad; T5.2 conserva compatibilidad histórica sin permitir nueva creación.",
       "evidenceRefs": ["src/catalog/seed-34plus.ts#SEED_34_PLUS_BRIDGE_COMPATIBILITY", "scripts/test-t52-34plus-canonical-catalog.mjs#compatibility-only"]
+    },
+    {
+      "seedId": "SEED_BRUNO_FAVOR",
+      "owner": "t51/canon-18-23",
+      "disposition": "canonical_chain",
+      "rationale": "La decisión temprana con Bruno produce una memoria persistente cuyo payload altera de forma determinista los pesos del reencuentro canónico posterior.",
+      "evidenceRefs": ["src/content/events/18_20/t51-seed-consumer-repairs.ts#PATCHES", "scripts/test-t51-early-seed-consumers.mjs#seed-dependent-outcomes"],
+      "producerEventId": "EVT_18_TEAM_001",
+      "consumerEventId": "CEVT_18_BRUNO_01"
+    },
+    {
+      "seedId": "SEED_MENA_EARLY_READ",
+      "owner": "t51/canon-18-23",
+      "disposition": "canonical_chain",
+      "rationale": "La lectura táctica temprana de Mena se conserva como memoria causal y modifica de forma explícita el desenlace del encuentro canónico posterior.",
+      "evidenceRefs": ["src/content/events/18_20/t51-seed-consumer-repairs.ts#PATCHES", "scripts/test-t51-early-seed-consumers.mjs#seed-dependent-outcomes"],
+      "producerEventId": "EVT_18_PRE_003",
+      "consumerEventId": "CEVT_18_CCH_01"
+    },
+    {
+      "seedId": "SEED_EXIT_STYLE_UDV",
+      "owner": "t51/canon-18-23",
+      "disposition": "canonical_chain",
+      "rationale": "El estilo de salida negociado en el bloque inicial se proyecta como memoria causal y modifica explícitamente las probabilidades de la decisión canónica posterior al descenso.",
+      "evidenceRefs": ["src/content/events/18_20/t51-seed-consumer-repairs.ts#PATCHES", "scripts/test-t51-early-seed-consumers.mjs#seed-dependent-outcomes"],
+      "producerEventId": "EVT_18_SUM_001",
+      "consumerEventId": "CEVT_18_RELEG_01"
+    },
+    {
+      "seedId": "SEED_BODY_PRECEDENT",
+      "owner": "t51/canon-18-23",
+      "disposition": "canonical_chain",
+      "rationale": "El precedente corporal temprano se conserva como memoria causal y modifica explícitamente los pesos de recuperación de la lesión posterior sin forzar el resultado.",
+      "evidenceRefs": ["src/content/events/18_20/t51-seed-consumer-repairs.ts#PATCHES", "scripts/test-t51-early-seed-consumers.mjs#seed-dependent-outcomes"],
+      "producerEventId": "EVT_18_PRE_002",
+      "consumerEventId": "CEVT_19_INJ_01"
+    },
+    {
+      "seedId": "SEED_PHYSIO_CONFIDENCE",
+      "owner": "t51/canon-18-23",
+      "disposition": "canonical_chain",
+      "rationale": "La confianza médica temprana se conserva como memoria causal y modifica explícitamente los pesos de recuperación posterior manteniendo el contrato determinista de RNG.",
+      "evidenceRefs": ["src/content/events/18_20/t51-seed-consumer-repairs.ts#PATCHES", "scripts/test-t51-early-seed-consumers.mjs#seed-dependent-outcomes"],
+      "producerEventId": "EVT_18_MED_001",
+      "consumerEventId": "CEVT_19_INJ_01"
     }
   ]
 }
