@@ -56,6 +56,8 @@ Siete enlaces principal→principal antes sobreclasificados quedaron como `decla
 
 Los siete `declaredReadMismatches` owner 30–34 sí son consumidores runtime positivos, pero siguen sin identidad canónica certificada. No se añade `seedsRead` todavía porque esa metadata cambia `contentIdentity`.
 
+El debt condicional quedó re-anclado al baseline `main@fa3c8bae…` y al target `9151d662…`; su guard exige que siga coincidiendo con readiness + migration handoff para impedir que una metadata pendiente quede asociada a un catálogo antiguo.
+
 Guard: `scripts/test-t51-30-34-conditional-seed-reads.mjs`.
 
 ### C30-34-CODEX-015 — convergencia raw-source con Career Authority
@@ -78,10 +80,10 @@ Guard: `scripts/test-t51-30-34-authority-gaps.mjs`.
 
 El Documento Maestro de `EVT_30_CON_001` referencia además `SEED_LAST_PEAK_CONTRACT`, pero ese ID no existe actualmente en `src/catalog/seeds.ts`. No se crea, renombra ni mapea a `SEED_AGE30_CONTRACT`, `SEED_LAST_BIG_MOVE_WINDOW` u otra seed por semejanza semántica.
 
-`test-t51-30-34-readiness.mjs` exige simultáneamente:
+Los guards exigen simultáneamente:
 
 - que source/target de la evidencia de paridad coincidan con el migration handoff;
-- que `SEED_LAST_PEAK_CONTRACT` siga marcada como missing/unclassified mientras no exista una definición runtime aprobada;
+- que `SEED_LAST_PEAK_CONTRACT` siga ausente mientras no exista una definición runtime aprobada;
 - que esta deuda no permita promover `EVT_30_CON_001` a identidad canónica verificada.
 
 ## Implementable / bloqueado para Codex
@@ -168,9 +170,19 @@ Freeze que coordinación/integración deberá crear antes de registrar la ruta:
 
 `qa/fixtures/t5.1/post-t51-sources/9151d6620739f5f63face23f412abdeca9898cac8e510cc44d86c1468da8d0f4.json`
 
-## Validación
+## Validación exacta
 
-La rama mantiene como regla que Repository Integrity puede fallar únicamente en el sentinel de freeze target propiedad de coordinación/integración. Los guards focales cubren trigger, autoridad de carrera, ofertas, liderazgo, deporte, seeds, readiness y migration handoff.
+Último HEAD de runtime/guards validado antes de este cierre documental: `877cb81c3d3596710135014ba21bfa69b1652677`.
+
+- T5.1 canon 30–34 run `35260723794` — **SUCCESS**;
+- T5 Market Contract Authority run `35260723792` — **SUCCESS**;
+- Repository Integrity run `35260723819` — **FAILURE únicamente en el sentinel esperado** `freeze-t51-active-source --check`.
+
+En `35260723819`, `npm test` completó correctamente build, T5.2, saves, T5.3, registries y offer bridges antes de fallar porque todavía no existe:
+
+`qa/fixtures/t5.1/post-t51-sources/9151d6620739f5f63face23f412abdeca9898cac8e510cc44d86c1468da8d0f4.json`
+
+No existe otro fallo de manifests/runtime previo al sentinel en ese HEAD. `main` seguía en `fa3c8bae…` y la rama estaba `behind_by=0` al cerrar esta validación.
 
 ## Invariantes
 
