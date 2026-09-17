@@ -81,6 +81,7 @@ export function applyT51SeedConsumerRepairs(events: readonly EventDefinition[]):
     if (!eventPatch) return event;
     return {
       ...event,
+      canonStatus: "verified",
       outcomes: event.outcomes.map(outcome => {
         const additions = eventPatch[outcome.id];
         return additions?.length ? { ...outcome, modifiers: [...(outcome.modifiers ?? []), ...additions] } : outcome;
