@@ -1,84 +1,125 @@
 # UNBLOCKED_CONTENT
 
-Audit base: `main@ebef17057156c7721fc4a041552c9cf1b3fdb6ba`.
+## Audit stack
 
-## Exact fully-ready count
+This handoff describes the exact stacked product tree currently under certification:
 
-A scene is counted as **ready** only when every sporting fact required by its canonical trigger/resolution is authoritative. A partially resolved dependency does not count.
+- `main@fa3c8bae524fef62e4eb9802e895df88588998c4`;
+- producer PR #156: `bbb491fac05fe4d981ae9e6c518c0a2c5aa57de7`;
+- 18–20 consumer PR #186: `1ee122ff3911a1aedc623044c4e220aa080c5f6a`.
 
-| Block | Fully Codex-ready from sporting authority |
-|---|---:|
-| 18–20 | 0 |
-| 20–23 | 0 |
-| 23–26 | 0 |
-| 26–30 | 0 |
-| 30–34 | 0 |
-| 34+ | 0 |
-| retirement | 0 |
-| **TOTAL** | **0** |
+Do **not** read this document as proof that those PRs are already integrated into `main`. Their exact-head CI remains the integration gate.
 
-This zero is intentional, not a lack of audit work: current `main` has no authoritative fixture/calendar/competition/match/squad/starting-XI/per-match-statistics producer. The branch supplies the read surface and the discrete football-moment result contract, but it refuses to convert aggregate role/form/age/time proxies into facts.
+## What the authoritative sport model now proves
 
-## Partially unblocked infrastructure consumers
+PR #156 adds persisted, deterministic sporting history behind `getSportContext` / `getCurrentMatchContext`.
 
-### 18–20 — issue #124
+Authoritative facts now available include:
 
-- `EVT_18_MATCH_001` — **blocked**. Needs a real live/post-match decision context: actual fixture, player participation/role, match state and competition. Existing `flags.OFFICIAL_DEBUT` is a coarse legacy flag and does not prove this context.
-- `EVT_18_PRS_001` — **blocked**. One existing branch can observe the legacy debut flag, but the canonical alternative “first real match squad call” does not exist. `PRESEASON_FIRST_TEAM_CALL` is not acceptable.
-- `EVT_18_SOC_001` — **blocked**. Needs factual `hoursToNextFixture` plus a following training window. Month/`seasonDay` is not evidence.
-- `EVT_18_END_001` — **blocked**. Needs `remainingLeagueMatches <= 4` and a concrete season objective still open. Neither fact exists.
-- Early injury/return scenes may consume existing medical/loan facts, but no match missed/return-match identity can be asserted until match history exists.
+- stable official league fixture identity;
+- competition, opponent and home/away identity;
+- registration-club sporting authority;
+- squad call, bench, start, appearance and minutes facts;
+- injury-unavailable state;
+- first match call / first bench / first appearance / first start / first full match milestones;
+- the canonical debut decision context only when the persisted row proves substitute entry at minute 78 with score 1–1;
+- previous / next official fixture;
+- hours to next fixture;
+- next scheduled training date;
+- remaining league fixtures;
+- season-objective lifecycle (`open` / terminal state).
+
+Reads consume 0 RNG and do not mutate state. Historical saves may omit the optional store; malformed persisted rows fail closed at the save boundary.
+
+Still deliberately unavailable rather than inferred:
+
+- generic per-match final score/result;
+- goals, assists or cards;
+- first-goal / last-goal identity;
+- current league standing;
+- designated penalty taker;
+- a prior missed penalty by that taker;
+- a generic high-profile-match classification;
+- national-team fixture/squad history.
+
+Do not recreate any unavailable fact from `roleScore`, form, reputation, age, month, `seasonDay`, coach trust or narrative flags.
+
+## Content status on the stacked tree
+
+| Block | Fully implemented using authoritative sporting facts | Remaining sporting blockers |
+|---|---:|---|
+| 18–20 | 4 | scene-specific match facts outside the repaired four |
+| 20–23 | 0 | scene-specific score/result/competition semantics still need explicit authority where canon claims them |
+| 23–26 | 0 | MATCH24 still lacks penalty setup facts; LOCK23 is owned by locker/NPC/seed content |
+| 26–30 | 0 | record/final/national-team match facts remain incomplete |
+| 30–34 | 0 | concrete veteran match/result claims still need richer history |
+| 34+ | 0 | goal/result/absence narratives remain incomplete |
+| retirement | 0 | last real appearance is now derivable, but last goal/result/final facts remain incomplete |
+
+### 18–20 — issue #124 / PR #186
+
+The four original #124 blockers are implemented on the stacked tree:
+
+- `EVT_18_MATCH_001` requires `facts.match.debutDecisionContext === true`; a historical debut flag, role or form cannot fabricate it.
+- `EVT_18_PRS_001` requires local attention plus either official debut or the persisted first real match-squad call.
+- `EVT_18_SOC_001` requires a produced future training date and no official fixture within 24 hours.
+- `EVT_18_END_001` requires 1–4 produced league fixtures remaining and an open season objective.
+
+PR #186 also carries directed positive and negative eligibility coverage and the adjacent H→I content migration/freeze evidence. No additional Codex rewrite of these four scenes should be started while #186 is pending.
 
 ### 20–23
 
-- Runtime contains `EVT_20_MATCH_001` (“Tres partidos que pesan más”), while the canonical reconciliation issue also identifies `EVT_20_MATCH_003` (“El minuto 65”). Any implementation that asserts a concrete appearance/minute/score remains **blocked** on match authority.
-- Captaincy, pressure and opportunity scenes may use leadership/relationship facts as supporting signals, but `starter`, `bench`, `minutes`, `important match` and result facts remain unavailable.
+The new history can now prove ordinary league squad/bench/start/appearance/minutes facts. It still cannot prove arbitrary scene-specific score states, final results or special-competition semantics unless the producer explicitly records them.
 
-### 23–26
+Codex may consume the new facts where the canon asks only for those facts. It must keep scenes blocked when their text requires unavailable match state.
 
-- `EVT_23_LOCK_001` — sporting-context work is not its owner. Locker leadership slot authority (#84) is already closed; seed/NPC knowledge dependencies remain with their owners.
-- `EVT_24_MATCH_001` — **partially unblocked**. The penalty micro-result (#85) is implemented on this branch with persisted football RNG. The scene remains blocked because the game cannot yet prove the player is on the field, the match is high-profile, the designated taker already missed, or the current score/context.
-- Selection/Europe content remains blocked wherever it claims a concrete call-up, start, benching, fixture or competition round.
+### 23–26 — issue #86
 
-### 26–30 — issue #6
+`EVT_23_LOCK_001` is **not** blocked by sporting authority. Its remaining work belongs to the T5.14 content owner and the already-integrated locker/NPC knowledge contracts. Do not identify the infracting teammate by abusing captain/star slot identity.
 
-- `EVT_26_MATCH_001` — **partially unblocked**. A registered penalty football moment can be resolved deterministically and persisted, but the record-chase match context itself is not authoritative yet.
-- `EVT_26_NAT_002` — **blocked**. Requires distinct factual club-starter and national-team bench/call contexts. Aggregate `professional.nationalRole` cannot prove a particular match selection.
-- `EVT_26_FINAL_001` — **blocked**. Requires a real final fixture and factual bench/start/appearance status. A synthetic `FINAL_CONTEXT` flag alone is insufficient.
-- Other derby/Europe/final/record scenes are blocked whenever they claim specific match identity/result rather than aggregate career state.
+`EVT_24_MATCH_001` is **partially unblocked**:
 
-### 30–34
+Available now:
 
-- Reduced minutes, veteran rotation, national-team phase-down, major-match and injury-return scenes are **blocked for concrete match claims** until per-match selection/minutes history exists.
-- Age or `roleScore` may remain legitimate career-level context, but cannot by themselves prove “benched six times”, “last start”, “great match”, or a competition result.
+- concrete official fixture / competition / opponent;
+- player squad and on-field participation facts;
+- persisted match history;
+- #85 football-RNG penalty outcome hook.
 
-### 34+
+Still missing before the canonical scene can be implemented safely:
 
-- Conditional content such as “Dos suplencias se convierten en seis” currently derives match-like semantics from aggregate role. That is proxy debt, not authoritative sporting history.
-- “last goal”, “last final”, “absence from squad”, veteran substitution and falling-minutes scenes require historical match facts.
+- designated penalty taker;
+- proof that the designated taker already missed an earlier penalty in the relevant match;
+- the live penalty decision score/context required by canon;
+- explicit high-profile classification if T5.14 requires more than league competition identity.
+
+The narrative choice must select hierarchy/intention only. Goal/miss remains a later `football` RNG fact and must never be hard-coded by a choice outcome.
+
+### 26–30
+
+`EVT_26_MATCH_001` can reuse the football-moment hook and ordinary appearance context, but the record-chase match setup is still not authoritative.
+
+`EVT_26_NAT_002` remains blocked because club and national-team selection contexts must be distinct factual systems.
+
+`EVT_26_FINAL_001` remains blocked because the current producer materializes league fixtures, not a factual final fixture/round.
+
+### 30–34 and 34+
+
+The new match history removes the need to infer ordinary bench/start/appearance/minutes from role score. It does **not** authorize claims such as a great match, a particular result, a final, a goal, or a specific competition round unless those facts exist in persisted history.
 
 ### Retirement
 
-- `EVT_RET_LAST_001` (“El último partido no está garantizado”) currently relies on `LAST_MATCH_WINDOW`; a future implementation must select the last **real** appearance/fixture from authoritative history.
-- `CEVT_RET_STORYBOOK_LAST_GOAL` similarly cannot infer a last goal from `LAST_MATCH_WINDOW + roleScore`.
-- No synthetic “last match” should be generated by the narrative layer.
+A retirement owner may now identify the latest real official appearance from match history and may use remaining official fixtures. It must not synthesize a last goal or storybook result: goal/result facts are still unavailable.
 
-## Cross-owner dependencies
+## Codex-safe next work
 
-- Seeds/causal memory: issue #125 / T5.2 owner.
-- Locker NPC slot authority: issue #84 is closed; NPC knowledge semantics remain T5.3 owner.
-- CareerOffer/contract transitions: Agent 3 ownership.
-- Retirement state machine: retirement owner.
-- This branch changes none of those authorities.
+Codex may safely:
 
-## What Codex can safely do now
+1. consume `facts.sport` / `facts.match` and the persisted match model rather than old proxies;
+2. treat `null` / unavailable as a hard blocker;
+3. use `resolvePenaltyMomentInPlace` only after an authoritative sporting context proves that the registered attempt actually exists;
+4. implement LOCK23 under its T5.14 + T5.3 ownership without coupling the infractor to captain/star identity;
+5. prepare the MATCH24 content patch **only after** an owner supplies the missing penalty-setup facts above;
+6. extend other age blocks only for claims already supported by factual history.
 
-Codex can safely:
-
-1. use `facts.sport` and `facts.match` as the shared read surface;
-2. treat `null`/`unavailable` as a hard blocker, never as false factual evidence;
-3. use `resolvePenaltyMomentInPlace` for registered penalty moments only after an authoritative match layer says the attempt actually exists;
-4. write tests/content patches once the relevant sporting facts become non-null;
-5. keep relationship/seed consequences separate from the sporting outcome.
-
-Codex must **not** make blocked scenes pass by reconstructing fixtures from month, age, season day, role score, reputation, coach trust or narrative flags.
+Codex must not add a second football simulator, consume narrative RNG for sporting results, or reconstruct match facts from month/age/role/reputation proxies.
