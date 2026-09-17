@@ -1,5 +1,51 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "fa3c8bae524fef62e4eb9802e895df88588998c4",
-  "tasks": []
+  "baseCommit": "5f4d14bca4d696cfafadb58b64034c7cd40cc147",
+  "tasks": [
+    {
+      "bugId": "T5-QA-029",
+      "issue": 212,
+      "status": "ready",
+      "severity": "P2",
+      "area": "saves-sport-authority",
+      "reproduction": "npm run build && node --test scripts/test-t5-match-model-known-bug.mjs",
+      "failingTest": "scripts/test-t5-match-model-known-bug.mjs",
+      "expected": "Match-model v1 save validation rejects producer-impossible player facts, unsupported firstGoal authority, and semantically wrong/non-first milestone pointers.",
+      "actual": "main@5f4d14bc integrated the authoritative match store while its validator still accepts those corrupted persisted states.",
+      "owner": "match-model-save-validation",
+      "allowedFiles": ["src/simulation/match-model.ts", "scripts/test-t5-match-model.mjs", "scripts/test-t5-match-model-known-bug.mjs"],
+      "forbiddenFiles": ["src/content/events/**", "src/content/content-identity*", "project/t51/**"],
+      "acceptanceTests": [
+        "Known-bug reproduction turns green without weakening assertions.",
+        "loadSave() and assertGameState() reject bench without call-up, zero-minute appearance, non-null firstGoal, wrong-predicate milestones and non-first milestone pointers.",
+        "Valid bench/substitute/starter rows still round-trip.",
+        "Validation/read paths consume zero RNG and mutate no state.",
+        "node --test scripts/test-t5-match-model.mjs scripts/test-t5-sport-context.mjs",
+        "Repository Integrity succeeds on the exact fix HEAD."
+      ]
+    },
+    {
+      "bugId": "T5-QA-028",
+      "issue": 130,
+      "status": "ready",
+      "severity": "P1",
+      "area": "contracts-employment",
+      "reproduction": "npm run build && node --test scripts/test-t5-contract-expiry-known-bug.mjs",
+      "failingTest": "scripts/test-t5-contract-expiry-known-bug.mjs",
+      "expected": "Contract expiry produces deterministic unattached employment authority; ordinary club football, renewal and institutional-club authority fail closed until a formal CareerOffer reactivates employment.",
+      "actual": "The authoritative sport producer is integrated at main@5f4d14bc, but zero-month contracts can still remain expired_pending_resolution while preserving ordinary registration and play.",
+      "owner": "shared-contract-employment",
+      "allowedFiles": ["src/core/types.ts", "src/simulation/world-simulator-core.ts", "src/simulation/offers.ts", "src/simulation/professional-adapter.ts", "src/save/validation.ts", "src/save/validation-legacy.ts", "scripts/test-t5-contract-expiry-known-bug.mjs"],
+      "forbiddenFiles": ["src/content/events/**", "src/content/content-identity*"],
+      "acceptanceTests": [
+        "A 1->0 contract expiry transition is deterministic, idempotent and consumes zero RNG.",
+        "At zero months current employment authority becomes unattached; historical club/owner/registration/salary strings remain provenance only.",
+        "Ordinary club appearances, renewals and institutional club authority fail closed while unattached.",
+        "Loading an ambiguous historical zero-month save does not fabricate a new free-agency decision.",
+        "Accepting a formal eligible CareerOffer is the only normal employment reactivation route.",
+        "No route=free_agent shortcut, salary-zero hack, sentinel club, forced transfer, synthetic contract or forced retirement.",
+        "The loyal/512000 reproduction turns green and market, save, long-career and Repository Integrity regressions remain green."
+      ]
+    }
+  ]
 }

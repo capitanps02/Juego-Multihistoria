@@ -1,40 +1,46 @@
 # QA → Codex handoff
 
-Fuente técnica: GitHub. Base de esta pasada: `main@fa3c8bae524fef62e4eb9802e895df88588998c4`.
+Fuente técnica: GitHub. Base de esta pasada: `main@5f4d14bca4d696cfafadb58b64034c7cd40cc147`.
 
-Objetivo: entregar defectos pequeños, reproducibles y con ownership claro. Codex no debe recibir tareas genéricas del tipo «arreglar QA» ni duplicar fixes que ya existen en una rama propietaria.
+Objetivo: entregar defectos reproducibles y con ownership claro. Codex no debe recibir tareas genéricas ni duplicar fixes ya existentes en ramas propietarias.
 
 ## Flujo
 
 1. Elegir una fila `status=ready` de `implementation-ready.json`.
-2. Si `tasks` está vacío, no inventar trabajo: consultar blockers/owner PRs del registro.
-3. Reproducir primero el test indicado sobre el base exacto o sobre el PR propietario cuando la tarea sea de integración.
-4. Cambiar solo los archivos permitidos por el ownership.
-5. Hacer verde la reproducción sin relajar el test.
-6. Ejecutar acceptance tests y regresiones vecinas.
-7. Reportar HEAD exacto y CI. No merge automático.
+2. Reproducir primero el test indicado sobre el base exacto o re-groundar si `main` avanzó.
+3. Cambiar solo la superficie autorizada.
+4. Hacer verde la reproducción sin relajar el test.
+5. Retener la regresión permanente y ejecutar pruebas vecinas + Repository Integrity exact-head.
+6. Reportar base, HEAD, archivos, CI y blockers. No merge automático.
 
-## Bugs abiertos reproducidos en main
+## Estado QA
 
-- T5-QA-016 / issue #61 — player authority en retirada. El runtime de `main` conserva el bypass, pero PR #118 ya implementa el fix dirigido; no duplicar ese código desde Codex. QA debe certificar su integración/re-ground cuando lineage lo permita.
-- T5-QA-028 / issue #130 — contrato vencido permanece registrado/activo durante años. Reproducción dirigida `loyal/512000`: 6669 días a 0 meses y 419 apariciones añadidas. `main@fa3c8b` incorpora hechos exactos de `CareerOffer`, pero no una transición autoritativa a empleo unattached; Pass A sigue esperando a que PR #156 fije la frontera final del simulador.
-- T5-QA-027 / issue #133 — el histórico PR #122 está cerrado/no integrable; la futura implementación H de LOCK23 debe ocultar la escalada al capitán cuando no exista target autoritativo.
+- **8 bugs registrados: 4 open / 4 resolved / 0 P0.**
+- T5-QA-016 / #61 — OPEN P1. El fix de retirada ya existe en PR #118; no duplicar desde Codex.
+- T5-QA-027 / #133 — OPEN P2. Pertenece al próximo owner serializado de LOCK23; no inventar capitán.
+- T5-QA-028 / #130 — OPEN P1 / **READY**. PR #156 ya está integrado en `main@5f4d14b`; el layout final `world-simulator-core.ts` existe y Pass A de empleo unattached ya no está sequencing-blocked.
+- T5-QA-029 / #212 — OPEN P2 / **READY**. El match-model v1 integrado acepta autoridad persistida imposible. Reproducción: `scripts/test-t5-match-model-known-bug.mjs`.
+
+## Orden recomendado para Codex
+
+1. **T5-QA-029 / #212**: fix pequeño y localizado de validación/save; cerrar primero para restaurar fail-closed del store deportivo.
+2. **T5-QA-028 / #130**: implementar Pass A sobre la frontera final del simulador ya integrada.
+
+## T5-QA-028 — límites de Pass A
+
+`monthsRemaining=0` debe derivar a empleo no activo/unattached; los strings de último club/owner/registration/salary son provenance, no autoridad laboral viva. Football, renovación ordinaria e institutional-club authority fallan cerrado. Los reads consumen 0 RNG. Solo aceptar una `CareerOffer` formal puede reactivar empleo normal.
+
+No improvisar `route=free_agent`, salario 0, club sentinel, transferencia forzada, contrato sintético ni retirada automática.
+
+## T5-QA-029 — invariantes mínimas
+
+El validador de `world.sportMatchModel` v1 debe rechazar, como mínimo: bench sin call-up, aparición con 0 minutos, `firstGoal` no nulo sin productor de goles, hitos que apuntan a un fixture que no prueba el hecho y hitos `first*` que saltan un fixture anterior ya cualificado.
 
 ## Resueltos
 
-- T5-QA-021 / #92 — baseline histórica NPC v1 integrada.
-- T5-QA-022 / #100 — `footballMomentResults` malformado falla en el boundary de carga; la regresión usa un moment id registrado.
-- T5-QA-023 / #109 — generación G usa provenance exacta (`roleGuaranteeAt23`) + caída factual (`roleDropSince23`), retenida en H, y cubre B/C/D negativos.
-- T5-QA-025 / #131 — historical seed consumers cierran contra `SEED_CATALOG` sin entrar en el grafo live.
+- T5-QA-021 / #92 — baseline histórica NPC v1.
+- T5-QA-022 / #100 — malformed `footballMomentResults` fail closed.
+- T5-QA-023 / #109 — provenance exacta de PRS23.
+- T5-QA-025 / #131 — historical seed IDs cierran contra `SEED_CATALOG`.
 
-## Simulación QA
-
-El rojo observado en la simulación estratificada no era #130: el validador confundía una cesión internacional válida (`LOAN_ACTIVE=true`, `ownerClub != registrationClub`, `route=abroad`) con una incoherencia. El validador ahora usa la autoridad de ownership y existe una regresión específica para esa combinación.
-
-## Por qué no hay tareas Codex QA desbloqueadas ahora
-
-- #61: el fix ya existe en PR #118; duplicarlo crearía dos implementaciones del mismo state machine. Sigue abierto hasta integración real y regresión exact-head.
-- #130: Pass A está definido, pero PR #156 sigue abierto/draft y mueve la frontera autoritativa de world simulation. Aplicarlo antes obligaría a parchear dos layouts.
-- #133: pertenece al owner LOCK23 sobre la lineage H actual, no al ownership QA.
-
-No improvisar `route=free_agent`, salario 0, club sentinel, transferencia forzada, contrato sintético ni retirada automática. No auto-merge.
+No auto-merge.

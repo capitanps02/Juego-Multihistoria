@@ -1,52 +1,54 @@
 # QA T5 — regresión y auditoría independiente
 
 Rama: `qa/t5-regression`  
-Re-ground actual: `main@fa3c8bae524fef62e4eb9802e895df88588998c4`  
+Re-ground actual: `main@5f4d14bca4d696cfafadb58b64034c7cd40cc147`  
 Owner: QA independiente
 
-QA intenta falsar invariantes. No reescribe canon ni corrige silenciosamente runtime de otros workstreams. Los defectos de runtime se convierten en reproducciones, issues y handoffs acotados; no se pide a Codex duplicar un fix ya existente en la rama propietaria.
+QA intenta falsar invariantes. No reescribe canon ni corrige silenciosamente runtime de otros workstreams. Los defectos runtime se convierten en reproducciones, issues y handoffs acotados.
 
 ## Estado verificado 2026-09-17
 
-- T5-QA-016 — **OPEN / P1 / owner-fix exists** — `main` conserva los bypasses de retirada; PR #118 implementa el fix dirigido y queda pendiente de re-ground/integración compatible con lineage. Issue #61. No duplicar desde Codex.
-- T5-QA-021 — **RESOLVED** — baseline histórica de NPC knowledge v1 integrada; issue #92 cerrado.
-- T5-QA-022 — **RESOLVED** — `footballMomentResults` se valida en el boundary de `loadSave`; issue #100 cerrado; probe QA usa un moment id registrado.
-- T5-QA-023 — **RESOLVED** — PRS23 usa `facts.roleGuaranteeAt23` + `facts.roleDropSince23` con regresiones negativas; issue #109 cerrado.
-- T5-QA-025 — **RESOLVED** — cierre de catálogo para historical seed consumers integrado; issue #131 cerrado.
-- T5-QA-027 — **OPEN / P2 / future H owner implementation** — historical PR #122 está cerrado/no integrable; issue #133 exige que la futura LOCK23 H falle cerrado si no existe capitán autoritativo.
-- T5-QA-028 — **OPEN / P1 / sequencing-blocked** — contract expiry zombie. Issue #130. Exact replay: run `35214465940`, job `105179515812`, artifact `10494278670`. `main@fa3c8b` integra hechos exactos de CareerOffer, no la transición autoritativa a empleo unattached; PR #156 debe fijar primero la frontera final de world simulation.
+**8 bugs: 4 open / 4 resolved / 0 P0.**
 
-## T5-QA-028 evidence
+- T5-QA-016 — **OPEN / P1 / owner-fix exists** — issue #61. PR #118 implementa el fix de player authority; no duplicar desde Codex.
+- T5-QA-021 — **RESOLVED** — NPC knowledge backfill v1; #92.
+- T5-QA-022 — **RESOLVED** — malformed footballMomentResults falla al cargar; #100.
+- T5-QA-023 — **RESOLVED** — PRS23 usa provenance y caída factual exactas; #109.
+- T5-QA-025 — **RESOLVED** — historical seed consumers cierran contra catálogo; #131.
+- T5-QA-027 — **OPEN / P2 / serialized owner** — #133. LOCK23 debe fallar cerrado sin capitán autoritativo.
+- T5-QA-028 — **OPEN / P1 / implementation-ready** — #130. Contract expiry zombie. PR #156 ya está integrado en `main@5f4d14b`, por lo que el blocker de layout desapareció y Pass A puede implementarse sobre `world-simulator-core.ts`.
+- T5-QA-029 — **OPEN / P2 / implementation-ready** — #212. `sportMatchModel` v1 acepta autoridad persistida imposible; reproducción QA dedicada fuera del gate verde.
 
-`loyal / seed 512000`:
-- first 0 months: `2029-06-01`, age 20;
-- last observed 0 months: `2049-09-01`, age 41;
-- 6669 total days at 0 months;
-- 5694-day maximum continuous zero streak;
-- 6669 days preserving same club/owner/registration/salary;
-- 0 employment changes while at zero;
-- 419 appearances added while contract remained at zero;
-- narrative free-agency seed memory exists, but explicit employment authority does not prevent ordinary registered play.
+## T5-QA-028 evidence y contrato
 
-El contrato de implementación ya está fijado en #130: `monthsRemaining=0` debe implicar empleo no activo/unattached como autoridad derivada; los strings del último club son provenance, no empleo vivo; football e institutional NPC deben fallar cerrado; los reads son 0 RNG; aceptar una nueva oferta formal reactiva empleo a través de la autoridad CareerOffer. No se introduce sentinel club ni una solución route-only.
+Reproducción histórica `loyal / seed 512000`: primera expiración `2029-06-01`; 6669 días observados a 0 meses; máximo continuo 5694; 0 cambios de empleo; 419 apariciones añadidas con el mismo club/owner/registration/salary.
 
-PR #156 sigue abierto/draft y ya está re-groundado sobre `main@fa3c8b`; mueve el body del simulador a `world-simulator-core.ts`. Por eso Pass A debe aplicarse después sobre el boundary definitivo y no duplicarse en el layout anterior.
+Pass A exige una autoridad `contracted | unattached`, transición 1→0 determinista/idempotente/0 RNG, provenance de último club separada de empleo vivo, football/renewal/institutional NPC fail-closed mientras unattached y reactivación únicamente mediante una CareerOffer formal. No sentinel club, `route=free_agent`, salary=0, transferencia forzada, contrato sintético ni retirada automática.
+
+## T5-QA-029 evidence y contrato
+
+Tras integrar #156, el validador del store deportivo v1 sigue aceptando combinaciones que el productor no puede crear: bench sin call-up, aparición con 0 minutos, `firstGoal` no nulo aunque el productor de goles no existe, y milestones que no prueban el predicado o no son realmente el primer fixture cualificado.
+
+Reproducción: `npm run build && node --test scripts/test-t5-match-model-known-bug.mjs`. Debe permanecer fuera del gate verde hasta el owner fix; después sus casos pasan a regresión permanente del match-model.
 
 ## Codex-ready QA
 
-`analysis/CODEX/qa/implementation-ready.json` contiene **0 tareas ready** en este snapshot. Esto es intencional: #61 ya tiene owner fix, #130 espera #156 y #133 pertenece al owner LOCK23.
+`analysis/CODEX/qa/implementation-ready.json` contiene **2 tareas ready**: T5-QA-029/#212 y T5-QA-028/#130. Orden recomendado: #212 primero por ser una corrección pequeña de integridad de saves, #130 después.
 
-## Gates
+## Gates verdes
 
-- `qa:t5:fast`: determinismo/RNG, cruces de edad, carreras largas y regresiones cerradas.
+- `qa:t5:fast`: determinismo/RNG, cruces de edad y carreras largas.
 - `qa:t5:content`: cierre referencial + ratchet de `seedsRead`.
-- `qa:t5:freeze` / `qa:t5:saves`: contentIdentity, lineage, freeze y compatibilidad.
+- `qa:t5:freeze` / `qa:t5:saves`: contentIdentity, lineage y compatibilidad.
 - `qa:t5:integration`: probes cross-workstream.
-- `qa:t5:simulation`: 9 perfiles estratificados.
-- `qa:t5:known-bugs`: reproducciones dirigidas de defectos abiertos; no debe maquillarse como gate verde.
-- `scripts/test-t5-contract-expiry-known-bug.mjs`: reproducción reducida de T5-QA-028; deliberadamente fuera del gate verde hasta owner fix.
-- `qa:t5:expensive`: 25 × 9 = 225 carreras; fuera del CI normal.
+- match-model/sport-context owner tests.
+- `qa:t5:simulation`: 9 perfiles estratificados + artifact diagnóstico.
+- state-validator QA unit tests.
 
-## Política de integración
+## Known-bug reproductions fuera del gate verde
 
-QA no mergea su propio PR. Un fix externo pasa a `resolved` solo después de integración real, reproducción original/regresión owner-side verde y verificación del HEAD exacto disponible. Repository Integrity debe evaluarse sobre el nuevo HEAD de QA antes de recomendar integración.
+- `scripts/test-t5-contract-expiry-known-bug.mjs` — T5-QA-028.
+- `scripts/test-t5-match-model-known-bug.mjs` — T5-QA-029.
+- `qa:t5:known-bugs` — retirada T5-QA-016.
+
+QA no mergea su propio PR. Un bug solo pasa a `resolved` tras fix integrado y reproducción/regresión verde sobre el HEAD exacto.
