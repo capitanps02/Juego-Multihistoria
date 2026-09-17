@@ -32,3 +32,17 @@
 - 17 de septiembre de 2026: se integró T5.3 (`408f38f`), que congela el baseline histórico de conocimiento de NPC para que las reglas vivas posteriores no reescriban replays anteriores. No altera la identidad del catálogo ni las rutas de migración de partida.
 - El bundle actualizado se publicó de nuevo en el asset `306862614`. Un Launch nuevo de la escena `2593315` recuperó la partida existente en 1 nov 2026 con 6 decisiones y sin errores ni avisos de consola.
 - La batería focal de T5.3, adaptador de jugador y PlayCanvas terminó con 66 pruebas correctas.
+
+## Indicadores de seguimiento
+
+Actualizados el 17 de septiembre de 2026. Estos indicadores separan el crédito oficial de los hitos técnicos para no presentar infraestructura o lotes incompletos como pasadas cerradas.
+
+| Indicador | Valor | Base verificable |
+|---|---:|---|
+| Progreso global acreditado | 33,51 % | `project/PLAN_PASADAS.md`; T5 aún no cierra ninguna pasada oficial. |
+| Migración del guardado publicado a PlayCanvas | 100 % | Asset `306862614` actualizado y Launch de la escena `2593315` recupera 1 nov 2026 / 6 decisiones. |
+| T3 Android | 75 % (3/4 hitos) | Falta exclusivamente la evidencia en teléfono Android físico de T3.4. |
+| T5 oficial acreditado | 0 % de su bloque | Ninguna pasada T5 completa; no se asigna peso parcial. |
+| Primer lote canónico 23–26 | 7/12 escenas (58,3 %) | Tres T5.10, tres T5.11 y `EVT_23_PRS_001` activos en el catálogo real. |
+
+- 17 de septiembre de 2026: integrado el contrato T5 de resultado deportivo determinista (`29fc684`): utiliza solo RNG `football`, persiste e idempotentemente reutiliza el hecho resuelto y no altera `contentIdentity`. Sigue pendiente el contenido canónico de `EVT_24_MATCH_001`, que será su primer consumidor.
