@@ -6,7 +6,11 @@ import { applyAge18MarketOfferBridges } from '../dist/content/events/18_20/t51-a
 import { eligibleChoices } from '../dist/narrative/choice-eligibility.js';
 import { offerBridgeEligible, offerBridgeSpec } from '../dist/narrative/offer-bridge.js';
 import { loadSave, serializeSave } from '../dist/save/save.js';
-import { materializeAge18MarketOfferInPlace } from '../dist/simulation/early-career-market.js';
+import {
+  AGE18_JAN_OFFER_MONTH_DAY,
+  AGE18_SUMMER_OFFER_MONTH_DAY,
+  materializeAge18MarketOfferInPlace
+} from '../dist/simulation/early-career-market.js';
 import { careerOfferKind, careerTerms, respondToOffer } from '../dist/simulation/offers.js';
 
 const REPAIRED = applyAge18MarketOfferBridges(BASE_EVENTS_18_20);
@@ -35,7 +39,7 @@ function findState({ date, expectedKind, setup = () => {}, limit = 4096 }) {
 
 function januaryLoanState() {
   return findState({
-    date: '2027-01-08',
+    date: `2027-${AGE18_JAN_OFFER_MONTH_DAY}`,
     expectedKind: 'loan',
     setup(state) {
       state.sport.roleScore = 20;
@@ -48,7 +52,7 @@ function januaryLoanState() {
 
 function januaryTransferState() {
   return findState({
-    date: '2027-01-08',
+    date: `2027-${AGE18_JAN_OFFER_MONTH_DAY}`,
     expectedKind: 'transfer',
     setup(state) {
       state.sport.roleScore = 64;
@@ -61,7 +65,7 @@ function januaryTransferState() {
 
 function summerRenewalState() {
   return findState({
-    date: '2027-06-04',
+    date: `2027-${AGE18_SUMMER_OFFER_MONTH_DAY}`,
     expectedKind: 'renewal',
     setup(state) {
       state.reputation.marketHeat = 10;
@@ -73,7 +77,7 @@ function summerRenewalState() {
 
 function summerTransferState() {
   return findState({
-    date: '2027-06-04',
+    date: `2027-${AGE18_SUMMER_OFFER_MONTH_DAY}`,
     expectedKind: 'transfer',
     setup(state) {
       state.reputation.marketHeat = 72;
@@ -109,10 +113,24 @@ test('age-18 producer is deterministic, detached and preserves pending offer thr
   assert.equal(restored.market.pending.terms.ownerClub, 'UDV');
   assert.notEqual(restored.market.pending.terms.registrationClub, 'UDV');
 
-  // Recreate from the original external seed by searching the same deterministic case.
   const b = januaryLoanState();
   assert.equal(b.rngState.narrative.seed, seed);
   assert.deepEqual(b.market.pending, beforeOffer);
+});
+
+test('producer attempts only on the one authoritative date in each age-18 market window', () => {
+  for (const date of ['2027-01-07', '2027-01-09', '2027-06-03', '2027-06-05']) {
+    const state = createInitialState(77);
+    state.date = date;
+    state.sport.roleScore = 20;
+    state.reputation.marketHeat = 70;
+    state.sport.appearances = 10;
+    state.flags.OFFICIAL_DEBUT = true;
+    const rng = rngSnapshot(state);
+    assert.equal(materializeAge18MarketOfferInPlace(state), null, `${date} must not reroll the window`);
+    assert.equal(state.market.pending, null);
+    assert.deepEqual(state.rngState, rng);
+  }
 });
 
 test('January bridge exposes only the formal action matching the one real proposal', () => {
@@ -169,7 +187,7 @@ test('accepting a staged January loan applies exact formal terms once and preser
 
 test('summer signing does not overlap the active-loan lifecycle', () => {
   const state = createInitialState(901);
-  state.date = '2027-06-04';
+  state.date = `2027-${AGE18_SUMMER_OFFER_MONTH_DAY}`;
   state.club = 'Development_4_01';
   state.tier = 4;
   state.professional.ownerClub = 'UDV';
