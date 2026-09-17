@@ -1,13 +1,15 @@
 # Retirement / epilogue blockers
 
-Coordination snapshot: 2026-09-17. This file is part of the retirement merge that synchronizes onto `main@fa3c8bae524fef62e4eb9802e895df88588998c4`; Git history is authoritative for the resulting retirement HEAD.
+Coordination snapshot: 2026-09-17.
 
-- certified retirement HEAD immediately before this sync: `a35dae2f6c2985ce12756a38248dbac0b4c3d2e6`
-- that head was **67 ahead / 0 behind** `main@a7a0bb5…`
-- retirement-specific workflow on `a35dae2f…`: build PASS + all T5.36/T5.37 gates PASS
-- retirement ownership remains isolated on `t5/retirement-epilogues`
+- synchronized retirement base: `a7caeba7732c3d527a12144c5ee33dc724d0f9b6`
+- synchronized against: `main@fa3c8bae524fef62e4eb9802e895df88588998c4`
+- compare at certification: **68 ahead / 0 behind main**
+- retirement-specific workflow on `a7caeba…`: build PASS + all T5.36/T5.37 gates PASS
+- Repository Integrity on `a7caeba…` reaches the intended fail-closed active-source freeze sentinel; ordinary validation before the sentinel passes
+- current unfrozen terminal candidate: `4f7c783521a463509ac8bf9a0646b6c0aeaff6861a8d01ab8b1e43c19641e93b`
 
-Repository Integrity is intentionally fail-closed on terminal lineage. The unfrozen terminal candidate observed on the preceding synchronized run was `4f7c783521a463509ac8bf9a0646b6c0aeaff6861a8d01ab8b1e43c19641e93b`; do not freeze or bypass that identity while the immediately preceding ordinary 34+ generation is not integrated/frozen.
+Do not freeze or bypass the terminal identity while the immediately preceding ordinary 34+ generation is not integrated and frozen.
 
 ## 1. Complete active 34+ generation / terminal lineage (RET-011)
 
@@ -17,32 +19,38 @@ owner chain: **#59 + #180 -> PR #15 -> terminal migration / PR #118**.
 ### PR #15 ordinary 34+ snapshot
 
 - branch: `t51/canon-34plus`
-- current relation to `main@fa3c8ba…`: **59 ahead / 1 behind**
-- current diff remains preparation/handoff material under `analysis/CODEX/canon-34plus/`; no Agent-8 principal is registered into `EVENTS`
+- relation at latest audit to `main@fa3c8ba…`: **59 ahead / 1 behind**
 - ordinary canonical cards prepared: **43/43 = 100%**
 - runtime implemented/registered by Agent 8: **0/43**
 - strict `codexReady`: **0/43** while Wave 0 is incomplete
 - active content remains generation H; no provisional ordinary-34+ identity may be frozen
 
-### Wave 0 blockers before any ordinary 34+ runtime registration
+### Wave 0 blockers
 
-1. **#59 — `T5.1 shared: multigeneration content migration lineage (A→B→C saves)` is open.** It owns route-path/evidence infrastructure so successive catalogs migrate deterministically without loading legacy catalogs into active scheduling. Required invariants include 0 RNG, no scheduling/choice resolution during migration, exact pending fingerprints, immutable compatibility evidence and fail-closed missing/ambiguous routes.
-2. **#180 — `T5.2: apply canonical Pasada-7 34+ seed catalog and provenance handoff` is open.** Owner decision: **54 exact new canonical seed IDs = 45 ordinary + 9 terminal**. The 68-entry technical set also contains **14 bridge-memory concepts**; these are inherited/derived compatibility concepts and must not be auto-produced merely by entering age 34. No fuzzy technical->canonical rename and no historical provenance rewrite.
-3. Once #59 and #180 are integrated, PR #15 may activate ordinary 34+ runtime waves and eventually produce the real frozen ordinary 34+ content identity.
-4. Retirement/epilogue generation must follow that exact frozen identity as the adjacent next generation. No shortcut from `PRE_T51_CONTENT_IDENTITY`, no guessed intermediate hash and no terminal freeze against a documentation-only 34+ branch.
+1. **#59 — multigeneration content migration lineage** is open. It owns deterministic route-path/evidence infrastructure: 0 RNG, no scheduling/choice resolution during migration, exact pending fingerprints, immutable compatibility evidence and fail-closed missing/ambiguous routes.
+2. **#180 — canonical Pasada-7 34+ seed catalog/provenance** is open. Owner decision: **54 exact new canonical seed IDs = 45 ordinary + 9 terminal**. The 14 bridge-memory concepts are inherited/derived compatibility concepts and must not auto-produce merely by entering age 34. No fuzzy technical->canonical rename and no historical provenance rewrite.
+3. After #59 and #180 are integrated, PR #15 may activate ordinary 34+ runtime waves and eventually produce the real frozen ordinary 34+ identity.
+4. Retirement must follow that exact frozen identity as the adjacent next generation. No `PRE_T51_CONTENT_IDENTITY` shortcut, no guessed intermediate hash and no terminal freeze against a documentation-only 34+ branch.
 
-status: **hard blocked upstream; no safe terminal migration code remains to write on this branch yet**.  
+status: **hard blocked upstream; no safe terminal migration code remains to write yet**.  
 retirement action now: keep terminal runtime/tests green and migration handoff ready; do not register/freeze the terminal candidate.
 
 ## 2. Full last-match authority (RET-005)
 
 task: `LastMatchFact { fixture, club, opponent, competition, minutes, starter, result, goals, assists }`.  
 current main: retirement still has no integrated persisted authoritative match-history producer.  
-concrete successor: PR #156 / `t5/authoritative-match-model`, audited head `30764bafacd9712ed39af8f176312ec8ffa8a8d4`.  
-current relation to `main@fa3c8ba…`: **1 ahead / 2 behind**; PR remains open/draft and is not a consumable main contract.  
-#156 provides: stable fixture identity/date/registration club/opponent/home-away/league competition, persisted `calledUp/onBench/started/appeared/minutes`, next/previous fixture, match-day and remaining fixture counts, save validation and deterministic replay with zero additional RNG draws.  
-#156 still does not provide: authoritative final result, goals, assists/cards, or a shared query for the latest history entry where `player.appeared=true` when the immediately previous fixture is a non-appearance.  
-certification on audited #156 head: Repository Integrity `35243389440` had project validation PASS, PlayCanvas PASS, QA build PASS and pre-content freeze sentinel PASS; determinism was still running at the latest audit. Because main has advanced twice since that producer head, a clean re-ground and fresh exact-head certification remain mandatory.  
+producer candidate: PR #156 / `t5/authoritative-match-model`.  
+current candidate HEAD: `05ac9cb123d413697de086b8099a6f5c3015d344` (`CI: allow full T5 repository integrity suite to finish`).  
+relation to `main@fa3c8ba…`: **2 ahead / 2 behind**; PR remains open/draft and is not a consumable main contract.  
+
+#156 provides: stable fixture identity/date/registration club/opponent/home-away/league competition, persisted `calledUp/onBench/started/appeared/minutes`, next/previous fixture, match-day and remaining fixture counts, save validation and deterministic replay with zero additional RNG draws.
+
+#156 still does not provide: authoritative final result, goals, assists/cards, or a shared query for the latest history entry where `player.appeared=true` when the immediately previous fixture is a non-appearance.
+
+CI evidence:
+- prior head `30764baf…`, Repository Integrity run `35243389440`: project validation PASS, PlayCanvas PASS, QA build PASS and pre-content freeze sentinel PASS; the run was **cancelled during determinism after a newer commit superseded it**, not concluded as a proven determinism failure;
+- current head `05ac9cb…`, Repository Integrity run `35244948064`: **in progress** at the latest audit; project validation was still running when sampled.
+
 status: **partially unblocked, not integration-ready**.  
 retirement action now: keep aggregate appearance fallback and null unsupported details; never infer result/goals or equate `previousFixture` with last appearance.
 
@@ -65,10 +73,10 @@ retirement action now: retain the narrow bridge and frozen-legacy regression unt
 task: replace coarse time/contract closure trigger with authoritative final sporting boundary.  
 current main: the persisted match model required by retirement is still not integrated.  
 producer candidate: PR #156 exposes `remainingOfficialMatches`, `remainingLeagueMatches`, `nextFixture`, `previousFixture`, match-day/training-window facts and official weekly league progression. In that candidate `remainingOfficialMatches` intentionally equals modeled league fixtures because league is the only modeled official competition.  
-exact audited candidate: `30764bafacd9712ed39af8f176312ec8ffa8a8d4`; **1 ahead / 2 behind `main@fa3c8ba…`**.  
-certification on that historical candidate head: project validation PASS; PlayCanvas PASS; QA build PASS; pre-content freeze sentinel PASS; determinism was still running at the latest audit.  
+current candidate: `05ac9cb123d413697de086b8099a6f5c3015d344`; **2 ahead / 2 behind `main@fa3c8ba…`**.  
+current exact-head CI: Repository Integrity `35244948064` is still in progress.  
 status: **blocked pending re-ground to current main, complete exact-head CI, and integration**.  
-unblock contract: once #156 (or clean successor) is fully certified and on main, gate administrative closure on authoritative `remainingOfficialMatches/nextFixture`, preserving announced-state playability, idempotence and a fail-closed compatibility path for saves without match history.  
+unblock contract: once #156 (or a clean successor) is re-grounded, fully certified and on main, gate administrative closure on authoritative `remainingOfficialMatches/nextFixture`, preserving announced-state playability, idempotence and a fail-closed compatibility path for saves without match history.  
 retirement action now: do not copy the producer into this branch and do not depend on its private store shape before integration.
 
 ## Repository-integrity rule
