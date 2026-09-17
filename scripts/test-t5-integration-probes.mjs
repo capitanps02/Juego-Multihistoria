@@ -215,3 +215,81 @@ test('T5 integration/T5.1 30-34: cada elección reimplementada produce un GameSt
   }
   assert.ok(executions > 0, 'fixture inválido: no se ejecutó ninguna elección canónica reimplementada');
 });
+
+test('T5 integration: accepted transfer expires club-scoped seed and invalidates previous institutional target', async t => {
+  const offers = await optionalImport('../dist/simulation/offers.js');
+  const npcAuthority = await optionalImport('../dist/simulation/npc-authority.js');
+  if (!offers || !npcAuthority || typeof resolver.expireDueSeedsInPlace !== 'function') {
+    t.skip('requiere autoridad de mercado, seed lifecycle y NPC authority integradas');
+    return;
+  }
+
+  const state = createInitialState(56213);
+  state.age = 21;
+  state.phase = '20_23';
+
+  const seedEvent = {
+    id: 'T5_QA_TRANSFER_SCOPE_SEED',
+    ageWindow: [21, 21],
+    phase: '20_23',
+    family: 'conditional',
+    gates: [],
+    cooldown: 0,
+    repeatable: true,
+    weight: 1,
+    text: { title: 'QA club scope', body: 'Fixture QA de seed local.' },
+    intel: { visible: [], uncertain: [] },
+    choices: [{ id: 'CREATE', label: 'Create', intentTags: ['qa'], outcomeIds: ['CREATED'] }],
+    outcomes: [{
+      id: 'CREATED', baseWeight: 1, effects: [], messages: ['ok'],
+      seedTransitions: [{ seedId: 'SEED_PRIVATE_CHAT', action: 'create' }]
+    }],
+    seedsWrite: ['SEED_PRIVATE_CHAT']
+  };
+
+  resolver.resolveChoiceInPlace(state, seedEvent, 'CREATE', true);
+  const seed = state.seeds.find(candidate => candidate.id === 'SEED_PRIVATE_CHAT' && !['resolved', 'expired'].includes(candidate.state));
+  assert.ok(seed, 'fixture inválida: no se creó la seed club-scoped');
+  assert.equal(seed.payload?.__t52OriginClub, 'UDV');
+  assert.equal(state.flags.HAS_SEED_PRIVATE_CHAT, true);
+
+  const beforeInstitutionQuery = structuredClone(state);
+  assert.equal(npcAuthority.resolveCurrentClubInstitutionalNpc(state), 'NPC_DIR_02');
+  assert.deepEqual(state, beforeInstitutionQuery, 'resolver institucional mutó estado o RNG antes del traspaso');
+
+  const rngBeforeOffer = structuredClone(state.rngState);
+  offers.proposeCareerChange(state, 'QA authoritative transfer', draft => {
+    draft.club = 'QA_DESTINATION';
+    draft.professional.ownerClub = 'QA_DESTINATION';
+    draft.professional.registrationClub = 'QA_DESTINATION';
+    draft.professional.route = 'domestic';
+    draft.flags.LOAN_ACTIVE = false;
+    draft.contract.monthsRemaining = 24;
+  });
+  const offer = state.market?.pending;
+  assert.ok(offer, 'fixture inválida: no se creó CareerOffer');
+  offers.respondToOffer(state, offer.id, 'accept');
+  assert.deepEqual(state.rngState, rngBeforeOffer, 'crear/aceptar CareerOffer consumió RNG');
+  assert.equal(state.club, 'QA_DESTINATION');
+  assert.equal(state.professional.ownerClub, 'QA_DESTINATION');
+  assert.equal(state.professional.registrationClub, 'QA_DESTINATION');
+
+  const rngBeforeExpiry = structuredClone(state.rngState);
+  resolver.expireDueSeedsInPlace(state);
+  assert.deepEqual(state.rngState, rngBeforeExpiry, 'caducar scope de seed consumió RNG');
+  assert.equal(seed.state, 'expired');
+  assert.equal(seed.payload?.__t52TerminalReason, 'club_scope');
+  assert.equal(state.flags.HAS_SEED_PRIVATE_CHAT, false);
+  assert.equal(seed.originEvent, 'T5_QA_TRANSFER_SCOPE_SEED', 'la memoria histórica de origen se perdió al caducar');
+
+  const beforePostTransferQuery = structuredClone(state);
+  assert.equal(npcAuthority.resolveCurrentClubInstitutionalNpc(state), null, 'el actor institucional de UDV fugó al nuevo club');
+  assert.deepEqual(state, beforePostTransferQuery, 'resolver institucional mutó estado o RNG tras el traspaso');
+
+  const restored = loadSave(serializeSave(state));
+  const restoredSeed = restored.seeds.find(candidate => candidate.id === 'SEED_PRIVATE_CHAT');
+  assert.equal(restoredSeed?.state, 'expired');
+  assert.equal(restoredSeed?.payload?.__t52TerminalReason, 'club_scope');
+  assert.equal(restored.professional.registrationClub, 'QA_DESTINATION');
+  assert.equal(npcAuthority.resolveCurrentClubInstitutionalNpc(restored), null);
+});
