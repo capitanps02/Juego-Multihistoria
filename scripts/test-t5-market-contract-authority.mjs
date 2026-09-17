@@ -54,6 +54,22 @@ test('formal offer queries are detached, deterministic and distinguish renewal/t
   assert.equal(getEligibleLoanOffers(loan).length, 1);
 });
 
+test('eligible queries fail closed when live CareerTerms no longer match the offer baseline', () => {
+  const state = createInitialState(308);
+  const rng = rngSnapshot(state);
+  proposeCareerChange(state, 'Propuesta de mercado', draft => {
+    draft.club = 'Destino FC';
+    draft.contract.salaryMonthly = 5000;
+  });
+  assert.equal(getActiveCareerOffers(state).length, 1, 'the pending proposal remains inspectable');
+  assert.equal(getEligibleTransferOffers(state).length, 1);
+  state.contract.salaryMonthly += 1;
+  assert.equal(getActiveCareerOffers(state).length, 1, 'read-only active query does not erase stale evidence');
+  assert.equal(getEligibleTransferOffers(state).length, 0, 'stale proposal is not eligible for narrative acceptance');
+  assert.throws(() => respondToOffer(state, state.market.pending.id, 'accept'), /condiciones han cambiado/);
+  assert.deepEqual(state.rngState, rng);
+});
+
 test('pending formal offer survives save/load without mutating its terms or RNG', () => {
   const state = createInitialState(307);
   proposeCareerChange(state, 'Propuesta de mercado', draft => {
