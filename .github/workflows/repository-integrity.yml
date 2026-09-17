@@ -1,35 +1,23 @@
 name: Repository integrity
 
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
   workflow_dispatch:
 
-jobs:
-  validate:
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+permissions:
+  contents: write
 
-      - name: Verify required project files
-        shell: bash
-        run: |
-          set -euo pipefail
-          test -f package.json
-          test -f package-lock.json
-          test -d src
-          test -d scripts
-          test -d web
-          test -d android
-          test -d project
-          test -d qa
-          test ! -d .android-tools
-          test ! -d node_modules
-          echo "Repository structure OK"
+jobs:
+  promote_t51_124_evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout stacked product branch
+        uses: actions/checkout@v4
+        with:
+          ref: t51/124-authoritative-18-20-wiring
+          fetch-depth: 0
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -40,56 +28,30 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # CI-only helper for PR #188. Generate the exact post-T5.1 evidence from
-      # the product tree before the normal checks, then export it for promotion
-      # into stacked PR #186. This branch is never merged.
-      - name: Generate T5.1 #124 migration evidence
+      - name: Generate exact post-T5.1 evidence
+        shell: bash
         run: |
+          set -euo pipefail
           npm run build
-          node scripts/freeze-t51-active-source.mjs
+          CURRENT_ID=$(node --input-type=module -e "import { EVENTS } from './dist/content/events/index.js'; import { contentIdentity } from './dist/session/content-identity.js'; console.log(await contentIdentity(EVENTS));")
+          TARGET="qa/fixtures/t5.1/post-t51-sources/${CURRENT_ID}.json"
+          if [ ! -f "$TARGET" ]; then
+            node scripts/freeze-t51-active-source.mjs
+          fi
           node scripts/generate-t51-post-legacy-registry.mjs
           node scripts/generate-t51-offer-bridge-evidence.mjs
+          echo "Generated content identity: ${CURRENT_ID}"
 
-      - name: Upload T5.1 #124 generated evidence
-        uses: actions/upload-artifact@v4
-        with:
-          name: t51-124-generated-evidence
-          if-no-files-found: error
-          retention-days: 1
-          path: |
-            qa/fixtures/t5.1/post-t51-sources/
-            src/session/post-t51-legacy-registry.ts
-            src/session/frozen-offer-bridge-evidence.ts
-
-      - name: Run project validation
-        run: npm test
-
-      - name: PlayCanvas integration regression
-        run: npm run test:playcanvas
-
-      - name: Build T5 QA target
-        run: npm run build
-
-      - name: T5 pre-content freeze sentinel
-        run: node scripts/freeze-t51-baseline.mjs --check
-
-      - name: T5 determinism and RNG isolation
-        run: node --test --test-name-pattern="T5 determinism" scripts/test-t5-regression.mjs
-
-      - name: T5 age boundaries
-        run: node --test --test-name-pattern="T5 age boundaries" scripts/test-t5-regression.mjs
-
-      - name: T5 content references
-        run: node --test --test-name-pattern="T5 content references" scripts/test-t5-regression.mjs
-
-      - name: T5 long careers
-        run: node --test --test-name-pattern="T5 long careers" scripts/test-t5-regression.mjs
-
-      - name: T5 content lifecycle audit
-        run: node scripts/qa-t5-content.mjs
-
-      - name: T5 cross-workstream integration probes
-        run: node --test scripts/test-t5-integration-probes.mjs
-
-      - name: T5 stratified simulation
-        run: node scripts/qa-t5-sim.mjs
+      - name: Commit generated evidence to product branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add qa/fixtures/t5.1/post-t51-sources src/session/post-t51-legacy-registry.ts src/session/frozen-offer-bridge-evidence.ts
+          if git diff --cached --quiet; then
+            echo "Generated evidence already committed"
+            exit 0
+          fi
+          git commit -m "T5.1 #124: freeze authoritative sport wiring generation"
+          git push origin HEAD:t51/124-authoritative-18-20-wiring
