@@ -39,6 +39,32 @@ const applyCanonicalSharedTriggers=(event:EventDefinition):EventDefinition=>{
   } as EventDefinition & {gateAlternatives:Condition[][]};
 };
 
+/**
+ * These scenes assert concrete fixture/competition facts. Until the shared sport
+ * authority can materialise those facts, they must fail closed instead of treating
+ * role/form/calendar proxies as if a real match existed.
+ */
+const sportAuthorityGates:Readonly<Record<string,readonly Condition[]>>={
+  EVT_31_FINAL_001:[
+    {path:"facts.sport.currentCompetition",op:"exists"},
+    {path:"facts.sport.nextFixture",op:"exists"}
+  ],
+  EVT_33_BODY_001:[
+    {path:"facts.sport.nextFixture",op:"exists"},
+    {path:"facts.sport.hoursToNextFixture",op:"exists"}
+  ]
+};
+
+const applySportAuthority=(event:EventDefinition):EventDefinition=>{
+  const required=sportAuthorityGates[event.id];
+  if(!required) return event;
+  return {
+    ...event,
+    gates:[...(event.gates??[]),...required],
+    tags:[...new Set([...(event.tags??[]),"t51_sport_authority_required"])]
+  };
+};
+
 type OfferDisposition="accept"|"reject"|"delegate"|"counter"|"defer";
 type OfferBridgeEvent=EventDefinition&{offerBridge:{choiceActions:Record<string,OfferDisposition>}};
 
@@ -134,7 +160,8 @@ const enforceCareerAuthority=(event:EventDefinition):EventDefinition=>{
 const principal:EventDefinition[]=PRINCIPAL_EVENTS_30_34.map(original=>{
   const selected=overrides.get(original.id)??original;
   const triggered=applyCanonicalSharedTriggers(selected);
-  const bridged=applyCareerOfferBridge(triggered);
+  const sportGated=applySportAuthority(triggered);
+  const bridged=applyCareerOfferBridge(sportGated);
   const event=enforceCareerAuthority(bridged);
   if(!reimplementedIds.has(event.id)) return event;
   const tags=[...(event.tags??[]).filter(tag=>tag!=="t51_verified_same_identity"),"t51_canonical_reimplementation"];
