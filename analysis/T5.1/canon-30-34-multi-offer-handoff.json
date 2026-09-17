@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "scope": "T5.1 canon 30-34 simultaneous CareerOffer authority handoff",
+  "sourceMainSha": "fa3c8bae524fef62e4eb9802e895df88588998c4",
+  "status": "shared_market_multi_offer_persistence_required",
+  "consumers": [
+    {
+      "eventId": "EVT_31_MKT_001",
+      "canonicalNeed": "Compare two simultaneous formal offers."
+    },
+    {
+      "eventId": "EVT_33_MKT_001",
+      "canonicalNeed": "Represent four simultaneous late-career routes/proposals without collapsing them into one pending offer."
+    }
+  ],
+  "currentRuntime": {
+    "marketStatePath": "src/core/types.ts",
+    "offerAuthorityPath": "src/simulation/offers.ts",
+    "persistedPendingShape": "MarketState.pending: CareerOffer | null",
+    "eligibleReadShape": "getEligibleCareerOffers(state): CareerOffer[]",
+    "actualPersistedCardinality": 1,
+    "rule": "The plural read API does not imply plural persistence; it currently projects zero-or-one pending CareerOffer."
+  },
+  "ownership": {
+    "implementationOwner": "shared market/contract authority",
+    "consumerWorkstream": "t51/canon-30-34",
+    "workstreamMayEncodeExtraOffersAsNarrativeFlags": false,
+    "workstreamMayEncodeExtraOffersAsSeeds": false,
+    "workstreamMayInventOfferTerms": false
+  },
+  "canonicalValuesNotEstablishedByThisWorkstream": {
+    "offer31ExactTerms": null,
+    "offer33ExactTerms": null,
+    "simultaneousOfferOrderingPolicy": null,
+    "nonSelectedOfferDisposition": null,
+    "crossOfferCounterSemantics": null
+  },
+  "requiredCapabilities": [
+    "Persist more than one simultaneously active formal CareerOffer with stable identity and exact provenance per offer.",
+    "Read all currently eligible formal offers deterministically without consuming narrative RNG or mutating GameState.",
+    "Address accept, counter, defer and reject by exact offer identity so a response cannot accidentally target a sibling offer.",
+    "Preserve the complete simultaneous offer set and each offer's lifecycle/provenance through save and restore.",
+    "Define an explicit shared-authority disposition for non-selected sibling offers; this workstream does not invent whether they remain, expire, withdraw or reject automatically.",
+    "Keep offer terms and contract application owned by CareerOffer/market authority rather than narrative effects, flags, tags or seeds.",
+    "Maintain deterministic replay/idempotence: retrying the same response command cannot resolve a different sibling offer or apply a contract twice.",
+    "Provide migration behavior for saves using the current singleton pending field without fabricating simultaneous offers that did not historically exist."
+  ],
+  "prohibitedApproximations": [
+    "Calling getEligibleCareerOffers() multi-offer support while it is backed by a singleton pending field.",
+    "Encoding the second/third/fourth offer only in event choice text.",
+    "Encoding alternative offers as HAS_SEED_* or arbitrary flags.",
+    "Synthesizing offer terms from club prestige, reputation, age or route labels.",
+    "Reusing one CareerOffer id for multiple canonical proposals.",
+    "Applying club/contract state directly from a narrative outcome to bypass offer identity."
+  ],
+  "codexAcceptanceEvidence": [
+    "Persistence test with at least two simultaneously active offers having distinct ids and terms; both survive save/restore exactly.",
+    "Four-offer capacity test demonstrating the authority can represent the cardinality required by EVT_33_MKT_001 without narrative-side shadow state.",
+    "Exact-target response tests proving accept/counter/defer/reject operate on the selected offer id and do not mutate an unintended sibling.",
+    "Retry/idempotence test for response commands in a multi-offer state.",
+    "Deterministic eligibility/read-order test consuming zero narrative RNG.",
+    "Legacy singleton-save migration test preserving the historical pending offer exactly and creating no phantom siblings.",
+    "Negative tests proving choice text, flags, seeds and prestige cannot stand in for a persisted formal offer."
+  ],
+  "integrationOrder": [
+    "Freeze/register the current 30-34 target before content changes that would create another identity.",
+    "Shared market/contract owner implements and migrates multi-offer persistence plus exact response addressing.",
+    "Canonical owners provide exact proposal terms and any sibling-disposition semantics not already authoritative.",
+    "Only then bridge EVT_31_MKT_001 and EVT_33_MKT_001 to the shared authority in a coordinated content-identity batch."
+  ]
+}
