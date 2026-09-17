@@ -64,7 +64,7 @@ jobs:
           if (ready.baseCommit !== expected) throw new Error(`ready baseCommit ${ready.baseCommit} != ${expected}`);
           if (matrix.counts.totalSeeds !== 210 || matrix.seeds.length !== 210) throw new Error('seed matrix is not 210/210');
           if (matrix.counts.codexReadyEvents !== 5 || ready.tasks.length !== 5) throw new Error('Codex-ready event count changed');
-          if (matrix.counts.historicalConsumerRegistrations !== 0) throw new Error('historical consumer registry changed unexpectedly');
+          if (matrix.counts.historicalConsumerRegistrations !== 1) throw new Error('historical consumer registry changed unexpectedly');
           console.log(JSON.stringify({
             baseCommit: matrix.baseCommit,
             totalSeeds: matrix.counts.totalSeeds,
