@@ -5,253 +5,312 @@
 **Repositorio:** `capitanps02/Juego-Multihistoria`  
 **Rama principal:** `main`
 
-> GitHub actual, código ejecutable y CI exact-head prevalecen sobre este panel. Un PR verde, una auditoría o una micro-generación no equivalen por sí solos a una pasada oficial cerrada.
+> GitHub actual, código ejecutable y CI exact-head prevalecen sobre este panel. Un PR verde, una auditoría, una micro-generación o un handoff Codex-ready no equivalen por sí solos a una pasada oficial cerrada.
 
 ## Estado de `main`
 
 Base observada al sincronizar este panel:
 
-`ebef17057156c7721fc4a041552c9cf1b3fdb6ba`
+`fa3c8bae524fef62e4eb9802e895df88588998c4`
 
 Commit:
 
-`T5.3: freeze historical NPC knowledge backfill semantics`
+`T5 market: exact eligible CareerOffer facts`
 
-Estado técnico estable:
+Desde la última sincronización se han integrado, sin cambiar `EVENTS` ni `contentIdentity`:
 
-- engine base `0.8.0-t2.5`;
-- save schema 8;
-- Session v3 con provenance por decisión;
-- RNG separado: `narrative`, `football`, `microfeed`, `qa`;
-- `resume()` normal estricto;
-- content migration explícita y fail-closed;
-- `main` sin branch protection: usar siempre HEAD exacto + CI exacta + `expected_head_sha` al integrar.
+- autoridad fail-closed de liderazgo de club del jugador;
+- hardening de ofertas stale;
+- `pendingCareerOfferKind` determinista;
+- auditoría permanente de mutaciones directas de mercado;
+- facts detached de `CareerOffer` elegibles en la read surface narrativa.
 
-## Progreso oficial acreditado
+## Content identity / migraciones
 
-Autoridad: `project/PLAN_PASADAS.md` + `analysis/2026-09-11/plan-seguimiento.json`.
+Lineage activa serializada:
 
-- progreso acreditado: **33,51 %**;
-- pasadas cerradas: **15**;
-- pasadas omitidas: **2**;
-- baseline total: **68**;
-- restantes baseline: **51**;
-- etapa actual: **T5**;
-- T3.4 continúa abierta hasta evidencia real en teléfono Android físico.
+`PRE -> B1a -> C -> D -> E -> F -> G -> H`
 
-No ganar porcentaje por infraestructura, PRs, auditorías, ramas o batches parciales.
+Identidad activa:
 
-## Content identity y lineage real
+`H = 84871fae2bec92d74d1e607e0a48943e2e530a062d315a829cfe75eda9fe0886`
 
-Baseline pre-T5.1:
+La generación H fue integrada por el batch canónico 18–23. Ningún commit posterior observado en `main@fa3c8bae...` cambia `EVENTS` ni la identidad de contenido.
 
-`PRE = 2e07efd2ea99c4e9ec4c2b20ae89664204f76db2c55a72d567208799c01bccff`
+Reglas obligatorias:
 
-Lineage integrada en `main`:
+1. una sola sucesora adyacente por turno de integración;
+2. nunca crear shortcuts ni dos sucesoras paralelas desde H;
+3. recalcular la fuente real inmediatamente antes de integrar cualquier PR que cambie `EVENTS`;
+4. no reutilizar hashes históricos de PRs viejos como si fueran autoridad viva;
+5. pending/history/provenance legacy se preservan; las freezes históricas no se regeneran ni reinterpretan;
+6. migración explícita, 0 RNG, 0 scheduling, 0 decisiones, 0 contratos y 0 resultados deportivos sintéticos.
 
-`PRE -> B1a -> C -> D -> E -> F`
+## P0 — autoridad deportiva compartida
 
-Identidades:
+### PR #156 — `t5/authoritative-match-model`
 
-- B1a: `1a8a5e2006fe7160f4fbc02060568d3abec99df038fe3a1a7799c8a0e802eac7`
-- C: `fee2ff875bac7979d3907f5ee1004ef736efa9a257237c6dee629dd8687fe136`
-- D: `5d3fd71a8df42ed5b93fdde63ed386e9d776693addd62a30293dbecad7aa56d2`
-- E: `88751a2107c035826162968991e3a1808b2f4573afa3a3a20a3efa376fa8af1f`
-- **F, catálogo activo:** `de9ef2f501c015705a28d54afd140259356f15566d424511e6dbf67769c9bd19`
+Objetivo: productor autoritativo de calendario/fixtures/participación y read surface deportiva para desbloquear #124.
 
-Reglas:
+Estado exacto observado:
 
-- cada cambio de `EVENTS` crea solo la edge adyacente desde la identidad activa real;
-- no shortcuts;
-- exactamente un camino acíclico source→target; 0 o >1 => fail closed;
-- freezes históricos son inmutables;
-- catálogos legacy solo validan/migran, nunca entran en scheduler/EventIndex;
-- pending legacy usa su definición/fingerprint exactos;
-- migrar consume 0 RNG, agenda 0 escenas y no reescribe history/journal/decision provenance;
-- no reutilizar hashes de source/target de PRs antiguas después de que `main` avance.
+- base: `main@fa3c8bae524fef62e4eb9802e895df88588998c4`;
+- HEAD: `91b3f0a151a7c547ef00cee42e823e9920b244cf`;
+- padre directo: `fa3c8bae...`;
+- tree: `09d26d4edc6c6607db739adff05fdf519c6a9364`;
+- write-set efectivo: 12 archivos de sport/save/QA;
+- `EVENTS`: sin cambios;
+- `contentIdentity`: sin cambios;
+- `schemaVersion`: sin cambios;
+- orden/recuento de draws RNG: sin cambios.
 
-## T5.3 — NPC / knowledge
+Produce/persiste:
 
-Integrado en `main`:
+- fixture oficial semanal;
+- club deportivo autoritativo vía `registrationClub`;
+- convocatoria/banquillo/titularidad/aparición/minutos;
+- indisponibilidad por lesión;
+- primera convocatoria real de partido;
+- primera aparición / primera titularidad / partido completo;
+- contexto de debut de banquillo;
+- siguiente fixture, horas al siguiente fixture y siguiente entrenamiento;
+- partidos de liga restantes;
+- ciclo de objetivo liguero.
 
-- deny-by-default;
-- canales `witnessed`, `informed`, `public`, `reported`;
-- `npcRefs`, seeds, access o relación no implican conocimiento;
-- reconciliación histórica provenance-safe;
-- targets dinámicos solo desde resolvers autoritativos;
-- baseline histórica `NPC_KNOWLEDGE_BACKFILL_RULES_V1` congelada e independiente del registry live.
+No inventa todavía:
 
-PR #96 ya integrada. Issue #92 / T5-QA-021 cerrado.
+- clasificación liguera;
+- resultado final genérico por partido;
+- goles/asistencias/tarjetas;
+- `firstGoal`.
 
-## Contenido 23–26 ya integrado
+CI exact-head:
 
-Escenas canónicas distintas activadas/reimplementadas:
+- Repository Integrity run `35245632330`: en curso al redactar este panel.
 
-- `EVT_23_BRIDGE_001`
-- `EVT_23_AGT_001`
-- `EVT_23_BODY_001`
-- `EVT_23_MONEY_001`
-- `EVT_23_HOME_001`
-- `EVT_23_EUR_001`
-- `EVT_23_PRS_001`
+No integrar con evidencia de runs anteriores. Mantener #124 abierto hasta que sus consumidores también estén activos en `main`.
 
-`EVT_23_EUR_001` recibió además una generación posterior de corrección de eligibility que produjo el catálogo activo F.
+## P1 — siguiente generación narrativa candidata
 
-No confundir estas micro-generaciones con pasadas oficiales T5.10/T5.11. La pasada oficial de 12 escenas no se acredita hasta cumplir su criterio completo.
+### PR #186 — `t51/124-authoritative-18-20-wiring`
 
-## Bug activo prioritario — PRS23
+Consumidor de #156 para cerrar las cuatro escenas bloqueadas de #124.
 
-Issue #109 / T5-QA-023 sigue abierto.
+Estado exacto apilado:
 
-El `EVT_23_PRS_001` activo puede tratar presencia genérica de `SEED_ELITE_ROLE_BARGAIN` como si existiera una expectativa/promesa concreta de minutos.
+- base branch: `t5/authoritative-match-model`;
+- base SHA: `91b3f0a151a7c547ef00cee42e823e9920b244cf`;
+- HEAD: `822bc18c7e89253aa1220ef378ee4f5197854b81`;
+- padre directo: #156 HEAD;
+- tree: `dfd12194dadb98a4bb4efc3f14a7502fb693e6fd`;
+- delta propio: 7 archivos;
+- T51 Content Migration run `35245912990`: SUCCESS;
+- Repository Integrity run `35245912975`: en curso al redactar este panel.
 
-Secuencia correcta:
+Reparaciones:
 
-1. integrar el contrato de historical seed reads (#119/#131);
-2. re-groundear e integrar #106 como **fact-only** (`facts.roleGuaranteeAt23`, `facts.roleDropSince23`), sin modificar `EVENTS`;
-3. crear una PR de contenido separada que corrija el trigger activo de PRS23;
-4. esa PR de contenido, si sigue siendo la siguiente, crea la nueva edge adyacente desde F o desde el sucesor real vigente.
+- `EVT_18_MATCH_001`: requiere `facts.match.debutDecisionContext === true`;
+- `EVT_18_PRS_001`: atención local + `OFFICIAL_DEBUT` o primera convocatoria oficial persistida;
+- `EVT_18_SOC_001`: threshold mediático + entrenamiento futuro + ningún fixture dentro de 24 h;
+- `EVT_18_END_001`: 1–4 fixtures de liga restantes + objetivo abierto.
 
-#106 no debe tomar ownership de migration/contentIdentity.
+Proxies prohibidos para estas verdades:
 
-## T5.2 / T5.4 — Seeds
+- `roleScore`;
+- `form`;
+- reputación;
+- mes;
+- `seasonDay` aproximado;
+- `FIRST_TEAM_ATTENTION` como sustituto de convocatoria/partido.
 
-Infraestructura importante ya integrada, pero T5.2 no está oficialmente cerrada.
+Como cambia `EVENTS`, #186 propone una generación sucesora de H. Target preparado:
 
-Regla central: **canon first, wiring second**.
+`99ec70cdb10e20069e5281dac5b56e2146779cc462add1c47fc7d8ea6fa5ef28`
 
-No inventar consumers, expiries, cierres o significados para mejorar métricas.
+No autorizar H -> `99ec70cd...` hasta que:
 
-### Cola actual
+1. #156 esté realmente integrado en `main`;
+2. se vuelva a comprobar que H sigue siendo la identidad activa;
+3. no exista otra generación narrativa integrada o preparada como sucesora paralela;
+4. #186 se retarget/re-groundee al `main` exacto;
+5. focused migration/content tests + Repository Integrity estén verdes en el HEAD exacto final.
 
-- PR #119: live seed presence vs historical seed evidence. Draft hasta cerrar #131 y re-groundear.
-- #131: historical registry debe rechazar IDs de seed inexistentes en `SEED_CATALOG`.
-- PR #102: audit closure-readiness 210/210. Volvió a draft; debe re-groundear sobre `main` actual.
-- PR #107: clasificaciones owner-backed; solo después de #102. Registry real debe permanecer vacío salvo evidencia explícita de owner.
+Cerrar #124 solo después de integrar y probar los cuatro consumers.
 
-## Football moment / MATCH24
+## Shared runtime ya integrado tras H
 
-Issue #85 define el hook de resultado deportivo con RNG `football`.
+### Liderazgo de club del jugador
 
-PR #93 sigue draft y requiere:
+Autoridad fail-closed integrada en `main`.
 
-- re-ground limpio;
-- cerrar #100;
-- validar `world.footballMomentResults` en load/restore;
-- store ausente compatible; store presente corrupto => fail closed;
-- un momento nuevo consume exactamente un draw `football`;
-- resultado persistido e idempotente;
-- 0 cambios en `EVENTS`/contentIdentity.
+Consecuencia:
 
-Solo después `EVT_24_MATCH_001` puede consumir el contrato.
+- #148 cerrado;
+- #152 / `EVT_25_CAP_001` queda content-ready para su turno serializado de generación;
+- A -> `captain_group`;
+- C -> `secondary_captain`;
+- B/D -> sin write de autoridad formal.
 
-## LOCK23
+No crear una generación paralela para #152 mientras #186 sea la siguiente candidata activa.
 
-PR #122 sigue draft.
+### Mercado / CareerOffer
 
-Su plan histórico E→F está obsoleto: F ya es activo.
+Integrado:
 
-Issue #133 / T5-QA-027 debe resolverse antes de integración:
+- stale offers fallan cerrado;
+- tipo de oferta pendiente determinista;
+- exact eligible `CareerOffer` facts detached/read-only;
+- direct-market-mutation audit;
+- `CareerOffer + respondToOffer()` sigue siendo la única autoridad formal.
 
-- si no existe captain autoritativo, la choice “avisar al capitán” no puede ser seleccionable;
-- A/B/C deben seguir disponibles cuando la escena se abre por STAR o `SEED_TEAMMATE_COVER` y no hay captain;
-- no hardcodear capitán UDV fuera de su club/fase;
-- no inferir desde `npcRefs`, trust, role textual o relación más alta;
-- offender genérico sigue genérico si canon no certifica identidad.
+No equivale todavía a:
 
-Freeze/edge solo cuando LOCK23 sea realmente la siguiente generación de contenido.
+- materialización age-18 requerida por #123;
+- selección de múltiples ofertas #157;
+- lifecycle de expiración #165;
+- generación veteran 34+ #176;
+- free-agency real #130.
 
-## 20–23 — PR #129
+## T5.2 — seeds
 
-Workstream activo:
+No confundir seeds declaradas con consecuencias causales cerradas.
 
-- rama `t51/canon-20-23`;
-- PR #129 draft;
-- 51 escenas canónicas: 33 principales + 18 condicionales;
-- snapshot funcional: **12/51**;
-- T5.5: **9/12**;
-- T5.6: **3/12**.
+Obligatorio por seed:
 
-Puede seguir avanzando por escenas no bloqueadas.
+- producer;
+- consumer vivo o histórico correctamente tipado;
+- origen/provenance;
+- scope;
+- terminalidad;
+- persistencia/save;
+- timing;
+- cierre/expiry solo si está certificado por owner/canon.
 
-Blockers de identidad que deben fallar cerrados, nunca resolverse por heurística:
+Los historical consumers no entran en el live deferred graph.
 
-- #134 active-agent identity;
-- #135 current-club institutional NPC recipient;
-- #136 captain identity 20–23.
+Wave 0 34+ sigue dependiendo de #180. No activar 34+ runtime hasta que catálogo/provenance y predecesor real estén cerrados.
 
-No considerar contacto comercial, trust, `agentControl`, seed o `npcRefs` como representación/agencia activa.
+## NPC / conocimiento
 
-## Workstreams posteriores
+Regla permanente: world occurrence != NPC knowledge.
 
-- #115 / `t51/canon-26-30`: bridge 26 preparado pero **staged**, no activo.
-- #13 / 30–34: útil como reconciliación/readiness, bloqueado por generaciones previas.
-- #15 / 34+: aislado; no congelar target provisional.
-- `t51/canon-34plus-career`: snapshot histórico, quedó detrás de `main`; re-ground obligatorio antes de reutilizar.
-- #118 / retirada+epílogos: no registrar edge terminal hasta que la generación 34+ correcta esté activa.
+Canales válidos:
 
-## Retirada
+- witnessed;
+- informed;
+- public;
+- reported.
 
-Máquina objetivo:
+`npcRefs`, relación, confianza, shared club o seed no autorizan conocimiento por sí solos.
+
+Identidades dinámicas se resuelven por autoridad explícita. Si no existe autoridad:
+
+- devolver `null`;
+- usar actor genérico solo si el canon lo permite;
+- nunca inferir por first compatible / trust / role heurístico.
+
+Active-agent representation sigue bloqueada por #134 salvo acción canónica explícita de contratación/cambio/terminación.
+
+## 18–23
+
+Generación H ya integrada.
+
+No hay actualmente otro PR abierto que contenga el batch preparado:
+
+- `EVT_20_BRIDGE_001`;
+- `EVT_20_CCH_001`;
+- `EVT_21_SOC_001`;
+- `EVT_21_PRS_002`;
+- `CEVT_18_PLAYOFF_01`.
+
+Si se reconstruye antes de integrar #186, coordinación debe decidir si se combina con la misma sucesora o si queda después. Nunca crear dos sucesoras paralelas desde H.
+
+## 23–30 / 30–34 / 34+
+
+Todos los PRs históricos de estas franjas son fuentes de semántica/handoff, no autoridad automática de lineage.
+
+Antes de promover runtime:
+
+1. re-ground al `main` real;
+2. usar la identidad activa real como source;
+3. descartar wiring de freeze/migration provisional viejo;
+4. preservar solo el contenido/canon certificado;
+5. crear una única sucesora adyacente;
+6. exact-head CI.
+
+### 34+
+
+Issue #168 mantiene el handoff canónico ordinario.
+
+Wave 0 obligatoria:
+
+- #59 predecesor/lineage real;
+- #180 seeds/provenance 34+;
+- memorias predecessor con live/historical semantics correctas;
+- pending/history/fingerprints migration-safe.
+
+No congelar una identidad provisional 34+.
+
+## Retirada / epílogos
+
+PR #118 sigue siendo owner del terminal state machine y epílogos.
+
+Estado objetivo:
 
 `playing -> decided -> announced -> closed`
 
-Solo `decided -> playing` puede reconsiderar antes del anuncio.
+Única reconsideración permitida:
 
-Issue #61 / T5-QA-016 sigue abierto hasta que la corrección de retirada llegue a `main` en su turno de lineage.
+`decided -> playing`
 
-No auto-retirada por edad, no auto-anuncio por timer, no retirada automática por ausencia de mercado, no último partido/gol/aparición inventados.
+Prohibido:
 
-## Presentación / Android / release
+- `announced -> playing`;
+- auto-retirada por edad;
+- auto-anuncio por timer;
+- retirada automática por falta de mercado;
+- contratos artificiales;
+- última aparición/gol sintéticos.
 
-- PR #14 puede avanzar en paralelo; T3.4 requiere evidencia física real.
-- PR #120 prepara release/beta, pero no acredita T7/T8.
-- PR #34 prepara observabilidad T6 sin modificar runtime productivo.
+El último partido y los epílogos deben derivar de historial real.
 
-## QA independiente
+## Blockers compartidos explícitos
 
-PR #32 permanece adversarial.
+Mantener fail-closed ownership para:
 
-Estado de findings prioritarios:
+- #123 — alternativas formales de mercado age-18;
+- #130 — expiry contractual / free-agency real;
+- #133 — LOCK23 captain semantics donde siga aplicando;
+- #134 — active-agent representation;
+- #157 — multi-offer selection;
+- #165 — offer expiry lifecycle;
+- #169 — coach chronology;
+- #172 — pain/imaging medical authority;
+- #174 — concrete national call-up/preselection/final squad;
+- #176 — veteran 34+ offers/terms;
+- #177 — late-career successor/coach/peer identities;
+- #180 — 34+ seed catalog/provenance.
 
-- QA-016 / #61: abierto;
-- QA-021 / #92: **cerrado por #96**;
-- QA-022 / #100: abierto;
-- QA-023 / #109: abierto y afecta contenido activo;
-- QA-025 / #131: abierto;
-- QA-027 / #133: abierto.
+## QA / integración
 
-## Cola operativa para Codex
+Antes de integrar cualquier PR:
 
-Issue coordinadora: **#138**.
+1. leer `main` actual;
+2. comprobar HEAD/base/ahead/behind;
+3. inspeccionar write-set efectivo;
+4. preservar invariants compartidos ya integrados;
+5. re-ground si `main` cambió;
+6. focused tests;
+7. Repository Integrity completo sobre el HEAD exacto;
+8. si `EVENTS` cambia, verificar source identity real y una sola edge adyacente;
+9. registrar SHA y workflow IDs;
+10. no debilitar tests para conseguir verde;
+11. no auto-mergear.
 
-Prioridad:
+## Fuente operativa viva
 
-1. #119 + #131;
-2. #106 fact-only;
-3. PR dedicada para #109 / PRS23, con siguiente edge adyacente real;
-4. #93 + #100 en paralelo;
-5. #122 + #133 preparado semánticamente, sin apropiarse de lineage antes de turno;
-6. #102 re-ground;
-7. #107 después de #102;
-8. #129 continúa solo por contenido no bloqueado;
-9. después 26–30 → 30–34 → 34+ → retirada/epílogos.
+Issue de coordinación:
 
-## Contrato de integración
+`#138 — Coordination v2`
 
-Para cualquier PR candidata:
-
-1. consultar `main` justo antes de trabajar;
-2. comprobar ahead/behind;
-3. re-groundear preservando únicamente el write-set owned;
-4. no regenerar freezes históricos;
-5. si cambia `EVENTS`, calcular source real y crear solo una edge adyacente;
-6. no debilitar tests;
-7. focused tests + full Repository Integrity sobre HEAD exacto;
-8. documentar SHA y run IDs;
-9. no auto-mergear;
-10. merge solo tras revisión de integrador y con `expected_head_sha`.
-
-## Cuello de botella actual
-
-El problema principal ya no es la ausencia de código, sino **serializar cambios integrables desde el catálogo F mientras se cierran bugs causales/epistemológicos ya detectados, sin romper lineage, saves ni ownership**.
+Usar #138 para la cola operativa de Codex y este documento como snapshot versionado. Si ambos difieren, GitHub actual y la actualización más reciente prevalecen.
