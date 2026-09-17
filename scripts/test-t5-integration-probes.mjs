@@ -153,7 +153,7 @@ test('T5 integration/T5-QA-022: football moment corrupto se rechaza en loadSave'
   }
 
   const state = createInitialState(55922);
-  const momentId = 'QA_T5_SAVE_BOUNDARY_PENALTY';
+  const momentId = 'EVT_24_MATCH_001:qa-save-boundary:penalty';
   const input = footballMoments.playerPenaltyAttempt(state, momentId, 80);
   footballMoments.resolvePenaltyMomentInPlace(state, input);
 
