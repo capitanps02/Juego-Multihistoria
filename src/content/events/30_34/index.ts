@@ -65,6 +65,24 @@ const applySportAuthority=(event:EventDefinition):EventDefinition=>{
   };
 };
 
+/**
+ * The age-33 handover scene canonically requires current main-club captaincy.
+ * Influence, succession pressure, captaincy-window flags and seeds are not formal
+ * leadership authority. The shared resolver already scopes the certification to the
+ * protagonist's current club, so the synthetic fact is safe to consume here.
+ */
+const applyLeadershipAuthority=(event:EventDefinition):EventDefinition=>{
+  if(event.id!=="EVT_33_CAP_001") return event;
+  return {
+    ...event,
+    gates:[
+      ...(event.gates??[]),
+      {path:"facts.playerClubLeadership.currentRole",op:"eq",value:"captain"}
+    ],
+    tags:[...new Set([...(event.tags??[]),"t51_leadership_authority_required"])]
+  };
+};
+
 type OfferDisposition="accept"|"reject"|"delegate"|"counter"|"defer";
 type OfferBridgeEvent=EventDefinition&{offerBridge:{choiceActions:Record<string,OfferDisposition>}};
 
@@ -161,7 +179,8 @@ const principal:EventDefinition[]=PRINCIPAL_EVENTS_30_34.map(original=>{
   const selected=overrides.get(original.id)??original;
   const triggered=applyCanonicalSharedTriggers(selected);
   const sportGated=applySportAuthority(triggered);
-  const bridged=applyCareerOfferBridge(sportGated);
+  const leadershipGated=applyLeadershipAuthority(sportGated);
+  const bridged=applyCareerOfferBridge(leadershipGated);
   const event=enforceCareerAuthority(bridged);
   if(!reimplementedIds.has(event.id)) return event;
   const tags=[...(event.tags??[]).filter(tag=>tag!=="t51_verified_same_identity"),"t51_canonical_reimplementation"];
