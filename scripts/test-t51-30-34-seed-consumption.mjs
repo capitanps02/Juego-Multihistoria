@@ -4,6 +4,8 @@ import fs from 'node:fs';
 import { EVENTS } from '../dist/content/events/index.js';
 
 const lifecycle = JSON.parse(fs.readFileSync('analysis/T5.1/canon-30-34-seed-lifecycle.json', 'utf8'));
+const readiness = JSON.parse(fs.readFileSync('analysis/T5.1/canon-30-34-implementation-readiness.json', 'utf8'));
+const seedCatalogSource = fs.readFileSync('src/catalog/seeds.ts', 'utf8');
 const byId = new Map(EVENTS.map(event => [event.id, event]));
 
 function scrubDeclaredMetadata(event) {
@@ -18,6 +20,18 @@ function hasRuntimeCausalReference(event, seedId) {
   const text = JSON.stringify(scrubDeclaredMetadata(event));
   return text.includes(`HAS_SEED_${suffix}`) || text.includes(`facts.seed.${seedId}`) || text.includes(`facts.seeds.${seedId}`);
 }
+
+test('seed lifecycle follows the current 30-34 baseline and keeps external canonical seed debt explicit', () => {
+  assert.equal(readiness.base, `main@${lifecycle.sourceMainSha}`);
+  assert.deepEqual(
+    lifecycle.canonicalReferencesOutsideRuntimeCatalog.map(row => row.seed),
+    ['SEED_LAST_PEAK_CONTRACT']
+  );
+  const external = lifecycle.canonicalReferencesOutsideRuntimeCatalog[0];
+  assert.equal(external.status, 'missing_unclassified_runtime_definition');
+  assert.match(external.rule, /Do not create, rename or map/i);
+  assert.equal(seedCatalogSource.includes('SEED_LAST_PEAK_CONTRACT'), false);
+});
 
 test('seed lifecycle does not call declared reads confirmed causal chains', () => {
   assert.equal(lifecycle.policy.seedsReadIsNotCausalConsumption, true);
