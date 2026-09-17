@@ -24,12 +24,27 @@ test('T5.36 final save/load preserves the facts needed to rebuild the same termi
   const state = createInitialState(536102);
   state.age = 39;
   state.phase = '34_plus';
+  state.season = '2040-41';
   state.club = 'UDV';
   state.professional.registrationClub = 'UDV';
   state.professional.ownerClub = 'UDV';
   state.professional.nationalCaps = 41;
   state.sport.appearances = 317;
   state.world.maturityLongInjuryCount = 2;
+  state.history = Array.from({ length: 8 }, (_, index) => {
+    const startYear = 2033 + index;
+    return {
+      eventId: `TEST_CAREER_${index + 1}`,
+      date: `${startYear}-07-01`,
+      season: `${startYear}-${String((startYear + 1) % 100).padStart(2, '0')}`,
+      choiceId: 'CONTINUE',
+      outcomeId: 'RECORDED',
+      club: 'UDV',
+      snapshot: {},
+      salience: 10,
+      visibility: 'private'
+    };
+  });
   state.retirement.status = 'announced';
   state.retirement.decidedDate = '2041-03-10';
   state.retirement.announcedDate = '2041-03-17';
@@ -47,6 +62,8 @@ test('T5.36 final save/load preserves the facts needed to rebuild the same termi
   const restoredSummary = buildCareerSummary(restored);
 
   assert.equal(summary.terminal, true);
+  assert.equal(state.epilogue.generated, true);
+  assert.ok(state.epilogue.families.length >= 2);
   assert.equal(summary.lastProfessionalAppearance.authority, 'sport.appearances_delta');
   assert.equal(summary.lastProfessionalAppearance.date, '2041-05-22');
   assert.equal(summary.lastProfessionalAppearance.fixture, null);
