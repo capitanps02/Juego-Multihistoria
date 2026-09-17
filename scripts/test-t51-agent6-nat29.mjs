@@ -5,6 +5,7 @@ import { createInitialState } from '../dist/content/initial-state.js';
 import { EVENTS_26_30 } from '../dist/content/events/26_30/index.js';
 import { T522_STAGED_NATIONAL_AVAILABILITY_EVENTS_29 } from '../dist/content/events/26_30/t522-staged-national-availability-principal-events.js';
 import { eventGatesPass } from '../dist/narrative/event-gates.js';
+import { scheduleEvent } from '../dist/narrative/scheduler.js';
 import { resolveNationalTeamAuthority } from '../dist/simulation/national-team-authority.js';
 
 const event = T522_STAGED_NATIONAL_AVAILABILITY_EVENTS_29[0];
@@ -44,6 +45,7 @@ test('Agent6 NAT29 requires real aggregate national history plus prior load memo
   assert.equal(authority.caps, 6);
   assert.equal(authority.role, 'rotation');
   assert.equal(eventGatesPass(valid, event), true);
+  assert.equal(scheduleEvent(valid, [event], { ignoreRhythmGate: true })?.event.id, event.id);
 
   const tooFewCaps = state29(62202);
   tooFewCaps.professional.nationalCaps = 5;
@@ -60,12 +62,13 @@ test('Agent6 NAT29 requires real aggregate national history plus prior load memo
 
   const retired = state29(62205);
   retired.flags.NATIONAL_RETIRED = true;
-  assert.equal(eventGatesPass(retired, event), false);
+  assert.equal(eventGatesPass(retired, event), true, 'retirement is an exclusion, not a gate');
+  assert.equal(scheduleEvent(retired, [event], { ignoreRhythmGate: true }), null, 'scheduler must honor national-retirement exclusion');
 });
 
 test('Agent6 NAT29 only records policy intent and never mutates selection status directly', () => {
   for (const choice of event.choices) {
-    assert.equal(choice.immediateEffects?.some(effect => effect.kind === 'flag' && effect.flag === 'NATIONAL_RETIRED'), false);
+    assert.equal((choice.immediateEffects ?? []).some(effect => effect.kind === 'flag' && effect.flag === 'NATIONAL_RETIRED'), false);
     for (const outcomeId of choice.outcomeIds) {
       const outcome = event.outcomes.find(candidate => candidate.id === outcomeId);
       assert.ok(outcome);
