@@ -1,4 +1,5 @@
 import type { GameState } from "../core/types.js";
+import { FORMAL_RENEWAL_REASON } from "./club-contract-intent.js";
 
 export interface CareerTerms {
   club: string; tier: number; months: number; salary: number; releaseClause: number | null;
@@ -7,6 +8,8 @@ export interface CareerTerms {
   abroad: boolean; loan: boolean; bigClub: boolean;
 }
 export interface CareerOffer { id: string; date: string; reason: string; before: CareerTerms; terms: CareerTerms; }
+export type CareerOfferKind = "renewal" | "transfer" | "loan" | "loan_return" | "loan_conversion";
+export type ContractEmploymentStatus = "active_contract" | "expiring" | "expired_pending_resolution" | "retired";
 /** Direct player actions exposed by the ordinary offer screen and persisted in market.history.action. */
 export type OfferAction = "accept" | "reject" | "delegate";
 /** Narrative decisions may close an offer without changing the persisted action enum. */
@@ -37,6 +40,63 @@ export function careerTerms(s: GameState): CareerTerms {
     prestigeTier:p.clubPrestigeTier,prestigeScore:p.clubPrestigeScore,route:p.route,
     abroad:!!s.flags.ABROAD_ROUTE,loan:!!s.flags.LOAN_ACTIVE,bigClub:!!s.flags.BIG_CLUB};
 }
+function sameTerms(a: CareerTerms, b: CareerTerms): boolean {
+  return JSON.stringify(a)===JSON.stringify(b);
+}
+
+/**
+ * Read-only semantic classification over the persisted CareerOffer shape.
+ * No extra offer type is persisted: historical saves remain schema-compatible.
+ */
+export function careerOfferKind(offer: CareerOffer): CareerOfferKind {
+  const { before, terms } = offer;
+  if (terms.loan) return "loan";
+  if (before.loan && !terms.loan && terms.club === before.ownerClub && terms.ownerClub === before.ownerClub) return "loan_return";
+  if (before.loan && !terms.loan && terms.club === before.registrationClub && terms.ownerClub === before.registrationClub) return "loan_conversion";
+  if (terms.club !== before.club || terms.ownerClub !== before.ownerClub || terms.registrationClub !== before.registrationClub) return "transfer";
+  return "renewal";
+}
+
+/** Returns detached formal offers so callers cannot mutate market.pending accidentally. */
+export function getActiveCareerOffers(s: GameState): readonly CareerOffer[] {
+  const pending = s.market?.pending;
+  return pending ? [structuredClone(pending)] : [];
+}
+export function getEligibleTransferOffers(s: GameState): readonly CareerOffer[] {
+  return getActiveCareerOffers(s).filter(offer => careerOfferKind(offer) === "transfer");
+}
+export function getEligibleLoanOffers(s: GameState): readonly CareerOffer[] {
+  return getActiveCareerOffers(s).filter(offer => careerOfferKind(offer) === "loan");
+}
+export function getEligibleRenewalOffers(s: GameState): readonly CareerOffer[] {
+  return getActiveCareerOffers(s).filter(offer => careerOfferKind(offer) === "renewal");
+}
+
+/**
+ * Employment status is deliberately conservative over the existing save schema.
+ * The model has a `professional.route="free_agent"` token and classifiers that read it,
+ * but current production code has no authoritative transition that also establishes
+ * unattached club/owner/registration/salary/football semantics. Therefore months===0
+ * remains pending resolution rather than being silently promoted to free agency.
+ */
+export function contractEmploymentStatus(s: GameState): ContractEmploymentStatus {
+  if (s.retirement.status !== "playing") return "retired";
+  const months = Number(s.contract.monthsRemaining);
+  if (months <= 0) return "expired_pending_resolution";
+  if (months <= 6) return "expiring";
+  return "active_contract";
+}
+
+function renewalWasRejectedFromSameTerms(market: MarketState, reason: string, before: CareerTerms): boolean {
+  if(reason!==FORMAL_RENEWAL_REASON)return false;
+  return market.history.some(decision=>{
+    const disposition=decision.source?.disposition??decision.action;
+    return !decision.accepted
+      && disposition==="reject"
+      && decision.offer.reason===reason
+      && sameTerms(decision.offer.before,before);
+  });
+}
 export function applyTerms(s: GameState, t: CareerTerms): void {
   s.club=t.club; s.tier=t.tier; s.contract.monthsRemaining=t.months; s.contract.salaryMonthly=t.salary;s.contract.releaseClause=t.releaseClause;
   Object.assign(s.professional,{ownerClub:t.ownerClub,registrationClub:t.registrationClub,leagueTier:t.leagueTier,
@@ -51,7 +111,12 @@ export function proposeCareerChange(s: GameState, reason: string, propose: (draf
   const draft=structuredClone(s),before=careerTerms(s);
   propose(draft);
   const terms=careerTerms(draft);
-  if(JSON.stringify(before)===JSON.stringify(terms))return;
+  if(sameTerms(before,terms))return;
+  // A direct rejection closes this exact renewal negotiation state. The club may
+  // approach again only after the player's current CareerTerms change (for example
+  // when another contract month elapses). We evaluate this after the detached
+  // proposal so world RNG consumption remains stable even when the reoffer is suppressed.
+  if(renewalWasRejectedFromSameTerms(market,reason,before))return;
   // Old market code sometimes only changed prestige. Give that offer an actual destination.
   if(terms.club===before.club && (terms.leagueTier!==before.leagueTier || terms.prestigeTier!==before.prestigeTier)){
     terms.club=`Club ${terms.leagueTier} · ${terms.prestigeTier}`;
@@ -83,7 +148,7 @@ export function respondToOffer(
   if(!offer || offer.id!==id)throw Error("Esta oferta ya no está pendiente.");
   if(!["accept","reject","delegate","counter","defer"].includes(disposition))throw Error("Respuesta de oferta no válida.");
   if((disposition==="counter"||disposition==="defer")&&!source)throw Error("Contraofertar o aplazar requiere una decisión narrativa identificada.");
-  if(JSON.stringify(careerTerms(s))!==JSON.stringify(offer.before))throw Error("Las condiciones han cambiado; la oferta ya no corresponde a esta partida.");
+  if(!sameTerms(careerTerms(s),offer.before))throw Error("Las condiciones han cambiado; la oferta ya no corresponde a esta partida.");
   const action: OfferAction = disposition==="counter"||disposition==="defer" ? "reject" : disposition;
   const accepted=action==="accept" || (action==="delegate" && offer.terms.salary>=offer.before.salary && offer.terms.months>=12 && offer.terms.leagueTier<=offer.before.leagueTier);
   const explanation=disposition==="delegate"

@@ -2,7 +2,11 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { GameSession, SESSION_VERSION } from '../dist/session/game-session.js';
 import { createInitialState } from '../dist/content/initial-state.js';
-import { careerTerms,proposeCareerChange,respondToOffer } from '../dist/simulation/offers.js';
+import {
+ careerTerms,proposeCareerChange,respondToOffer,
+ careerOfferKind,getActiveCareerOffers,getEligibleTransferOffers,getEligibleLoanOffers,getEligibleRenewalOffers,
+ contractEmploymentStatus
+} from '../dist/simulation/offers.js';
 import { advanceWorldDayInPlace } from '../dist/simulation/world-simulator.js';
 import { assertGameState } from '../dist/save/validation.js';
 const command=(s,type,extra={})=>({type,commandId:crypto.randomUUID(),expectedRevision:s.getView().revision,...extra});
@@ -61,6 +65,30 @@ test('transfer acceptance changes registration, owner, contract and context toge
  const s=createInitialState(10);proposeCareerChange(s,'Fichaje',d=>{d.club='Destino';d.contract.salaryMonthly=4500;d.professional.route='abroad';d.flags.ABROAD_ROUTE=true;});
  const before=careerTerms(s),o=s.market.pending;assert.equal(s.club,'UDV');assert.deepEqual(careerTerms(s),before);
  respondToOffer(s,o.id,'accept');assert.equal(s.club,'Destino');assert.equal(s.professional.ownerClub,'Destino');assert.equal(s.world.ownerClub,'Destino');assert.equal(s.professional.registrationClub,'Destino');assert.equal(s.contract.monthsRemaining,24);assert.equal(s.flags.ABROAD_ROUTE,true);assertGameState(s);
+});
+test('authoritative offer queries classify formal offers without exposing mutable market state or RNG',()=>{
+ const renewal=createInitialState(101),renewalRng=structuredClone(renewal.rngState);
+ proposeCareerChange(renewal,'Renovación',d=>{d.contract.salaryMonthly+=500;d.contract.monthsRemaining=24;});
+ assert.equal(careerOfferKind(renewal.market.pending),'renewal');
+ assert.equal(getEligibleRenewalOffers(renewal).length,1);assert.equal(getEligibleTransferOffers(renewal).length,0);assert.equal(getEligibleLoanOffers(renewal).length,0);
+ const detached=getActiveCareerOffers(renewal);detached[0].terms.salary=1;
+ assert.notEqual(renewal.market.pending.terms.salary,1);assert.deepEqual(renewal.rngState,renewalRng);
+
+ const transfer=createInitialState(102);
+ proposeCareerChange(transfer,'Fichaje',d=>{d.club='Destino';d.contract.salaryMonthly=5000;});
+ assert.equal(careerOfferKind(transfer.market.pending),'transfer');assert.equal(getEligibleTransferOffers(transfer).length,1);
+
+ const loan=createInitialState(103);
+ proposeCareerChange(loan,'Cesión',d=>{d.club='Development Club';d.flags.LOAN_ACTIVE=true;d.professional.route='loan';});
+ assert.equal(careerOfferKind(loan.market.pending),'loan');assert.equal(getEligibleLoanOffers(loan).length,1);
+});
+test('contract expiry is exposed as pending resolution, never silently relabelled free agency',()=>{
+ const s=createInitialState(104);
+ s.contract.monthsRemaining=7;assert.equal(contractEmploymentStatus(s),'active_contract');
+ s.contract.monthsRemaining=6;assert.equal(contractEmploymentStatus(s),'expiring');
+ s.contract.monthsRemaining=0;assert.equal(contractEmploymentStatus(s),'expired_pending_resolution');
+ assert.equal(s.club,'UDV');assert.equal(s.professional.ownerClub,'UDV');
+ s.retirement.status='closed';assert.equal(contractEmploymentStatus(s),'retired');
 });
 test('corrupt offers, authority records and receipt mismatches are rejected',async()=>{
  const s=await pending();

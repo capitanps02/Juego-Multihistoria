@@ -2,6 +2,7 @@ import type { GameState } from "../core/types.js";
 import { NPC_CATALOG } from "../catalog/npcs.js";
 import { careerTerms } from "../simulation/offers.js";
 import { AGE_MILESTONES } from "../simulation/age-milestones.js";
+import { inspectFootballMomentStore } from "../simulation/football-moments.js";
 
 function assertMarket(value: unknown, state: GameState): void {
   const m=record(value,"market");
@@ -65,7 +66,7 @@ export function list(value: unknown, path: string): unknown[] {
   ensure(Array.isArray(value) && value.length <= 50_000, path, "lista ausente o excesiva");
   return value;
 }
-export function strings(value: unknown, path: string): void { list(value, path).forEach((x,i) => string(x, `${path}[${i}]`)); }
+export function strings(value: unknown, path: string): void { list(value,path).forEach((x,i) => string(x, `${path}[${i}]`)); }
 export function oneOf(value: unknown, options: readonly string[], path: string): void {
   ensure(typeof value === "string" && options.includes(value), path, "valor desconocido");
 }
@@ -158,6 +159,8 @@ export function validateGameSave(value: unknown, version: number): void {
   }
   if (version >= 3 || s.careerStateTags !== undefined) strings(s.careerStateTags,"careerStateTags");
   for (const key of ["contract","finances","body","selection","reputation","control","sport","world","personality","flags","eventCooldowns","familyLastSeen","narrativePressure"]) record(s[key],key);
+  const footballMomentIssue = inspectFootballMomentStore(record(s.world,"world").footballMomentResults, s.date as string);
+  if (footballMomentIssue) ensure(false, footballMomentIssue.path, footballMomentIssue.reason);
   const requiredNumbers: Record<string,string[]> = {
     contract:["monthsRemaining","salaryMonthly"],finances:["cash"],body:["risk","fatigue","fitness"],
     reputation:["prestige","mediaHeat","marketHeat"],control:["career","agentDependency"],
