@@ -1,7 +1,7 @@
 {
   "version": 1,
   "generatedAt": "2026-09-17",
-  "baseMain": "a7a0bb575ac8824c3e52975e8861a97e29f94830",
+  "baseMain": "fa3c8bae524fef62e4eb9802e895df88588998c4",
   "ownerBranch": "t51/canon-34plus",
   "scope": {
     "ordinaryPrincipals": 43,
@@ -33,7 +33,8 @@
         "stale-offer fail-closed eligibility",
         "deterministic pendingCareerOfferKind",
         "renewal-reason authority cleanup",
-        "direct market mutation audit"
+        "direct market mutation audit",
+        "detached exact eligible CareerOffer facts on narrative read surface"
       ],
       "stillMissing": [
         "authoritative 34+ veteran renewal/transfer/return/lower-level/high-value/short-offer generation",
