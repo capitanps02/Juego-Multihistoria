@@ -16,6 +16,7 @@
     "canonicalCardsPreparedUnique": 43,
     "canonicalCardPreparationPercent": 100,
     "authorityMatrixCoverage": 43,
+    "sharedOwnerRoutingMachineReadable": true,
     "waveAImplementationSpecs": 4,
     "waveBCoverage": 18,
     "waveCCoverage": 16,
@@ -48,6 +49,7 @@
     "rule": "wait_for_all_intervening_generations_and_register_only_adjacent_final_predecessor_to_34plus_edge"
   },
   "downstreamOwners": {
+    "machineReadableRouting": "SHARED_OWNER_ROUTING.json",
     "contentLineage": {"issue": 59, "owner": "shared_integration"},
     "seedCatalog": {"issue": 180, "owner": "t52_agent2", "handoff": "T52_SEED_HANDOFF.json"},
     "matchCalendarCompetition": {"issue": 124, "pullRequest": 156, "owner": "shared_sport_authority"},
@@ -99,6 +101,7 @@
   "preparedPackages": [
     "CANONICAL_CARD_COVERAGE.json",
     "AUTHORITY_MATRIX.json",
+    "SHARED_OWNER_ROUTING.json",
     "WAVE_A_IMPLEMENTATION.json",
     "WAVE_A_TEST_MATRIX.md",
     "WAVE_B_COMPLETE_INDEX.json",
