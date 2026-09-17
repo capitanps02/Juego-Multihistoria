@@ -1,5 +1,5 @@
 {
-  "contentIdentity": "99ec70cdb10e20069e5281dac5b56e2146779cc462add1c47fc7d8ea6fa5ef28",
+  "contentIdentity": "df1b8939f29c7bca65829dbfa2a0c4a2fcb5c8cc8f1ea08eb96592edc4dcd6fc",
   "engineBuild": "0.8.0-t2.5",
   "sessionVersions": [
     3
@@ -3945,7 +3945,16 @@
       ],
       "phase": "18_20",
       "family": "market",
-      "gates": [],
+      "gates": [
+        {
+          "path": "facts.pendingCareerOfferKind",
+          "op": "in",
+          "value": [
+            "loan",
+            "transfer"
+          ]
+        }
+      ],
       "timeWindow": {
         "months": [
           1
@@ -3989,6 +3998,13 @@
           "outcomeIds": [
             "LOAN__PRIMARY",
             "LOAN__SECONDARY"
+          ],
+          "eligibility": [
+            {
+              "path": "facts.pendingCareerOfferKind",
+              "op": "eq",
+              "value": "loan"
+            }
           ]
         },
         {
@@ -4001,6 +4017,13 @@
           "outcomeIds": [
             "TRANSFER__PRIMARY",
             "TRANSFER__SECONDARY"
+          ],
+          "eligibility": [
+            {
+              "path": "facts.pendingCareerOfferKind",
+              "op": "eq",
+              "value": "transfer"
+            }
           ]
         },
         {
@@ -4094,21 +4117,6 @@
               "kind": "set",
               "path": "role",
               "value": "loan_rotation"
-            },
-            {
-              "kind": "set",
-              "path": "club",
-              "value": "DEVELOPMENT_CLUB"
-            },
-            {
-              "kind": "set",
-              "path": "tier",
-              "value": 4
-            },
-            {
-              "kind": "flag",
-              "flag": "LOAN_ACTIVE",
-              "value": true
             }
           ],
           "messages": [
@@ -4147,21 +4155,6 @@
               "delta": -2,
               "min": 0,
               "max": 100
-            },
-            {
-              "kind": "set",
-              "path": "club",
-              "value": "DEVELOPMENT_CLUB"
-            },
-            {
-              "kind": "set",
-              "path": "tier",
-              "value": 4
-            },
-            {
-              "kind": "flag",
-              "flag": "LOAN_ACTIVE",
-              "value": true
             }
           ],
           "messages": [
@@ -4200,21 +4193,6 @@
               "delta": 6,
               "min": 0,
               "max": 100
-            },
-            {
-              "kind": "set",
-              "path": "club",
-              "value": "NEW_CLUB"
-            },
-            {
-              "kind": "set",
-              "path": "world.ownerClub",
-              "value": "NEW_CLUB"
-            },
-            {
-              "kind": "set",
-              "path": "tier",
-              "value": 3
             }
           ],
           "messages": [
@@ -4246,21 +4224,6 @@
               "delta": 5,
               "min": 0,
               "max": 100
-            },
-            {
-              "kind": "set",
-              "path": "club",
-              "value": "NEW_CLUB"
-            },
-            {
-              "kind": "set",
-              "path": "world.ownerClub",
-              "value": "NEW_CLUB"
-            },
-            {
-              "kind": "set",
-              "path": "tier",
-              "value": 3
             },
             {
               "kind": "flag",
@@ -4300,7 +4263,7 @@
             }
           ],
           "messages": [
-            "La espera mejora la opción disponible en los últimos días."
+            "Aplazas la propuesta y mantienes tus condiciones actuales. Sigues escuchando al mercado, pero esta oferta deja de estar reservada para ti."
           ],
           "historyTags": [
             "patience",
@@ -4328,7 +4291,7 @@
             }
           ],
           "messages": [
-            "El mercado se cierra y una alternativa ficha a otro jugador."
+            "La propuesta deja de estar pendiente y enero puede cerrarse sin una alternativa formal que la sustituya."
           ],
           "historyTags": [
             "patience",
@@ -4365,7 +4328,15 @@
           }
         ]
       },
-      "canonStatus": "technical_adaptation"
+      "canonStatus": "technical_adaptation",
+      "offerBridge": {
+        "choiceActions": {
+          "STAY_WITH_ROLE": "reject",
+          "LOAN": "accept",
+          "TRANSFER": "accept",
+          "WAIT_DEADLINE": "defer"
+        }
+      }
     },
     {
       "id": "EVT_18_TEAM_001",
@@ -5622,7 +5593,21 @@
       ],
       "phase": "18_20",
       "family": "contract",
-      "gates": [],
+      "gates": [
+        {
+          "path": "facts.pendingCareerOfferKind",
+          "op": "in",
+          "value": [
+            "renewal",
+            "transfer"
+          ]
+        },
+        {
+          "path": "professional.ownerClub",
+          "op": "eq",
+          "value": "UDV"
+        }
+      ],
       "timeWindow": {
         "months": [
           6
@@ -5633,7 +5618,7 @@
       "weight": 10,
       "text": {
         "title": "Tu primera firma de verdad",
-        "body": "La temporada termina. Ferrer ofrece una renovación. Puede haber salida, cesión o nada; salario, duración y cláusula compiten con minutos y libertad."
+        "body": "La temporada termina. Ferrer abre la renovación y, si el mercado ha cristalizado, también puede existir una salida formal. Salario, duración y cláusula compiten con minutos y libertad."
       },
       "intel": {
         "visible": [
@@ -5654,6 +5639,13 @@
           "outcomeIds": [
             "STABILITY__PRIMARY",
             "STABILITY__SECONDARY"
+          ],
+          "eligibility": [
+            {
+              "path": "facts.pendingCareerOfferKind",
+              "op": "eq",
+              "value": "renewal"
+            }
           ]
         },
         {
@@ -5666,6 +5658,13 @@
           "outcomeIds": [
             "FLEXIBILITY__PRIMARY",
             "FLEXIBILITY__SECONDARY"
+          ],
+          "eligibility": [
+            {
+              "path": "facts.pendingCareerOfferKind",
+              "op": "eq",
+              "value": "renewal"
+            }
           ]
         },
         {
@@ -5690,6 +5689,13 @@
           "outcomeIds": [
             "REQUEST_EXIT__PRIMARY",
             "REQUEST_EXIT__SECONDARY"
+          ],
+          "eligibility": [
+            {
+              "path": "facts.pendingCareerOfferKind",
+              "op": "eq",
+              "value": "transfer"
+            }
           ]
         }
       ],
@@ -5698,11 +5704,6 @@
           "id": "STABILITY__PRIMARY",
           "baseWeight": 55,
           "effects": [
-            {
-              "kind": "set",
-              "path": "contract.monthsRemaining",
-              "value": 36
-            },
             {
               "kind": "numeric",
               "path": "sport.roleScore",
@@ -5735,11 +5736,6 @@
           "baseWeight": 45,
           "effects": [
             {
-              "kind": "set",
-              "path": "contract.monthsRemaining",
-              "value": 36
-            },
-            {
               "kind": "numeric",
               "path": "control.career",
               "delta": -7,
@@ -5771,11 +5767,6 @@
           "baseWeight": 55,
           "effects": [
             {
-              "kind": "set",
-              "path": "contract.monthsRemaining",
-              "value": 24
-            },
-            {
               "kind": "numeric",
               "path": "control.career",
               "delta": 7,
@@ -5784,7 +5775,7 @@
             }
           ],
           "messages": [
-            "El club acepta una estructura que preserva parte de tu movilidad."
+            "Planteas una estructura más flexible. El club toma la contraoferta y tu contrato actual sigue vigente mientras no exista una nueva propuesta formal."
           ],
           "seedTransitions": [
             {
@@ -5830,7 +5821,7 @@
             }
           ],
           "messages": [
-            "Ferrer endurece la negociación y la renovación se enfría."
+            "Ferrer endurece la negociación. La contraoferta cierra esta propuesta sin cambiar tus condiciones actuales."
           ],
           "seedTransitions": [
             {
@@ -5868,7 +5859,7 @@
             }
           ],
           "messages": [
-            "El mercado mejora y aparecen alternativas más fuertes."
+            "Aplazas la firma y conservas tus condiciones actuales, aceptando el riesgo de que la siguiente propuesta sea distinta."
           ],
           "seedTransitions": [
             {
@@ -5906,7 +5897,7 @@
             }
           ],
           "messages": [
-            "Una mala pretemporada reduce la palanca que esperabas ganar."
+            "La propuesta deja de estar pendiente y el mercado puede enfriarse antes de que aparezca otra."
           ],
           "seedTransitions": [
             {
@@ -5944,7 +5935,7 @@
             }
           ],
           "messages": [
-            "La necesidad de caja hace que UDV acepte negociar sin guerra pública."
+            "Aceptas la oferta formal y UDV canaliza la salida sin convertirla en una guerra pública."
           ],
           "seedTransitions": [
             {
@@ -5982,7 +5973,7 @@
             }
           ],
           "messages": [
-            "El club rechaza el momento y la petición tensiona una relación que aún necesitas."
+            "La salida formal se cierra, pero la forma de forzar el movimiento tensiona tu relación con la dirección."
           ],
           "seedTransitions": [
             {
@@ -6038,7 +6029,15 @@
           }
         ]
       },
-      "canonStatus": "technical_adaptation"
+      "canonStatus": "technical_adaptation",
+      "offerBridge": {
+        "choiceActions": {
+          "STABILITY": "accept",
+          "FLEXIBILITY": "counter",
+          "WAIT": "defer",
+          "REQUEST_EXIT": "accept"
+        }
+      }
     },
     {
       "id": "EVT_19_SUM_001",
