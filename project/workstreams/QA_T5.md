@@ -1,7 +1,7 @@
 # QA T5 — regresión y auditoría independiente
 
 Rama: `qa/t5-regression`  
-Re-ground actual: `main@782b92c9a496293aeb33ad8b39f522a927374d6f`  
+Re-ground actual: `main@da3b356ac1c9c3376052189573e5a30f89b71cf0`  
 Owner: QA independiente
 
 QA intenta falsar invariantes. No reescribe canon ni corrige silenciosamente runtime de otros workstreams. Los defectos de runtime se convierten en reproducciones, issues y tareas acotadas para Codex.
@@ -10,11 +10,11 @@ QA intenta falsar invariantes. No reescribe canon ni corrige silenciosamente run
 
 - T5-QA-016 — **OPEN / P1** — retirada puede reabrirse desde `announced`, autoanunciarse por tiempo y autodecidirse por agotamiento de mercado. Issue #61.
 - T5-QA-021 — **RESOLVED** — baseline histórica de NPC knowledge v1 integrada; issue #92 cerrado.
-- T5-QA-022 — **OPEN / P1 / candidate PR blocker** — #93 no debe integrarse hasta validar `world.footballMomentResults` en load/save. Issue #100.
-- T5-QA-023 — **OPEN / P2** — PRS23 no debe interpretar la seed genérica como promesa de minutos. Issue #109.
+- T5-QA-022 — **RESOLVED** — `footballMomentResults` se valida en el boundary de `loadSave`; issue #100 cerrado; probe QA usa un moment id registrado.
+- T5-QA-023 — **RESOLVED** — PRS23 usa `facts.roleGuaranteeAt23` + `facts.roleDropSince23` con regresiones negativas; issue #109 cerrado.
 - T5-QA-025 — **RESOLVED** — cierre de catálogo para historical seed consumers integrado; issue #131 cerrado.
 - T5-QA-027 — **OPEN / P2 / candidate PR blocker** — LOCK23 choice D sigue sin eligibility de captain en PR #122. Issue #133.
-- T5-QA-028 — **OPEN / P1 / design-blocked** — contract expiry zombie. Issue #130. Exact replay on `main@782b92c9`: run `35214465940`, job `105179515812`, artifact `10494278670`.
+- T5-QA-028 — **OPEN / P1 / sequencing-blocked** — contract expiry zombie. Issue #130. Exact replay: run `35214465940`, job `105179515812`, artifact `10494278670`. Pass A está especificado; PR #156 debe fijar primero la frontera final de world simulation.
 
 ## T5-QA-028 evidence
 
@@ -26,9 +26,11 @@ QA intenta falsar invariantes. No reescribe canon ni corrige silenciosamente run
 - 6669 days preserving same club/owner/registration/salary;
 - 0 employment changes while at zero;
 - 419 appearances added while contract remained at zero;
-- narrative free-agency seed memory exists, but explicit employment/free-agent signal does not.
+- narrative free-agency seed memory exists, but explicit employment authority does not prevent ordinary registered play.
 
-`contractEmploymentStatus()` now reports `expired_pending_resolution`, which is a useful classifier but does not itself resolve registration/football/employment semantics. QA forbids a route-only or synthetic fix.
+El contrato de implementación ya está fijado en #130: `monthsRemaining=0` debe implicar empleo no activo/unattached como autoridad derivada; los strings del último club son provenance, no empleo vivo; football e institutional NPC deben fallar cerrado; los reads son 0 RNG; aceptar una nueva oferta formal reactiva empleo a través de la autoridad CareerOffer. No se introduce sentinel club ni una solución route-only.
+
+PR #170 ya está integrado. PR #156 continúa abierto/draft y mueve el body del simulador a `world-simulator-core.ts`; por eso Pass A debe aplicarse después sobre el boundary definitivo y no duplicarse.
 
 ## Gates
 

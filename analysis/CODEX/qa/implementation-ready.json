@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "182d5e6abc4f7c98eeb95703a4bc6c3560a4bcde",
+  "baseCommit": "da3b356ac1c9c3376052189573e5a30f89b71cf0",
   "tasks": [
     {"id":"CODEX-QA-001","bugId":"T5-QA-016","status":"ready","severity":"P1","owner":"retirement-runtime","failingTest":"scripts/test-t5-known-bugs.mjs :: T5-QA-016a/b/c","expected":"Only explicit player actions may decide/announce retirement; announced and closed are not reopenable.","actual":"Three runtime fallbacks bypass player authority.","allowedFiles":["src/simulation/late-career-engine.ts","scripts/test-t5-known-bugs.mjs","scripts/test-t5-regression.mjs"],"forbiddenFiles":["src/content/events/**","src/catalog/**","src/session/content-migration.ts","project/PLAN_PASADAS.md"],"acceptanceTests":["npm run qa:t5:known-bugs","npm run qa:t5:fast","npm run qa:t5:saves","npm test"]}
   ]
