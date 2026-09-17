@@ -1,0 +1,213 @@
+{
+  "schemaVersion": 1,
+  "baseCommit": "ebef17057156c7721fc4a041552c9cf1b3fdb6ba",
+  "runtimeAuthorityCommit": "04a6048d89cdd5c366e7b766435c4910cedb6d4a",
+  "generatedAt": "2026-09-17",
+  "branch": "t5/npc-authority",
+  "tasks": [
+    {
+      "id": "CODEX-NPC-001",
+      "status": "ready",
+      "priority": "high",
+      "eventId": "EVT_21_PRS_001",
+      "files": [
+        "src/catalog/npc-knowledge-rules.ts",
+        "src/content/events/20_23/canonical-t55-b.ts"
+      ],
+      "dependenciesSatisfied": [
+        "resolveCurrentClubInstitutionalNpc",
+        "targetSlots.currentClubInstitutional",
+        "historical NPC knowledge freeze"
+      ],
+      "requiredApi": [
+        "captureNpcKnowledgeTargetContext",
+        "resolveNpcKnowledgeTargets"
+      ],
+      "doNotTouch": [
+        "contentIdentity unless EVENTS actually change",
+        "historical backfill baseline",
+        "npcRefs semantics"
+      ],
+      "acceptanceTests": [
+        "CLUB_CORRECT can target currentClubInstitutional",
+        "UDV 20_23 resolves NPC_DIR_02 only while active and still at UDV",
+        "non-UDV club writes no nominal director knowledge",
+        "professional.institutionalTrust still changes normally",
+        "0 RNG and target capture is read-only"
+      ],
+      "notes": "Add nominal knowledge only for choices/outcomes where the player or scene actually informs the club. Do not turn every institutionalTrust effect into NPC knowledge."
+    },
+    {
+      "id": "CODEX-NPC-002",
+      "status": "ready",
+      "priority": "high",
+      "eventId": "EVT_22_CON_001",
+      "files": [
+        "src/catalog/npc-knowledge-rules.ts",
+        "src/content/events/20_23/canonical-t55-b.ts"
+      ],
+      "dependenciesSatisfied": [
+        "resolveCurrentClubInstitutionalNpc",
+        "targetSlots.currentClubInstitutional"
+      ],
+      "requiredApi": [
+        "captureNpcKnowledgeTargetContext",
+        "resolveNpcKnowledgeTargets"
+      ],
+      "doNotTouch": [
+        "CareerOffer authority",
+        "contract terms",
+        "npcRefs semantics"
+      ],
+      "acceptanceTests": [
+        "OPEN_RENEWAL_NOW and NO_RENEWAL_FOR_NOW may create club knowledge because they communicate a stance",
+        "WAIT_SUMMER does not grant nominal knowledge merely because institutionalTrust changes",
+        "uncertified club returns no NPC target",
+        "no club switch leakage"
+      ],
+      "notes": "Review each choice semantically; target only communication to the institution, not private strategy."
+    },
+    {
+      "id": "CODEX-NPC-003",
+      "status": "ready",
+      "priority": "high",
+      "eventId": "EVT_22_CON_002",
+      "files": [
+        "src/catalog/npc-knowledge-rules.ts",
+        "src/content/events/20_23/canonical-t55-b.ts"
+      ],
+      "dependenciesSatisfied": [
+        "resolveCurrentClubInstitutionalNpc",
+        "targetSlots.currentClubInstitutional"
+      ],
+      "requiredApi": [
+        "captureNpcKnowledgeTargetContext",
+        "resolveNpcKnowledgeTargets"
+      ],
+      "doNotTouch": [
+        "offer execution",
+        "contract execution",
+        "market provenance"
+      ],
+      "acceptanceTests": [
+        "only choices actually communicated to the club write nominal institutional knowledge",
+        "RUN_DOWN alone is not assumed communicated unless text/rule makes that explicit",
+        "non-UDV club produces no nominal director target",
+        "0 RNG"
+      ],
+      "notes": "Keep abstract institutional consequences separate from personal knowledge."
+    },
+    {
+      "id": "CODEX-NPC-004",
+      "status": "ready",
+      "priority": "critical",
+      "eventId": "EVT_23_LOCK_001",
+      "files": [
+        "src/content/events/23_26/t511-lock-principal-event.ts",
+        "scripts/test-t51-t511-23-26.mjs"
+      ],
+      "dependenciesSatisfied": [
+        "choice.eligibility shared contract",
+        "facts.lockerCaptainAffinity authoritative synthetic fact",
+        "resolveLockerSlot fail-closed"
+      ],
+      "requiredApi": [
+        "facts.lockerCaptainAffinity"
+      ],
+      "doNotTouch": [
+        "options unrelated to captain",
+        "LOCKER_LEADERSHIP_ASSIGNMENTS",
+        "npcRefs semantics",
+        "RNG"
+      ],
+      "acceptanceTests": [
+        "captain warning choice uses eligibility exists on facts.lockerCaptainAffinity",
+        "choice is hidden when captain slot is null",
+        "other choices remain selectable",
+        "captain knowledge is written only when target exists",
+        "UDV captain cannot leak to another club"
+      ],
+      "notes": "Apply on the owner branch for PR #122, not by copying its whole content into t5/npc-authority."
+    },
+    {
+      "id": "CODEX-NPC-005",
+      "status": "implemented",
+      "priority": "high",
+      "eventId": "EVT_21_CAP_001",
+      "files": [
+        "src/simulation/locker-leadership.ts",
+        "src/narrative/npc-knowledge-targets.ts"
+      ],
+      "dependenciesSatisfied": [
+        "20_23 captain deliberately remains uncertified"
+      ],
+      "requiredApi": [
+        "resolveLockerSlot"
+      ],
+      "doNotTouch": [
+        "do not assign NPC_PLR_10 or NPC_PLR_11 as captain without new canonical evidence"
+      ],
+      "acceptanceTests": [
+        "scene may narrate generic captain",
+        "captain target resolves null in 20_23",
+        "no nominal captain memory is written"
+      ],
+      "notes": "Route B selected: generic/non-persistent captain. No content patch is needed merely to force a name."
+    },
+    {
+      "id": "CODEX-NPC-006",
+      "status": "blocked",
+      "priority": "critical",
+      "eventId": "EVT_20_BRUNO_001",
+      "files": [
+        "src/content/events/20_23",
+        "src/catalog/npc-knowledge-rules.ts"
+      ],
+      "dependenciesSatisfied": [
+        "resolveActiveAgent",
+        "targetSlots.activeAgent"
+      ],
+      "requiredApi": [
+        "resolveActiveAgent"
+      ],
+      "doNotTouch": [
+        "do not infer active agent from EVT_18_AGT_001 contact choices",
+        "do not infer from SEED_FIRST_AGENT or AGENT_ACTIVE"
+      ],
+      "acceptanceTests": [
+        "requires a prior canonical hiring/switch action that certifies activeAgentNpcId"
+      ],
+      "notes": "Runtime authority exists; canonical provenance writer is still missing. Same blocker class applies to EVT_20_AGT_001, EVT_21_SOC_001 and EVT_21_AGT_001."
+    },
+    {
+      "id": "CODEX-NPC-007",
+      "status": "needs_owner_decision",
+      "priority": "critical",
+      "eventId": null,
+      "files": [
+        "src/content/events/18_20",
+        "src/content/events/20_23",
+        "src/simulation/npc-authority.ts"
+      ],
+      "dependenciesSatisfied": [
+        "certifyActiveAgentInPlace",
+        "clearActiveAgentInPlace"
+      ],
+      "requiredApi": [
+        "certifyActiveAgentInPlace",
+        "clearActiveAgentInPlace"
+      ],
+      "doNotTouch": [
+        "historical meaning of EVT_18_AGT_001",
+        "SEED_FIRST_AGENT origin",
+        "RNG"
+      ],
+      "acceptanceTests": [
+        "owner identifies an existing or new canonical action that truly hires one named agent",
+        "switch and termination are explicit",
+        "old saves without authority remain null"
+      ],
+      "notes": "This decision is the remaining content-level dependency before active-agent blocked scenes can become ready."
+    }
+  ]
+}
