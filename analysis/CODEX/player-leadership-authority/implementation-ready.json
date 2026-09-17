@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 2,
+  "baseCommit": "c41e7de20daf3bd672ae54646428e921761008c8",
+  "issue": 148,
+  "contentWriterIssue": 152,
+  "authorityBranch": "t5/player-leadership-authority",
+  "authorityStore": "world.playerClubLeadershipAuthority",
+  "tasks": [
+    {
+      "id": "CODEX-LEAD-001",
+      "status": "ready_on_23_30_owner_branch",
+      "eventId": "EVT_25_CAP_001",
+      "sourceBlock": "B743",
+      "action": "wire_choice_A",
+      "writer": "certifyPlayerClubLeadershipInPlace(state, 'captain_group', 'EVT_25_CAP_001', 'A')",
+      "notes": "Formal captaincy-group membership only; must not be promoted to main captain."
+    },
+    {
+      "id": "CODEX-LEAD-002",
+      "status": "ready_on_23_30_owner_branch",
+      "eventId": "EVT_25_CAP_001",
+      "sourceBlock": "B743",
+      "action": "wire_choice_C",
+      "writer": "certifyPlayerClubLeadershipInPlace(state, 'secondary_captain', 'EVT_25_CAP_001', 'C')",
+      "notes": "Explicit secondary-captain certification."
+    },
+    {
+      "id": "CODEX-LEAD-003",
+      "status": "no_authority_write",
+      "eventId": "EVT_25_CAP_001",
+      "sourceBlock": "B743",
+      "choices": ["B"],
+      "notes": "Rejection does not create leadership authority. Do not infer from seeds written by the generic factory."
+    },
+    {
+      "id": "CODEX-LEAD-004",
+      "status": "canonical_gap",
+      "eventId": "EVT_25_CAP_001",
+      "sourceBlock": "B743",
+      "choices": ["D"],
+      "notes": "Locker-room vote outcome is unresolved. Leave authority absent until a canonical resolved vote result exists."
+    },
+    {
+      "id": "CODEX-LEAD-005",
+      "status": "ready_after_authority_integration",
+      "eventId": "EVT_30_CAP_001",
+      "sourceBlock": "B1083",
+      "action": "preserve_or_trigger_without_inference",
+      "requiredApis": ["resolveCurrentPlayerClubLeadership", "listCertifiedPlayerClubLeadership"],
+      "notes": "Canon trigger is prior captaincy OR high locker weight. Locker-weight route must not fabricate prior captaincy. Younger teammate is generic/non-persistent; no named successor certification."
+    },
+    {
+      "id": "CODEX-LEAD-006",
+      "status": "ready_consumer_but_unreachable_without_main_captain_writer",
+      "eventId": "EVT_33_CAP_001",
+      "sourceBlock": "B1198",
+      "action": "gate_on_explicit_current_main_captain",
+      "requiredApis": ["resolveCurrentPlayerClubLeadership"],
+      "notes": "Requires current role 'captain' for the captaincy branch. Canon says 'otro compañero' / candidate, not a named NPC, so use a generic successor actor. Do not make next-season transition effective before the canonical outcome says it is."
+    },
+    {
+      "id": "CODEX-LEAD-007",
+      "status": "canonical_gap",
+      "eventId": null,
+      "action": "main_club_captain_writer",
+      "notes": "No audited principal action explicitly upgrades the protagonist to main club captain. EVT_25 only proves group/secondary roles; EVT_32_HOME only offers probable captaincy; national captaincy is a separate domain."
+    },
+    {
+      "id": "CODEX-LEAD-008",
+      "status": "resolved_generic_actor",
+      "eventId": "EVT_30_CAP_001;EVT_33_CAP_001",
+      "action": "successor_identity",
+      "notes": "Current canon does not name the younger/candidate successor. Use a generic non-persistent actor. Do not call the named-successor writer unless future source evidence explicitly identifies an NPC."
+    },
+    {
+      "id": "CODEX-LEAD-009",
+      "status": "no_authority_write",
+      "eventId": "EVT_32_HOME_001",
+      "sourceBlock": "B1164",
+      "action": "probable_captaincy_offer",
+      "notes": "The offer says capitanía probable. Returning/accepting the project does not certify role 'captain'. A later explicit appointment is required."
+    },
+    {
+      "id": "CODEX-LEAD-010",
+      "status": "separate_authority_domain",
+      "eventId": "EVT_27_NAT_001",
+      "sourceBlock": "B941",
+      "action": "national_team_captaincy",
+      "notes": "National-team captaincy must not write or satisfy club leadership authority."
+    }
+  ],
+  "forbiddenInference": [
+    "professional.lockerPower",
+    "flags.CAPTAINCY_WINDOW",
+    "SEED_CAPTAINCY_STYLE",
+    "SEED_FIRST_CAPTAIN_ROOM",
+    "SEED_CAPTAIN_HANDOVER",
+    "SEED_HOME_CAPTAIN_OFFER",
+    "relationships",
+    "reputation",
+    "age",
+    "npcRefs",
+    "careerStateTags",
+    "national_team_captaincy"
+  ]
+}
