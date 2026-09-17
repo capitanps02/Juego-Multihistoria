@@ -6,6 +6,7 @@ on:
       - 'src/catalog/seed-34plus.ts'
       - 'src/catalog/seeds.ts'
       - 'src/narrative/resolver.ts'
+      - 'analysis/T5.2/seed-closure-classifications.json'
       - 'scripts/test-t52-34plus-canonical-catalog.mjs'
       - '.github/workflows/t52-34plus-seed-catalog.yml'
   push:
@@ -14,6 +15,7 @@ on:
       - 'src/catalog/seed-34plus.ts'
       - 'src/catalog/seeds.ts'
       - 'src/narrative/resolver.ts'
+      - 'analysis/T5.2/seed-closure-classifications.json'
       - 'scripts/test-t52-34plus-canonical-catalog.mjs'
       - '.github/workflows/t52-34plus-seed-catalog.yml'
 
@@ -29,3 +31,4 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: node --test scripts/test-t52-34plus-canonical-catalog.mjs
+      - run: npm run test:t52
