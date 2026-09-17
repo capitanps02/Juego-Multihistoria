@@ -1,286 +1,147 @@
 # T5.36 / T5.37 — Retirada, cierre y epílogos
 
-Rama propietaria: `t5/retirement-epilogues`
+Owner branch: `t5/retirement-epilogues`  
+PR: #118
 
-Base al iniciar el workstream: `main@6866ed7710bf317e8633b67a78d477a5be952349`.
+This workstream owns only the terminal layer. Ordinary 34+ veteran career belongs to PR #15 / `t51/canon-34plus`. Never merge automatically and never finalize terminal lineage before the preceding active generation is integrated and frozen.
 
-> Este workstream no es propietario de la carrera veterana ordinaria 34+. Su frontera empieza cuando existe una decisión válida de cierre o un contexto terminal. La integración final de `contentIdentity` queda bloqueada hasta recibir la generación 34+ activa real del Agente 13.
+## State machine
 
-## T5.36 — máquina de retirada
+Allowed:
 
-Máquina permitida:
+`playing -> decided -> announced -> closed`
 
-```text
-playing -> decided -> announced -> closed
-              |
-              +------> playing   (solo reconsideración explícita pre-anuncio)
-```
+and only explicit pre-announcement reconsideration:
 
-Transiciones prohibidas:
+`decided -> playing`
 
-```text
-announced -> playing
-closed    -> playing
-playing   -> announced
-playing   -> closed   (salvo bridge legacy explícito 30–34 ya existente)
-```
+Ordinary `announced -> playing`, `closed -> playing`, `playing -> announced` and `playing -> closed` are invalid.
 
-### Autoridad por estado
+The only direct compatibility bridge retained is `EARLY_RETIRED_30_34`. The current 30–34 `EVT_33_RET_001` choice A semantically contains decision + announcement + end-of-season closure intent but persists only that legacy flag and `world.retirementReason="voluntary_30_34"`. Keep this bridge narrow until 30–34 writes explicit phases and a migration path.
 
-| Estado | Quién/qué puede producirlo | Evidencia mínima |
-| --- | --- | --- |
-| `playing` | estado normal; o escena explícita de reconsideración | `decided`, ventana pre-anuncio y decisión `RETURN` |
-| `decided` | elección del protagonista en una escena terminal | choice que escribe `retirement.status=decided` |
-| `announced` | `EVT_RET_ANNOUNCE_001` | choice pública explícita; nunca timer |
-| `closed` | cierre narrativo/administrativo desde `announced` | anuncio previo + tipo de cierre factual |
+## Implemented terminal rules
 
-`closeCareer()` no puede usar edad, ausencia de oferta o RNG como sustitutos de una decisión. El único bridge directo conservado es compatibilidad con el flag histórico `EARLY_RETIRED_30_34`, que ya representaba una retirada ejecutada por el bloque anterior.
+- age, injury, contract expiry and zero offers are context, never automatic retirement;
+- explicit player intent creates `decided`;
+- public announcement is separate from decision and closure;
+- announced players remain active until factual/administrative terminal closure;
+- `closeCareer()` is idempotent and consumes 0 RNG;
+- closed saves remain terminal after load;
+- no retirement event manufactures fixtures, appearances, minutes, goals, assists, results or wins;
+- formal offer truth comes only from `src/simulation/offers.ts`;
+- public announcement knowledge is already wired through T5.3 live NPC authority;
+- epilogue family selection and final prose are deterministic and evidence-gated;
+- CareerSummary is a read-only factual projection and leaves unsupported facts null;
+- terminal closure does not mass-resolve seeds.
 
-## Reconsideración
+## RET-007 — fixture-aware closure implemented
 
-`decided -> playing` exige simultáneamente:
+PR #118 now consumes `SportContext` season authority:
 
-- estado `decided`;
-- `RECONSIDERATION_WINDOW=true`;
-- razón narrativa persistida (por ejemplo anuncio pospuesto);
-- decisión explícita del jugador.
+- if `availability.remainingOfficialMatches === "known"` and the value is `> 0`, closure is blocked;
+- if that authority is known and the value reaches `0`, closure may proceed from `announced`;
+- if the authority is unavailable, the previous timeout remains only as a compatibility fallback.
 
-Una oferta, RNG o scheduler no abren por sí mismos la transición.
+No age/month/form proxy replaces official-match authority.
 
-`CEVT_RET_RECONSIDER` conserva su ID físico por compatibilidad de catálogo, pero su semántica nueva es **pre-anuncio**. La definición legacy que reaccionaba después del anuncio es una escena distinta a efectos de migración.
+## Last-match factual boundary — RET-005
 
-## Anuncio y conocimiento
+At announcement, retirement records the authoritative cumulative `careerAppearances` baseline. During `announced`, a later increase may set `LAST_MATCH_PLAYED=true`.
 
-`EVT_RET_ANNOUNCE_001` distingue:
+That proves only that at least one later appearance happened. It does not prove the identity of the player's final fixture.
 
-- decisión privada todavía no anunciada;
-- anuncio público persistente (`RETIREMENT_PUBLIC`, `RETIREMENT_WAS_ANNOUNCED`);
-- posibilidad de `WAIT`, que mantiene `decided` y abre una ventana explícita de reconsideración.
+`world.retirementLastAppearanceDate` is currently the observation/week date, not an authoritative match timestamp.
 
-### Handoff T5.3
+PR #156 / `t5/authoritative-match-model` is the producer candidate for richer fixture/match history. Its latest inspected Repository Integrity run was cancelled while the determinism step was still running, so it cannot yet be treated as a certified base. RET-005 additionally needs a query for the player's last actual appearance; `previousOfficialMatch()` is not equivalent if the player did not appear.
 
-No se modifica aquí la arquitectura global de conocimiento NPC.
+Until that exists, opponent, competition, starter/bench, exact minutes, result, goals and assists remain unavailable.
 
-El coordinador/T5.3 debe conectar el anuncio público con el registry dinámico de conocimiento del `main` actual:
+## Market authority
 
-1. decisiones `decided` y `WAIT` permanecen privadas salvo comunicación explícita;
-2. choices públicas de `EVT_RET_ANNOUNCE_001` deben usar `source: public` para NPC con acceso al canal público;
-3. `npcRefs` nunca equivale a conocimiento;
-4. el cierre factual puede conocerse por vía pública, pero no debe reescribir cuándo supieron la decisión privada.
+Use the formal offer APIs from `src/simulation/offers.ts`.
 
-## Mercado y familia
+- no synthetic veteran offers;
+- no role/salary/duration/destination fabrication;
+- zero offers may create a reflection context, not retirement;
+- an offer after announcement must be a real persisted CareerOffer;
+- offer response cannot reopen a public announcement.
 
-### Mercado agotado
+## NPC knowledge
 
-`lateCareerPreseason()` puede crear:
+Public `EVT_RET_ANNOUNCE_001` choices publish only through live authority slots:
 
-- `NO_MARKET_END_CONTEXT`;
-- `NO_MARKET_DECISION_PENDING`.
+- `captain`;
+- `star`;
+- `activeAgent`;
+- `currentClubInstitutional`.
 
-Nunca cambia el estado de retirada.
+Unresolved slots fail closed. `WAIT` remains private. Do not rewrite historical NPC knowledge.
 
-`EVT_38_MKT_001` ofrece concesiones, espera, contacto directo o retirada. Solo la elección `RETIRE` produce `decided` y deja `NO_MARKET_RETIREMENT_CHOSEN` como evidencia.
+## Epilogues
 
-### Familia
+Epilogue selection is deterministic and requires factual support. Important hard rules include:
 
-`EVT_RET_HOME_001` / alias canónico `EVT_RET_FAM_001` permite hablar de última temporada, retirarse, seguir sin fecha o esperar ofertas. La familia influye; no ejecuta la retirada.
+- one-club vs journeyman conflict;
+- one-club vs home-prodigal conflict;
+- early-voluntary vs too-long conflict;
+- market-silence/body-closed-door vs storybook conflict;
+- retire-on-high vs unfinished conflict;
+- storybook requires factual appearance plus factual last-goal evidence; legacy synthetic flags are insufficient.
 
-## Último partido
+Rendering may use only facts supported by state/history. No free RNG is consumed during epilogue selection/render.
 
-Canon P12 / `EVT_RET_LASTMATCH_001`:
+## Seeds
 
-- pedir jugar si hay alta;
-- aceptar decisión técnica;
-- pedir minutos condicionados al marcador;
-- proteger el cuerpo.
+T5.36/T5.37 do not mass-close seeds. Owner-backed closure classifications are explicit evidence, not inferred from naming or terminal state.
 
-El ID legacy `EVT_RET_LAST_001` se conserva como alias del ID canónico, pero ninguna choice escribe `LAST_MATCH_PLAYED`.
+PR #191 supplies the dedicated canonical 34+ seed catalog and has been independently certified by focused CI plus Repository Integrity on its inspected head. It does not substitute for completion of ordinary 34+ content.
 
-### Fuente factual
+## Content identity / migration lineage — RET-011
 
-El simulador de fútbol ya incrementa `sport.appearances` cuando realmente se produce una aparición. Al anunciarse la retirada se captura un baseline. Mientras el estado es `announced`, T5.36 solo observa el delta:
+The repository already has multi-hop migration-path infrastructure. The remaining blocker is generation ordering.
 
-```text
-sport.appearances > retirementObservedAppearances
-```
+Required lineage:
 
-Solo entonces se registra:
+`... -> 30–34 -> active ordinary 34+ -> retirement/epilogue`
 
-- `LAST_MATCH_PLAYED=true`;
-- `world.retirementLastAppearanceDate`.
+Do not register a direct shortcut from a pre-34+ generation to retirement. Do not freeze a provisional terminal identity while PR #15 ordinary 34+ remains incomplete/unfrozen.
 
-El workstream no inventa minutos, titularidad, resultado o ceremonia.
+Only after the immediate predecessor is integrated and frozen may coordination:
 
-### Último gol
+1. calculate the terminal target `contentIdentity`;
+2. freeze the target definition;
+3. register exactly the adjacent predecessor -> terminal edge;
+4. rerun pending/history/save/migration/determinism gates.
 
-El motor actual no simula goles individuales con un hecho persistente suficiente. Por tanto:
+## Current Codex state
 
-- `STORYBOOK_LAST_GOAL` legacy NO es evidencia;
-- ningún evento terminal crea `LAST_MATCH_GOAL_FACT`;
-- `CEVT_RET_STORYBOOK_LAST_GOAL` solo es elegible si un futuro subsistema de partido ya ha escrito `LAST_MATCH_GOAL_FACT=true` junto con una aparición real.
+Authoritative queue: `analysis/CODEX/retirement/implementation-ready.json`.
 
-## Cierre sin partido
+- **9 implemented**
+- **0 ready**
+- **2 blocked**
 
-`CEVT_RET_NO_LAST_MATCH` permite cerrar desde `announced` cuando no existe una aparición posterior al anuncio.
+Blocked only:
+- RET-005 — factual full LastMatchFact;
+- RET-011 — terminal freeze + adjacent migration edge.
 
-El cierre administrativo del runtime usa:
+RET-007 is implemented; do not recreate it.
 
-- `last_match_played` si se observó una aparición real;
-- `no_last_match` si no se observó.
+## QA
 
-Cerrar no modifica retrospectivamente `sport.appearances` ni crea eventos deportivos.
+Minimum terminal regression set:
 
-## Retirada internacional
+`node --test scripts/test-t536-t537-retirement.mjs scripts/test-t536-career-summary.mjs scripts/test-t536-market-authority.mjs scripts/test-t536-sport-authority.mjs scripts/test-t536-npc-announcement.mjs scripts/test-t537-family-minimums.mjs scripts/test-t536-status-writer-inventory.mjs scripts/test-t537-epilogue-profiles.mjs`
 
-`NATIONAL_RETIRED` es independiente de `retirement.status`.
+Also run repository integrity/save/determinism gates on the exact integration HEAD. A failure before the known content freeze/lineage sentinel is a real regression. Never weaken the sentinel.
 
-El jugador puede cerrar selección y seguir en `playing` a nivel de club. T5.37 lo refleja como una etapa separada cuando genera texto factual.
+## Integration status
 
-# T5.37 — 20 familias de epílogo
-
-La selección es determinista y se hace en este orden:
-
-1. requisito factual positivo;
-2. requisito negativo/hard conflict;
-3. prioridad de saliencia;
-4. fallback factual si no domina un arquetipo fuerte.
-
-El número de familias ya no depende del RNG. Se conserva el contrato histórico 2–5 para no romper saves/gates actuales.
-
-| Familia | Evidencia positiva mínima | Bloqueo principal |
-| --- | --- | --- |
-| `END_WORLD_LEGEND` | victoria/título + mito/trophy/legacy altos | sin victoria/título |
-| `END_ONE_CLUB_MYTH` | un club + permanencia larga/icon + legado | >1 club |
-| `END_HOME_PRODIGAL` | `HOME_RETURN_30`, UDV final y club exterior previo | carrera de un club |
-| `END_GREAT_PRO` | carrera cerrada y trayectoria/historial prolongado | carrera abierta |
-| `END_TACTICAL_SECOND_CAREER` | reinvención registrada | sin reinvención |
-| `END_JOURNEYMAN_VETERAN` | >=3 clubes o tag canónico | un club |
-| `END_MARKET_SILENCE` | `NO_MARKET_RETIREMENT_CHOSEN` | simple falta temporal de oferta |
-| `END_BODY_CLOSED_DOOR` | razón health + evidencia física | estabilidad física sin decisión médica |
-| `END_ELITE_SPECIALIST` | tag o especialista con contexto élite | sin contexto élite/especialista |
-| `END_NEW_MARKET_ICON` | ruta transatlántica/rich league | ruta inexistente |
-| `END_EARLY_VOLUNTARY` | decisión voluntaria temprana explícita | retirada tardía/forzada |
-| `END_TOO_LONG` | 41+ + rol/mercado/motivación bajos | edad sola |
-| `END_RETIRE_ON_HIGH` | elección explícita + victoria/título | ganar sin elegir retirarse |
-| `END_COMEBACK_FINAL` | comeback o reconsideración pre-anuncio | duda post-anuncio |
-| `END_POLARIZING_WINNER` | victoria/título + trophy + polarización | polarización sin éxito |
-| `END_WEALTH_OVER_GLORY` | ruta económica explícita | salario aislado |
-| `END_UNFINISHED_FEELING` | retire-low, no-last-match o ausencia objetiva de dimensión dominante | final factual alto/storybook |
-| `END_STORYBOOK_FAREWELL` | aparición real + `LAST_MATCH_GOAL_FACT` + cierre factual | cualquier flag legacy sintético |
-| `END_NATIONAL_CAPTAIN` | capitanía confirmada por flag/seed | caps sin capitanía |
-| `END_CONTRACT_KING` | tag canónico o contractPower/careerControl altos | contrato rico aislado |
-
-## Hard conflicts
-
-Como mínimo:
-
-- one-club × journeyman;
-- one-club × home-prodigal;
-- early-voluntary × too-long;
-- market-silence × storybook;
-- body-closed-door × storybook;
-- retire-on-high × unfinished;
-- storybook × unfinished.
-
-## Texto final
-
-`buildEpilogueText()` solo formula frases que puede probar con estado/historial:
-
-- edad y fecha de cierre;
-- clubes registrados;
-- retirada internacional y caps;
-- lesiones largas registradas;
-- razón factual de retirada;
-- aparición real posterior al anuncio o ausencia de ella;
-- gol final solo con `LAST_MATCH_GOAL_FACT`.
-
-El objeto persistido `epilogue` añade, sin romper schema 8:
-
-- `evidence`: evidencias por familia;
-- `finalText`: frases factuales finales.
-
-Los validadores actuales toleran campos adicionales y continúan validando los campos históricos requeridos.
-
-# Seeds — handoff T5.2/T5.4
-
-T5.36 no hace mass-resolve/mass-expire al cerrar una carrera.
-
-La terminación debe distinguir en el workstream propietario:
-
-- `resolved`;
-- `expired`;
-- terminalmente irrelevante;
-- abierta pero no accionable;
-- histórica ya consumida.
-
-T5.36 incluye una prueba que confirma que `closeCareer()` no modifica el array de seeds por defecto.
-
-# Saves
-
-QA cubre `playing`, `decided`, `announced`, `closed`.
-
-Cargar/serializar no debe:
-
-- consumir RNG;
-- anunciar;
-- cerrar;
-- programar escenas;
-- reescribir history.
-
-La migración schema 7 -> 8 sigue produciendo un estado `playing` salvo la compatibilidad legacy explícita ya existente para early retirement 30–34.
-
-# Content identity / migration lineage
-
-## Bloqueo actual
-
-A 2026-09-16 la rama `t51/canon-34plus-career` contiene `T5.29: canonicalize veteran career entry` (`3d726c3...`), pero solo añade `t529-career-events.ts` y aún no constituye una generación 34+ activa completa.
-
-Por tanto T5.36/T5.37 **NO registra todavía** una identidad final ni un edge de migración.
-
-Orden obligatorio:
-
-```text
-... -> 30–34 -> 34+ carrera activa del Agente 13 -> retirada/epílogo
-```
-
-No se permite `PRE -> retirada`.
-
-### IDs que requieren identidad semántica separada
-
-- `CEVT_RET_RECONSIDER`: legacy post-anuncio vs target pre-anuncio; `distinct_scene`/frozen definition.
-- `EVT_RET_LAST_001` / `EVT_RET_LASTMATCH_001`: alias físico no implica equivalencia con la vieja escena que fabricaba aparición.
-- `CEVT_RET_STORYBOOK_LAST_GOAL`: legacy sintético no equivale al target factual.
-- `CEVT_38_OFFER_AFTER_RETIREMENT_ANNOUNCED`: la nueva semántica no reabre el anuncio.
-
-Cuando el Agente 13 publique su source real, el coordinador debe:
-
-1. congelar esa source según T5.1;
-2. rebase/sincronizar este workstream;
-3. aplicar el terminal layer;
-4. calcular el nuevo `contentIdentity`;
-5. congelar la definición target;
-6. registrar exactamente un edge source→target;
-7. ejecutar gates de lineage y migración sin RNG.
-
-# QA local
-
-Después de compilar:
-
-```bash
-npm run build
-node --test scripts/test-t536-t537-retirement.mjs
-npm run qa:t5
-```
-
-La suite específica cubre las 18 pruebas exigidas por T5.36/T5.37 y un gate extra de no-mass-close de seeds.
-
-# Estado de integración
-
-- Runtime terminal: implementado en la rama.
-- Contenido terminal: implementado en la rama.
-- Epílogos factuales: implementados en la rama.
-- QA específico: implementado en la rama.
-- NPC public propagation: handoff a T5.3; no invadido.
-- Seed terminal classification: handoff a T5.2/T5.4; no invadido.
-- `contentIdentity` definitiva: bloqueada correctamente por dependencia del Agente 13.
-- Merge a `main`: no realizado.
+- terminal runtime: implemented on branch;
+- terminal content: implemented on branch;
+- RET-007: implemented and regression-covered;
+- NPC public propagation: implemented through shared authority;
+- deterministic factual epilogues: implemented;
+- RET-005: blocked on richer certified match/appearance authority;
+- RET-011: blocked on predecessor generation completion/freeze;
+- merge to `main`: not performed.

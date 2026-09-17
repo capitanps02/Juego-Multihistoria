@@ -1,73 +1,89 @@
 # Retirement / epilogues — Codex handoff
 
 Owner branch: `t5/retirement-epilogues`  
-PR: #118  
-Integration base: always verify latest `main` before work; this handoff was refreshed after re-grounding on `main@6d2239ae1f89be97a7c5cf117d456cff9218aade`.
+PR: #118
+
+This handoff was refreshed against `main@fa3c8bae524fef62e4eb9802e895df88588998c4`; always verify the latest base before work.
 
 ## Boundary
 
-This workstream owns the terminal process only. Ordinary active 34+ veteran career belongs to PR #15 / `t51/canon-34plus` and must land/freeze first.
+This workstream owns only the terminal process. Ordinary active 34+ veteran gameplay belongs to PR #15 / `t51/canon-34plus` and must land/freeze before terminal lineage is finalized.
 
-Current runtime state machine is:
+Runtime state machine:
 
 `playing -> decided -> announced -> closed`
 
-with only explicit pre-announcement `decided -> playing` reconsideration.
+Only explicit pre-announcement reconsideration may do `decided -> playing`.
 
-## What is implemented
-
-- age/no-market/injury are context, not automatic retirement;
-- explicit decision and explicit public announcement are separated;
-- announced state remains playable;
-- closed state is terminal and idempotent;
-- post-announcement offers do not silently reopen retirement;
-- no terminal event creates an appearance, fixture, goal, result or victory;
-- last-appearance evidence is currently derived only from an authoritative cumulative appearance increase after announcement;
-- `SportContext` is consumed directly and unavailable match facts remain unavailable;
-- public `EVT_RET_ANNOUNCE_001` choices publish knowledge only through T5.3 live authority slots (`captain`, `star`, `activeAgent`, `currentClubInstitutional`);
-- `WAIT` keeps retirement intent private and creates no public NPC knowledge;
-- epilogue families are deterministic and evidence-gated;
-- final save/load retains closed state and epilogue;
-- `buildCareerSummary()` exposes read-only terminal facts and leaves unsupported sporting facts as `null`;
-- T5.2 owner-backed seed-closure classifications are inherited from main and are never inferred automatically by retirement.
-
-## Codex status
+## Current status
 
 `implementation-ready.json` is authoritative:
 
-- **8 implemented**;
+- **9 implemented**;
 - **0 ready**;
-- **3 blocked**.
+- **2 blocked**.
 
-Do not reopen or duplicate implemented lots simply because an older handoff called them ready.
+Implemented terminal behavior includes explicit decision/announcement separation, fail-closed reconsideration, real-offer authority, live NPC announcement knowledge, deterministic epilogues, factual CareerSummary, save compatibility, idempotent closure, and RET-007 fixture-aware closure gating.
 
 Blocked only:
 
-1. `CODEX-RET-005` — full persisted `LastMatchFact`;
-2. `CODEX-RET-007` — fixture/season-end-aware closure boundary;
-3. `CODEX-RET-011` — final terminal contentIdentity freeze + adjacent migration edge.
+1. `CODEX-RET-005` — complete persisted `LastMatchFact`;
+2. `CODEX-RET-011` — final terminal contentIdentity freeze + adjacent migration edge.
 
-## Hard blockers
+## RET-007 is implemented
 
-1. **34+ canonical generation**: PR #15 / `t51/canon-34plus` still has a substantial ordinary-content backlog. Do not freeze/register terminal contentIdentity yet.
-2. **Fixture/match authority**: current `SportContext` deliberately leaves fixture/calendar/competition/squad/minutes/result facts unavailable. A complete `LastMatchFact` cannot be built from aggregate appearances.
-3. **Authoritative season-end boundary**: `remainingOfficialMatches`, `nextFixture` and related match-day facts are still unavailable, so closure cannot yet be truly fixture-aware.
-4. **Terminal/34+ seeds**: owner-backed lifecycle classifications remain owner decisions; historical/runtime topology is evidence, not implicit closure authority.
-5. **30–34 early retirement bridge**: the narrow historical compatibility path remains pending owner/coordinator semantic reconciliation before final lineage.
+The closure path now consumes `SportContext` season authority when it exists:
 
-## Validation evidence
+- known remaining official matches `> 0` => keep the announced career open;
+- known remaining official matches `=== 0` => terminal closure may proceed;
+- authority unavailable => retain the historical administrative timeout only as a compatibility fallback.
 
-The retirement suite now includes `scripts/test-t536-npc-announcement.mjs` in addition to state-machine, sport, market, summary, save and epilogue regressions.
+This is intentionally forward-compatible with the match-model producer. Do not reopen RET-007 as a new Codex task.
 
-The latest certified merge tree before this documentation refresh passed:
+## Sporting facts / RET-005
 
-- dedicated T5.36/T5.37 suite: **41/41**;
-- T5.3 suite: **55/55**;
-- T5.3 audit: `invalidKnowledgeRules=[]` and `passed=true`;
-- repository validation proceeds to the expected fail-closed contentIdentity sentinel only.
+`getSportContext(state).careerAppearances` is authoritative only as a cumulative aggregate. A post-announcement delta proves a later appearance occurred; it does not identify the final fixture.
 
-Documentation-only commits still require final exact-head/merge-tree CI before integration status is reported as current.
+`world.retirementLastAppearanceDate` is currently an observation/week date, not a fixture timestamp.
 
-## Codex rule
+PR #156 / `t5/authoritative-match-model` is the upstream producer candidate. Its latest inspected Repository Integrity run was cancelled while the determinism step was still running, therefore it is not yet a certified integration base. A complete RET-005 additionally requires a factual query for the player's last actual appearance; `previousOfficialMatch()` alone is insufficient when the player did not appear in that fixture.
 
-Read `implementation-ready.json`. Implement nothing locally for the three blocked tasks until their named upstream authority exists. Do not freeze contentIdentity, register a shortcut migration, weaken lineage sentinels, rewrite history/seeds, or merge PR #118 automatically.
+Unsupported opponent, competition, minutes, result, goals and assists remain null/omitted.
+
+## Market and NPC authority
+
+Formal offers come only from `src/simulation/offers.ts`; retirement does not synthesize market facts.
+
+Public retirement announcement already uses the live T5.3 knowledge authority slots (`captain`, `star`, `activeAgent`, `currentClubInstitutional`). `WAIT` remains private and unresolved slots fail closed.
+
+## 30–34 compatibility
+
+`EVT_33_RET_001` choice A has been semantically audited. Its text represents a decision to close at season end and an announcement, while the current 30–34 implementation persists only `EARLY_RETIRED_30_34` plus `world.retirementReason="voluntary_30_34"`.
+
+Therefore PR #118 retains one narrow compatibility bridge for that legacy flag. This is now a bounded compatibility contract, not an unresolved retirement blocker. Do not broaden it; the 30–34 owner should eventually persist explicit terminal phases and migration evidence.
+
+## Seeds
+
+Owner-backed seed closure classifications are evidence-driven. Retirement does not mass-close seeds or use retirement-named seeds as a second state machine.
+
+PR #191 provides the dedicated 34+ canonical seed catalog and has had both its focused workflow and Repository Integrity certified green on the same inspected head. That seed work does not remove the need to finish/freeze ordinary 34+ content before terminal lineage.
+
+## RET-011 lineage blocker
+
+Multi-hop migration infrastructure already exists on `main`. The remaining blocker is ordering/freeze, not graph capability.
+
+Required sequence:
+
+`... -> 30–34 -> active ordinary 34+ -> retirement/epilogue`
+
+Do not freeze the current terminal target or register a shortcut migration before the preceding active 34+ generation is integrated and frozen.
+
+## Validation rule
+
+The dedicated T5.36/T5.37 suite has passed on the runtime tree containing RET-007. Repository Integrity may stop at the intentional contentIdentity/freeze sentinel; any failure earlier than that is a real regression and must be fixed.
+
+After any documentation or runtime commit, certify the **exact HEAD** again. Never report an older green run as proof for a newer commit.
+
+## Integration rule
+
+Do not auto-merge PR #118. Before any eventual integration report exact branch HEAD, exact current `main`, ahead/behind, CI results, runtime/shared-authority changes, and task count **9 implemented / 0 ready / 2 blocked**.
