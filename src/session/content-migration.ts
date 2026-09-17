@@ -80,6 +80,7 @@ export const T51_PRS_CONTENT_IDENTITY = "88751a2107c035826162968991e3a1808b2f457
 export const T51_EUR_ELIGIBILITY_CONTENT_IDENTITY = "de9ef2f501c015705a28d54afd140259356f15566d424511e6dbf67769c9bd19";
 export const T51_PRS_CAUSAL_CONTENT_IDENTITY = "303527efcc42c17e502257c3d7c613facafa10c8ed113810b64a1d7ebc6d0bb1";
 export const T51_AGENT5_18_23_CONTENT_IDENTITY = "84871fae2bec92d74d1e607e0a48943e2e530a062d315a829cfe75eda9fe0886";
+export const T51_SPORT_CONTEXT_18_20_CONTENT_IDENTITY = "99ec70cdb10e20069e5281dac5b56e2146779cc462add1c47fc7d8ea6fa5ef28";
 
 /**
  * Explicit identity-bound edges. Successive canonical batches extend this as a
@@ -205,6 +206,17 @@ export const CONTENT_MIGRATION_ROUTES: readonly ContentMigrationRoute[] = [
       { kind: "distinct_scene", legacyEventId: "EVT_20_STATUS_001", canonicalEventId: "EVT_20_STATUS_001", clearCanonicalSeen: true, clearCanonicalCooldown: true },
       { kind: "distinct_scene", legacyEventId: "EVT_20_LOCK_001", canonicalEventId: "EVT_20_LOCK_001", clearCanonicalSeen: true, clearCanonicalCooldown: true },
       { kind: "distinct_scene", legacyEventId: "EVT_20_LOCK_002", canonicalEventId: "EVT_20_LOCK_002", clearCanonicalSeen: true, clearCanonicalCooldown: true }
+    ],
+    seedOriginMappings: []
+  },
+  {
+    sourceContentIdentity: T51_AGENT5_18_23_CONTENT_IDENTITY,
+    targetContentIdentity: T51_SPORT_CONTEXT_18_20_CONTENT_IDENTITY,
+    schedulerMappings: [
+      { kind: "same_scene", legacyEventId: "EVT_18_MATCH_001", canonicalEventId: "EVT_18_MATCH_001" },
+      { kind: "same_scene", legacyEventId: "EVT_18_PRS_001", canonicalEventId: "EVT_18_PRS_001" },
+      { kind: "same_scene", legacyEventId: "EVT_18_SOC_001", canonicalEventId: "EVT_18_SOC_001" },
+      { kind: "same_scene", legacyEventId: "EVT_18_END_001", canonicalEventId: "EVT_18_END_001" }
     ],
     seedOriginMappings: []
   }
