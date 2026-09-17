@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "scope": "30_34 boundary seed handoff to downstream veteran/retirement owners",
-  "sourceMainSha": "182d5e6abc4f7c98eeb95703a4bc6c3560a4bcde",
+  "sourceMainSha": "fa3c8bae524fef62e4eb9802e895df88588998c4",
   "consumerMatrixEvidence": {
     "path": "analysis/CODEX/seeds/SEED_CONSUMER_MATRIX.json",
     "snapshotBaseCommit": "cda24da1a688cc245695cd007c50d458c4e1e7d7",
