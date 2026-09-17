@@ -1,6 +1,7 @@
 # Market authority
 
-Audit base: `main@ebef17057156c7721fc4a041552c9cf1b3fdb6ba`.
+Runtime audit base: `main@ebef17057156c7721fc4a041552c9cf1b3fdb6ba`.  
+Coordination re-ground: `main@c2a0b3ab9f63ac335d334846ee730fa7c6d1e6b6`.
 
 ## 1. Vocabulary
 
@@ -66,8 +67,8 @@ It does **not** currently persist `offerType`, `expiresAt`, contractual squad ro
 | Change club/owner/registration/salary/duration/clause after signing | `applyTerms()` called by accepted `respondToOffer()` | Atomic within the contract authority. |
 | Withdrawal | **not modelled** | Do not simulate by mutating `market.pending` from narrative. |
 | Offer expiry | **not modelled** | No persisted `expiresAt`; pending offer freezes world advance. |
-| Contract expiry | `monthlyContractTick()` reaches 0; `contractEmploymentStatus()` exposes `expired_pending_resolution` | No authoritative free agency state yet. |
-| Free agency | **not modelled authoritatively** | Do not infer it merely from a seed or `monthsRemaining===0`. |
+| Contract expiry | `monthlyContractTick()` reaches 0; `contractEmploymentStatus()` exposes `expired_pending_resolution` | Existing route/classifier scaffolding is insufficient to establish real unattached employment. |
+| Free agency | **partially scaffolded, not authoritatively transitioned** | `professional.route` allows `free_agent`, but no production transition establishes full employment invariants. Do not infer it merely from a seed/tag or `monthsRemaining===0`. |
 
 ## 4. Offer-kind derivation
 
@@ -152,7 +153,17 @@ A return proposal changes registration/club back to parent and clears loan statu
 
 Issue #130 is confirmed. Current production semantics can leave a player at zero months while retaining club, owner, registration, salary and sporting activity for years.
 
-This workstream does **not** equate zero months to free agency because the current save/runtime model has no authoritative unattached employment representation. `contractEmploymentStatus(state)` therefore reports:
+The repository contains **partial free-agency scaffolding**, but not a complete employment transition:
+
+- `ProfessionalState.route` accepts `"free_agent"`;
+- save validation accepts that route value;
+- state classifiers read `p.route === "free_agent"` and/or emit labels such as `STATE26_FREE_AGENT`;
+- `STATE26_FREE_AGENT` itself can be emitted merely from `monthsRemaining <= 1 && marketHeat >= 35`, so it is a classifier tag, not proof that the employment state changed;
+- repository search found no production assignment that transitions the player into `professional.route = "free_agent"`;
+- `GameState.club`, `ProfessionalState.ownerClub` and `registrationClub` remain required strings, and no canonical unattached sentinel or ownership semantics are defined;
+- no authoritative rule defines salary, football availability, scheduling or re-signing while unattached.
+
+Therefore this workstream does **not** equate zero months, a `FREE_AGENT` tag/seed, or the dormant route token with actual free agency. `contractEmploymentStatus(state)` reports:
 
 - `active_contract` > 6 months;
 - `expiring` = 1..6 months;
@@ -161,15 +172,16 @@ This workstream does **not** equate zero months to free agency because the curre
 
 A real #130 fix must decide, together with save/calendar/football/content owners:
 
-- whether `club` may be null or needs an explicit unattached sentinel;
+- whether `club` may become null or whether an explicit, validated unattached sentinel exists;
 - what `ownerClub` / `registrationClub` mean while unattached;
+- whether `route="free_agent"` becomes the authoritative employment marker or remains descriptive;
 - salary semantics;
-- whether football appearances stop;
+- whether football appearances and club scheduling stop;
 - when/where free-agent offers materialise;
-- how historical saves at zero months migrate;
-- how `SEED_FIRST_FREE_AGENCY` reflects a real state rather than substituting for it.
+- how historical saves already at zero months migrate without inventing history;
+- how `SEED_FIRST_FREE_AGENCY` and classifier tags reflect a real transition rather than substituting for one.
 
-Until that contract is approved, no forced transfer, salary=0 hack or synthetic `FREE_AGENT` flag is authorised.
+Until that contract is approved, no forced transfer, salary=0 hack, synthetic `FREE_AGENT` flag or route-only patch is authorised.
 
 ## 10. Atomicity and side effects
 
@@ -233,6 +245,9 @@ Confirmed content patterns on audited main:
   - `EVT_18_SUM_001` writes `contract.monthsRemaining` from narrative outcomes.
 - `src/content/events/18_20/conditional-events.ts` contains direct development-club loan writes.
 - `src/content/events/18_20/principal-additions.ts` contains several direct development-club writes.
+- `src/content/events/23_26/principal-events.ts`
+  - `EVT_24_MKT_001` presents three concrete offer profiles while runtime persists only one pending formal offer;
+  - `EVT_24_JAN_001` changes `contract.salaryMonthly` directly despite presenting a concrete external offer.
 - `src/content/events/26_30/principal-events.ts`
   - `EVT_29_HOME_001/A` directly writes route, owner, registration and club to UDV.
 - `src/content/events/30_34/principal-events.ts`
@@ -248,4 +263,4 @@ Before implementing any market/contract choice, ask in this order:
 2. Does the player see exact signable terms or a concrete destination? If yes, require a real compatible `CareerOffer`.
 3. Does the choice sign/reject/counter/defer that offer? Use the offer bridge and `respondToOffer()`.
 4. Does it merely request that negotiations begin? Record intent/memory only; any eventual proposal must be materialised separately.
-5. Never use `marketHeat`, a seed or a boolean `hasOffers` as proof of a formal offer.
+5. Never use `marketHeat`, a seed, classifier tag, dormant `route="free_agent"` token or boolean `hasOffers` as proof of a formal offer or employment transition.
