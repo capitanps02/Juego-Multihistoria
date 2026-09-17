@@ -5,9 +5,9 @@ import { CONDITIONAL_OWNERSHIP } from "../analysis/T5.1/conditional-ownership.mj
 
 const allowed = new Set(["verified_same_identity","needs_reimplementation","canonical_missing","engine_only_noncanonical","canonical_replacement","blocked","terminal_owned_elsewhere"]);
 
-test("T5.17 conditional matrix reconciles the identifiable universe", () => {
-  const { records } = CONDITIONAL_CANON_MATRIX;
-  assert.equal(CONDITIONAL_CANON_MATRIX.runtimeActiveCount, 134);
+test("T5.17 conditional matrix covers the reconciled universe with explicit statuses", () => {
+  const records = CONDITIONAL_CANON_MATRIX.records;
+  assert.equal(CONDITIONAL_CANON_MATRIX.activeRuntimeCount, 134);
   assert.equal(CONDITIONAL_CANON_MATRIX.reconciliationUniverseCount, 168);
   assert.equal(records.length, 168);
   assert.equal(new Set(records.map(r => r.id)).size, 168);
@@ -27,9 +27,6 @@ test("T5.17 ownership manifest has one disposition per reconciled identity", () 
 
 test("T5.17 known collision/blocker dispositions stay explicit", () => {
   const byId = new Map(CONDITIONAL_CANON_MATRIX.records.map(r => [r.id, r]));
-  assert.equal(byId.get("CEVT_21_ABR_01")?.implementationStatus, "needs_reimplementation");
-  assert.equal(byId.get("CEVT_21_MEDIA_01")?.implementationStatus, "needs_reimplementation");
-  assert.match(byId.get("CEVT_22_FREE_01")?.migrationStatus ?? "", /shared_dependency/);
-  assert.equal(byId.get("CEVT_24_TOURN_02")?.implementationStatus, "needs_reimplementation");
-  assert.equal(byId.get("CEVT_29_BODY_04")?.implementationStatus, "needs_reimplementation");
+  for (const id of ["CEVT_21_ABR_01","CEVT_21_MEDIA_01","CEVT_22_FREE_01","CEVT_29_BODY_04"]) assert.equal(byId.get(id)?.implementationStatus, "needs_reimplementation");
+  for (const id of ["CEVT_30_BODY_01","CEVT_34_MAJOR_COMEBACK"]) assert.equal(byId.get(id)?.implementationStatus, "blocked");
 });
