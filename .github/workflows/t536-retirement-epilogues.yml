@@ -1,0 +1,35 @@
+name: T5.36 retirement and epilogues
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/simulation/late-career-engine.ts'
+      - 'src/epilogue/generator.ts'
+      - 'src/content/events/34_plus/**'
+      - 'scripts/test-t536-t537-retirement.mjs'
+      - '.github/workflows/t536-retirement-epilogues.yml'
+  workflow_dispatch:
+
+jobs:
+  retirement-terminal-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: T5.36 and T5.37 retirement gates
+        run: node --test scripts/test-t536-t537-retirement.mjs
