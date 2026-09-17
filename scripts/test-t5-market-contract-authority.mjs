@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createInitialState } from '../dist/content/initial-state.js';
+import { loadSave, serializeSave } from '../dist/save/save.js';
 import {
   careerOfferKind,
   careerTerms,
@@ -53,8 +54,22 @@ test('formal offer queries are detached, deterministic and distinguish renewal/t
   assert.equal(getEligibleLoanOffers(loan).length, 1);
 });
 
-test('loan start keeps parent club and accepted return is deterministic', () => {
-  const state = createInitialState(304);
+test('pending formal offer survives save/load without mutating its terms or RNG', () => {
+  const state = createInitialState(307);
+  proposeCareerChange(state, 'Propuesta de mercado', draft => {
+    draft.club = 'Destino FC';
+    draft.contract.salaryMonthly = 5000;
+  });
+  const before = structuredClone(state.market.pending);
+  const rng = rngSnapshot(state);
+  const restored = loadSave(serializeSave(state));
+  assert.deepEqual(restored.market.pending, before);
+  assert.deepEqual(restored.rngState, rng);
+  assert.equal(getEligibleTransferOffers(restored).length, 1);
+});
+
+test('loan start keeps parent club through save/load and accepted return is deterministic', () => {
+  let state = createInitialState(304);
   const rngBefore = rngSnapshot(state);
   proposeCareerChange(state, 'Cesión', draft => {
     draft.club = 'Development Club';
@@ -74,6 +89,13 @@ test('loan start keeps parent club and accepted return is deterministic', () => 
   assert.equal(state.flags.LOAN_ACTIVE, true);
   assert.deepEqual(state.rngState, rngBefore);
 
+  state = loadSave(serializeSave(state));
+  assert.equal(state.club, 'Development Club');
+  assert.equal(state.professional.ownerClub, 'UDV');
+  assert.equal(state.professional.registrationClub, 'Development Club');
+  assert.equal(state.world.ownerClub, 'UDV');
+  assert.equal(state.flags.LOAN_ACTIVE, true);
+
   const returnRng = rngSnapshot(state);
   proposeCareerChange(state, 'Retorno de cesión', draft => {
     draft.club = 'UDV';
@@ -90,6 +112,12 @@ test('loan start keeps parent club and accepted return is deterministic', () => 
   assert.equal(state.professional.registrationClub, 'UDV');
   assert.equal(state.flags.LOAN_ACTIVE, false);
   assert.deepEqual(state.rngState, returnRng);
+
+  const restoredReturn = loadSave(serializeSave(state));
+  assert.equal(restoredReturn.club, 'UDV');
+  assert.equal(restoredReturn.professional.ownerClub, 'UDV');
+  assert.equal(restoredReturn.professional.registrationClub, 'UDV');
+  assert.equal(restoredReturn.flags.LOAN_ACTIVE, false);
 });
 
 test('loan permanent conversion moves ownership only through accepted CareerOffer', () => {
@@ -118,9 +146,14 @@ test('loan permanent conversion moves ownership only through accepted CareerOffe
   assert.equal(state.professional.registrationClub, 'Loan Club');
   assert.equal(state.world.ownerClub, 'Loan Club');
   assert.equal(state.flags.LOAN_ACTIVE, false);
+
+  const restored = loadSave(serializeSave(state));
+  assert.equal(restored.professional.ownerClub, 'Loan Club');
+  assert.equal(restored.professional.registrationClub, 'Loan Club');
+  assert.equal(restored.flags.LOAN_ACTIVE, false);
 });
 
-test('zero-month contract is explicitly unresolved, not silently called free agency', () => {
+test('zero-month contract is explicitly unresolved; dormant free_agent route alone is not a transition authority', () => {
   const state = createInitialState(306);
   state.contract.monthsRemaining = 7;
   assert.equal(contractEmploymentStatus(state), 'active_contract');
@@ -130,4 +163,7 @@ test('zero-month contract is explicitly unresolved, not silently called free age
   assert.equal(contractEmploymentStatus(state), 'expired_pending_resolution');
   assert.equal(state.club, 'UDV');
   assert.equal(state.professional.ownerClub, 'UDV');
+  state.professional.route = 'free_agent';
+  assert.equal(contractEmploymentStatus(state), 'expired_pending_resolution');
+  assert.equal(state.club, 'UDV', 'route token alone must not silently detach the player from the current employer');
 });
