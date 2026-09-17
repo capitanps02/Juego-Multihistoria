@@ -43,6 +43,9 @@ jobs:
       - name: Run project validation
         run: npm test
 
+      - name: PlayCanvas integration regression
+        run: npm run test:playcanvas
+
       - name: Build T5 QA target
         run: npm run build
 

@@ -1,6 +1,7 @@
 import type { GameState } from "../core/types.js";
+import { type LeagueObjectiveStatus, type MatchCompetition, type OfficialMatchRecord, type ScheduledFixture, type SquadStatus } from "./match-model.js";
 export type SportFactAvailability = "known" | "unavailable";
-export type MatchContextStatus = "no_authoritative_match_model";
+export type MatchContextStatus = "authoritative" | "no_current_match";
 export interface SportContextAvailability {
     currentSeason: SportFactAvailability;
     sportingClub: SportFactAvailability;
@@ -13,6 +14,7 @@ export interface SportContextAvailability {
     hoursToNextFixture: SportFactAvailability;
     isMatchDay: SportFactAvailability;
     isTrainingWindow: SportFactAvailability;
+    nextTrainingDate: SportFactAvailability;
     remainingOfficialMatches: SportFactAvailability;
     remainingLeagueMatches: SportFactAvailability;
     seasonObjectiveStatus: SportFactAvailability;
@@ -32,56 +34,59 @@ export interface SportContext {
     ownerClub: string;
     leagueTier: number;
     careerAppearances: number;
-    /** Legacy coarse fact only. It is not a current-match or squad-call context. */
+    /** Legacy coarse fact retained for compatibility; prefer match-model milestones for new content. */
     officialDebutRecorded: boolean;
-    currentCompetition: null;
-    nextFixture: null;
-    previousFixture: null;
-    hoursToNextFixture: null;
-    isMatchDay: null;
-    isTrainingWindow: null;
-    remainingOfficialMatches: null;
-    remainingLeagueMatches: null;
-    seasonObjectiveStatus: null;
+    currentCompetition: MatchCompetition | null;
+    nextFixture: ScheduledFixture | null;
+    previousFixture: OfficialMatchRecord | null;
+    hoursToNextFixture: number | null;
+    isMatchDay: boolean;
+    isTrainingWindow: boolean;
+    nextTrainingDate: string | null;
+    remainingOfficialMatches: number;
+    remainingLeagueMatches: number;
+    seasonObjectiveStatus: LeagueObjectiveStatus | null;
     currentStanding: null;
-    currentSquadStatus: null;
-    firstMatchSquadCall: null;
-    firstBench: null;
-    firstAppearance: null;
-    firstStart: null;
-    firstFullMatch: null;
+    currentSquadStatus: SquadStatus | null;
+    firstMatchSquadCall: string | null;
+    firstBench: string | null;
+    firstAppearance: string | null;
+    firstStart: string | null;
+    firstFullMatch: string | null;
     firstGoal: null;
     availability: SportContextAvailability;
-    unavailableReason: "no_authoritative_fixture_match_or_squad_store";
+    unavailableReason: "standing_and_goal_model_not_implemented" | "historical_match_store_not_initialized" | null;
 }
 export interface CurrentMatchContext {
     status: MatchContextStatus;
-    competition: null;
-    opponent: null;
-    homeAway: null;
+    fixtureId: string | null;
+    competition: MatchCompetition | null;
+    opponent: string | null;
+    homeAway: "home" | "away" | null;
     dateTime: null;
     result: null;
-    playerCalledUp: null;
-    playerOnBench: null;
-    playerStarted: null;
-    playerAppeared: null;
-    minutes: null;
+    playerCalledUp: boolean | null;
+    playerOnBench: boolean | null;
+    playerStarted: boolean | null;
+    playerAppeared: boolean | null;
+    minutes: number | null;
     goals: null;
     assists: null;
     cards: null;
-    injury: null;
+    injury: boolean | null;
+    decisionMinute: number | null;
+    scoreAtDecision: {
+        home: number;
+        away: number;
+    } | null;
+    debutDecisionContext: boolean;
 }
 /**
- * Read-only sporting projection.
- *
- * Important: current main has no authoritative fixture, competition, match,
- * squad-call or per-match statistics store. Those facts therefore remain null.
- * This function intentionally refuses to infer them from age, roleScore, form,
- * reputation, coach trust, seasonDay, month or narrative flags.
+ * Read-only sporting projection over the simulation-owned weekly fixture model.
+ * Calendar facts are derived from the same seven-day cadence used by footballWeek;
+ * match/squad facts come only from persisted rows produced by that simulation.
+ * No RNG is consumed and narrative flags/roleScore are never used here to fabricate facts.
  */
 export declare function getSportContext(state: GameState): SportContext;
-/**
- * Current-match projection. Fail closed until the simulation owns an actual
- * match store; narrative code must not turn aggregate career state into a match.
- */
-export declare function getCurrentMatchContext(_state: GameState): CurrentMatchContext;
+/** Current-match projection over the persisted match row for today's football cycle. */
+export declare function getCurrentMatchContext(state: GameState): CurrentMatchContext;

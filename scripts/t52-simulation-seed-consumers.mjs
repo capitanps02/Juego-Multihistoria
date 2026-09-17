@@ -3,35 +3,35 @@
 // not change gameplay or authorize canonical wiring.
 export const SIMULATION_SEED_CONSUMERS = [
   {
-    file: 'src/simulation/world-simulator.ts',
+    file: 'src/simulation/world-simulator-core.ts',
     seedId: 'SEED_AGENT_OMISSION',
     ageWindow: [19, 19],
     surface: 'age19-agent-second-discrepancy',
     rationale: 'updateContextFlags only reads this seed inside state.age === 19.'
   },
   {
-    file: 'src/simulation/world-simulator.ts',
+    file: 'src/simulation/world-simulator-core.ts',
     seedId: 'SEED_FIRST_AGENT',
     ageWindow: [19, 19],
     surface: 'age19-foreign-development-interest',
     rationale: 'updateContextFlags only reads this seed inside state.age === 19.'
   },
   {
-    file: 'src/simulation/world-simulator.ts',
+    file: 'src/simulation/world-simulator-core.ts',
     seedId: 'SEED_CHRONIC_BODY',
     ageWindow: [30, null],
     surface: 'mature-weekly-injury-risk',
     rationale: 'footballWeek applies the chronic-body modifier when state.age >= 30 and maturity is initialized.'
   },
   {
-    file: 'src/simulation/world-simulator.ts',
+    file: 'src/simulation/world-simulator-core.ts',
     seedId: 'SEED_YOUNG_SUCCESSOR',
     ageWindow: [26, null],
     surface: 'peak-weekly-succession-pressure',
     rationale: 'professionalWeek reads the seed inside the state.age >= 26 peak-state branch.'
   },
   {
-    file: 'src/simulation/world-simulator.ts',
+    file: 'src/simulation/world-simulator-core.ts',
     seedId: 'SEED_POSITIONAL_REINVENTION',
     ageWindow: [26, null],
     surface: 'peak-weekly-role-adaptability',

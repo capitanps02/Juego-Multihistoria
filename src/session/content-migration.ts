@@ -92,6 +92,7 @@ export const T51_T55B_20_23_CONTENT_IDENTITY = "6e552f606ace400d7b535747fbf7ba60
 export const T51_T56A_20_23_CONTENT_IDENTITY = "ce2f30ea24934787fb116627c727e4adf6c7bd05f8b8e79f415a20643e3fd58f";
 export const T51_COMBINED_PRS20_23_CONTENT_IDENTITY = "691401e78db356a03bf7bf13c7d2a2931d66431cc3108f22a8664f37d3afbdb8";
 export const T51_COMBINED_18_23_CONTENT_IDENTITY = "84871fae2bec92d74d1e607e0a48943e2e530a062d315a829cfe75eda9fe0886";
+export const T51_SPORT_CONTEXT_18_20_CONTENT_IDENTITY = "99ec70cdb10e20069e5281dac5b56e2146779cc462add1c47fc7d8ea6fa5ef28";
 
 /**
  * Explicit identity-bound edges. Successive canonical batches extend this as a
@@ -268,6 +269,19 @@ export const CONTENT_MIGRATION_ROUTES: readonly ContentMigrationRoute[] = [
       { kind: "same_scene", legacyEventId: "CEVT_18_RELEG_01", canonicalEventId: "CEVT_18_RELEG_01" },
       { kind: "same_scene", legacyEventId: "CEVT_19_INJ_01", canonicalEventId: "CEVT_19_INJ_01" },
       { kind: "same_scene", legacyEventId: "CEVT_19_RETURN_01", canonicalEventId: "CEVT_19_RETURN_01" }
+    ],
+    seedOriginMappings: []
+  },
+  {
+    // The published Agent 5 generation gains simulation-owned sport context.
+    // These retain their IDs and preserve any completed historical scene.
+    sourceContentIdentity: T51_COMBINED_18_23_CONTENT_IDENTITY,
+    targetContentIdentity: T51_SPORT_CONTEXT_18_20_CONTENT_IDENTITY,
+    schedulerMappings: [
+      { kind: "same_scene", legacyEventId: "EVT_18_MATCH_001", canonicalEventId: "EVT_18_MATCH_001" },
+      { kind: "same_scene", legacyEventId: "EVT_18_PRS_001", canonicalEventId: "EVT_18_PRS_001" },
+      { kind: "same_scene", legacyEventId: "EVT_18_SOC_001", canonicalEventId: "EVT_18_SOC_001" },
+      { kind: "same_scene", legacyEventId: "EVT_18_END_001", canonicalEventId: "EVT_18_END_001" }
     ],
     seedOriginMappings: []
   }
