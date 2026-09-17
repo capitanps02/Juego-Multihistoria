@@ -2,7 +2,7 @@
   "generatedAt": "2026-09-17",
   "owner": "agent8",
   "branch": "t51/canon-34plus",
-  "baseMain": "a7a0bb575ac8824c3e52975e8861a97e29f94830",
+  "baseMain": "fa3c8bae524fef62e4eb9802e895df88588998c4",
   "scope": {
     "canonicalPrincipals": 50,
     "ordinaryAgent8": 43,
@@ -43,7 +43,7 @@
   "lineage": {
     "currentMainGeneration": "H",
     "currentMainGenerationScope": "certified_canonical_18_23_plus_shared_non_content_authorities",
-    "currentMainCommit": "a7a0bb575ac8824c3e52975e8861a97e29f94830",
+    "currentMainCommit": "fa3c8bae524fef62e4eb9802e895df88588998c4",
     "eventsChangedByLatestMainCommit": false,
     "immediate34PlusPredecessorAuthoritative": false,
     "rule": "wait_for_all_intervening_generations_and_register_only_adjacent_final_predecessor_to_34plus_edge"
@@ -66,8 +66,9 @@
       "pendingCareerOfferKindDeterministic": true,
       "renewalReasonAuthorityHardened": true,
       "directMarketMutationAuditIntegrated": true,
+      "exactEligibleOfferFactsNarrativeReadSurface": true,
       "veteran34PlusOfferGenerationAvailable": false,
-      "impact": "improves safe consumption of formal offers but does not create veteran renewals/transfers or resolve unsupported late-career terms; issue_176 remains active"
+      "impact": "Wave B can consume detached exact eligible formal-offer facts, but shared authority still does not create veteran 34+ renewals/transfers or resolve unsupported late-career terms; issue_176 remains active"
     },
     "nationalTeam": {
       "resolver": "resolveNationalTeamAuthority",
@@ -90,7 +91,7 @@
   "verifiedCurrentBlockers": {
     "contentLineage": "issue_59; generation_H_is_integrated_but_final_30_34_predecessor_is_not_yet_authoritative",
     "seedCatalog": "issue_180; 54_exact_34plus_seed_ids_not_applied_to_main_yet",
-    "veteranRenewalGeneration": "issue_176; formal offer lifecycle is hardened but authoritative veteran 34plus offer generation remains missing",
+    "veteranRenewalGeneration": "issue_176; exact eligible offer facts are readable but authoritative veteran 34plus offer generation remains missing",
     "contractRepresentability": "issue_176; canonical_bonus_exit_role_liaison_ambassador_terms_need_explicit_authority_decision",
     "freeAgency": "issue_130; expired_pending_resolution_is_not_unattached",
     "sport": "issue_124_plus_PR_156; fixture_usage_result_record_and_specific_medical_facts_fail_closed_when_absent",
