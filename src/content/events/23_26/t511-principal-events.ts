@@ -208,6 +208,7 @@ const EUROPE = ambiguousEvent({
   ],
   gates: [
     { path: "flags.CONTINENTAL_CONTEXT", op: "eq", value: true },
+    { path: "flags.CONTINENTAL_REGISTERED", op: "eq", value: false },
     { path: "professional.roleSecurity", op: "lte", value: 70 }
   ],
   timeWindow: { months: [8, 9] },
