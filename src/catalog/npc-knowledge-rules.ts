@@ -205,6 +205,22 @@ export const NPC_EVENT_KNOWLEDGE_RULES: NpcEventKnowledgeRule[] = [
     certainty: 100,
     memory: "strong",
     relationshipMemory: true
+  },
+  {
+    eventId: "EVT_RET_ANNOUNCE_001",
+    choiceIds: [
+      "LOCKER_CLUB_FAMILY_PUBLIC",
+      "FAMILY_CLUB_PUBLIC",
+      "DIRECT_VIDEO",
+      "TRUSTED_JOURNALIST",
+      "CLUB_ORGANIZES"
+    ],
+    npcIds: [],
+    targetSlots: ["captain", "star", "activeAgent", "currentClubInstitutional"],
+    source: "public",
+    certainty: 100,
+    memory: "strong",
+    relationshipMemory: false
   }
 ];
 
