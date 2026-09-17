@@ -2,8 +2,10 @@
 
 Original market authority integrated through PR #142 / merge commit `782b92c9a496293aeb33ad8b39f522a927374d6f`.
 
-Current follow-up base: `main@290cdb443c1bd075ff876d2c6c1c7b8264476a03`  
+Current follow-up integration base: `main@176317c5708995bb72fa40af9dd45dffc9838093`  
 Follow-up branch: `t5/market-contract-followup`
+
+`implementation-ready.json` retains generation-time provenance fields where useful; current `main`, this README and the PR base are the integration authority.
 
 ## Scope
 
