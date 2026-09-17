@@ -12,7 +12,7 @@ Act as a senior TypeScript engineer implementing market and contract scenes in:
    - `analysis/CODEX/market-contracts/MARKET_AUTHORITY.md`;
    - `analysis/CODEX/market-contracts/implementation-ready.json`;
    - `analysis/CODEX/market-contracts/CONTRACT_TRANSITION_MATRIX.json`.
-4. The audit base for this handoff was `main@ebef17057156c7721fc4a041552c9cf1b3fdb6ba`. Do not assume it is still current.
+4. Runtime audit base was `main@ebef17057156c7721fc4a041552c9cf1b3fdb6ba`; this workstream was re-grounded over coordination commit `c2a0b3ab9f63ac335d334846ee730fa7c6d1e6b6`. Do not assume either is still current.
 5. Re-ground your content branch on the current main before editing.
 6. Never auto-merge.
 
@@ -44,7 +44,7 @@ Do NOT:
 - use `marketHeat`, `BIG_CLUB_INTEREST`, `FOREIGN_DEV_INTEREST`, scouting, a coach call, a seed or `hasOffers` as proof of a formal offer;
 - add a second offer system;
 - fabricate three destinations when only one real `market.pending` offer exists;
-- turn `monthsRemaining===0` into free agency unless the shared employment/save contract has been approved;
+- turn `monthsRemaining===0`, a `STATE*_FREE_AGENT` classifier tag, a seed, or the dormant `professional.route="free_agent"` token into authoritative free agency unless the shared employment/save contract has been approved;
 - make retirement automatic when a contract expires or no offer exists;
 - alter `contentIdentity`, freeze fixtures or migration lineage outside the single adjacent generation allocated by coordination.
 
@@ -96,11 +96,11 @@ Current ready set at audit time:
 
 ### Age 18 (#123)
 
-`EVT_18_JAN_001` and `EVT_18_SUM_001` are not ready until a real age-18 offer-materialisation path exists. Do not replace that with `marketHeat` or a boolean flag.
+`EVT_18_JAN_001` and `EVT_18_SUM_001` are not ready until a real age-18 offer-materialisation path exists. Do not replace that with `marketHeat` or a boolean flag. Do not activate generation in isolation if the current content would consume the offer through the generic offer screen before the intended canonical scene; generation and bridge integration must be coordinated atomically in the allocated content generation.
 
 ### Contract expiry (#130)
 
-The zombie contract is confirmed, but there is no approved unattached/free-agent state. `contractEmploymentStatus()` deliberately returns `expired_pending_resolution` at zero months. Do not invent `FREE_AGENT` semantics.
+The zombie contract is confirmed. The type/save layer contains partial free-agency scaffolding (`professional.route` accepts `"free_agent"`, and classifiers reference it), but the production runtime does not establish that route together with authoritative club/owner/registration/salary/football semantics. `GameState.club` remains a required string. `contractEmploymentStatus()` therefore deliberately returns `expired_pending_resolution` at zero months, even if a caller merely flips the route token. Do not invent an unattached sentinel, route-only patch, forced transfer or fake `FREE_AGENT` flag.
 
 ### Multiple offers
 
@@ -123,7 +123,7 @@ Before changing any event definition:
 7. never regenerate or rewrite historical freezes;
 8. never rewrite old history/journal/provenance/seed origins.
 
-The issue #83 original F naming is stale. Its later comment moved the batch to a later generation. GitHub current state overrides both; re-read it before implementation.
+At coordination re-ground `main` had active catalog F (`de9ef2f501c015705a28d54afd140259356f15566d424511e6dbf67769c9bd19`). This can become stale at any moment. The issue #83 original generation naming is stale; GitHub current state overrides it. Re-read coordination immediately before implementation.
 
 ## Tests required for offer-bridge scenes
 
@@ -151,6 +151,15 @@ For `EVT_25_MKT_001` prove the inverse:
 - club/contract remain unchanged;
 - `market.pending` remains unchanged;
 - contact/intent memory may change only through canonical narrative effects/seeds.
+
+For loans additionally prove:
+
+- accepted loan start preserves parent `ownerClub`;
+- `registrationClub` is the loan club;
+- save/load preserves parent and registration clubs;
+- return is a formal deterministic transition;
+- permanent conversion changes ownership only after an accepted `CareerOffer`;
+- all response operations consume 0 RNG.
 
 ## Required gates
 
