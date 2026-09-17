@@ -48,12 +48,21 @@ function bridgeEvent(id = 'EVT_T51_OFFER_BRIDGE_PROVENANCE', choiceActions = {})
   };
 }
 
-async function advanceUntil(session, screen, limit = 8) {
+async function advanceUntil(session, screen, limit = 10) {
   for (let i = 0; i < limit; i++) {
-    if (session.getView().screen === screen) return session;
+    const view = session.getView();
+    if (view.screen === screen && view.age >= 20) return session;
+    // Provenance fixtures target the generic age-20 bridge. Real age-18 offers are
+    // valid product state and must be resolved through market authority before the
+    // fixture can continue to its intended age window.
+    if (view.screen === 'offer' && view.age < 20) {
+      await session.dispatch(command(session, 'offer', { offerId: view.offer.id, action: 'reject' }));
+      continue;
+    }
     await session.dispatch(command(session, 'continue', { maxDays: 366 }));
   }
   assert.equal(session.getView().screen, screen, `No apareció la pantalla ${screen}`);
+  assert.ok(session.getView().age >= 20, `La pantalla ${screen} apareció antes de la edad del fixture`);
   return session;
 }
 
