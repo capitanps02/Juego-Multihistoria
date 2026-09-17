@@ -1,7 +1,7 @@
 # Unblocked / blocked market content
 
 Original market authority integrated in PR #142 / `782b92c9a496293aeb33ad8b39f522a927374d6f`.  
-Follow-up base: `main@06762a0557c4e92b189e52151c71d6c1af831ee5`.
+Follow-up base: `main@290cdb443c1bd075ff876d2c6c1c7b8264476a03`.
 
 `Codex ready` here means that the technical market/contract dependency is sufficiently specified to implement the content without inventing a second authority. It does **not** grant permission to skip the active content-identity lineage; Codex must re-read the coordinator queue immediately before touching `EVENTS`.
 
