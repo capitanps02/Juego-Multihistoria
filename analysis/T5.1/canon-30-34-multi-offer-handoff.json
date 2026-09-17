@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "scope": "T5.1 canon 30-34 simultaneous CareerOffer authority handoff",
-  "sourceMainSha": "fa3c8bae524fef62e4eb9802e895df88588998c4",
+  "sourceMainSha": "5f4d14bca4d696cfafadb58b64034c7cd40cc147",
   "status": "shared_market_multi_offer_persistence_required",
   "consumers": [
     {
