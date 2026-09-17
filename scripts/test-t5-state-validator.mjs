@@ -51,7 +51,7 @@ test('QA state validator catches duplicate/invalid seed lifecycle states', () =>
   assert.equal(found.has('seed_state_unknown'), true);
 });
 
-test('QA state validator catches live employment and loan incoherence', () => {
+test('QA state validator catches live employment and loan ownership incoherence', () => {
   const state = createInitialState(57004);
   state.professional.registrationClub = 'OTHER';
   state.world.ownerClub = 'WRONG_OWNER';
@@ -61,8 +61,22 @@ test('QA state validator catches live employment and loan incoherence', () => {
   const found = codes(validateGameStateQa(state));
   assert.equal(found.has('live_registration_club_mismatch'), true);
   assert.equal(found.has('live_owner_club_mismatch'), true);
-  assert.equal(found.has('loan_active_without_loan_route'), true);
   assert.equal(found.has('loan_without_distinct_parent_club'), true);
+});
+
+test('QA state validator accepts an international loan with abroad route and distinct parent club', () => {
+  const state = createInitialState(57006);
+  state.club = 'Foreign QA';
+  state.professional.registrationClub = 'Foreign QA';
+  state.professional.ownerClub = 'UDV';
+  state.world.ownerClub = 'UDV';
+  state.professional.route = 'abroad';
+  state.flags.LOAN_ACTIVE = true;
+  state.flags.ABROAD_ROUTE = true;
+  const before = structuredClone(state);
+  const issues = validateGameStateQa(state);
+  assert.equal(codes(issues).has('loan_without_distinct_parent_club'), false, JSON.stringify(issues));
+  assert.deepEqual(state, before, 'international-loan validation mutated state');
 });
 
 test('QA state validator catches duplicate/pending-decided market identity', () => {
