@@ -167,6 +167,6 @@ test('countering a renewal does not masquerade as a direct rejection for reoffer
 });
 
 test('derived propensity is locked to the existing world renewal policy until deliberately changed', () => {
-  const source = fs.readFileSync('src/simulation/world-simulator.ts', 'utf8');
+  const source = fs.readFileSync('src/simulation/world-simulator-core.ts', 'utf8');
   assert.match(source, /0\.20 \+ p\.institutionalTrust \/ 220 \+ p\.roleSecurity \/ 280 - Math\.max\(0, p\.contractPower - 65\) \/ 230, 0\.16, 0\.68/);
 });

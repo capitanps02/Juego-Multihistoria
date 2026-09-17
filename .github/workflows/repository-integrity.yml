@@ -10,7 +10,7 @@ on:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -42,6 +42,9 @@ jobs:
 
       - name: Run project validation
         run: npm test
+
+      - name: PlayCanvas integration regression
+        run: npm run test:playcanvas
 
       - name: Build T5 QA target
         run: npm run build

@@ -104,7 +104,7 @@ test('role expectation/7 los facts están disponibles a Condition y conviven con
   ]), true);
   assert.ok(Object.prototype.hasOwnProperty.call(root.facts, 'brunoFavorStance'));
   assert.equal(root.facts.sport.sportingClub, state.professional.registrationClub);
-  assert.equal(root.facts.match.status, 'no_authoritative_match_model');
+  assert.equal(root.facts.match.status, 'no_current_match');
   assert.equal(Object.hasOwn(state, 'facts'), false);
 });
 
