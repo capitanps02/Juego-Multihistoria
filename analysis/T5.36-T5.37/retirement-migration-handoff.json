@@ -2,6 +2,9 @@
   "workstream": "T5.36-T5.37",
   "branch": "t5/retirement-epilogues",
   "baseAtStart": "6866ed7710bf317e8633b67a78d477a5be952349",
+  "lastSyncedMain": "99b1cd56f199bda657fb9fb1c757b003265892b6",
+  "syncCommit": "fdfefc1ef3ea46449748577f37c65ba92d822f62",
+  "isolatedQaWorkflow": ".github/workflows/t536-retirement-epilogues.yml",
   "status": "blocked_pending_agent13_active_34plus_generation",
   "doNotRegisterRouteYet": true,
   "requiredLineage": [
