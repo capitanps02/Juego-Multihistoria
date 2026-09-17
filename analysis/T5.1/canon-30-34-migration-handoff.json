@@ -2,12 +2,12 @@
   "schemaVersion": 2,
   "workstream": "T5.1 canon 30-34 migration handoff",
   "generatedAt": "2026-09-17",
-  "sourceMainSha": "cfb9459934fcd09e52300027f47935f773e60823",
+  "sourceMainSha": "176317c5708995bb72fa40af9dd45dffc9838093",
   "sourceContentIdentity": "5d3fd71a8df42ed5b93fdde63ed386e9d776693addd62a30293dbecad7aa56d2",
-  "observedTargetContentIdentity": "8efa101a7d1742e06272e697025c6fc63eb46c3fc3813bae408feb1da11d9ecb",
+  "observedTargetContentIdentity": "14164e54ec4250e50b915c29c959b35a56ff7ccd249a99c4ad026925af2d8c07",
   "targetIdentityEvidence": {
-    "workflowRun": 35224676628,
-    "source": "Focused 30-34 CI passed on branch merge grounded on main@cfb9459934fcd09e52300027f47935f773e60823.",
+    "workflowRun": 35225413008,
+    "source": "Focused 30-34 CI computed the active catalog identity after fail-closed sport-authority gates; all new sport regressions passed before the stale-target assertion stopped the run.",
     "rule": "Target identity follows the active merged catalog and must be refreshed whenever canonical event metadata changes."
   },
   "consumer": {
@@ -16,7 +16,7 @@
     "routeRegistry": "CONTENT_MIGRATION_ROUTES",
     "workstreamMayRegisterRoute": false,
     "targetFreezeRequiredBeforeRouteRegistration": true,
-    "targetFreezeFixture": "qa/fixtures/t5.1/post-t51-sources/8efa101a7d1742e06272e697025c6fc63eb46c3fc3813bae408feb1da11d9ecb.json"
+    "targetFreezeFixture": "qa/fixtures/t5.1/post-t51-sources/14164e54ec4250e50b915c29c959b35a56ff7ccd249a99c4ad026925af2d8c07.json"
   },
   "invariants": {
     "approvedSameSceneMappings": [],
