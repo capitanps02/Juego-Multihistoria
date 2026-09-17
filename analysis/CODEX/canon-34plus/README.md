@@ -1,6 +1,6 @@
 # Canon 34+ — Agent 8
 
-Runtime re-grounded on `main@a7a0bb575ac8824c3e52975e8861a97e29f94830` on 2026-09-17. Current main includes certified canonical 18–23 **generation H**, shared player-club-leadership authority and hardened `CareerOffer` lifecycle. These are real shared-authority improvements, but 34+ still cannot freeze because its immediate predecessor — final canonical 30–34 — is not yet authoritative.
+Runtime re-grounded on `main@fa3c8bae524fef62e4eb9802e895df88588998c4` on 2026-09-17. Current main includes certified canonical 18–23 **generation H**, shared player-club-leadership authority, hardened `CareerOffer` lifecycle and exact eligible-offer facts on the narrative read surface. These are real shared-authority improvements, but 34+ still cannot freeze because its immediate predecessor — final canonical 30–34 — is not yet authoritative.
 
 ## Scope
 - Canonical principals in source block 34+: **50**.
@@ -22,7 +22,7 @@ This branch intentionally contains **no new active 34+ canonical event implement
 Preparation is complete; activation is blocked by shared lineage/seed migration and scene-specific authorities, not by missing canonical cards.
 
 ## Current lineage position
-Main remains on certified generation H for active content. The newer leadership and market-hardening commits do not change `EVENTS`, content identity, RNG or schema. Agent 8 must still wait for all intervening canonical generations, especially 23–30 and final 30–34, to become authoritative. Issue #59 owns the multigeneration migration/evidence contract.
+Main remains on certified generation H for active content. The newer leadership and market-authority commits do not change `EVENTS`, content identity, RNG or schema. Agent 8 must still wait for all intervening canonical generations, especially 23–30 and final 30–34, to become authoritative. Issue #59 owns the multigeneration migration/evidence contract.
 
 When 34+ genuinely becomes the next generation:
 1. re-ground on that exact predecessor;
@@ -32,7 +32,7 @@ When 34+ genuinely becomes the next generation:
 5. never reuse a provisional hash from this handoff branch.
 
 ## Authorities available on current main
-- Market: persisted `CareerOffer`, offer queries, `respondToOffer()` and the offer bridge are authoritative. Current main additionally hardens stale-offer eligibility fail-closed, deterministic pending-offer kind, renewal-reason authority and direct-market-mutation auditing. This improves safe **consumption** of formal offers but does not generate the missing veteran 34+ renewals/transfers or make unsupported late-career terms real; **issue #176** remains the owner for those gaps.
+- Market: persisted `CareerOffer`, offer bridge and `respondToOffer()` are authoritative. Current main now also provides stale-offer eligibility fail-closed, deterministic pending-offer kind, renewal-reason authority cleanup, direct-market-mutation auditing **and detached exact eligible `CareerOffer` facts on the narrative read surface**. Wave B may consume those exact factual rows instead of reconstructing offer truth. This still does not generate the missing veteran 34+ renewals/transfers or make unsupported late-career terms real; **issue #176** remains the owner for generation and representability.
 - Contract employment: `contractEmploymentStatus()` exists, but `monthsRemaining <= 0` is still `expired_pending_resolution`, not authoritative free agency; **issue #130** owns the unattached-player contract.
 - Sport: `getSportContext()` / `getCurrentMatchContext()` fail closed for unsupported fixture, starts, recent minutes, bench, goals/results and other concrete match facts. Shared factual match/calendar work is tracked by **#124** and PR #156.
 - National team: `resolveNationalTeamAuthority()` safely exposes historical/pool/cycle/international-retirement facts. It deliberately exposes `concreteCallupKnown=false` and `tournamentSquadKnown=false`; **issue #174** owns concrete preselection/final-squad authority.
@@ -44,7 +44,7 @@ When 34+ genuinely becomes the next generation:
 - Seeds: scope-aware live/historical projections and owner-classification infrastructure exist. The 54 exact Pasada-7 identities still require T5.2 application under **#180**.
 
 ## Complete ordinary dependency coverage
-`CANONICAL_CARD_COVERAGE.json`, `UNLOCK_WAVES.md` and `AUTHORITY_MATRIX.json` cover all **43/43** ordinary principals.
+`CANONICAL_CARD_COVERAGE.json`, `UNLOCK_WAVES.md`, `AUTHORITY_MATRIX.json` and `SHARED_OWNER_ROUTING.json` cover all **43/43** ordinary principals and their current downstream owners.
 
 Wave membership counts are dependency counts, so overlaps are intentional:
 - Wave A — **4** context/body/family/image scenes;
