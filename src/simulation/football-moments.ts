@@ -109,13 +109,50 @@ function signature(input: PenaltyAttemptInput): string {
   ]);
 }
 
+function probabilityFromValues(technique: number, composure: number, form: number, pressure: number): number {
+  return clamp(
+    0.58
+      + technique * 0.0018
+      + composure * 0.0012
+      + form * 0.0008
+      - pressure * 0.0014,
+    MIN_PROBABILITY,
+    MAX_PROBABILITY
+  );
+}
+
+function parsedSignature(value: unknown): Omit<PenaltyAttemptInput, "momentId"> | null {
+  if (typeof value !== "string" || value.length === 0 || value.length > 1000) return null;
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(value);
+  } catch {
+    return null;
+  }
+  if (!Array.isArray(parsed) || parsed.length !== 5) return null;
+  const [actorId, technique, composure, form, pressure] = parsed;
+  try {
+    const normalized = {
+      actorId: actorIdentifier(actorId as string),
+      technique: score(technique as number, "penalty technique"),
+      composure: score(composure as number, "penalty composure"),
+      form: score(form as number, "penalty form"),
+      pressure: score(pressure as number, "penalty pressure")
+    };
+    if (JSON.stringify([normalized.actorId, normalized.technique, normalized.composure, normalized.form, normalized.pressure]) !== value) return null;
+    return normalized;
+  } catch {
+    return null;
+  }
+}
+
 function validIsoDate(value: unknown): value is string {
   if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
   const date = new Date(`${value}T00:00:00Z`);
   return Number.isFinite(date.getTime()) && date.toISOString().slice(0, 10) === value;
 }
 
-function storedPenaltyIssue(value: unknown, momentId: string): FootballMomentStoreIssue | null {
+function storedPenaltyIssue(value: unknown, momentId: string, maxResolvedAt?: string): FootballMomentStoreIssue | null {
   const path = `world.${STORE_KEY}.${momentId}`;
   if (!plainRecord(value)) return { path, reason: "row must be an object" };
   const keys = Object.keys(value).sort().join(",");
@@ -132,12 +169,27 @@ function storedPenaltyIssue(value: unknown, momentId: string): FootballMomentSto
   if (value.outcome !== "scored" && value.outcome !== "missed") {
     return { path: `${path}.outcome`, reason: "unknown penalty outcome" };
   }
-  if (typeof value.probability !== "number" || !Number.isFinite(value.probability) || value.probability < 0 || value.probability > 1) {
-    return { path: `${path}.probability`, reason: "probability must be finite and within [0,1]" };
+  const persistedInput = parsedSignature(value.inputSignature);
+  if (!persistedInput) return { path: `${path}.inputSignature`, reason: "invalid or non-canonical input signature" };
+  if (persistedInput.actorId !== value.actorId) return { path: `${path}.inputSignature`, reason: "input signature actor does not match row actor" };
+  const expectedProbability = probabilityFromValues(
+    persistedInput.technique,
+    persistedInput.composure,
+    persistedInput.form,
+    persistedInput.pressure
+  );
+  if (
+    typeof value.probability !== "number" ||
+    !Number.isFinite(value.probability) ||
+    value.probability < MIN_PROBABILITY ||
+    value.probability > MAX_PROBABILITY ||
+    Math.abs(value.probability - expectedProbability) > Number.EPSILON * 16
+  ) {
+    return { path: `${path}.probability`, reason: "probability is inconsistent with persisted sporting inputs" };
   }
   if (!validIsoDate(value.resolvedAt)) return { path: `${path}.resolvedAt`, reason: "invalid ISO date" };
-  if (typeof value.inputSignature !== "string" || value.inputSignature.length === 0 || value.inputSignature.length > 1000) {
-    return { path: `${path}.inputSignature`, reason: "invalid input signature" };
+  if (maxResolvedAt !== undefined && value.resolvedAt > maxResolvedAt) {
+    return { path: `${path}.resolvedAt`, reason: "football moment cannot be resolved in the future" };
   }
   return null;
 }
@@ -146,7 +198,7 @@ function storedPenaltyIssue(value: unknown, momentId: string): FootballMomentSto
  * Read-only validation for the optional persisted store. Historical saves may omit it.
  * This function never consumes RNG and never mutates the supplied value.
  */
-export function inspectFootballMomentStore(value: unknown): FootballMomentStoreIssue | null {
+export function inspectFootballMomentStore(value: unknown, maxResolvedAt?: string): FootballMomentStoreIssue | null {
   if (value === undefined) return null;
   if (!plainRecord(value)) return { path: `world.${STORE_KEY}`, reason: "store must be an object when present" };
   for (const [momentId, row] of Object.entries(value)) {
@@ -155,7 +207,7 @@ export function inspectFootballMomentStore(value: unknown): FootballMomentStoreI
     } catch {
       return { path: `world.${STORE_KEY}`, reason: `unknown football moment id '${momentId}'` };
     }
-    const issue = storedPenaltyIssue(row, momentId);
+    const issue = storedPenaltyIssue(row, momentId, maxResolvedAt);
     if (issue) return issue;
   }
   return null;
@@ -191,15 +243,7 @@ function storedPenalty(value: DataValue, momentId: string): StoredPenaltyMoment 
  */
 export function penaltySuccessProbability(inputValue: PenaltyAttemptInput): number {
   const input = normalizedInput(inputValue);
-  return clamp(
-    0.58
-      + input.technique * 0.0018
-      + input.composure * 0.0012
-      + input.form * 0.0008
-      - input.pressure * 0.0014,
-    MIN_PROBABILITY,
-    MAX_PROBABILITY
-  );
+  return probabilityFromValues(input.technique, input.composure, input.form, input.pressure);
 }
 
 /** Build the protagonist attempt from persisted football attributes only. */
