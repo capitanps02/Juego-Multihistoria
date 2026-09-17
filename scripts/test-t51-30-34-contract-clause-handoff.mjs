@@ -61,7 +61,7 @@ test('C007 explicitly forbids the known proxy substitutions', () => {
   const prohibited = handoff.prohibitedApproximations.join('\n');
   assert.match(prohibited, /contract\.monthsRemaining/);
   assert.match(prohibited, /sport\.form/);
-  assert.match(prohibited, /career appearances/i);
+  assert.match(prohibited, /sport\.careerAppearances/);
   assert.match(prohibited, /roleScore/);
   assert.match(prohibited, /SEED_ROLLING_CONTRACT/);
   assert.match(prohibited, /reason text/i);
