@@ -49,6 +49,7 @@ export declare const T51_T55A_20_23_CONTENT_IDENTITY = "6a9c66ab3afaec76299662af
 export declare const T51_T55B_20_23_CONTENT_IDENTITY = "6e552f606ace400d7b535747fbf7ba6078c60fd92889d4a360eb4db0bfb1013a";
 export declare const T51_T56A_20_23_CONTENT_IDENTITY = "ce2f30ea24934787fb116627c727e4adf6c7bd05f8b8e79f415a20643e3fd58f";
 export declare const T51_COMBINED_PRS20_23_CONTENT_IDENTITY = "691401e78db356a03bf7bf13c7d2a2931d66431cc3108f22a8664f37d3afbdb8";
+export declare const T51_COMBINED_18_23_CONTENT_IDENTITY = "84871fae2bec92d74d1e607e0a48943e2e530a062d315a829cfe75eda9fe0886";
 /**
  * Explicit identity-bound edges. Successive canonical batches extend this as a
  * lineage (A -> B -> C), not as a matrix of shortcuts from every old version.
