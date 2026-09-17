@@ -5,8 +5,10 @@ on:
     branches: [main]
     paths:
       - 'src/simulation/offers.ts'
+      - 'src/simulation/club-contract-intent.ts'
       - 'scripts/test-offers.mjs'
       - 'scripts/test-t5-market-contract-authority.mjs'
+      - 'scripts/audit-market-direct-mutations.mjs'
       - 'analysis/CODEX/market-contracts/**'
       - '.github/workflows/t5-market-contract-authority.yml'
   workflow_dispatch:
@@ -26,6 +28,8 @@ jobs:
       - run: npm ci
       - name: Build
         run: npm run build
+      - name: Direct market/contract mutation ownership audit
+        run: node scripts/audit-market-direct-mutations.mjs
       - name: Focused market and loan invariants
         run: node --test scripts/test-offers.mjs scripts/test-t5-market-contract-authority.mjs
       - name: Offer bridge and save regressions
