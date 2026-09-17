@@ -1,15 +1,11 @@
 # CODEX PROMPT — T5.2 causal seed consumers
 
-Work in repository `capitanps02/Juego-Multihistoria`.
-
-Authoritative integration baseline for this handoff: `main@06762a0557c4e92b189e52151c71d6c1af831ee5` at reconstruction time. Before touching content, fetch the real latest `main`; GitHub/code/CI override every SHA written in generated audit artifacts. Create a fresh implementation branch from that current main or re-ground safely; never develop on main and never auto-merge.
-
-`analysis/CODEX/seeds/SEED_CONSUMER_MATRIX.json` was generated on an earlier source-branch snapshot and may retain its generation-time `baseCommit` metadata. That field is provenance only, not integration authority. The current PR base, current `main`, runtime code and exact-head CI are authoritative.
+Work in repository `capitanps02/Juego-Multihistoria`. Base for this handoff: `cda24da1a688cc245695cd007c50d458c4e1e7d7`. Create a fresh implementation branch from the current main or rebase safely; never develop on main and never auto-merge.
 
 The architecture is already resolved:
 
 - `src/narrative/seed-memory.ts`: exact, read-only, scope-aware SeedInstance projections;
-- `narrativeConditionRoot`: exposes exact live payload scalars under `facts.*` while preserving already-integrated `facts.sport` / `facts.match`;
+- `narrativeConditionRoot`: exposes exact live payload scalars under `facts.*`;
 - `src/narrative/resolver.ts`: gates, eligibility, outcome conditions and modifiers share the causal root;
 - live and historical direct consumers are separate registries; historical IDs fail closed against the catalog;
 - projections/audits consume 0 RNG and do not mutate saves/history.
