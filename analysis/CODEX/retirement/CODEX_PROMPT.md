@@ -26,6 +26,7 @@ Only explicit pre-announcement reconsideration may do `decided -> playing`. `ann
 - announcement is distinct from career closure;
 - announced player can still train/play/be injured/bench/not play;
 - no retirement event creates a fixture, appearance, minutes, goal, assist, result or victory;
+- no retirement code fabricates a formal offer, destination, salary, duration or promised role;
 - closing career consumes 0 RNG;
 - epilogue selection/render is deterministic for the same save;
 - `closeCareer` remains idempotent;
@@ -37,7 +38,7 @@ Only explicit pre-announcement reconsideration may do `decided -> playing`. `ann
 
 ## Sporting authority boundary
 
-PR #141 / issue #124 currently establishes that main has no authoritative fixture/calendar/competition/squad/minutes/result model. `sport.appearances` is only an aggregate authority. Until that changes:
+PR #141 / issue #124 currently establishes that main has no authoritative fixture/calendar/competition/squad/minutes/result model. `sport.appearances` is an aggregate/cumulative authority only. Until that changes:
 
 - you may use the observed post-announcement appearance delta as a limited factual last-appearance signal;
 - you must leave fixture/opponent/competition/minutes/starter/result/goals/assists unknown unless an authoritative sport fact exists;
@@ -45,9 +46,26 @@ PR #141 / issue #124 currently establishes that main has no authoritative fixtur
 
 When sport authority lands, consume it; do not reimplement the sport simulator here.
 
-## Contract authority boundary
+## Contract / market authority boundary
 
-Consume the authoritative contract/CareerOffer layer. Do not create synthetic contracts or offers. Zero offers may open a retirement decision but cannot close the career.
+Runtime authority lives in `src/simulation/offers.ts`. Consume it; do not replace it.
+
+Use:
+
+- `getActiveCareerOffers(state)` for persisted formal-offer truth;
+- `careerOfferKind(offer)` when offer semantics matter;
+- `contractEmploymentStatus(state)` for conservative employment status;
+- `respondToOffer(...)` / `offerBridge` when a terminal scene actually responds to a real pending offer.
+
+Hard rules:
+
+- `marketHeat`, scouting, seeds, veteran-demand scores and boolean flags are **not** formal offers;
+- `VETERAN_OFFER_AVAILABLE` may mirror a real persisted `CareerOffer`; it must never be generated independently;
+- do not synthesize `veteranOfferSalary`, `veteranOfferMonths`, destination or squad-role promises;
+- `contract.monthsRemaining <= 0` currently means `expired_pending_resolution`, not authoritative free agency;
+- zero formal offers may open a retirement reflection scene but cannot close the career;
+- a post-announcement-offer scene requires a real `CareerOffer`; do not roll one from `marketHeat` or RNG;
+- the current market authority normally blocks new offer materialization once retirement is not `playing`; if post-announcement offer generation is desired, that is a market-owner contract change, not a retirement workaround.
 
 ## Seeds
 
@@ -75,7 +93,7 @@ G. save compatibility tests
 
 At minimum run/build the dedicated retirement suite:
 
-`node --test scripts/test-t536-t537-retirement.mjs scripts/test-t536-career-summary.mjs scripts/test-t537-family-minimums.mjs scripts/test-t536-status-writer-inventory.mjs scripts/test-t537-epilogue-profiles.mjs`
+`node --test scripts/test-t536-t537-retirement.mjs scripts/test-t536-career-summary.mjs scripts/test-t536-market-authority.mjs scripts/test-t537-family-minimums.mjs scripts/test-t536-status-writer-inventory.mjs scripts/test-t537-epilogue-profiles.mjs`
 
 Also run the repository save/determinism/integrity gates available on the current head. Do not weaken a failing lineage/freeze sentinel; report it as the expected blocker if it is the only failure.
 
