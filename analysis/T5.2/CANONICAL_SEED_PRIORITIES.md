@@ -1,33 +1,165 @@
-# T5.2 — Prioridades canónicas de wiring de seeds
+# T5.2 — Prioridades canónicas de wiring y cierre de seeds
 
-Fecha: 2026-09-16  
+Fecha del snapshot: 2026-09-17  
+Base exacta: `main@6d2239ae1f89be97a7c5cf117d456cff9218aade`  
 Workstream: `t5/seed-lifecycle`  
-Alcance: handoff técnico; **no** implementa escenas canónicas ni reescribe history.
+Alcance: coordinación/handoff; **no** inventa escenas, consumers ni cierres canónicos.
 
-Este documento convierte la deuda estructural de `seed-handoff.json` en un orden de trabajo accionable para los owners de contenido. La regla sigue siendo **canon first, wiring second**: una seed no se conecta a una escena genérica/legacy para mejorar métricas.
+## 1. Regla de prioridad
 
-## 1. Cuatro huérfanas 30–34: mapping canónico explícito
+El orden correcto ya no es “bajar la cifra de seeds abiertas”. La prioridad es:
 
-El audit T5.2 detecta cuatro seeds 30–34 sin productor runtime ni consumidor. El inventario canónico de `t51/canon-30-34` contiene cuatro escenas `canonical_missing` de edad 30 con correspondencia semántica uno-a-uno:
+1. integrar hechos y escenas canónicas de cada owner;
+2. volver a medir T5.2 desde el `main` exacto;
+3. distinguir live presence de precedente histórico;
+4. demostrar la consecuencia real de cada seed;
+5. registrar una disposición de cierre solo con evidencia owner-backed.
 
-| Seed huérfana | Escena canónica propietaria | Evidencia semántica | Acción correcta |
-| --- | --- | --- | --- |
-| `SEED_ROLE_COMMUNICATION` | `EVT_30_CCH_001` — *Te enteras por la pizarra* | Comunicación/ausencia de comunicación del rol por parte del entrenador | Crear la seed únicamente cuando la escena canónica sea implementada y la elección/outcome lo justifique. |
-| `SEED_FALSE_ULTIMATUM` | `EVT_30_PRS_001` — *El ultimátum que nunca diste* | Presión pública atribuida al jugador que no corresponde a una exigencia real | La escena canónica debe decidir payload/intensidad y futuros consumers; no fabricar precedente desde prensa legacy. |
-| `SEED_NATIONAL_ABSENCE` | `EVT_30_NAT_002` — *La selección gana sin ti* | Ausencia de selección y consecuencia identitaria/de rol internacional | Productor en la escena canónica; no inferir automáticamente de cualquier no-convocatoria técnica. |
-| `SEED_SPECIALIST_BIGCLUB` | `EVT_30_JAN_001` — *Enero: especialista de lujo* | Aceptar/negociar un rol especialista en un gran club | Productor ligado a la decisión/outcome canónico, no a un shell de mercado genérico. |
+Las cuatro únicas disposiciones válidas son:
 
-Las cuatro entradas del catálogo siguen usando `PASADA_6_30_34` como procedencia editorial. Ese marcador **no** debe convertirse artificialmente en `originEvent` runtime. Cuando nazca una nueva instancia a través de la escena canónica, `originEvent` será el evento runtime real que la produjo.
+- `canonical_chain`;
+- `intentional_persistent`;
+- `canonical_expiry`;
+- `retired_compatible`.
 
-### Restricción de migración
+Una cadena técnicamente factible no autoriza automáticamente `canonical_chain`. Una ventana finita no autoriza automáticamente `canonical_expiry`. Una seed sin consumer no autoriza automáticamente `intentional_persistent`.
 
-Si una versión antigua llegase a contener una instancia histórica de una de estas seeds, su `originEvent` se conserva por defecto. La migración de sesión/contentIdentity no debe reescribir procedencia histórica salvo mapping explícito y semánticamente acreditado con `rewriteExisting:true`.
+## 2. Punto de partida medido
 
-## 2. 34+: descomposición de las 68 seeds
+El exact-main runner `35229309280` deja esta topología:
 
-El catálogo 34+ contiene 68 seeds; en el `main` auditado todas carecen de productor y consumidor runtime. No forman un bloque homogéneo. Se dividen en ocho grupos funcionales:
+- **210** seeds totales;
+- **47** productor + consumer factible;
+- **91** producer-only;
+- **72** unwired;
+- **0** producer→consumer impossible;
+- **162** open-ended que todavía necesitan razón canónica;
+- **0** cierres canónicos clasificados;
+- **210** pendientes de clasificación;
+- **22** registros live de consumers de simulación;
+- **1** consumer histórico directo registrado;
+- **1/1** scope proofs requeridas/integradas;
+- `npm run test:t52`: **63/63 PASS**.
 
-### A. Memoria/bridge heredada al entrar en 34+ — 14
+Por tanto, la infraestructura T5.2 ya no es el cuello de botella principal. El trabajo restante es sobre todo **evidencia canónica por owner + integración limpia + clasificación explícita**.
+
+## 3. Prioridad A — 18–23: integrar antes de duplicar
+
+Estado integrado de este owner:
+
+- 31 seeds totales;
+- 31 con productor runtime;
+- 23 con algún consumer;
+- 8 sin consumer;
+- 7 open-ended sin terminal;
+- 24 con ventana de edad finita;
+- 1 con terminal explícito.
+
+El PR #155 (`t51/canon-18-23-agent5`) continúa abierto/draft y ya contiene implementación owner-side para los cinco consumers que el handoff Codex de T5.2 marca como ready:
+
+- `CEVT_18_BRUNO_01`;
+- `CEVT_18_CCH_01`;
+- `CEVT_18_RELEG_01`;
+- `CEVT_19_INJ_01`;
+- `CEVT_19_RETURN_01`.
+
+Esa implementación usa `facts.*` causales y outcome modifiers; T5.2 **no debe volver a implementarla en otra rama**.
+
+### Acción prioritaria
+
+1. que el owner cierre sus gates de integración/contentIdentity;
+2. integrar #155 solo cuando el coordinador lo considere seguro;
+3. regenerar T5.2 desde el nuevo `main`;
+4. comprobar cuáles de las cinco tareas dejan de ser “Codex-ready” porque ya son runtime integrado;
+5. estudiar las 8 seeds todavía sin consumer y las 7 open-ended para obtener una disposición real, no una clasificación por defecto.
+
+## 4. Prioridad B — 23–30: explotar el nuevo contrato histórico
+
+Estado integrado:
+
+- 59 seeds totales;
+- 59 con productor runtime;
+- 29 con algún consumer;
+- 30 sin consumer;
+- 35 open-ended;
+- 24 con ventana finita.
+
+Este bloque aporta el primer ejemplo explícito de **consumer histórico**:
+
+`SEED_ELITE_ROLE_BARGAIN` → `src/simulation/club-contract-intent.ts` → `hasRoleGuaranteeAt23`.
+
+La lección de diseño es importante: cuando la consecuencia depende de que un hecho haya ocurrido, no hay que mantener artificialmente viva la seed. Se consulta el precedente histórico mediante un contrato explícito y auditable.
+
+### Acción prioritaria
+
+Para las 30 seeds sin consumer y las 35 open-ended, el owner debe decidir caso a caso si:
+
+- existe una consecuencia posterior live;
+- existe una consecuencia basada en historial factual;
+- la memoria debe persistir intencionalmente;
+- existe expiración canónica real;
+- el concepto debe retirarse de forma compatible con saves.
+
+No registrar historical consumers por anticipado: solo se añaden cuando existe una lectura runtime real que el ratchet pueda verificar.
+
+## 5. Prioridad C — 30–34: resolver las cuatro huérfanas reales
+
+Estado integrado:
+
+- 52 seeds totales;
+- 48 con productor runtime;
+- 7 con algún consumer;
+- 45 sin consumer;
+- 4 sin productor ni consumer;
+- 52 open-ended;
+- 52 con deuda de origin canónico en este snapshot.
+
+Las cuatro huérfanas siguen siendo:
+
+| Seed | Mapping canónico ya documentado | Acción correcta |
+| --- | --- | --- |
+| `SEED_ROLE_COMMUNICATION` | `EVT_30_CCH_001` — *Te enteras por la pizarra* | Crear únicamente cuando la escena canónica produzca realmente esa memoria. |
+| `SEED_FALSE_ULTIMATUM` | `EVT_30_PRS_001` — *El ultimátum que nunca diste* | La escena define payload/intensidad y futuros efectos; no inferir desde prensa genérica. |
+| `SEED_NATIONAL_ABSENCE` | `EVT_30_NAT_002` — *La selección gana sin ti* | No convertir cualquier no-convocatoria técnica en este precedente. |
+| `SEED_SPECIALIST_BIGCLUB` | `EVT_30_JAN_001` — *Enero: especialista de lujo* | Ligar al resultado/decisión canónicos, no a un shell de mercado. |
+
+`PASADA_6_30_34` es provenance editorial del catálogo, **no** un `originEvent` runtime válido. Cuando una escena canónica produzca una nueva instancia, el origen debe ser el evento runtime real. History antigua se conserva salvo una migración explícita y acreditada.
+
+### Acción prioritaria
+
+1. implementar/integrar las cuatro escenas propietarias;
+2. regenerar `seed-lifecycle`, `seed-handoff`, deferred y closure readiness;
+3. exigir que `withoutRuntimeProducer` de este owner baje de 4 a 0 por productores reales;
+4. no clasificar las otras 48 seeds solo porque ya tengan productor;
+5. trabajar después las 45 sin consumer y los 52 open-ended por evidencia.
+
+## 6. Prioridad D — 34+: no crear 68 seeds por edad
+
+Estado integrado de `t51/canon-34plus`:
+
+- 68 seeds totales;
+- 0 con productor runtime;
+- 0 con consumer runtime;
+- 68 sin productor;
+- 68 sin consumer;
+- 68 open-ended.
+
+Este bloque es actualmente la mayor bolsa `unwired` de T5.2. Eso **no** significa que la solución sea crear las 68 al entrar en 34+.
+
+La agrupación funcional existente sigue siendo útil para planificar, pero **no es una clasificación de cierre**:
+
+- 14 bridge/memoria heredada;
+- 16 de fase 34;
+- 8 de fase 35;
+- 6 de fase 36;
+- 4 de fase 37;
+- 4 de fase 38;
+- 14 relacionadas con decisión/estado/cierre de retirada;
+- 2 de epílogo.
+
+Partición: **14 + 16 + 8 + 6 + 4 + 4 + 14 + 2 = 68**.
+
+### Bridge/memoria heredada — 14
 
 - `SEED_FORM_VS_PLAN`
 - `SEED_PEAK_BODY_MEMORY`
@@ -44,77 +176,83 @@ El catálogo 34+ contiene 68 seeds; en el `main` auditado todas carecen de produ
 - `SEED_MEDICAL_LONG_MEMORY`
 - `SEED_HOME_RETURN_SIGNAL`
 
-**Decisión pendiente del owner 34+:** clasificar cada una como (a) memoria derivada de hechos previos ya persistidos, (b) seed creada por un bridge canónico concreto, o (c) concepto redundante que no debe convertirse en una segunda fuente de verdad. No crear 14 seeds automáticamente al cumplir 34 años.
+Para cada una, el owner debe escoger con evidencia entre:
 
-### B. Fase edad 34 — 16
+- derivar el dato de hechos previos ya persistidos;
+- crear una seed mediante un bridge canónico concreto;
+- mantener una memoria intencionalmente persistente;
+- retirar el concepto si duplica otra fuente autoritativa.
 
-`SEED_34_MARKET_SILENCE`, `SEED_34_ROLE_FLOOR`, `SEED_34_BODY_NEGOTIATION`, `SEED_34_CONTRACT_FLEX`, `SEED_34_LAST_SELECTION`, `SEED_34_MENTORSHIP`, `SEED_34_FAMILY_WEIGHT`, `SEED_34_MEDIA_TONE`, `SEED_34_HOME_PULL`, `SEED_34_MEDICAL_REDLINE`, `SEED_34_FINAL_OUTSIDE`, `SEED_34_COMEBACK`, `SEED_34_NO_CLEARANCE`, `SEED_34_LATE_OFFER`, `SEED_34_LEAGUE_DOWNGRADE`, `SEED_34_STATUS_SACRIFICE`.
+No introducir una segunda fuente de verdad solo porque el catálogo contiene un ID.
 
-Estas son candidatas naturales a resultados/condicionales de la fase 34. Deben vincularse a identidades canónicas concretas después de la migración de sesión y no a eventos técnicos `engine_only_noncanonical`.
+### Seeds 34–38, retirada y epílogo
 
-### C. Fase edad 35 — 8
+Las seeds de fases 34–38 deben nacer de decisiones/outcomes reales de sus escenas. Las de retirada no pueden duplicar `retirement.status`, fechas o `closureType` como otra máquina de estados. Las de epílogo no autorizan recalcular history ya factual con reglas nuevas.
 
-`SEED_35_YEAR_OPTION`, `SEED_35_FINAL_ROLE`, `SEED_35_BODY_PLAN`, `SEED_35_MARKET_CALL`, `SEED_35_NATIONAL_GOODBYE`, `SEED_35_FAMILY_DECISION`, `SEED_35_CLUB_FAREWELL`, `SEED_35_HOME_LAST_WINDOW`.
+Especialmente tras un estado terminal de retirada, ninguna seed puede reabrir por inferencia un estado `announced` o `closed`.
 
-### D. Fase edad 36 — 6
+## 7. Prioridad E — convertir evidencia estructural en cierre owner-backed
 
-`SEED_36_CONTRACT_MINUTES`, `SEED_36_MEDICAL_CLEARANCE`, `SEED_36_COMEBACK_FINAL`, `SEED_36_MENTOR_ROLE`, `SEED_36_RICH_LEAGUE_LAST`, `SEED_36_NO_MARKET`.
+La topología actual contiene 47 cadenas factibles, pero el registry canónico sigue 0/210. El siguiente avance real de T5.2 consiste en convertir evidencia ya integrada en decisiones explícitas del owner.
 
-### E. Fase edad 37 — 4
+Para cada seed candidata:
 
-`SEED_37_ANNOUNCEMENT_CONTROL`, `SEED_37_LAST_PRESEASON`, `SEED_37_LAST_DERBY`, `SEED_37_PRIVATE_RETIREMENT`.
+1. localizar owner y producer real;
+2. localizar consumer/cierre real o justificar por qué no debe existir;
+3. comprobar si la lectura requiere live presence o historia factual;
+4. comprobar edad/scope/fecha;
+5. preservar payload semantics;
+6. asignar exactamente una de las cuatro disposiciones permitidas;
+7. aportar evidencia suficiente para que el validator pueda aceptarla fail-closed.
 
-### F. Fase edad 38 — 4
+No clasificar por lotes basándose solo en prefijos, edad o ausencia de consumer.
 
-`SEED_38_POST_ANNOUNCE_OFFER`, `SEED_38_RECONSIDERATION`, `SEED_38_LAST_CONTRACT`, `SEED_38_MARKET_SILENCE`.
+## 8. Restricciones transversales
 
-Estas cuatro requieren especial cuidado con el guard canónico de retirada: ninguna seed puede reabrir por inferencia un estado `announced` o `closed`.
+Todo wiring/cierre nuevo debe conservar simultáneamente:
 
-### G. Decisión/estado/cierre de retirada — 14
+- `SeedInstance.originEvent` histórico;
+- contentIdentity/fingerprint de contenido ya visto;
+- pending events/choices;
+- history factual;
+- determinismo y streams RNG;
+- save/restore;
+- idempotencia;
+- separación entre live seed y existencia histórica;
+- aislamiento epistemológico T5.3;
+- autoridad real de contratos/mercado;
+- autoridad real de partido/calendario;
+- invariantes de retirada y epílogo.
 
-`SEED_RET_HOME_CONVERSATION`, `SEED_RET_BODY_DECISION`, `SEED_RET_HIGH`, `SEED_RET_LOW`, `SEED_RET_ANNOUNCEMENT`, `SEED_RET_LAST_MATCH`, `SEED_RET_NO_LAST_MATCH`, `SEED_RET_STORYBOOK`, `SEED_RET_RECONSIDERED`, `SEED_RET_MARKET_END`, `SEED_RET_HEALTH_END`, `SEED_RET_FAMILY_END`, `SEED_RET_PUBLIC_TONE`, `SEED_RET_PRIVATE_TONE`.
+### Prohibiciones
 
-Estas seeds no deben duplicar el `retirement.status`, fechas o `closureType` como una segunda máquina de estados. Solo deben persistir información narrativa adicional cuando exista una consecuencia futura que no pueda derivarse de los hechos de retirada ya almacenados.
+- no crear `resolve`/`expire` arbitrarios para bajar deuda;
+- no registrar historical consumers que no tengan lectura runtime real;
+- no reescribir `originEvent` antiguo para que parezca canónico;
+- no convertir una seed en conocimiento NPC implícito;
+- no inventar contratos, ofertas, partidos, goles o retirada desde una seed;
+- no usar una seed como workaround de un bug del owner de mercado/contratos;
+- no declarar un bloque cerrado solo porque CI esté verde.
 
-### H. Epílogo — 2
+## 9. Gate de integración recomendado
 
-- `SEED_EPILOGUE_LEGACY`
-- `SEED_EPILOGUE_UNFINISHED`
+Tras cada batch funcional de un owner:
 
-Un epílogo ya generado es factual y se preserva verbatim durante migración. Estas seeds no autorizan regenerar `families`, `milestones` o `summaryKey` con reglas nuevas.
+1. `npm run test:t52`;
+2. regenerar lifecycle/handoff/deferred/closure readiness;
+3. ejecutar ratchet de direct seed identity reads;
+4. comprobar registry de live/historical consumers;
+5. comprobar scope proofs;
+6. revisar contentIdentity y save migration si EVENTS cambiaron;
+7. ejecutar gates T5.3 si hay NPC/knowledge involucrados;
+8. ejecutar autoridad de contratos/mercado o fútbol si corresponde;
+9. ejecutar Repository Integrity/full integration;
+10. regenerar `analysis/CODEX/seeds` desde el `main` exacto.
 
-Partición: **14 + 16 + 8 + 6 + 4 + 4 + 14 + 2 = 68**.
+PR #159 es precisamente el handoff de provenance exact-main actual. Si `main` avanza antes de su integración, debe regenerarse otra vez; nunca editar manualmente `baseCommit` para aparentar frescura.
 
-## 3. Contrato T5.2 con SESSION_CONTENT_MIGRATION (#24 / #25)
+## 10. Criterio de éxito
 
-El wiring canónico futuro debe respetar simultáneamente:
+T5.2 estará realmente cerrado cuando **210/210** seeds tengan una disposición explícita, verificable y owner-backed dentro de una de las cuatro clases permitidas.
 
-1. **History factual:** nunca reescribir una `SeedInstance.originEvent` histórica solo porque el evento canónico futuro use otro ID o la misma string ID con semántica distinta.
-2. **Exact-ID collision:** provenance/fingerprint debe separar definición legacy y definición canónica; `SEEN_*` y `eventCooldowns` legacy tampoco pueden suprimir la escena nueva no equivalente.
-3. **Nueva instancia, nuevo origen:** si una seed terminal se vuelve a crear legítimamente en una escena canónica posterior, T5.2 abre una nueva instancia y conserva la terminal histórica.
-4. **Sin replay de seeds:** migrar una sesión no vuelve a ejecutar productores/consumidores ni sintetiza `HAS_SEED_*`.
-5. **Sin RNG:** migración y lifecycle administrativo no consumen draws.
-6. **Pending legacy:** si una decisión antigua estaba pendiente, se resuelve con la definición/fingerprint que el jugador vio; no con la escena reparada que reutiliza el mismo ID.
-7. **Legacy compatibility only:** definiciones antiguas usadas para validar history/journal/pending no vuelven a entrar en `EventIndex`/scheduler.
-8. **NPC separado:** seed viva, `HAS_SEED_*` o `npcRefs` no implica conocimiento NPC.
-
-### Estado de integración observado
-
-- Issue #24 sigue siendo la autoridad del contrato.
-- PR #25 ya contiene implementación Session v3/provenance y pruebas dirigidas; el fallo técnico previo del registry generado fue corregido en un head posterior.
-- Los workflows del head observado `709b522827a560099a7c8290387be4c5aa010af6` figuran `action_required`, por lo que T5.2 **no lo considera todavía integrado ni habilita wiring canónico dependiente**.
-- PR #30 mantiene un contrato alternativo/documental sin runtime y no debe tratarse como segunda autoridad mientras #24/#25 no se resuelva explícitamente.
-
-## 4. Orden de ejecución recomendado tras desbloqueo
-
-1. Integrar y validar la migración de sesión/contentIdentity.
-2. Implementar las cuatro escenas canónicas 30–34 anteriores con sus productores reales.
-3. Reejecutar `npm run audit:t52` y comprobar que `withoutRuntimeProducer` de 30–34 baja de 4 a 0 sin introducir referencias desconocidas ni reescrituras históricas.
-4. Clasificar las 14 bridge-memory 34+ antes de crear ninguna automáticamente.
-5. Cablear por lotes 34 → 35 → 36 → 37 → 38 → retirada → epílogo, ejecutando audit entre lotes.
-6. Para cada seed open-ended, documentar explícitamente si es memoria permanente o definir consumidor/`resolve`/`expire` canónico.
-7. Revalidar conjuntamente saves, determinismo, T5.3 knowledge isolation, long careers, retirement invariants y epílogos.
-
-## Criterio de éxito
-
-La métrica objetivo no es “cero seeds abiertas”. El objetivo es que cada seed tenga una clasificación canónica demostrable: productor correcto, consumidor/cierre correcto cuando proceda, memoria persistente intencional o deprecación segura; sin falsificar pasado ni duplicar fuentes de verdad.
+La meta no es “cero seeds abiertas” ni “cero IDs sin consumer”. Una seed persistente puede ser correcta; una expiración puede ser correcta; una retirada compatible puede ser correcta. Lo que no puede quedar es memoria causal sin semántica, sin owner o con una consecuencia inventada para satisfacer una métrica.
