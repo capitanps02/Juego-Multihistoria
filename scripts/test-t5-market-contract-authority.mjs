@@ -9,6 +9,7 @@ import {
   contractEmploymentStatus,
   eligibleCareerOfferKind,
   getActiveCareerOffers,
+  getEligibleCareerOffers,
   getEligibleLoanOffers,
   getEligibleRenewalOffers,
   getEligibleTransferOffers,
@@ -36,6 +37,9 @@ test('formal offer queries are detached, deterministic and distinguish renewal/t
   const detached = getActiveCareerOffers(renewal);
   detached[0].terms.salary = 1;
   assert.notEqual(renewal.market.pending.terms.salary, 1);
+  const eligibleDetached = getEligibleCareerOffers(renewal);
+  eligibleDetached[0].terms.salary = 2;
+  assert.notEqual(renewal.market.pending.terms.salary, 2);
   assert.deepEqual(renewal.rngState, rng);
 
   const transfer = createInitialState(302);
@@ -45,7 +49,16 @@ test('formal offer queries are detached, deterministic and distinguish renewal/t
   });
   assert.equal(careerOfferKind(transfer.market.pending), 'transfer');
   assert.equal(eligibleCareerOfferKind(transfer), 'transfer');
-  assert.equal(narrativeConditionRoot(transfer).facts.pendingCareerOfferKind, 'transfer');
+  const transferFacts = narrativeConditionRoot(transfer).facts;
+  assert.equal(transferFacts.pendingCareerOfferKind, 'transfer');
+  assert.equal(transferFacts.pendingCareerOffer.kind, 'transfer');
+  assert.equal(transferFacts.pendingCareerOffer.id, transfer.market.pending.id);
+  assert.equal(transferFacts.pendingCareerOffer.date, transfer.market.pending.date);
+  assert.equal(transferFacts.pendingCareerOffer.reason, 'Propuesta de mercado');
+  assert.equal(transferFacts.pendingCareerOffer.terms.club, 'Destino FC');
+  assert.equal(transferFacts.pendingCareerOffer.terms.salary, 5000);
+  transferFacts.pendingCareerOffer.terms.salary = 1;
+  assert.equal(transfer.market.pending.terms.salary, 5000, 'narrative projection must not mutate pending offer');
   assert.equal(getEligibleTransferOffers(transfer).length, 1);
 
   const loan = createInitialState(303);
@@ -58,7 +71,11 @@ test('formal offer queries are detached, deterministic and distinguish renewal/t
   });
   assert.equal(careerOfferKind(loan.market.pending), 'loan');
   assert.equal(eligibleCareerOfferKind(loan), 'loan');
-  assert.equal(narrativeConditionRoot(loan).facts.pendingCareerOfferKind, 'loan');
+  const loanFacts = narrativeConditionRoot(loan).facts;
+  assert.equal(loanFacts.pendingCareerOfferKind, 'loan');
+  assert.equal(loanFacts.pendingCareerOffer.kind, 'loan');
+  assert.equal(loanFacts.pendingCareerOffer.terms.ownerClub, 'UDV');
+  assert.equal(loanFacts.pendingCareerOffer.terms.registrationClub, 'Development Club');
   assert.equal(getEligibleLoanOffers(loan).length, 1);
 });
 
@@ -73,11 +90,14 @@ test('eligible queries fail closed when live CareerTerms no longer match the off
   assert.equal(getEligibleTransferOffers(state).length, 1);
   assert.equal(eligibleCareerOfferKind(state), 'transfer');
   assert.equal(narrativeConditionRoot(state).facts.pendingCareerOfferKind, 'transfer');
+  assert.equal(narrativeConditionRoot(state).facts.pendingCareerOffer?.terms.club, 'Destino FC');
   state.contract.salaryMonthly += 1;
   assert.equal(getActiveCareerOffers(state).length, 1, 'read-only active query does not erase stale evidence');
+  assert.equal(getEligibleCareerOffers(state).length, 0, 'generic eligible query also fails closed');
   assert.equal(getEligibleTransferOffers(state).length, 0, 'stale proposal is not eligible for narrative acceptance');
   assert.equal(eligibleCareerOfferKind(state), null, 'stale pending offer has no eligible semantic kind');
   assert.equal(narrativeConditionRoot(state).facts.pendingCareerOfferKind, null, 'narrative gates fail closed on stale offer');
+  assert.equal(narrativeConditionRoot(state).facts.pendingCareerOffer, null, 'exact narrative projection fails closed on stale offer');
   assert.throws(() => respondToOffer(state, state.market.pending.id, 'accept'), /condiciones han cambiado/);
   assert.deepEqual(state.rngState, rng);
 });
@@ -94,7 +114,10 @@ test('pending formal offer survives save/load without mutating its terms or RNG'
   assert.deepEqual(restored.market.pending, before);
   assert.deepEqual(restored.rngState, rng);
   assert.equal(getEligibleTransferOffers(restored).length, 1);
-  assert.equal(narrativeConditionRoot(restored).facts.pendingCareerOfferKind, 'transfer');
+  const restoredFacts = narrativeConditionRoot(restored).facts;
+  assert.equal(restoredFacts.pendingCareerOfferKind, 'transfer');
+  assert.equal(restoredFacts.pendingCareerOffer.kind, 'transfer');
+  assert.deepEqual(restoredFacts.pendingCareerOffer.terms, before.terms);
 });
 
 test('loan start keeps parent club through save/load and accepted return is deterministic', () => {
