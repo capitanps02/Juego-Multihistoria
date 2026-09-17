@@ -1,10 +1,19 @@
 import type { NpcKnowledgeSource, NpcMemoryClass } from "../core/npc-knowledge.js";
 
+export type NpcKnowledgeTargetSlot = "captain" | "star";
+
 export interface NpcEventKnowledgeRule {
   eventId: string;
   choiceIds?: string[];
   outcomeIds?: string[];
+  /** Explicit persistent NPC targets known at authoring time. */
   npcIds: string[];
+  /**
+   * Optional role-based recipients resolved from authoritative runtime contracts.
+   * These are live-resolution targets, never inferred from npcRefs, seeds, role
+   * text or relationship magnitude.
+   */
+  targetSlots?: NpcKnowledgeTargetSlot[];
   factId?: string;
   source: NpcKnowledgeSource;
   certainty?: number;
