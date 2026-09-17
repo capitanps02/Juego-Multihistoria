@@ -32,7 +32,7 @@ function assertMarket(value: unknown, state: GameState): void {
     ensure(h.accepted===accepted,"market.history.accepted","firma incompatible con autorización");
   });
   ensure(m.pending!==undefined,"market.pending","falta oferta pendiente");
-  if(m.pending!==null){const {before}=offer(m.pending,history.length);ensure(JSON.stringify(before)!==JSON.stringify(undefined) && JSON.stringify(before)===JSON.stringify(careerTerms(state)),"market.pending.before","condiciones obsoletas");}
+  if(m.pending!==null){const {before}=offer(m.pending,history.length);ensure(JSON.stringify(before)===JSON.stringify(careerTerms(state)),"market.pending.before","condiciones obsoletas");}
   ensure(m.sequence===history.length+(m.pending===null?0:1),"market.sequence","historial incompleto");
 }
 
@@ -66,7 +66,7 @@ export function list(value: unknown, path: string): unknown[] {
   ensure(Array.isArray(value) && value.length <= 50_000, path, "lista ausente o excesiva");
   return value;
 }
-export function strings(value: unknown, path: string): void { list(value, path).forEach((x,i) => string(x, `${path}[${i}]`)); }
+export function strings(value: unknown, path: string): void { list(value,path).forEach((x,i) => string(x, `${path}[${i}]`)); }
 export function oneOf(value: unknown, options: readonly string[], path: string): void {
   ensure(typeof value === "string" && options.includes(value), path, "valor desconocido");
 }
@@ -83,7 +83,7 @@ export function validateData(value: unknown): void {
   const ancestors = new Set<object>();
   const visit = (x: unknown, path: string, depth: number): void => {
     ensure(++nodes <= 300_000 && depth <= 64, path, "estructura demasiado grande o profunda");
-    if (x === null || typeof x === "boolean" || x === undefined) return;
+    if (x === null || typeof x === "boolean" || x === undefined) return; // optional object fields
     if (typeof x === "string") { string(x,path,true); return; }
     if (typeof x === "number") { number(x,path); return; }
     ensure(typeof x === "object",path,"tipo de dato no admitido");
@@ -185,6 +185,7 @@ export function validateGameSave(value: unknown, version: number): void {
   for (const name of ["narrative","football","qa", ...(version>=6 || rng.microfeed !== undefined ? ["microfeed"] : [])]) {
     const r=record(rng[name],`rngState.${name}`);
     integer(r.seed,`rngState.${name}.seed`,-Number.MAX_SAFE_INTEGER);
+    // Existing streams accumulate beyond uint32; never truncate or reseed them.
     integer(r.state,`rngState.${name}.state`); integer(r.draws,`rngState.${name}.draws`);
   }
   if (version >= 4 || s.professional !== undefined) {
