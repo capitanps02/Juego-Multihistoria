@@ -1,7 +1,7 @@
 # Market / contract authority — Codex handoff
 
 Runtime audit base: `main@ebef17057156c7721fc4a041552c9cf1b3fdb6ba`  
-Coordination re-ground: `main@c2a0b3ab9f63ac335d334846ee730fa7c6d1e6b6`  
+Latest integration re-ground: `main@adf1bffa7298bff6d7cebab88a3388c559cd3588`  
 Branch: `t5/market-contract-authority`
 
 ## Scope
@@ -22,6 +22,7 @@ This folder is the implementation handoff for market, contracts, `CareerOffer`, 
   - `getEligibleLoanOffers(state)`;
   - `getEligibleRenewalOffers(state)`;
   - `careerOfferKind(offer)`.
+- `getEligible*` fails closed if current live `CareerTerms` no longer equal `offer.before`; stale proposals remain inspectable through `getActiveCareerOffers()` but cannot be presented as signable.
 - Derived expiry visibility: `contractEmploymentStatus(state)` returns `expired_pending_resolution` at zero months instead of treating a classifier/route token as proof that employment has actually ended.
 
 ## Non-negotiable distinction
@@ -34,10 +35,12 @@ This folder is the implementation handoff for market, contracts, `CareerOffer`, 
 2. **Expired contract (#130):** confirmed zombie state. `monthsRemaining=0` can retain club/owner/registration/salary and normal appearances for years. The model contains a dormant `professional.route = "free_agent"` value and classifiers that mention free agency, but there is no production transition that establishes it together with authoritative club/owner/registration/salary/football semantics. `GameState.club` remains a required string. This branch exposes the unresolved state but does not invent an unattached sentinel, schema change or forced transfer.
 3. **Offer expiry/withdrawal:** `CareerOffer` has `date` but no persisted expiry or withdrawal transition; world time is frozen while an offer is pending.
 4. **Contractual role:** role is not part of `CareerTerms`; a salary/duration/club offer cannot formally promise a squad role today.
+5. **34+ synthetic veteran offer:** `lateCareerPreseason()` creates `VETERAN_OFFER_AVAILABLE` + `world.veteranOffer*` values instead of a real `CareerOffer`, and `EVT_34_MKT_001` signs by writing contract duration directly. See `VETERAN_MARKET_BLOCKERS.md`.
+6. **34+ market/retirement coupling:** the late-career engine can move retirement to `decided/no_market` after repeated weak-market windows. Market authority documents this but does not change retirement ownership.
 
 ## Content mutation debt
 
-Broad static search found direct narrative writes to club/contract state in 18–20, 26–30 and 30–34. They are catalogued in `MARKET_AUTHORITY.md`. They are intentionally not edited here because doing so changes `EVENTS` and therefore `contentIdentity`; each must be converted by its content owner using the active content-lineage process.
+Broad static search found direct narrative writes to club/contract state in 18–20, 23–26, 26–30, 30–34 and 34+. They are catalogued in `MARKET_AUTHORITY.md`. They are intentionally not edited here because doing so changes `EVENTS` and therefore `contentIdentity`; each must be converted by its content owner using the active content-lineage process.
 
 ## Files
 
@@ -45,6 +48,7 @@ Broad static search found direct narrative writes to club/contract state in 18�
 - `CONTRACT_TRANSITION_MATRIX.json`: machine-readable transition authority.
 - `implementation-ready.json`: Codex task queue.
 - `UNBLOCKED_CONTENT.md`: content readiness by age range.
+- `VETERAN_MARKET_BLOCKERS.md`: 34+ synthetic-offer and retirement-coupling handoff.
 - `CODEX_PROMPT.md`: ready-to-paste implementation prompt.
 
 ## QA owned here
