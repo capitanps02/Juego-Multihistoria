@@ -1,6 +1,7 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "ebef17057156c7721fc4a041552c9cf1b3fdb6ba",
+  "baseCommit": "adf1bffa7298bff6d7cebab88a3388c559cd3588",
+  "runtimeAuditBaseCommit": "ebef17057156c7721fc4a041552c9cf1b3fdb6ba",
   "branch": "t5/market-contract-authority",
   "contentIdentityChangedByThisWorkstream": false,
   "readyCounts": {
@@ -18,11 +19,11 @@
       "eventId": "EVT_18_JAN_001",
       "ageRange": "18_20",
       "requiredOfferType": "loan_or_transfer",
-      "blocker": "#123: no productive pre-age-20 formal offer materialisation path is proven before the scene; current LOAN choice directly writes club/tier/LOAN_ACTIVE.",
+      "blocker": "#123: no productive pre-age-20 formal offer materialisation path is proven before the scene; current LOAN choice directly writes club/tier/LOAN_ACTIVE. Generation must be integrated atomically with the canonical bridge so the generic offer screen cannot consume the proposal first.",
       "requiredApis": ["getEligibleLoanOffers", "getEligibleTransferOffers", "respondToOffer"],
       "allowedFiles": ["age-18 market generation owned by market authority", "18-20 content overlay owned by content agent", "focused tests"],
       "forbiddenFiles": ["historical freeze fixtures unless allocated as the next content generation"],
-      "acceptanceTests": ["no compatible offer => LOAN/TRANSFER unavailable", "compatible CareerOffer => matching choice available", "accept consumes exact offer", "eligibility consumes 0 RNG", "no direct club/contract effects"]
+      "acceptanceTests": ["no compatible offer => LOAN/TRANSFER unavailable", "compatible CareerOffer => matching choice available", "accept consumes exact offer", "eligibility consumes 0 RNG", "no direct club/contract effects", "generic offer screen cannot steal the intended narrative proposal"]
     },
     {
       "id": "CODEX-MKT-18-002",
@@ -30,7 +31,7 @@
       "eventId": "EVT_18_SUM_001",
       "ageRange": "18_20",
       "requiredOfferType": "renewal_and_optional_transfer",
-      "blocker": "#123: REQUEST_EXIT requires a real external offer; current renewal choices also write contract.monthsRemaining directly.",
+      "blocker": "#123: REQUEST_EXIT requires a real external offer; current renewal choices also write contract.monthsRemaining directly. Generation and content bridge must be integrated together.",
       "requiredApis": ["getEligibleRenewalOffers", "getEligibleTransferOffers", "respondToOffer"],
       "allowedFiles": ["age-18 market generation owned by market authority", "18-20 content overlay owned by content agent", "focused tests"],
       "forbiddenFiles": ["content migration registry without coordinator allocation"],
@@ -66,11 +67,11 @@
       "eventId": "EVT_22_CON_002",
       "ageRange": "20_23",
       "requiredOfferType": "renewal_or_expiry_path",
-      "blocker": "Depends on the still-unresolved real employment semantics at contract expiry (#130).",
+      "blocker": "Depends on #130. professional.route accepts free_agent and classifiers reference it, but no production transition establishes authoritative unattached club/owner/registration/salary/football semantics; GameState.club remains required string.",
       "requiredApis": ["contractEmploymentStatus", "getEligibleRenewalOffers"],
-      "allowedFiles": ["20-23 content owner files after #130 contract is approved"],
-      "forbiddenFiles": ["synthetic FREE_AGENT flags"],
-      "acceptanceTests": ["narrative seed is not used as employment state"]
+      "allowedFiles": ["20-23 content owner files after #130 employment contract is approved"],
+      "forbiddenFiles": ["synthetic FREE_AGENT flags", "route-only free-agent patches", "invented unattached club sentinels"],
+      "acceptanceTests": ["narrative seed/tag is not used as employment state", "monthsRemaining==0 alone does not assert free agency"]
     },
     {
       "id": "CODEX-MKT-23-001",
@@ -82,7 +83,7 @@
       "allowedFiles": ["23-26 content overlay", "23-26 focused tests", "content migration files only when coordinator allocates the next adjacent generation"],
       "forbiddenFiles": ["direct club/owner/registration/contract effects", "parallel offer state", "synthetic hasOffers flags"],
       "acceptanceTests": ["bridge only with real compatible transfer offer", "accept applies exact pending terms", "reject/counter/defer preserve before terms", "0 RNG in eligibility", "save/resume provenance preserved"],
-      "lineageNote": "Issue #83 comment supersedes its original F plan; current integration lineage must be re-read immediately before implementation and only the next adjacent generation may be registered."
+      "lineageNote": "Issue #83 historical generation labels are stale. Re-read current coordination immediately before implementation and register only the next adjacent generation."
     },
     {
       "id": "CODEX-MKT-23-002",
