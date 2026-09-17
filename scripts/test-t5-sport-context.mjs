@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createInitialState } from '../dist/content/initial-state.js';
+import { narrativeConditionRoot } from '../dist/simulation/club-contract-intent.js';
 import { getCurrentMatchContext, getSportContext } from '../dist/simulation/sport-context.js';
 
 function rng(state) { return structuredClone(state.rngState); }
@@ -62,4 +63,16 @@ test('sport context/4 legacy debut flag is exposed only as coarse history, not a
   assert.equal(context.firstAppearance, null);
   assert.equal(match.playerAppeared, null);
   assert.equal(match.result, null);
+});
+
+test('sport context/5 narrative condition root exposes sport and match facts without persistence or RNG', () => {
+  const state = createInitialState(8705);
+  const before = structuredClone(state);
+  const root = narrativeConditionRoot(state);
+  assert.equal(root.facts.sport.sportingClub, state.professional.registrationClub);
+  assert.equal(root.facts.sport.nextFixture, null);
+  assert.equal(root.facts.match.status, 'no_authoritative_match_model');
+  assert.equal(root.facts.match.playerStarted, null);
+  assert.equal(Object.prototype.hasOwnProperty.call(state, 'facts'), false);
+  assert.deepEqual(state, before);
 });
