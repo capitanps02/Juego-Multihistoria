@@ -4,7 +4,9 @@ import type { DataValue, GameState } from "../core/types.js";
 const STORE_KEY = "footballMomentResults";
 const MIN_PROBABILITY = 0.45;
 const MAX_PROBABILITY = 0.9;
-const MOMENT_ID = /^[A-Za-z0-9_.:-]+$/;
+const IDENTIFIER = /^[A-Za-z0-9_.:-]+$/;
+const MOMENT_CONTEXT = /^[A-Za-z0-9_.-]+$/;
+const REGISTERED_PENALTY_EVENTS = new Set(["EVT_24_MATCH_001", "EVT_26_MATCH_001"]);
 
 export type FootballMomentOutcome = "scored" | "missed";
 
@@ -63,18 +65,33 @@ function score(value: number, label: string): number {
   return value;
 }
 
-function identifier(value: string, label: string): string {
-  if (typeof value !== "string" || value.length === 0 || value.length > 200 || !MOMENT_ID.test(value)) {
-    throw new Error(`Invalid ${label}`);
+function actorIdentifier(value: string): string {
+  if (typeof value !== "string" || value.length === 0 || value.length > 200 || !IDENTIFIER.test(value)) {
+    throw new Error("Invalid football actor id");
   }
-  if (["__proto__", "constructor", "prototype"].includes(value)) throw new Error(`Reserved ${label}`);
+  if (["__proto__", "constructor", "prototype"].includes(value)) throw new Error("Reserved football actor id");
+  return value;
+}
+
+/**
+ * Football moment identities are an explicit registry, not arbitrary save keys.
+ * Registering a new narrative football moment is therefore a deliberate code change.
+ */
+function penaltyMomentIdentifier(value: string): string {
+  if (typeof value !== "string" || value.length === 0 || value.length > 200) {
+    throw new Error("Invalid football moment id");
+  }
+  const parts = value.split(":");
+  if (parts.length !== 3 || !REGISTERED_PENALTY_EVENTS.has(parts[0]) || !MOMENT_CONTEXT.test(parts[1]) || parts[2] !== "penalty") {
+    throw new Error(`Unknown football moment id: ${value}`);
+  }
   return value;
 }
 
 function normalizedInput(input: PenaltyAttemptInput): PenaltyAttemptInput {
   return {
-    momentId: identifier(input.momentId, "football moment id"),
-    actorId: identifier(input.actorId, "football actor id"),
+    momentId: penaltyMomentIdentifier(input.momentId),
+    actorId: actorIdentifier(input.actorId),
     technique: score(input.technique, "penalty technique"),
     composure: score(input.composure, "penalty composure"),
     form: score(input.form, "penalty form"),
@@ -107,7 +124,9 @@ function storedPenaltyIssue(value: unknown, momentId: string): FootballMomentSto
   }
   if (value.version !== 1) return { path: `${path}.version`, reason: "unsupported football moment schema version" };
   if (value.kind !== "penalty") return { path: `${path}.kind`, reason: "unknown football moment kind" };
-  if (typeof value.actorId !== "string" || value.actorId.length === 0 || value.actorId.length > 200 || !MOMENT_ID.test(value.actorId)) {
+  try {
+    actorIdentifier(value.actorId as string);
+  } catch {
     return { path: `${path}.actorId`, reason: "invalid actor id" };
   }
   if (value.outcome !== "scored" && value.outcome !== "missed") {
@@ -132,9 +151,9 @@ export function inspectFootballMomentStore(value: unknown): FootballMomentStoreI
   if (!plainRecord(value)) return { path: `world.${STORE_KEY}`, reason: "store must be an object when present" };
   for (const [momentId, row] of Object.entries(value)) {
     try {
-      identifier(momentId, "football moment id");
+      penaltyMomentIdentifier(momentId);
     } catch {
-      return { path: `world.${STORE_KEY}`, reason: `invalid football moment id '${momentId}'` };
+      return { path: `world.${STORE_KEY}`, reason: `unknown football moment id '${momentId}'` };
     }
     const issue = storedPenaltyIssue(row, momentId);
     if (issue) return issue;
