@@ -15,8 +15,21 @@ async function pending(options={}){
  for(let i=0;i<5 && !s.getView().offer;i++)await s.dispatch(command(s,'continue',{maxDays:366}));
  assert.equal(s.getView().screen,'offer');return s;
 }
+async function pendingAt20(options={}){
+ const s=await GameSession.create(123,{events:[],...options});
+ for(let i=0;i<10;i++){
+  const view=s.getView();
+  if(view.offer){
+   if(view.age>=20)break;
+   await s.dispatch(command(s,'offer',{offerId:view.offer.id,action:'reject'}));
+   continue;
+  }
+  await s.dispatch(command(s,'continue',{maxDays:366}));
+ }
+ assert.equal(s.getView().screen,'offer');assert.equal(s.getView().age,20);return s;
+}
 test('20th birthday proposes terms without changing club or silently renewing',async()=>{
- const s=await pending(),v=s.getView(),snap=s.exportSnapshot();
+ const s=await pendingAt20(),v=s.getView(),snap=s.exportSnapshot();
  assert.equal(v.age,20);assert.equal(v.salaryMonthly,900);assert.equal(v.contractMonths,0);
  assert.ok(v.offer.terms.salary>900);assert.equal(v.club,v.offer.before.club);
  assertGameState(snap.state);
