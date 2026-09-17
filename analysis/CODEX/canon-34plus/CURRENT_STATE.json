@@ -39,6 +39,16 @@
     },
     "uniqueOrdinaryCoverage": 43
   },
+  "downstreamOwners": {
+    "contentLineage": {"issue": 59, "owner": "shared_integration"},
+    "seedCatalog": {"owner": "t52_agent2", "handoff": "T52_SEED_HANDOFF.json"},
+    "matchCalendarCompetition": {"issue": 124, "owner": "shared_sport_authority"},
+    "nationalConcreteSelection": {"issue": 174, "owner": "shared_national_selection_authority"},
+    "veteranMarketContracts": {"issue": 176, "owner": "shared_market_contract_authority"},
+    "freeAgency": {"issue": 130, "owner": "shared_market_employment_state"},
+    "lateCareerNpcIdentity": {"issue": 177, "owner": "shared_t53_npc_affiliation_authority"},
+    "terminalRetirement": {"pullRequest": 118, "owner": "agent9"}
+  },
   "currentSharedAuthorities": {
     "nationalTeam": {
       "resolver": "resolveNationalTeamAuthority",
@@ -52,12 +62,12 @@
   "verifiedCurrentBlockers": {
     "contentLineage": "issue_59_waits_for_actual_predecessor_generations",
     "seedCatalog": "54_exact_34plus_seed_ids_not_applied_to_main_yet",
-    "veteranRenewalGeneration": "clubWantsRenewal_returns_false_at_age_gte_34",
-    "contractRepresentability": "several_canonical_bonus_exit_role_liaison_ambassador_terms_are_not_fully_representable_in_current_CareerTerms",
-    "freeAgency": "expired_pending_resolution_is_not_unattached; EVT_37_SHORT_001_and_EVT_38_MARKET_001_require_real_unattached_state",
-    "sport": "fixture_usage_result_record_and_specific_medical_facts_fail_closed_when_absent",
-    "nationalTeamConcrete": "historical/pool/retirement authority exists but concrete current callup_prelist_omission_and_tournament_squad facts remain unavailable",
-    "lateNpcSquad": "ordinary_34plus_institutional_squad_coach_successor_peer_identity_incomplete",
+    "veteranRenewalGeneration": "issue_176; clubWantsRenewal_returns_false_at_age_gte_34",
+    "contractRepresentability": "issue_176; canonical_bonus_exit_role_liaison_ambassador_terms_need_explicit_authority_decision",
+    "freeAgency": "issue_130; expired_pending_resolution_is_not_unattached",
+    "sport": "issue_124_and_shared_match_authority; fixture_usage_result_record_and_specific_medical_facts_fail_closed_when_absent",
+    "nationalTeamConcrete": "issue_174; concrete current callup_prelist_omission_and_tournament_squad facts remain unavailable",
+    "lateNpcSquad": "issue_177; ordinary_34plus_institutional_squad_coach_successor_peer_identity_incomplete",
     "terminalRetirement": "agent9_pr118; protagonist career-retirement choices inside ordinary scenes delegate terminal transition"
   },
   "preparedPackages": [
@@ -82,6 +92,6 @@
     "EVT_35_IMG_001",
     "EVT_36_MED_001"
   ],
-  "nextPreparationTarget": "No ordinary canonical-card extraction remains. Coordinate Wave 0 and scene-specific shared authorities; re-audit dynamically as main advances.",
+  "nextPreparationTarget": "No ordinary canonical-card extraction remains. Shared owners must land Wave 0 and scene-specific authority contracts before runtime activation.",
   "activationCondition": "Wave 0 must be satisfied before any canonical 34+ runtime registration or contentIdentity freeze"
 }
