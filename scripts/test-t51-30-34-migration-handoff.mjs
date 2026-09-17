@@ -32,6 +32,22 @@ test('T5.1 30-34 migration handoff usa la última fuente upstream congelada y un
   assert.equal(handoff.consumer.workstreamMayRegisterRoute, false);
 });
 
+test('T5.1 30-34 conserva explícito el estado pre-integración: target sin freeze ni ruta', () => {
+  const target = handoff.observedTargetContentIdentity;
+  const source = handoff.sourceContentIdentity;
+
+  assert.equal(handoff.consumer.targetFreezeRequiredBeforeRouteRegistration, true);
+  assert.equal(handoff.consumer.targetFreezeFixture, `qa/fixtures/t5.1/post-t51-sources/${target}.json`);
+  assert.equal(fs.existsSync(handoff.consumer.targetFreezeFixture), false, 'coordination has frozen the target; re-ground and refresh this handoff instead of retaining pre-integration assumptions');
+  assert.equal(LEGACY_CONTENT_SOURCES[target], undefined, 'target is now a registered legacy source; re-ground and advance the handoff lineage');
+  assert.equal(
+    CONTENT_MIGRATION_ROUTES.some(route => route.sourceContentIdentity === source && route.targetContentIdentity === target),
+    false,
+    'coordination has registered the 30-34 edge; this workstream must re-ground before further content changes'
+  );
+  assert.equal(findMigrationPath(source, target, CONTENT_MIGRATION_ROUTES), undefined, 'no indirect/ambiguous path may silently stand in for the pending direct integration edge');
+});
+
 test('T5.1 30-34 current route candidate cubre exactamente las 27 colisiones estables', () => {
   assert.deepEqual(sorted(handoff.currentBatch.exactIdSemanticCollisions), stableIds);
   assert.equal(handoff.currentBatch.exactIdSemanticCollisions.length, 27);
