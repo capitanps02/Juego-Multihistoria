@@ -1,4 +1,4 @@
-import type { Condition, EventDefinition } from "../../../core/types.js";
+import type { Condition, Effect, EventDefinition } from "../../../core/types.js";
 import { PRINCIPAL_EVENTS_30_34 } from "./principal-events.js";
 import { CONDITIONAL_EVENTS_30_34 } from "./conditional-events.js";
 import { CANONICAL_REIMPLEMENTATIONS_30_34 } from "./canonical-reimplementations.js";
@@ -27,12 +27,6 @@ const canonicalRenewalAlternatives:Condition[][]=[
   [{path:"facts.clubWantsRenewal",op:"eq",value:true}]
 ];
 
-/**
- * EVT_30_CON_001 canon: contract <=18 months OR the current club wants to renew.
- * The shared T5.1 condition root now exposes facts.clubWantsRenewal, so this event
- * can use the exact event-level OR contract instead of the previous reachability
- * proxy. Trigger parity alone does not prove full canonical identity.
- */
 const applyCanonicalSharedTriggers=(event:EventDefinition):EventDefinition=>{
   if(event.id!=="EVT_30_CON_001") return event;
   return {
@@ -45,9 +39,47 @@ const applyCanonicalSharedTriggers=(event:EventDefinition):EventDefinition=>{
   } as EventDefinition & {gateAlternatives:Condition[][]};
 };
 
+const authorityOwnedPath=(effect:Effect):boolean=>{
+  if(effect.kind==="flag") return false;
+  return effect.path==="club"
+    || effect.path==="professional.ownerClub"
+    || effect.path==="professional.registrationClub"
+    || effect.path.startsWith("contract.");
+};
+
+/**
+ * 30–34 owns narrative intent, not employment mutation.
+ * Formal club/contract changes must be applied only by CareerOffer/respondToOffer.
+ * Until a scene has a compatible formal offer bridge, retain its intent/seed/history
+ * effects while preventing ad-hoc writes to authority-owned state.
+ */
+const enforceCareerAuthority=(event:EventDefinition):EventDefinition=>{
+  let stripped=false;
+  const keep=(effects:Effect[]|undefined):Effect[]|undefined=>{
+    if(!effects) return effects;
+    const filtered=effects.filter(effect=>!authorityOwnedPath(effect));
+    if(filtered.length!==effects.length) stripped=true;
+    return filtered;
+  };
+  const choices=event.choices.map(choice=>({
+    ...choice,
+    immediateEffects:keep(choice.immediateEffects),
+    hiddenCosts:keep(choice.hiddenCosts)
+  }));
+  const outcomes=event.outcomes.map(outcome=>({...outcome,effects:keep(outcome.effects)??[]}));
+  if(!stripped) return event;
+  return {
+    ...event,
+    choices,
+    outcomes,
+    tags:[...new Set([...(event.tags??[]),"t51_shared_authority_guard"])]
+  };
+};
+
 const principal:EventDefinition[]=PRINCIPAL_EVENTS_30_34.map(original=>{
   const selected=overrides.get(original.id)??original;
-  const event=applyCanonicalSharedTriggers(selected);
+  const triggered=applyCanonicalSharedTriggers(selected);
+  const event=enforceCareerAuthority(triggered);
   if(!reimplementedIds.has(event.id)) return event;
   const tags=[...(event.tags??[]).filter(tag=>tag!=="t51_verified_same_identity"),"t51_canonical_reimplementation"];
   return {...event,canonStatus:"technical_adaptation",tags:[...new Set(tags)]};

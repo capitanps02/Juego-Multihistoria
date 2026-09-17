@@ -12,9 +12,27 @@ Una coincidencia de `eventId/choiceId/outcomeId` no demuestra que una decisión 
 
 La reconciliación usa ahora esa evidencia y falla cerrada:
 
-- si el fingerprint histórico coincide con el fingerprint activo del mismo `eventId`, la fila puede aplicar las reglas T5.3 actuales;
-- si los fingerprints difieren, la fila no reconstruye conocimiento salvo que exista una certificación epistemológica explícita y exacta;
+- si el fingerprint histórico coincide con el fingerprint activo del mismo `eventId`, la fila puede ser candidata a replay epistemológico;
+- si los fingerprints difieren, la fila no reconstruye conocimiento salvo certificación epistemológica explícita y exacta;
 - una ruta T5.1 `same_scene`, una migración de scheduler o la coincidencia textual de IDs no crean esa certificación automáticamente.
+
+## T5-QA-021 — deriva de reglas live
+
+`NPC_EVENT_KNOWLEDGE_RULES` no forma parte de `EventDefinition`, `eventFingerprint` ni `contentIdentity`. Por tanto proteger únicamente el fingerprint del evento no basta: una regla epistemológica live podría cambiar en una release posterior mientras el evento conserva exactamente el mismo fingerprint.
+
+Si el replay histórico leyera siempre el registry live, una partida antigua sin `knowledge` derivado podría reinterpretarse retroactivamente según esa nueva regla.
+
+Corrección:
+
+- la resolución **live** continúa usando `NPC_EVENT_KNOWLEDGE_RULES`;
+- la reconciliación histórica usa exclusivamente `NPC_KNOWLEDGE_BACKFILL_RULES_V1` de `src/catalog/npc-knowledge-backfill-v1.ts`;
+- esa baseline contiene las 18 reglas aprobadas cuando se introdujo el backfill histórico;
+- la baseline v1 tiene un SHA-256 semántico fijado por QA;
+- array, reglas y arrays internos de la baseline quedan congelados también en runtime mediante `Object.freeze`, no solo tipados como `readonly`;
+- una evolución normal del registry live no cambia el replay de saves antiguos;
+- si en el futuro se quiere ampliar deliberadamente la semántica de backfill, no debe editarse v1 en sitio: se añadirá una nueva versión/provenance explícita.
+
+Esto evita meter reglas NPC en `contentIdentity`, lo que provocaría migraciones globales aunque no cambie ninguna escena.
 
 ## Contrato
 
@@ -23,7 +41,7 @@ La reconciliación usa ahora esa evidencia y falla cerrada:
 1. una entrada factual de `GameState.history`;
 2. la entrada de `decisionProvenance` del mismo índice;
 3. fingerprint activo coincidente o certificación legacy explícita;
-4. una regla de `NPC_EVENT_KNOWLEDGE_RULES` compatible con `eventId/choiceId/outcomeId`.
+4. una regla compatible de la baseline histórica versionada, actualmente `NPC_KNOWLEDGE_BACKFILL_RULES_V1`.
 
 `NpcKnowledgeLegacyCertification` identifica exactamente:
 
@@ -41,7 +59,7 @@ No se infiere conocimiento desde `npcRefs`, seeds, flags, ejes de relación, `NP
 
 Una fila ya persistida que satisface `getNpcKnowledgeRecord(...)` es autoritativa y no se reescribe durante el replay histórico. Esto preserva versiones subjetivas adquiridas después, transmisiones NPC→NPC, certeza distinta, memoria reforzada y procedencia/club del aprendizaje posterior.
 
-Una fila ausente o semánticamente inválida sí puede reconstruirse cuando la historia y su provenance establecen una versión semántica autorizada.
+Una fila ausente o semánticamente inválida sí puede reconstruirse cuando la historia, su provenance y la baseline de backfill establecen una versión semántica autorizada.
 
 ## Tiempo y contexto
 
@@ -72,19 +90,15 @@ Por tanto un `resume()` puede devolver en memoria un snapshot epistemológicamen
 
 ## QA dirigido
 
-`scripts/test-t53-reconciliation.mjs` cubre nueve regresiones:
+`scripts/test-t53-reconciliation.mjs` mantiene las nueve regresiones de reconciliación/provenance de T5-QA-017.
 
-1. reconstrucción de conocimiento faltante con fecha/club históricos;
-2. idempotencia;
-3. preservación exacta de una versión subjetiva válida;
-4. sustitución de una fila semánticamente inválida cuando existe evidencia explícita;
-5. no resurrección de memorias temporales históricamente caducadas;
-6. `GameSession.resume()` real con receipts, journal y provenance válidos, cero commit durante resume y RNG/history intactos;
-7. T5-QA-017: colisión exact-ID con fingerprint legacy distinto y sin certificación => cero backfill;
-8. T5-QA-017: certificación legacy exacta => backfill permitido;
-9. T5-QA-017: historial mixto legacy/current evaluado fila por fila, con RNG/history intactos.
+`scripts/test-t53-backfill-baseline.mjs` añade los gates T5-QA-021:
 
-La suite forma parte de `npm test`, `npm run test:t53`, `npm run qa:t5:saves` y `npm run qa:t5` y se ejecuta junto a los gates actuales de lineage/migration T5.1, T5.2 y contactos T5.3.
+1. la baseline v1 contiene exactamente 18 reglas, conserva el SHA-256 fijado y está congelada en runtime en todos sus niveles mutables;
+2. una regla sintética añadida temporalmente solo al registry live sí afecta una resolución live nueva;
+3. esa misma regla live-only no aparece al reconciliar history antigua, demostrando que el replay consulta la baseline congelada y no el registry actual.
+
+La suite nueva se importa desde `scripts/test-t53-reconciliation.mjs`. Por tanto queda cubierta por `npm test`, `npm run test:t53`, `npm run qa:t5:saves` y `npm run qa:t5` sin modificar `package.json`, y se ejecuta junto a los gates actuales de lineage/migration T5.1, T5.2, contactos T5.3, targets dinámicos y reconciliación histórica.
 
 ## Límites
 
@@ -92,6 +106,8 @@ Este follow-up no inventa conocimiento para escenas sin regla, no modifica canon
 
 Que una escena legacy haya sido certificada `same_scene` para scheduling/continuidad no basta para backfill epistemológico. Si se desea conservar conocimiento histórico de una versión con fingerprint diferente, debe auditarse y añadir una `NpcKnowledgeLegacyCertification` exacta para las decisiones compatibles.
 
+Que una nueva regla live —incluido un futuro `targetSlots` dinámico— sea correcta para partidas nuevas tampoco la incorpora automáticamente al replay de partidas históricas. Esa ampliación requiere una decisión explícita de versionado de backfill y, para destinatarios dinámicos, evidencia histórica suficiente para resolver el receptor real.
+
 ## Estado
 
-T5-QA-017 implementado en `t5/npc-knowledge-reconciliation`. Integrar solo tras Repository Integrity verde sobre el HEAD exacto y revisión del integrador. No auto-mergear.
+T5-QA-017 y la infraestructura de targets dinámicos (#108) están integrados en `main`. T5-QA-021 se implementa en `t5/npc-knowledge-backfill-v1` y debe integrarse solo tras Repository Integrity verde sobre el HEAD exacto. No auto-mergear.

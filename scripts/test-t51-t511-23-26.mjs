@@ -2,7 +2,6 @@ import fs from 'node:fs';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createInitialState } from '../dist/content/initial-state.js';
-import { EVENTS } from '../dist/content/events/index.js';
 import { EVENTS_23_26 } from '../dist/content/events/23_26/index.js';
 import { eventGatesPass, gateAlternatives } from '../dist/narrative/event-gates.js';
 import { resolveChoice } from '../dist/narrative/resolver.js';
@@ -23,6 +22,7 @@ const IDS = ['EVT_23_MONEY_001', 'EVT_23_HOME_001', 'EVT_23_EUR_001'];
 const TARGET_IDENTITY = '5d3fd71a8df42ed5b93fdde63ed386e9d776693addd62a30293dbecad7aa56d2';
 const PRE_T51_EVENTS = JSON.parse(fs.readFileSync('qa/fixtures/t5.1/pre-t51-event-catalog.json', 'utf8'));
 const T510_FIXTURE = JSON.parse(fs.readFileSync(`qa/fixtures/t5.1/post-t51-sources/${T51_T510_CONTENT_IDENTITY}.json`, 'utf8'));
+const T511_FIXTURE = JSON.parse(fs.readFileSync(`qa/fixtures/t5.1/post-t51-sources/${T51_T511_CONTENT_IDENTITY}.json`, 'utf8'));
 
 const byId = id => {
   const rows = EVENTS_23_26.filter(event => event.id === id);
@@ -146,6 +146,7 @@ test('continental-list scene requires continental context and does not decide re
   const event = europe();
   assert.deepEqual(event.gates, [
     { path: 'flags.CONTINENTAL_CONTEXT', op: 'eq', value: true },
+    { path: 'flags.CONTINENTAL_REGISTERED', op: 'eq', value: false },
     { path: 'professional.roleSecurity', op: 'lte', value: 70 }
   ]);
   assert.deepEqual(event.timeWindow?.months, [8, 9]);
@@ -163,6 +164,9 @@ test('continental-list scene requires continental context and does not decide re
   state.flags.CONTINENTAL_REGISTERED = false;
   state.professional.roleSecurity = 45;
   assert.equal(eventGatesPass(state, event), true);
+  state.flags.CONTINENTAL_REGISTERED = true;
+  assert.equal(eventGatesPass(state, event), false, 'already registered players must not receive the unresolved-list scene');
+  state.flags.CONTINENTAL_REGISTERED = false;
   const beforeRegistration = state.flags.CONTINENTAL_REGISTERED;
   const result = resolveChoice(state, event, 'C');
   assert.equal(result.state.flags.CONTINENTAL_REGISTERED, beforeRegistration, 'narrative stance must not fabricate registration result');
@@ -171,8 +175,8 @@ test('continental-list scene requires continental context and does not decide re
   assert.equal(seed?.payload.registrationOutcome, 'unknown');
 });
 
-test('T5.11 extends only the T5.10 -> T5.11 lineage edge', async () => {
-  const actualIdentity = await contentIdentity(EVENTS);
+test('T5.11 frozen catalog preserves only the T5.10 -> T5.11 lineage edge', async () => {
+  const actualIdentity = await contentIdentity(T511_FIXTURE.events);
   assert.equal(actualIdentity, TARGET_IDENTITY);
   assert.equal(actualIdentity, T51_T511_CONTENT_IDENTITY);
   assert.equal(findMigrationRoute(PRE_T51_CONTENT_IDENTITY, actualIdentity, CONTENT_MIGRATION_ROUTES), undefined);
@@ -229,7 +233,7 @@ test('T5.10 -> T5.11 preserves history/seeds and releases legacy scheduler suppr
   }
 });
 
-test('real PRE and T5.10 snapshots migrate to T5.11 without RNG drift', async () => {
+test('real PRE and T5.10 snapshots retain a unique no-drift route to frozen T5.11', async () => {
   const sources = [
     ['pre', PRE_T51_EVENTS, 51106],
     ['t510', T510_FIXTURE.events, 51107]
@@ -239,10 +243,11 @@ test('real PRE and T5.10 snapshots migrate to T5.11 without RNG drift', async ()
     const before = session.exportSnapshot();
     const stateBefore = structuredClone(before.state);
     const rngBefore = structuredClone(before.state.rngState);
-    const migrated = await GameSession.migrateAndResume(before);
-    const after = migrated.exportSnapshot();
-    assert.equal(after.contentIdentity, TARGET_IDENTITY, `${name}: wrong target identity`);
-    assert.deepEqual(after.state, stateBefore, `${name}: migration mutated unresolved state`);
-    assert.deepEqual(after.state.rngState, rngBefore, `${name}: migration consumed RNG`);
+    const path = findMigrationPath(before.contentIdentity, TARGET_IDENTITY, CONTENT_MIGRATION_ROUTES);
+    assert.ok(path, `${name}: missing route to frozen T5.11`);
+    const migratedState = structuredClone(before.state);
+    for (const route of path) applyMigrationRouteInPlace(migratedState, route);
+    assert.deepEqual(migratedState, stateBefore, `${name}: route mutated unresolved state`);
+    assert.deepEqual(migratedState.rngState, rngBefore, `${name}: route consumed RNG`);
   }
 });
