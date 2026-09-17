@@ -1,0 +1,138 @@
+{
+  "version": 1,
+  "generatedAt": "2026-09-17",
+  "baseMain": "a7a0bb575ac8824c3e52975e8861a97e29f94830",
+  "ownerBranch": "t51/canon-34plus",
+  "scope": {
+    "ordinaryPrincipals": 43,
+    "canonicalCardsPrepared": 43,
+    "runtimeActivated": 0,
+    "strictCodexReady": 0
+  },
+  "globalPrerequisites": [
+    {
+      "owner": "shared_integration",
+      "issue": 59,
+      "appliesToAllOrdinaryScenes": true,
+      "contract": "34+ may register only after the actual authoritative immediate predecessor exists; create one adjacent predecessor_to_34plus content generation and preserve migration evidence"
+    },
+    {
+      "owner": "t52_seed_lifecycle",
+      "issue": 180,
+      "appliesToAllOrdinaryScenes": true,
+      "contract": "apply the 54 exact Pasada-7 canonical seed identities and 14 bridge-memory dispositions from T52_SEED_HANDOFF.json without provenance rewrite or heuristic aliases"
+    }
+  ],
+  "routes": [
+    {
+      "domain": "veteran_market_contract",
+      "ownerIssue": 176,
+      "upstreamAlreadyIntegrated": [
+        "CareerOffer formal authority",
+        "offer/session bridge",
+        "stale-offer fail-closed eligibility",
+        "deterministic pendingCareerOfferKind",
+        "renewal-reason authority cleanup",
+        "direct market mutation audit"
+      ],
+      "stillMissing": [
+        "authoritative 34+ veteran renewal/transfer/return/lower-level/high-value/short-offer generation",
+        "explicit representability decisions for canonical salary/bonus/exit/role/liaison/ambassador/short-duration terms"
+      ],
+      "events": [
+        "EVT_34_AGT_001","EVT_34_BRIDGE_001","EVT_34_CON_001","EVT_34_HOME_001","EVT_34_MAR_001","EVT_34_PAY_001",
+        "EVT_35_AGT_001","EVT_35_CON_001","EVT_35_DUAL_001","EVT_35_FAREWELL_001","EVT_35_HOME_001","EVT_35_JAN_001","EVT_35_MKT_001",
+        "EVT_36_CON_001","EVT_36_LOWER_001","EVT_37_HOME_001","EVT_37_SHORT_001","EVT_38_RICH_001"
+      ]
+    },
+    {
+      "domain": "free_agency",
+      "ownerIssue": 130,
+      "stillMissing": [
+        "authoritative unattached player employment/registration/salary/sporting state",
+        "factual elapsed market-silence history for EVT_38_MARKET_001"
+      ],
+      "events": ["EVT_37_SHORT_001","EVT_38_MARKET_001"]
+    },
+    {
+      "domain": "concrete_national_selection",
+      "ownerIssue": 174,
+      "upstreamAlreadyIntegrated": [
+        "resolveNationalTeamAuthority aggregate/history/pool/cycle facts",
+        "international-retirement invariant distinct from career retirement"
+      ],
+      "stillMissing": [
+        "concrete current preselection/call-up/omission/final-squad facts"
+      ],
+      "events": ["EVT_34_NT_001","EVT_34_NT_002","EVT_35_NT_001"]
+    },
+    {
+      "domain": "sport_match_usage_calendar",
+      "ownerIssue": 124,
+      "candidatePullRequest": 156,
+      "candidateStateAtAudit": "open_draft_not_integrated",
+      "candidateProvides": [
+        "official fixture identity",
+        "next/previous fixture and remaining league fixtures",
+        "real match squad call/bench/start/appearance/minutes",
+        "injury-unavailable fact",
+        "historical usage rows"
+      ],
+      "candidateExplicitlyDoesNotProvide": [
+        "per-match final result",
+        "goals/assists/cards",
+        "penalty opportunity/assignment/outcome",
+        "concrete national selection",
+        "generic record authority",
+        "non-league final identity unless separately produced"
+      ],
+      "events": [
+        "EVT_34_BODY_001","EVT_34_FAN_001","EVT_34_LOAD_001","EVT_34_MATCH_001","EVT_34_NT_001","EVT_34_NT_002","EVT_34_ROLE_001","EVT_34_TRAVEL_001",
+        "EVT_35_BENCH_001","EVT_35_FINAL_001","EVT_35_NT_001","EVT_35_RECORD_001","EVT_35_TACT_001",
+        "EVT_36_BODY_001","EVT_36_RECORD_001","EVT_37_PEN_001"
+      ],
+      "knownResidualExamplesAfterPR156": {
+        "EVT_34_MATCH_001": "decisive goal/result still missing",
+        "EVT_34_TRAVEL_001": "team win/result still missing",
+        "EVT_35_FINAL_001": "authoritative final/competition context still missing",
+        "EVT_35_RECORD_001": "record definition/surpass fact still missing",
+        "EVT_36_RECORD_001": "record authority still missing",
+        "EVT_37_PEN_001": "penalty opportunity/assignment/outcome still missing"
+      }
+    },
+    {
+      "domain": "late_career_npc_identity",
+      "ownerIssue": 177,
+      "relatedCoachIssue": 169,
+      "upstreamAlreadyIntegrated": [
+        "resolveActiveAgent fail-closed",
+        "resolveCurrentPlayerClubLeadership",
+        "listCertifiedPlayerClubLeadership",
+        "resolveCertifiedPlayerLeadershipSuccessor explicit-certification-only"
+      ],
+      "stillMissing": [
+        "factual young signing/current younger competitor when required",
+        "current coach/change plus age/generation",
+        "veteran peer plus explicit peer-retirement fact",
+        "ordinary 34+ institutional counterparty",
+        "record-breaking young-player identity bound to factual record"
+      ],
+      "events": ["EVT_34_DORSAL_001","EVT_34_MENTOR_001","EVT_35_AGT_001","EVT_35_DUAL_001","EVT_35_RECORD_001","EVT_36_CCH_001","EVT_36_PEER_001"]
+    },
+    {
+      "domain": "terminal_career_retirement",
+      "ownerPullRequest": 118,
+      "owner": "agent9",
+      "ordinarySceneBoundaryOnly": true,
+      "eventsWithCareerRetirementChoiceOrTerminalHandoff": ["EVT_36_LOWER_001","EVT_38_MARKET_001","EVT_38_RICH_001"],
+      "rule": "Agent 8 may present the ordinary dilemma but career-terminal state transition/announcement/closure stays with Agent 9"
+    },
+    {
+      "domain": "agent8_context_specific",
+      "owner": "agent8_after_wave0",
+      "events": ["EVT_35_FAM_001","EVT_35_BODY_001","EVT_35_IMG_001","EVT_36_MED_001"],
+      "rule": "first activation batch after global Wave 0; each card still requires its factual family/body/image/medical gates from WAVE_A_IMPLEMENTATION.json"
+    }
+  ],
+  "codexRule": "Do not mark an event ready because one routed authority lands. Re-evaluate the full AUTHORITY_MATRIX entry plus Wave 0 against the then-current main; unavailable facts fail closed and proxies are forbidden."
+}
