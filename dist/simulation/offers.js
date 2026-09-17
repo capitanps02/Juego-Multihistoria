@@ -1,4 +1,4 @@
-import { FORMAL_RENEWAL_REASON } from "./club-contract-intent.js";
+export const FORMAL_RENEWAL_REASON = "Renovación de contrato";
 export function marketState(s) {
     return s.market ??= { version: 1, sequence: 0, pending: null, history: [] };
 }
@@ -33,14 +33,32 @@ export function getActiveCareerOffers(s) {
     const pending = s.market?.pending;
     return pending ? [structuredClone(pending)] : [];
 }
+/**
+ * Returns only formal offers whose persisted `before` snapshot still matches the live
+ * CareerTerms. Results are detached through getActiveCareerOffers(), so callers may
+ * inspect exact destination/financial terms without acquiring mutation authority.
+ */
+export function getEligibleCareerOffers(s) {
+    const current = careerTerms(s);
+    return getActiveCareerOffers(s).filter(offer => sameTerms(current, offer.before));
+}
+/**
+ * Read-only kind of the one formal offer that is still compatible with the live
+ * CareerTerms. A stale pending offer remains inspectable through getActiveCareerOffers
+ * but intentionally projects null here so narrative eligibility fails closed.
+ */
+export function eligibleCareerOfferKind(s) {
+    const offer = getEligibleCareerOffers(s)[0];
+    return offer ? careerOfferKind(offer) : null;
+}
 export function getEligibleTransferOffers(s) {
-    return getActiveCareerOffers(s).filter(offer => careerOfferKind(offer) === "transfer");
+    return getEligibleCareerOffers(s).filter(offer => careerOfferKind(offer) === "transfer");
 }
 export function getEligibleLoanOffers(s) {
-    return getActiveCareerOffers(s).filter(offer => careerOfferKind(offer) === "loan");
+    return getEligibleCareerOffers(s).filter(offer => careerOfferKind(offer) === "loan");
 }
 export function getEligibleRenewalOffers(s) {
-    return getActiveCareerOffers(s).filter(offer => careerOfferKind(offer) === "renewal");
+    return getEligibleCareerOffers(s).filter(offer => careerOfferKind(offer) === "renewal");
 }
 /**
  * Employment status is deliberately conservative over the existing save schema.

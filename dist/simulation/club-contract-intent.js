@@ -1,14 +1,17 @@
 import { earlyCareerSeedFacts } from "../narrative/seed-memory.js";
 import { lockerSlotAffinity } from "./locker-leadership.js";
+import { careerOfferKind, eligibleCareerOfferKind, FORMAL_RENEWAL_REASON, getEligibleCareerOffers } from "./offers.js";
 import { getCurrentMatchContext, getSportContext } from "./sport-context.js";
+export { FORMAL_RENEWAL_REASON };
 export const CLUB_WANTS_RENEWAL_FACT = "facts.clubWantsRenewal";
 export const LOCKER_CAPTAIN_AFFINITY_FACT = "facts.lockerCaptainAffinity";
 export const LOCKER_STAR_AFFINITY_FACT = "facts.lockerStarAffinity";
 export const ROLE_DROP_SINCE_23_FACT = "facts.roleDropSince23";
 export const ROLE_GUARANTEE_AT_23_FACT = "facts.roleGuaranteeAt23";
+export const PENDING_CAREER_OFFER_KIND_FACT = "facts.pendingCareerOfferKind";
+export const PENDING_CAREER_OFFER_FACT = "facts.pendingCareerOffer";
 export const CLUB_RENEWAL_INTENT_MAX_MONTHS = 24;
 export const CLUB_RENEWAL_INTENT_THRESHOLD = 0.50;
-export const FORMAL_RENEWAL_REASON = "Renovación de contrato";
 const clamp = (x, min = 0, max = 1) => Math.min(max, Math.max(min, x));
 const num = (x, fallback = 0) => typeof x === "number" ? x : fallback;
 /**
@@ -24,10 +27,10 @@ export function clubRenewalPropensity(state) {
         + num(p.roleSecurity) / 280
         - Math.max(0, num(p.contractPower) - 65) / 230, 0.16, 0.68);
 }
-/** A materialised same-club renewal offer is direct evidence of club renewal intent. */
+/** A materialised, still-compatible same-club renewal is direct evidence of club renewal intent. */
 export function hasFormalClubRenewalOffer(state) {
     const offer = state.market?.pending;
-    if (!offer || offer.reason !== FORMAL_RENEWAL_REASON)
+    if (!offer || offer.reason !== FORMAL_RENEWAL_REASON || eligibleCareerOfferKind(state) !== "renewal")
         return false;
     return offer.before.club === offer.terms.club
         && offer.before.ownerClub === offer.terms.ownerClub;
@@ -76,6 +79,18 @@ export function hasRoleGuaranteeAt23(state) {
         && seed.originEvent === "EVT_23_BRIDGE_001"
         && seed.payload.stance === "role_guarantees");
 }
+export function pendingCareerOfferFacts(state) {
+    const offer = getEligibleCareerOffers(state)[0];
+    if (!offer)
+        return null;
+    return {
+        id: offer.id,
+        kind: careerOfferKind(offer),
+        date: offer.date,
+        reason: offer.reason,
+        terms: structuredClone(offer.terms)
+    };
+}
 export function narrativeCausalFacts(state) {
     return {
         ...earlyCareerSeedFacts(state),
@@ -84,6 +99,8 @@ export function narrativeCausalFacts(state) {
         lockerStarAffinity: lockerSlotAffinity(state, "star"),
         roleDropSince23: roleDropSince23(state),
         roleGuaranteeAt23: hasRoleGuaranteeAt23(state),
+        pendingCareerOfferKind: eligibleCareerOfferKind(state),
+        pendingCareerOffer: pendingCareerOfferFacts(state),
         sport: getSportContext(state),
         match: getCurrentMatchContext(state)
     };

@@ -1,4 +1,5 @@
 import type { GameState } from "../core/types.js";
+export declare const FORMAL_RENEWAL_REASON = "Renovaci\u00F3n de contrato";
 export interface CareerTerms {
     club: string;
     tier: number;
@@ -58,6 +59,18 @@ export declare function careerTerms(s: GameState): CareerTerms;
 export declare function careerOfferKind(offer: CareerOffer): CareerOfferKind;
 /** Returns detached formal offers so callers cannot mutate market.pending accidentally. */
 export declare function getActiveCareerOffers(s: GameState): readonly CareerOffer[];
+/**
+ * Returns only formal offers whose persisted `before` snapshot still matches the live
+ * CareerTerms. Results are detached through getActiveCareerOffers(), so callers may
+ * inspect exact destination/financial terms without acquiring mutation authority.
+ */
+export declare function getEligibleCareerOffers(s: GameState): readonly CareerOffer[];
+/**
+ * Read-only kind of the one formal offer that is still compatible with the live
+ * CareerTerms. A stale pending offer remains inspectable through getActiveCareerOffers
+ * but intentionally projects null here so narrative eligibility fails closed.
+ */
+export declare function eligibleCareerOfferKind(s: GameState): CareerOfferKind | null;
 export declare function getEligibleTransferOffers(s: GameState): readonly CareerOffer[];
 export declare function getEligibleLoanOffers(s: GameState): readonly CareerOffer[];
 export declare function getEligibleRenewalOffers(s: GameState): readonly CareerOffer[];
