@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "baseCommit": "782b92c9a496293aeb33ad8b39f522a927374d6f",
+  "branch": "integration/t5-npc-authority-current",
+  "generatedAt": "2026-09-17",
+  "tasks": [
+    {
+      "id": "CODEX-NPC-001",
+      "status": "ready_after_authority_merge",
+      "priority": "high",
+      "eventId": "EVT_21_PRS_001",
+      "requiredApi": ["captureNpcKnowledgeTargetContext", "resolveNpcKnowledgeTargets"],
+      "acceptance": ["currentClubInstitutional only for actual club communication", "non-certified club => no nominal target", "0 RNG"]
+    },
+    {
+      "id": "CODEX-NPC-002",
+      "status": "ready_after_authority_merge",
+      "priority": "high",
+      "eventId": "EVT_22_CON_001",
+      "requiredApi": ["resolveCurrentClubInstitutionalNpc"],
+      "acceptance": ["choice-by-choice communication semantics", "private WAIT_SUMMER does not imply knowledge", "no club leakage"]
+    },
+    {
+      "id": "CODEX-NPC-003",
+      "status": "ready_after_authority_merge",
+      "priority": "high",
+      "eventId": "EVT_22_CON_002",
+      "requiredApi": ["resolveCurrentClubInstitutionalNpc"],
+      "acceptance": ["only communicated stances create nominal knowledge", "RUN_DOWN is not automatically informed", "0 RNG"]
+    },
+    {
+      "id": "CODEX-NPC-004",
+      "status": "ready_on_owner_branch",
+      "priority": "critical",
+      "eventId": "EVT_23_LOCK_001",
+      "owner": "PR #122",
+      "acceptance": ["captain choice requires facts.lockerCaptainAffinity exists", "A/B/C remain available", "no UDV captain leakage"]
+    },
+    {
+      "id": "CODEX-NPC-005",
+      "status": "policy_resolved",
+      "priority": "high",
+      "eventId": "EVT_21_CAP_001",
+      "acceptance": ["20_23 captain remains generic", "no nominal captain memory without certification"]
+    },
+    {
+      "id": "CODEX-NPC-006",
+      "status": "blocked",
+      "priority": "critical",
+      "eventId": "EVT_20_BRUNO_001",
+      "blockedAlso": ["EVT_20_AGT_001", "EVT_21_SOC_001", "EVT_21_AGT_001"],
+      "reason": "No canonical hiring/switch action yet certifies activeAgentNpcId. Runtime resolver alone is insufficient."
+    },
+    {
+      "id": "CODEX-NPC-007",
+      "status": "needs_owner_decision",
+      "priority": "critical",
+      "eventId": null,
+      "requiredApi": ["certifyActiveAgentInPlace", "clearActiveAgentInPlace"],
+      "acceptance": ["identify real canonical hire/switch/termination action", "old saves without authority remain null", "no contact/seed heuristic"]
+    }
+  ]
+}

@@ -4,7 +4,7 @@ import test from 'node:test';
 import { createInitialState } from '../dist/content/initial-state.js';
 import { eventGatesPass } from '../dist/narrative/event-gates.js';
 import { clubRenewalPropensity, clubWantsRenewal, hasFormalClubRenewalOffer } from '../dist/simulation/club-contract-intent.js';
-import { proposeCareerChange } from '../dist/simulation/offers.js';
+import { careerTerms, proposeCareerChange, respondToOffer } from '../dist/simulation/offers.js';
 
 function state30() {
   const state = createInitialState(12345);
@@ -36,6 +36,13 @@ function canonicalTriggerEvent() {
     choices: [{ id: 'A', label: 'A', intentTags: [], outcomeIds: ['O'] }],
     outcomes: [{ id: 'O', baseWeight: 1, effects: [], messages: ['ok'] }]
   };
+}
+
+function makeRenewal(state, months = 36, salaryDelta = 600) {
+  proposeCareerChange(state, 'Renovación de contrato', draft => {
+    draft.contract.monthsRemaining = months;
+    draft.contract.salaryMonthly = Number(draft.contract.salaryMonthly) + salaryDelta;
+  });
 }
 
 test('high club renewal propensity creates an authoritative early-renewal fact beyond 18 months', () => {
@@ -112,6 +119,51 @@ test('renewal fact resolution consumes no RNG and mutates no GameState', () => {
   const before = structuredClone(state);
   assert.equal(clubWantsRenewal(state), true);
   assert.deepEqual(state, before);
+});
+
+test('a directly rejected renewal cannot be recreated from the identical contract snapshot', () => {
+  const state = state30();
+  state.contract.monthsRemaining = 5;
+  const before = careerTerms(state);
+  makeRenewal(state, 36, 600);
+  const first = structuredClone(state.market.pending);
+  assert.ok(first);
+  respondToOffer(state, first.id, 'reject');
+  assert.deepEqual(careerTerms(state), before);
+
+  makeRenewal(state, 42, 900);
+  assert.equal(state.market.pending, null);
+  assert.equal(state.market.history.length, 1);
+});
+
+test('a changed current contract snapshot can open a fresh renewal after a rejection', () => {
+  const state = state30();
+  state.contract.monthsRemaining = 5;
+  makeRenewal(state, 36, 600);
+  respondToOffer(state, state.market.pending.id, 'reject');
+
+  state.contract.monthsRemaining = 4;
+  makeRenewal(state, 42, 900);
+  assert.ok(state.market.pending);
+  assert.equal(state.market.pending.before.months, 4);
+  assert.equal(state.market.pending.reason, 'Renovación de contrato');
+});
+
+test('countering a renewal does not masquerade as a direct rejection for reoffer suppression', () => {
+  const state = state30();
+  state.contract.monthsRemaining = 5;
+  makeRenewal(state, 36, 600);
+  const first = state.market.pending;
+  respondToOffer(state, first.id, 'counter', {
+    kind: 'narrative_choice',
+    historyIndex: 0,
+    eventId: 'TEST_COUNTER',
+    choiceId: 'COUNTER'
+  });
+
+  makeRenewal(state, 42, 900);
+  assert.ok(state.market.pending);
+  assert.equal(state.market.history[0].source.disposition, 'counter');
 });
 
 test('derived propensity is locked to the existing world renewal policy until deliberately changed', () => {

@@ -1,5 +1,7 @@
 import type { GameState } from "../core/types.js";
+import { earlyCareerSeedFacts, type EarlyCareerSeedFacts } from "../narrative/seed-memory.js";
 import { lockerSlotAffinity } from "./locker-leadership.js";
+import { getCurrentMatchContext, getSportContext, type CurrentMatchContext, type SportContext } from "./sport-context.js";
 
 export const CLUB_WANTS_RENEWAL_FACT = "facts.clubWantsRenewal" as const;
 export const LOCKER_CAPTAIN_AFFINITY_FACT = "facts.lockerCaptainAffinity" as const;
@@ -56,17 +58,24 @@ export function clubWantsRenewal(state: GameState): boolean {
   return clubRenewalPropensity(state) >= CLUB_RENEWAL_INTENT_THRESHOLD;
 }
 
-export interface NarrativeCausalFacts {
+export interface NarrativeCausalFacts extends EarlyCareerSeedFacts {
   clubWantsRenewal: boolean;
   lockerCaptainAffinity: number | null;
   lockerStarAffinity: number | null;
+  /** Authoritative/read-only sporting projection. Unavailable sporting facts are null. */
+  sport: SportContext;
+  /** Current match projection. Fails closed until a real match producer exists. */
+  match: CurrentMatchContext;
 }
 
 export function narrativeCausalFacts(state: GameState): NarrativeCausalFacts {
   return {
+    ...earlyCareerSeedFacts(state),
     clubWantsRenewal: clubWantsRenewal(state),
     lockerCaptainAffinity: lockerSlotAffinity(state, "captain"),
-    lockerStarAffinity: lockerSlotAffinity(state, "star")
+    lockerStarAffinity: lockerSlotAffinity(state, "star"),
+    sport: getSportContext(state),
+    match: getCurrentMatchContext(state)
   };
 }
 

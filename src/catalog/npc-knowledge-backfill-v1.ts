@@ -1,40 +1,17 @@
-import type { NpcKnowledgeSource, NpcMemoryClass } from "../core/npc-knowledge.js";
-
-export type NpcKnowledgeTargetSlot = "captain" | "star" | "activeAgent" | "currentClubInstitutional";
-
-export interface NpcEventKnowledgeRule {
-  eventId: string;
-  choiceIds?: string[];
-  outcomeIds?: string[];
-  /** Explicit persistent NPC targets known at authoring time. */
-  npcIds: string[];
-  /**
-   * Optional role-based recipients resolved from authoritative runtime contracts.
-   * These are live-resolution targets, never inferred from npcRefs, seeds, role
-   * text or relationship magnitude.
-   */
-  targetSlots?: NpcKnowledgeTargetSlot[];
-  factId?: string;
-  source: NpcKnowledgeSource;
-  certainty?: number;
-  memory?: NpcMemoryClass;
-  expiresAfterDays?: number;
-  relationshipMemory?: boolean;
-}
-
-export interface NpcEventKnowledgeRequirement {
-  eventId: string;
-  npcId: string;
-  factId: string;
-}
+import type { NpcEventKnowledgeRule } from "./npc-knowledge-rules.js";
 
 /**
- * Conservative knowledge registry.
+ * Immutable semantic baseline used only to reconstruct missing T5.3 knowledge
+ * from historical saves. Live event resolution MUST continue to use
+ * NPC_EVENT_KNOWLEDGE_RULES from npc-knowledge-rules.ts.
  *
- * `npcRefs` must never be treated as witnesses. A fact is granted only through
- * an explicit rule in this registry (or a later call to informNpcOfEventInPlace).
+ * Do not edit this v1 baseline in place when live rules evolve. If historical
+ * backfill semantics must intentionally expand, add a new explicitly versioned
+ * baseline/provenance decision instead. The SHA-256 ratchet is asserted by QA.
  */
-export const NPC_EVENT_KNOWLEDGE_RULES: NpcEventKnowledgeRule[] = [
+export const NPC_KNOWLEDGE_BACKFILL_V1_SHA256 = "80187bea933b80035e0c5c02d28fffe2d5d7bea84df0f478288461214aaee4d6";
+
+export const NPC_KNOWLEDGE_BACKFILL_RULES_V1: readonly NpcEventKnowledgeRule[] = [
   {
     eventId: "EVT_18_PRE_001",
     choiceIds: ["CALL_NANO"],
@@ -208,22 +185,23 @@ export const NPC_EVENT_KNOWLEDGE_RULES: NpcEventKnowledgeRule[] = [
   }
 ];
 
-/**
- * Some callbacks are reactions to prior facts. They are eligible only after the
- * reacting NPC actually knows the relevant fact; flags/seeds alone are not enough.
- */
-export const NPC_EVENT_KNOWLEDGE_REQUIREMENTS: NpcEventKnowledgeRequirement[] = [
-  { eventId: "CEVT_19_NANO_01", npcId: "NPC_PLR_14", factId: "EVT_19_TEAM_001" }
-];
-
-export function knowledgeRulesFor(eventId: string, choiceId: string, outcomeId: string): NpcEventKnowledgeRule[] {
-  return NPC_EVENT_KNOWLEDGE_RULES.filter(rule =>
-    rule.eventId === eventId &&
-    (!rule.choiceIds || rule.choiceIds.includes(choiceId)) &&
-    (!rule.outcomeIds || rule.outcomeIds.includes(outcomeId))
-  );
+for (const rule of NPC_KNOWLEDGE_BACKFILL_RULES_V1) {
+  Object.freeze(rule.npcIds);
+  if (rule.choiceIds) Object.freeze(rule.choiceIds);
+  if (rule.outcomeIds) Object.freeze(rule.outcomeIds);
+  if (rule.targetSlots) Object.freeze(rule.targetSlots);
+  Object.freeze(rule);
 }
+Object.freeze(NPC_KNOWLEDGE_BACKFILL_RULES_V1);
 
-export function knowledgeRequirementsFor(eventId: string): NpcEventKnowledgeRequirement[] {
-  return NPC_EVENT_KNOWLEDGE_REQUIREMENTS.filter(rule => rule.eventId === eventId);
+export function historicalKnowledgeRulesFor(
+  eventId: string,
+  choiceId: string,
+  outcomeId: string
+): NpcEventKnowledgeRule[] {
+  return NPC_KNOWLEDGE_BACKFILL_RULES_V1.filter(rule =>
+    rule.eventId === eventId
+    && (!rule.choiceIds || rule.choiceIds.includes(choiceId))
+    && (!rule.outcomeIds || rule.outcomeIds.includes(outcomeId))
+  );
 }
