@@ -8,9 +8,10 @@
     "EVT_25_MKT_001",
     "EVT_26_BRIDGE_001",
     "EVT_26_DOC_001",
-    "EVT_27_IMG_001"
+    "EVT_27_IMG_001",
+    "EVT_27_BODY_001"
   ],
-  "auditNext": ["EVT_27_BODY_001", "EVT_27_HOME_001", "EVT_27_MONEY_001"],
+  "auditNext": ["EVT_27_HOME_001", "EVT_27_MONEY_001", "EVT_27_CON_001"],
   "blockedAfterAudit": [
     {"id":"EVT_26_CAP_001","reason":"no certified captain slot for phase 26_30"},
     {"id":"EVT_26_MED_001","reason":"no authoritative schedule density"},
