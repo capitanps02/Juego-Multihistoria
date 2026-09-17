@@ -23,6 +23,7 @@ test('T5.36 career summary is read-only and does not fabricate unavailable match
 test('T5.36 final save/load preserves the facts needed to rebuild the same terminal summary', () => {
   const state = createInitialState(536102);
   state.age = 39;
+  state.phase = '34_plus';
   state.club = 'UDV';
   state.professional.registrationClub = 'UDV';
   state.professional.ownerClub = 'UDV';
@@ -58,6 +59,7 @@ test('T5.36 final save/load preserves the facts needed to rebuild the same termi
 test('T5.36 career summary reports no last appearance when retirement closes without one', () => {
   const state = createInitialState(536103);
   state.age = 40;
+  state.phase = '34_plus';
   state.retirement.status = 'announced';
   state.retirement.reason = 'no_market';
   state.flags.RETIREMENT_ANNOUNCED = true;
