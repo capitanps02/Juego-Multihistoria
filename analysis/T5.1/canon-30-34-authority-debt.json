@@ -98,6 +98,22 @@
   },
   "scenes": [
     {
+      "eventId": "EVT_30_FORM_001",
+      "status": "blocked_missing_sport_history_authority",
+      "canonicalClaim": "The scene is specifically triggered by a six-match spell containing five goals.",
+      "currentApproximation": [
+        "aggregate sport.form / narrative maturity context"
+      ],
+      "missingFacts": [
+        "authoritative ordered recent-match history",
+        "authoritative player appearance for each relevant match",
+        "authoritative per-match goal totals",
+        "query/projection capable of proving five goals across the six-match window"
+      ],
+      "risk": "Aggregate form cannot prove that six concrete matches occurred or that the player scored five goals in that window.",
+      "codexAction": "Keep the scene technical-adaptation debt until sport authority exposes recent match history; do not reconstruct the six-match/five-goal claim from form, career totals or fabricated fixtures."
+    },
+    {
       "eventId": "EVT_31_FINAL_001",
       "status": "protected_fail_closed",
       "canonicalClaim": "The decision is specifically about a final and a planned role/minutes context.",
