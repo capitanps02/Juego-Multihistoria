@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "generatedAt": "2026-09-17",
   "baseMain": "fa3c8bae524fef62e4eb9802e895df88588998c4",
   "ownerBranch": "t51/canon-34plus",
@@ -11,24 +11,7 @@
     "ordinaryCardsPrepared": 43,
     "ordinaryAuthorityMatrixCoverage": 43,
     "runtimeImplementedOnAgent8Branch": 0,
-    "strictCodexReady": 0,
-    "identityBreakdown": {
-      "verifiedSameIdentity": 4,
-      "replacement": 3,
-      "needsReimplementation": 13,
-      "canonicalMissing": 30
-    },
-    "detailSources": [
-      "IDENTITY_RECONCILIATION.json",
-      "CANONICAL_CARD_COVERAGE.json",
-      "AUTHORITY_MATRIX.json",
-      "implementation-ready.json",
-      "WAVE_A_IMPLEMENTATION.json",
-      "WAVE_B_IMPLEMENTATION.json",
-      "WAVE_C_IMPLEMENTATION.json",
-      "WAVE_D_IMPLEMENTATION.json",
-      "WAVE_E_IMPLEMENTATION.json"
-    ]
+    "strictCodexReady": 0
   },
   "conditionals": {
     "canonicalSource": "Documento Maestro section 25.13",
@@ -39,77 +22,85 @@
     "runtimeAccredited": 0,
     "exactIdOverlap": 5,
     "exactIdSemanticallyAccredited": 0,
-    "sameIdNeedsReimplementation": 5,
     "canonicalMissingExactId": 27,
     "engineTechnicalExtraExactId": 27,
-    "genericTechnicalAdaptationsInEngine": 29,
     "ownerIssue": 192,
-    "sharedAuthorityGapIssue": 195,
-    "unresolvedSharedAuthorityDomains": 8,
-    "detailSources": [
-      "CONDITIONAL_RECONCILIATION.json",
-      "CONDITIONAL_HANDOFF.md",
-      "CONDITIONAL_AUTHORITY_MATRIX.json"
-    ],
-    "terminalBoundary": [
-      "CEVT_38_OFFER_AFTER_RETIREMENT_ANNOUNCED",
-      "CEVT_38_RETIREMENT_REVERSAL",
-      "CEVT_RET_NO_LAST_MATCH",
-      "CEVT_RET_STORYBOOK_LAST_GOAL"
-    ],
-    "migrationGuard": "CEVT_RET_RECONSIDER is not a canonical Pasada-7 ID and must not be silently aliased to CEVT_38_RETIREMENT_REVERSAL"
+    "formerGapIssue": {"issue":195,"state":"closed_completed"},
+    "unresolvedSharedAuthorityDomains": 0,
+    "routedFactOwners": [176,199,200,201],
+    "migrationGuard": "CEVT_RET_RECONSIDER is not canonical Pasada-7 identity and must not be silently aliased to CEVT_38_RETIREMENT_REVERSAL"
   },
   "seeds": {
     "canonicalPasada7Identities": 54,
     "ordinaryAgent8Producers": 45,
     "terminalAgent9Producers": 9,
     "bridgeMemoryConcepts": 14,
-    "catalogAppliedToMain": false,
     "ownerIssue": 180,
-    "detailSources": [
-      "SEED_OWNERSHIP.md",
-      "T52_SEED_HANDOFF.json"
-    ]
+    "pullRequest": 191,
+    "implementationState": "ready_for_review_green_not_integrated",
+    "catalogAppliedToMain": false
   },
   "lineage": {
-    "activeContentGeneration": "H",
-    "immediate34PlusPredecessorAuthoritative": false,
     "ownerIssue": 59,
-    "rule": "Do not register or freeze 34+ contentIdentity until the actual final canonical predecessor exists; then add only the adjacent predecessor-to-34+ generation."
+    "migrationGraphImplemented": true,
+    "activeContentGeneration": "H",
+    "activeContentIdentity": "84871fae2bec92d74d1e607e0a48943e2e530a062d315a829cfe75eda9fe0886",
+    "agent8SuccessorAuthorizedNow": false,
+    "immediate34PlusPredecessorAuthoritative": false,
+    "rule": "34+ must wait for the serialized final 30-34 predecessor and then register only one adjacent predecessor-to-34plus generation"
   },
+  "sharedRuntimeOrder": [
+    {"order":1,"issue":124,"pullRequest":156,"scope":"sport boundary","state":"open_draft_not_integrated"},
+    {"order":2,"issue":157,"scope":"MarketState v2 multi-offer authority","state":"contract_ready_after_156"},
+    {"order":3,"issue":130,"scope":"employment/unattached authority","state":"implementation_ready_after_156_prefer_after_157"},
+    {"order":4,"issue":176,"scope":"veteran offer producer and market assessment","state":"contract_ready_after_157_130"}
+  ],
   "sharedAuthorities": {
     "exactEligibleCareerOfferFacts": true,
+    "multiOfferMarketStateV2": false,
     "veteran34PlusOfferGeneration": false,
-    "authoritativeFreeAgency": false,
+    "authoritativeUnattachedEmployment": false,
     "clubFixtureUsageHistoryOnMain": false,
     "concreteNationalSelection": false,
+    "richSportHistoryAwardsRecords": false,
+    "injuryRehabEpisodeHistory": false,
+    "clubWorldIncidents": false,
     "playerClubLeadership": true,
-    "explicitNamedLeadershipSuccessorOnly": true,
-    "lateCareerCoachPeerInstitutionalIdentityComplete": false,
+    "lateCareerNpcRoutingStandaloneSubsystemRequired": false,
     "terminalRetirementOwner": "agent9_pr118"
   },
+  "routingRefinements": {
+    "activeAgent": "existing resolveActiveAgent or null",
+    "institutionalVoice": "generic club voice allowed unless named continuity is canon-required",
+    "coach": "#169 tenure/profile; persistent NPC not automatically required",
+    "youngSuccessorCompetitor": "generic non-persistent actor allowed where no named continuity/T5.3 effects are required",
+    "recordTruth": "#199",
+    "peerRetirement": "still fail-closed until exact peer plus causal retirement history exists"
+  },
   "blockers": [
-    {"issue": 59, "scope": "global lineage / Wave 0"},
-    {"issue": 180, "scope": "exact Pasada-7 seed catalog and provenance / Wave 0"},
-    {"issue": 192, "scope": "exact canonical 34+ conditional content"},
-    {"issue": 195, "scope": "eight missing factual authority domains for canonical conditionals"},
-    {"issue": 124, "pullRequest": 156, "scope": "club match/calendar/usage authority"},
-    {"issue": 174, "scope": "concrete national selection"},
-    {"issue": 176, "scope": "veteran CareerOffer generation and term representability"},
-    {"issue": 130, "scope": "authoritative free agency / unattached employment"},
-    {"issue": 177, "relatedIssue": 169, "scope": "late-career NPC/coach/successor/peer/institutional identity"},
-    {"pullRequest": 118, "scope": "terminal retirement / last-match closure / epilogues / terminal conditionals"}
+    {"issue":59,"scope":"serialized lineage / Wave 0"},
+    {"issue":180,"pullRequest":191,"scope":"exact Pasada-7 seed catalog in main / Wave 0"},
+    {"issue":192,"scope":"exact canonical 34+ conditional content"},
+    {"issue":124,"pullRequest":156,"scope":"club match/calendar/usage authority"},
+    {"issue":157,"scope":"authoritative multi-offer MarketState v2"},
+    {"issue":130,"scope":"authoritative employment/unattached state"},
+    {"issue":176,"scope":"veteran CareerOffer production, late-career terms and market medical assessment"},
+    {"issue":174,"scope":"concrete national selection"},
+    {"issue":199,"scope":"rich sporting history, awards and records"},
+    {"issue":200,"scope":"injury episode and rehabilitation history"},
+    {"issue":201,"scope":"club finance/sponsor/stadium/staff-crisis incidents"},
+    {"issue":169,"scope":"coach tenure/profile where consumed"},
+    {"issue":177,"scope":"routing guard; explicit peer-retirement evidence remains unresolved"},
+    {"pullRequest":118,"scope":"terminal career retirement and terminal conditionals"}
+  ],
+  "closedCoordinationGaps": [
+    {"issue":195,"reason":"all eight former conditional factual domains now have explicit owner routing"}
   ],
   "activation": {
-    "ordinaryFirstBatchAfterWave0": [
-      "EVT_35_FAM_001",
-      "EVT_35_BODY_001",
-      "EVT_35_IMG_001",
-      "EVT_36_MED_001"
-    ],
-    "conditionalRule": "Use exact canonical IDs plus CONDITIONAL_AUTHORITY_MATRIX.json; never activate generic technical shells as canonical content.",
+    "ordinaryFirstBatchAfterWave0": ["EVT_35_FAM_001","EVT_35_BODY_001","EVT_35_IMG_001","EVT_36_MED_001"],
     "contentIdentityFreezeAllowedNow": false,
-    "autoMergeAllowed": false
+    "autoMergeAllowed": false,
+    "condition": "serialized 34+ lineage turn plus PR #191 integrated plus every selected scene's exact factual authorities"
   },
   "authoritativeCurrentSnapshot": "CURRENT_STATE.json"
 }
