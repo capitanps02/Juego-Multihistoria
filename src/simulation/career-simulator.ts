@@ -18,6 +18,7 @@ import { generateEpilogue } from "../epilogue/generator.js";
 import { closeCareer } from "./late-career-engine.js";
 import { maybeEmitMicroFeed } from "./microfeed.js";
 import { advanceWorldDayInPlace } from "./world-simulator.js";
+import { materializeAge18MarketOfferInPlace } from "./early-career-market.js";
 
 export type ChoiceStrategy = "random" | "first" | "balanced";
 
@@ -95,6 +96,7 @@ export function simulateCareer(options: CareerSimulationOptions): CareerSimulati
     if(state.flags.EARLY_RETIRED_30_34&&state.retirement.status!=="closed") closeCareer(state,"early_retirement_30_34","early_retirement");
     if(state.retirement.status==="closed") { generateEpilogue(state); break; }
     advanceWorldDayInPlace(state);
+    materializeAge18MarketOfferInPlace(state);
     if(state.age<30) maybeEmitMicroFeed(state, MICROFEEDS_26_30, options.microfeeds ?? true);
     else if(state.age<34) maybeEmitMicroFeed(state, MICROFEEDS_30_34, options.microfeeds ?? true);
     else maybeEmitMicroFeed(state, MICROFEEDS_34_PLUS, options.microfeeds ?? true);

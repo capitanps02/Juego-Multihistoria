@@ -17,6 +17,7 @@ import { generateEpilogue } from "../epilogue/generator.js";
 import { closeCareer } from "./late-career-engine.js";
 import { maybeEmitMicroFeed } from "./microfeed.js";
 import { advanceWorldDayInPlace } from "./world-simulator.js";
+import { materializeAge18MarketOfferInPlace } from "./early-career-market.js";
 function selectChoice(state, event, strategy) {
     if (strategy === "first")
         return event.choices[0].id;
@@ -67,6 +68,7 @@ export function simulateCareer(options) {
             break;
         }
         advanceWorldDayInPlace(state);
+        materializeAge18MarketOfferInPlace(state);
         if (state.age < 30)
             maybeEmitMicroFeed(state, MICROFEEDS_26_30, options.microfeeds ?? true);
         else if (state.age < 34)

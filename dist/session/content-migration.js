@@ -38,6 +38,7 @@ export const T51_T56A_20_23_CONTENT_IDENTITY = "ce2f30ea24934787fb116627c727e4ad
 export const T51_COMBINED_PRS20_23_CONTENT_IDENTITY = "691401e78db356a03bf7bf13c7d2a2931d66431cc3108f22a8664f37d3afbdb8";
 export const T51_COMBINED_18_23_CONTENT_IDENTITY = "84871fae2bec92d74d1e607e0a48943e2e530a062d315a829cfe75eda9fe0886";
 export const T51_SPORT_CONTEXT_18_20_CONTENT_IDENTITY = "99ec70cdb10e20069e5281dac5b56e2146779cc462add1c47fc7d8ea6fa5ef28";
+export const T51_AGE18_MARKET_AUTHORITY_CONTENT_IDENTITY = "df1b8939f29c7bca65829dbfa2a0c4a2fcb5c8cc8f1ea08eb96592edc4dcd6fc";
 /**
  * Explicit identity-bound edges. Successive canonical batches extend this as a
  * lineage (A -> B -> C), not as a matrix of shortcuts from every old version.
@@ -226,6 +227,18 @@ export const CONTENT_MIGRATION_ROUTES = [
             { kind: "same_scene", legacyEventId: "EVT_18_PRS_001", canonicalEventId: "EVT_18_PRS_001" },
             { kind: "same_scene", legacyEventId: "EVT_18_SOC_001", canonicalEventId: "EVT_18_SOC_001" },
             { kind: "same_scene", legacyEventId: "EVT_18_END_001", canonicalEventId: "EVT_18_END_001" }
+        ],
+        seedOriginMappings: []
+    },
+    {
+        // #123 only makes previously staged January/summer CareerOffer bridges
+        // active. Exact scene IDs remain completed; no historical offer, contract
+        // or scheduler state is replayed or rewritten during the transition.
+        sourceContentIdentity: T51_SPORT_CONTEXT_18_20_CONTENT_IDENTITY,
+        targetContentIdentity: T51_AGE18_MARKET_AUTHORITY_CONTENT_IDENTITY,
+        schedulerMappings: [
+            { kind: "same_scene", legacyEventId: "EVT_18_JAN_001", canonicalEventId: "EVT_18_JAN_001" },
+            { kind: "same_scene", legacyEventId: "EVT_18_SUM_001", canonicalEventId: "EVT_18_SUM_001" }
         ],
         seedOriginMappings: []
     }

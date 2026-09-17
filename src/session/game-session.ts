@@ -6,13 +6,14 @@ import { createInitialState } from "../content/initial-state.js";
 import { EventIndex } from "../narrative/event-index.js";
 import { scheduleEvent } from "../narrative/scheduler.js";
 import { eligibleChoices, isChoiceEligible } from "../narrative/choice-eligibility.js";
-import { offerDispositionForChoice, selectOfferBridgeEvent } from "../narrative/offer-bridge.js";
+import { offerBridgeSpec, offerDispositionForChoice, selectOfferBridgeEvent } from "../narrative/offer-bridge.js";
 import {
   reconcileNpcKnowledgeFromHistoryInPlace,
   type NpcKnowledgeLegacyCertification
 } from "../narrative/npc-knowledge-reconciliation.js";
 import { resolveChoiceInPlace } from "../narrative/resolver.js";
 import { advanceWorldDayInPlace } from "../simulation/world-simulator.js";
+import { materializeAge18MarketOfferInPlace } from "../simulation/early-career-market.js";
 import { maybeEmitMicroFeed } from "../simulation/microfeed.js";
 import { MICROFEEDS_26_30 } from "../content/microfeeds/26_30.js";
 import { MICROFEEDS_30_34 } from "../content/microfeeds/30_34.js";
@@ -424,6 +425,13 @@ export class GameSession {
 
   #worldDay(next: SessionSnapshot): void {
     advanceWorldDayInPlace(next.state);
+    // The producer is enabled only when this session owns the canonical JAN/SUM
+    // bridge definitions. Headless or legacy sessions cannot surface a generic
+    // offer in place of the authored decision.
+    if (this.#index.events.some(event => event.id === "EVT_18_JAN_001" && offerBridgeSpec(event))
+      && this.#index.events.some(event => event.id === "EVT_18_SUM_001" && offerBridgeSpec(event))) {
+      materializeAge18MarketOfferInPlace(next.state);
+    }
     const feeds = next.state.age < 30 ? MICROFEEDS_26_30 : next.state.age < 34 ? MICROFEEDS_30_34 : MICROFEEDS_34_PLUS;
     maybeEmitMicroFeed(next.state, feeds, next.microfeeds);
     generateEpilogue(next.state);
