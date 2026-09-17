@@ -1,0 +1,193 @@
+{
+  "schemaVersion": 1,
+  "baseCommit": "ebef17057156c7721fc4a041552c9cf1b3fdb6ba",
+  "facts": [
+    {
+      "fact": "currentSeason",
+      "source": "GameState.season",
+      "api": "getSportContext",
+      "persisted": true,
+      "derived": false,
+      "rng": "none",
+      "saveSafe": true,
+      "status": "ready",
+      "consumers": []
+    },
+    {
+      "fact": "sportingClub",
+      "source": "GameState.professional.registrationClub",
+      "api": "getSportContext",
+      "persisted": true,
+      "derived": true,
+      "rng": "none",
+      "saveSafe": true,
+      "status": "ready",
+      "consumers": ["transfer/loan-aware sport context"]
+    },
+    {
+      "fact": "careerAppearances",
+      "source": "GameState.sport.appearances",
+      "api": "getSportContext",
+      "persisted": true,
+      "derived": true,
+      "rng": "none",
+      "saveSafe": true,
+      "status": "ready_coarse",
+      "consumers": []
+    },
+    {
+      "fact": "officialDebutRecorded",
+      "source": "GameState.flags.OFFICIAL_DEBUT",
+      "api": "getSportContext",
+      "persisted": true,
+      "derived": true,
+      "rng": "none",
+      "saveSafe": true,
+      "status": "ready_coarse_not_match_context",
+      "consumers": ["EVT_18_PRS_001 as one OR branch only"]
+    },
+    {
+      "fact": "currentCompetition",
+      "source": null,
+      "api": "getSportContext",
+      "persisted": false,
+      "derived": false,
+      "rng": "none",
+      "saveSafe": true,
+      "status": "blocked_no_authoritative_producer",
+      "consumers": ["MATCH", "CUP", "EUROPE", "FINAL", "NATIONAL TEAM"]
+    },
+    {
+      "fact": "nextFixture",
+      "source": null,
+      "api": "getSportContext",
+      "persisted": false,
+      "derived": false,
+      "rng": "none",
+      "saveSafe": true,
+      "status": "blocked_no_authoritative_producer",
+      "consumers": ["EVT_18_SOC_001", "pre-match scenes"]
+    },
+    {
+      "fact": "hoursToNextFixture",
+      "source": null,
+      "api": "getSportContext",
+      "persisted": false,
+      "derived": false,
+      "rng": "none",
+      "saveSafe": true,
+      "status": "blocked_no_authoritative_producer",
+      "consumers": ["EVT_18_SOC_001"]
+    },
+    {
+      "fact": "firstMatchSquadCall",
+      "source": null,
+      "api": "getSportContext",
+      "persisted": false,
+      "derived": false,
+      "rng": "none",
+      "saveSafe": true,
+      "status": "blocked_no_match_selection_history",
+      "consumers": ["EVT_18_PRS_001"]
+    },
+    {
+      "fact": "currentSquadStatus",
+      "source": null,
+      "api": "getSportContext",
+      "persisted": false,
+      "derived": false,
+      "rng": "none",
+      "saveSafe": true,
+      "status": "blocked_no_match_selection_history",
+      "consumers": ["BENCH", "START", "DEBUT", "FINAL", "NATIONAL TEAM"]
+    },
+    {
+      "fact": "firstAppearance",
+      "source": null,
+      "api": "getSportContext",
+      "persisted": false,
+      "derived": false,
+      "rng": "none",
+      "saveSafe": true,
+      "status": "blocked_aggregate_count_has_no_fixture_identity",
+      "consumers": ["DEBUT"]
+    },
+    {
+      "fact": "firstStart",
+      "source": null,
+      "api": "getSportContext",
+      "persisted": false,
+      "derived": false,
+      "rng": "none",
+      "saveSafe": true,
+      "status": "blocked_no_lineup_history",
+      "consumers": ["START", "ROLE"]
+    },
+    {
+      "fact": "remainingOfficialMatches",
+      "source": null,
+      "api": "getSportContext",
+      "persisted": false,
+      "derived": false,
+      "rng": "none",
+      "saveSafe": true,
+      "status": "blocked_no_fixture_calendar",
+      "consumers": ["season end", "retirement", "renewal"]
+    },
+    {
+      "fact": "remainingLeagueMatches",
+      "source": null,
+      "api": "getSportContext",
+      "persisted": false,
+      "derived": false,
+      "rng": "none",
+      "saveSafe": true,
+      "status": "blocked_no_fixture_calendar",
+      "consumers": ["EVT_18_END_001", "relegation", "title", "promotion"]
+    },
+    {
+      "fact": "seasonObjectiveStatus",
+      "source": null,
+      "api": "getSportContext",
+      "persisted": false,
+      "derived": false,
+      "rng": "none",
+      "saveSafe": true,
+      "status": "blocked_no_objective_model",
+      "consumers": ["EVT_18_END_001", "relegation", "title", "promotion", "cup run"]
+    },
+    {
+      "fact": "currentMatchContext",
+      "source": null,
+      "api": "getCurrentMatchContext",
+      "persisted": false,
+      "derived": false,
+      "rng": "none",
+      "saveSafe": true,
+      "status": "fail_closed_no_authoritative_match_model",
+      "consumers": ["EVT_18_MATCH_001", "EVT_24_MATCH_001", "EVT_26_MATCH_001", "FINAL scenes"]
+    },
+    {
+      "fact": "footballMoment.penaltyOutcome",
+      "source": "world.footballMomentResults + rngState.football",
+      "api": "resolvePenaltyMomentInPlace",
+      "persisted": true,
+      "derived": false,
+      "rng": "football_exactly_once_on_create",
+      "saveSafe": true,
+      "status": "ready",
+      "consumers": ["EVT_24_MATCH_001", "EVT_26_MATCH_001"]
+    },
+    {
+      "fact": "footballMoment.persistedStoreValidation",
+      "source": "world.footballMomentResults",
+      "api": "inspectFootballMomentStore / assertGameState",
+      "persisted": true,
+      "derived": false,
+      "rng": "none",
+      "saveSafe": true,
+      "status": "ready",
+      "consumers": ["loadSave", "serializeSave", "GameSession validation"]
+    }
+  ]
+}
