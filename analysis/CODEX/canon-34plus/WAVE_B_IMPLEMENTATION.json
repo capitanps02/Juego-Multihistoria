@@ -1,0 +1,453 @@
+{
+  "version": 1,
+  "generatedAt": "2026-09-17",
+  "owner": "t51/canon-34plus",
+  "canonicalSource": "analysis/2026-09-11/guion-extraido.txt",
+  "scope": "Wave B — 17 ordinary 34+ market/contract principals",
+  "summary": {
+    "events": 17,
+    "canonicalCardsExtracted": 17,
+    "runtimeActivated": 0,
+    "strictCodexReady": 0,
+    "freeAgencyOverlap": ["EVT_37_SHORT_001"],
+    "npcOverlap": ["EVT_35_AGT_001"],
+    "terminalChoiceDelegations": ["EVT_36_LOWER_001:B", "EVT_38_RICH_001:B"]
+  },
+  "globalRules": [
+    "Canonical wording, trigger, visible information, imperfect information and options come from the Documento Maestro; do not replace them with generic veteran choices.",
+    "A signable or negotiable club proposal must be backed by a real CareerOffer or another explicitly approved authoritative negotiation object; rumor, marketHeat and flags are insufficient.",
+    "Narrative choices do not directly mutate club, ownerClub, registrationClub or contract terms.",
+    "When CareerTerms cannot represent a canonical clause/bonus/role promise, keep the scene blocked or model the promise as non-contractual memory only if canon and shared authority explicitly permit it.",
+    "monthsRemaining <= 0 is not free agency.",
+    "Any option that terminally retires the player is delegated to Agent 9; Agent 8 may preserve the visible option and nonterminal intent/handoff only.",
+    "Do not invent outcome effects merely to make a card executable. Effects remain implementation_pending until the listed authority can express the canonical choice safely.",
+    "All events additionally require Wave 0 lineage, canonical seed catalog/provenance and save/pending/history compatibility."
+  ],
+  "events": [
+    {
+      "eventId": "EVT_34_BRIDGE_001",
+      "sourceHeading": "25.6.1. La reunión sin horizonte",
+      "sourceBlock": "B1246-B1248",
+      "title": "La reunión sin horizonte",
+      "premise": "Tu club no quiere hablar de último contrato; propone un año y revisar en marzo. Tú quieres saber si de verdad cuentan contigo.",
+      "trigger": "Edad 34 + contrato activo o negociable.",
+      "visible": ["Rol previsto", "salario", "calendario de conversaciones"],
+      "imperfect": ["El club puede estar siendo prudente", "puede estar preparando sucesión", "puede estar esperando ver tu cuerpo"],
+      "hiddenState": ["VETERAN_LEVERAGE", "RETIREMENT_DISTANCE", "STATUS_INERTIA", "MANAGER_POWER"],
+      "options": [
+        {"id":"A","label":"Firmar un año sin más."},
+        {"id":"B","label":"Exigir definición de rol."},
+        {"id":"C","label":"Esperar hasta agosto."},
+        {"id":"D","label":"Pedir salida si no hay compromiso."}
+      ],
+      "canonicalSeeds": ["SEED_AGE34_REALITY"],
+      "authority": {
+        "requires": ["authoritative_same_club_negotiation_or_formal_renewal_offer", "contract_horizon", "role_expectation_fact_if_displayed"],
+        "forbidden": ["direct_contract_mutation", "synthetic_renewal", "age_as_proof_of_decline"],
+        "knownGap": "clubWantsRenewal currently fails closed at age >= 34; veteran renewal generation is not authoritative."
+      },
+      "status": "blocked_shared_authority",
+      "outcomeEffects": "implementation_pending"
+    },
+    {
+      "eventId": "EVT_34_PAY_001",
+      "sourceHeading": "25.6.2. La cifra que ya no te pagan",
+      "sourceBlock": "B1249-B1251",
+      "title": "La cifra que ya no te pagan",
+      "premise": "La renovación baja tu salario un 35 %, aunque sigues siendo importante. El club argumenta edad y estructura, no rendimiento.",
+      "trigger": "Renovación 34+ + salario histórico alto.",
+      "visible": ["Oferta", "comparables parciales", "rendimiento reciente"],
+      "imperfect": ["No sabes si otro club pagará más", "no sabes si la rebaja es política interna"],
+      "hiddenState": ["VETERAN_LEVERAGE", "EARNINGS_SECURITY", "MARKET_HEAT", "LEGACY_CAPITAL"],
+      "options": [
+        {"id":"A","label":"Aceptar."},
+        {"id":"B","label":"Pedir primas por minutos/títulos."},
+        {"id":"C","label":"Rechazar por estatus."},
+        {"id":"D","label":"Filtrar que escuchas mercado."}
+      ],
+      "canonicalSeeds": ["SEED_VETERAN_PAYCUT"],
+      "authority": {
+        "requires": ["real_same_club_renewal_offer", "historical_salary_fact", "salary_terms"],
+        "forbidden": ["synthetic_35_percent_cut", "marketHeat_as_offer"],
+        "representabilityGap": "Minute/title bonus structure may require contract-term extension; do not pretend unsupported bonuses exist in CareerTerms."
+      },
+      "status": "blocked_shared_authority",
+      "outcomeEffects": "implementation_pending"
+    },
+    {
+      "eventId": "EVT_34_HOME_001",
+      "sourceHeading": "25.6.4. Valdoria no puede igualarlo",
+      "sourceBlock": "B1255-B1257",
+      "title": "Valdoria no puede igualarlo",
+      "premise": "UDV te quiere, pero su mejor oferta es muy inferior a dos propuestas exteriores. A cambio tendrías rol central y un proyecto deportivo real.",
+      "trigger": "HOME_PULL medio/alto + UDV interesado.",
+      "visible": ["Salario", "rol", "duración", "plantilla", "objetivos"],
+      "imperfect": ["No sabes cuánto pesa para ti volver hasta vivirlo", "no sabes si el equipo será competitivo"],
+      "hiddenState": ["HOME_CLOSURE_PULL", "EARNINGS_SECURITY", "ROLE_ACCEPTANCE", "EXIT_STYLE_UDV"],
+      "options": [
+        {"id":"A","label":"Volver."},
+        {"id":"B","label":"Usar la oferta para mejorar otras."},
+        {"id":"C","label":"Pedir a UDV más poder deportivo."},
+        {"id":"D","label":"Posponer un año."}
+      ],
+      "canonicalSeeds": ["SEED_FINAL_HOME_WINDOW"],
+      "authority": {
+        "requires": ["former_club_history", "real_UDV_offer", "two_real_external_offers_for_full_canonical_premise", "role_and_project_facts_when_displayed"],
+        "forbidden": ["HOME_PULL_as_offer", "synthetic_competing_offers", "direct_club_change"],
+        "representabilityGap": "Sporting power/role promises are not ordinary CareerTerms unless a shared authority explicitly represents them."
+      },
+      "status": "blocked_shared_authority",
+      "outcomeEffects": "implementation_pending"
+    },
+    {
+      "eventId": "EVT_34_AGT_001",
+      "sourceHeading": "25.6.5. El agente dice que esperes",
+      "sourceBlock": "B1258-B1260",
+      "title": "El agente dice que esperes",
+      "premise": "Tu agente afirma que en dos semanas caerá una oferta mejor. Hoy tienes una propuesta sólida con fecha de caducidad.",
+      "trigger": "Mercado abierto + al menos una oferta real.",
+      "visible": ["Oferta existente", "confianza histórica del agente"],
+      "imperfect": ["No sabes si la oferta futura existe", "puede ser un sondeo", "puede ser una apuesta del agente por una comisión mayor"],
+      "hiddenState": ["AGENT_POWER", "VETERAN_LEVERAGE", "MARKET_HEAT", "FIRST_AGENT/AGENT_OMISSION según guardado"],
+      "options": [
+        {"id":"A","label":"Esperar."},
+        {"id":"B","label":"Firmar la segura."},
+        {"id":"C","label":"Hablar directamente con el club futuro."},
+        {"id":"D","label":"Pedir prueba concreta al agente."}
+      ],
+      "canonicalSeeds": ["SEED_LAST_AGENT_GAMBLE"],
+      "authority": {
+        "requires": ["resolveActiveAgent_non_null", "at_least_one_real_formal_offer", "offer_expiry_fact", "certified_agent_history_for_trust"],
+        "forbidden": ["agentControl_as_identity", "invented_future_offer", "rumor_as_formal_offer"]
+      },
+      "status": "blocked_shared_authority",
+      "outcomeEffects": "implementation_pending"
+    },
+    {
+      "eventId": "EVT_34_CON_001",
+      "sourceHeading": "25.6.8. La cláusula de salida digna",
+      "sourceBlock": "B1267-B1269",
+      "title": "La cláusula de salida digna",
+      "premise": "Un club te ofrece dos años si aceptas una cláusula que permite terminar el segundo verano con indemnización baja si tu rol cae.",
+      "trigger": "Oferta multianual 34+.",
+      "visible": ["Duración", "salario", "cláusula"],
+      "imperfect": ["No sabes si la cláusula protege al club o también evita que quedes atrapado"],
+      "hiddenState": ["CONTRACT_POWER", "ROLE_ACCEPTANCE", "VETERAN_LEVERAGE", "RETIREMENT_DISTANCE"],
+      "options": [
+        {"id":"A","label":"Aceptarla."},
+        {"id":"B","label":"Pedir que sea bilateral."},
+        {"id":"C","label":"Cambiar a un año sin cláusula."},
+        {"id":"D","label":"Rechazar y buscar seguridad total."}
+      ],
+      "canonicalSeeds": ["SEED_DIGNIFIED_EXIT_CLAUSE"],
+      "authority": {
+        "requires": ["real_multiyear_offer", "conditional_exit_clause_authority_or_explicit_noncontractual_model"],
+        "forbidden": ["fake_clause_in_seed_only_when_presented_as_contract", "direct_contract_mutation"],
+        "representabilityGap": "Current CareerTerms does not natively encode the role-drop/low-compensation conditional exit clause."
+      },
+      "status": "blocked_shared_authority",
+      "outcomeEffects": "implementation_pending"
+    },
+    {
+      "eventId": "EVT_34_MAR_001",
+      "sourceHeading": "25.7.8. Marzo: el club no llama",
+      "sourceBlock": "B1293-B1295",
+      "title": "Marzo: el club no llama",
+      "premise": "Habían prometido revisar tu contrato en marzo y pasan dos semanas sin reunión.",
+      "trigger": "Contrato corto + promesa informal.",
+      "visible": ["Fecha", "silencio", "rumores"],
+      "imperfect": ["No sabes si esperan presupuesto", "no sabes si esperan entrenador", "no sabes si esperan sustituto"],
+      "hiddenState": ["VETERAN_LEVERAGE", "CONTRACT_POWER", "MANAGER_POWER", "MARKET_HEAT"],
+      "options": [
+        {"id":"A","label":"Pedir reunión."},
+        {"id":"B","label":"Empezar a negociar fuera sin avisar."},
+        {"id":"C","label":"Esperar hasta abril."},
+        {"id":"D","label":"Filtrar que no hay conversaciones."}
+      ],
+      "canonicalSeeds": ["SEED_MARCH_SILENCE"],
+      "authority": {
+        "requires": ["short_contract_fact", "persisted_or_authoritative_informal_review_promise", "calendar_date"],
+        "forbidden": ["marketHeat_as_silence", "invented_promise", "monthsRemaining_as_free_agency"]
+      },
+      "status": "blocked_shared_authority",
+      "outcomeEffects": "implementation_pending"
+    },
+    {
+      "eventId": "EVT_35_MKT_001",
+      "sourceHeading": "25.8.1. Tres ofertas, tres versiones de ti",
+      "sourceBlock": "B1298-B1300",
+      "title": "Tres ofertas, tres versiones de ti",
+      "premise": "Un candidato a títulos te ve como especialista, un club medio como titular y UDV como símbolo-líder.",
+      "trigger": "Edad 35 + mercado múltiple.",
+      "visible": ["Roles reales", "condiciones reales"],
+      "imperfect": ["No sabes qué versión de ti seguirá existiendo en febrero"],
+      "hiddenState": ["ROLE_ACCEPTANCE", "HOME_CLOSURE_PULL", "TROPHY_HUNGER", "MARKET_FLOOR"],
+      "options": [
+        {"id":"A","label":"Especialista arriba."},
+        {"id":"B","label":"Titular más abajo."},
+        {"id":"C","label":"UDV."},
+        {"id":"D","label":"Esperar una cuarta opción."}
+      ],
+      "canonicalSeeds": ["SEED_THREE_VERSIONS_35"],
+      "authority": {
+        "requires": ["three_real_concurrent_offer_contexts_for_full_canonical_scene", "real_club_tiers_or_competitive_context", "role_expectation_facts"],
+        "forbidden": ["invented_three_offer_menu", "reputation_as_offer", "direct_signing"],
+        "representabilityGap": "Role descriptions are player-visible offer context but are not automatically contractual guarantees."
+      },
+      "status": "blocked_shared_authority",
+      "outcomeEffects": "implementation_pending"
+    },
+    {
+      "eventId": "EVT_35_CON_001",
+      "sourceHeading": "25.8.2. Contrato por objetivos físicos",
+      "sourceBlock": "B1301-B1303",
+      "title": "Contrato por objetivos físicos",
+      "premise": "Te ofrecen fijo bajo y primas fuertes por convocatorias, minutos y disponibilidad.",
+      "trigger": "Mercado veterano + dudas físicas.",
+      "visible": ["Fórmula contractual", "métricas"],
+      "imperfect": ["No sabes si al club le incentiva gestionarte bien o evitar activar pagos"],
+      "hiddenState": ["BODY_REDLINE", "CONTRACT_POWER", "EARNINGS_SECURITY", "ROLE_ACCEPTANCE"],
+      "options": [
+        {"id":"A","label":"Aceptar."},
+        {"id":"B","label":"Convertir parte en primas colectivas."},
+        {"id":"C","label":"Pedir mínimo garantizado mayor."},
+        {"id":"D","label":"Rechazar por desconfianza."}
+      ],
+      "canonicalSeeds": ["SEED_AVAILABILITY_CONTRACT"],
+      "authority": {
+        "requires": ["real_veteran_offer", "factual_body_or_availability_context", "performance_bonus_contract_authority"],
+        "forbidden": ["synthetic_physical_doubt", "unsupported_bonus_terms", "direct_contract_mutation"],
+        "representabilityGap": "Current CareerTerms does not fully encode call-up/minute/availability bonus formulae."
+      },
+      "status": "blocked_shared_authority",
+      "outcomeEffects": "implementation_pending"
+    },
+    {
+      "eventId": "EVT_35_FAREWELL_001",
+      "sourceHeading": "25.8.4. El club ofrece homenaje... si te vas",
+      "sourceBlock": "B1307-B1309",
+      "title": "El club ofrece homenaje... si te vas",
+      "premise": "Tu club propone una despedida enorme si no renuevas; si sigues, no garantiza cuándo podrá organizar algo parecido.",
+      "trigger": "Leyenda institucional + contrato expira.",
+      "visible": ["Oferta de homenaje", "contrato alternativo limitado"],
+      "imperfect": ["No sabes si continuar te hará perder un cierre perfecto", "no sabes si realmente quieres un cierre diseñado por otros"],
+      "hiddenState": ["FAREWELL_CONTROL", "LEGACY_ANXIETY", "MOTIVATION_RESERVE", "STATUS_INERTIA"],
+      "options": [
+        {"id":"A","label":"Aceptar despedida y salir."},
+        {"id":"B","label":"Renovar y renunciar al timing perfecto."},
+        {"id":"C","label":"Salir sin gran ceremonia."},
+        {"id":"D","label":"Pedir homenaje independientemente del futuro."}
+      ],
+      "canonicalSeeds": ["SEED_FAREWELL_AS_LEVERAGE", "SEED_PUBLIC_MYTH_FINAL"],
+      "authority": {
+        "requires": ["institutional_legend_fact", "authoritative_contract_expiry_context", "real_renewal_or_exit_option", "factual_club_farewell_proposal"],
+        "forbidden": ["retirement_announcement", "synthetic_homage", "contract_expiry_as_free_agency"],
+        "boundary": "Leaving the club is not retirement. Do not turn options A/C into terminal career closure."
+      },
+      "status": "blocked_shared_authority",
+      "outcomeEffects": "implementation_pending"
+    },
+    {
+      "eventId": "EVT_35_AGT_001",
+      "sourceHeading": "25.8.7. Sin agente por primera vez",
+      "sourceBlock": "B1316-B1318",
+      "title": "Sin agente por primera vez",
+      "premise": "Una negociación sencilla podría cerrarse sin agente. Tu representante histórico insiste en que el último contrato es precisamente cuando más le necesitas.",
+      "trigger": "SELF_REPRESENTATION o relación de agencia desgastada.",
+      "visible": ["Oferta", "honorarios"],
+      "imperfect": ["No sabes qué conversaciones invisibles perderás", "no sabes cuánto sesgo tiene el agente al defender su utilidad"],
+      "hiddenState": ["SELF_REPRESENTATION", "AGENT_POWER", "VETERAN_LEVERAGE", "NETWORK_POWER"],
+      "options": [
+        {"id":"A","label":"Negociar tú con abogado."},
+        {"id":"B","label":"Mantener agente."},
+        {"id":"C","label":"Pagar tarifa fija sin comisión."},
+        {"id":"D","label":"Cambiar de agente para el cierre."}
+      ],
+      "canonicalSeeds": ["SEED_FINAL_AGENT_STRUCTURE"],
+      "authority": {
+        "requires": ["real_offer_or_negotiation_context", "certified_active_agent_or_explicit_no_agent_state", "authoritative_agent_relationship_history"],
+        "forbidden": ["agentControl_as_identity", "invented_lawyer_or_replacement_agent_as_persistent_NPC", "direct_contract_mutation"],
+        "waveOverlap": ["B", "D"]
+      },
+      "status": "blocked_shared_authority",
+      "outcomeEffects": "implementation_pending"
+    },
+    {
+      "eventId": "EVT_35_JAN_001",
+      "sourceHeading": "25.9.5. Una oferta en enero",
+      "sourceBlock": "B1333-B1335",
+      "title": "Una oferta en enero",
+      "premise": "Un club con lesiones te ofrece seis meses y opción por otro año. Jugarías más pero abandonarías un proyecto que puede competir por títulos.",
+      "trigger": "Rol actual bajo/medio + mercado de enero.",
+      "visible": ["Oferta", "situación de ambos clubes"],
+      "imperfect": ["No sabes si los lesionados volverán rápido", "no sabes si tu club actual te necesitará en primavera"],
+      "hiddenState": ["MARKET_FLOOR", "TROPHY_HUNGER", "ROLE_ACCEPTANCE", "VETERAN_LEVERAGE"],
+      "options": [
+        {"id":"A","label":"Irte."},
+        {"id":"B","label":"Quedarte."},
+        {"id":"C","label":"Pedir cesión corta."},
+        {"id":"D","label":"Negociar salida solo si juegas menos en dos semanas."}
+      ],
+      "canonicalSeeds": ["SEED_LAST_JANUARY_MOVE"],
+      "authority": {
+        "requires": ["real_january_offer", "authoritative_current_role_or_usage_context", "real_current_and_target_club_competitive_context"],
+        "forbidden": ["roleScore_as_current_role", "synthetic_injury_crisis_at_target_club", "direct_transfer_mutation"],
+        "representabilityGap": "Choice D requires a deferred factual usage condition; do not encode a fake guaranteed-minute contract clause."
+      },
+      "status": "blocked_shared_authority",
+      "outcomeEffects": "implementation_pending"
+    },
+    {
+      "eventId": "EVT_35_HOME_001",
+      "sourceHeading": "25.9.7. El ascenso de Valdoria",
+      "sourceBlock": "B1339-B1341",
+      "title": "El ascenso de Valdoria",
+      "premise": "UDV logra ascenso o una temporada histórica sin ti, justo cuando tu contrato termina.",
+      "trigger": "UDV relevante + no estar allí.",
+      "visible": ["Resultado", "mensajes del entorno"],
+      "imperfect": ["No sabes si ahora necesitan tu nombre menos que antes", "no sabes si el nuevo nivel hace tu regreso más útil"],
+      "hiddenState": ["HOME_CLOSURE_PULL", "EXIT_STYLE_UDV", "MARKET_FLOOR", "LEGACY_ANXIETY"],
+      "options": [
+        {"id":"A","label":"Llamar tú."},
+        {"id":"B","label":"Esperar a que llamen."},
+        {"id":"C","label":"No mezclar emoción con mercado."},
+        {"id":"D","label":"Felicitar públicamente dejando la puerta abierta."}
+      ],
+      "canonicalSeeds": ["SEED_HOME_SUCCESS_WITHOUT_YOU"],
+      "authority": {
+        "requires": ["former_club_history", "authoritative_UDV_promotion_or_historic_season_fact", "current_contract_end_context"],
+        "forbidden": ["fabricated_UDV_success", "phone_call_as_formal_offer", "contract_end_as_free_agency"],
+        "note": "The scene may open a return-interest pathway; it must not manufacture a UDV offer."
+      },
+      "status": "blocked_shared_authority",
+      "outcomeEffects": "implementation_pending"
+    },
+    {
+      "eventId": "EVT_36_CON_001",
+      "sourceHeading": "25.10.1. Renovar después de una gran temporada",
+      "sourceBlock": "B1347-B1349",
+      "title": "Renovar después de una gran temporada",
+      "premise": "Con 36 haces una temporada mejor de lo esperado y el club ofrece dos años.",
+      "trigger": "Forma alta 35-36 + cuerpo sostenible.",
+      "visible": ["Oferta", "rendimiento reciente"],
+      "imperfect": ["No sabes si es un nuevo equilibrio", "no sabes si fue una temporada excepcional difícil de repetir"],
+      "hiddenState": ["FALSE_RESURGENCE", "BODY_REDLINE", "VETERAN_LEVERAGE", "MOTIVATION_RESERVE"],
+      "options": [
+        {"id":"A","label":"Dos años."},
+        {"id":"B","label":"Uno."},
+        {"id":"C","label":"Esperar mercado."},
+        {"id":"D","label":"Renovar con salida bilateral."}
+      ],
+      "canonicalSeeds": ["SEED_AGE36_LONG_DEAL"],
+      "authority": {
+        "requires": ["authoritative_recent_season_performance_fact", "explicit_body_sustainability_evidence", "real_same_club_multiyear_offer"],
+        "forbidden": ["form_proxy_as_full_season_fact", "age_only_body_sustainability", "synthetic_renewal"],
+        "representabilityGap": "Bilateral exit semantics must be represented authoritatively before choice D can sign them."
+      },
+      "status": "blocked_shared_authority",
+      "outcomeEffects": "implementation_pending"
+    },
+    {
+      "eventId": "EVT_36_LOWER_001",
+      "sourceHeading": "25.10.6. Un año en una liga menor",
+      "sourceBlock": "B1362-B1364",
+      "title": "Un año en una liga menor",
+      "premise": "Un club de categoría inferior pero profesional te ofrece ser titular y referente.",
+      "trigger": "MARKET_FLOOR baja + deseo de minutos alto.",
+      "visible": ["Nivel", "salario", "rol"],
+      "imperfect": ["No sabes si disfrutarás competir más abajo", "no sabes si el cuerpo agradecerá o sufrirá un fútbol distinto"],
+      "hiddenState": ["ROLE_ACCEPTANCE", "MOTIVATION_RESERVE", "HOME_CLOSURE_PULL", "LEGACY_ANXIETY"],
+      "options": [
+        {"id":"A","label":"Aceptar."},
+        {"id":"B","label":"Preferir retirarte en nivel alto.","terminalChoiceOwner":"agent9"},
+        {"id":"C","label":"Buscar UDV."},
+        {"id":"D","label":"Esperar otro mercado."}
+      ],
+      "canonicalSeeds": ["SEED_DROP_LEVEL_TO_PLAY"],
+      "authority": {
+        "requires": ["real_lower_level_formal_offer", "real_target_tier", "role_expectation_fact_if_displayed"],
+        "forbidden": ["marketFloor_as_offer", "direct_tier_change", "agent8_terminal_retirement_transition"],
+        "terminalBoundary": "Choice B may record retirement intent/handoff but Agent 9 owns any decided/announced/closed retirement transition."
+      },
+      "status": "blocked_shared_authority",
+      "outcomeEffects": "implementation_pending"
+    },
+    {
+      "eventId": "EVT_37_SHORT_001",
+      "sourceHeading": "25.11.1. Contrato de tres meses",
+      "sourceBlock": "B1370-B1372",
+      "title": "Contrato de tres meses",
+      "premise": "Un club con una emergencia te ofrece solo tres meses hasta final de temporada.",
+      "trigger": "Agente libre 37+ + mercado puntual.",
+      "visible": ["Duración", "rol", "calendario"],
+      "imperfect": ["No sabes si servirá de escaparate", "no sabes si será despedida", "no sabes si será simple parche"],
+      "hiddenState": ["MARKET_FLOOR", "MOTIVATION_RESERVE", "ROLE_ACCEPTANCE", "FAREWELL_CONTROL"],
+      "options": [
+        {"id":"A","label":"Aceptar."},
+        {"id":"B","label":"Rechazar por falta de proyecto."},
+        {"id":"C","label":"Pedir opción automática."},
+        {"id":"D","label":"Aceptar sin promesas y decidir después."}
+      ],
+      "canonicalSeeds": ["SEED_THREE_MONTH_CONTRACT"],
+      "authority": {
+        "requires": ["authoritative_unattached_free_agent_state", "real_three_month_offer", "real_role_and_calendar_context"],
+        "forbidden": ["monthsRemaining_zero_as_free_agency", "synthetic_emergency_offer", "direct_contract_mutation"],
+        "waveOverlap": ["B", "E"],
+        "representabilityGap": "Automatic option must be represented by authoritative terms before choice C can sign it."
+      },
+      "status": "blocked_shared_authority",
+      "outcomeEffects": "implementation_pending"
+    },
+    {
+      "eventId": "EVT_37_HOME_001",
+      "sourceHeading": "25.11.2. Valdoria te ofrece diez partidos",
+      "sourceBlock": "B1373-B1375",
+      "title": "Valdoria te ofrece diez partidos",
+      "premise": "UDV solo puede garantizarte un papel parcial hasta junio, pero quiere que cierres allí.",
+      "trigger": "HOME_CLOSURE_PULL alto + UDV disponible.",
+      "visible": ["Rol limitado", "contexto del club"],
+      "imperfect": ["No sabes si una despedida local con pocos minutos te satisfará más que seguir compitiendo fuera"],
+      "hiddenState": ["HOME_CLOSURE_PULL", "FAREWELL_CONTROL", "ROLE_ACCEPTANCE", "EXIT_STYLE_UDV"],
+      "options": [
+        {"id":"A","label":"Volver aunque sea poco."},
+        {"id":"B","label":"Pedir un año completo."},
+        {"id":"C","label":"Seguir fuera."},
+        {"id":"D","label":"Volver solo si el equipo lo necesita deportivamente."}
+      ],
+      "canonicalSeeds": ["SEED_TEN_MATCH_HOME_RETURN"],
+      "authority": {
+        "requires": ["former_club_history", "real_UDV_short_return_offer", "authoritative_partial_role_context"],
+        "forbidden": ["HOME_CLOSURE_PULL_as_offer", "sentimental_return_as_contract", "direct_club_change"],
+        "representabilityGap": "A ten-match/partial-role guarantee is not an ordinary salary-duration term; do not fake contractual role guarantees."
+      },
+      "status": "blocked_shared_authority",
+      "outcomeEffects": "implementation_pending"
+    },
+    {
+      "eventId": "EVT_38_RICH_001",
+      "sourceHeading": "25.11.5. Una última oferta enorme",
+      "sourceBlock": "B1382-B1384",
+      "title": "Una última oferta enorme",
+      "premise": "Cuando casi habías decidido parar, llega una oferta de un año que multiplica cualquier alternativa.",
+      "trigger": "Edad 37+ + reputación/mercado global.",
+      "visible": ["Dinero", "rol de embajador", "duración"],
+      "imperfect": ["No sabes si el proyecto te quiere como futbolista o como nombre", "no sabes cuánto disfrutarás el año"],
+      "hiddenState": ["EARNINGS_SECURITY", "RETIREMENT_DISTANCE", "GLOBAL_IMAGE", "MOTIVATION_RESERVE"],
+      "options": [
+        {"id":"A","label":"Aceptar."},
+        {"id":"B","label":"Rechazar y retirarte.","terminalChoiceOwner":"agent9"},
+        {"id":"C","label":"Pedir calendario/rol deportivo mínimo."},
+        {"id":"D","label":"Aceptar solo seis meses."}
+      ],
+      "canonicalSeeds": ["SEED_LAST_HUGE_OFFER"],
+      "authority": {
+        "requires": ["real_high_value_formal_offer", "authoritative_offer_duration_and_money", "factual_ambassador_role_if_displayed"],
+        "forbidden": ["reputation_as_offer", "synthetic_huge_offer", "agent8_terminal_retirement_transition"],
+        "terminalBoundary": "Choice B delegates the retirement transition to Agent 9.",
+        "representabilityGap": "Ambassador role and minimum sporting calendar/role are not ordinary CareerTerms without explicit shared representation."
+      },
+      "status": "blocked_shared_authority",
+      "outcomeEffects": "implementation_pending"
+    }
+  ]
+}
