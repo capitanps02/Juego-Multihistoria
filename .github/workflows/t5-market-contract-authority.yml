@@ -6,8 +6,11 @@ on:
     paths:
       - 'src/simulation/offers.ts'
       - 'src/simulation/club-contract-intent.ts'
+      - 'src/simulation/early-career-market.ts'
+      - 'src/content/events/18_20/t51-age18-market-offer-bridges.ts'
       - 'scripts/test-offers.mjs'
       - 'scripts/test-t5-market-contract-authority.mjs'
+      - 'scripts/test-t5-age18-market-authority.mjs'
       - 'scripts/audit-market-direct-mutations.mjs'
       - 'analysis/CODEX/market-contracts/**'
       - '.github/workflows/t5-market-contract-authority.yml'
@@ -30,7 +33,7 @@ jobs:
         run: npm run build
       - name: Direct market/contract mutation ownership audit
         run: node scripts/audit-market-direct-mutations.mjs
-      - name: Focused market and loan invariants
-        run: node --test scripts/test-offers.mjs scripts/test-t5-market-contract-authority.mjs
+      - name: Focused market, loan and age-18 invariants
+        run: node --test scripts/test-offers.mjs scripts/test-t5-market-contract-authority.mjs scripts/test-t5-age18-market-authority.mjs
       - name: Offer bridge and save regressions
         run: node --test scripts/test-t51-offer-bridge.mjs scripts/test-t51-offer-bridge-provenance.mjs scripts/test-saves.mjs
