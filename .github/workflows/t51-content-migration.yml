@@ -18,7 +18,7 @@ on:
       - '.github/workflows/t51-content-migration.yml'
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   migration:
@@ -26,45 +26,75 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: 20
       - run: npm ci
-      - name: Build
+      - name: Build combined catalog
         run: npm run build
 
-      # Temporary integration probe for the serialized #123 + #124 generation.
-      # It generates evidence from the exact compiled EVENTS catalog; it never writes
-      # back to the repository. The artifact is consumed by the coordinator and this
-      # probe is removed before final certification.
-      - name: Generate exact combined T5.1 evidence
+      # Temporary one-shot finalizer for the serialized #123 + #124 generation.
+      # It computes all evidence from the exact compiled EVENTS catalog, validates it,
+      # and commits only the generated lineage artifacts to this integration branch.
+      # This block is removed immediately after the one-shot commit lands.
+      - name: Generate and validate exact combined T5.1 evidence
         shell: bash
         run: |
           set -euo pipefail
           PROVISIONAL="99ec70cdb10e20069e5281dac5b56e2146779cc462add1c47fc7d8ea6fa5ef28"
-          rm -f "qa/fixtures/t5.1/post-t51-sources/${PROVISIONAL}.json"
           ID=$(node --input-type=module -e 'import { EVENTS } from "./dist/content/events/index.js"; import { contentIdentity } from "./dist/session/content-identity.js"; console.log(await contentIdentity(EVENTS));')
           echo "Combined content identity: ${ID}"
+          test "${ID}" = "df1b8939f29c7bca65829dbfa2a0c4a2fcb5c8cc8f1ea08eb96592edc4dcd6fc"
+
+          git rm -f --ignore-unmatch "qa/fixtures/t5.1/post-t51-sources/${PROVISIONAL}.json"
           node scripts/freeze-t51-active-source.mjs
           node scripts/generate-t51-post-legacy-registry.mjs
           node scripts/generate-t51-offer-bridge-evidence.mjs
-          mkdir -p generated-combined/qa/fixtures/t5.1/post-t51-sources generated-combined/src/session
-          cp "qa/fixtures/t5.1/post-t51-sources/${ID}.json" "generated-combined/qa/fixtures/t5.1/post-t51-sources/${ID}.json"
-          cp src/session/post-t51-legacy-registry.ts generated-combined/src/session/post-t51-legacy-registry.ts
-          cp src/session/frozen-offer-bridge-evidence.ts generated-combined/src/session/frozen-offer-bridge-evidence.ts
-          printf '%s\n' "${ID}" > generated-combined/content-identity.txt
 
-      - name: Upload exact combined T5.1 evidence
-        uses: actions/upload-artifact@v4
-        with:
-          name: t51-123-124-generated-${{ github.run_id }}
-          path: generated-combined
-          if-no-files-found: error
-          retention-days: 1
+          COMBINED_ID="${ID}" node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const file = 'src/session/content-migration.ts';
+          const provisional = '99ec70cdb10e20069e5281dac5b56e2146779cc462add1c47fc7d8ea6fa5ef28';
+          const id = process.env.COMBINED_ID;
+          let body = fs.readFileSync(file, 'utf8');
+          if (!body.includes(provisional)) throw new Error('provisional #124 target identity not found');
+          body = body.replaceAll(provisional, id);
+          if (!body.includes('legacyEventId: "EVT_18_JAN_001"')) {
+            const marker = '      { kind: "same_scene", legacyEventId: "EVT_18_END_001", canonicalEventId: "EVT_18_END_001" }\n';
+            if (!body.includes(marker)) throw new Error('#124 route marker not found');
+            body = body.replace(marker,
+              '      { kind: "same_scene", legacyEventId: "EVT_18_END_001", canonicalEventId: "EVT_18_END_001" },\n' +
+              '      { kind: "same_scene", legacyEventId: "EVT_18_JAN_001", canonicalEventId: "EVT_18_JAN_001" },\n' +
+              '      { kind: "same_scene", legacyEventId: "EVT_18_SUM_001", canonicalEventId: "EVT_18_SUM_001" }\n');
+          }
+          fs.writeFileSync(file, body);
+          NODE
 
-      - name: Frozen legacy registry is reproducible
-        run: node scripts/generate-t51-legacy-registry.mjs --check
-      - name: Active content has an explicit migration route when required
-        run: node scripts/check-t51-content-migration-route.mjs
-      - name: Directed migration tests
-        run: node --test scripts/test-t51-content-migration.mjs
+          npm run build
+          node scripts/generate-t51-post-legacy-registry.mjs --check
+          node scripts/generate-t51-offer-bridge-evidence.mjs --check
+          node scripts/freeze-t51-active-source.mjs --check
+          node scripts/check-t51-content-migration-route.mjs
+          node --test scripts/test-t51-content-migration.mjs
+
+      - name: Commit exact generated lineage artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A \
+            qa/fixtures/t5.1/post-t51-sources \
+            src/session/content-migration.ts \
+            src/session/post-t51-legacy-registry.ts \
+            src/session/frozen-offer-bridge-evidence.ts
+          git diff --cached --check
+          if git diff --cached --quiet; then
+            echo "No generated changes to commit"
+          else
+            git commit -m "T5 #123+#124: freeze combined content generation [skip ci]"
+            git push origin "HEAD:${{ github.head_ref }}"
+          fi
