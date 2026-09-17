@@ -1,5 +1,19 @@
 {
   "workstream": "retirement-epilogues",
+  "integrationSnapshot": {
+    "date": "2026-09-17",
+    "main": "a7a0bb575ac8824c3e52975e8861a97e29f94830",
+    "retirementSyncHead": "66612a4939802e020c9d16b213401a13235d32a9",
+    "compare": "66_ahead_0_behind",
+    "retirementCertification": {
+      "previousSynchronizedHead": "09f4f877c2c91d35cbcfa1e5286d2201c0d3472a",
+      "dedicatedRunId": 35243968035,
+      "dedicatedConclusion": "success",
+      "repositoryIntegrityRunId": 35243968077,
+      "repositoryIntegrityConclusion": "expected_fail_closed_lineage_sentinel_after_ordinary_validation",
+      "unfrozenCandidateIdentity": "4f7c783521a463509ac8bf9a0646b6c0aeaff6861a8d01ab8b1e43c19641e93b"
+    }
+  },
   "statusModel": {
     "implemented": "Implemented on t5/retirement-epilogues with dedicated regression evidence; Codex must not duplicate it.",
     "blocked": "Prepared but must not be guessed around until the named external authority exists or is integrated.",
@@ -74,15 +88,24 @@
         {
           "id": "CODEX-RET-005",
           "status": "blocked",
-          "readiness": "partially_unblocked_by_PR_156",
+          "readiness": "partially_unblocked_by_PR_156_not_integration_ready",
           "task": "Replace aggregate post-announcement appearance observation with full LastMatchFact fixture/minutes/result model.",
-          "currentMainBlocker": "Main still lacks persisted authoritative match history usable by retirement.",
+          "currentMainBlocker": "Main still lacks the integrated persisted authoritative match history required by retirement.",
           "candidateAuthority": {
             "pr": 156,
             "branch": "t5/authoritative-match-model",
-            "headAtAudit": "ffc9415f3a92e3449a43466d5e34fcd76efb3014",
-            "baseAtAudit": "6d2239ae1f89be97a7c5cf117d456cff9218aade",
-            "stateAtAudit": "open_draft_mergeable_8_commits_rebased_on_current_main",
+            "headAtAudit": "30764bafacd9712ed39af8f176312ec8ffa8a8d4",
+            "currentMainAtAudit": "a7a0bb575ac8824c3e52975e8861a97e29f94830",
+            "relationAtAudit": "1_ahead_1_behind",
+            "stateAtAudit": "open_draft_not_integrated",
+            "certificationAtSnapshot": {
+              "repositoryIntegrityRunId": 35243389440,
+              "projectValidation": "pass",
+              "playcanvas": "pass",
+              "qaBuild": "pass",
+              "preContentFreezeSentinel": "pass",
+              "determinism": "running"
+            },
             "provides": [
               "persisted official league fixture identity",
               "registration club/opponent/homeAway/competition",
@@ -95,10 +118,10 @@
               "authoritative per-match final result",
               "authoritative goals",
               "authoritative assists",
-              "shared read helper for last fixture in history where player.appeared=true when the immediately previous fixture was a non-appearance"
+              "shared read helper for last fixture in history where player.appeared=true when immediately previous fixture was a non-appearance"
             ]
           },
-          "unblockContract": "Integrate/certify PR #156 (or successor) and additionally expose a read-only last-professional-appearance query plus result/goals/assists if the canonical rich LastMatchFact continues to require those fields. Until then keep unsupported fields null and preserve aggregate fallback."
+          "unblockContract": "Re-ground, fully certify and integrate PR #156 (or successor), then expose a read-only last-professional-appearance query plus result/goals/assists only if the canonical rich LastMatchFact continues to require them. Until then keep unsupported fields null and preserve aggregate fallback."
         }
       ]
     },
@@ -119,15 +142,15 @@
         {
           "id": "CODEX-RET-007",
           "status": "blocked",
-          "readiness": "candidate_authority_ready_in_PR_156_pending_integration_and_certification",
+          "readiness": "candidate_authority_playcanvas_green_but_behind_main_and_not_integrated",
           "task": "Make closure fixture/season-end aware instead of relying on coarse timing/contract proxies.",
-          "currentMainBlocker": "Main currently marks remainingOfficialMatches/nextFixture/match-day facts unavailable.",
+          "currentMainBlocker": "The authoritative persisted match producer required by retirement is not integrated into current main.",
           "candidateAuthority": {
             "pr": 156,
             "branch": "t5/authoritative-match-model",
-            "headAtAudit": "ffc9415f3a92e3449a43466d5e34fcd76efb3014",
-            "baseAtAudit": "6d2239ae1f89be97a7c5cf117d456cff9218aade",
-            "stateAtAudit": "open_draft_mergeable_8_commits_rebased_on_current_main",
+            "headAtAudit": "30764bafacd9712ed39af8f176312ec8ffa8a8d4",
+            "currentMainAtAudit": "a7a0bb575ac8824c3e52975e8861a97e29f94830",
+            "relationAtAudit": "1_ahead_1_behind",
             "provides": [
               "SportContext remaining league/official fixture facts",
               "SportContext nextFixture and previousFixture",
@@ -137,12 +160,22 @@
               "persisted objective closure for existing UDV season resolution"
             ],
             "requiredCertificationBeforeConsumption": [
-              "PR #156 exact-head CI green for its own producer suite",
-              "npm run test:playcanvas green as required by PR #156",
-              "integration into main or clean successor before retirement rewiring"
-            ]
+              "re-ground candidate to current main",
+              "complete exact-head Repository Integrity producer suite",
+              "retain exact-head PlayCanvas green evidence",
+              "integration into main or a clean successor before retirement rewiring"
+            ],
+            "certificationAtSnapshot": {
+              "repositoryIntegrityRunId": 35243389440,
+              "projectValidation": "pass",
+              "playcanvas": "pass",
+              "qaBuild": "pass",
+              "preContentFreezeSentinel": "pass",
+              "determinism": "running",
+              "integratedIntoMain": false
+            }
           },
-          "unblockContract": "After PR #156 (or its clean successor) is CI-certified and integrated into main, replace the coarse administrative final-window trigger with a fail-closed sporting boundary based on authoritative remainingOfficialMatches/nextFixture while preserving announced-state playability, idempotence and legacy-store compatibility."
+          "unblockContract": "After PR #156 (or its clean successor) is re-grounded, fully exact-head certified and integrated into main, replace the coarse administrative final-window trigger with a fail-closed sporting boundary based on authoritative remainingOfficialMatches/nextFixture while preserving announced-state playability, idempotence and legacy-store compatibility. Do not copy the unmerged producer into the retirement branch."
         }
       ]
     },
@@ -195,8 +228,8 @@
           "id": "CODEX-RET-011",
           "status": "blocked",
           "task": "Freeze terminal contentIdentity and register final migration edge.",
-          "blocker": "PR #15 / ordinary 34+ generation is not yet complete/integrated/frozen; terminal must follow the authoritative 34+ generation.",
-          "latestOwnerEvidence": "Ordinary 34+ remains the preceding lineage owner; do not freeze the terminal candidate while that generation is incomplete.",
+          "blocker": "Ordinary 34+ generation is not yet complete/integrated/frozen; terminal must follow the authoritative 34+ generation.",
+          "currentUnfrozenTerminalCandidate": "4f7c783521a463509ac8bf9a0646b6c0aeaff6861a8d01ab8b1e43c19641e93b",
           "unblockContract": "Complete and frozen authoritative ordinary 34+ generation plus its exact adjacent source contentIdentity."
         }
       ]
@@ -206,5 +239,5 @@
   "readyCount": 0,
   "blockedCount": 3,
   "partiallyUnblockedCount": 2,
-  "remainingCodexAction": "Do not duplicate implemented lots. PR #156 is now re-grounded on current main and is the concrete candidate upstream for RET-007 and partial RET-005, but retirement must not consume it until its required CI/PlayCanvas certification and integration. RET-011 remains blocked on complete ordinary 34+ canon."
+  "remainingCodexAction": "Do not duplicate implemented lots. RET-007 is narrowed to PR #156 (or clean successor): PlayCanvas is green on the audited head, but the candidate is now 1 behind current main, its Repository Integrity run is still executing, and it is not integrated. Re-ground and finish certification before consumption. RET-005 remains partial because rich result/goals/assists and last-appeared-fixture lookup are absent. RET-011 remains blocked on complete ordinary 34+ canon."
 }
