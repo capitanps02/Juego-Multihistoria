@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "adf1bffa7298bff6d7cebab88a3388c559cd3588",
+  "baseCommit": "cda24da1a688cc245695cd007c50d458c4e1e7d7",
   "principles": {
     "structuralValidityIsNotCanonicalClosure": true,
     "seedsReadIsNotCausalConsumption": true,
