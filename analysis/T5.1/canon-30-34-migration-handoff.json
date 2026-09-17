@@ -2,12 +2,12 @@
   "schemaVersion": 2,
   "workstream": "T5.1 canon 30-34 migration handoff",
   "generatedAt": "2026-09-17",
-  "sourceMainSha": "182d5e6abc4f7c98eeb95703a4bc6c3560a4bcde",
-  "sourceContentIdentity": "303527efcc42c17e502257c3d7c613facafa10c8ed113810b64a1d7ebc6d0bb1",
-  "observedTargetContentIdentity": "00355375a47c53eb2d50ead6eff7c7b67b70cddf91ac6ec6aed251b5b3b77cbf",
+  "sourceMainSha": "c41e7de20daf3bd672ae54646428e921761008c8",
+  "sourceContentIdentity": "84871fae2bec92d74d1e607e0a48943e2e530a062d315a829cfe75eda9fe0886",
+  "observedTargetContentIdentity": "3ecee9e2329be03cb566c459fc1aecd0c32d759354aadf40061494873e392ba5",
   "targetIdentityEvidence": {
-    "workflowRun": 35236949333,
-    "source": "Focused PR CI after main advanced to 182d5e6 proved all C012 conditional-seed guards and calculated runtime contentIdentity 00355375...77cbf; the only focused failure was the then-stale handoff target 14164e54...8c07.",
+    "workflowRun": 35242289109,
+    "source": "Focused PR CI after re-ground on Agent 5 generation H calculated runtime contentIdentity 3ecee9e2...92ba5; 54/55 tests passed and the only failure was the stale previous target.",
     "rule": "Target identity follows the active merged catalog and must be refreshed whenever upstream canonical event metadata changes."
   },
   "consumer": {
@@ -16,7 +16,7 @@
     "routeRegistry": "CONTENT_MIGRATION_ROUTES",
     "workstreamMayRegisterRoute": false,
     "targetFreezeRequiredBeforeRouteRegistration": true,
-    "targetFreezeFixture": "qa/fixtures/t5.1/post-t51-sources/00355375a47c53eb2d50ead6eff7c7b67b70cddf91ac6ec6aed251b5b3b77cbf.json"
+    "targetFreezeFixture": "qa/fixtures/t5.1/post-t51-sources/3ecee9e2329be03cb566c459fc1aecd0c32d759354aadf40061494873e392ba5.json"
   },
   "invariants": {
     "approvedSameSceneMappings": [],
@@ -33,11 +33,7 @@
   },
   "currentBatch": {
     "sameSceneMappings": [],
-    "exactIdSemanticCollisions": [
-      "EVT_30_CON_001","EVT_30_BODY_001","EVT_30_MKT_001","EVT_30_NAT_001","EVT_30_FAM_001","EVT_30_MED_001","EVT_30_FORM_001","EVT_30_CAP_001",
-      "EVT_31_MED_001","EVT_31_MKT_001","EVT_31_HOME_001","EVT_31_AGT_001","EVT_31_LEGACY_001","EVT_31_RETURN_001","EVT_31_TACT_001","EVT_31_CCH_001","EVT_31_NAT_001","EVT_31_FINAL_001",
-      "EVT_32_CON_001","EVT_32_HOME_001","EVT_32_AGT_001","EVT_32_FAN_001","EVT_32_NAT_001","EVT_33_BODY_001","EVT_33_CAP_001","EVT_33_MKT_001","EVT_33_PRS_001"
-    ],
+    "exactIdSemanticCollisions": ["EVT_30_CON_001","EVT_30_BODY_001","EVT_30_MKT_001","EVT_30_NAT_001","EVT_30_FAM_001","EVT_30_MED_001","EVT_30_FORM_001","EVT_30_CAP_001","EVT_31_MED_001","EVT_31_MKT_001","EVT_31_HOME_001","EVT_31_AGT_001","EVT_31_LEGACY_001","EVT_31_RETURN_001","EVT_31_TACT_001","EVT_31_CCH_001","EVT_31_NAT_001","EVT_31_FINAL_001","EVT_32_CON_001","EVT_32_HOME_001","EVT_32_AGT_001","EVT_32_FAN_001","EVT_32_NAT_001","EVT_33_BODY_001","EVT_33_CAP_001","EVT_33_MKT_001","EVT_33_PRS_001"],
     "schedulerMappingsCandidate": [
       {"kind":"distinct_scene","legacyEventId":"EVT_30_CON_001","canonicalEventId":"EVT_30_CON_001","clearCanonicalSeen":true,"clearCanonicalCooldown":true},
       {"kind":"distinct_scene","legacyEventId":"EVT_30_BODY_001","canonicalEventId":"EVT_30_BODY_001","clearCanonicalSeen":true,"clearCanonicalCooldown":true},
@@ -100,8 +96,5 @@
     "ids": ["EVT_30_AGT_001","EVT_33_NAT_001","EVT_33_HOME_001","EVT_33_CON_001","EVT_33_RET_001"],
     "earlyRetirementException": "EVT_33_RET_001 remains a technical voluntary early-retirement adaptation until an explicit canonical owner decision replaces it."
   },
-  "requiredCurrentRouteAssertions": [
-    "double migration is a no-op",
-    "registered edge extends the existing upstream lineage without shortcut or ambiguity"
-  ]
+  "requiredCurrentRouteAssertions": ["double migration is a no-op","registered edge extends the existing upstream lineage without shortcut or ambiguity"]
 }
