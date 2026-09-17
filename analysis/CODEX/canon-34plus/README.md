@@ -26,6 +26,18 @@ Strict integration-ready count is currently **0/43 ordinary principals**. All 43
 ## Closed ownership question
 Agent 8 classified the 14 34+ bridge-memory concepts and reconciled the **54 exact Pasada-7 canonical seed identities**. See `SEED_OWNERSHIP.md`. This removes the semantic ambiguity about “68 new seeds”: 14 are inherited/derived concepts and 54 are Pasada-7 memories, with **45 ordinary producers** and **9 terminal producers**.
 
+## Prepared Wave A
+`UNLOCK_WAVES.md` separates the 43 ordinary principals by shared authority dependency. The first ordinary batch has now been reduced to an implementation-complete handoff, without registering it into runtime:
+
+- `EVT_35_FAM_001` — family / relocation tradeoff;
+- `EVT_35_BODY_001` — reduced preseason / body-management choice;
+- `EVT_35_IMG_001` — late commercial campaign framing;
+- `EVT_36_MED_001` — post-career body-risk conversation.
+
+`WAVE_A_IMPLEMENTATION.json` contains exact choice IDs, canonical seed payloads, required factual gates and forbidden mutations. `WAVE_A_TEST_MATRIX.md` contains negative authority tests plus save/load, migration, determinism and retirement-boundary checks.
+
+These four are **prepared, not active**. Wave 0 must land first: issue #59 lineage, T5.2 seed-catalog/provenance application and valid predecessor memory.
+
 ## Main remaining blockers
 1. successive content lineage / issue #59;
 2. T5.2 catalog + migration application of `SEED_OWNERSHIP.md` and subsequent closure-registry entries where evidence permits;
