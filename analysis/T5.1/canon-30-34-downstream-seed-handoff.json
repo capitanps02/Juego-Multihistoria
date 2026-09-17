@@ -5,7 +5,7 @@
   "consumerMatrixEvidence": {
     "path": "analysis/CODEX/seeds/SEED_CONSUMER_MATRIX.json",
     "snapshotBaseCommit": "cda24da1a688cc245695cd007c50d458c4e1e7d7",
-    "rule": "The matrix is an evidence snapshot, not sole current authority. Current-main source search was used to corroborate the absence of a demonstrated live causal reader for these boundary seeds."
+    "rule": "The matrix is an evidence snapshot, not sole current authority. Current runtime writers in this branch are authoritative for producer provenance; current-main source search is used only to corroborate downstream consumer evidence."
   },
   "policy": {
     "structuralReadIsNotConsumption": true,
@@ -18,10 +18,10 @@
   "handoffs": [
     {
       "seedId": "SEED_AGE34_PRIORITY",
-      "currentProducerEvidence": ["EVT_33_CON_001", "EVT_33_END_001"],
+      "currentProducerEvidence": ["EVT_33_CON_001", "EVT_33_END_001", "EVT_33_MKT_001"],
       "currentStatus": "review_required_no_demonstrated_live_consumer",
-      "reviewTarget": "34+ contract and age-transition content",
-      "requiredDecision": "Register a semantically real downstream reader, define a canonically supported terminal disposition, or explicitly keep the seed open."
+      "reviewTarget": "34+ contract, market and age-transition content",
+      "requiredDecision": "Register a semantically real downstream reader, define a canonically supported terminal disposition, or explicitly keep the seed open. Its three current writers represent converging late-career priority decisions and must not be collapsed to one provenance source."
     },
     {
       "seedId": "SEED_RETIREMENT_PUBLIC_TONE",
@@ -32,10 +32,10 @@
     },
     {
       "seedId": "SEED_HOME_PULL_PUBLIC",
-      "currentProducerEvidence": ["EVT_33_HOME_001"],
+      "currentProducerEvidence": ["EVT_33_HOME_001", "EVT_33_PRS_001"],
       "currentStatus": "review_required_no_demonstrated_live_consumer",
       "reviewTarget": "34+ home-return and retirement-location content",
-      "requiredDecision": "A downstream scene may read it only when the prior public home commitment materially changes that scene."
+      "requiredDecision": "A downstream scene may read it only when a prior public home commitment materially changes that scene. Preserve whether the memory came from the direct home promise or the retirement interview; do not synthesize a single fake origin."
     },
     {
       "seedId": "SEED_FINAL_FOUR_WAYS",
