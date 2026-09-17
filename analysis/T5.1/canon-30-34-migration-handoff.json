@@ -2,12 +2,12 @@
   "schemaVersion": 2,
   "workstream": "T5.1 canon 30-34 migration handoff",
   "generatedAt": "2026-09-17",
-  "sourceMainSha": "176317c5708995bb72fa40af9dd45dffc9838093",
+  "sourceMainSha": "6d2239ae1f89be97a7c5cf117d456cff9218aade",
   "sourceContentIdentity": "5d3fd71a8df42ed5b93fdde63ed386e9d776693addd62a30293dbecad7aa56d2",
   "observedTargetContentIdentity": "14164e54ec4250e50b915c29c959b35a56ff7ccd249a99c4ad026925af2d8c07",
   "targetIdentityEvidence": {
-    "workflowRun": 35225413008,
-    "source": "Focused 30-34 CI computed the active catalog identity after fail-closed sport-authority gates; all new sport regressions passed before the stale-target assertion stopped the run.",
+    "workflowRun": 35229622659,
+    "source": "Focused 30-34 CI after re-ground to main@6d2239a passed the full trigger, career authority, authority-gap, sport-authority, readiness and migration-handoff suite with the same active catalog target identity.",
     "rule": "Target identity follows the active merged catalog and must be refreshed whenever canonical event metadata changes."
   },
   "consumer": {
