@@ -16,6 +16,9 @@
     "authorityMatrixCoverage": 43,
     "waveAImplementationSpecs": 4,
     "waveATestSpecs": 4,
+    "waveBCanonicalCardsExtracted": 17,
+    "waveBImplementationSpecs": 17,
+    "waveBTestSpecs": 17,
     "canonicalPasada7SeedsClassified": 54,
     "bridgeMemoryConceptsClassified": 14,
     "machineReadableT52Handoff": true
@@ -25,10 +28,11 @@
     "B": 17,
     "C": 16,
     "D": 7,
-    "E": 1,
+    "E": 2,
     "overlaps": {
       "EVT_35_AGT_001": ["B", "D"],
-      "EVT_35_RECORD_001": ["C", "D"]
+      "EVT_35_RECORD_001": ["C", "D"],
+      "EVT_37_SHORT_001": ["B", "E"]
     },
     "uniqueOrdinaryCoverage": 43
   },
@@ -36,16 +40,26 @@
     "contentLineage": "issue_59_waits_for_actual_predecessor_generations",
     "seedCatalog": "54_exact_34plus_seed_ids_not_present_on_main_yet",
     "veteranRenewalGeneration": "clubWantsRenewal_returns_false_at_age_gte_34",
-    "freeAgency": "expired_pending_resolution_is_not_unattached",
+    "contractRepresentability": "several_canonical_bonus_exit_role_ambassador_terms_are_not_fully_representable_in_current_CareerTerms",
+    "freeAgency": "expired_pending_resolution_is_not_unattached; EVT_37_SHORT_001_and_EVT_38_MARKET_001_require_real_unattached_state",
     "sport": "fixture_usage_result_selection_facts_fail_closed_when_absent",
     "lateNpcSquad": "ordinary_34plus_institutional_and_squad_identity_incomplete",
-    "terminalRetirement": "agent9_pr118"
+    "terminalRetirement": "agent9_pr118; retirement_choices_inside_EVT_36_LOWER_001_and_EVT_38_RICH_001_delegate_terminal_transition"
   },
+  "preparedPackages": [
+    "WAVE_A_IMPLEMENTATION.json",
+    "WAVE_A_TEST_MATRIX.md",
+    "WAVE_B_IMPLEMENTATION.json",
+    "WAVE_B_TEST_MATRIX.md",
+    "AUTHORITY_MATRIX.json",
+    "T52_SEED_HANDOFF.json"
+  ],
   "nextSafeActivation": [
     "EVT_35_FAM_001",
     "EVT_35_BODY_001",
     "EVT_35_IMG_001",
     "EVT_36_MED_001"
   ],
+  "nextPreparationTarget": "Wave C canonical extraction and sport-authority package",
   "activationCondition": "Wave 0 must be satisfied before any canonical 34+ runtime registration or contentIdentity freeze"
 }
