@@ -7,9 +7,11 @@ const audit = JSON.parse(fs.readFileSync('analysis/T5.1/canon-30-34.json', 'utf8
 const freeze = JSON.parse(fs.readFileSync('qa/fixtures/t5.1/pre-t51-content-manifest.json', 'utf8'));
 const seedLifecycle = JSON.parse(fs.readFileSync('analysis/T5.1/canon-30-34-seed-lifecycle.json', 'utf8'));
 const migrationHandoff = JSON.parse(fs.readFileSync('analysis/T5.1/canon-30-34-migration-handoff.json', 'utf8'));
+const parityEvidence = JSON.parse(fs.readFileSync('analysis/T5.1/canon-30-34-parity-evidence.json', 'utf8'));
 const indexSource = fs.readFileSync('src/content/events/30_34/index.ts', 'utf8');
 const eventGateSource = fs.readFileSync('src/narrative/event-gates.ts', 'utf8');
 const renewalFactSource = fs.readFileSync('src/simulation/club-contract-intent.ts', 'utf8');
+const seedCatalogSource = fs.readFileSync('src/catalog/seeds.ts', 'utf8');
 
 const byStatus = status => readiness.events.filter(event => event.status === status);
 const ids = rows => rows.map(row => row.canonicalId).sort();
@@ -22,6 +24,22 @@ test('T5.1 30-34 readiness queda anclado al freeze pre-T5.1 y declara el target 
   assert.equal(readiness.currentTarget.contentIdentity, migrationHandoff.observedTargetContentIdentity);
   assert.equal(readiness.currentTarget.workstreamMayRegisterRoute, false);
   assert.equal(readiness.currentTarget.freezeStatus, 'pending_coordination_integration');
+});
+
+test('T5.1 30-34 parity evidence usa el mismo source/target que el handoff vigente', () => {
+  const contract = parityEvidence.events.EVT_30_CON_001;
+  assert.ok(contract);
+  assert.equal(contract.dimensions.saveContinuity.sourceContentIdentity, migrationHandoff.sourceContentIdentity);
+  assert.equal(contract.dimensions.saveContinuity.targetContentIdentity, migrationHandoff.observedTargetContentIdentity);
+  assert.equal(contract.dimensions.saveContinuity.routeRegistrationOwner, 'coordination/integration');
+  assert.equal(contract.dimensions.saveContinuity.targetFreezeRequired, true);
+});
+
+test('T5.1 30-34 parity evidence no materializa SEED_LAST_PEAK_CONTRACT sin definición runtime', () => {
+  const contract = parityEvidence.events.EVT_30_CON_001;
+  assert.deepEqual(contract.dimensions.seeds.missingOrUnclassified, ['SEED_LAST_PEAK_CONTRACT']);
+  assert.equal(seedCatalogSource.includes('SEED_LAST_PEAK_CONTRACT'), false);
+  assert.equal(contract.promotionAllowed, false);
 });
 
 test('T5.1 30-34 readiness particiona exactamente los 50 principales en 27/18/5', () => {
