@@ -80,7 +80,7 @@ test('EVT_31_HOME_001 consumes only a real UDV offer and maps every choice expli
   assert.equal(offerBridgeEligible(state, event), false);
 });
 
-test('EVT_32_HOME_001 consumes only a real UDV offer and never grants captaincy by state proxy', () => {
+test('EVT_32_HOME_001 consumes only a real UDV offer and rejects another destination', () => {
   const event = byId('EVT_32_HOME_001');
   assert.deepEqual(offerBridgeSpec(event)?.choiceActions, { A:'accept', B:'counter', C:'counter', D:'defer' });
   assert.ok(event.tags?.includes('t51_offer_authority_bridge'));
@@ -90,6 +90,11 @@ test('EVT_32_HOME_001 consumes only a real UDV offer and never grants captaincy 
   pendingOffer(state, { club:'UDV', ownerClub:'UDV', registrationClub:'UDV', route:'home', months:24 });
   assert.equal(offerBridgeEligible(state, event), true);
   assert.equal(JSON.stringify(event).includes('setCaptain'), false);
+
+  state.market.pending.terms.club = 'Otro Club';
+  state.market.pending.terms.ownerClub = 'Otro Club';
+  state.market.pending.terms.registrationClub = 'Otro Club';
+  assert.equal(offerBridgeEligible(state, event), false);
 });
 
 test('EVT_32_CON_001 requires the authoritative one-year renewal offer', () => {
@@ -104,6 +109,10 @@ test('EVT_32_CON_001 requires the authoritative one-year renewal offer', () => {
   assert.equal(offerBridgeEligible(state, event), true);
 
   state.market.pending.reason = 'Traspaso';
+  assert.equal(offerBridgeEligible(state, event), false);
+
+  state.market.pending.reason = 'Renovación de contrato';
+  state.market.pending.terms.months = 24;
   assert.equal(offerBridgeEligible(state, event), false);
 });
 
