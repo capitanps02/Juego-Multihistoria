@@ -20,8 +20,8 @@ Implementation queue re-grounded over: `main@adf1bffa7298bff6d7cebab88a3388c559c
 | `EVT_25_MKT_001` | 25 | direct coach contact | #81 risked confusing contact with offer | explicit rule: required offer type = none | **Yes** |
 | `EVT_29_HOME_001` | 29 | home return | direct owner/registration/club writes | transfer authority exists, but no guaranteed matching home offer | **No — blocked** |
 | `EVT_32_HOME_001` | 32 | home return | direct owner/registration/club writes | transfer authority exists, but no guaranteed matching home offer | **No — blocked** |
-| `EVT_34_CON_001` | 34 | short veteran contract | active content generic; role promise cannot be represented in `CareerTerms` | renewal authority represents duration/salary | **No — needs canon** |
-| `EVT_34_MKT_001` | 34 | veteran market | active content generic | transfer authority exists; absence of market remains absence | **No — needs canon** |
+| `EVT_34_CON_001` | 34 | short veteran contract | generic contract scene; role promise cannot be represented in `CareerTerms` | renewal authority represents duration/salary, but content premise still needs canon | **No — needs canon** |
+| `EVT_34_MKT_001` | 34 | veteran market | synthetic `VETERAN_OFFER_AVAILABLE` + `world.veteranOffer*`; acceptance directly writes contract duration | existing CareerOffer authority can represent salary/duration, but 34+ generation and offerBridge are not integrated | **No — blocked** |
 
 ## Exact Codex-ready count in this handoff
 
@@ -61,4 +61,6 @@ The authority can already represent:
 - rejection / counter / defer;
 - no offer existing.
 
-It cannot currently represent a contractual **squad role promise** inside `CareerTerms`, nor can it infer retirement from no-renewal. Retirement remains a separate owner.
+The current 34+ runtime does **not** use that authority for its veteran offer: it keeps a legacy synthetic boolean + `world.veteranOffer*` payload and signs via direct content effects. `VETERAN_MARKET_BLOCKERS.md` defines the required atomic future conversion.
+
+The authority also cannot currently represent a contractual **squad role promise** inside `CareerTerms`, nor can it infer retirement from no-renewal. Retirement remains a separate owner.
