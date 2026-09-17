@@ -5,7 +5,7 @@ Every ordinary Agent-8 principal now has a canonical card. Remaining blockers ar
 ## B1 — Successive content lineage
 **Owner:** shared integration.  
 **Issue:** **#59**.  
-**Missing contract:** deterministic successive content migration/source evidence through the actual immediately preceding canonical generation. Current main has certified earlier generation H, but final canonical 30–34 is not yet the authoritative immediate predecessor of 34+.  
+**Missing contract:** deterministic successive content migration/source evidence through the actual immediately preceding canonical generation. Current main has certified earlier generation H plus shared non-content authorities, but final canonical 30–34 is not yet the authoritative immediate predecessor of 34+.  
 **Effect:** all 43 ordinary cards are prepared, but Agent 8 must not freeze/register a provisional 34+ content identity, migration shortcut or history rewrite.
 
 ## B2 — 34+ seed catalog/lifecycle integration
@@ -40,9 +40,11 @@ Every ordinary Agent-8 principal now has a canonical card. Remaining blockers ar
 ## B6 — Late-career NPC/squad authority
 **Owner:** shared T5.3 / NPC / affiliation authority.  
 **Issue:** **#177 — authoritative late-career coach, successor, peer and institutional NPC identity**.  
-**Related upstream work:** coordination #138 tracks **PR #150** for authoritative club leadership/successor; existing **#169** covers coach chronology. #177 remains the 34+ composition contract for coach/successor/peer/institutional identity where those narrower authorities do not suffice.  
-`resolveActiveAgent()` is integrated and may be used fail-closed. Current-club institutional NPC certification remains sparse and does not cover ordinary 34+ clubs. Successor/current-coach/peer identities require factual affiliation/career evidence.  
-**Affected:** `EVT_34_DORSAL_001`, `EVT_34_MENTOR_001`, `EVT_35_DUAL_001`, `EVT_35_AGT_001`, `EVT_35_RECORD_001`, `EVT_36_CCH_001`, `EVT_36_PEER_001`. Agent scenes may use a certified `activeAgent`; they cannot fabricate a replacement representative.
+**Current progress on main:** `main@da3b356ac1c9c3376052189573e5a30f89b71cf0` integrates the shared player-club-leadership authority. Agent 8 may now consume `resolveCurrentPlayerClubLeadership()`, historical leadership certifications and `resolveCertifiedPlayerLeadershipSuccessor()` fail-closed. The successor resolver returns a named same-club active NPC only after an explicit certification; it never guesses from relationships, `npcRefs`, prominence, recency, age or seeds. The audited earlier canon does not supply a general main-captain writer and its audited succession actors remain generic/non-persistent unless future canon explicitly identifies one.  
+**What this does not yet prove:** `EVT_34_DORSAL_001` still needs a factual young signing/successor plus shirt/campaign context; `EVT_34_MENTOR_001` still needs a factual current younger teammate and competitor/successor relation. A null certified successor remains valid and must fail closed. Current coach/coach-change, veteran peer retirement, institutional counterparty and record-breaking young-player identity remain separate factual needs.  
+**Related work:** **#169** covers coach chronology. #177 remains the 34+ composition contract for the remaining coach/young-competitor/successor/peer/institutional identity facts.  
+`resolveActiveAgent()` remains authoritative for the current representative and may return null.  
+**Affected:** `EVT_34_DORSAL_001`, `EVT_34_MENTOR_001`, `EVT_35_DUAL_001`, `EVT_35_AGT_001`, `EVT_35_RECORD_001`, `EVT_36_CCH_001`, `EVT_36_PEER_001`.
 
 ## B7 — Terminal career retirement
 **Owner:** Agent 9 / **PR #118**.  
