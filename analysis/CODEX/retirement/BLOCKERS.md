@@ -2,131 +2,118 @@
 
 Coordination snapshot: 2026-09-17.
 
-- synchronized retirement head: `38f6294aa262b16151bc0ad6a1df35ab7edf03c6`
-- synchronized against: `main@fa3c8bae524fef62e4eb9802e895df88588998c4`
-- compare at this snapshot: **71 ahead / 0 behind main**
-- retirement-specific workflow: run `35247316398` = **SUCCESS** (build + all T5.36/T5.37 gates)
-- Repository Integrity: run `35247316406` reaches the existing `freeze-t51-active-source --check` fail-closed sentinel from inside `npm test`; all preceding visible test suites pass before the sentinel
-- current unfrozen terminal candidate: `4f7c783521a463509ac8bf9a0646b6c0aeaff6861a8d01ab8b1e43c19641e93b`
+Runtime head audited: `c3afca7e63cdc7833518c5746814919998267dce` against `main@fa3c8bae524fef62e4eb9802e895df88588998c4` (**74 ahead / 0 behind** at that snapshot).
 
-Do not freeze or bypass the terminal identity while the immediately preceding ordinary 34+ generation is not integrated and frozen.
+The previous exact-head terminal workflow on `3c42379a…` was green (**42/42**). `c3afca7e…` adds only the terminal conditional canonical-accreditation ratchet + its focused tests/workflow registration; certify its own exact-head runs before integration claims.
 
-## 1. Complete active 34+ generation / terminal lineage (RET-011)
+The previous terminal candidate hash `4f7c7835…` is historical only. The accreditation ratchet changes active catalog metadata, so Repository Integrity may produce a new provisional identity. **Do not freeze any provisional terminal identity.**
 
-task: freeze the real ordinary 34+ generation, then register the adjacent terminal `contentIdentity` migration edge.
+## 1. Terminal lineage / ordinary 34+ predecessor — RET-011
 
-### What #59 still owns
+The multi-hop migration engine is already integrated in `main`; #59 is not blocked on graph machinery. The remaining ownership is serial registration/freeze of each real future generation in canonical order.
 
-The original multi-generation migration engine is **already integrated in main**:
+### #180 / PR #191 — seed catalog
 
-- `findMigrationPath()` resolves a unique acyclic route and fails closed on missing/ambiguous paths;
-- `GameSession.migrateAndResume()` consumes the route multi-hop;
-- A→B→C, direct A→C, B-save→C, frozen pending provenance, mixed A/B history, cycles and ambiguous routes are covered by `scripts/test-t51-content-lineage.mjs`;
-- migration remains ordered and does not justify shortcut edges.
+PR #191 (`t5/seed-34plus-catalog`) is a certified, unmerged candidate:
 
-Therefore #59 is no longer a blocker because the path engine is missing. Its remaining ownership is **serial registration/freeze of each future content generation in canonical order**.
+- HEAD `d8f724893cfcb40d2b81f995d8ed08179bbd6f52`;
+- **3 ahead / 0 behind** the audited main;
+- focused run `35246851382`: SUCCESS;
+- Repository Integrity `35246851472`: SUCCESS;
+- 54 exact canonical Pasada-7 seeds = **45 ordinary + 9 terminal**;
+- 14 bridge-memory concepts remain inherited/derived compatibility facts;
+- no fuzzy aliases, history rewrite, `EVENTS`, RNG, schema or lineage change.
 
-### #180 / PR #191 canonical 34+ seed catalog
+This resolves the catalog/provenance implementation candidate for #180, but it is not yet integrated and must enter at the correct serial point.
 
-PR #191 (`t5/seed-34plus-catalog`) is now a certified implementation candidate:
+### PR #15 — ordinary 34+ preparation
 
-- exact HEAD: `d8f724893cfcb40d2b81f995d8ed08179bbd6f52`;
-- relation to current main: **3 ahead / 0 behind**;
-- focused workflow `35246851382`: **SUCCESS** (build + `test-t52-34plus-canonical-catalog.mjs` + `test:t52`);
-- Repository Integrity `35246851472`: **SUCCESS** on the same exact HEAD;
-- contract: 54 canonical Pasada-7 seeds = **45 ordinary + 9 terminal**;
-- 14 bridge-memory concepts stay inherited/derived compatibility facts, not automatic age-34 producers;
-- no fuzzy technical→canonical aliasing and no historical provenance rewrite;
-- PR #191 does not register `EVENTS`, freeze content identity or create lineage edges.
+Current audited PR #15 head: `0a199462e3b70791284796bcdfd4639a5f6b8a5b`.
 
-It is not integrated yet and must not be auto-merged from this workstream.
-
-### PR #15 ordinary 34+ snapshot
-
-- branch: `t51/canon-34plus`;
-- relation to current main: **67 ahead / 0 behind**;
-- current diff remains analysis / machine-readable preparation only; no Agent-8 ordinary 34+ runtime files are registered;
+- **73 ahead / 0 behind** audited main;
 - ordinary canonical cards prepared: **43/43**;
-- runtime implemented/registered by Agent 8: **0/43**;
-- active runtime content therefore remains generation H from the perspective of 34+ ordinary canon.
+- authority matrix: **43/43**;
+- ordinary principals registered/implemented at runtime on this branch: **0/43**;
+- active content therefore remains the previous certified generation until activation work actually lands.
 
-### Required sequence
+The bottleneck has moved from design to activation/dependency closure.
+
+### #192 — exact Pasada-7 conditional deck
+
+Canonical conditionals: **32**.
+
+- engine rows: 32;
+- exact-ID overlap: 5;
+- semantically accredited exact overlaps: **0**;
+- canonical exact IDs missing from engine: 27;
+- technical engine extras absent from canon: 27.
+
+Terminal/shared rows stay Agent-9-owned; ordinary rows belong #192/Agent 8. Equal counts are not semantic coverage.
+
+### Required lineage sequence
 
 1. integrate the remaining canonical predecessor generations in their real order;
-2. integrate #191 when the coordinator chooses the correct serial point;
-3. activate/integrate the 43 ordinary 34+ scenes from PR #15 only after their shared authorities are satisfied;
-4. freeze the resulting ordinary 34+ identity and register its adjacent lineage edge through #59 ownership;
-5. re-ground PR #118 on that exact frozen predecessor;
-6. only then freeze/register the terminal retirement identity as the next adjacent generation.
+2. integrate #191 at the correct serial point;
+3. implement/accredit #192 and activate/integrate the 43 ordinary 34+ principals only against real shared authority;
+4. freeze that exact ordinary 34+ generation and register its adjacent edge through #59;
+5. re-ground PR #118 on the exact frozen predecessor;
+6. only then calculate/freeze terminal contentIdentity and register the single adjacent ordinary34plus -> terminal edge.
 
-status: **hard blocked upstream by content-generation order, not by missing migration infrastructure**.
+Status: **hard blocked upstream by generation order and ordinary 34+ activation, not by missing migration infrastructure**.
 
-## 2. Full last-match authority (RET-005)
-
-task: `LastMatchFact { fixture, club, opponent, competition, minutes, starter, result, goals, assists }`.
+## 2. Full last-match authority / terminal factual conditionals — RET-005
 
 Producer candidate: PR #156 / `t5/authoritative-match-model`.
 
-Latest audited producer state:
+Latest audited producer:
 
-- HEAD: `91b3f0a151a7c547ef00cee42e823e9920b244cf`;
-- relation to current main: **1 ahead / 0 behind**;
-- Repository Integrity run `35245632330` is still in progress at `T5 determinism and RNG isolation`;
-- project validation, PlayCanvas integration regression, QA build and pre-content freeze sentinel are already green on that exact HEAD.
+- HEAD `54a84694ffa6dcd42a7d87b985db2db95047b9e4`;
+- **2 ahead / 0 behind** audited main;
+- Repository Integrity run `35258290496` is still in progress at the latest check;
+- the latest producer commit only extends workflow timeout to 60 minutes; it does not change match-model semantics.
 
-#156 provides stable fixture identity/date, registration club, opponent, home/away, league competition, persisted `calledUp/onBench/started/appeared/minutes`, next/previous fixture and remaining official/league fixture counts.
+Candidate facts supplied by #156 include fixture id/date, club/opponent/home-away/league competition, call-up/bench/start/appearance/minutes/injuryUnavailable, next/previous fixture and remaining official/league fixture counts.
 
-#156 still does **not** provide:
+Still missing for a complete retirement LastMatchFact:
 
+- public read-only latest match where `player.appeared === true` (previous fixture may be a non-appearance);
 - authoritative final result;
 - goals;
 - assists/cards;
-- a shared query for the latest persisted official match where `player.appeared === true` when the immediately previous fixture is a non-appearance.
+- suspension authority where canonical no-last-match requires suspension.
 
-Retirement must not equate `previousFixture` with the player's last professional appearance and must keep unsupported details null.
+### Canonical terminal conditional ratchet
 
-status: **partially unblocked; rich LastMatchFact still blocked**.
+PR #118 now enforces fail-closed accreditation in `retirement-terminal-canonical-guard.ts`.
 
-## 3. Fixture-aware closure boundary (RET-007) — IMPLEMENTED
+These rows remain `technical_adaptation` until their exact canonical factual contract exists:
 
-RET-007 is no longer a blocked implementation task.
+- `CEVT_38_OFFER_AFTER_RETIREMENT_ANNOUNCED` — real CareerOffer handling exists, but terminal reversal semantics are a separate canonical contract;
+- `CEVT_RET_RECONSIDER` — legacy pre-announcement ID, **not** canonical `CEVT_38_RETIREMENT_REVERSAL`; no silent alias;
+- `CEVT_RET_NO_LAST_MATCH` — current 60-day/no-appearance closure is compatibility behavior and does **not** prove canonical injury/suspension causation;
+- `CEVT_RET_STORYBOOK_LAST_GOAL` — non-synthetic/evidence-gated, but no authoritative last-goal producer exists yet.
+
+The focused ratchet test is `scripts/test-t536-canonical-accreditation.mjs`.
+
+Status: **partially unblocked; factual LastMatchFact and canonical no-last-match/last-goal accreditation remain blocked**.
+
+## 3. Fixture-aware closure boundary — RET-007 IMPLEMENTED
 
 Implemented in `38f6294aa262b16151bc0ad6a1df35ab7edf03c6`:
 
-- `retirementSportingBoundary()` reads only the shared `SportContext` projection;
-- `remainingOfficialMatches > 0` => an announced career stays playable even if the legacy administrative timeout or contract-expiry fallback would otherwise close it;
-- `remainingOfficialMatches === 0` with authoritative availability => sporting season complete and closure may proceed;
-- unavailable/legacy/invalid sporting authority => exact previous administrative fallback is preserved;
-- no private match-store shape is copied into retirement;
-- no extra RNG is consumed.
+- authoritative `remainingOfficialMatches > 0` keeps an announced career open;
+- authoritative `remainingOfficialMatches === 0` permits terminal closure;
+- unavailable/invalid authority retains the legacy administrative fallback only;
+- no private match-store shape and no extra RNG.
 
-Focused regression coverage lives in `scripts/test-t536-sport-authority.mjs` and the dedicated T5.36/T5.37 workflow is green.
+Current main still reports this field unavailable. Integrating a compatible sport producer activates the already-written authoritative branch; no new RET-007 implementation is required.
 
-Current main still exposes this field as unavailable, so production behavior remains backward-compatible. When PR #156 or a compatible producer is integrated, the already-implemented `known` path activates automatically.
+## 4. 30–34 early-retirement compatibility — resolved as bounded bridge
 
-status: **implemented; producer integration only activates the authoritative branch, it is not additional retirement implementation work**.
+`EVT_33_RET_001` choice A has been semantically audited. It means closing at season end and its copy explicitly says the announcement occurs, while current 30–34 runtime persists only `EARLY_RETIRED_30_34=true` plus `world.retirementReason="voluntary_30_34"`.
 
-## 4. Terminal seed lifecycle
-
-owner chain: #180 / PR #191 + PR #15 ordinary 34+ + PR #118 terminal producers.
-
-The canonical split is **45 ordinary producer IDs + 9 terminal producer IDs**. The 14 bridge-memory concepts are compatibility/history projections and must not be auto-produced at age 34.
-
-Retirement rules remain:
-
-- preserve exact `originEvent` provenance;
-- never mass-close unrelated seeds;
-- never fuzzy-remap technical IDs;
-- do not fabricate canonical instances before their producer event occurs.
-
-## 5. 30–34 early-retirement semantics
-
-task: decide whether `EVT_33_RET_001` already contains an announcement fact or should enter the standard terminal announcement flow.
-
-owner: `t51/canon-30-34` + coordinator.
-
-The historical compatibility bridge still narrowly compresses `playing -> decided -> announced -> closed` only for the legacy early-retirement flag. Preserve it until the owner finalizes canonical semantics.
+Therefore the narrow legacy bridge in PR #118 is intentional compatibility, not an open terminal-design blocker. Do not broaden it. Remove it only after the 30–34 owner writes explicit phases and migration evidence.
 
 ## Repository-integrity rule
 
-Do not weaken the freeze sentinel to make terminal content pass. The `4f7c7835…` failure is evidence that PR #118 is intentionally ahead of the serial content lineage; it is not permission to freeze the terminal catalog early.
+Do not weaken the active-source freeze sentinel. Any future terminal identity emitted after `c3afca7e…` remains provisional until the immediately preceding ordinary 34+ generation is integrated and frozen. A failure before that sentinel is a real regression; a failure at that sentinel is expected fail-closed lineage protection.
