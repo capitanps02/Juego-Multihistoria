@@ -1,1 +1,0 @@
-The current repository intentionally contains a provenance-refresh gate for the T5.2 seed consumer matrix. See `PROVENANCE_REFRESH.md` and `PROVENANCE_REFRESH_TASK.json`. The generated matrix must be regenerated from the exact current main with the official generator before it is used as authoritative canonical-closure evidence.
