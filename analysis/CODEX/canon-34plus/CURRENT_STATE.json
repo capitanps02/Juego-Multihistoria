@@ -2,7 +2,7 @@
   "generatedAt": "2026-09-17",
   "owner": "agent8",
   "branch": "t51/canon-34plus",
-  "baseMain": "fa3c8bae524fef62e4eb9802e895df88588998c4",
+  "baseMain": "5f4d14bca4d696cfafadb58b64034c7cd40cc147",
   "scope": {
     "canonicalPrincipals": 50,
     "ordinaryAgent8": 43,
@@ -19,27 +19,25 @@
     "migrationGraphImplementedOnMain": true,
     "currentMainGeneration": "H",
     "currentActiveIdentity": "84871fae2bec92d74d1e607e0a48943e2e530a062d315a829cfe75eda9fe0886",
-    "currentMainCommit": "fa3c8bae524fef62e4eb9802e895df88588998c4",
+    "currentMainCommit": "5f4d14bca4d696cfafadb58b64034c7cd40cc147",
     "agent8SuccessorAuthorizedNow": false,
     "immediate34PlusPredecessorAuthoritative": false,
-    "reason": "coordination requires earlier serialized content generations and the authoritative final 30-34 predecessor before 34+ may register a successor",
-    "rule": "calculate only the adjacent predecessor_to_34plus edge at the actual integration turn; never use a provisional target"
+    "reason": "PR #156 is shared runtime only and does not advance EVENTS/contentIdentity; coordination still requires serialized earlier content and the final 30-34 predecessor before 34+",
+    "rule": "at the real 34+ turn, calculate only the adjacent final30_34_to_34plus generation"
   },
   "seedCatalog": {
     "issue": 180,
     "pullRequest": 191,
-    "state": "ready_for_review_not_integrated",
+    "state": "ready_for_review_green_not_integrated",
     "head": "d8f724893cfcb40d2b81f995d8ed08179bbd6f52",
     "canonicalIds": 54,
     "ordinaryProducerIds": 45,
     "terminalProducerIds": 9,
     "bridgeConcepts": 14,
-    "repositoryIntegrity": "success",
-    "activationRule": "do not treat seed declarations as runtime-produced until PR #191 is in main and the exact canonical producer event/outcome occurs"
+    "activationRule": "Wave 0 remains incomplete until PR #191 is actually in main"
   },
   "conditionalReconciliation": {
     "ownerIssue": 192,
-    "canonicalSource": "Documento Maestro section 25.13",
     "canonicalCount": 32,
     "engineCount": 32,
     "exactIdOverlap": 5,
@@ -50,9 +48,7 @@
     "unresolvedSharedAuthorityDomains": 0,
     "formerGapIssue": {"issue":195,"state":"closed_completed"},
     "explicitFactOwners": [176,199,200,201],
-    "automaticAliasAllowed": false,
-    "engineReconsiderId": "CEVT_RET_RECONSIDER",
-    "canonicalReconsiderId": "CEVT_38_RETIREMENT_REVERSAL"
+    "runtimeAccredited": 0
   },
   "preparation": {
     "ordinaryTaskRows": 43,
@@ -63,61 +59,67 @@
     "conditionalIdentityCoveragePercent": 100,
     "conditionalAuthorityMatrixCoverage": 32,
     "canonicalPasada7SeedsClassified": 54,
-    "bridgeMemoryConceptsClassified": 14,
-    "sharedOwnerRoutingMachineReadable": true
+    "bridgeMemoryConceptsClassified": 14
   },
   "sharedRuntimeOrder": [
-    {"step":1,"ref":"PR #156 / issue #124","domain":"sport boundary","state":"open draft; exact-head Repository Integrity running at last audit"},
-    {"step":2,"ref":"issue #157","domain":"MarketState v2 multi-offer authority","state":"implementation contract ready after #156"},
-    {"step":3,"ref":"issue #130","domain":"employment/unattached authority","state":"implementation-ready after #156; preferred after #157"},
-    {"step":4,"ref":"issue #176","domain":"veteran 34+ offer producer and late-career market assessment","state":"contract ready after #157/#130"}
+    {"step":1,"ref":"#124 / PR #156","domain":"sport boundary","state":"integrated_in_main_5f4d14bc"},
+    {"step":2,"ref":"#157","domain":"MarketState v2 multi-offer authority","state":"now_unblocked_for_implementation"},
+    {"step":3,"ref":"#130","domain":"employment/unattached authority","state":"now_unblocked_for_implementation; coordinate with #157"},
+    {"step":4,"ref":"#176","domain":"veteran 34+ offer producer and market assessment","state":"wait_for_157_and_130"}
   ],
+  "newlyUnblockedSharedOwnersAfter156": [
+    {"issue":157,"reason":"may now implement MarketState v2 against the stable public simulator boundary"},
+    {"issue":130,"reason":"employment/unattached contract may now be implemented against the integrated sport boundary"},
+    {"issue":174,"reason":"national selection authority was specified to start after #156"},
+    {"issue":199,"reason":"rich sport history can extend the integrated fixture identity/history"},
+    {"issue":200,"reason":"injury/rehab history can compose with integrated fixture participation"}
+  ],
+  "sportAuthorityOnMain": {
+    "integrated": true,
+    "sourceCommit": "5f4d14bca4d696cfafadb58b64034c7cd40cc147",
+    "factsAvailable": ["official_league_fixture_identity","next_previous_fixture","remaining_league_fixtures","squad_call","bench","start","appearance","minutes","injury_unavailable","historical_usage"],
+    "stillUnavailable": ["per_match_final_result","goals","assists","cards","award_results","generic_records","concrete_national_selection","stadium_incident_context"]
+  },
   "downstreamOwners": {
-    "contentLineage": {"issue":59,"owner":"shared_integration"},
-    "seedCatalog": {"issue":180,"pullRequest":191,"owner":"t52_agent2"},
-    "conditionalCanonicalContent": {"issue":192,"owner":"agent8_plus_terminal_agent9_boundary"},
-    "matchCalendarCompetition": {"issue":124,"pullRequest":156,"owner":"shared_sport_authority"},
-    "richSportHistoryRecordsAwards": {"issue":199,"owner":"shared_sport_history"},
-    "injuryRehabHistory": {"issue":200,"owner":"shared_medical_history"},
-    "clubWorldIncidents": {"issue":201,"owner":"shared_world_context"},
-    "nationalConcreteSelection": {"issue":174,"owner":"shared_national_selection_authority"},
-    "marketStateV2": {"issue":157,"owner":"shared_market_collection_authority"},
-    "veteranMarketContracts": {"issue":176,"owner":"shared_market_contract_authority"},
-    "freeAgency": {"issue":130,"owner":"shared_employment_state"},
-    "coachChronology": {"issue":169,"owner":"shared_coach_tenure"},
-    "lateCareerIdentityRouting": {"issue":177,"owner":"routing_guard_not_standalone_runtime_pass"},
+    "contentLineage": {"issue":59},
+    "seedCatalog": {"issue":180,"pullRequest":191},
+    "conditionalCanonicalContent": {"issue":192},
+    "sportBoundary": {"issue":124,"pullRequest":156,"state":"integrated"},
+    "richSportHistoryRecordsAwards": {"issue":199,"state":"unblocked_to_start"},
+    "injuryRehabHistory": {"issue":200,"state":"unblocked_to_start"},
+    "clubWorldIncidents": {"issue":201,"state":"open_design_gate"},
+    "nationalConcreteSelection": {"issue":174,"state":"unblocked_to_start"},
+    "marketStateV2": {"issue":157,"state":"unblocked_to_start"},
+    "veteranMarketContracts": {"issue":176,"state":"waiting_157_130"},
+    "freeAgency": {"issue":130,"state":"unblocked_to_start"},
+    "coachChronology": {"issue":169},
+    "lateCareerIdentityRouting": {"issue":177,"state":"routing_guard"},
     "terminalRetirement": {"pullRequest":118,"owner":"agent9"}
   },
   "routingRefinements": {
     "EVT_35_AGT_001": "existing active-agent authority or null; no #177 implementation dependency",
-    "EVT_35_DUAL_001": "generic club voice allowed; market/institutional facts route through #157/#176",
+    "EVT_35_DUAL_001": "generic club voice allowed; contract/institutional facts route through #157/#176",
     "EVT_36_CCH_001": "coach tenure/profile routes to #169; persistent NPC identity not required",
     "EVT_34_DORSAL_001": "generic non-persistent young actor allowed if canon needs no named continuity/T5.3 mutation",
-    "EVT_34_MENTOR_001": "same generic-actor boundary; persistent successor cannot be inferred",
-    "EVT_35_RECORD_001": "record truth routes to #199; named identity only if canon explicitly requires/certifies it",
+    "EVT_34_MENTOR_001": "same generic-actor boundary",
+    "EVT_35_RECORD_001": "record truth routes to #199; named identity only if explicitly required/certified",
     "EVT_36_PEER_001": "still blocked on exact peer identity plus causal peer-retirement history"
   },
   "verifiedCurrentBlockers": {
-    "contentLineage": "#59: migration graph exists, but 34+ is not the next authorized serialized generation and final 30-34 predecessor is not authoritative",
-    "seedCatalog": "#180/#191: exact 34+ seed authority is implemented and green but not yet integrated into main",
-    "conditionalDeck": "#192: 32 identities and owner routing are complete, but 0/32 canonical conditionals are runtime-accredited",
-    "sportBoundary": "#124/#156: candidate is open/draft and not integrated; rich results/goals/records still belong to #199",
-    "marketCollection": "#157: MarketState v2 must precede the veteran producer",
-    "freeAgency": "#130: implementation-ready contract exists but runtime unattached authority is not integrated",
-    "veteranMarket": "#176: must follow #157/#130; veteran offer generation and factual medical-assessment record remain missing",
-    "nationalTeamConcrete": "#174: Codex-ready after #156 but not implemented/integrated",
-    "richSportHistory": "#199: results/goals/assists/awards/records remain missing",
-    "injuryRehab": "#200: exact injury/rehab chronology remains missing",
-    "clubWorldIncidents": "#201: finance/sponsor/stadium/staff-crisis facts need explicit producer or deliberate fail-closed decision",
+    "contentLineage": "#59: 34+ is not the next authorized serialized EVENTS generation and final 30-34 predecessor is not authoritative",
+    "seedCatalog": "#180/#191: exact seed authority is implemented and green but not integrated",
+    "conditionalDeck": "#192: 32/32 identities/routing prepared, 0/32 runtime-accredited",
+    "marketCollection": "#157: now unblocked but not implemented",
+    "freeAgency": "#130: now unblocked but not implemented",
+    "veteranMarket": "#176: waits for #157/#130",
+    "nationalTeamConcrete": "#174: now unblocked but not implemented",
+    "richSportHistory": "#199: results/goals/awards/records still missing",
+    "injuryRehab": "#200: episode/rehab chronology still missing",
+    "clubWorldIncidents": "#201: finance/sponsor/stadium/staff-crisis facts require justified producers or explicit fail-closed decisions",
     "peerRetirement": "#177: EVT_36_PEER_001 still lacks exact causal peer-retirement history",
-    "terminalRetirement": "PR #118 / Agent 9 retains terminal state transitions and terminal conditionals"
+    "terminalRetirement": "PR #118 retains terminal state transitions and terminal conditionals"
   },
-  "nextSafeActivation": [
-    "EVT_35_FAM_001",
-    "EVT_35_BODY_001",
-    "EVT_35_IMG_001",
-    "EVT_36_MED_001"
-  ],
-  "nextPreparationTarget": "Agent-8 canonical extraction/routing is complete. Do not add 34+ runtime while #59 blocks serialization. Track #156 then #157/#130/#176, PR #191 integration, and #174/#199/#200/#201; re-evaluate exact facts at the eventual 34+ integration turn.",
-  "activationCondition": "serialized 34+ lineage turn plus PR #191 seed authority in main plus every scene-specific factual owner required by the selected batch"
+  "nextSafeActivation": ["EVT_35_FAM_001","EVT_35_BODY_001","EVT_35_IMG_001","EVT_36_MED_001"],
+  "nextPreparationTarget": "Do not create Agent-8 runtime while #59/#191 block Wave 0. Shared implementation capacity should now move to #157, #130, #174, #199 and #200; then #176.",
+  "activationCondition": "serialized 34+ lineage turn plus PR #191 in main plus every selected scene's exact factual authorities"
 }
