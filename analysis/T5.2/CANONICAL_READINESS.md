@@ -1,129 +1,198 @@
-# T5.2 — Readiness canónica para conectar seeds
+# T5.2 — Readiness canónica para conectar y cerrar seeds
 
-Fecha del snapshot: 2026-09-16  
-Base observada: `main@802dfd13a9d1b73b5131a0fb1ff3c740137aad54`
+Fecha del snapshot: 2026-09-17  
+Base exacta observada: `main@6d2239ae1f89be97a7c5cf117d456cff9218aade`
 
-Este documento complementa `seed-lifecycle.json` y `seed-handoff.json`. Su objetivo es impedir una falsa conclusión: una seed sin productor, consumidor o cierre **no debe cablearse automáticamente** si la escena que debería producirla/consumirla todavía no ha sido reconciliada con el Documento Maestro.
+Este documento describe el estado integrado de T5.2. La regla principal es deliberadamente estricta:
 
-Los conteos lifecycle siguen describiendo el runtime integrado. Los cambios recientes de `main` (#12, #23 y #17) son auditoría/QA y no reescriben el contenido runtime de seeds; por eso **no deben hacer bajar artificialmente** los contadores de productor/consumidor/cierre.
+> **readiness estructural no equivale a cierre canónico.**
 
-## Regla operativa
+Una seed puede tener productor, consumidor o una cadena temporal técnicamente viable y seguir necesitando una decisión explícita del owner sobre su significado y su cierre narrativo.
 
-Para cualquier seed pendiente:
+## 1. Estado exacto de T5.2 en main
 
-1. identificar su owner con `seed-handoff.json`;
-2. comprobar si la escena productora/consumidora está `verified_same_identity`, es un `approved_alias` o sigue en reimplementación/ausente;
-3. si la identidad no está acreditada, implementar el lifecycle **junto con** la reparación canónica de la escena, nunca sobre una escena genérica/no canónica solo para hacer bajar una métrica;
-4. preservar `contentIdentity`, history y pending events según la política de migración que apruebe el integrador;
-5. no convertir `npcRefs`, `HAS_SEED_*` ni la presencia de una seed en conocimiento de NPC: T5.3 mantiene una frontera epistemológica independiente;
-6. después de cada integración funcional T5.1/T5.3, volver a ejecutar `npm run audit:t52` antes de aceptar una reducción de deuda.
+El runner exact-main `35229309280` hizo checkout explícito de `6d2239ae...`, ejecutó `npm run test:t52` y terminó con **63/63 tests PASS**.
 
-## Cambios integrados desde el snapshot anterior
+### Inventario lifecycle
 
-### PR #12 — T5.1 23–30
+- catálogo: **210/210 seeds únicas**;
+- eventos observados: **388** (`254` principales + `134` condicionales);
+- seeds con productor runtime: **138**;
+- seeds con algún consumer detectado por el inventario lifecycle: **59**;
+- seeds con consumer terminal: **1**;
+- seeds con ventana de edad finita: **48**;
+- seeds club-scoped: **5**;
+- transiciones `resolve` observadas: **2**;
+- transiciones `expire` explícitas observadas: **0**;
+- referencias desconocidas: **0**;
+- write mismatches declarados: **0**.
 
-#12 ya está integrado en `main`, pero es **audit-only**. Refina la readiness sin alterar las métricas runtime T5.2:
+`seedsWithAnyConsumer=59` pertenece al inventario lifecycle amplio. El grafo deferred aplica una definición más estricta de consumer runtime y por eso contabiliza **47** seeds con lado consumidor. No deben mezclarse ambas métricas.
 
-- 91/91 principales 23–30 clasificados;
-- 23–26: 25 `verified_same_identity` y 15 `needs_reimplementation`;
-- 26–30: 25 `needs_reimplementation`, 22 `canonical_missing` y 4 candidatos sin alias aprobado;
-- las **44/44 condicionales** ya tienen planning semántico revisado;
-- **0/44 condicionales** están `canonical_verified_full` en runtime;
-- 23–26: 20/20 condicionales comparten ID/título, pero las 20 requieren rewrite semántico específico;
-- 26–30: 24/24 callbacks revisados; 5 ID exactos, 9 lineage plausibles, 3 parciales/ambiguos, 7 sin counterpart creíble; ninguna migración directa same-scene queda aprobada;
-- de las 15 principales 23–26 a reimplementar, **10/15** son candidatas scene-level una vez resuelta la compatibilidad de sesiones y **5/15** dependen además de contratos compartidos (`EVT_23_MKT_001`, `EVT_23_CON_001`, `EVT_23_LOCK_001`, `EVT_24_MATCH_001`, `EVT_25_CON_001`).
+### Grafo deferred / causal
 
-Conclusión T5.2: el dato antiguo “44 condicionales en revisión manual” queda sustituido por “44/44 revisadas en planning, 0/44 acreditadas como implementación runtime completa”.
+- runtime producer seeds: **138**;
+- runtime event consumer seeds: **39**;
+- runtime simulation consumer seeds: **15**;
+- runtime consumer seeds combinadas: **47**;
+- registros de consumer de simulación: **22**;
+- cadenas strict-deferred: **35**;
+- cadenas runtime imposibles: **0**;
+- obligaciones de scope proof: **1**;
+- scope proofs integradas: **1/1**;
+- usos de seed de simulación sin registrar: **0**;
+- `hardPass`: **true**.
 
-### PR #23 — save baseline
+### Closure readiness
 
-#23 ya está integrado. `npm test` ejecuta ahora `test-saves` de forma normal y protege explícitamente:
+La tabla estructural cubre exactamente **210/210** seeds:
 
-- schema 8;
-- history;
-- seeds;
-- streams RNG preexistentes;
-- round-trip `serializeSave -> loadSave`.
+| Topología | Seeds |
+| --- | ---: |
+| productor + consumer factible | 47 |
+| productor + consumer imposible | 0 |
+| solo productor | 91 |
+| solo consumer | 0 |
+| unwired | 72 |
+| evidencia deferred ausente | 0 |
 
-Esto refuerza T5.2: cualquier wiring o migración futura de seeds deberá conservar esos invariantes.
+Evidencia adicional:
 
-### PR #17 — QA transversal T5
+- verified producer seeds: **48**;
+- verified event consumer seeds: **8**;
+- verified feasible pair seeds: **3**;
+- simulation consumer seeds: **15**;
+- explicit terminal seeds: **1**;
+- finite age-window seeds: **48**;
+- open-ended que todavía necesitan razón canónica: **162**.
 
-#17 ya está integrado en `main`. Añade al baseline coordinado:
+El mecanismo de clasificación owner-backed está integrado, pero el registro real continúa vacío:
 
-- freeze sentinel de T5.1;
-- `qa:t5:saves`;
-- probes de integración T5.2/T5.3;
-- regresiones de content identity/save compatibility;
-- reproducción de conocimiento T5.3 malformado.
+- `canonicalClosureClassified`: **0**;
+- `canonicalClosurePending`: **210**;
+- `classificationRegistryValid`: **true**;
+- `structuralPass`: **true**;
+- `canonicalClosureComplete`: **false**.
 
-T5-QA-005 (flag `HAS_SEED_*` fantasma) sigue siendo precisamente el hardening funcional de #19. T5-QA-006 exige que la composición final T5.2+T5.3 conserve simultáneamente seed viva, flag de presencia y adquisición causal de conocimiento. T5-QA-008 pertenece a T5.3 y no debe resolverse desde el lifecycle de seeds.
+No se debe reducir `canonicalClosurePending` por inferencia, por comodidad de QA ni por el simple hecho de existir una cadena runtime.
 
-## Estado por owner
+## 2. Live memory frente a memoria histórica
 
-| Owner | Deuda T5.2 runtime | Estado canónico actual | Readiness para wiring |
-| --- | --- | --- | --- |
-| `t51/canon-18-23` | 31 seeds; 10 sin consumidor; 7 open-ended; 1 terminal explícito | #10 abierto: 18 principales verificadas, 39 a reimplementar, 6 ausentes. Condicionales: 10 a reimplementar, 15 ausentes, 7 revisión. Repair plan: 36 reparaciones scene-level tras migración y 3 bloqueadas por contratos compartidos. | **Mixta/bloqueada por contratos y migración.** Mantener métricas como backlog; cablear solo dentro de identidades canónicas reparadas/certificadas. |
-| `t51/canon-23-30` | 59 seeds; 59 con productor; 30 sin consumidor; 35 open-ended | #12 integrado audit-only. 44/44 condicionales revisadas en planning, 0/44 certificadas full runtime. 23–26 tiene 10/15 reparaciones scene-level tras migración y 5/15 con dependencia transversal adicional. | **Readiness mejor caracterizada, runtime todavía bloqueado.** El próximo descenso de deuda debe venir de implementación funcional posterior, no del merge de #12. |
-| `t51/canon-30-34` | 52 seeds; 4 sin productor/consumidor; 45 sin consumidor; 52 open-ended | #13 abierto/draft: 45 principales a reimplementar, 5 ausentes, 0 verificadas; 26 condicionales pendientes de cierre canónico. QA advierte además que CI verde de una rama con catálogo modificado no acredita por sí solo migración de `contentIdentity`. | **Bloqueada.** Las cuatro huérfanas deben nacer en sus escenas canónicas correctas; no conectarlas a shells actuales. |
-| `t51/canon-34plus` | 68 seeds; 68 sin productor, 68 sin consumidor, 68 open-ended | #15 abierto: 4 verificadas + 3 aliases aprobados, pero 43/50 principales siguen sin implementación canónica completa; shared seed wiring diferido. Hay mejoras reales de retirada/mercado, pero `contentIdentity` sigue siendo blocker de integración. | **Bloqueada salvo wiring coordinado de identidades acreditadas.** T5.29–T5.35 debe crear/reparar escenas y conectar entonces memoria/consecuencias. |
+T5.2 distingue explícitamente dos contratos:
 
-Las cuatro seeds huérfanas 30–34 permanecen:
+1. **live seed instance**: la instancia sigue disponible según estado, edad, scope y terminalidad;
+2. **historical existence**: el hecho ocurrió y puede seguir siendo un precedente factual aunque la seed ya no esté viva.
+
+En este snapshot existen:
+
+- **22** registros live de consumers de simulación, sobre **15** seed IDs;
+- **1** registro directo histórico real.
+
+El consumidor histórico es:
+
+- `SEED_ELITE_ROLE_BARGAIN` → `src/simulation/club-contract-intent.ts` → `hasRoleGuaranteeAt23`.
+
+Su contrato es factual: una conversación previa sobre garantía de rol puede seguir siendo un antecedente a los 23 años sin fingir que la seed continúa viva. El ratchet de lecturas directas pasa sin lecturas sin registrar, ambiguas, stale o con IDs desconocidos.
+
+Esto **no** concede conocimiento a ningún NPC. Que un hecho exista históricamente y que un personaje conozca ese hecho son dos preguntas distintas.
+
+## 3. Estado por owner
+
+La partición `seed-handoff` sigue siendo exacta: **210 asignadas, 210 únicas, 0 duplicadas, 0 sin owner**.
+
+| Owner | Total | Producidas | Con consumer | Sin consumer | Open-ended sin terminal | Observación operativa |
+| --- | ---: | ---: | ---: | ---: | ---: | --- |
+| `t51/canon-18-23` | 31 | 31 | 23 | 8 | 7 | 24 tienen ventana finita y 1 tiene terminal explícito. El siguiente descenso de deuda debe venir de integración owner-side real, no de un parche T5.2 duplicado. |
+| `t51/canon-23-30` | 59 | 59 | 29 | 30 | 35 | 24 tienen ventana finita. Ya existe un precedente histórico explícito (`SEED_ELITE_ROLE_BARGAIN`) que muestra cómo preservar hechos sin exigir presencia live. |
+| `t51/canon-30-34` | 52 | 48 | 7 | 45 | 52 | Quedan exactamente 4 seeds sin productor ni consumer. Las 52 conservan deuda de origin/cierre canónico en el snapshot integrado. |
+| `t51/canon-34plus` | 68 | 0 | 0 | 68 | 68 | El bloque sigue completamente unwired en `main`; no debe materializarse automáticamente al cumplir 34 años. |
+
+Las cuatro huérfanas 30–34 siguen siendo:
 
 - `SEED_ROLE_COMMUNICATION`;
 - `SEED_FALSE_ULTIMATUM`;
 - `SEED_NATIONAL_ABSENCE`;
 - `SEED_SPECIALIST_BIGCLUB`.
 
-## Frontera T5.2 ↔ T5.3
+## 4. Infraestructura ya integrada
 
-PR #9 implementa conocimiento NPC deny-by-default y cadenas causales explícitas. La versión observada añade además validación de `sourceNpcId`, caducidad de la fuente y reaprendizaje monotónico.
+T5.2 ya dispone en `main` de las piezas necesarias para dejar de tratar el problema como una auditoría manual:
 
-Contrato transversal:
+- readiness estructural 210/210 y detección de cadenas imposibles;
+- clasificación de cierre explícita, owner-backed y fail-closed;
+- causal seed memory con separación live/historical;
+- condition root compartida por gates, eligibility, outcome conditions y modifiers;
+- registro de consumers de simulación;
+- ratchet de lecturas directas de identidad;
+- registro separado para consumers históricos;
+- scope proofs integradas;
+- pruebas de save/restore, idempotencia, migración de origen y preservación de RNG;
+- generador de handoff Codex basado en el `main` exacto.
 
-- una seed puede representar que un hecho/consecuencia existe en el mundo;
-- `npcRefs` puede indicar personajes relacionados con una seed o escena;
-- **ninguno de los dos implica que el NPC conozca el hecho**;
-- un callback que dependa de conocimiento personal debe usar la vía explícita de T5.3;
-- consumir/resolver una seed no debe informar silenciosamente a NPCs;
-- informar a un NPC no debe resolver automáticamente una seed salvo que la escena canónica declare ambas consecuencias.
+Las únicas disposiciones de cierre admitidas son:
 
-Riesgo de integración conocido: #9 comparte `src/narrative/resolver.ts` con T5.2 y su head observado fue construido antes del hardening final de presencia de #19. Si #19 entra primero, #9 debe re-groundearse conservando la limpieza de flags fantasma y superar T5-QA-006. Si #9 entra primero, #19 debe re-groundearse preservando adquisición/club de aprendizaje. **Nunca elegir una versión del resolver descartando la otra responsabilidad.**
+- `canonical_chain`;
+- `intentional_persistent`;
+- `canonical_expiry`;
+- `retired_compatible`.
 
-La deuda T5-QA-008 sobre `knowledge` persistido malformado es propiedad T5.3/save validation. T5.2 solo exige que ninguna solución rompa seeds, history, RNG ni restore.
+No crear categorías nuevas para ocultar deuda.
 
-## Qué puede hacerse ya desde T5.2
+## 5. Estado del handoff Codex
 
-- mantener el auditor y el reparto 210/210;
-- detectar nuevas seeds sin owner o IDs desconocidos;
-- detectar productores/consumidores/cierres cuando los equipos canónicos los incorporen;
-- validar scope, expiración, save/restore e idempotencia;
-- aprovechar `test-saves`, `qa:t5:saves`, `qa:t5:freeze` y `qa:t5:integration` ya integrados;
-- volver a generar el handoff tras cada integración funcional T5.1;
-- impedir que deuda de contenido sea ocultada mediante cierres genéricos inventados.
+PR #159 (`t5/seed-provenance-refresh`) contiene una regeneración exact-main desde `6d2239ae...` y no modifica gameplay ni canon.
 
-## Criterio de cierre real de T5.2
+Su matriz regenerada informa:
 
-La infraestructura base está integrada, pero T5.2 debe permanecer `in_progress` mientras la deuda canónica impida demostrar el ciclo de vida extremo a extremo del catálogo.
+- total seeds: **210**;
+- live consumer registrations: **22**;
+- historical consumer registrations: **1**;
+- Codex-ready events: **5**;
+- blocked declared-read-only consumers: **37**.
 
-Para considerar la pasada cerrada, el `main` integrado deberá permitir clasificar cada seed como una de estas categorías con evidencia:
+El PR está preparado para revisión, pero **no forma parte de main hasta que se integre**. Cada avance material de `main` obliga a volver a regenerar provenance antes de integrar esa evidencia.
 
-1. productor + consumidor/cierre canónico implementados;
-2. memoria intencionalmente persistente/open-ended con razón canónica explícita;
-3. seed que caduca por una política de scope/edad/fecha canónicamente justificada;
-4. seed retirada/deprecada mediante una estrategia compatible con saves/history.
+Las cinco tareas Codex-ready pertenecen a 18–23. La rama owner-side del PR #155 ya contiene implementación para los cinco consumers en `src/content/events/18_20/t51-seed-consumer-repairs.ts`, pero #155 continúa **abierto, draft y no merged**. T5.2 no debe duplicar ese código. Cuando el owner lo integre, se vuelve a generar la matriz y se reevalúan las cinco filas contra runtime integrado.
 
-No se acepta como cierre: crear `resolve`/`expire` arbitrarios, conectar seeds a escenas `engine_only_noncanonical`, reinterpretar history antigua, ni usar conocimiento NPC implícito para simular consecuencias.
+## 6. Frontera T5.2 ↔ T5.3
 
-## Referencias observadas en este snapshot
+Contrato permanente:
 
-- `main`: `802dfd13a9d1b73b5131a0fb1ff3c740137aad54`.
-- #10 `t51/canon-18-23`: abierto; audit/repair plan, runtime aún no autorizado.
-- #12 `t51/canon-23-30`: **merged**; audit-only, 44/44 condicionales planificadas y 0/44 full runtime.
-- #13 `t51/canon-30-34`: abierto/draft.
-- #15 `t51/canon-34plus`: abierto; shared seed wiring diferido.
-- #9 `t5/npc-memory`: abierto; requiere composición consciente con #19.
-- #17 QA T5: **merged**.
-- #23 save baseline: **merged**.
+- una seed puede probar que algo ocurrió en el mundo;
+- una instancia histórica puede conservar ese precedente después de su terminalidad;
+- `npcRefs`, `HAS_SEED_*`, una seed live o una seed histórica **no prueban conocimiento NPC**;
+- adquisición, transmisión, olvido y alcance del conocimiento pertenecen a T5.3;
+- resolver una seed no informa silenciosamente a personajes;
+- informar a un personaje no resuelve una seed salvo que una escena canónica declare ambas consecuencias.
 
-Este snapshot debe actualizarse cuando cualquiera de los workstreams funcionales se integre o cambie materialmente.
+Por tanto, ningún owner debe convertir el nuevo soporte histórico en un atajo de omnisciencia.
+
+## 7. Qué puede hacerse ya
+
+T5.2 puede avanzar sin inventar canon mediante este ciclo:
+
+1. integrar una implementación funcional de un owner;
+2. regenerar lifecycle, handoff, deferred y closure readiness desde el nuevo `main`;
+3. confirmar productores/consumers/cierres reales;
+4. registrar solo las lecturas live o históricas que existan de verdad;
+5. pedir al owner una disposición de cierre con evidencia;
+6. añadirla al registry únicamente cuando encaje en una de las cuatro clases permitidas;
+7. ejecutar `npm run test:t52` y los gates de integración completos;
+8. regenerar el handoff Codex exact-main.
+
+No es válido crear `resolve`, `expire`, consumers o flags ficticios solo para mejorar contadores.
+
+## 8. Criterio de cierre real de T5.2
+
+T5.2 se puede cerrar cuando las **210/210** seeds tengan una disposición owner-backed demostrable:
+
+1. `canonical_chain`: productor y consecuencia/cierre canónicos implementados;
+2. `intentional_persistent`: memoria que debe permanecer abierta por diseño, con razón canónica explícita;
+3. `canonical_expiry`: caducidad demostrada por edad, fecha o scope real;
+4. `retired_compatible`: retirada/deprecación que conserva saves, history y provenance.
+
+El objetivo **no** es llegar a cero seeds abiertas. El objetivo es que ninguna seed carezca de una explicación causal y canónica verificable.
+
+### Snapshot reproducible
+
+Fuente de las métricas: exact-main runner `35229309280`, job `105228906193`, checkout `6d2239ae1f89be97a7c5cf117d456cff9218aade`, `npm run test:t52` = **63/63 PASS**.
