@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "workstream": "T5.1 canon 30-34 strict parity evidence",
-  "generatedAt": "2026-09-16",
+  "generatedAt": "2026-09-17",
   "authority": {
     "masterTraceability": "analysis/2026-09-11/t1/principal-traceability.json",
     "canonicalSourceBlock": "B1051",
@@ -79,7 +79,7 @@
           "missingOrUnclassified": [
             "SEED_LAST_PEAK_CONTRACT"
           ],
-          "policy": "Do not invent a producer, reader, consumer or lifecycle for SEED_LAST_PEAK_CONTRACT until T5.2/canonical evidence defines its semantics."
+          "policy": "Do not invent a producer, reader, consumer or lifecycle for SEED_LAST_PEAK_CONTRACT until T5.2/canonical evidence defines its semantics. The current runtime catalog does not contain that seed id."
         },
         "npcKnowledge": {
           "status": "no_explicit_named_npc_dependency_in_canonical_source",
@@ -89,8 +89,8 @@
         "saveContinuity": {
           "status": "blocked_pending_registered_content_migration",
           "classification": "distinct_scene_exact_id_collision",
-          "sourceContentIdentity": "5d3fd71a8df42ed5b93fdde63ed386e9d776693addd62a30293dbecad7aa56d2",
-          "targetContentIdentity": "380d28e0e09995330dbbf72ba958a9822855f0b66a3bdc63a202b30a34bb3989",
+          "sourceContentIdentity": "84871fae2bec92d74d1e607e0a48943e2e530a062d315a829cfe75eda9fe0886",
+          "targetContentIdentity": "9151d6620739f5f63face23f412abdeca9898cac8e510cc44d86c1468da8d0f4",
           "targetFreezeRequired": true,
           "routeRegistrationOwner": "coordination/integration"
         }
