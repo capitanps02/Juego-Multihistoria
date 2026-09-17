@@ -6,6 +6,9 @@ import {
   type CareerOfferKind
 } from "./offers.js";
 
+export const AGE18_JAN_OFFER_MONTH_DAY = "01-08";
+export const AGE18_SUMMER_OFFER_MONTH_DAY = "06-04";
+
 const num = (value: unknown, fallback = 0): number => typeof value === "number" ? value : fallback;
 
 function hashString(value: string): number {
@@ -53,7 +56,7 @@ function materializeJanuary(state: GameState): CareerOfferKind | null {
   const transferPlausible = market >= 26 && (debuted || appearances >= 2);
   if (!loanPlausible && !transferPlausible) return null;
 
-  // A real January proposal is common but not guaranteed. Absence remains a valid world state.
+  // One deterministic January attempt. Absence remains a stable world fact for this window.
   if (producerRoll(state, "age18:january:available") % 100 >= 78) return null;
 
   const kind: "loan" | "transfer" = loanPlausible && transferPlausible
@@ -147,6 +150,8 @@ function materializeSummer(state: GameState): CareerOfferKind | null {
 
 /**
  * Materialize the one formal proposal that the canonical age-18 market scene may consume.
+ * Exactly one calendar date is eligible in each window, so a failed/no-offer roll cannot
+ * silently reroll on every subsequent world day. The function consumes zero RNG draws.
  *
  * This function is intentionally not wired into the world loop by this staging module.
  * Activation must land atomically with the JAN/SUM offerBridge content generation so the
@@ -154,8 +159,8 @@ function materializeSummer(state: GameState): CareerOfferKind | null {
  */
 export function materializeAge18MarketOfferInPlace(state: GameState): CareerOfferKind | null {
   if (state.age !== 18 || state.retirement.status !== "playing" || state.market?.pending) return null;
-  const month = Number(state.date.slice(5, 7));
-  if (month === 1) return materializeJanuary(state);
-  if (month === 6) return materializeSummer(state);
+  const monthDay = state.date.slice(5);
+  if (monthDay === AGE18_JAN_OFFER_MONTH_DAY) return materializeJanuary(state);
+  if (monthDay === AGE18_SUMMER_OFFER_MONTH_DAY) return materializeSummer(state);
   return null;
 }
