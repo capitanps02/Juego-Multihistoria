@@ -2,6 +2,7 @@ import type { GameState } from "../core/types.js";
 import { NPC_CATALOG } from "../catalog/npcs.js";
 import { careerTerms } from "../simulation/offers.js";
 import { AGE_MILESTONES } from "../simulation/age-milestones.js";
+import { inspectFootballMomentStore } from "../simulation/football-moments.js";
 
 function assertMarket(value: unknown, state: GameState): void {
   const m=record(value,"market");
@@ -31,7 +32,7 @@ function assertMarket(value: unknown, state: GameState): void {
     ensure(h.accepted===accepted,"market.history.accepted","firma incompatible con autorización");
   });
   ensure(m.pending!==undefined,"market.pending","falta oferta pendiente");
-  if(m.pending!==null){const {before}=offer(m.pending,history.length);ensure(JSON.stringify(before)===JSON.stringify(careerTerms(state)),"market.pending.before","condiciones obsoletas");}
+  if(m.pending!==null){const {before}=offer(m.pending,history.length);ensure(JSON.stringify(before)!==JSON.stringify(undefined) && JSON.stringify(before)===JSON.stringify(careerTerms(state)),"market.pending.before","condiciones obsoletas");}
   ensure(m.sequence===history.length+(m.pending===null?0:1),"market.sequence","historial incompleto");
 }
 
@@ -82,7 +83,7 @@ export function validateData(value: unknown): void {
   const ancestors = new Set<object>();
   const visit = (x: unknown, path: string, depth: number): void => {
     ensure(++nodes <= 300_000 && depth <= 64, path, "estructura demasiado grande o profunda");
-    if (x === null || typeof x === "boolean" || x === undefined) return; // optional object fields
+    if (x === null || typeof x === "boolean" || x === undefined) return;
     if (typeof x === "string") { string(x,path,true); return; }
     if (typeof x === "number") { number(x,path); return; }
     ensure(typeof x === "object",path,"tipo de dato no admitido");
@@ -158,6 +159,8 @@ export function validateGameSave(value: unknown, version: number): void {
   }
   if (version >= 3 || s.careerStateTags !== undefined) strings(s.careerStateTags,"careerStateTags");
   for (const key of ["contract","finances","body","selection","reputation","control","sport","world","personality","flags","eventCooldowns","familyLastSeen","narrativePressure"]) record(s[key],key);
+  const footballMomentIssue = inspectFootballMomentStore(record(s.world,"world").footballMomentResults);
+  if (footballMomentIssue) ensure(false, footballMomentIssue.path, footballMomentIssue.reason);
   const requiredNumbers: Record<string,string[]> = {
     contract:["monthsRemaining","salaryMonthly"],finances:["cash"],body:["risk","fatigue","fitness"],
     reputation:["prestige","mediaHeat","marketHeat"],control:["career","agentDependency"],
@@ -182,7 +185,6 @@ export function validateGameSave(value: unknown, version: number): void {
   for (const name of ["narrative","football","qa", ...(version>=6 || rng.microfeed !== undefined ? ["microfeed"] : [])]) {
     const r=record(rng[name],`rngState.${name}`);
     integer(r.seed,`rngState.${name}.seed`,-Number.MAX_SAFE_INTEGER);
-    // Existing streams accumulate beyond uint32; never truncate or reseed them.
     integer(r.state,`rngState.${name}.state`); integer(r.draws,`rngState.${name}.draws`);
   }
   if (version >= 4 || s.professional !== undefined) {
