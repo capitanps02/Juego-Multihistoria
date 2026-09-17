@@ -16,7 +16,8 @@
     "EVT_26_BRIDGE_001",
     "EVT_26_DOC_001",
     "EVT_27_IMG_001",
-    "EVT_27_BODY_001"
+    "EVT_27_BODY_001",
+    "EVT_27_CON_001"
   ],
   "age26Audit": {
     "CAP": "blocked: certified locker captain assignments stop at phase 23_26",
@@ -27,7 +28,10 @@
   },
   "age27Progress": {
     "IMG": "implemented staged using GLOBAL_IMAGE or exact STATE26_MEDIA_POWER thresholds",
-    "BODY": "implemented staged using live SELF_OPTIMIZATION or repository high PEAK_STATUS convention (55)"
+    "BODY": "implemented staged using live SELF_OPTIMIZATION or repository high PEAK_STATUS convention (55)",
+    "CON": "implemented staged from a compatible formal renewal with real release clause and contractPower >= 65",
+    "HOME": "blocked: HOME_INSTITUTION exists but no authoritative high-net-worth model/cutoff",
+    "MONEY": "blocked: no authoritative high-net-worth model/cutoff; salary is not used as patrimonio"
   },
-  "nextMicrobatch": ["EVT_27_HOME_001", "EVT_27_MONEY_001", "EVT_27_CON_001"]
+  "nextMicrobatch": ["EVT_27_PRS_001", "EVT_27_MKT_001", "EVT_27_MED_001"]
 }

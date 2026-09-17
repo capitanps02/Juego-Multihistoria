@@ -9,14 +9,17 @@
     "EVT_26_BRIDGE_001",
     "EVT_26_DOC_001",
     "EVT_27_IMG_001",
-    "EVT_27_BODY_001"
+    "EVT_27_BODY_001",
+    "EVT_27_CON_001"
   ],
-  "auditNext": ["EVT_27_HOME_001", "EVT_27_MONEY_001", "EVT_27_CON_001"],
+  "auditNext": ["EVT_27_PRS_001", "EVT_27_MKT_001", "EVT_27_MED_001"],
   "blockedAfterAudit": [
     {"id":"EVT_26_CAP_001","reason":"no certified captain slot for phase 26_30"},
     {"id":"EVT_26_MED_001","reason":"no authoritative schedule density"},
     {"id":"EVT_26_RIV_001","reason":"no persisted compatible competitive level for Adrián"},
-    {"id":"EVT_26_TEAM_002","reason":"no authoritative young teammate + loan + coach request context"}
+    {"id":"EVT_26_TEAM_002","reason":"no authoritative young teammate + loan + coach request context"},
+    {"id":"EVT_27_HOME_001","reason":"no authoritative high-net-worth model/cutoff for canonical patrimonio trigger"},
+    {"id":"EVT_27_MONEY_001","reason":"no authoritative high-net-worth model/cutoff; salary/moneyComfort alone are not net worth"}
   ],
   "doNotImplementUntilAuthorityExists": ["EVT_24_MATCH_001", "EVT_25_NAT_001", "EVT_26_MATCH_001", "EVT_26_NAT_002", "EVT_26_FINAL_001"]
 }
