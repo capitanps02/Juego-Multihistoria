@@ -2,7 +2,7 @@
   "generatedAt": "2026-09-17",
   "owner": "agent8",
   "branch": "t51/canon-34plus",
-  "baseMain": "d9cd3cf3b9d1f23ab2f082b66ef4a01f6177e7f2",
+  "baseMain": "c41e7de20daf3bd672ae54646428e921761008c8",
   "scope": {
     "canonicalPrincipals": 50,
     "ordinaryAgent8": 43,
@@ -39,6 +39,13 @@
     },
     "uniqueOrdinaryCoverage": 43
   },
+  "lineage": {
+    "currentMainGeneration": "H",
+    "currentMainGenerationScope": "certified_canonical_18_23",
+    "currentMainCommit": "c41e7de20daf3bd672ae54646428e921761008c8",
+    "immediate34PlusPredecessorAuthoritative": false,
+    "rule": "wait_for_all_intervening_generations_and_register_only_adjacent_final_predecessor_to_34plus_edge"
+  },
   "downstreamOwners": {
     "contentLineage": {"issue": 59, "owner": "shared_integration"},
     "seedCatalog": {"owner": "t52_agent2", "handoff": "T52_SEED_HANDOFF.json"},
@@ -60,7 +67,7 @@
     }
   },
   "verifiedCurrentBlockers": {
-    "contentLineage": "issue_59_waits_for_actual_predecessor_generations",
+    "contentLineage": "issue_59; generation_H_is_integrated_but_final_30_34_predecessor_is_not_yet_authoritative",
     "seedCatalog": "54_exact_34plus_seed_ids_not_applied_to_main_yet",
     "veteranRenewalGeneration": "issue_176; clubWantsRenewal_returns_false_at_age_gte_34",
     "contractRepresentability": "issue_176; canonical_bonus_exit_role_liaison_ambassador_terms_need_explicit_authority_decision",
