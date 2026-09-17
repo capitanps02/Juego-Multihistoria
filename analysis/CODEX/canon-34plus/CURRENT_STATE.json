@@ -16,6 +16,7 @@
   },
   "conditionalReconciliation": {
     "ownerIssue": 192,
+    "sharedAuthorityGapIssue": 195,
     "canonicalSource": "Documento Maestro section 25.13",
     "canonicalCount": 32,
     "engineCount": 32,
@@ -23,6 +24,8 @@
     "exactIdSemanticallyAccredited": 0,
     "canonicalMissingExactId": 27,
     "engineTechnicalExtraExactId": 27,
+    "authorityMatrixCoverage": 32,
+    "unresolvedSharedAuthorityDomains": 8,
     "sameIdNeedsReimplementation": [
       "CEVT_34_MAJOR_COMEBACK",
       "CEVT_36_NO_MEDICAL_CLEARANCE",
@@ -42,7 +45,8 @@
     "automaticAliasAllowed": false,
     "handoffFiles": [
       "CONDITIONAL_RECONCILIATION.json",
-      "CONDITIONAL_HANDOFF.md"
+      "CONDITIONAL_HANDOFF.md",
+      "CONDITIONAL_AUTHORITY_MATRIX.json"
     ]
   },
   "preparation": {
@@ -58,6 +62,7 @@
     "waveECoverage": 2,
     "canonicalConditionalsIdentified": 32,
     "conditionalIdentityCoveragePercent": 100,
+    "conditionalAuthorityMatrixCoverage": 32,
     "canonicalPasada7SeedsClassified": 54,
     "bridgeMemoryConceptsClassified": 14,
     "machineReadableT52Handoff": true
@@ -89,6 +94,7 @@
     "contentLineage": {"issue": 59, "owner": "shared_integration"},
     "seedCatalog": {"issue": 180, "owner": "t52_agent2", "handoff": "T52_SEED_HANDOFF.json"},
     "conditionalCanonicalContent": {"issue": 192, "owner": "agent8_plus_terminal_agent9_boundary", "handoff": "CONDITIONAL_RECONCILIATION.json"},
+    "conditionalMissingFactualAuthorities": {"issue": 195, "owner": "shared_authority_coordination", "handoff": "CONDITIONAL_AUTHORITY_MATRIX.json"},
     "matchCalendarCompetition": {"issue": 124, "pullRequest": 156, "owner": "shared_sport_authority"},
     "nationalConcreteSelection": {"issue": 174, "owner": "shared_national_selection_authority"},
     "veteranMarketContracts": {"issue": 176, "owner": "shared_market_contract_authority"},
@@ -128,7 +134,8 @@
   "verifiedCurrentBlockers": {
     "contentLineage": "issue_59; generation_H_is_integrated_but_final_30_34_predecessor_is_not_yet_authoritative",
     "seedCatalog": "issue_180; 54_exact_34plus_seed_ids_not_applied_to_main_yet",
-    "conditionalDeck": "issue_192; 32 canonical conditional IDs are now reconciled but 0 are semantically accredited in runtime; 5 same-ID collisions need reimplementation and 27 canonical exact IDs are absent",
+    "conditionalDeck": "issue_192; 32 canonical conditional IDs are reconciled but 0 are semantically accredited in runtime; 5 same-ID collisions need reimplementation and 27 canonical exact IDs are absent",
+    "conditionalMissingFacts": "issue_195; eight factual authority domains required by canonical conditionals still need a producer/reuse/fail-closed decision",
     "veteranRenewalGeneration": "issue_176; exact eligible offer facts are readable but authoritative veteran 34plus offer generation remains missing",
     "contractRepresentability": "issue_176; canonical_bonus_exit_role_liaison_ambassador_terms_need_explicit_authority_decision",
     "freeAgency": "issue_130; expired_pending_resolution_is_not_unattached",
@@ -143,6 +150,7 @@
     "SHARED_OWNER_ROUTING.json",
     "CONDITIONAL_RECONCILIATION.json",
     "CONDITIONAL_HANDOFF.md",
+    "CONDITIONAL_AUTHORITY_MATRIX.json",
     "WAVE_A_IMPLEMENTATION.json",
     "WAVE_A_TEST_MATRIX.md",
     "WAVE_B_COMPLETE_INDEX.json",
@@ -162,6 +170,6 @@
     "EVT_35_IMG_001",
     "EVT_36_MED_001"
   ],
-  "nextPreparationTarget": "Principal canonical-card extraction and conditional identity reconciliation are complete. Shared owners must land Wave 0 and scene-specific authority contracts; #192 then reimplements exact canonical conditionals without generic/proxy substitutions.",
+  "nextPreparationTarget": "Principal canonical-card extraction, conditional identity reconciliation and conditional authority classification are complete. Shared owners must land Wave 0 and scene-specific authority contracts; #192 then reimplements exact canonical conditionals, while #195 closes or explicitly fail-closes eight missing factual domains.",
   "activationCondition": "Wave 0 must be satisfied before any canonical 34+ principal/conditional runtime registration or contentIdentity freeze"
 }
