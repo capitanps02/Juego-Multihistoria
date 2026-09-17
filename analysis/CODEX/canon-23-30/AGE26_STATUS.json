@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "baseMain": "adf1bffa7298bff6d7cebab88a3388c559cd3588",
+  "block": "age26",
+  "bridge": {
+    "eventId": "EVT_26_BRIDGE_001",
+    "inventoryState": "implemented_candidate",
+    "canonStatus": "blocked_lineage",
+    "identityStatus": "replacement",
+    "legacyEventId": "EVT_26_IDN_001",
+    "sourceFile": "src/content/events/26_30/t515-principal-events.ts",
+    "seedCreated": "SEED_PEAK_IDENTITY",
+    "blocker": "Integrator must activate the candidate in the next adjacent content generation and reconcile the new-campaign seed origin without rewriting historical SeedInstance.originEvent values."
+  },
+  "match": {
+    "eventId": "EVT_26_MATCH_001",
+    "inventoryState": "blocked",
+    "canonStatus": "blocked_shared_authority",
+    "identityStatus": "canonical_missing",
+    "requires": ["fixture", "opponent", "competition", "appearance", "start", "result", "playerContribution"],
+    "seedCreated": "SEED_RECORD_CHASE",
+    "blocker": "Authoritative sport context/football moment must describe the real match and contribution; narrative RNG is forbidden."
+  },
+  "captain": {
+    "eventId": "EVT_26_CAP_001",
+    "inventoryState": "blocked",
+    "canonStatus": "blocked_shared_authority",
+    "identityStatus": "canonical_missing",
+    "requires": ["current-club locker leadership", "resolved captain/participant identity", "knowledge route"],
+    "seedCreated": "SEED_LOCKER_ENDORSEMENT",
+    "blocker": "Captaincy must use current-club locker authority and distinguish captain, leader, veteran and influence."
+  },
+  "medical": {
+    "eventId": "EVT_26_MED_001",
+    "inventoryState": "ready",
+    "canonStatus": "codex_ready",
+    "identityStatus": "canonical_missing",
+    "requires": ["existing injury history", "recurrence/missed-time/return facts when present"],
+    "seedCreated": "SEED_PEAK_LOAD",
+    "guard": "React to medical history; do not invent diagnoses."
+  },
+  "documentary": {
+    "eventId": "EVT_26_DOC_001",
+    "inventoryState": "ready",
+    "canonStatus": "codex_ready",
+    "identityStatus": "canonical_missing",
+    "requires": ["explicit public/private information boundary", "NPC knowledge rules only when causally exposed"],
+    "seedCreated": "SEED_DOCUMENTARY_ACCESS",
+    "guard": "Public release may affect media/fans/club; private or unreleased material must not make every NPC omniscient."
+  },
+  "rivalry": {
+    "eventId": "EVT_26_RIV_001",
+    "inventoryState": "ready",
+    "canonStatus": "codex_ready",
+    "identityStatus": "canonical_missing",
+    "requires": ["previous conflict or sporting history or public statement or relationship memory"],
+    "seedCreated": "SEED_PUBLIC_RIVALRY",
+    "guard": "Do not create an instant rivalry merely because two players share a fixture."
+  },
+  "team": {
+    "eventId": "EVT_26_TEAM_002",
+    "inventoryState": "blocked",
+    "canonStatus": "blocked_shared_authority",
+    "identityStatus": "canonical_missing",
+    "requires": ["current-club locker participant", "current institutional role", "knowledge route"],
+    "seedCreated": "SEED_MENTOR_ADVICE",
+    "blocker": "Do not target a teammate from a previous club as the current institutional actor after a transfer."
+  },
+  "national": {
+    "eventId": "EVT_26_NAT_002",
+    "inventoryState": "blocked",
+    "canonStatus": "blocked_shared_authority",
+    "identityStatus": "canonical_missing",
+    "requires": ["authoritative call-up/selection history", "actual national-team role"],
+    "seedCreated": "SEED_NATIONAL_ROLE",
+    "blocker": "Reputation/nationalHeat alone is not sufficient evidence of selection or repeated call-ups."
+  },
+  "final": {
+    "eventId": "EVT_26_FINAL_001",
+    "inventoryState": "blocked",
+    "canonStatus": "blocked_shared_authority",
+    "identityStatus": "canonical_missing",
+    "requires": ["real final fixture", "appearance/bench fact", "real result", "SEED_BIG_GAME_BENCH causal history"],
+    "seedCreated": "SEED_FINAL_BENCH",
+    "blocker": "Must consume real final/bench facts. The canonical upstream producer of SEED_BIG_GAME_BENCH is EVT_26_EUR_001."
+  },
+  "criticalDependency": {
+    "eventId": "EVT_26_EUR_001",
+    "requiredCanonicalRole": "La noche en la que no empiezas",
+    "mustCreate": "SEED_BIG_GAME_BENCH",
+    "chain": "EVT_26_EUR_001 -> SEED_BIG_GAME_BENCH -> EVT_26_FINAL_001 -> SEED_FINAL_BENCH",
+    "status": "blocked_shared_authority",
+    "reason": "Needs real continental/final sporting context and must replace the current generic semantics without rewriting historical seed origins."
+  }
+}
