@@ -80,16 +80,19 @@
           "candidateAuthority": {
             "pr": 156,
             "branch": "t5/authoritative-match-model",
-            "stateAtAudit": "open_draft_11_ahead_5_behind",
+            "headAtAudit": "ffc9415f3a92e3449a43466d5e34fcd76efb3014",
+            "baseAtAudit": "6d2239ae1f89be97a7c5cf117d456cff9218aade",
+            "stateAtAudit": "open_draft_mergeable_8_commits_rebased_on_current_main",
             "provides": [
               "persisted official league fixture identity",
-              "club/opponent/homeAway/competition",
-              "calledUp/onBench/started/appeared/minutes",
+              "registration club/opponent/homeAway/competition",
+              "calledUp/onBench/started/appeared/minutes/injuryUnavailable",
               "next and previous fixture surfaces",
-              "remaining official/league fixture count"
+              "remaining official/league fixture facts",
+              "save validation and deterministic replay with zero additional RNG"
             ],
             "stillMissingForFullLastMatchFact": [
-              "authoritative result",
+              "authoritative per-match final result",
               "authoritative goals",
               "authoritative assists",
               "shared read helper for last fixture in history where player.appeared=true when the immediately previous fixture was a non-appearance"
@@ -116,22 +119,30 @@
         {
           "id": "CODEX-RET-007",
           "status": "blocked",
-          "readiness": "pending_PR_156_integration",
+          "readiness": "candidate_authority_ready_in_PR_156_pending_integration_and_certification",
           "task": "Make closure fixture/season-end aware instead of relying on coarse timing/contract proxies.",
           "currentMainBlocker": "Main currently marks remainingOfficialMatches/nextFixture/match-day facts unavailable.",
           "candidateAuthority": {
             "pr": 156,
             "branch": "t5/authoritative-match-model",
-            "stateAtAudit": "open_draft_11_ahead_5_behind",
+            "headAtAudit": "ffc9415f3a92e3449a43466d5e34fcd76efb3014",
+            "baseAtAudit": "6d2239ae1f89be97a7c5cf117d456cff9218aade",
+            "stateAtAudit": "open_draft_mergeable_8_commits_rebased_on_current_main",
             "provides": [
-              "SportContext.remainingOfficialMatches as known",
-              "SportContext.remainingLeagueMatches as known",
-              "SportContext.nextFixture",
-              "SportContext.isMatchDay",
-              "official weekly league fixture progression through season end"
+              "SportContext remaining league/official fixture facts",
+              "SportContext nextFixture and previousFixture",
+              "hoursToNextFixture/training-window facts",
+              "current squad and participation/minutes facts",
+              "official weekly league fixture progression through Aug-May",
+              "persisted objective closure for existing UDV season resolution"
+            ],
+            "requiredCertificationBeforeConsumption": [
+              "PR #156 exact-head CI green for its own producer suite",
+              "npm run test:playcanvas green as required by PR #156",
+              "integration into main or clean successor before retirement rewiring"
             ]
           },
-          "unblockContract": "After PR #156 (or its clean successor) is re-grounded, CI-certified and integrated into main, replace the coarse administrative final-window trigger with a fail-closed sporting boundary based on authoritative remainingOfficialMatches/nextFixture while preserving announced-state playability, idempotence and legacy-store compatibility."
+          "unblockContract": "After PR #156 (or its clean successor) is CI-certified and integrated into main, replace the coarse administrative final-window trigger with a fail-closed sporting boundary based on authoritative remainingOfficialMatches/nextFixture while preserving announced-state playability, idempotence and legacy-store compatibility."
         }
       ]
     },
@@ -185,7 +196,7 @@
           "status": "blocked",
           "task": "Freeze terminal contentIdentity and register final migration edge.",
           "blocker": "PR #15 / ordinary 34+ generation is not yet complete/integrated/frozen; terminal must follow the authoritative 34+ generation.",
-          "latestOwnerEvidence": "PR #15 branch is 7 ahead / 0 behind main at audit, but its effective diff is handoff/documentation only and runtime ordinary 34+ completion remains 0/43.",
+          "latestOwnerEvidence": "Ordinary 34+ remains the preceding lineage owner; do not freeze the terminal candidate while that generation is incomplete.",
           "unblockContract": "Complete and frozen authoritative ordinary 34+ generation plus its exact adjacent source contentIdentity."
         }
       ]
@@ -195,5 +206,5 @@
   "readyCount": 0,
   "blockedCount": 3,
   "partiallyUnblockedCount": 2,
-  "remainingCodexAction": "Do not duplicate implemented lots. Track PR #156 as the concrete upstream for RET-007 and partial RET-005; do not consume it until re-grounded/certified/integrated. RET-011 remains blocked on complete ordinary 34+ canon."
+  "remainingCodexAction": "Do not duplicate implemented lots. PR #156 is now re-grounded on current main and is the concrete candidate upstream for RET-007 and partial RET-005, but retirement must not consume it until its required CI/PlayCanvas certification and integration. RET-011 remains blocked on complete ordinary 34+ canon."
 }
