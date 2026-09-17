@@ -1,0 +1,124 @@
+{
+  "workstream": "T5.36-T5.37",
+  "branch": "t5/retirement-epilogues",
+  "baseAtStart": "6866ed7710bf317e8633b67a78d477a5be952349",
+  "lastSyncedMain": "99b1cd56f199bda657fb9fb1c757b003265892b6",
+  "syncCommit": "fdfefc1ef3ea46449748577f37c65ba92d822f62",
+  "isolatedQaWorkflow": ".github/workflows/t536-retirement-epilogues.yml",
+  "crossWorkstreamHandoffs": "analysis/T5.36-T5.37/cross-workstream-handoffs.json",
+  "validation": {
+    "isolatedWorkflowRun": 35207832811,
+    "isolatedWorkflowConclusion": "success",
+    "terminalTests": 27,
+    "terminalTestsPassed": 27,
+    "terminalTestsFailed": 0,
+    "buildPassed": true,
+    "coverage": {
+      "mandatoryRetirementAndEpilogueGates": 18,
+      "seedMassClosureRegression": true,
+      "statusWriterInventory": true,
+      "legacy30To34BridgeRegression": true,
+      "schema7HistoricalEarlyRetirementReconstruction": true,
+      "endingFamilyAuditCount": 20,
+      "greatProMinimumEvidenceTests": 2,
+      "deterministicTerminalProfiles": 16,
+      "profileNonConvergenceGate": true,
+      "profileHardConflictGate": true,
+      "profileEvidenceGate": true,
+      "profileNoSyntheticGoalTextGate": true
+    },
+    "repositoryIntegrityRun": 35207832665,
+    "repositoryIntegrityPreFreeze": {
+      "finalGatePassed": true,
+      "buildErrors": 0,
+      "buildWarnings": 0,
+      "reproducible": true,
+      "saveTestsPassed": "38/38",
+      "t53TestsPassed": "53/53",
+      "catalogEvents": 388,
+      "catalogSeeds": 210,
+      "npcCount": 20
+    },
+    "expectedFreezeBlock": {
+      "contentIdentity": "af3a16e1d66fa5dc8a4509b63f375db4a78f6a35026ed405aebccad7645a75b8",
+      "frozen": false,
+      "intentional": true,
+      "reason": "Agent13 complete active 34+ generation has not landed; freezing this terminal identity now would register the wrong source lineage."
+    },
+    "agent13SeedEvidence": {
+      "owner": "t51/canon-34plus",
+      "assignedSeeds": 68,
+      "runtimeProduced": 0,
+      "withAnyConsumer": 0,
+      "noProducerAndNoConsumer": 68
+    }
+  },
+  "status": "blocked_pending_agent13_active_34plus_generation",
+  "doNotRegisterRouteYet": true,
+  "requiredLineage": [
+    "existing_active_T5.1_lineage",
+    "30_34_generation",
+    "agent13_34plus_active_generation",
+    "retirement_epilogue_generation"
+  ],
+  "forbiddenShortcuts": [
+    "PRE_T51 -> retirement_epilogue_generation",
+    "30_34 -> retirement_epilogue_generation when an active Agent13 34+ source exists"
+  ],
+  "agent13ObservedPartialDelivery": {
+    "branch": "t51/canon-34plus-career",
+    "commit": "3d726c3aa48bf03fd216240c7ec3682ebba57b3a",
+    "message": "T5.29: canonicalize veteran career entry",
+    "filesAdded": ["src/content/events/34_plus/t529-career-events.ts"],
+    "sufficientAsTerminalSource": false,
+    "reason": "Only the veteran career entry batch is present and it is not yet the active complete 34+ catalog generation."
+  },
+  "semanticIdentityCases": [
+    {
+      "id": "CEVT_RET_RECONSIDER",
+      "legacySemantics": "post-announcement reconsideration could reopen announced -> playing",
+      "targetSemantics": "pre-announcement explicit reconsideration only from decided -> playing",
+      "mapping": "distinct_scene",
+      "preserveFrozenLegacyDefinition": true
+    },
+    {
+      "id": "EVT_RET_LAST_001",
+      "canonicalAlias": "EVT_RET_LASTMATCH_001",
+      "legacySemantics": "choice could directly assert LAST_MATCH_PLAYED/closure",
+      "targetSemantics": "choice only records request/control posture; real appearance comes from sport.appearances delta",
+      "mapping": "semantic_review_required",
+      "preserveFrozenLegacyDefinition": true
+    },
+    {
+      "id": "CEVT_RET_STORYBOOK_LAST_GOAL",
+      "legacySemantics": "terminal event could create a synthetic storybook goal",
+      "targetSemantics": "event is inert unless LAST_MATCH_GOAL_FACT already exists from the match system",
+      "mapping": "distinct_scene",
+      "preserveFrozenLegacyDefinition": true
+    },
+    {
+      "id": "CEVT_38_OFFER_AFTER_RETIREMENT_ANNOUNCED",
+      "legacySemantics": "offer could open reconsideration after a public announcement",
+      "targetSemantics": "offer can be heard/declined but status remains announced",
+      "mapping": "semantic_review_required",
+      "preserveFrozenLegacyDefinition": true
+    }
+  ],
+  "migrationInvariants": [
+    "no RNG consumption",
+    "no retirement announcement on load",
+    "no retirement closure on load unless reconstructing an already-terminal frozen legacy fact",
+    "no history rewrite",
+    "no automatic scene scheduling",
+    "sourceContentIdentity must match a frozen source",
+    "target contentIdentity must be computed only after Agent13 source is active"
+  ],
+  "nextIntegratorActions": [
+    "Wait for Agent13 complete 34+ source to land or be frozen.",
+    "Synchronize t5/retirement-epilogues with the then-current main without bypassing intermediate generations.",
+    "Apply the terminal layer after the Agent13 34+ generation.",
+    "Compute and freeze the resulting contentIdentity.",
+    "Register exactly one adjacent source -> target migration edge.",
+    "Run freeze, lineage, migration, save and deterministic QA gates."
+  ]
+}

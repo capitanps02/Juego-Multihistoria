@@ -1,0 +1,67 @@
+[
+  {
+    "fact": "retirementStatus",
+    "authority": "GameState.retirement.status",
+    "persisted": true,
+    "derived": false,
+    "requiredFor": ["terminal_state", "career_close", "epilogue"],
+    "fallback": "playing"
+  },
+  {
+    "fact": "retirementDecision",
+    "authority": "GameState.retirement + decision history/provenance",
+    "persisted": true,
+    "derived": false,
+    "requiredFor": ["announcement", "career_close", "epilogue"],
+    "fallback": null
+  },
+  {
+    "fact": "publicRetirementAnnouncement",
+    "authority": "retirement.status/announcedDate + RETIREMENT_WAS_ANNOUNCED",
+    "persisted": true,
+    "derived": false,
+    "requiredFor": ["final_phase", "npc_public_knowledge"],
+    "fallback": null
+  },
+  {
+    "fact": "postAnnouncementAppearanceObserved",
+    "authority": "getSportContext(state).careerAppearances delta after announcement",
+    "persisted": "partial",
+    "derived": true,
+    "requiredFor": ["career_close", "epilogue"],
+    "fallback": null,
+    "limitations": [
+      "proves only that a later aggregate appearance occurred",
+      "retirementLastAppearanceDate is currently an observation/week date, not fixture timestamp",
+      "does not identify authoritative final fixture"
+    ]
+  },
+  {
+    "fact": "lastProfessionalMatchDetail",
+    "authority": "future authoritative persisted match history",
+    "persisted": false,
+    "derived": false,
+    "requiredFor": ["rich_last_match_epilogue"],
+    "fallback": null,
+    "status": "blocked_by_missing_authoritative_match_model",
+    "currentSportContract": "getCurrentMatchContext(state).status == no_authoritative_match_model",
+    "unavailableFields": ["fixture", "opponent", "competition", "selection", "starter", "bench", "minutes", "result", "goals", "assists"]
+  },
+  {
+    "fact": "careerSummary",
+    "authority": "buildCareerSummary(GameState)",
+    "persisted": false,
+    "derived": true,
+    "requiredFor": ["epilogue", "presentation", "debugging"],
+    "fallback": null,
+    "missingDataPolicy": "null_or_omit"
+  },
+  {
+    "fact": "terminalEpilogue",
+    "authority": "GameState.epilogue generated from closed state",
+    "persisted": true,
+    "derived": true,
+    "requiredFor": ["final_save", "presentation"],
+    "fallback": "degrade_to_available_evidence"
+  }
+]

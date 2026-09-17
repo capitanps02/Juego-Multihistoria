@@ -1,0 +1,130 @@
+{
+  "workstream": "retirement-epilogues",
+  "batches": [
+    {
+      "lot": "A",
+      "name": "Retirement contemplation",
+      "tasks": [
+        {
+          "id": "CODEX-RET-001",
+          "status": "ready",
+          "task": "Audit/add terminal contemplation copy without changing retirement.status until an explicit retirement choice is made",
+          "requiredState": "playing",
+          "forbiddenEffects": ["retire by age", "retire because no offers", "retire because injury", "write RETIRED=true"],
+          "acceptanceTests": ["status remains playing on continue/wait choices", "no RNG in pure fact projection"]
+        }
+      ]
+    },
+    {
+      "lot": "B",
+      "name": "Continue / announce decisions",
+      "tasks": [
+        {
+          "id": "CODEX-RET-002",
+          "status": "ready",
+          "task": "Extend explicit pre-announcement continue/reconsideration content using the existing decided->playing contract",
+          "requiredState": "decided",
+          "forbiddenEffects": ["announced->playing", "closed->playing", "implicit reconsideration from offer RNG"],
+          "acceptanceTests": ["explicit RETURN can restore playing only with valid reconsideration window", "public announcement remains irreversible in normal gameplay"]
+        },
+        {
+          "id": "CODEX-RET-003",
+          "status": "ready",
+          "task": "Bind public announcement choices to T5.3 live knowledge rules without backfilling private intent",
+          "eventId": "EVT_RET_ANNOUNCE_001",
+          "requiredState": "decided",
+          "forbiddenEffects": ["teach NPCs private retirement intent", "edit frozen NPC backfill v1"],
+          "acceptanceTests": ["private WAIT path creates no public knowledge", "public path can create only evidenced public knowledge"]
+        }
+      ]
+    },
+    {
+      "lot": "C",
+      "name": "Final-phase scenes",
+      "tasks": [
+        {
+          "id": "CODEX-RET-004",
+          "status": "ready",
+          "task": "Add final-phase narrative scenes that consume existing facts but never grant an appearance, goal or win",
+          "requiredState": "announced",
+          "forbiddenEffects": ["increment sport.appearances", "synthetic goal", "synthetic fixture", "synthetic victory"],
+          "acceptanceTests": ["same sporting state before/after narrative-only choice", "terminal narrative consumes no football RNG unless delegated to sport authority"]
+        },
+        {
+          "id": "CODEX-RET-005",
+          "status": "blocked",
+          "task": "Replace aggregate post-announcement appearance observation with full LastMatchFact fixture/minutes/result model",
+          "blocker": "SportContext has landed, but getCurrentMatchContext() still reports no_authoritative_match_model and fixture/opponent/competition/squad/minutes/result/goals/assists remain unavailable"
+        }
+      ]
+    },
+    {
+      "lot": "D",
+      "name": "Career closure",
+      "tasks": [
+        {
+          "id": "CODEX-RET-006",
+          "status": "ready",
+          "task": "Use closeCareer as the terminal operation for new terminal integration points; keep calls idempotent",
+          "requiredState": "announced",
+          "forbiddenEffects": ["duplicate epilogue", "duplicate history", "consume RNG", "reopen closed career"],
+          "acceptanceTests": ["double close is no-op", "closed save/load remains terminal"]
+        },
+        {
+          "id": "CODEX-RET-007",
+          "status": "blocked",
+          "task": "Make closure fixture/season-end aware instead of relying on coarse timing/contract proxies",
+          "blocker": "SportContext deliberately exposes remainingOfficialMatches/nextFixture/match-day facts as unavailable"
+        }
+      ]
+    },
+    {
+      "lot": "E",
+      "name": "Epilogue facts",
+      "tasks": [
+        {
+          "id": "CODEX-RET-008",
+          "status": "ready",
+          "task": "Consume buildCareerSummary() for presentation/debug output and keep unsupported facts null/omitted",
+          "requiredFacts": ["closed or active GameState"],
+          "forbiddenEffects": ["derive goals from reputation", "derive trophies from trophyCapital as a count", "invent fixture detail"],
+          "acceptanceTests": ["read-only", "save/load reproduces identical closed summary"]
+        }
+      ]
+    },
+    {
+      "lot": "F",
+      "name": "Epilogue narratives",
+      "tasks": [
+        {
+          "id": "CODEX-RET-009",
+          "status": "ready",
+          "task": "Add deterministic prose variants inside already-supported ending families using factual evidence arrays",
+          "forbiddenEffects": ["free RNG on render", "good/bad tier ranking", "invent family/statue/trophy/reconciliation"],
+          "acceptanceTests": ["same save => same text", "different evidence profiles do not converge to identical text"]
+        }
+      ]
+    },
+    {
+      "lot": "G",
+      "name": "Legacy / save compatibility",
+      "tasks": [
+        {
+          "id": "CODEX-RET-010",
+          "status": "ready",
+          "task": "Add regression fixtures for active, decided, announced and closed legacy saves without changing content lineage",
+          "forbiddenEffects": ["retire active save on load", "regenerate frozen epilogue", "rewrite history", "consume RNG"],
+          "acceptanceTests": ["active old save stays active", "announced survives save/load", "closed remains terminal", "pending decision uses frozen definition"]
+        },
+        {
+          "id": "CODEX-RET-011",
+          "status": "blocked",
+          "task": "Freeze terminal contentIdentity and register final migration edge",
+          "blocker": "PR #15 / ordinary 34+ generation is not yet complete/integrated/frozen; terminal must follow the authoritative 34+ generation"
+        }
+      ]
+    }
+  ],
+  "readyCount": 8,
+  "blockedCount": 3
+}
