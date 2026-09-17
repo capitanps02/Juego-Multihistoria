@@ -39,11 +39,6 @@ const applyCanonicalSharedTriggers=(event:EventDefinition):EventDefinition=>{
   } as EventDefinition & {gateAlternatives:Condition[][]};
 };
 
-/**
- * These scenes assert concrete fixture/competition facts. Until the shared sport
- * authority can materialise those facts, they must fail closed instead of treating
- * role/form/calendar proxies as if a real match existed.
- */
 const sportAuthorityGates:Readonly<Record<string,readonly Condition[]>>={
   EVT_31_FINAL_001:[
     {path:"facts.sport.currentCompetition",op:"exists"},
@@ -65,12 +60,6 @@ const applySportAuthority=(event:EventDefinition):EventDefinition=>{
   };
 };
 
-/**
- * The age-33 handover scene canonically requires current main-club captaincy.
- * Influence, succession pressure, captaincy-window flags and seeds are not formal
- * leadership authority. The shared resolver already scopes the certification to the
- * protagonist's current club, so the synthetic fact is safe to consume here.
- */
 const applyLeadershipAuthority=(event:EventDefinition):EventDefinition=>{
   if(event.id!=="EVT_33_CAP_001") return event;
   return {
@@ -90,18 +79,24 @@ const withOfferBridge=(
   event:EventDefinition,
   extraGates:Condition[],
   choiceActions:Record<string,OfferDisposition>
-):EventDefinition=>({
-  ...event,
-  gates:[...(event.gates??[]),...extraGates],
-  offerBridge:{choiceActions},
-  tags:[...new Set([...(event.tags??[]),"t51_offer_authority_bridge"])]
-} as OfferBridgeEvent);
+):EventDefinition=>{
+  const existing=event.tags??[];
+  const carriesAuthorityGuard=existing.includes("t51_shared_authority_guard");
+  const baseTags=existing.filter(tag=>
+    tag!=="t51_offer_authority_bridge" && tag!=="t51_shared_authority_guard"
+  );
+  return {
+    ...event,
+    gates:[...(event.gates??[]),...extraGates],
+    offerBridge:{choiceActions},
+    tags:[...new Set([
+      ...baseTags,
+      "t51_offer_authority_bridge",
+      ...(carriesAuthorityGuard?["t51_shared_authority_guard"]:[])
+    ])]
+  } as OfferBridgeEvent;
+};
 
-/**
- * Only bridge scenes whose canonical decision can be represented by the single
- * authoritative pending CareerOffer. Multi-offer comparisons intentionally stay
- * outside this mapping until the market authority can represent them without proxies.
- */
 const applyCareerOfferBridge=(event:EventDefinition):EventDefinition=>{
   if(event.id==="EVT_31_HOME_001"){
     return withOfferBridge(
@@ -146,12 +141,6 @@ const authorityOwnedPath=(effect:Effect):boolean=>{
     || effect.path.startsWith("contract.");
 };
 
-/**
- * 30–34 owns narrative intent, not employment mutation.
- * Formal club/contract changes must be applied only by CareerOffer/respondToOffer.
- * Until a scene has a compatible formal offer bridge, retain its intent/seed/history
- * effects while preventing ad-hoc writes to authority-owned state.
- */
 const enforceCareerAuthority=(event:EventDefinition):EventDefinition=>{
   let stripped=false;
   const keep=(effects:Effect[]|undefined):Effect[]|undefined=>{
