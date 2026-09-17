@@ -1,15 +1,15 @@
 {
-  "schemaVersion": 2,
-  "generatedAt": "2026-09-16",
+  "schemaVersion": 3,
+  "generatedAt": "2026-09-17",
   "workstream": "T51_CANON_20_23",
   "branch": "t51/canon-20-23",
-  "baselineMainSha": "6cb81b63f03ce55776ca97075012cfaa22ac228d",
+  "baselineMainSha": "99b1cd56f199bda657fb9fb1c757b003265892b6",
   "sources": [
     "Documento Maestro v0.9 via analysis/2026-09-11/t1/principal-traceability.json",
     "t51/canon-18-23:analysis/T5.1/canon-20-23-b2-handoff.json",
     "t51/canon-18-23:analysis/T5.1/canon-20-23-b3-missing-handoff.json",
     "t51/canon-18-23:analysis/T5.1/canon-18-23-b4-legacy-retirement.json",
-    "main@6cb81b63f03ce55776ca97075012cfaa22ac228d runtime catalogs"
+    "main@99b1cd56f199bda657fb9fb1c757b003265892b6 runtime catalogs"
   ],
   "revalidation": {
     "principalFactoryStillGenericForUnreplacedRows": true,
@@ -18,18 +18,19 @@
     "criticalCollisionEVT_21_RIV_001ReplacedAsDistinctScene": true,
     "notes": [
       "The historical 27 principal and 3 conditional same-ID cards were revalidated against current main before authoring.",
-      "T5.5-A replaces five active shells through a local overlay; the remaining same-ID backlog still flows through the generic factories.",
-      "EVT_21_RIV_001 canonical now means Adrián/SEED_ADRIAN_MIRROR while the frozen source identity must continue validating the old Rivas/HAS_SEED_RIVAS_TRUST definition."
+      "T5.5-A and T5.5-B replace nine active shells through local overlays; remaining same-ID debt still flows through the generic factories.",
+      "EVT_21_RIV_001 canonical means Adrian/SEED_ADRIAN_MIRROR while the frozen source identity continues validating the old Rivas/HAS_SEED_RIVAS_TRUST definition.",
+      "Microbatch B is frozen as contentIdentity 6e552f606ace400d7b535747fbf7ba6078c60fd92889d4a360eb4db0bfb1013a after 20/20 focused tests and zero T5 content hard errors."
     ]
   },
   "inventory": {
     "canonicalTotal": 51,
     "principals": 33,
     "conditionals": 18,
-    "verifiedFunctional": 5,
-    "verifiedFunctionalPrincipals": 3,
+    "verifiedFunctional": 9,
+    "verifiedFunctionalPrincipals": 7,
     "verifiedFunctionalConditionals": 2,
-    "needsReimplementation": 25,
+    "needsReimplementation": 21,
     "canonicalMissing": 21,
     "legacyOnly": 21,
     "legacyOnlyPrincipals": 6,
@@ -37,8 +38,8 @@
   },
   "principalNeedsReimplementation": [
     "EVT_20_MKT_001","EVT_20_MED_001","EVT_20_AGT_001","EVT_20_STATUS_001","EVT_20_CCH_001","EVT_20_LOCK_001","EVT_20_LOCK_002","EVT_20_BRUNO_001",
-    "EVT_21_MONEY_001","EVT_21_AGT_001","EVT_21_NAT_001","EVT_21_IMG_001","EVT_21_CAP_001","EVT_21_PRS_001","EVT_21_MED_001","EVT_21_CCH_002",
-    "EVT_22_CON_001","EVT_22_LOCK_001","EVT_22_HOME_001","EVT_22_MKT_001","EVT_22_MED_001","EVT_22_TACT_001","EVT_22_DDL_001","EVT_22_CON_002"
+    "EVT_21_MONEY_001","EVT_21_AGT_001","EVT_21_NAT_001","EVT_21_IMG_001","EVT_21_MED_001","EVT_21_CCH_002",
+    "EVT_22_LOCK_001","EVT_22_HOME_001","EVT_22_MKT_001","EVT_22_MED_001","EVT_22_TACT_001","EVT_22_DDL_001"
   ],
   "conditionalNeedsReimplementation": ["CEVT_22_FREE_01"],
   "principalCanonicalMissing": ["EVT_20_BRIDGE_001","EVT_20_MATCH_003","EVT_20_JAN_001","EVT_21_MKT_001","EVT_21_SOC_001","EVT_21_PRS_002"],
@@ -55,7 +56,9 @@
     "matchAuthority": ["EVT_20_MATCH_003"],
     "conditionalMarketFact": ["EVT_20_JAN_001"],
     "offerAndLoanPlanAuthority": ["EVT_21_MKT_001","CEVT_21_LOAN_01"],
-    "activeAgentIdentity": ["EVT_20_BRUNO_001"],
+    "activeAgentIdentity": ["EVT_20_BRUNO_001","EVT_20_AGT_001"],
+    "liveCaptain20_23": ["EVT_21_CAP_001 persistent named-NPC memory only"],
+    "currentClubInstitutionalNpc": ["EVT_21_PRS_001 CLUB_CORRECT memory","EVT_22_CON_001 club knowledge","EVT_22_CON_002 club knowledge"],
     "externalWorldFacts": ["CEVT_20_RIVAS_01","CEVT_20_VELA_01","CEVT_20_NANO_01","CEVT_20_MONT_01","CEVT_20_ADR_01","CEVT_21_BIGCLUB_01","CEVT_22_UDV_01","CEVT_22_ADR_02","CEVT_22_SOC_02","CEVT_22_SHOCK_01"],
     "compoundMedicalFacts": ["CEVT_20_PAULA_01","CEVT_21_INJ_01"],
     "marketProvenance": ["CEVT_21_AGENT_02","CEVT_22_BRUNO_02"]
@@ -71,18 +74,33 @@
     "T5.8": ["EVT_20_MATCH_003","EVT_20_JAN_001","CEVT_20_RIVAS_01","CEVT_20_VELA_01","CEVT_20_PAULA_01","CEVT_20_NANO_01","CEVT_20_MONT_01","CEVT_20_ADR_01","CEVT_21_BIGCLUB_01","CEVT_21_INJ_01","CEVT_22_UDV_01","CEVT_22_BRUNO_02"],
     "T5.9": ["CEVT_22_ADR_02","CEVT_22_SOC_02","CEVT_22_SHOCK_01"]
   },
-  "firstMicrobatch": {
-    "id": "T5.5-A",
-    "scenes": ["EVT_20_LIFE_001","EVT_20_ABR_001","EVT_21_RIV_001","CEVT_21_ABR_01","CEVT_21_MEDIA_01"],
-    "deferredFromInitialSelection": ["EVT_20_BRUNO_001"],
-    "deferReason": "The current authoritative NPC knowledge target contract exposes captain/star slots but no current-agent identity. Persisting agent knowledge through a guessed NPC would violate T5.3, so Bruno remains queued until that fact/target exists or the scene can be proven not to require agent knowledge.",
-    "migrationPolicy": "Every exact-ID rewrite is distinct_scene. Preserve legacy history/pending by sourceContentIdentity/fingerprint; clear canonical SEEN/cooldown only on the adjacent coordinator-owned migration edge."
+  "completedMicrobatches": [
+    {
+      "id": "T5.5-A",
+      "scenes": ["EVT_20_LIFE_001","EVT_20_ABR_001","EVT_21_RIV_001","CEVT_21_ABR_01","CEVT_21_MEDIA_01"],
+      "targetContentIdentity": "6a9c66ab3afaec76299662afb2a662e19203f8c6c430a87cc458b8608965a651",
+      "migrationHandoff": "analysis/T5.1/t55a-20-23-migration-handoff.json"
+    },
+    {
+      "id": "T5.5-B",
+      "scenes": ["EVT_21_CAP_001","EVT_21_PRS_001","EVT_22_CON_001","EVT_22_CON_002"],
+      "targetContentIdentity": "6e552f606ace400d7b535747fbf7ba6078c60fd92889d4a360eb4db0bfb1013a",
+      "migrationHandoff": "analysis/T5.1/t55b-20-23-migration-handoff.json",
+      "qa": "20/20 focused A+B tests green; T5 content hardErrors=0"
+    }
+  ],
+  "nextSafeWork": {
+    "T5.5": ["EVT_21_SOC_001"],
+    "blockedT5.5": ["EVT_20_BRUNO_001","EVT_20_AGT_001"],
+    "policy": "After EVT_21_SOC_001, move immediately to unlocked T5.6 scenes instead of inventing active-agent infrastructure."
   },
   "progress": {
-    "T5.5": "5/12",
-    "global": "5/51",
-    "globalPercent": 9.8,
-    "principals": "3/33",
-    "conditionals": "2/18"
+    "T5.5": "9/12",
+    "global": "9/51",
+    "globalPercent": 17.6,
+    "principals": "7/33",
+    "principalPercent": 21.2,
+    "conditionals": "2/18",
+    "conditionalPercent": 11.1
   }
 }
