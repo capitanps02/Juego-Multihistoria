@@ -1,5 +1,6 @@
 import type { GameState } from "../core/types.js";
-import { FORMAL_RENEWAL_REASON } from "./club-contract-intent.js";
+
+export const FORMAL_RENEWAL_REASON = "Renovación de contrato";
 
 export interface CareerTerms {
   club: string; tier: number; months: number; salary: number; releaseClause: number | null;
@@ -65,6 +66,15 @@ export function getActiveCareerOffers(s: GameState): readonly CareerOffer[] {
 function getEligibleCareerOffers(s: GameState): readonly CareerOffer[] {
   const current = careerTerms(s);
   return getActiveCareerOffers(s).filter(offer => sameTerms(current, offer.before));
+}
+/**
+ * Read-only kind of the one formal offer that is still compatible with the live
+ * CareerTerms. A stale pending offer remains inspectable through getActiveCareerOffers
+ * but intentionally projects null here so narrative eligibility fails closed.
+ */
+export function eligibleCareerOfferKind(s: GameState): CareerOfferKind | null {
+  const offer = getEligibleCareerOffers(s)[0];
+  return offer ? careerOfferKind(offer) : null;
 }
 export function getEligibleTransferOffers(s: GameState): readonly CareerOffer[] {
   return getEligibleCareerOffers(s).filter(offer => careerOfferKind(offer) === "transfer");
