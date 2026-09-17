@@ -2,16 +2,17 @@
   "workstream": "retirement-epilogues",
   "integrationSnapshot": {
     "date": "2026-09-17",
-    "main": "a7a0bb575ac8824c3e52975e8861a97e29f94830",
-    "retirementSyncHead": "66612a4939802e020c9d16b213401a13235d32a9",
-    "compare": "66_ahead_0_behind",
+    "mainAtAudit": "fa3c8bae524fef62e4eb9802e895df88588998c4",
+    "retirementCertifiedHeadBeforeThisSync": "a35dae2f6c2985ce12756a38248dbac0b4c3d2e6",
     "retirementCertification": {
-      "previousSynchronizedHead": "09f4f877c2c91d35cbcfa1e5286d2201c0d3472a",
-      "dedicatedRunId": 35243968035,
+      "dedicatedRunId": 35244654520,
       "dedicatedConclusion": "success",
-      "repositoryIntegrityRunId": 35243968077,
-      "repositoryIntegrityConclusion": "expected_fail_closed_lineage_sentinel_after_ordinary_validation",
-      "unfrozenCandidateIdentity": "4f7c783521a463509ac8bf9a0646b6c0aeaff6861a8d01ab8b1e43c19641e93b"
+      "build": "pass",
+      "retirementGates": "pass"
+    },
+    "lineageSentinel": {
+      "policy": "fail_closed_until_preceding_ordinary_34plus_generation_is_integrated_and_frozen",
+      "previousUnfrozenTerminalCandidate": "4f7c783521a463509ac8bf9a0646b6c0aeaff6861a8d01ab8b1e43c19641e93b"
     }
   },
   "statusModel": {
@@ -95,16 +96,16 @@
             "pr": 156,
             "branch": "t5/authoritative-match-model",
             "headAtAudit": "30764bafacd9712ed39af8f176312ec8ffa8a8d4",
-            "currentMainAtAudit": "a7a0bb575ac8824c3e52975e8861a97e29f94830",
-            "relationAtAudit": "1_ahead_1_behind",
+            "currentMainAtAudit": "fa3c8bae524fef62e4eb9802e895df88588998c4",
+            "relationAtAudit": "1_ahead_2_behind",
             "stateAtAudit": "open_draft_not_integrated",
-            "certificationAtSnapshot": {
+            "historicalCertificationOnCandidateHead": {
               "repositoryIntegrityRunId": 35243389440,
               "projectValidation": "pass",
               "playcanvas": "pass",
               "qaBuild": "pass",
               "preContentFreezeSentinel": "pass",
-              "determinism": "running"
+              "determinismAtLatestAudit": "running"
             },
             "provides": [
               "persisted official league fixture identity",
@@ -142,15 +143,15 @@
         {
           "id": "CODEX-RET-007",
           "status": "blocked",
-          "readiness": "candidate_authority_playcanvas_green_but_behind_main_and_not_integrated",
+          "readiness": "producer_candidate_historically_playcanvas_green_but_2_behind_current_main_and_not_integrated",
           "task": "Make closure fixture/season-end aware instead of relying on coarse timing/contract proxies.",
           "currentMainBlocker": "The authoritative persisted match producer required by retirement is not integrated into current main.",
           "candidateAuthority": {
             "pr": 156,
             "branch": "t5/authoritative-match-model",
             "headAtAudit": "30764bafacd9712ed39af8f176312ec8ffa8a8d4",
-            "currentMainAtAudit": "a7a0bb575ac8824c3e52975e8861a97e29f94830",
-            "relationAtAudit": "1_ahead_1_behind",
+            "currentMainAtAudit": "fa3c8bae524fef62e4eb9802e895df88588998c4",
+            "relationAtAudit": "1_ahead_2_behind",
             "provides": [
               "SportContext remaining league/official fixture facts",
               "SportContext nextFixture and previousFixture",
@@ -162,16 +163,16 @@
             "requiredCertificationBeforeConsumption": [
               "re-ground candidate to current main",
               "complete exact-head Repository Integrity producer suite",
-              "retain exact-head PlayCanvas green evidence",
+              "retain exact-head PlayCanvas green evidence on the re-grounded head",
               "integration into main or a clean successor before retirement rewiring"
             ],
-            "certificationAtSnapshot": {
+            "historicalCertificationOnAuditedHead": {
               "repositoryIntegrityRunId": 35243389440,
               "projectValidation": "pass",
               "playcanvas": "pass",
               "qaBuild": "pass",
               "preContentFreezeSentinel": "pass",
-              "determinism": "running",
+              "determinismAtLatestAudit": "running",
               "integratedIntoMain": false
             }
           },
@@ -227,10 +228,33 @@
         {
           "id": "CODEX-RET-011",
           "status": "blocked",
+          "readiness": "explicit_upstream_chain_identified",
           "task": "Freeze terminal contentIdentity and register final migration edge.",
-          "blocker": "Ordinary 34+ generation is not yet complete/integrated/frozen; terminal must follow the authoritative 34+ generation.",
-          "currentUnfrozenTerminalCandidate": "4f7c783521a463509ac8bf9a0646b6c0aeaff6861a8d01ab8b1e43c19641e93b",
-          "unblockContract": "Complete and frozen authoritative ordinary 34+ generation plus its exact adjacent source contentIdentity."
+          "blocker": "The ordinary 34+ generation does not exist in runtime yet and therefore cannot be the frozen adjacent predecessor of terminal retirement.",
+          "upstreamChain": {
+            "step1Lineage": {
+              "issue": 59,
+              "stateAtAudit": "open",
+              "contract": "deterministic multigeneration migration path/evidence infrastructure; 0 RNG; no scheduling/choice resolution; exact pending fingerprints; fail-closed missing/ambiguous routes"
+            },
+            "step2Seeds": {
+              "issue": 180,
+              "stateAtAudit": "open",
+              "contract": "54 exact canonical Pasada-7 seed IDs = 45 ordinary + 9 terminal; 14 bridge-memory concepts are inherited/derived and must not auto-produce at age 34; no fuzzy ID rename or provenance rewrite"
+            },
+            "step3Ordinary34Plus": {
+              "pr": 15,
+              "branch": "t51/canon-34plus",
+              "relationAtAuditToMain": "59_ahead_1_behind",
+              "preparedCards": "43/43",
+              "runtimeImplemented": "0/43",
+              "strictCodexReady": "0/43_until_Wave_0_complete",
+              "contentState": "generation_H_remains_active_no_provisional_34plus_freeze"
+            },
+            "step4Terminal": "Only after the exact ordinary 34+ generation is implemented, integrated and frozen may retirement register the adjacent ordinary34plus->terminal edge."
+          },
+          "previousUnfrozenTerminalCandidate": "4f7c783521a463509ac8bf9a0646b6c0aeaff6861a8d01ab8b1e43c19641e93b",
+          "unblockContract": "Integrate #59 and #180, activate/integrate/freeze the authoritative ordinary 34+ generation from PR #15, then register only the exact adjacent ordinary-34+ -> terminal migration edge. No PRE_T51 shortcut and no guessed target hash."
         }
       ]
     }
@@ -239,5 +263,5 @@
   "readyCount": 0,
   "blockedCount": 3,
   "partiallyUnblockedCount": 2,
-  "remainingCodexAction": "Do not duplicate implemented lots. RET-007 is narrowed to PR #156 (or clean successor): PlayCanvas is green on the audited head, but the candidate is now 1 behind current main, its Repository Integrity run is still executing, and it is not integrated. Re-ground and finish certification before consumption. RET-005 remains partial because rich result/goals/assists and last-appeared-fixture lookup are absent. RET-011 remains blocked on complete ordinary 34+ canon."
+  "remainingCodexAction": "Do not duplicate implemented lots. RET-007 remains blocked on re-ground + exact-head certification + integration of PR #156 (or clean successor). RET-005 remains partial because rich result/goals/assists and last-appeared-fixture lookup are absent. RET-011 now has an explicit upstream chain: #59 + #180 -> PR #15 ordinary runtime/freeze -> terminal adjacent migration. There is no safe terminal contentIdentity work to perform before that chain completes."
 }
