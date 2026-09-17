@@ -250,6 +250,52 @@ export const NPC_EVENT_KNOWLEDGE_RULES: NpcEventKnowledgeRule[] = [
     certainty: 100,
     memory: "temporary",
     relationshipMemory: false
+  },
+  {
+    eventId: "EVT_21_CAP_001",
+    choiceIds: ["PARTICIPATE_VOTE", "LISTEN_NO_NAME", "DISSENT_MINORITY", "DECLINE_FOR_NOW"],
+    npcIds: [],
+    targetSlots: ["captain"],
+    source: "witnessed",
+    certainty: 100,
+    memory: "strong",
+    relationshipMemory: true
+  },
+  {
+    eventId: "EVT_21_PRS_001",
+    choiceIds: ["CORRECT_WITH_NUMBER", "DENY_NO_NUMBER"],
+    npcIds: ["NPC_PRS_01"],
+    source: "public",
+    certainty: 100,
+    memory: "strong",
+    relationshipMemory: false
+  },
+  {
+    eventId: "EVT_21_PRS_001",
+    choiceIds: ["CLUB_CORRECT"],
+    npcIds: ["NPC_DIR_02"],
+    source: "informed",
+    certainty: 100,
+    memory: "temporary",
+    relationshipMemory: true
+  },
+  {
+    eventId: "EVT_22_CON_001",
+    choiceIds: ["OPEN_RENEWAL_NOW", "SHORT_EXTENSION_CLAUSE", "NO_RENEWAL_FOR_NOW"],
+    npcIds: ["NPC_DIR_02"],
+    source: "informed",
+    certainty: 100,
+    memory: "strong",
+    relationshipMemory: true
+  },
+  {
+    eventId: "EVT_22_CON_002",
+    choiceIds: ["ACCEPT_SALE_PATH", "RENEW_STRONG_UPGRADE"],
+    npcIds: ["NPC_DIR_02"],
+    source: "informed",
+    certainty: 100,
+    memory: "strong",
+    relationshipMemory: true
   }
 ];
 
