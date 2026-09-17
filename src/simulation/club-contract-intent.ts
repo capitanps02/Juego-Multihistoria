@@ -1,5 +1,6 @@
 import type { GameState } from "../core/types.js";
 import { lockerSlotAffinity } from "./locker-leadership.js";
+import { getCurrentMatchContext, getSportContext, type CurrentMatchContext, type SportContext } from "./sport-context.js";
 
 export const CLUB_WANTS_RENEWAL_FACT = "facts.clubWantsRenewal" as const;
 export const LOCKER_CAPTAIN_AFFINITY_FACT = "facts.lockerCaptainAffinity" as const;
@@ -87,6 +88,10 @@ export interface NarrativeCausalFacts {
   lockerStarAffinity: number | null;
   roleDropSince23: number;
   roleGuaranteeAt23: boolean;
+  /** Authoritative/read-only sporting projection. Unavailable sporting facts are null. */
+  sport: SportContext;
+  /** Current match projection. Fails closed until a real match producer exists. */
+  match: CurrentMatchContext;
 }
 
 export function narrativeCausalFacts(state: GameState): NarrativeCausalFacts {
@@ -95,7 +100,9 @@ export function narrativeCausalFacts(state: GameState): NarrativeCausalFacts {
     lockerCaptainAffinity: lockerSlotAffinity(state, "captain"),
     lockerStarAffinity: lockerSlotAffinity(state, "star"),
     roleDropSince23: roleDropSince23(state),
-    roleGuaranteeAt23: hasRoleGuaranteeAt23(state)
+    roleGuaranteeAt23: hasRoleGuaranteeAt23(state),
+    sport: getSportContext(state),
+    match: getCurrentMatchContext(state)
   };
 }
 
