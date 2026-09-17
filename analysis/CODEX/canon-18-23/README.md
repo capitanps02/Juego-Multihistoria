@@ -1,6 +1,6 @@
 # Agent 5 — Canon 18–23 / Codex handoff
 
-Base reconciled during this pass: `main@182d5e6abc4f7c98eeb95703a4bc6c3560a4bcde` (re-check main before any future integration).
+Base reconciled during this pass: `main@d9cd3cf3b9d1f23ab2f082b66ef4a01f6177e7f2` (re-check main before any future integration).
 Branch: `t51/canon-18-23-agent5`.
 PR: #155.
 
@@ -50,6 +50,8 @@ Conditionals: 5 verified + 7 implemented = **12/32 = 37.50% functional**; +1 rea
 - `EVT_20_LOCK_002`
 
 The five #125 callbacks consume scope-aware live SeedInstance payload projections through `facts.*`; terminal/historical instances are not promoted to live causal facts. No extra RNG stream, proxy flag or duplicate memory authority was introduced.
+
+The shared national-team projection now present in `main` remains intentionally aggregate (`concreteCallupKnown: false`, `tournamentSquadKnown: false`), so it does **not** falsely unblock `EVT_21_NAT_001`; that scene still requires a concrete authoritative call-up/list fact.
 
 ## Identity / migration
 
