@@ -1,120 +1,91 @@
 # Codex implementation queue — Canon 30–34
 
-Estado re-grounded sobre `main@06762a0557c4e92b189e52151c71d6c1af831ee5`.
+Re-grounded sobre `main@290cdb443c1bd075ff876d2c6c1c7b8264476a03`.
 
-Este documento no convierte blockers en hechos. Si una autoridad compartida devuelve `null` / `unavailable`, Codex debe fallar cerrado y dejar la escena bloqueada.
+El Documento Maestro sigue siendo autoridad canónica. Una API compartida que devuelva `null` / `unavailable` no autoriza proxies: la escena debe fallar cerrado.
 
-## Ya implementado y protegido
+## Cerrado en esta rama
 
-### EVT_30_CON_001 — renovación
+### C30-34-CODEX-001 — authority guard
 
-Trigger autoritativo ya implementado:
+`src/content/events/30_34/index.ts` elimina del catálogo activo cualquier `Effect` narrativo que intente mutar estado propiedad de `CareerOffer/respondToOffer`:
 
-- `contract.monthsRemaining <= 18`
-- **OR** `facts.clubWantsRenewal === true`
-
-No volver a introducir proxies de intención del club. La escena sigue `technical_adaptation`: tener trigger correcto no demuestra identidad canónica completa ni continuidad de save.
-
-### CareerOffer / contrato
-
-El catálogo activo 30–34 aplica un guard que elimina efectos narrativos sobre estado propiedad de `CareerOffer/respondToOffer`:
-
-- `club`;
-- `tier`;
-- `world.ownerClub`;
-- `professional.ownerClub`;
-- `professional.registrationClub`;
-- `professional.leagueTier`;
-- `professional.clubPrestigeTier`;
-- `professional.clubPrestigeScore`;
-- `professional.route`;
+- `club`, `tier`, `world.ownerClub`;
+- `professional.ownerClub`, `professional.registrationClub`, `professional.leagueTier`;
+- `professional.clubPrestigeTier`, `professional.clubPrestigeScore`, `professional.route`;
 - `contract.*`;
-- `ABROAD_ROUTE`;
-- `LOAN_ACTIVE`;
-- `BIG_CLUB`.
+- flags `ABROAD_ROUTE`, `LOAN_ACTIVE`, `BIG_CLUB`.
 
-Tres escenas consumen ya una `CareerOffer` formal mediante `offerBridge`:
+Regression test: todo evento activo `phase === "30_34"` debe quedar sin efectos authority-owned.
 
-1. `EVT_31_HOME_001` — solo cuando `market.pending.terms.club === "UDV"`.
-2. `EVT_32_HOME_001` — solo cuando `market.pending.terms.club === "UDV"`.
-3. `EVT_32_CON_001` — solo `reason === "Renovación de contrato"` y `terms.months === 12`.
+### C30-34-CODEX-002 — offer bridges y provenance
 
-Tests focales deben conservar casos positivos y negativos para impedir que una oferta distinta sea capturada por estas escenas.
+Tres escenas consumen una `CareerOffer` formal:
 
-## Tareas Codex ejecutables ahora
+1. `EVT_31_HOME_001`: oferta real cuyo destino/owner/registration es `UDV`.
+2. `EVT_32_HOME_001`: oferta real cuyo destino/owner/registration es `UDV`.
+3. `EVT_32_CON_001`: renovación formal anual (`reason === "Renovación de contrato"`, mismo club/owner/registration, `terms.months === 12`).
 
-### C30-34-CODEX-001 — mantener authority guard
+Cobertura focal:
 
-Objetivo: impedir regresiones donde contenido 30–34 vuelva a firmar, transferir, prestar o renovar mediante `Effect` narrativo.
+- oferta de otro club no activa escenas UDV;
+- renovación distinta de 12 meses no activa `EVT_32_CON_001`;
+- `counter` y `defer` cierran la oferta sin aplicar `CareerTerms`;
+- `accept` aplica exactamente los términos pendientes;
+- provenance narrativa conserva `eventId`, `choiceId` y disposition;
+- una oferta pendiente sigue siendo autoritativa tras save/restore equivalente;
+- `EVT_31_MKT_001` permanece fuera de `offerBridge` porque exige comparar dos ofertas simultáneas y el runtime solo persiste una.
 
-Archivos permitidos:
-
-- `src/content/events/30_34/**`;
-- `scripts/test-t51-30-34-*.mjs`.
-
-Aceptación:
-
-- ningún evento activo `phase === "30_34"` contiene efectos sobre las rutas/flags authority-owned listadas arriba;
-- las escenas que necesiten un cambio contractual usan una oferta formal o permanecen sin mutar contrato/club.
-
-### C30-34-CODEX-002 — endurecer bridges sin ampliar autoridad
-
-Objetivo: ampliar pruebas de elegibilidad, provenance y save/restore de los tres bridges ya introducidos.
-
-Reglas:
-
-- una oferta de otro club no puede activar escenas UDV;
-- una renovación que no sea anual no puede activar `EVT_32_CON_001`;
-- `counter` y `defer` no aplican `CareerTerms`;
-- `accept` solo aplica exactamente los términos de la `CareerOffer` pendiente;
-- no crear una segunda fuente de verdad contractual.
+## Implementable ahora por Codex
 
 ### C30-34-CODEX-003 — caracterizar deuda deportiva escena a escena
 
-Usar `facts.sport` / `facts.match` como única read surface para hechos concretos de partido.
+Usar exclusivamente `facts.sport` / `facts.match` para hechos deportivos concretos.
 
-Para cada escena 30–34 con semántica como:
+Para cada escena 30–34 con semántica de:
 
-- titular/suplente;
 - convocatoria;
-- minutos concretos;
+- titularidad/suplencia;
+- minutos;
 - gol/asistencia;
 - resultado;
 - final/semifinal/competición;
 - dos partidos en 72 horas;
 - racha de partidos;
-- retorno en un partido;
+- vuelta tras lesión;
 
-registrar el hecho autoritativo que falta. No hacer pasar la escena mientras ese hecho sea `null`/`unavailable`.
+registrar el hecho exacto requerido y mantener la escena bloqueada mientras ese hecho sea `null`/`unavailable`.
 
-## Blockers duros — no implementar con proxies
+No inferir desde edad, `roleScore`, forma, reputación, confianza del entrenador, `seasonDay`, mes ni flags narrativos.
+
+### C30-34-CODEX-004 — pruebas de fail-closed deportivo
+
+Añadir regresiones que eleven deliberadamente todos los proxies históricos y demuestren que una escena que exige fixture/match/squad real sigue sin pasar cuando `facts.sport`/`facts.match` no tienen autoridad.
+
+## Blockers duros actuales
 
 ### Sporting authority
 
-El `main` actual expone `getSportContext()` y `getCurrentMatchContext()`, pero todavía no existe store autoritativo de fixture/competición/partido/convocatoria/once/minutos por partido.
+`main` expone `getSportContext()` y `getCurrentMatchContext()`, pero todavía declara explícitamente:
 
-Por tanto el número de escenas 30–34 completamente desbloqueadas por esta autoridad deportiva es actualmente **0**.
+- `currentCompetition = null`;
+- fixture anterior/siguiente = `null`;
+- horas al próximo partido = `null`;
+- match day / training window = `null`;
+- partidos oficiales/liga restantes = `null`;
+- objetivo/posición = `null`;
+- squad status = `null`;
+- convocatoria, banquillo, titularidad, minutos, goles, asistencias, resultado = `null`.
 
-Prohibido reconstruir esos hechos desde:
-
-- edad;
-- `roleScore`;
-- forma;
-- reputación;
-- confianza del entrenador;
-- `seasonDay`;
-- mes;
-- flags narrativos.
+Por tanto esta rama no debe fabricar hechos de partido. La read surface existe; el store autoritativo todavía no.
 
 ### EVT_31_MKT_001 — dos ofertas simultáneas
 
-El canon compara dos propuestas simultáneas. El runtime persiste una única `CareerOffer` pendiente.
-
-No convertirla en `offerBridge` hasta que la autoridad de mercado pueda representar la comparación sin perder identidad/provenance. Mientras tanto el guard de autoridad debe impedir que la escena cambie contratos directamente.
+El canon compara dos propuestas a la vez. `MarketState.pending` representa una sola `CareerOffer`. No convertir esta escena en bridge hasta que mercado modele comparación múltiple con identidad/provenance persistible.
 
 ### 18 identidades desplazadas
 
-Requieren decisión explícita de identidad + migración. No renombrar, no alias por título y no reescribir historia silenciosamente.
+Requieren decisión explícita de identidad + migración. Sin aliases por parecido, sin renombrados destructivos y sin reescritura silenciosa de historia.
 
 ### 5 principales missing
 
@@ -124,39 +95,34 @@ Requieren decisión explícita de identidad + migración. No renombrar, no alias
 - `EVT_30_JAN_001`
 - `EVT_31_ROLE_001`
 
-Añadirlos cambia el catálogo/content identity. Su alta debe ir en batch coordinado con freeze y ruta de migración.
+Su alta cambia content identity y debe entrar en batch coordinado con freeze + ruta de migración.
 
 ### Condicionales
 
-Los 26 condicionales del motor siguen sin inventario condicional canónico autoritativo. No certificar identidad por parecido.
+Los 26 condicionales del motor siguen sin inventario condicional canónico autoritativo. No certificar identidad por título o similitud semántica.
 
 ### Bridge 30→34
 
-La infraestructura de transition priority existe, pero `EVT_30_BRIDGE_001` sigue desplazado frente a `EVT_30_IDN_001`. No convertir el legacy en obligatorio antes de resolver identidad/migración.
+La prioridad compartida existe, pero `EVT_30_BRIDGE_001` sigue desplazado frente a `EVT_30_IDN_001`. No convertir el legacy en obligatorio hasta resolver identidad y migración.
 
 ### Seeds
 
-No resolver/consumir una seed solo para “cerrar” auditoría. Hace falta lector o transición terminal demostrable por canon/downstream owner.
+No consumir/resolver una seed para cerrar auditoría. Hace falta lector o transición terminal demostrable por canon/downstream owner.
 
-## Ownership de integración
+## Migración
 
-Este workstream **no** debe:
+Target observado actual del catálogo PR-merge:
 
-- crear el target freeze global de content identity;
-- registrar o certificar `CONTENT_MIGRATION_ROUTES`;
-- modificar save schema global;
-- modificar scheduler global;
-- resolver la state machine de retirada;
-- inventar fixture/match/squad stores.
+`8efa101a7d1742e06272e697025c6fc63eb46c3fc3813bae408feb1da11d9ecb`
 
-Esos handoffs pertenecen a coordinación/integración o al owner correspondiente.
+El workstream no registra por sí mismo `CONTENT_MIGRATION_ROUTES` ni congela el target global. Eso sigue siendo ownership de coordinación/integración.
 
 ## Invariantes
 
-- edad cronológica no fuerza retirada;
+- edad no fuerza retirada;
 - retirada internacional != retirada de club;
-- no aliases silenciosos;
-- no renombrados destructivos;
 - Documento Maestro prevalece;
+- empleo/contrato solo desde `CareerOffer/respondToOffer`;
 - hechos deportivos concretos solo desde autoridad deportiva real;
-- empleo/contrato solo desde `CareerOffer/respondToOffer`.
+- sin aliases silenciosos;
+- sin renombrados destructivos.
