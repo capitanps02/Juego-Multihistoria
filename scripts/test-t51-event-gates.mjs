@@ -1,3 +1,4 @@
+import './test-t51-issue124-sport-wiring.mjs';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createInitialState } from '../dist/content/initial-state.js';
