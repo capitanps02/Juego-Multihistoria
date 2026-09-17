@@ -49,9 +49,11 @@ export function validateGameStateQa(state) {
   }
 
   if (state.flags?.LOAN_ACTIVE === true) {
-    if (state.professional?.route !== 'loan') issues.push(violation('loan_active_without_loan_route', { route: state.professional?.route }));
+    // `professional.route` is a single presentation/classification dimension, not the
+    // authoritative loan marker. A valid international loan may carry route="abroad"
+    // while LOAN_ACTIVE=true and ownerClub differs from registrationClub.
     if (!state.professional?.ownerClub || state.professional.ownerClub === state.professional?.registrationClub) {
-      issues.push(violation('loan_without_distinct_parent_club', { ownerClub: state.professional?.ownerClub, registrationClub: state.professional?.registrationClub }));
+      issues.push(violation('loan_without_distinct_parent_club', { ownerClub: state.professional?.ownerClub, registrationClub: state.professional?.registrationClub, route: state.professional?.route }));
     }
   }
 
