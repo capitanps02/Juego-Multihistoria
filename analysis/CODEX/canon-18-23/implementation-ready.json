@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "branch": "t51/canon-18-23-agent5",
+  "owner": "Agent 5 / canon 18-23",
+  "tasks": [
+    {
+      "id": "CODEX-1823-001",
+      "eventId": "CEVT_18_PLAYOFF_01",
+      "status": "ready",
+      "canonSource": "analysis/T5.1/canon-18-23-conditionals.json + 18-20 certification",
+      "requiredApis": [],
+      "requiredSeeds": [],
+      "requiredNpcTargets": [],
+      "requiredSportFacts": ["existing UDV_PLAYOFF producer only; do not invent new fixture facts"],
+      "requiredOffers": [],
+      "files": ["src/content/events/18_20/conditional-events.ts"],
+      "acceptanceTests": ["explicit retention-vs-market consequence survives save/restore", "same seed/state deterministic", "no extra RNG", "summer route can consume the deferred consequence"]
+    },
+    {
+      "id": "CODEX-1823-002",
+      "eventId": "EVT_20_BRIDGE_001",
+      "status": "ready",
+      "canonSource": "analysis/T5.1/canon-20-23-b3-missing-handoff.json",
+      "requiredApis": ["current contract state", "current role/minutes", "active-agent resolver"],
+      "requiredSeeds": ["SEED_AGENT_POWER", "SEED_EXIT_STYLE_UDV when causally relevant"],
+      "requiredNpcTargets": ["activeAgent optional/fail-closed"],
+      "requiredSportFacts": [],
+      "requiredOffers": ["read existing formal offers only; scene must not create one"],
+      "files": ["src/content/events/20_23/"],
+      "acceptanceTests": ["STATE20 positive", "state/contract negative", "four canonical choices", "0 RNG in eligibility", "save/pending identity compatibility"]
+    },
+    {
+      "id": "CODEX-1823-003",
+      "eventId": "EVT_20_CCH_001",
+      "status": "ready",
+      "canonSource": "analysis/T5.1/canon-20-23-b2-handoff.json",
+      "requiredApis": ["active-agent resolver", "current-club institutional resolver"],
+      "requiredSeeds": ["SEED_AGENT_POWER"],
+      "requiredNpcTargets": ["activeAgent", "currentClubInstitutional only when resolved"],
+      "requiredSportFacts": [],
+      "requiredOffers": [],
+      "files": ["src/content/events/20_23/"],
+      "acceptanceTests": ["canonical four choices", "no fixed UDV director after transfer", "agent choice unavailable/adapted when no active agent", "determinism", "distinct-scene migration handoff"]
+    },
+    {
+      "id": "CODEX-1823-004",
+      "eventId": "EVT_21_SOC_001",
+      "status": "ready",
+      "canonSource": "analysis/T5.1/canon-20-23-b3-missing-handoff.json",
+      "requiredApis": ["active-agent resolver", "NPC knowledge/provenance"],
+      "requiredSeeds": ["SEED_DANI_NORMALITY", "SEED_AGENT_POWER"],
+      "requiredNpcTargets": ["Dani", "activeAgent"],
+      "requiredSportFacts": [],
+      "requiredOffers": [],
+      "files": ["src/content/events/20_23/", "src/catalog/npc-knowledge-rules-18-23.ts"],
+      "acceptanceTests": ["contact provenance explicit", "no third-party omniscience", "no active agent => agent-specific choice fails closed/adapts", "save/load", "determinism"]
+    },
+    {
+      "id": "CODEX-1823-005",
+      "eventId": "EVT_21_PRS_002",
+      "status": "ready",
+      "canonSource": "analysis/T5.1/canon-20-23-b3-missing-handoff.json",
+      "requiredApis": ["active-agent resolver", "contract state", "NPC knowledge/provenance"],
+      "requiredSeeds": ["SEED_CLARA_CHANNEL", "SEED_PUBLIC_CONTRACT"],
+      "requiredNpcTargets": ["Clara", "activeAgent optional"],
+      "requiredSportFacts": [],
+      "requiredOffers": ["market provenance may be read; Clara information is not a guaranteed offer"],
+      "files": ["src/content/events/20_23/", "src/catalog/npc-knowledge-rules-18-23.ts"],
+      "acceptanceTests": ["requires live Clara channel", "contract facts authoritative", "source uncertainty retained", "agent route fails closed/adapts without active agent", "save/load", "determinism"]
+    }
+  ]
+}
