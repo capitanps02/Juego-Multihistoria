@@ -1,12 +1,12 @@
 # Agent 6 — Canon 23–30
 
-Status after safe re-ground on `main@fa3c8bae524fef62e4eb9802e895df88588998c4` and subsequent staged implementation through `EVT_29_FIN_001`.
+Status after safe merge of `main@5f4d14bca4d696cfafadb58b64034c7cd40cc147` and staged implementation through `EVT_29_NAT_002`.
 
-Current compare: branch is 17 commits ahead and 0 behind main at the recorded status point.
+Recorded compare at the sport-authority merge: branch is 21 commits ahead and 0 behind main. Agent-6 focal CI for merge head `6308fdaa...` passed.
 
 ## Scope
 
-Ownership is canonical blocks 23–26 and 26–30. This branch does not own global content-lineage activation, migrations, fixture authority, national-team authority or NPC infrastructure.
+Ownership is canonical principals and conditionals for 23–26 and 26–30. This branch does not own global content-lineage activation, migrations, external world actors, seed-memory infrastructure, or simulation authority outside the smallest agreed handoffs.
 
 ## Implemented on this branch, staged only
 
@@ -22,16 +22,19 @@ Ownership is canonical blocks 23–26 and 26–30. This branch does not own glob
 - `EVT_27_CON_001` — real same-club renewal with a numeric release clause.
 - `EVT_28_MEDIA_001` — documentary fallout only after real access.
 - `EVT_29_FIN_001` — five canonical age-30 priorities, advisory rather than route-locking.
+- `EVT_29_NAT_002` — national availability policy from aggregate international history + load memory; never a fabricated call-up.
 - `src/narrative/offer-bridge.ts` — exact `CareerOfferKind` filtering.
 
-All staged event definitions remain outside the active event catalog until the integration owner lands lineage/contentIdentity/migration changes.
+All staged definitions remain outside the active event catalog until the integration owner lands lineage/contentIdentity/migration changes.
 
-## Already active on main
+## Shared authority update
 
-`EVT_23_EUR_001`, `EVT_23_HOME_001`, `EVT_23_MONEY_001` and the corrected PRS23 path are owned by current main. The obsolete local PRS23 candidate and its duplicate test were intentionally removed during re-ground.
+Main now owns an authoritative weekly **league** match model. See `SPORT_AUTHORITY_DELTA.md` before changing any sporting blocker: fixture/squad/minutes facts are now real, but result/goals/penalties/standings/continental/final semantics still are not.
 
-## Safety rules
+## Conditional work
 
-No synthetic offers or fixtures. No direct club mutation. No narrative RNG for football results. No captain/national/agent inference. Historical seed `originEvent` is immutable. Private knowledge does not become public without a transmission/publication path. Age-30 priority can guide later narrative but cannot invalidate otherwise legal player choices.
+All 44 callbacks in Agent-6 scope still require semantic certification/rewrite. `CONDITIONAL_STATUS.md` records the first high-value candidates and exact blockers. Exact ID/title is never sufficient.
 
-See the JSON status files and blocker/handoff documents in this folder for Codex execution order.
+## Handoffs
+
+`AUTHORITY_HANDOFFS.md` specifies the minimum shared facts needed to unlock the largest remaining scene clusters without creating parallel infrastructure.
