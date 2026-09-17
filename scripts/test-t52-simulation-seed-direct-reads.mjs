@@ -38,7 +38,7 @@ test('direct seed identity audit fails closed for an unregistered file+seed pair
       path.join(dir, 'synthetic.ts'),
       `export const x = state.seeds.some(seed => seed.id === "SEED_DIRECT_UNREGISTERED");\n`
     );
-    const report = auditDirectSimulationSeedReads([], dir);
+    const report = auditDirectSimulationSeedReads([], dir, []);
     assert.equal(report.pass, false);
     assert.deepEqual(report.unregisteredUses, [{
       file: path.relative(process.cwd(), path.join(dir, 'synthetic.ts')).replaceAll(path.sep, '/'),
@@ -49,7 +49,7 @@ test('direct seed identity audit fails closed for an unregistered file+seed pair
   }
 });
 
-test('direct seed identity audit accepts an explicitly registered file+seed pair', () => {
+test('direct seed identity audit accepts an explicitly registered live-presence pair', () => {
   const dir = fs.mkdtempSync(path.join(process.cwd(), 'tmp-t52-direct-seed-'));
   try {
     const file = path.join(dir, 'synthetic.ts');
@@ -59,11 +59,148 @@ test('direct seed identity audit accepts an explicitly registered file+seed pair
       file: relative,
       seedId: 'SEED_DIRECT_REGISTERED',
       ageWindow: [23, 23],
-      surface: 'synthetic',
-      rationale: 'Synthetic explicit registration for the audit regression.'
-    }], dir);
+      surface: 'synthetic-live',
+      rationale: 'Synthetic explicit live-presence registration for the audit regression.'
+    }], dir, []);
     assert.equal(report.pass, true, JSON.stringify(report.unregisteredUses));
+    assert.equal(report.liveRegisteredDirectUses.length, 1);
+    assert.equal(report.historicalRegisteredUses.length, 0);
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('direct seed identity audit accepts persisted-history evidence without promoting it to live presence', () => {
+  const dir = fs.mkdtempSync(path.join(process.cwd(), 'tmp-t52-historical-seed-'));
+  try {
+    const file = path.join(dir, 'historical.ts');
+    fs.writeFileSync(file, `export const x = state.seeds.some(seed => seed.id === "SEED_HISTORY");\n`);
+    const relative = path.relative(process.cwd(), file).replaceAll(path.sep, '/');
+    const report = auditDirectSimulationSeedReads([], dir, [{
+      file: relative,
+      seedId: 'SEED_HISTORY',
+      ageWindow: [23, null],
+      surface: 'historical-provenance',
+      rationale: 'Persisted instance existence is historical evidence even after live lifecycle closure.'
+    }], new Set(['SEED_HISTORY']));
+    assert.equal(report.pass, true, JSON.stringify(report));
+    assert.equal(report.liveRegisteredDirectUses.length, 0);
+    assert.deepEqual(report.historicalRegisteredUses, [{
+      file: relative,
+      seedId: 'SEED_HISTORY',
+      ageWindow: [23, null],
+      surface: 'historical-provenance'
+    }]);
+    assert.deepEqual(report.unknownHistoricalSeedIds, []);
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('historical registry rejects a matching direct read for an unknown seed id', () => {
+  const dir = fs.mkdtempSync(path.join(process.cwd(), 'tmp-t52-unknown-history-'));
+  try {
+    const file = path.join(dir, 'historical.ts');
+    fs.writeFileSync(file, `export const x = state.seeds.some(seed => seed.id === "SEED_DOES_NOT_EXIST");\n`);
+    const relative = path.relative(process.cwd(), file).replaceAll(path.sep, '/');
+    const row = {
+      file: relative,
+      seedId: 'SEED_DOES_NOT_EXIST',
+      ageWindow: [23, null],
+      surface: 'synthetic-history',
+      rationale: 'Synthetic unknown-id regression for catalog closure.'
+    };
+    const report = auditDirectSimulationSeedReads([], dir, [row], new Set(['SEED_KNOWN_ONLY']));
+    assert.equal(report.pass, false);
     assert.deepEqual(report.unregisteredUses, []);
+    assert.deepEqual(report.unknownHistoricalSeedIds, [{
+      file: relative,
+      seedId: 'SEED_DOES_NOT_EXIST',
+      surface: 'synthetic-history'
+    }]);
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('direct seed identity audit rejects a pair classified as both live and historical', () => {
+  const dir = fs.mkdtempSync(path.join(process.cwd(), 'tmp-t52-ambiguous-seed-'));
+  try {
+    const file = path.join(dir, 'ambiguous.ts');
+    fs.writeFileSync(file, `export const x = state.seeds.some(seed => seed.id === "SEED_AMBIGUOUS");\n`);
+    const relative = path.relative(process.cwd(), file).replaceAll(path.sep, '/');
+    const row = {
+      file: relative,
+      seedId: 'SEED_AMBIGUOUS',
+      ageWindow: [23, 25],
+      surface: 'ambiguous',
+      rationale: 'Synthetic ambiguity regression.'
+    };
+    const report = auditDirectSimulationSeedReads([row], dir, [row], new Set(['SEED_AMBIGUOUS']));
+    assert.equal(report.pass, false);
+    assert.deepEqual(report.ambiguousRegistrations, [`${relative}:SEED_AMBIGUOUS`]);
+    assert.deepEqual(report.unknownHistoricalSeedIds, []);
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('historical registry fails closed for stale or structurally invalid evidence rows', () => {
+  const dir = fs.mkdtempSync(path.join(process.cwd(), 'tmp-t52-invalid-history-'));
+  try {
+    fs.writeFileSync(path.join(dir, 'empty.ts'), 'export const x = 1;\n');
+    const stale = {
+      file: path.relative(process.cwd(), path.join(dir, 'empty.ts')).replaceAll(path.sep, '/'),
+      seedId: 'SEED_STALE_HISTORY',
+      ageWindow: [23, null],
+      surface: 'stale',
+      rationale: 'No matching direct read exists.'
+    };
+    const invalid = {
+      ...stale,
+      seedId: 'SEED_INVALID_HISTORY',
+      ageWindow: [30, 23],
+      surface: ''
+    };
+    const report = auditDirectSimulationSeedReads(
+      [],
+      dir,
+      [stale, invalid],
+      new Set(['SEED_STALE_HISTORY', 'SEED_INVALID_HISTORY'])
+    );
+    assert.equal(report.pass, false);
+    assert.equal(report.staleHistoricalRegistrations.length, 2);
+    assert.equal(report.invalidHistoricalRegistrations.length, 1);
+    assert.deepEqual(report.unknownHistoricalSeedIds, []);
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('historical registry fails closed for duplicate registrations', () => {
+  const dir = fs.mkdtempSync(path.join(process.cwd(), 'tmp-t52-duplicate-history-'));
+  try {
+    const file = path.join(dir, 'duplicate.ts');
+    fs.writeFileSync(file, `export const x = state.seeds.some(seed => seed.id === "SEED_DUPLICATE_HISTORY");\n`);
+    const relative = path.relative(process.cwd(), file).replaceAll(path.sep, '/');
+    const row = {
+      file: relative,
+      seedId: 'SEED_DUPLICATE_HISTORY',
+      ageWindow: [23, null],
+      surface: 'duplicate-history',
+      rationale: 'Synthetic duplicate registration regression.'
+    };
+    const report = auditDirectSimulationSeedReads(
+      [],
+      dir,
+      [row, { ...row }],
+      new Set(['SEED_DUPLICATE_HISTORY'])
+    );
+    assert.equal(report.pass, false);
+    assert.deepEqual(report.duplicateHistoricalRegistrations, [{
+      key: `${relative}:SEED_DUPLICATE_HISTORY`,
+      count: 2
+    }]);
   } finally {
     fs.rmSync(dir, { recursive: true, force: true });
   }
@@ -71,5 +208,8 @@ test('direct seed identity audit accepts an explicitly registered file+seed pair
 
 test('current main simulation sources contain no unregistered direct seed identity reads', () => {
   const report = auditDirectSimulationSeedReads();
-  assert.equal(report.pass, true, JSON.stringify(report.unregisteredUses));
+  assert.equal(report.pass, true, JSON.stringify(report));
+  assert.deepEqual(report.unregisteredUses, []);
+  assert.deepEqual(report.ambiguousRegistrations, []);
+  assert.deepEqual(report.unknownHistoricalSeedIds, []);
 });

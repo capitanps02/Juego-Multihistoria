@@ -4,68 +4,24 @@ import { generateEpilogue } from "../epilogue/generator.js";
 
 const clamp=(x:number,min=0,max=100)=>Math.min(max,Math.max(min,x));
 const num=(x:unknown,f=0)=>typeof x==="number"?x:f;
-type RetirementStatus=GameState["retirement"]["status"];
 
-const RETIREMENT_TRANSITIONS:Record<RetirementStatus,ReadonlySet<RetirementStatus>>={
-  playing:new Set<RetirementStatus>(["decided"]),
-  decided:new Set<RetirementStatus>(["announced","playing"]),
-  announced:new Set<RetirementStatus>(["closed"]),
-  closed:new Set<RetirementStatus>()
-};
-
-export function isRetirementTransitionAllowed(previous:RetirementStatus,current:RetirementStatus):boolean{
-  return previous===current||RETIREMENT_TRANSITIONS[previous].has(current);
-}
-
-function setStatus(state:GameState,status:RetirementStatus,reason?:string,closureType?:string){
-  const previous=state.retirement.status;
-  if(!isRetirementTransitionAllowed(previous,status)){
-    state.flags.RETIREMENT_INVALID_TRANSITION_BLOCKED=true;
-    return false;
-  }
+function setStatus(state:GameState,status:GameState["retirement"]["status"],reason?:string,closureType?:string){
   state.retirement.status=status; state.retirement.daysInStatus=0;
   if(status==="decided"){
     state.retirement.decidedDate=state.date; state.retirement.decisionAge=state.age; if(reason)state.retirement.reason=reason;
     state.flags.RETIREMENT_DECISION_CONTEXT=true;
   } else if(status==="announced"){
     state.retirement.announcedDate=state.date; state.flags.RETIREMENT_ANNOUNCED=true; state.flags.RETIREMENT_DECISION_CONTEXT=false;
-  } else if(status==="playing"){
-    state.flags.RETIREMENT_ANNOUNCED=false; state.flags.RETIREMENT_DECISION_CONTEXT=false;
   } else if(status==="closed"){
     state.retirement.closedDate=state.date; if(closureType)state.retirement.closureType=closureType; state.flags.RETIRED=true;
-    state.flags.RETIREMENT_ANNOUNCED=false; state.flags.RETIREMENT_DECISION_CONTEXT=false; state.flags.RECONSIDERATION_WINDOW=false;
+    state.flags.RETIREMENT_ANNOUNCED=false; state.flags.RETIREMENT_DECISION_CONTEXT=false;
   }
-  return true;
 }
 
-export function syncRetirementState(state:GameState,previous:RetirementStatus):void{
+
+export function syncRetirementState(state:GameState,previous:GameState["retirement"]["status"]):void{
   const current=state.retirement.status;
   if(current===previous)return;
-  if(!isRetirementTransitionAllowed(previous,current)){
-    state.retirement.status=previous;
-    state.retirement.daysInStatus=0;
-    state.flags.RETIREMENT_INVALID_TRANSITION_BLOCKED=true;
-    if(previous==="closed"){
-      state.flags.RETIRED=true;
-      state.flags.RETIREMENT_ANNOUNCED=false;
-      state.flags.RETIREMENT_DECISION_CONTEXT=false;
-    } else {
-      state.retirement.closedDate=null;
-      state.retirement.closureType=null;
-      state.flags.RETIRED=false;
-      if(previous==="announced"){
-        state.flags.RETIREMENT_ANNOUNCED=true;
-        state.flags.RETIREMENT_DECISION_CONTEXT=false;
-      } else if(previous==="decided"){
-        state.flags.RETIREMENT_ANNOUNCED=false;
-        state.flags.RETIREMENT_DECISION_CONTEXT=true;
-      } else {
-        state.flags.RETIREMENT_ANNOUNCED=false;
-        state.flags.RETIREMENT_DECISION_CONTEXT=false;
-      }
-    }
-    return;
-  }
   state.retirement.daysInStatus=0;
   if(current==="decided"){
     state.retirement.decidedDate=state.retirement.decidedDate??state.date; state.retirement.decisionAge=state.retirement.decisionAge??state.age;
@@ -78,7 +34,7 @@ export function syncRetirementState(state:GameState,previous:RetirementStatus):v
     state.flags.RETIREMENT_ANNOUNCED=false; state.flags.RETIREMENT_DECISION_CONTEXT=false;
   }
   if(current==="closed"){
-    state.retirement.closedDate=state.date; state.flags.RETIRED=true; state.flags.RETIREMENT_ANNOUNCED=false; state.flags.RETIREMENT_DECISION_CONTEXT=false; state.flags.RECONSIDERATION_WINDOW=false;
+    state.retirement.closedDate=state.date; state.flags.RETIRED=true; state.flags.RETIREMENT_ANNOUNCED=false; state.flags.RETIREMENT_DECISION_CONTEXT=false;
     generateEpilogue(state);
   }
 }
@@ -86,32 +42,14 @@ export function syncRetirementState(state:GameState,previous:RetirementStatus):v
 export function closeCareer(state:GameState,reason:string,closureType:string){
   if(state.retirement.status==="closed")return;
   state.retirement.reason=state.retirement.reason??reason;
-  // Compatibility-only normalization for the pre-existing 30-34 early-retirement flag.
-  // Normal 34+ retirement cannot use this helper to invent a decision or public announcement.
-  if(state.retirement.status==="playing"){
-    if(reason!=="early_retirement_30_34"||state.flags.EARLY_RETIRED_30_34!==true){
-      state.flags.RETIREMENT_INVALID_TRANSITION_BLOCKED=true;
-      return;
-    }
-    if(!setStatus(state,"decided",reason))return;
-  }
-  if(state.retirement.status==="decided"){
-    if(reason!=="early_retirement_30_34"||state.flags.EARLY_RETIRED_30_34!==true)return;
-    if(!setStatus(state,"announced"))return;
-  }
-  if(state.retirement.status!=="announced")return;
-  if(!setStatus(state,"closed",reason,closureType))return;
+  setStatus(state,"closed",reason,closureType);
   generateEpilogue(state);
 }
 
 export function reverseRetirement(state:GameState){
-  // Reconsideration exists only while the decision is still private. Once retirement has
-  // been announced, the canonical state machine is monotonic: announced -> closed.
-  if(state.retirement.status!=="decided")return;
-  if(state.retirement.reversals>=2)return;
-  if(!setStatus(state,"playing"))return;
-  state.retirement.reversals+=1;
-  state.flags.RETIREMENT_RECONSIDERED=true;
+  if(state.retirement.status!=="announced"&&state.retirement.status!=="decided")return;
+  state.retirement.status="playing"; state.retirement.daysInStatus=0; state.retirement.reversals+=1;
+  state.flags.RETIREMENT_ANNOUNCED=false; state.flags.RETIREMENT_DECISION_CONTEXT=false; state.flags.RETIREMENT_RECONSIDERED=true;
   state.professional.careerControl=clamp(state.professional.careerControl-5);
   state.professional.statusInertia=clamp(state.professional.statusInertia-4);
   state.reputation.marketHeat=clamp(num(state.reputation.marketHeat)-5);
@@ -129,9 +67,7 @@ export function lateCareerPreseason(state:GameState):void{
   state.flags.INFORMAL_RENEWAL_PROMISE=false;
 
   if(months<=2 && state.retirement.status==="playing"){
-    // No immortal 5% floor: when age-independent sporting/market evidence drives demand
-    // to zero, the simulation may genuinely have no compatible professional offer.
-    const offerP=clamp(0.12+demand/155-agePenalty/150,0,0.72);
+    const offerP=clamp(0.12+demand/155-agePenalty/150,0.05,0.72);
     if(rng.next()<offerP){
       state.flags.VETERAN_OFFER_AVAILABLE=true;
       state.retirement.noMarketWindows=0;
@@ -144,10 +80,11 @@ export function lateCareerPreseason(state:GameState):void{
     }
   }
 
-  // Market exhaustion opens a canonical decision scene; it never chooses retirement for the player.
-  const marketExhausted=state.retirement.status==="playing"&&months<=0&&!state.flags.VETERAN_OFFER_AVAILABLE&&((state.retirement.noMarketWindows>=2&&demand<20)||(state.retirement.noMarketWindows>=3&&demand<35));
-  state.flags.NO_MARKET_END_CONTEXT=marketExhausted;
-  state.flags.NO_MARKET_DECISION_PENDING=marketExhausted;
+  // A veteran can choose to continue but eventually run out of compatible market.
+  if(state.retirement.status==="playing"&&months<=0&&!state.flags.VETERAN_OFFER_AVAILABLE&&((state.retirement.noMarketWindows>=2&&demand<20)||(state.retirement.noMarketWindows>=3&&demand<35))){
+    setStatus(state,"decided","no_market");
+    state.flags.NO_MARKET_END_CONTEXT=true;
+  }
 
   const physicalRedline=p.recoveryDebt>=55||p.availability<=50||num(state.world.maturityLongInjuryCount)>=1;
   state.flags.LATE_BODY_REDLINE=physicalRedline;
@@ -184,17 +121,16 @@ export function lateCareerWeek(state:GameState):void{
   state.flags.MAJOR_COMEBACK_CONTEXT=state.flags.LONG_INJURY===false&&num(state.world.maturityLongInjuryCount)>=1&&form>=58&&role>=38; if(state.flags.MAJOR_COMEBACK_CONTEXT) state.flags.LATE_MAJOR_COMEBACK=true;
   state.flags.NO_MEDICAL_CLEARANCE_CONTEXT=p.recoveryDebt>=70&&p.availability<=40&&state.age>=36;
 
-  // A post-announcement offer may still exist as context, but it cannot reopen an announced retirement.
-  if(state.retirement.status==="announced"&&state.age>=36&&market>=30&&!state.flags.POST_ANNOUNCE_OFFER&&!state.flags.RECONSIDERATION_WINDOW&&rng.next()<.10){
+  // Post-announcement offer can open one rare reversal; it never auto-reverses.
+  if(state.retirement.status==="announced"&&state.age>=36&&state.retirement.reversals<2&&market>=30&&!state.flags.POST_ANNOUNCE_OFFER&&!state.flags.RECONSIDERATION_WINDOW&&rng.next()<.10){
     state.flags.POST_ANNOUNCE_OFFER=true;
   }
 
-  // A private retirement decision stays private until the canonical announcement scene is played.
-  // Do not synthesize `decided -> announced` from elapsed time.
-  if(state.retirement.status==="decided"){
-    state.flags.ADMIN_ANNOUNCEMENT_FALLBACK=false;
+  // Deadlock guard: after a firm decision, communication becomes administrative.
+  if(state.retirement.status==="decided"&&state.retirement.daysInStatus>=45){
+    setStatus(state,"announced");
+    state.flags.ADMIN_ANNOUNCEMENT_FALLBACK=true;
   }
-
   // An announced retirement cannot remain open forever. Give narrative last-match windows first.
   if(state.retirement.status==="announced"){
     const month=Number(state.date.slice(5,7));
