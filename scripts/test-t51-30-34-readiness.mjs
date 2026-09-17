@@ -26,6 +26,19 @@ test('T5.1 30-34 readiness queda anclado al freeze pre-T5.1 y declara el target 
   assert.equal(readiness.currentTarget.freezeStatus, 'pending_coordination_integration');
 });
 
+test('T5.1 30-34 audit, readiness y migration handoff comparten el lineage vigente', () => {
+  const migrationDependency = audit.globalDependencies.find(row => row.id === 'DEP_T51_EVENT_ID_MIGRATION');
+  assert.ok(migrationDependency);
+  assert.match(migrationDependency.description, new RegExp(migrationHandoff.sourceContentIdentity));
+  assert.match(migrationDependency.description, new RegExp(migrationHandoff.observedTargetContentIdentity));
+  assert.equal(audit.integrationStatus.contentMigrationSourceIdentity, migrationHandoff.sourceContentIdentity);
+  assert.equal(audit.integrationStatus.targetContentIdentity, migrationHandoff.observedTargetContentIdentity);
+  assert.match(audit.integrationStatus.contentMigrationTargetFreeze, new RegExp(migrationHandoff.observedTargetContentIdentity));
+  assert.equal(readiness.base, `main@${audit.integrationStatus.syncedBaselineMain}`);
+  assert.equal(audit.globalDependencies.some(row => row.id === 'DEP_T51_T510_TEST_LINEAGE_STALENESS'), false);
+  assert.equal(audit.integrationStatus.sharedT510Test, 'resolved_in_main_lineage_aware');
+});
+
 test('T5.1 30-34 parity evidence usa el mismo source/target que el handoff vigente', () => {
   const contract = parityEvidence.events.EVT_30_CON_001;
   assert.ok(contract);
