@@ -153,7 +153,7 @@ test('football moments/11 malformed and unknown moment ids fail before RNG is co
   assert.deepEqual(state.rngState, before);
 });
 
-test('football moments/12 save boundary accepts valid rows and rejects malformed persisted facts', () => {
+test('football moments/12 save boundary accepts valid rows and rejects malformed or semantically inconsistent facts', () => {
   const state = persistedState(8512);
   const raw = JSON.parse(serializeSave(state));
   assert.doesNotThrow(() => loadSave(JSON.stringify(raw)));
@@ -161,9 +161,13 @@ test('football moments/12 save boundary accepts valid rows and rejects malformed
   const corruptions = [
     row => { row.outcome = 'impossible'; },
     row => { row.probability = 2; },
+    row => { row.probability = row.probability >= 0.46 ? row.probability - 0.01 : row.probability + 0.01; },
     row => { row.inputSignature = ''; },
+    row => { row.inputSignature = ` ${row.inputSignature}`; },
+    row => { row.actorId = 'NPC_PLR_10'; },
     row => { row.version = 99; },
     row => { row.resolvedAt = '2026-02-30'; },
+    row => { row.resolvedAt = '2999-01-01'; },
     row => { row.kind = 'free-kick'; },
     row => { row.extra = true; }
   ];
