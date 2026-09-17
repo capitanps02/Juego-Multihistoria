@@ -3,27 +3,28 @@
   "snapshot": {
     "date": "2026-09-17",
     "mainAtAudit": "fa3c8bae524fef62e4eb9802e895df88588998c4",
-    "retirementSynchronizedHead": "a7caeba7732c3d527a12144c5ee33dc724d0f9b6",
-    "retirementCompareAtCertification": "68_ahead_0_behind",
+    "retirementHead": "38f6294aa262b16151bc0ad6a1df35ab7edf03c6",
+    "retirementCompareAtAudit": "71_ahead_0_behind",
     "retirementDedicatedCI": {
-      "runId": 35245103819,
+      "runId": 35247316398,
       "result": "success",
       "build": "pass",
       "t536_t537_gates": "pass"
     },
     "repositoryIntegrity": {
-      "runId": 35245103825,
-      "result": "expected_fail_closed_active_source_freeze_sentinel",
-      "ordinaryValidationBeforeSentinel": "pass",
+      "runId": 35247316406,
+      "result": "expected_fail_closed_active_source_freeze_sentinel_inside_npm_test",
+      "ordinaryVisibleSuitesBeforeSentinel": "pass",
       "unfrozenTerminalCandidate": "4f7c783521a463509ac8bf9a0646b6c0aeaff6861a8d01ab8b1e43c19641e93b"
     }
   },
   "rules": [
     "Do not duplicate tasks marked implemented.",
     "Do not consume an unmerged producer-private store shape.",
-    "Do not infer unsupported match result, goals or assists.",
+    "Do not infer unsupported match result, goals, assists or last appearance.",
     "Do not weaken or pre-freeze the terminal contentIdentity sentinel.",
-    "Terminal lineage must be adjacent to the real frozen ordinary 34+ generation."
+    "Terminal lineage must be adjacent to the real frozen ordinary 34+ generation.",
+    "Current main already contains the multi-hop migration-path engine; #59 now owns future serial edge/freeze registration."
   ],
   "tasks": [
     {
@@ -58,27 +59,19 @@
       "producer": {
         "pr": 156,
         "branch": "t5/authoritative-match-model",
-        "currentHead": "05ac9cb123d413697de086b8099a6f5c3015d344",
-        "relationToMainAtAudit": "2_ahead_2_behind",
-        "state": "open_draft_not_integrated",
+        "currentHead": "91b3f0a151a7c547ef00cee42e823e9920b244cf",
+        "relationToMainAtAudit": "1_ahead_0_behind",
+        "state": "open_not_integrated",
         "currentExactHeadCI": {
-          "runId": 35244948064,
+          "runId": 35245632330,
           "statusAtAudit": "in_progress",
-          "sampledStep": "project_validation_running"
-        },
-        "priorHeadEvidence": {
-          "head": "30764bafacd9712ed39af8f176312ec8ffa8a8d4",
-          "runId": 35243389440,
-          "projectValidation": "pass",
-          "playcanvas": "pass",
-          "qaBuild": "pass",
-          "preContentFreezeSentinel": "pass",
-          "termination": "cancelled_during_determinism_after_newer_commit_superseded_run_not_a_proven_determinism_failure"
+          "completedGreenSteps": ["project_validation", "playcanvas", "qa_build", "pre_content_freeze_sentinel"],
+          "currentStep": "determinism_and_rng_isolation"
         },
         "provides": ["fixture identity/date", "registration club/opponent/home-away/league competition", "calledUp/onBench/started/appeared/minutes/injuryUnavailable", "next/previous fixture", "remaining official/league fixture counts", "save validation and deterministic replay contract"],
-        "stillMissing": ["authoritative per-match final result", "authoritative goals", "authoritative assists", "shared last history fixture where player.appeared=true"]
+        "stillMissing": ["authoritative per-match final result", "authoritative goals", "authoritative assists/cards", "shared last history fixture where player.appeared=true"]
       },
-      "unblockContract": "Re-ground and fully certify PR #156 or successor, integrate it into main, then add/read last-professional-appearance facts. Keep unsupported details null until an authority exists."
+      "unblockContract": "Fully certify and integrate PR #156 or successor, then expose/read the latest real professional appearance. Keep unsupported details null until an authority exists."
     },
     {
       "id": "CODEX-RET-006",
@@ -88,17 +81,22 @@
     },
     {
       "id": "CODEX-RET-007",
-      "status": "blocked",
+      "status": "implemented",
+      "activation": "forward_compatible_pending_match_authority_integration",
       "task": "Make career closure fixture/season-end aware rather than relying on coarse time/contract proxies.",
-      "producer": {
-        "pr": 156,
-        "currentHead": "05ac9cb123d413697de086b8099a6f5c3015d344",
-        "relationToMainAtAudit": "2_ahead_2_behind",
-        "exactHeadRunId": 35244948064,
-        "exactHeadCIAtAudit": "in_progress",
-        "requiredBeforeConsumption": ["re-ground to current main", "complete exact-head Repository Integrity", "exact-head PlayCanvas green", "integration into main or clean successor"]
+      "implementation": {
+        "commit": "38f6294aa262b16151bc0ad6a1df35ab7edf03c6",
+        "behavior": [
+          "known remainingOfficialMatches > 0 suppresses administrative closure",
+          "known remainingOfficialMatches == 0 permits sporting-boundary closure",
+          "unavailable/invalid authority preserves the exact legacy administrative fallback",
+          "reads shared SportContext only and consumes zero additional RNG"
+        ],
+        "evidence": ["src/simulation/late-career-engine.ts", "scripts/test-t536-sport-authority.mjs"],
+        "dedicatedRunId": 35247316398,
+        "dedicatedResult": "success"
       },
-      "unblockContract": "After the producer is integrated, gate administrative closure on authoritative remainingOfficialMatches/nextFixture while preserving announced-state playability, idempotence and fail-closed legacy-store compatibility."
+      "producerActivation": "Current main reports remainingOfficialMatches unavailable; PR #156 or a compatible integrated producer will activate the already-implemented known path without new retirement code."
     },
     {
       "id": "CODEX-RET-008",
@@ -122,17 +120,38 @@
       "id": "CODEX-RET-011",
       "status": "blocked",
       "task": "Freeze terminal contentIdentity and register the final adjacent migration edge.",
-      "upstreamChain": [
-        {"issue": 59, "stateAtAudit": "open", "contract": "deterministic multigeneration migration lineage with 0 RNG and fail-closed route evidence"},
-        {"issue": 180, "stateAtAudit": "open", "contract": "54 exact canonical Pasada-7 seed IDs = 45 ordinary + 9 terminal; 14 bridge concepts inherited/derived"},
-        {"pr": 15, "branch": "t51/canon-34plus", "relationToMainAtAudit": "59_ahead_1_behind", "preparedCards": "43/43", "runtimeImplemented": "0/43", "strictCodexReady": "0/43_until_Wave_0_complete", "contentState": "generation_H_active_no_provisional_34plus_freeze"}
-      ],
-      "unblockContract": "Integrate #59 and #180; activate, integrate and freeze the authoritative ordinary 34+ generation from PR #15; then register only the exact adjacent ordinary34plus->terminal edge. No PRE_T51 shortcut and no guessed hash."
+      "migrationInfrastructure": {
+        "issue": 59,
+        "engineState": "multi_hop_path_resolution_already_integrated_in_main",
+        "remainingOwnership": "serial future generation edge/freeze registration in canonical order"
+      },
+      "seedCatalog": {
+        "issue": 180,
+        "pr": 191,
+        "branch": "t5/seed-34plus-catalog",
+        "head": "d8f724893cfcb40d2b81f995d8ed08179bbd6f52",
+        "relationToMainAtAudit": "3_ahead_0_behind",
+        "focusedRun": 35246851382,
+        "focusedResult": "success",
+        "repositoryIntegrityRun": 35246851472,
+        "repositoryIntegrityResult": "success",
+        "contract": "54 canonical IDs = 45 ordinary + 9 terminal; 14 bridge concepts inherited/derived",
+        "integrationState": "not_integrated"
+      },
+      "ordinary34plus": {
+        "pr": 15,
+        "branch": "t51/canon-34plus",
+        "relationToMainAtAudit": "67_ahead_0_behind",
+        "preparedCards": "43/43",
+        "runtimeImplemented": "0/43",
+        "contentState": "analysis_only_preparation_no_ordinary_34plus_runtime_registration"
+      },
+      "unblockContract": "Integrate the remaining predecessor generations in order; integrate the canonical 34+ seed catalog at the correct serial point; activate/integrate ordinary 34+ runtime; freeze that exact ordinary 34+ identity through #59; then re-ground retirement and register only the adjacent ordinary34plus->terminal edge. Never freeze the current 4f7c terminal candidate early."
     }
   ],
-  "implementedCount": 8,
+  "implementedCount": 9,
   "readyCount": 0,
-  "blockedCount": 3,
-  "partiallyUnblockedCount": 2,
-  "codexNextAction": "Do not duplicate implemented retirement lots. RET-005 and RET-007 wait on re-grounded, exact-head-certified, integrated match authority. RET-011 waits on #59 + #180 -> PR #15 ordinary 34+ runtime/freeze -> terminal adjacent migration."
+  "blockedCount": 2,
+  "partiallyUnblockedCount": 1,
+  "codexNextAction": "Do not duplicate implemented retirement lots. RET-007 is implemented. RET-005 waits on full match/last-appearance authority. RET-011 waits on serial predecessor generations, #191 integration at the correct point, PR #15 ordinary 34+ runtime/freeze, then the adjacent terminal migration edge."
 }
