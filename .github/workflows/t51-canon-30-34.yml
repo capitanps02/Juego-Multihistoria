@@ -39,6 +39,7 @@ jobs:
           scripts/test-t51-30-34-authority-gaps.mjs
           scripts/test-t51-30-34-sport-authority.mjs
           scripts/test-t51-30-34-contract-clause-handoff.mjs
+          scripts/test-t51-30-34-multi-offer-handoff.mjs
           scripts/test-t51-30-34-seed-handoff.mjs
           scripts/test-t51-30-34-downstream-seed-handoff.mjs
           scripts/test-t51-30-34-seed-consumption.mjs
