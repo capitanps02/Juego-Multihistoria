@@ -8,13 +8,38 @@ Never auto-merge.
 
 ## Mission
 
-Advance only the terminal retirement/epilogue layer. Ordinary active 34+ veteran career is owned by PR #15 / `t51/canon-34plus` and must remain active until an explicit terminal process begins.
+Maintain and integrate only the terminal retirement/epilogue layer. Ordinary active 34+ veteran career is owned by PR #15 / `t51/canon-34plus` and must remain active until an explicit terminal process begins.
 
 Current terminal machine:
 
 `playing -> decided -> announced -> closed`
 
 Only explicit pre-announcement reconsideration may do `decided -> playing`. `announced -> playing` and `closed -> playing` are forbidden in normal gameplay.
+
+## Current implementation status
+
+Read `implementation-ready.json` before changing code.
+
+The eight previously prepared lots are now **implemented and regression-covered**:
+
+- `CODEX-RET-001` contemplation without automatic retirement;
+- `CODEX-RET-002` explicit pre-announcement reconsideration;
+- `CODEX-RET-003` public-announcement NPC knowledge through live authority targets;
+- `CODEX-RET-004` final-phase narrative without fabricated sporting facts;
+- `CODEX-RET-006` idempotent `closeCareer` integration;
+- `CODEX-RET-008` factual `CareerSummary`;
+- `CODEX-RET-009` deterministic evidence-gated epilogue prose;
+- `CODEX-RET-010` legacy/save compatibility regressions.
+
+Do **not** duplicate or redesign those tasks merely because they were formerly marked ready.
+
+There are currently **0 ready tasks and 3 blocked tasks**:
+
+- `CODEX-RET-005` — full persisted `LastMatchFact`;
+- `CODEX-RET-007` — fixture/season-end-aware closure boundary;
+- `CODEX-RET-011` — terminal contentIdentity freeze + adjacent migration edge.
+
+Only resume one of those blocked tasks after its explicit unblock contract in `implementation-ready.json` exists on the real integration base.
 
 ## Mandatory invariants
 
@@ -38,7 +63,7 @@ Only explicit pre-announcement reconsideration may do `decided -> playing`. `ann
 
 ## Sporting authority boundary
 
-PR #141 has landed the read-only authority in `src/simulation/sport-context.ts`.
+The read-only authority lives in `src/simulation/sport-context.ts`.
 
 Use:
 
@@ -56,6 +81,21 @@ Current unavailable facts include fixture identity, opponent, competition/curren
 - `football-moments` is evidence for isolated moments and is not a substitute for persisted match history.
 
 When authoritative fixture/match history lands, consume it here; do not reimplement the sport simulator.
+
+## NPC knowledge boundary
+
+Public retirement announcement is already integrated with the T5.3 live knowledge authority.
+
+`EVT_RET_ANNOUNCE_001` public choices are choice+outcome scoped and target only the authoritative live slots:
+
+- `captain`;
+- `star`;
+- `activeAgent`;
+- `currentClubInstitutional`.
+
+Those slots are resolved by `src/narrative/npc-knowledge-targets.ts`. Unresolved slots fail closed and create no recipient. `WAIT` has no knowledge rule and must remain private. Do not edit historical/frozen T5.3 backfill to make current retirement intent retroactively known.
+
+Any future recipient class must first be added to the typed `NpcKnowledgeTargetSlot` authority, its resolver, and the dynamic-target fail-closed ratchet.
 
 ## Contract / market authority boundary
 
@@ -80,38 +120,26 @@ Hard rules:
 
 ## 34+ boundary
 
-Read PR #15 before any terminal catalog change. It currently reconciles 34+ identities but explicitly leaves a large ordinary-content backlog and does not authorize a provisional contentIdentity freeze. Do not treat identity classification as completed ordinary gameplay content.
+Read PR #15 / `t51/canon-34plus` before any terminal catalog or lineage change. Its reconciliation is not equivalent to completed ordinary 34+ gameplay; a substantial canonical-content backlog remains.
 
 Terminal content must not register its final lineage edge until the immediately preceding active 34+ generation is integrated and frozen by coordination.
 
 ## Seeds
 
-Read `TERMINAL_SEEDS.md`. Do not mass-close seeds. Do not turn retirement-named seeds into a second retirement state machine. Wire only evidence-backed producers/consumers owned by the appropriate content workstream.
+Read `TERMINAL_SEEDS.md`. Current T5.2 supports explicit owner-backed closure classifications; it does not authorize inferred closure. Do not mass-close seeds. Do not turn retirement-named seeds into a second retirement state machine. Wire only evidence-backed producers/consumers owned by the appropriate content workstream.
 
 ## Saves and migration
 
 Read `SAVE_COMPATIBILITY.md`. Preserve active/decided/announced/closed states. Do not reinterpret same-ID changed events without provenance. The final terminal contentIdentity edge is blocked until complete active 34+ is frozen.
 
-## Ready tasks
-
-Read `implementation-ready.json` and execute only items with `status=ready`. Blocked tasks must remain prepared, not guessed around.
-
-Suggested lot order:
-
-A. contemplation
-B. continue/announce
-C. final-phase narrative
-D. closeCareer integration/idempotence
-E. CareerSummary / epilogue facts
-F. deterministic epilogue prose
-G. save compatibility tests
-
 ## Tests
 
 At minimum run/build the dedicated retirement suite:
 
-`node --test scripts/test-t536-t537-retirement.mjs scripts/test-t536-career-summary.mjs scripts/test-t536-market-authority.mjs scripts/test-t536-sport-authority.mjs scripts/test-t537-family-minimums.mjs scripts/test-t536-status-writer-inventory.mjs scripts/test-t537-epilogue-profiles.mjs`
+`node --test scripts/test-t536-t537-retirement.mjs scripts/test-t536-career-summary.mjs scripts/test-t536-market-authority.mjs scripts/test-t536-sport-authority.mjs scripts/test-t536-npc-announcement.mjs scripts/test-t537-family-minimums.mjs scripts/test-t536-status-writer-inventory.mjs scripts/test-t537-epilogue-profiles.mjs`
 
-Also run the repository save/determinism/integrity gates available on the current head. Do not weaken a failing lineage/freeze sentinel; report it as the expected blocker only after build and ordinary authority tests are green.
+For any NPC announcement change, also preserve the T5.3 dynamic-target/audit contracts; Repository Integrity already exercises them.
 
-Before handing off, report exact HEAD, ahead/behind, changed EVENTS, schema/RNG/contentIdentity/migration changes, exact tests, blockers and remaining Codex-ready task count.
+Run the repository save/determinism/integrity gates available on the current head. Do not weaken a failing lineage/freeze sentinel; report it as the expected blocker only after build and ordinary authority tests are green.
+
+Before handing off, report exact HEAD, ahead/behind, changed EVENTS/shared authority files, schema/RNG/contentIdentity/migration changes, exact tests, blockers and counts for implemented/ready/blocked Codex tasks.
