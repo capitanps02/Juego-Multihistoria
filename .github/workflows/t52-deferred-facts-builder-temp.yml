@@ -1,0 +1,89 @@
+name: T5.2 deferred facts builder temp
+
+on:
+  push:
+    branches:
+      - t5/seed-early-canonical-chains
+    paths:
+      - '.github/workflows/t52-deferred-facts-builder-temp.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch-test-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: t5/seed-early-canonical-chains
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Patch deferred audit and focused tests
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          audit = Path('scripts/audit-t52-deferred.mjs')
+          src = audit.read_text()
+          src = src.replace(
+            "import { seedPresencePolarity } from './t52-seed-condition-polarity.mjs';\n",
+            "import { seedPresencePolarity } from './t52-seed-condition-polarity.mjs';\nimport { T52_CAUSAL_SEED_FACTS } from './t52-causal-seed-facts.mjs';\n",
+            1
+          )
+          marker = "function dedupeRows(rows, keyFn) {\n  return [...new Map(rows.map(row => [keyFn(row), row])).values()];\n}\n"
+          addition = marker + "\n/**\n * Scalar facts.* projections in T52_CAUSAL_SEED_FACTS come only from scope-valid live\n * SeedInstances and become null when no live instance exists. A comparator is a positive\n * dependency only when null cannot satisfy it. Ambiguous comparators stay neutral.\n */\nexport function causalFactDependencyPolarity(condition) {\n  switch (condition.op) {\n    case 'eq': return condition.value === null ? 'negative' : 'positive';\n    case 'neq': return condition.value === null ? 'positive' : 'neutral';\n    case 'in': {\n      if (!Array.isArray(condition.value)) return 'neutral';\n      const hasNull = condition.value.includes(null);\n      if (!hasNull) return 'positive';\n      return condition.value.every(value => value === null) ? 'negative' : 'neutral';\n    }\n    case 'notIn':\n      return Array.isArray(condition.value) && condition.value.includes(null) ? 'positive' : 'neutral';\n    default:\n      return 'neutral';\n  }\n}\n"
+          if marker not in src:
+            raise SystemExit('dedupe marker not found')
+          src = src.replace(marker, addition, 1)
+
+          old = """  const seedFromPresencePath = value => (\n    typeof value === 'string' && value.startsWith('flags.HAS_SEED_')\n      ? value.slice('flags.HAS_'.length)\n      : null\n  );\n\n  const collectConditions = (event, conditions, context) => {\n    for (const condition of conditions ?? []) {\n      const seedId = seedFromPresencePath(condition.path);\n      if (!seedId) continue;\n      if (!localSeedIds.has(seedId)) {\n        unknownRefs.push({ seedId, eventId: event.id, kind: 'condition', context });\n        continue;\n      }\n\n      const polarity = seedPresencePolarity(condition);\n      const row = {\n        seedId,\n        eventId: event.id,\n        kind: 'condition',\n        context,\n        polarity,\n        op: condition.op,\n        value: condition.value,\n        ageWindow: event.ageWindow,\n        phase: event.phase,\n        family: event.family\n      };\n\n      if (polarity === 'positive') consumers.push(row);\n      else if (polarity === 'negative') negativeDependencies.push(row);\n      else neutralDependencies.push(row);\n    }\n  };\n"""
+          new = """  const seedFromPresencePath = value => (\n    typeof value === 'string' && value.startsWith('flags.HAS_SEED_')\n      ? value.slice('flags.HAS_'.length)\n      : null\n  );\n  const seedFromCausalFactPath = value => (\n    typeof value === 'string' ? (T52_CAUSAL_SEED_FACTS[value] ?? null) : null\n  );\n\n  const collectConditions = (event, conditions, context) => {\n    for (const condition of conditions ?? []) {\n      const presenceSeedId = seedFromPresencePath(condition.path);\n      const causalFactSeedId = seedFromCausalFactPath(condition.path);\n      const seedId = presenceSeedId ?? causalFactSeedId;\n      if (!seedId) continue;\n      if (!localSeedIds.has(seedId)) {\n        unknownRefs.push({ seedId, eventId: event.id, kind: 'condition', context });\n        continue;\n      }\n\n      const surface = presenceSeedId ? 'live_presence' : 'causal_fact';\n      const polarity = presenceSeedId\n        ? seedPresencePolarity(condition)\n        : causalFactDependencyPolarity(condition);\n      const row = {\n        seedId,\n        eventId: event.id,\n        kind: 'condition',\n        context,\n        surface,\n        polarity,\n        op: condition.op,\n        value: condition.value,\n        ageWindow: event.ageWindow,\n        phase: event.phase,\n        family: event.family\n      };\n\n      if (polarity === 'positive') consumers.push(row);\n      else if (polarity === 'negative') negativeDependencies.push(row);\n      else neutralDependencies.push(row);\n    }\n  };\n"""
+          if old not in src:
+            raise SystemExit('condition collector marker not found')
+          src = src.replace(old, new, 1)
+          src = src.replace(
+            "consumerEvidence: 'positive HAS_SEED_* conditions in event gates/gate alternatives/exclusions/outcomes/modifiers/choice eligibility, resolve/expire transitions, plus registered direct positive HAS_SEED_* effects in src/simulation; negative/neutral dependencies and seedsRead-only metadata are reported separately',",
+            "consumerEvidence: 'positive HAS_SEED_* conditions plus fail-closed live-only facts.* conditions in event gates/gate alternatives/exclusions/outcomes/modifiers/choice eligibility, resolve/expire transitions, and registered direct positive HAS_SEED_* simulation effects; negative/neutral dependencies and seedsRead-only metadata are reported separately',",
+            1
+          )
+          src = src.replace(
+            "polarity: 'boolean HAS_SEED_* predicates are classified by whether the same comparator passes for true vs false; only positive presence requirements create producer→consumer edges',",
+            "polarity: 'HAS_SEED_* predicates use boolean presence polarity; registered facts.* projections use null-as-absence semantics and only comparators that cannot pass for null create positive producer→consumer edges',",
+            1
+          )
+          audit.write_text(src)
+
+          test = Path('scripts/test-t52-deferred.mjs')
+          t = test.read_text()
+          t = t.replace(
+            "import { seedPresencePolarity } from './t52-seed-condition-polarity.mjs';\n",
+            "import { seedPresencePolarity } from './t52-seed-condition-polarity.mjs';\nimport { causalFactDependencyPolarity } from './audit-t52-deferred.mjs';\n",
+            1
+          )
+          anchor = "test('absence/suppression predicates do not create positive producer→consumer edges', () => {"
+          tests = """test('live-only causal facts create deferred edges only when null cannot satisfy the comparator', () => {\n  assert.equal(causalFactDependencyPolarity({ op: 'eq', value: 'helped' }), 'positive');\n  assert.equal(causalFactDependencyPolarity({ op: 'eq', value: null }), 'negative');\n  assert.equal(causalFactDependencyPolarity({ op: 'neq', value: 'helped' }), 'neutral');\n  assert.equal(causalFactDependencyPolarity({ op: 'neq', value: null }), 'positive');\n  assert.equal(causalFactDependencyPolarity({ op: 'in', value: ['helped', 'refused'] }), 'positive');\n  assert.equal(causalFactDependencyPolarity({ op: 'in', value: [null, 'helped'] }), 'neutral');\n});\n\ntest('registered facts.* equality is a first-class runtime deferred consumer', () => {\n  const seed = { id: 'SEED_BRUNO_FAVOR', ageWindow: [18, 23] };\n  const producer = {\n    id: 'EVT_SYNTH_FACT_PRODUCER', phase: '18_20', family: 'team', ageWindow: [18, 18], choices: [],\n    outcomes: [{ id: 'CREATE', seedTransitions: [{ seedId: seed.id, action: 'create' }] }]\n  };\n  const consumer = {\n    id: 'EVT_SYNTH_FACT_CONSUMER', phase: '18_20', family: 'conditional', ageWindow: [19, 19], choices: [],\n    outcomes: [{\n      id: 'READ',\n      modifiers: [{ id: 'REMEMBER', multiply: 1.2, conditions: [{ path: 'facts.brunoFavorStance', op: 'eq', value: 'helped' }] }]\n    }]\n  };\n\n  const report = buildDeferredConsequenceReport([producer, consumer], [seed]);\n  const row = report.rows[0];\n  assert.equal(row.runtimeConsumerCount, 1);\n  assert.equal(row.runtimeConsumers[0].eventId, consumer.id);\n  assert.equal(row.runtimeConsumers[0].surface, 'causal_fact');\n  assert.equal(row.runtimeConsumers[0].polarity, 'positive');\n  assert.equal(row.strictDeferredPairCount, 1);\n});\n\ntest('ambiguous facts.* inequality does not invent a positive seed chain', () => {\n  const seed = { id: 'SEED_BRUNO_FAVOR', ageWindow: [18, 23] };\n  const producer = {\n    id: 'EVT_SYNTH_FACT_PRODUCER_NEQ', phase: '18_20', family: 'team', ageWindow: [18, 18], choices: [],\n    outcomes: [{ id: 'CREATE', seedTransitions: [{ seedId: seed.id, action: 'create' }] }]\n  };\n  const consumer = {\n    id: 'EVT_SYNTH_FACT_CONSUMER_NEQ', phase: '18_20', family: 'conditional', ageWindow: [19, 19], choices: [],\n    outcomes: [{\n      id: 'READ',\n      modifiers: [{ id: 'AMBIGUOUS', multiply: 1.2, conditions: [{ path: 'facts.brunoFavorStance', op: 'neq', value: 'helped' }] }]\n    }]\n  };\n\n  const report = buildDeferredConsequenceReport([producer, consumer], [seed]);\n  const row = report.rows[0];\n  assert.equal(row.runtimeConsumerCount, 0);\n  assert.equal(row.neutralDependencyCount, 1);\n  assert.equal(row.feasiblePairCount, 0);\n});\n\n"""
+          if anchor not in t:
+            raise SystemExit('test anchor not found')
+          t = t.replace(anchor, tests + anchor, 1)
+          test.write_text(t)
+          PY
+      - name: Focused validation
+        run: |
+          npm run build
+          node --test scripts/test-t52-deferred.mjs scripts/test-t52-causal-seed-facts.mjs
+      - name: Publish validated patch
+        shell: bash
+        run: |
+          rm .github/workflows/t52-deferred-facts-builder-temp.yml
+          git config user.name "T5.2 Agent Builder"
+          git config user.email "actions@users.noreply.github.com"
+          git add scripts/audit-t52-deferred.mjs scripts/test-t52-deferred.mjs .github/workflows/t52-deferred-facts-builder-temp.yml
+          git commit -m "T5.2: include causal facts in deferred seed graph"
+          git push origin HEAD:t5/seed-early-canonical-chains
