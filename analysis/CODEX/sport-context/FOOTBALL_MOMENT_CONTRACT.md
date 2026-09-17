@@ -15,22 +15,30 @@ Implemented entry points:
 - `penaltySuccessProbability(input)` — pure probability projection; no RNG.
 - `playerPenaltyAttempt(state, momentId, pressure)` — builds protagonist input from persisted sporting attributes.
 - `resolvePenaltyMomentInPlace(state, input)` — first resolution or idempotent replay.
-- `inspectFootballMomentStore(value)` — read-only persisted-store validation.
+- `inspectFootballMomentStore(value, maxResolvedAt?)` — read-only persisted-store validation; the save boundary passes the current game date as the maximum allowed resolution date.
 - `assertFootballMomentStore(value)` — runtime assertion for resolver reads.
 
 ## Stable identity
 
 A moment is keyed by a stable technical identifier, never by narrative copy.
 
-Recommended shape:
+Shape:
 
-`<EVENT_ID>:<choice-or-actor-context>:<moment-kind>`
+`<REGISTERED_EVENT_ID>:<stable-context>:penalty`
 
-Example:
+Examples:
 
-`EVT_24_MATCH_001:TAKE:penalty`
+- `EVT_24_MATCH_001:TAKE:penalty`
+- `EVT_26_MATCH_001:RECORD:penalty`
 
-IDs accept stable alphanumeric/dot/underscore/colon/hyphen identifiers, are length bounded, and reserved prototype keys are rejected.
+The v1 registry accepts only the explicitly registered event namespaces:
+
+- `EVT_24_MATCH_001`;
+- `EVT_26_MATCH_001`.
+
+The context component is a bounded technical identifier, not user-visible copy. Unknown event namespaces, malformed IDs and prototype-reserved actor IDs fail closed.
+
+Registering a new football-moment event is a deliberate code change with tests; arbitrary save keys are not accepted.
 
 Reusing the same `momentId` with different sporting inputs is an error. This prevents an already-resolved sporting fact from being silently rewritten.
 
@@ -82,7 +90,7 @@ Do not reinterpret this as a canonical story rule. If future moment kinds requir
 
 Store: `state.world.footballMomentResults`.
 
-Historical saves may omit the store. When present, it must be a plain object keyed by stable moment IDs. Each v1 penalty row has exactly:
+Historical saves may omit the store. When present, it must be a plain object keyed by registered stable moment IDs. Each v1 penalty row has exactly:
 
 ```ts
 {
@@ -96,19 +104,36 @@ Historical saves may omit the store. When present, it must be a plain object key
 }
 ```
 
-Save/session validation rejects:
+`inputSignature` is a canonical JSON encoding of the factual sporting inputs:
+
+```ts
+[actorId, technique, composure, form, pressure]
+```
+
+It is validated semantically, not only as a non-empty string.
+
+## Save/session validation
+
+The common `GameState` boundary rejects:
 
 - malformed store container;
-- unknown or reserved moment ID;
+- unknown or malformed moment ID;
 - unsupported row version;
 - unknown moment kind;
 - unknown outcome;
-- non-finite/out-of-range probability;
+- actor IDs that are malformed/reserved;
+- malformed or non-canonical input signatures;
+- actor mismatch between row and signature;
+- non-finite or out-of-domain sporting inputs inside the signature;
+- probability outside `[0.45, 0.90]`;
+- probability that does not exactly correspond to the persisted sporting inputs/formula;
 - invalid resolution date;
-- empty/invalid input signature;
+- resolution date later than the current `GameState.date`;
 - extra/missing row fields.
 
 The resolver separately rejects a duplicate moment ID presented with incompatible sporting inputs.
+
+This does not claim cryptographic tamper-proofing. It guarantees that a loaded row is structurally and internally consistent with the declared v1 sporting contract and chronology, rather than silently accepting an impossible payload.
 
 ## Save behavior
 
