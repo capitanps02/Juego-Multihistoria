@@ -2,6 +2,7 @@ import { EVENTS } from '../dist/content/events/index.js';
 import { contentIdentity, eventFingerprintMap } from '../dist/session/content-identity.js';
 import { LEGACY_CONTENT_SOURCES } from '../dist/session/content-migration.js';
 
+// Microbatch A is the only permitted adjacent source for B.
 const SOURCE_CONTENT_IDENTITY = '6a9c66ab3afaec76299662afb2a662e19203f8c6c430a87cc458b8608965a651';
 const ids = ['EVT_21_CAP_001', 'EVT_21_PRS_001', 'EVT_22_CON_001', 'EVT_22_CON_002'];
 
