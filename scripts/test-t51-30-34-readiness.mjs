@@ -5,6 +5,8 @@ import fs from 'node:fs';
 const readiness = JSON.parse(fs.readFileSync('analysis/T5.1/canon-30-34-implementation-readiness.json', 'utf8'));
 const audit = JSON.parse(fs.readFileSync('analysis/T5.1/canon-30-34.json', 'utf8'));
 const freeze = JSON.parse(fs.readFileSync('qa/fixtures/t5.1/pre-t51-content-manifest.json', 'utf8'));
+const seedLifecycle = JSON.parse(fs.readFileSync('analysis/T5.1/canon-30-34-seed-lifecycle.json', 'utf8'));
+const migrationHandoff = JSON.parse(fs.readFileSync('analysis/T5.1/canon-30-34-migration-handoff.json', 'utf8'));
 const indexSource = fs.readFileSync('src/content/events/30_34/index.ts', 'utf8');
 const eventGateSource = fs.readFileSync('src/narrative/event-gates.ts', 'utf8');
 const renewalFactSource = fs.readFileSync('src/simulation/club-contract-intent.ts', 'utf8');
@@ -12,11 +14,14 @@ const renewalFactSource = fs.readFileSync('src/simulation/club-contract-intent.t
 const byStatus = status => readiness.events.filter(event => event.status === status);
 const ids = rows => rows.map(row => row.canonicalId).sort();
 
-test('T5.1 30-34 readiness queda anclado al freeze pre-T5.1', () => {
+test('T5.1 30-34 readiness queda anclado al freeze pre-T5.1 y declara el target actual sin apropiarse del route', () => {
   assert.equal(readiness.phase, '30_34');
   assert.equal(readiness.baselineFreeze.status, 'closed');
   assert.equal(readiness.baselineFreeze.contentIdentity, freeze.contentIdentity);
   assert.equal(readiness.baselineFreeze.contentIdentity, '2e07efd2ea99c4e9ec4c2b20ae89664204f76db2c55a72d567208799c01bccff');
+  assert.equal(readiness.currentTarget.contentIdentity, migrationHandoff.observedTargetContentIdentity);
+  assert.equal(readiness.currentTarget.workstreamMayRegisterRoute, false);
+  assert.equal(readiness.currentTarget.freezeStatus, 'pending_coordination_integration');
 });
 
 test('T5.1 30-34 readiness particiona exactamente los 50 principales en 27/18/5', () => {
@@ -59,6 +64,33 @@ test('T5.1 30-34 readiness: los cinco missing coinciden exactamente con el audit
   assert.equal(missing.length, 5);
   assert.equal(missing.every(event => event.engineId === null), true);
   assert.equal(missing.every(event => event.dependencies.includes('COORDINATED_ADDITION')), true);
+});
+
+test('T5.1 30-34 readiness fija uno-a-uno las cuatro seeds huérfanas en sus writers canónicos missing', () => {
+  const expected = new Map([
+    ['SEED_ROLE_COMMUNICATION', 'EVT_30_CCH_001'],
+    ['SEED_FALSE_ULTIMATUM', 'EVT_30_PRS_001'],
+    ['SEED_NATIONAL_ABSENCE', 'EVT_30_NAT_002'],
+    ['SEED_SPECIALIST_BIGCLUB', 'EVT_30_JAN_001']
+  ]);
+
+  assert.equal(readiness.summary.canonicalMissingWithOrphanSeedWriterOwnership, 4);
+  assert.equal(readiness.seedWriterBatch.withoutRuntimeProducer, 4);
+  assert.equal(readiness.seedWriterBatch.mappings.length, 4);
+  assert.equal(seedLifecycle.orphanCanonicalMappings.length, 4);
+
+  for (const mapping of readiness.seedWriterBatch.mappings) {
+    assert.equal(expected.get(mapping.seed), mapping.canonicalEventId, `${mapping.seed}: writer canónico inesperado`);
+    const event = readiness.events.find(row => row.canonicalId === mapping.canonicalEventId);
+    assert.ok(event);
+    assert.equal(event.status, 'canonical_missing_requires_coordinated_addition');
+    assert.ok(event.dependencies.includes('CANONICAL_SEED_WRITER'));
+    assert.equal(event.writesSeed, mapping.seed);
+  }
+
+  const role = readiness.events.find(event => event.canonicalId === 'EVT_31_ROLE_001');
+  assert.ok(role.dependencies.includes('SPORT_AUTHORITY'));
+  assert.equal(role.dependencies.includes('CANONICAL_SEED_WRITER'), false);
 });
 
 test('T5.1 30-34 readiness consume OR gates y el hecho causal de renovación ya disponibles', () => {
