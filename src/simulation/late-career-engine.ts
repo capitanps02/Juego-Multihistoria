@@ -1,6 +1,7 @@
 import { DeterministicRng } from "../core/rng.js";
 import type { GameState } from "../core/types.js";
 import { generateEpilogue } from "../epilogue/generator.js";
+import { contractEmploymentStatus, getActiveCareerOffers } from "./offers.js";
 
 const clamp=(x:number,min=0,max=100)=>Math.min(max,Math.max(min,x));
 const num=(x:unknown,f=0)=>typeof x==="number"?x:f;
@@ -154,26 +155,28 @@ export function lateCareerPreseason(state:GameState):void{
   const agePenalty=Math.max(0,state.age-34)*2.2;
   const demand=clamp(market*.36+role*.24+p.veteranLeverage*.18+p.legacyCapital*.12+p.availability*.10-agePenalty);
   state.world.veteranMarketDemand=Math.round(demand*10)/10;
-  state.flags.VETERAN_OFFER_AVAILABLE=false;
-  state.flags.INFORMAL_RENEWAL_PROMISE=false;
 
-  if(months<=2 && state.retirement.status==="playing"){
-    // No veteran-offer floor: genuine market exhaustion is possible, but it never retires the player.
-    const offerP=clamp(0.12+demand/155-agePenalty/150,0,0.72);
-    if(rng.next()<offerP){
-      state.flags.VETERAN_OFFER_AVAILABLE=true;
-      state.retirement.noMarketWindows=0;
-      state.world.veteranOfferRole=Math.round(clamp(role-6+rng.next()*20));
-      state.world.veteranOfferMonths=6+Math.floor(rng.next()*19);
-      state.world.veteranOfferSalary=Math.max(900,Math.round(num(state.contract.salaryMonthly,900)*(0.55+rng.next()*.8)));
-    } else {
-      state.retirement.noMarketWindows+=1;
-      if(demand>=38&&rng.next()<0.32)state.flags.INFORMAL_RENEWAL_PROMISE=true;
-    }
+  // Formal offer truth belongs exclusively to the CareerOffer authority. Retirement may
+  // observe it, but it never fabricates salary/months/destination facts from marketHeat/RNG.
+  const activeOffers=getActiveCareerOffers(state);
+  const formalOffer=activeOffers[0]??null;
+  state.flags.VETERAN_OFFER_AVAILABLE=formalOffer!==null;
+  state.flags.INFORMAL_RENEWAL_PROMISE=false;
+  state.world.veteranOfferRole=null;
+  state.world.veteranOfferMonths=formalOffer?.terms.months??null;
+  state.world.veteranOfferSalary=formalOffer?.terms.salary??null;
+
+  if(formalOffer){
+    state.retirement.noMarketWindows=0;
+  } else if(months<=2 && state.retirement.status==="playing"){
+    state.retirement.noMarketWindows+=1;
   }
 
-  // No-market is context for a decision scene, never an automatic retirement transition.
-  const marketExhausted=state.retirement.status==="playing"&&months<=0&&!state.flags.VETERAN_OFFER_AVAILABLE&&((state.retirement.noMarketWindows>=2&&demand<20)||(state.retirement.noMarketWindows>=3&&demand<35));
+  // Contract expiry is not free agency and no offer is not retirement. It can only open
+  // a reflection scene when the contract authority says the current employment is expired
+  // pending resolution and there is no real formal CareerOffer to answer.
+  const employment=contractEmploymentStatus(state);
+  const marketExhausted=state.retirement.status==="playing"&&employment==="expired_pending_resolution"&&activeOffers.length===0;
   state.flags.NO_MARKET_END_CONTEXT=marketExhausted;
   state.flags.NO_MARKET_DECISION_PENDING=marketExhausted;
 
@@ -213,10 +216,14 @@ export function lateCareerWeek(state:GameState):void{
   if(state.flags.MAJOR_COMEBACK_CONTEXT)state.flags.LATE_MAJOR_COMEBACK=true;
   state.flags.NO_MEDICAL_CLEARANCE_CONTEXT=p.recoveryDebt>=70&&p.availability<=40&&state.age>=36;
 
-  // A post-announcement offer may exist, but it cannot reopen the public announcement.
-  if(state.retirement.status==="announced"&&state.age>=36&&market>=30&&!state.flags.POST_ANNOUNCE_OFFER&&rng.next()<.10){
-    state.flags.POST_ANNOUNCE_OFFER=true;
-  }
+  // A post-announcement offer is a formal CareerOffer fact, never a marketHeat roll. The
+  // current market authority does not normally materialise offers after announcement, so
+  // this remains false until that owner explicitly supports such an offer.
+  const announcedDate=state.retirement.announcedDate;
+  const postAnnounceOffer=state.retirement.status==="announced"&&announcedDate!==null
+    ? getActiveCareerOffers(state).some(offer=>offer.date>=announcedDate)
+    : false;
+  state.flags.POST_ANNOUNCE_OFFER=postAnnounceOffer;
 
   // A private decision remains private until an explicit announcement event is resolved.
   if(state.retirement.status==="decided")state.flags.ADMIN_ANNOUNCEMENT_FALLBACK=false;
