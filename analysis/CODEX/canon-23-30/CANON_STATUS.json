@@ -1,0 +1,32 @@
+{
+  "canonicalCounts": {
+    "23_26": {"principal": 40, "conditional": 20},
+    "26_30": {"principal": 51, "conditional": 24}
+  },
+  "identityAudit26_30": {
+    "canonicalPrincipal": 51,
+    "enginePrincipalHistoricalCount": 51,
+    "exactIdsNeedingSemanticReimplementationHistorical": 25,
+    "canonicalFreshOrMissingHistorical": 26,
+    "warning": "Count equality is not identity parity. Re-audit against current main before changing these historical figures."
+  },
+  "implementedActiveMain": [
+    "EVT_23_EUR_001",
+    "EVT_23_HOME_001",
+    "EVT_23_MONEY_001",
+    "EVT_23_PRS_001"
+  ],
+  "implementedStagedAgent6": [
+    {"id":"EVT_23_LOCK_001","status":"blocked_lineage"},
+    {"id":"EVT_23_MKT_001","status":"blocked_lineage"},
+    {"id":"EVT_23_CON_001","status":"blocked_lineage"},
+    {"id":"EVT_25_CON_001","status":"blocked_lineage"},
+    {"id":"EVT_25_MKT_001","status":"blocked_lineage"},
+    {"id":"EVT_26_BRIDGE_001","status":"blocked_lineage"}
+  ],
+  "highPriorityBlocked": [
+    {"id":"EVT_24_MATCH_001","status":"blocked_shared_authority","needs":"authoritative fixture/match/squad producer"},
+    {"id":"EVT_25_AGT_001","status":"blocked_shared_authority","needs":"certified active-agent identity for relevant careers"},
+    {"id":"EVT_25_NAT_001","status":"blocked_shared_authority","needs":"authoritative national-team call/role history"}
+  ]
+}

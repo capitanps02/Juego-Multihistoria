@@ -1,0 +1,41 @@
+name: Agent 6 canon 23-30
+
+on:
+  push:
+    branches: ["t51/canon-23-30"]
+  pull_request:
+    paths:
+      - "src/content/events/23_26/**"
+      - "src/content/events/26_30/**"
+      - "src/narrative/offer-bridge.ts"
+      - "scripts/test-t51-agent6-*.mjs"
+      - "analysis/CODEX/canon-23-30/**"
+      - ".github/workflows/t51-agent6-canon-23-30.yml"
+
+jobs:
+  focal:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Agent 6 staged candidates
+        run: >-
+          node --test
+          scripts/test-t51-agent6-lock23.mjs
+          scripts/test-t51-agent6-mkt25.mjs
+          scripts/test-t51-agent6-offers23-25.mjs
+          scripts/test-t51-agent6-age26-bridge.mjs
+      - name: Shared authorities absorbed from main
+        run: >-
+          node --test
+          scripts/test-t51-role-expectation.mjs
+          scripts/test-t51-prs-23-26.mjs
+          scripts/test-t51-offer-bridge.mjs
+          scripts/test-t51-offer-bridge-provenance.mjs
+      - name: Offer bridge evidence remains frozen
+        run: node scripts/generate-t51-offer-bridge-evidence.mjs --check

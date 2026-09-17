@@ -1,0 +1,18 @@
+{
+  "policy": "Only items whose prerequisites are currently understood are listed. Re-check authority on latest main immediately before coding.",
+  "alreadyImplementedStaged": [
+    "EVT_23_LOCK_001",
+    "EVT_23_MKT_001",
+    "EVT_23_CON_001",
+    "EVT_25_CON_001",
+    "EVT_25_MKT_001",
+    "EVT_26_BRIDGE_001"
+  ],
+  "codexReady": [
+    {"id":"EVT_26_DOC_001","priority":1,"constraints":["knowledge-scoped reactions","publication required for public knowledge","no invented NPC authority"]},
+    {"id":"EVT_26_RIV_001","priority":2,"constraints":["require pre-existing rivalry/conflict evidence","no rivalry from fixture alone"]},
+    {"id":"EVT_26_CAP_001","priority":3,"constraints":["authoritative captain/locker target only","fail closed"]}
+  ],
+  "auditNext": ["EVT_26_MED_001", "EVT_26_TEAM_002"],
+  "doNotImplementUntilAuthorityExists": ["EVT_24_MATCH_001", "EVT_25_NAT_001", "EVT_26_MATCH_001", "EVT_26_NAT_002", "EVT_26_FINAL_001"]
+}

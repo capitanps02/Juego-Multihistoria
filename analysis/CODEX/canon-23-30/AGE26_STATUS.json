@@ -1,0 +1,15 @@
+{
+  "age": 26,
+  "slots": [
+    {"id":"EVT_26_BRIDGE_001","status":"blocked_lineage","implementation":"staged_complete","note":"Integrator must activate adjacent generation and preserve historical seed origins."},
+    {"id":"EVT_26_MATCH_001","status":"blocked_shared_authority","needs":"authoritative fixture/result/player-participation facts"},
+    {"id":"EVT_26_CAP_001","status":"codex_ready","guard":"Use only authoritative captain/locker slots; fail closed; never infer from age or reputation."},
+    {"id":"EVT_26_MED_001","status":"blocked_shared_authority","needs":"current injury/history audit before implementation"},
+    {"id":"EVT_26_DOC_001","status":"codex_ready","guard":"Respect NPC knowledge, publication and privacy channels."},
+    {"id":"EVT_26_RIV_001","status":"codex_ready","guard":"Require actual prior conflict/relationship/seed; fixture alone is insufficient."},
+    {"id":"EVT_26_TEAM_002","status":"blocked_shared_authority","needs":"verified current-club institutional target; otherwise fail closed"},
+    {"id":"EVT_26_NAT_002","status":"blocked_shared_authority","needs":"authoritative national-team selection/role history"},
+    {"id":"EVT_26_FINAL_001","status":"blocked_shared_authority","needs":"real final, bench/start/appearance and result facts"},
+    {"id":"EVT_26_EUR_001","status":"blocked_shared_authority","needs":"real European match participation/start/bench context for semantic correction"}
+  ]
+}
