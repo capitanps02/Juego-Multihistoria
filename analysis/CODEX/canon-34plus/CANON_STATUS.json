@@ -1,1 +1,115 @@
-{"generatedAt":"2026-09-17","baseMain":"6095ee58a4bdf89838afb3738575ae21fcddb78c","summary":{"principals":50,"agent8Ordinary":43,"agent9Terminal":7,"implemented":0,"verifiedEquivalentOnAgent8Branch":0,"codexReady":0,"blocked":50,"identityReconciled":50},"entries":[{"eventId":"EVT_RET_BODY_001","engineId":"EVT_RET_BODY_001","identityStatus":"verified_same_identity","implementationStatus":"blocked_shared_authority","retirementDependency":true,"sharedAuthorityDependencies":["agent9_retirement"],"saveRisk":"terminal_owned","codexReadiness":"blocked"},{"eventId":"EVT_RET_HIGH_001","engineId":"EVT_RET_HIGH_001","identityStatus":"verified_same_identity","implementationStatus":"blocked_shared_authority","retirementDependency":true,"sharedAuthorityDependencies":["agent9_retirement"],"saveRisk":"terminal_owned","codexReadiness":"blocked"},{"eventId":"EVT_RET_LOW_001","engineId":"EVT_RET_LOW_001","identityStatus":"verified_same_identity","implementationStatus":"blocked_shared_authority","retirementDependency":true,"sharedAuthorityDependencies":["agent9_retirement"],"saveRisk":"terminal_owned","codexReadiness":"blocked"},{"eventId":"EVT_RET_ANNOUNCE_001","engineId":"EVT_RET_ANNOUNCE_001","identityStatus":"verified_same_identity","implementationStatus":"blocked_shared_authority","retirementDependency":true,"sharedAuthorityDependencies":["agent9_retirement"],"saveRisk":"terminal_owned","codexReadiness":"blocked"},{"eventId":"EVT_38_MARKET_001","engineId":"EVT_38_MKT_001","identityStatus":"replacement","implementationStatus":"blocked_shared_authority","retirementDependency":false,"sharedAuthorityDependencies":["content_lineage","#T5.2_seed_catalog","veteran_market_contract","free_agency"],"saveRisk":"distinct_scene","codexReadiness":"blocked"},{"eventId":"EVT_RET_FAM_001","engineId":"EVT_RET_HOME_001","identityStatus":"replacement","implementationStatus":"blocked_shared_authority","retirementDependency":true,"sharedAuthorityDependencies":["agent9_retirement"],"saveRisk":"distinct_scene","codexReadiness":"blocked"},{"eventId":"EVT_RET_LASTMATCH_001","engineId":"EVT_RET_LAST_001","identityStatus":"replacement","implementationStatus":"blocked_shared_authority","retirementDependency":true,"sharedAuthorityDependencies":["agent9_retirement"],"saveRisk":"distinct_scene","codexReadiness":"blocked"},{"eventId":"EVT_34_HOME_001","engineId":"EVT_34_HOME_001","identityStatus":"needs_reimplementation","implementationStatus":"blocked_shared_authority","retirementDependency":false,"sharedAuthorityDependencies":["content_lineage","#T5.2_seed_catalog","veteran_market_contract"],"saveRisk":"distinct_scene","codexReadiness":"blocked"},{"eventId":"EVT_34_CON_001","engineId":"EVT_34_CON_001","identityStatus":"needs_reimplementation","implementationStatus":"blocked_shared_authority","retirementDependency":false,"sharedAuthorityDependencies":["content_lineage","#T5.2_seed_catalog","veteran_market_contract"],"saveRisk":"distinct_scene","codexReadiness":"blocked"},{"eventId":"EVT_34_ROLE_001","engineId":"EVT_34_ROLE_001","identityStatus":"needs_reimplementation","implementationStatus":"blocked_shared_authority","retirementDependency":false,"sharedAuthorityDependencies":["content_lineage","#T5.2_seed_catalog","sport_or_selection"],"saveRisk":"distinct_scene","codexReadiness":"blocked"},{"eventId":"EVT_34_BODY_001","engineId":"EVT_34_BODY_001","identityStatus":"needs_reimplementation","implementationStatus":"blocked_shared_authority","retirementDependency":false,"sharedAuthorityDependencies":["content_lineage","#T5.2_seed_catalog","sport_or_selection"],"saveRisk":"distinct_scene","codexReadiness":"blocked"},{"eventId":"EVT_34_MAR_001","engineId":"EVT_34_MAR_001","identityStatus":"needs_reimplementation","implementationStatus":"blocked_shared_authority","retirementDependency":false,"sharedAuthorityDependencies":["content_lineage","#T5.2_seed_catalog","veteran_market_contract"],"saveRisk":"distinct_scene","codexReadiness":"blocked"},{"eventId":"EVT_35_MKT_001","engineId":"EVT_35_MKT_001","identityStatus":"needs_reimplementation","implementationStatus":"blocked_shared_authority","retirementDependency":false,"sharedAuthorityDependencies":["content_lineage","#T5.2_seed_catalog","veteran_market_contract"],"saveRisk":"distinct_scene","codexReadiness":"blocked"},{"eventId":"EVT_35_FAM_001","engineId":"EVT_35_FAM_001","identityStatus":"needs_reimplementation","implementationStatus":"blocked_shared_authority","retirementDependency":false,"sharedAuthorityDependencies":["content_lineage","#T5.2_seed_catalog"],"saveRisk":"distinct_scene","codexReadiness":"blocked"},{"eventId":"EVT_35_BODY_001","engineId":"EVT_35_BODY_001","identityStatus":"needs_reimplementation","implementationStatus":"blocked_shared_authority","retirementDependency":false,"sharedAuthorityDependencies":["content_lineage","#T5.2_seed_catalog"],"saveRisk":"distinct_scene","codexReadiness":"blocked"},{"eventId":"EVT_35_FINAL_001","engineId":"EVT_35_FINAL_001","identityStatus":"needs_reimplementation","implementationStatus":"blocked_shared_authority","retirementDependency":false,"sharedAuthorityDependencies":["content_lineage","#T5.2_seed_catalog","sport_or_selection"],"saveRisk":"distinct_scene","codexReadiness":"blocked"},{"eventId":"EVT_35_HOME_001","engineId":"EVT_35_HOME_001","identityStatus":"needs_reimplementation","implementationStatus":"blocked_shared_authority","retirementDependency":false,"sharedAuthorityDependencies":["content_lineage","#T5.2_seed_catalog","veteran_market_contract"],"saveRisk":"distinct_scene","codexReadiness":"blocked"},{"eventId":"EVT_36_CON_001","engineId":"EVT_36_CON_001","identityStatus":"needs_reimplementation","implementationStatus":"blocked_shared_authority","retirementDependency":false,"sharedAuthorityDependencies":["content_lineage","#T5.2_seed_catalog","veteran_market_contract"],"saveRisk":"distinct_scene","codexReadiness":"blocked"},{"eventId":"EVT_36_MED_001","engineId":"EVT_36_MED_001","identityStatus":"needs_reimplementation","implementationStatus":"blocked_shared_authority","retirementDependency":false,"sharedAuthorityDependencies":["content_lineage","#T5.2_seed_catalog"],"saveRisk":"distinct_scene","codexReadiness":"blocked"},{"eventId":"EVT_37_ANNOUNCE_001","engineId":"EVT_37_ANNOUNCE_001","identityStatus":"needs_reimplementation","implementationStatus":"blocked_shared_authority","retirementDependency":true,"sharedAuthorityDependencies":["agent9_retirement"],"saveRisk":"distinct_scene","codexReadiness":"blocked"},{"eventId":"EVT_34_BRIDGE_001","engineId":null,"identityStatus":"canonical_missing","implementationStatus":"blocked_shared_authority","retirementDependency":false,"sharedAuthorityDependencies":["content_lineage","#T5.2_seed_catalog","veteran_market_contract"],"saveRisk":"new_scene","codexReadiness":"blocked"},{"eventId":"EVT_34_PAY_001","engineId":null,"identityStatus":"canonical_missing","implementationStatus":"blocked_shared_authority","retirementDependency":false,"sharedAuthorityDependencies":["content_lineage","#T5.2_seed_catalog","veteran_market_contract"],"saveRisk":"new_scene","codexReadiness":"blocked"},{"eventId":"EVT_34_NT_001","engineId":null,"identityStatus":"canonical_missing","implementationStatus":"blocked_shared_authority","retirementDependency":false,"sharedAuthorityDependencies":["content_lineage","#T5.2_seed_catalog","sport_or_selection"],"saveRisk":"new_scene","codexReadiness":"blocked"},{"eventId":"EVT_34_AGT_001","engineId":null,"identityStatus":"canonical_missing","implementationStatus":"blocked_shared_authority","retirementDependency":false,"sharedAuthorityDependencies":["content_lineage","#T5.2_seed_catalog","veteran_market_contract"],"saveRisk":"new_scene","codexReadiness":"blocked"},{"eventId":"EVT_34_LOAD_001","engineId":null,"identityStatus":"canonical_missing","implementationStatus":"blocked_shared_authority","retirementDependency":false,"sharedAuthorityDependencies":["content_lineage","#T5.2_seed_catalog","sport_or_selection"],"saveRisk":"new_scene","codexReadiness":"blocked"},{"eventId":"EVT_34_DORSAL_001","engineId":null,"identityStatus":"canonical_missing","implementationStatus":"blocked_shared_authority","retirementDependency":false,"sharedAuthorityDependencies":["content_lineage","#T5.2_seed_catalog","npc_or_squad_authority"],"saveRisk":"new_scene","codexReadiness":"blocked"},{"eventId":"EVT_34_MENTOR_001","engineId":null,"identityStatus":"canonical_missing","implementationStatus":"blocked_shared_authority","retirementDependency":false,"sharedAuthorityDependencies":["content_lineage","#T5.2_seed_catalog","npc_or_squad_authority"],"saveRisk":"new_scene","codexReadiness":"blocked"},{"eventId":"EVT_34_MATCH_001","engineId":null,"identityStatus":"canonical_missing","implementationStatus":"blocked_shared_authority","retirementDependency":false,"sharedAuthorityDependencies":["content_lineage","#T5.2_seed_catalog","sport_or_selection"],"saveRisk":"new_scene","codexReadiness":"blocked"},{"eventId":"EVT_34_NT_002","engineId":null,"identityStatus":"canonical_missing","implementationStatus":"blocked_shared_authority","retirementDependency":false,"sharedAuthorityDependencies":["content_lineage","#T5.2_seed_catalog","sport_or_selection"],"saveRisk":"new_scene","codexReadiness":"blocked"},{"eventId":"EVT_34_FAN_001","engineId":null,"identityStatus":"canonical_missing","implementationStatus":"blocked_shared_authority","retirementDependency":false,"sharedAuthorityDependencies":["content_lineage","#T5.2_seed_catalog","sport_or_selection"],"saveRisk":"new_scene","codexReadiness":"blocked"},{"eventId":"EVT_34_TRAVEL_001","engineId":null,"identityStatus":"canonical_missing","implementationStatus":"blocked_shared_authority","retirementDependency":false,"sharedAuthorityDependencies":["content_lineage","#T5.2_seed_catalog","sport_or_selection"],"saveRisk":"new_scene","codexReadiness":"blocked"},{"eventId":"EVT_35_CON_001","engineId":null,"identityStatus":"canonical_missing","implementationStatus":"blocked_shared_authority","retirementDependency":false,"sharedAuthorityDependencies":["content_lineage","#T5.2_seed_catalog","veteran_market_contract"],"saveRisk":"new_scene","codexReadiness":"blocked"},{"eventId":"EVT_35_FAREWELL_001","engineId":null,"identityStatus":"canonical_missing","implementationStatus":"blocked_shared_authority","retirementDependency":false,"sharedAuthorityDependencies":["content_lineage","#T5.2_seed_catalog","veteran_market_contract"],"saveRisk":"new_scene","codexReadiness":"blocked"},{"eventId":"EVT_35_DUAL_001","engineId":null,"identityStatus":"canonical_missing","implementationStatus":"blocked_shared_authority","retirementDependency":false,"sharedAuthorityDependencies":["content_lineage","#T5.2_seed_catalog","npc_or_squad_authority"],"saveRisk":"new_scene","codexReadiness":"blocked"},{"eventId":"EVT_35_AGT_001","engineId":null,"identityStatus":"canonical_missing","implementationStatus":"blocked_shared_authority","retirementDependency":false,"sharedAuthorityDependencies":["content_lineage","#T5.2_seed_catalog","veteran_market_contract","npc_or_squad_authority"],"saveRisk":"new_scene","codexReadiness":"blocked"},{"eventId":"EVT_35_TACT_001","engineId":null,"identityStatus":"canonical_missing","implementationStatus":"blocked_shared_authority","retirementDependency":false,"sharedAuthorityDependencies":["content_lineage","#T5.2_seed_catalog","sport_or_selection"],"saveRisk":"new_scene","codexReadiness":"blocked"},{"eventId":"EVT_35_BENCH_001","engineId":null,"identityStatus":"canonical_missing","implementationStatus":"blocked_shared_authority","retirementDependency":false,"sharedAuthorityDependencies":["content_lineage","#T5.2_seed_catalog","sport_or_selection"],"saveRisk":"new_scene","codexReadiness":"blocked"},{"eventId":"EVT_35_RECORD_001","engineId":null,"identityStatus":"canonical_missing","implementationStatus":"blocked_shared_authority","retirementDependency":false,"sharedAuthorityDependencies":["content_lineage","#T5.2_seed_catalog","sport_or_selection","npc_or_squad_authority"],"saveRisk":"new_scene","codexReadiness":"blocked"},{"eventId":"EVT_35_NT_001","engineId":null,"identityStatus":"canonical_missing","implementationStatus":"blocked_shared_authority","retirementDependency":false,"sharedAuthorityDependencies":["content_lineage","#T5.2_seed_catalog","sport_or_selection"],"saveRisk":"new_scene","codexReadiness":"blocked"},{"eventId":"EVT_35_JAN_001","engineId":null,"identityStatus":"canonical_missing","implementationStatus":"blocked_shared_authority","retirementDependency":false,"sharedAuthorityDependencies":["content_lineage","#T5.2_seed_catalog","veteran_market_contract"],"saveRisk":"new_scene","codexReadiness":"blocked"},{"eventId":"EVT_35_IMG_001","engineId":null,"identityStatus":"canonical_missing","implementationStatus":"blocked_shared_authority","retirementDependency":false,"sharedAuthorityDependencies":["content_lineage","#T5.2_seed_catalog"],"saveRisk":"new_scene","codexReadiness":"blocked"},{"eventId":"EVT_36_BODY_001","engineId":null,"identityStatus":"canonical_missing","implementationStatus":"blocked_shared_authority","retirementDependency":false,"sharedAuthorityDependencies":["content_lineage","#T5.2_seed_catalog","sport_or_selection"],"saveRisk":"new_scene","codexReadiness":"blocked"},{"eventId":"EVT_36_CCH_001","engineId":null,"identityStatus":"canonical_missing","implementationStatus":"blocked_shared_authority","retirementDependency":false,"sharedAuthorityDependencies":["content_lineage","#T5.2_seed_catalog","npc_or_squad_authority"],"saveRisk":"new_scene","codexReadiness":"blocked"},{"eventId":"EVT_36_RECORD_001","engineId":null,"identityStatus":"canonical_missing","implementationStatus":"blocked_shared_authority","retirementDependency":false,"sharedAuthorityDependencies":["content_lineage","#T5.2_seed_catalog","sport_or_selection"],"saveRisk":"new_scene","codexReadiness":"blocked"},{"eventId":"EVT_36_PEER_001","engineId":null,"identityStatus":"canonical_missing","implementationStatus":"blocked_shared_authority","retirementDependency":false,"sharedAuthorityDependencies":["content_lineage","#T5.2_seed_catalog","npc_or_squad_authority"],"saveRisk":"new_scene","codexReadiness":"blocked"},{"eventId":"EVT_36_LOWER_001","engineId":null,"identityStatus":"canonical_missing","implementationStatus":"blocked_shared_authority","retirementDependency":false,"sharedAuthorityDependencies":["content_lineage","#T5.2_seed_catalog","veteran_market_contract"],"saveRisk":"new_scene","codexReadiness":"blocked"},{"eventId":"EVT_37_SHORT_001","engineId":null,"identityStatus":"canonical_missing","implementationStatus":"blocked_shared_authority","retirementDependency":false,"sharedAuthorityDependencies":["content_lineage","#T5.2_seed_catalog","veteran_market_contract"],"saveRisk":"new_scene","codexReadiness":"blocked"},{"eventId":"EVT_37_HOME_001","engineId":null,"identityStatus":"canonical_missing","implementationStatus":"blocked_shared_authority","retirementDependency":false,"sharedAuthorityDependencies":["content_lineage","#T5.2_seed_catalog","veteran_market_contract"],"saveRisk":"new_scene","codexReadiness":"blocked"},{"eventId":"EVT_37_PEN_001","engineId":null,"identityStatus":"canonical_missing","implementationStatus":"blocked_shared_authority","retirementDependency":false,"sharedAuthorityDependencies":["content_lineage","#T5.2_seed_catalog","sport_or_selection"],"saveRisk":"new_scene","codexReadiness":"blocked"},{"eventId":"EVT_38_RICH_001","engineId":null,"identityStatus":"canonical_missing","implementationStatus":"blocked_shared_authority","retirementDependency":false,"sharedAuthorityDependencies":["content_lineage","#T5.2_seed_catalog","veteran_market_contract"],"saveRisk":"new_scene","codexReadiness":"blocked"}]}
+{
+  "version": 2,
+  "generatedAt": "2026-09-17",
+  "baseMain": "fa3c8bae524fef62e4eb9802e895df88588998c4",
+  "ownerBranch": "t51/canon-34plus",
+  "principals": {
+    "canonicalCount": 50,
+    "agent8Ordinary": 43,
+    "agent9Terminal": 7,
+    "identityReconciled": 50,
+    "ordinaryCardsPrepared": 43,
+    "ordinaryAuthorityMatrixCoverage": 43,
+    "runtimeImplementedOnAgent8Branch": 0,
+    "strictCodexReady": 0,
+    "identityBreakdown": {
+      "verifiedSameIdentity": 4,
+      "replacement": 3,
+      "needsReimplementation": 13,
+      "canonicalMissing": 30
+    },
+    "detailSources": [
+      "IDENTITY_RECONCILIATION.json",
+      "CANONICAL_CARD_COVERAGE.json",
+      "AUTHORITY_MATRIX.json",
+      "implementation-ready.json",
+      "WAVE_A_IMPLEMENTATION.json",
+      "WAVE_B_IMPLEMENTATION.json",
+      "WAVE_C_IMPLEMENTATION.json",
+      "WAVE_D_IMPLEMENTATION.json",
+      "WAVE_E_IMPLEMENTATION.json"
+    ]
+  },
+  "conditionals": {
+    "canonicalSource": "Documento Maestro section 25.13",
+    "canonicalCount": 32,
+    "engineCount": 32,
+    "identityReconciled": 32,
+    "authorityMatrixCoverage": 32,
+    "runtimeAccredited": 0,
+    "exactIdOverlap": 5,
+    "exactIdSemanticallyAccredited": 0,
+    "sameIdNeedsReimplementation": 5,
+    "canonicalMissingExactId": 27,
+    "engineTechnicalExtraExactId": 27,
+    "genericTechnicalAdaptationsInEngine": 29,
+    "ownerIssue": 192,
+    "sharedAuthorityGapIssue": 195,
+    "unresolvedSharedAuthorityDomains": 8,
+    "detailSources": [
+      "CONDITIONAL_RECONCILIATION.json",
+      "CONDITIONAL_HANDOFF.md",
+      "CONDITIONAL_AUTHORITY_MATRIX.json"
+    ],
+    "terminalBoundary": [
+      "CEVT_38_OFFER_AFTER_RETIREMENT_ANNOUNCED",
+      "CEVT_38_RETIREMENT_REVERSAL",
+      "CEVT_RET_NO_LAST_MATCH",
+      "CEVT_RET_STORYBOOK_LAST_GOAL"
+    ],
+    "migrationGuard": "CEVT_RET_RECONSIDER is not a canonical Pasada-7 ID and must not be silently aliased to CEVT_38_RETIREMENT_REVERSAL"
+  },
+  "seeds": {
+    "canonicalPasada7Identities": 54,
+    "ordinaryAgent8Producers": 45,
+    "terminalAgent9Producers": 9,
+    "bridgeMemoryConcepts": 14,
+    "catalogAppliedToMain": false,
+    "ownerIssue": 180,
+    "detailSources": [
+      "SEED_OWNERSHIP.md",
+      "T52_SEED_HANDOFF.json"
+    ]
+  },
+  "lineage": {
+    "activeContentGeneration": "H",
+    "immediate34PlusPredecessorAuthoritative": false,
+    "ownerIssue": 59,
+    "rule": "Do not register or freeze 34+ contentIdentity until the actual final canonical predecessor exists; then add only the adjacent predecessor-to-34+ generation."
+  },
+  "sharedAuthorities": {
+    "exactEligibleCareerOfferFacts": true,
+    "veteran34PlusOfferGeneration": false,
+    "authoritativeFreeAgency": false,
+    "clubFixtureUsageHistoryOnMain": false,
+    "concreteNationalSelection": false,
+    "playerClubLeadership": true,
+    "explicitNamedLeadershipSuccessorOnly": true,
+    "lateCareerCoachPeerInstitutionalIdentityComplete": false,
+    "terminalRetirementOwner": "agent9_pr118"
+  },
+  "blockers": [
+    {"issue": 59, "scope": "global lineage / Wave 0"},
+    {"issue": 180, "scope": "exact Pasada-7 seed catalog and provenance / Wave 0"},
+    {"issue": 192, "scope": "exact canonical 34+ conditional content"},
+    {"issue": 195, "scope": "eight missing factual authority domains for canonical conditionals"},
+    {"issue": 124, "pullRequest": 156, "scope": "club match/calendar/usage authority"},
+    {"issue": 174, "scope": "concrete national selection"},
+    {"issue": 176, "scope": "veteran CareerOffer generation and term representability"},
+    {"issue": 130, "scope": "authoritative free agency / unattached employment"},
+    {"issue": 177, "relatedIssue": 169, "scope": "late-career NPC/coach/successor/peer/institutional identity"},
+    {"pullRequest": 118, "scope": "terminal retirement / last-match closure / epilogues / terminal conditionals"}
+  ],
+  "activation": {
+    "ordinaryFirstBatchAfterWave0": [
+      "EVT_35_FAM_001",
+      "EVT_35_BODY_001",
+      "EVT_35_IMG_001",
+      "EVT_36_MED_001"
+    ],
+    "conditionalRule": "Use exact canonical IDs plus CONDITIONAL_AUTHORITY_MATRIX.json; never activate generic technical shells as canonical content.",
+    "contentIdentityFreezeAllowedNow": false,
+    "autoMergeAllowed": false
+  },
+  "authoritativeCurrentSnapshot": "CURRENT_STATE.json"
+}
