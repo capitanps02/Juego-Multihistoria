@@ -2,7 +2,8 @@
   "workstream": "retirement-epilogues",
   "statusModel": {
     "implemented": "Implemented on t5/retirement-epilogues with dedicated regression evidence; Codex must not duplicate it.",
-    "blocked": "Prepared but must not be guessed around until the named external authority exists."
+    "blocked": "Prepared but must not be guessed around until the named external authority exists or is integrated.",
+    "partially_unblocked": "An external candidate provides part of the required authority, but the task is not integration-ready yet."
   },
   "batches": [
     {
@@ -73,9 +74,28 @@
         {
           "id": "CODEX-RET-005",
           "status": "blocked",
+          "readiness": "partially_unblocked_by_PR_156",
           "task": "Replace aggregate post-announcement appearance observation with full LastMatchFact fixture/minutes/result model.",
-          "blocker": "SportContext has landed, but getCurrentMatchContext() still reports no_authoritative_match_model and fixture/opponent/competition/squad/minutes/result/goals/assists remain unavailable.",
-          "unblockContract": "A persisted authoritative fixture/match-history model exposing exact match identity and player participation facts."
+          "currentMainBlocker": "Main still lacks persisted authoritative match history usable by retirement.",
+          "candidateAuthority": {
+            "pr": 156,
+            "branch": "t5/authoritative-match-model",
+            "stateAtAudit": "open_draft_11_ahead_5_behind",
+            "provides": [
+              "persisted official league fixture identity",
+              "club/opponent/homeAway/competition",
+              "calledUp/onBench/started/appeared/minutes",
+              "next and previous fixture surfaces",
+              "remaining official/league fixture count"
+            ],
+            "stillMissingForFullLastMatchFact": [
+              "authoritative result",
+              "authoritative goals",
+              "authoritative assists",
+              "shared read helper for last fixture in history where player.appeared=true when the immediately previous fixture was a non-appearance"
+            ]
+          },
+          "unblockContract": "Integrate/certify PR #156 (or successor) and additionally expose a read-only last-professional-appearance query plus result/goals/assists if the canonical rich LastMatchFact continues to require those fields. Until then keep unsupported fields null and preserve aggregate fallback."
         }
       ]
     },
@@ -96,9 +116,22 @@
         {
           "id": "CODEX-RET-007",
           "status": "blocked",
+          "readiness": "pending_PR_156_integration",
           "task": "Make closure fixture/season-end aware instead of relying on coarse timing/contract proxies.",
-          "blocker": "SportContext deliberately exposes remainingOfficialMatches/nextFixture/match-day facts as unavailable.",
-          "unblockContract": "Authoritative remaining-official-fixtures and season-end boundary facts."
+          "currentMainBlocker": "Main currently marks remainingOfficialMatches/nextFixture/match-day facts unavailable.",
+          "candidateAuthority": {
+            "pr": 156,
+            "branch": "t5/authoritative-match-model",
+            "stateAtAudit": "open_draft_11_ahead_5_behind",
+            "provides": [
+              "SportContext.remainingOfficialMatches as known",
+              "SportContext.remainingLeagueMatches as known",
+              "SportContext.nextFixture",
+              "SportContext.isMatchDay",
+              "official weekly league fixture progression through season end"
+            ]
+          },
+          "unblockContract": "After PR #156 (or its clean successor) is re-grounded, CI-certified and integrated into main, replace the coarse administrative final-window trigger with a fail-closed sporting boundary based on authoritative remainingOfficialMatches/nextFixture while preserving announced-state playability, idempotence and legacy-store compatibility."
         }
       ]
     },
@@ -152,6 +185,7 @@
           "status": "blocked",
           "task": "Freeze terminal contentIdentity and register final migration edge.",
           "blocker": "PR #15 / ordinary 34+ generation is not yet complete/integrated/frozen; terminal must follow the authoritative 34+ generation.",
+          "latestOwnerEvidence": "PR #15 branch is 7 ahead / 0 behind main at audit, but its effective diff is handoff/documentation only and runtime ordinary 34+ completion remains 0/43.",
           "unblockContract": "Complete and frozen authoritative ordinary 34+ generation plus its exact adjacent source contentIdentity."
         }
       ]
@@ -160,5 +194,6 @@
   "implementedCount": 8,
   "readyCount": 0,
   "blockedCount": 3,
-  "remainingCodexAction": "Do not duplicate implemented lots. Wait for or help the owning workstreams deliver the three unblock contracts, then integrate only RET-005/007/011."
+  "partiallyUnblockedCount": 2,
+  "remainingCodexAction": "Do not duplicate implemented lots. Track PR #156 as the concrete upstream for RET-007 and partial RET-005; do not consume it until re-grounded/certified/integrated. RET-011 remains blocked on complete ordinary 34+ canon."
 }
