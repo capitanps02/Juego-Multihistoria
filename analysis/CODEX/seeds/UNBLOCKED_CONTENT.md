@@ -1,6 +1,6 @@
 # Unblocked seed content
 
-Base: `c2a0b3ab9f63ac335d334846ee730fa7c6d1e6b6`.
+Base: `adf1bffa7298bff6d7cebab88a3388c559cd3588`.
 
 | Evento | Seed | Bloqueo anterior | Infraestructura nueva | Estado Codex |
 | --- | --- | --- | --- | --- |
