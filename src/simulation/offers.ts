@@ -63,7 +63,12 @@ export function getActiveCareerOffers(s: GameState): readonly CareerOffer[] {
   const pending = s.market?.pending;
   return pending ? [structuredClone(pending)] : [];
 }
-function getEligibleCareerOffers(s: GameState): readonly CareerOffer[] {
+/**
+ * Returns only formal offers whose persisted `before` snapshot still matches the live
+ * CareerTerms. Results are detached through getActiveCareerOffers(), so callers may
+ * inspect exact destination/financial terms without acquiring mutation authority.
+ */
+export function getEligibleCareerOffers(s: GameState): readonly CareerOffer[] {
   const current = careerTerms(s);
   return getActiveCareerOffers(s).filter(offer => sameTerms(current, offer.before));
 }

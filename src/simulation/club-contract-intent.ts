@@ -1,7 +1,14 @@
 import type { GameState } from "../core/types.js";
 import { earlyCareerSeedFacts, type EarlyCareerSeedFacts } from "../narrative/seed-memory.js";
 import { lockerSlotAffinity } from "./locker-leadership.js";
-import { eligibleCareerOfferKind, FORMAL_RENEWAL_REASON, type CareerOfferKind } from "./offers.js";
+import {
+  careerOfferKind,
+  eligibleCareerOfferKind,
+  FORMAL_RENEWAL_REASON,
+  getEligibleCareerOffers,
+  type CareerOfferKind,
+  type CareerTerms
+} from "./offers.js";
 import { getCurrentMatchContext, getSportContext, type CurrentMatchContext, type SportContext } from "./sport-context.js";
 
 export { FORMAL_RENEWAL_REASON };
@@ -11,6 +18,7 @@ export const LOCKER_STAR_AFFINITY_FACT = "facts.lockerStarAffinity" as const;
 export const ROLE_DROP_SINCE_23_FACT = "facts.roleDropSince23" as const;
 export const ROLE_GUARANTEE_AT_23_FACT = "facts.roleGuaranteeAt23" as const;
 export const PENDING_CAREER_OFFER_KIND_FACT = "facts.pendingCareerOfferKind" as const;
+export const PENDING_CAREER_OFFER_FACT = "facts.pendingCareerOffer" as const;
 export const CLUB_RENEWAL_INTENT_MAX_MONTHS = 24;
 export const CLUB_RENEWAL_INTENT_THRESHOLD = 0.50;
 
@@ -87,6 +95,31 @@ export function hasRoleGuaranteeAt23(state: GameState): boolean {
   );
 }
 
+/**
+ * Exact, detached projection of the one formal offer that is still compatible with
+ * live CareerTerms. Narrative conditions can inspect destination, salary, duration,
+ * release clause and registration semantics without receiving mutation authority.
+ * Stale offers fail closed to null.
+ */
+export interface PendingCareerOfferFacts {
+  id: string;
+  kind: CareerOfferKind;
+  date: string;
+  reason: string;
+  terms: Readonly<CareerTerms>;
+}
+export function pendingCareerOfferFacts(state: GameState): PendingCareerOfferFacts | null {
+  const offer = getEligibleCareerOffers(state)[0];
+  if (!offer) return null;
+  return {
+    id: offer.id,
+    kind: careerOfferKind(offer),
+    date: offer.date,
+    reason: offer.reason,
+    terms: structuredClone(offer.terms)
+  };
+}
+
 export interface NarrativeCausalFacts extends EarlyCareerSeedFacts {
   clubWantsRenewal: boolean;
   lockerCaptainAffinity: number | null;
@@ -95,6 +128,8 @@ export interface NarrativeCausalFacts extends EarlyCareerSeedFacts {
   roleGuaranteeAt23: boolean;
   /** Compatible formal offer kind for deterministic event/choice gating; null includes stale offers. */
   pendingCareerOfferKind: CareerOfferKind | null;
+  /** Exact detached formal-offer projection; null includes no offer and stale offers. */
+  pendingCareerOffer: PendingCareerOfferFacts | null;
   /** Authoritative/read-only sporting projection. Unavailable sporting facts are null. */
   sport: SportContext;
   /** Current match projection. Fails closed until a real match producer exists. */
@@ -110,6 +145,7 @@ export function narrativeCausalFacts(state: GameState): NarrativeCausalFacts {
     roleDropSince23: roleDropSince23(state),
     roleGuaranteeAt23: hasRoleGuaranteeAt23(state),
     pendingCareerOfferKind: eligibleCareerOfferKind(state),
+    pendingCareerOffer: pendingCareerOfferFacts(state),
     sport: getSportContext(state),
     match: getCurrentMatchContext(state)
   };
