@@ -18,17 +18,18 @@ Strict `codexReady` remains **0/43** until Wave 0 and each scene-specific author
 ## Coverage
 
 - Wave A: **4** context/body/family/image scenes.
-- Wave B: **17** veteran market/contract scenes.
+- Wave B: **18** veteran market/contract-dependent scenes.
 - Wave C: **16** sport/usage/selection scenes.
 - Wave D: **7** NPC/squad-identity scenes.
 - Wave E: **2** scenes requiring authoritative free-agency/unattached state.
 
 Intentional overlaps:
 - `EVT_35_AGT_001` = B + D;
+- `EVT_35_DUAL_001` = B + D;
 - `EVT_35_RECORD_001` = C + D;
 - `EVT_37_SHORT_001` = B + E.
 
-Unique ordinary coverage: **43/43**.
+Unique ordinary coverage: **43/43**. Canonical card extraction/preparation is certified by `CANONICAL_CARD_COVERAGE.json`.
 
 ## Wave A — prepared context batch
 
@@ -46,9 +47,11 @@ These scenes do not need a new formal football offer, fixture, current national-
 
 ## Wave B — veteran market / contract
 
-Detailed package:
-- `WAVE_B_IMPLEMENTATION.json`
-- `WAVE_B_TEST_MATRIX.md`
+Detailed composition:
+- `WAVE_B_COMPLETE_INDEX.json` — authoritative 18-event dependency set;
+- `WAVE_B_IMPLEMENTATION.json` — 17 core canonical cards;
+- `WAVE_D_IMPLEMENTATION.json#EVT_35_DUAL_001` — the B+D overlap card;
+- `WAVE_B_TEST_MATRIX.md`.
 
 Events:
 - `EVT_34_BRIDGE_001`
@@ -61,6 +64,7 @@ Events:
 - `EVT_35_CON_001`
 - `EVT_35_FAREWELL_001`
 - `EVT_35_AGT_001` (also D)
+- `EVT_35_DUAL_001` (also D)
 - `EVT_35_JAN_001`
 - `EVT_35_HOME_001`
 - `EVT_36_CON_001`
@@ -73,10 +77,14 @@ Rules:
 - a rumor, `marketHeat`, reputation or narrative flag is not a signable offer;
 - club/contract state changes only through authoritative market APIs;
 - current `clubWantsRenewal()` still fails closed at `age >= 34`, so ordinary veteran renewal generation is missing;
-- unsupported bonus, exit-clause, role-guarantee or ambassador terms cannot be pretended to exist in `CareerTerms`;
+- unsupported bonus, exit-clause, role-guarantee, liaison-role or ambassador terms cannot be pretended to exist in `CareerTerms`;
 - `EVT_36_LOWER_001` choice B and `EVT_38_RICH_001` choice B expose canonical retirement choices but terminal transitions belong to Agent 9.
 
 ## Wave C — authoritative football / usage / selection
+
+Detailed package:
+- `WAVE_C_IMPLEMENTATION.json`
+- `WAVE_C_TEST_MATRIX.md`
 
 Events:
 - `EVT_34_NT_001`
@@ -100,16 +108,20 @@ Rules:
 - aggregate appearances do not prove current fixture or recent usage;
 - age, form, `roleScore` and coach trust do not prove starts/bench/minutes;
 - caps/national standing do not prove a current call or omission;
-- `EVT_34_BODY_001` requires a real preceding match before post-match pain can be narrated;
-- `EVT_35_RECORD_001` needs the real sporting record plus certified identity if another player is named;
-- `EVT_37_PEN_001` needs a real match, real penalty opportunity and authoritative hierarchy/assignment.
+- `EVT_34_BODY_001` requires a real preceding match/load context plus any medical-negative fact it states;
+- `EVT_35_RECORD_001` needs the real sporting record plus certified identity;
+- `EVT_37_PEN_001` needs a real match, real penalty opportunity, authoritative hierarchy/assignment and a real farewell/possible-last-match context, while Agent 8 must not close the terminal last match.
 
 ## Wave D — late-career NPC / squad identity
+
+Detailed package:
+- `WAVE_D_IMPLEMENTATION.json`
+- `WAVE_D_TEST_MATRIX.md`
 
 Events:
 - `EVT_34_DORSAL_001`
 - `EVT_34_MENTOR_001`
-- `EVT_35_DUAL_001`
+- `EVT_35_DUAL_001` (also B)
 - `EVT_35_RECORD_001` (also C)
 - `EVT_36_CCH_001`
 - `EVT_36_PEER_001`
@@ -118,9 +130,14 @@ Events:
 Rules:
 - active representative = `resolveActiveAgent()` or null;
 - successor/current coach/institutional actor/veteran peer must come from certified affiliation/career facts;
-- `npcRefs`, relationships, lockerPower, age and seed presence are not identity authority.
+- `npcRefs`, relationships, lockerPower, age and seed presence are not identity authority;
+- another NPC retiring can affect protagonist pressure/memory but never terminally retires the protagonist.
 
 ## Wave E — authoritative free agency / unattached state
+
+Detailed package:
+- `WAVE_E_IMPLEMENTATION.json`
+- `WAVE_E_TEST_MATRIX.md`
 
 Events:
 - `EVT_37_SHORT_001` (also B): canon explicitly triggers on **“Agente libre 37+ + mercado puntual”**.
@@ -129,7 +146,9 @@ Events:
 Rules:
 - `monthsRemaining <= 0` currently means `expired_pending_resolution`, not free agency;
 - no unattached state => both scenes fail closed;
-- no offer / market silence never auto-retires the player.
+- market silence is temporal offer/contact history, not low `marketHeat`;
+- no offer / market silence never auto-retires the player;
+- `EVT_38_MARKET_001` choice D delegates terminal retirement to Agent 9.
 
 ## Excluded terminal ownership — Agent 9 / PR #118
 
