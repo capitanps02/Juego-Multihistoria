@@ -24,22 +24,28 @@
     "fallback": null
   },
   {
-    "fact": "lastProfessionalAppearance",
-    "authority": "sport.appearances delta after announcement",
+    "fact": "postAnnouncementAppearanceObserved",
+    "authority": "getSportContext(state).careerAppearances delta after announcement",
     "persisted": "partial",
     "derived": true,
     "requiredFor": ["career_close", "epilogue"],
     "fallback": null,
-    "limitations": ["no authoritative fixture id", "no opponent", "no competition", "no exact minutes", "no starter/bench fact", "no result"]
+    "limitations": [
+      "proves only that a later aggregate appearance occurred",
+      "retirementLastAppearanceDate is currently an observation/week date, not fixture timestamp",
+      "does not identify authoritative final fixture"
+    ]
   },
   {
     "fact": "lastProfessionalMatchDetail",
-    "authority": "future authoritative match history",
+    "authority": "future authoritative persisted match history",
     "persisted": false,
     "derived": false,
     "requiredFor": ["rich_last_match_epilogue"],
     "fallback": null,
-    "status": "blocked_by_sport_authority_PR_141"
+    "status": "blocked_by_missing_authoritative_match_model",
+    "currentSportContract": "getCurrentMatchContext(state).status == no_authoritative_match_model",
+    "unavailableFields": ["fixture", "opponent", "competition", "selection", "starter", "bench", "minutes", "result", "goals", "assists"]
   },
   {
     "fact": "careerSummary",
