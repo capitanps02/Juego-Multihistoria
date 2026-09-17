@@ -18,7 +18,7 @@ jobs:
       - name: Checkout exact main source
         uses: actions/checkout@v4
         with:
-          ref: 176317c5708995bb72fa40af9dd45dffc9838093
+          ref: 6d2239ae1f89be97a7c5cf117d456cff9218aade
           fetch-depth: 0
 
       - name: Set up Node.js
@@ -38,7 +38,7 @@ jobs:
         run: |
           set -euo pipefail
           SOURCE_SHA="$(git rev-parse HEAD)"
-          test "${SOURCE_SHA}" = "176317c5708995bb72fa40af9dd45dffc9838093"
+          test "${SOURCE_SHA}" = "6d2239ae1f89be97a7c5cf117d456cff9218aade"
           CODEX_BASE_COMMIT="${SOURCE_SHA}" node scripts/generate-codex-seed-handoff.mjs
 
       - name: Remove stale provenance markers
@@ -57,7 +57,7 @@ jobs:
         run: |
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
-          const expected = '176317c5708995bb72fa40af9dd45dffc9838093';
+          const expected = '6d2239ae1f89be97a7c5cf117d456cff9218aade';
           const matrix = JSON.parse(fs.readFileSync('analysis/CODEX/seeds/SEED_CONSUMER_MATRIX.json', 'utf8'));
           const ready = JSON.parse(fs.readFileSync('analysis/CODEX/seeds/implementation-ready.json', 'utf8'));
           if (matrix.baseCommit !== expected) throw new Error(`matrix baseCommit ${matrix.baseCommit} != ${expected}`);
