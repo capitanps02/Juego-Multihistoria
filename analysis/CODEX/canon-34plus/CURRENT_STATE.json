@@ -22,19 +22,18 @@
     "currentMainCommit": "5f4d14bca4d696cfafadb58b64034c7cd40cc147",
     "agent8SuccessorAuthorizedNow": false,
     "immediate34PlusPredecessorAuthoritative": false,
-    "reason": "PR #156 is shared runtime only and does not advance EVENTS/contentIdentity; coordination still requires serialized earlier content and the final 30-34 predecessor before 34+",
+    "reason": "shared runtime authorities may advance without EVENTS/contentIdentity, but 34+ still waits for serialized earlier content and the final 30-34 predecessor",
     "rule": "at the real 34+ turn, calculate only the adjacent final30_34_to_34plus generation"
   },
   "seedCatalog": {
     "issue": 180,
     "pullRequest": 191,
-    "state": "ready_for_review_green_not_integrated",
-    "head": "d8f724893cfcb40d2b81f995d8ed08179bbd6f52",
+    "state": "ready_for_review_green_but_not_integrated_and_currently_needs_rebase_or_reground_after_main_moved",
     "canonicalIds": 54,
     "ordinaryProducerIds": 45,
     "terminalProducerIds": 9,
     "bridgeConcepts": 14,
-    "activationRule": "Wave 0 remains incomplete until PR #191 is actually in main"
+    "activationRule": "Wave 0 remains incomplete until the exact seed authority is integrated into the current main lineage"
   },
   "conditionalReconciliation": {
     "ownerIssue": 192,
@@ -63,16 +62,10 @@
   },
   "sharedRuntimeOrder": [
     {"step":1,"ref":"#124 / PR #156","domain":"sport boundary","state":"integrated_in_main_5f4d14bc"},
-    {"step":2,"ref":"#157","domain":"MarketState v2 multi-offer authority","state":"now_unblocked_for_implementation"},
-    {"step":3,"ref":"#130","domain":"employment/unattached authority","state":"now_unblocked_for_implementation; coordinate with #157"},
-    {"step":4,"ref":"#176","domain":"veteran 34+ offer producer and market assessment","state":"wait_for_157_and_130"}
-  ],
-  "newlyUnblockedSharedOwnersAfter156": [
-    {"issue":157,"reason":"may now implement MarketState v2 against the stable public simulator boundary"},
-    {"issue":130,"reason":"employment/unattached contract may now be implemented against the integrated sport boundary"},
-    {"issue":174,"reason":"national selection authority was specified to start after #156"},
-    {"issue":199,"reason":"rich sport history can extend the integrated fixture identity/history"},
-    {"issue":200,"reason":"injury/rehab history can compose with integrated fixture participation"}
+    {"step":2,"ref":"PR #207 / #175","domain":"CareerOffer rich side-term context","state":"ready_for_review_green_not_integrated; prerequisite_for_157"},
+    {"step":3,"ref":"#157","domain":"MarketState v2 multi-offer authority","state":"wait_for_207_integration_then_implement"},
+    {"step":4,"ref":"#130","domain":"employment/unattached authority","state":"implementation_ready_but_coordinate_after_157_collection_contract"},
+    {"step":5,"ref":"#176","domain":"veteran 34+ offer producer and market assessment","state":"wait_for_157_and_130"}
   ],
   "sportAuthorityOnMain": {
     "integrated": true,
@@ -80,25 +73,39 @@
     "factsAvailable": ["official_league_fixture_identity","next_previous_fixture","remaining_league_fixtures","squad_call","bench","start","appearance","minutes","injury_unavailable","historical_usage"],
     "stillUnavailable": ["per_match_final_result","goals","assists","cards","award_results","generic_records","concrete_national_selection","stadium_incident_context"]
   },
+  "marketContextPrerequisite": {
+    "issue": 175,
+    "pullRequest": 207,
+    "state": "ready_for_review_green_not_integrated",
+    "purpose": "persist validated CareerOffer.context before MarketState v2 so multi-offer migration and selectors preserve rich late-career side-term context natively",
+    "agent8Rule": "do not implement local rich-offer context or start veteran multi-offer consumers against a model that will be immediately migrated"
+  },
+  "newlyUnblockedSharedOwnersAfter156": [
+    {"issue":174,"reason":"national selection authority may build on integrated sport boundary"},
+    {"issue":199,"reason":"rich sport history can extend integrated fixture identity/history"},
+    {"issue":200,"reason":"injury/rehab history can compose with integrated fixture participation"}
+  ],
+  "marketOwnersPending207": [157,130,176],
   "downstreamOwners": {
     "contentLineage": {"issue":59},
     "seedCatalog": {"issue":180,"pullRequest":191},
     "conditionalCanonicalContent": {"issue":192},
     "sportBoundary": {"issue":124,"pullRequest":156,"state":"integrated"},
+    "richOfferContext": {"issue":175,"pullRequest":207,"state":"ready_green_not_integrated"},
     "richSportHistoryRecordsAwards": {"issue":199,"state":"unblocked_to_start"},
     "injuryRehabHistory": {"issue":200,"state":"unblocked_to_start"},
     "clubWorldIncidents": {"issue":201,"state":"open_design_gate"},
     "nationalConcreteSelection": {"issue":174,"state":"unblocked_to_start"},
-    "marketStateV2": {"issue":157,"state":"unblocked_to_start"},
-    "veteranMarketContracts": {"issue":176,"state":"waiting_157_130"},
-    "freeAgency": {"issue":130,"state":"unblocked_to_start"},
+    "marketStateV2": {"issue":157,"state":"waiting_207"},
+    "veteranMarketContracts": {"issue":176,"state":"waiting_207_157_130"},
+    "freeAgency": {"issue":130,"state":"contract_ready_coordinate_with_157"},
     "coachChronology": {"issue":169},
     "lateCareerIdentityRouting": {"issue":177,"state":"routing_guard"},
     "terminalRetirement": {"pullRequest":118,"owner":"agent9"}
   },
   "routingRefinements": {
     "EVT_35_AGT_001": "existing active-agent authority or null; no #177 implementation dependency",
-    "EVT_35_DUAL_001": "generic club voice allowed; contract/institutional facts route through #157/#176",
+    "EVT_35_DUAL_001": "generic club voice allowed; contract/institutional facts route through #207/#157/#176",
     "EVT_36_CCH_001": "coach tenure/profile routes to #169; persistent NPC identity not required",
     "EVT_34_DORSAL_001": "generic non-persistent young actor allowed if canon needs no named continuity/T5.3 mutation",
     "EVT_34_MENTOR_001": "same generic-actor boundary",
@@ -107,12 +114,13 @@
   },
   "verifiedCurrentBlockers": {
     "contentLineage": "#59: 34+ is not the next authorized serialized EVENTS generation and final 30-34 predecessor is not authoritative",
-    "seedCatalog": "#180/#191: exact seed authority is implemented and green but not integrated",
+    "seedCatalog": "#180/#191: exact seed authority is green but not integrated into current main",
     "conditionalDeck": "#192: 32/32 identities/routing prepared, 0/32 runtime-accredited",
-    "marketCollection": "#157: now unblocked but not implemented",
-    "freeAgency": "#130: now unblocked but not implemented",
+    "richOfferContext": "#175/#207: green/ready but not integrated; #157 must follow it",
+    "marketCollection": "#157: wait for #207, then implement MarketState v2",
+    "freeAgency": "#130: contract ready; coordinate with #157 before final integration",
     "veteranMarket": "#176: waits for #157/#130",
-    "nationalTeamConcrete": "#174: now unblocked but not implemented",
+    "nationalTeamConcrete": "#174: unblocked but not implemented",
     "richSportHistory": "#199: results/goals/awards/records still missing",
     "injuryRehab": "#200: episode/rehab chronology still missing",
     "clubWorldIncidents": "#201: finance/sponsor/stadium/staff-crisis facts require justified producers or explicit fail-closed decisions",
@@ -120,6 +128,6 @@
     "terminalRetirement": "PR #118 retains terminal state transitions and terminal conditionals"
   },
   "nextSafeActivation": ["EVT_35_FAM_001","EVT_35_BODY_001","EVT_35_IMG_001","EVT_36_MED_001"],
-  "nextPreparationTarget": "Do not create Agent-8 runtime while #59/#191 block Wave 0. Shared implementation capacity should now move to #157, #130, #174, #199 and #200; then #176.",
-  "activationCondition": "serialized 34+ lineage turn plus PR #191 in main plus every selected scene's exact factual authorities"
+  "nextPreparationTarget": "Do not create Agent-8 runtime while #59/#191 block Wave 0. Integrate/re-ground #207 first, then #157/#130/#176; #174/#199/#200 may proceed independently on the integrated sport boundary.",
+  "activationCondition": "serialized 34+ lineage turn plus exact seed authority in current main plus every selected scene's exact factual authorities"
 }
