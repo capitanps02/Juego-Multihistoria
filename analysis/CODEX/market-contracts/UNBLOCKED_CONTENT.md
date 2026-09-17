@@ -1,7 +1,7 @@
 # Unblocked / blocked market content
 
 Original market authority integrated in PR #142 / `782b92c9a496293aeb33ad8b39f522a927374d6f`.  
-Follow-up integration base: `main@6d2239ae1f89be97a7c5cf117d456cff9218aade`.
+Follow-up integration base: `main@d9cd3cf3b9d1f23ab2f082b66ef4a01f6177e7f2`.
 
 `Codex ready` means the market/contract dependency is specified well enough to implement without inventing a second authority. It does **not** authorize an `EVENTS` change outside the active content-identity queue.
 
@@ -64,11 +64,20 @@ A pending proposal remains inspectable through `getActiveCareerOffers`, but:
 
 when current `CareerTerms` no longer equal `offer.before`.
 
+## Offer lifecycle blocker (#165)
+
+Current runtime pauses world advancement whenever `market.pending` exists. Therefore a pending offer cannot naturally reach a later calendar expiry date. A safe lifecycle implementation needs both:
+
+1. a persisted **system closure** representation (`expired | withdrawn | superseded`) that is not a player `reject`; and
+2. an explicit time-ownership decision: either allow authoritative world/calendar advancement with a pending offer, or define another deterministic boundary that can close it.
+
+`assertMarket()` currently derives `market.sequence` from player history plus the one pending offer, so a closure ledger also requires a compatible sequence invariant. Do not add `expiresAt` alone, clear pending without provenance, or reuse/decrement offer IDs.
+
 ## Other blockers
 
 - #130: `CONTRACT_EXPIRY_SHARED_INVARIANT.md`.
 - #164: `VETERAN_MARKET_BLOCKERS.md`.
-- #165: formal offer expiry/withdrawal/supersession lifecycle remains undefined.
+- #165: persisted system-close authority + pending-offer/time policy are both required.
 - Issue #6 is primarily age-26 seed/canon chronology; market authority becomes relevant only where a real employment change occurs.
 
 The authority can represent one-/two-year duration, reduced salary, renewal, permanent transfer, loan/return/conversion, rejection/counter/defer and absence of offer. It still cannot encode a contractual squad-role promise, and no-market must not itself imply retirement.
