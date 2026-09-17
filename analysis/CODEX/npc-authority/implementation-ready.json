@@ -1,12 +1,16 @@
 {
-  "schemaVersion": 1,
-  "baseCommit": "782b92c9a496293aeb33ad8b39f522a927374d6f",
-  "branch": "integration/t5-npc-authority-current",
+  "schemaVersion": 2,
+  "baseCommit": "06762a0557c4e92b189e52151c71d6c1af831ee5",
+  "authorityIntegrationCommit": "291c73eb8c8d74f843060bcb61687a592880e2ea",
+  "authorityIntegrationPr": 144,
+  "authorityIntegrated": true,
+  "repositoryIntegrityRun": 35215222945,
   "generatedAt": "2026-09-17",
+  "branch": "t5/npc-authority-postmerge-handoff",
   "tasks": [
     {
       "id": "CODEX-NPC-001",
-      "status": "ready_after_authority_merge",
+      "status": "ready",
       "priority": "high",
       "eventId": "EVT_21_PRS_001",
       "requiredApi": ["captureNpcKnowledgeTargetContext", "resolveNpcKnowledgeTargets"],
@@ -14,7 +18,7 @@
     },
     {
       "id": "CODEX-NPC-002",
-      "status": "ready_after_authority_merge",
+      "status": "ready",
       "priority": "high",
       "eventId": "EVT_22_CON_001",
       "requiredApi": ["resolveCurrentClubInstitutionalNpc"],
@@ -22,7 +26,7 @@
     },
     {
       "id": "CODEX-NPC-003",
-      "status": "ready_after_authority_merge",
+      "status": "ready",
       "priority": "high",
       "eventId": "EVT_22_CON_002",
       "requiredApi": ["resolveCurrentClubInstitutionalNpc"],
@@ -38,26 +42,35 @@
     },
     {
       "id": "CODEX-NPC-005",
-      "status": "policy_resolved",
+      "status": "resolved_in_main",
       "priority": "high",
       "eventId": "EVT_21_CAP_001",
+      "resolution": "generic_non_persistent_actor",
       "acceptance": ["20_23 captain remains generic", "no nominal captain memory without certification"]
     },
     {
       "id": "CODEX-NPC-006",
-      "status": "blocked",
+      "status": "canonical_gap",
       "priority": "critical",
       "eventId": "EVT_20_BRUNO_001",
       "blockedAlso": ["EVT_20_AGT_001", "EVT_21_SOC_001", "EVT_21_AGT_001"],
-      "reason": "No canonical hiring/switch action yet certifies activeAgentNpcId. Runtime resolver alone is insufficient."
+      "reason": "Runtime authority exists, but the audited 18-23 canon contains no explicit first hiring action that selects NPC_AGT_01 or NPC_AGT_02.",
+      "evidence": [
+        "EVT_18_AGT_001 explicitly states no contract is signed and only permits contacts/information",
+        "EVT_19_AGENT_001 already assumes 'tu representante' without identifying a prior hire",
+        "EVT_20_AGT_001 canon requires active agent and manages communication scope, not hiring",
+        "EVT_21_AGT_001 canon assumes an agent contract is revisable, not initially created"
+      ],
+      "forbiddenFallbacks": ["SEED_FIRST_AGENT", "AGENT_ACTIVE", "AGENT_CONTACT_HECTOR", "AGENT_CONTACT_PRISMA", "relationships", "professional.agentControl", "npcRefs"]
     },
     {
       "id": "CODEX-NPC-007",
-      "status": "needs_owner_decision",
+      "status": "needs_canonical_content_action",
       "priority": "critical",
       "eventId": null,
       "requiredApi": ["certifyActiveAgentInPlace", "clearActiveAgentInPlace"],
-      "acceptance": ["identify real canonical hire/switch/termination action", "old saves without authority remain null", "no contact/seed heuristic"]
+      "acceptance": ["owner supplies/certifies a real canonical hire/switch/termination action", "that action alone writes activeAgentNpcId", "old saves without authority remain null", "no contact/seed heuristic", "0 RNG on resolution"],
+      "notes": "Do not implement a new hiring scene unless the canonical owner explicitly adds or certifies it. Until then activeAgent=null is the correct state for unproven representation."
     }
   ]
 }
