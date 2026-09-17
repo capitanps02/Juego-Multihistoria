@@ -4,12 +4,14 @@ This file orders the 43 ordinary Agent-8 principals by **authority dependency**,
 
 Current rule: **strict Codex-ready remains 0/43** until the dependencies named below are present on the integration base. A prepared scene must still fail closed when a required inherited fact is absent or unverified.
 
+Coverage check: Wave A has 4 scenes, Wave B 17, Wave C 16, Wave D 7 and Wave E 1. `EVT_35_AGT_001` overlaps B+D and `EVT_35_RECORD_001` overlaps C+D, producing **43 unique ordinary principals** with no gaps.
+
 ## Wave 0 — common prerequisites
 
 No ordinary 34+ scene should become active before all of the following are true:
 
 1. **Successive content lineage** (#59) can place the 34+ generation after the actual immediately preceding canonical generation without skipping source evidence.
-2. **T5.2 applies `SEED_OWNERSHIP.md`**: 14 bridge-memory technical concepts are not auto-produced at age 34; the 54 exact Pasada-7 canonical seed identities are available with compatible provenance/migration semantics.
+2. **T5.2 applies `SEED_OWNERSHIP.md` / `T52_SEED_HANDOFF.json`**: 14 bridge-memory technical concepts are not auto-produced at age 34; the 54 exact Pasada-7 canonical seed identities are available with compatible provenance/migration semantics.
 3. **Predecessor memory is canonical**. A 34+ scene that reads a 30–34 memory (`SEED_RELOCATION_LIMIT`, `SEED_RETIREMENT_PUBLIC_TONE`, `SEED_MEDICAL_AUTHORITY`, etc.) must read the canonical predecessor instance/payload, not an unverified generic shell or a boolean inferred from the seed name.
 4. Save/pending/history fingerprints remain compatible; no old `SEEN_*`, cooldown or technical event may suppress a distinct canonical replacement.
 
@@ -135,27 +137,30 @@ Rules:
 - a rumor, `marketHeat` or narrative flag is not a signable offer;
 - narrative choices never mutate club/contract directly;
 - multi-offer scenes require actual simultaneous offer authority or a deliberately narrower canonical representation;
-- role/objective clauses must not be pretended to be contractual if `CareerTerms` cannot encode them.
+- role/objective clauses must not be pretended to be contractual if `CareerTerms` cannot encode them;
+- current `clubWantsRenewal()` still fails closed at `age >= 34`; upstream renewal-intent work does **not** by itself provide veteran renewal generation.
 
 ---
 
 ## Wave C — authoritative football / usage / selection facts required
 
-`EVT_34_NT_001`, `EVT_34_LOAD_001`, `EVT_34_ROLE_001`, `EVT_34_MATCH_001`, `EVT_34_NT_002`, `EVT_34_FAN_001`, `EVT_34_TRAVEL_001`, `EVT_35_TACT_001`, `EVT_35_BENCH_001`, `EVT_35_FINAL_001`, `EVT_35_NT_001`, `EVT_36_BODY_001`, `EVT_36_RECORD_001`, `EVT_37_PEN_001`.
+`EVT_34_NT_001`, `EVT_34_LOAD_001`, `EVT_34_ROLE_001`, `EVT_34_BODY_001`, `EVT_34_MATCH_001`, `EVT_34_NT_002`, `EVT_34_FAN_001`, `EVT_34_TRAVEL_001`, `EVT_35_TACT_001`, `EVT_35_BENCH_001`, `EVT_35_RECORD_001`, `EVT_35_FINAL_001`, `EVT_35_NT_001`, `EVT_36_BODY_001`, `EVT_36_RECORD_001`, `EVT_37_PEN_001`.
 
 Rules:
 - aggregate appearances do not prove a current fixture or recent usage;
 - `roleScore`, age, form and coach trust do not prove starts/bench/minutes;
 - national standing/caps do not prove a current call or omission;
+- `EVT_34_BODY_001` needs a real preceding match context before it may describe post-match pain;
+- `EVT_35_RECORD_001` needs the underlying sporting record fact **and** a certified comparison/squad identity when the scene names another player;
 - a farewell penalty needs a real match + penalty opportunity + hierarchy context and must never be fabricated for cinematic effect.
 
 ---
 
 ## Wave D — late-career NPC / squad identity required
 
-`EVT_34_DORSAL_001`, `EVT_34_MENTOR_001`, `EVT_35_DUAL_001`, `EVT_35_RECORD_001`, `EVT_36_CCH_001`, `EVT_36_PEER_001`.
+`EVT_34_DORSAL_001`, `EVT_34_MENTOR_001`, `EVT_35_DUAL_001`, `EVT_35_RECORD_001`, `EVT_36_CCH_001`, `EVT_36_PEER_001`, `EVT_35_AGT_001`.
 
-`EVT_35_AGT_001` also belongs here in addition to Wave B.
+Overlap is intentional: `EVT_35_AGT_001` requires both Wave B + D; `EVT_35_RECORD_001` requires both Wave C + D.
 
 Rules:
 - `resolveActiveAgent()` or null is authoritative for the representative;
