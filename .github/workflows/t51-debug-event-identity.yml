@@ -1,0 +1,53 @@
+name: T5.1 debug event identity
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/t51-debug-event-identity.yml'
+  workflow_dispatch:
+
+jobs:
+  compare-active-events:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Build current
+        run: |
+          npm ci
+          npm run build
+      - name: Build previous green catalog
+        run: |
+          git worktree add /tmp/t51-old 3dd9fd463a7cbef0093f6b0d87c14b6991d8e522
+          cd /tmp/t51-old
+          npm ci
+          npm run build
+      - name: Compare active EVENTS
+        run: |
+          node --input-type=module <<'NODE'
+          import { pathToFileURL } from 'node:url';
+          const current = (await import(pathToFileURL(`${process.cwd()}/dist/content/events/index.js`))).EVENTS;
+          const previous = (await import(pathToFileURL('/tmp/t51-old/dist/content/events/index.js'))).EVENTS;
+          const prev = new Map(previous.map(event => [event.id, event]));
+          const cur = new Map(current.map(event => [event.id, event]));
+          const ids = [...new Set([...prev.keys(), ...cur.keys()])].sort();
+          let count = 0;
+          for (const id of ids) {
+            const a = prev.get(id);
+            const b = cur.get(id);
+            if (JSON.stringify(a) === JSON.stringify(b)) continue;
+            count += 1;
+            console.log(`\n=== ${id} ===`);
+            console.log('PREVIOUS', JSON.stringify(a));
+            console.log('CURRENT ', JSON.stringify(b));
+          }
+          console.log(`\nDIFFERING_EVENTS=${count}`);
+          if (count === 0) console.log('EVENTS are byte-for-byte JSON equivalent.');
+          NODE
