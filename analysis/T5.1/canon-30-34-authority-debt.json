@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "scope": "T5.1 canon 30-34 shared-authority debt",
   "sourceMainSha": "fa3c8bae524fef62e4eb9802e895df88588998c4",
-  "principle": "Concrete match, squad, competition, offer and contract-clause claims must come from an authoritative shared surface. Aggregate form, reputation, age, role, month and narrative flags are not substitutes.",
+  "principle": "Concrete match, squad, competition, offer, leadership and contract-clause claims must come from an authoritative shared surface. Aggregate form, reputation, age, role, month and narrative flags are not substitutes.",
   "upstreamReview": {
     "newFactsAtSourceMain": [
       "facts.roleDropSince23",
@@ -12,7 +12,7 @@
       "facts.playerClubLeadership.currentRole",
       "facts.playerClubLeadership.hasCertifiedMainCaptainHistory"
     ],
-    "resultFor30_34": "Exact pending-offer and leadership facts close single-offer/current-captain read gaps but do not create multi-offer persistence, a minutes-based renewal clause, or missing sport history. EVT_33_CAP_001 can consume current main-captain authority; canonical-missing EVT_31_ROLE_001 still needs authoritative match production plus bench/squad context."
+    "resultFor30_34": "Exact pending-offer and leadership facts close single-offer/current-captain read gaps but do not create multi-offer persistence, a minutes-based renewal clause, missing sport history, or a quantified 30-34 locker-weight authority. EVT_33_CAP_001 can consume current main-captain authority; EVT_30_CAP_001 still cannot equate professional.lockerPower or generic NPC affinity with the canonical high LOCKER_WEIGHT trigger. Canonical-missing EVT_31_ROLE_001 still needs authoritative match production plus bench/squad context."
   },
   "sharedSurfaces": {
     "sport": {
@@ -82,6 +82,18 @@
         "automatic-renewal-by-minutes clause",
         "minutes threshold attached to a formal offer"
       ]
+    },
+    "lockerLeadership": {
+      "path": "src/simulation/locker-leadership.ts",
+      "currentAssignments": [
+        "UDV / phase 23_26 / captain NPC_PLR_10 / star unavailable"
+      ],
+      "veteran30_34Assignment": null,
+      "readFacts": [
+        "facts.lockerCaptainAffinity",
+        "facts.lockerStarAffinity"
+      ],
+      "constraint": "Without an explicit assignment for phase 30_34, captain/star affinity resolves null. professional.lockerPower is an aggregate protagonist score and is not certified as the canonical LOCKER_WEIGHT scale or threshold."
     }
   },
   "scenes": [
@@ -155,6 +167,19 @@
       "codexAction": "Require a national-team roster authority before certifying the trigger; do not derive preselection from nationalStanding."
     },
     {
+      "eventId": "EVT_30_CAP_001",
+      "status": "blocked_unquantified_locker_authority",
+      "canonicalClaim": "The captaincy handover is conditioned by a high LOCKER_WEIGHT / established dressing-room leadership context.",
+      "currentAuthority": "LOCKER_LEADERSHIP_ASSIGNMENTS has no phase 30_34 assignment. facts.lockerCaptainAffinity and facts.lockerStarAffinity therefore fail closed to null in a veteran state.",
+      "currentApproximationRisk": [
+        "professional.lockerPower",
+        "generic NPC relationship affinity/respect",
+        "captaincy-related seeds or flags"
+      ],
+      "risk": "No approved mapping proves that any aggregate runtime score is the canonical LOCKER_WEIGHT scale or defines the required high threshold.",
+      "codexAction": "Keep EVT_30_CAP_001 as technical adaptation. When shared locker authority gains a 30_34 assignment or canon defines the LOCKER_WEIGHT mapping, revisit the trigger explicitly; do not infer the threshold from lockerPower or arbitrary relationship values."
+    },
+    {
       "eventId": "EVT_31_MKT_001",
       "status": "blocked_multi_offer_authority",
       "canonicalClaim": "Two simultaneous formal proposals are compared: two years as a star versus one year at an elite contender.",
@@ -203,6 +228,7 @@
     "No missing match fact may be replaced by sport.form, roleScore, age, reputation, coach trust, month, seasonDay or a narrative flag.",
     "No multi-offer scene may be certified from MarketState.pending or from getEligibleCareerOffers while persistence remains single-offer.",
     "No contractual clause may be claimed as authoritative if CareerTerms cannot persist it.",
+    "No canonical LOCKER_WEIGHT threshold may be inferred from professional.lockerPower or an arbitrary NPC relationship scalar.",
     "Authority gaps remain technical-adaptation debt, not aliases or verified identity."
   ]
 }
