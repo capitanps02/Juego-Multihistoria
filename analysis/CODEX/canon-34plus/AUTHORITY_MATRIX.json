@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "generatedAt": "2026-09-17",
   "baseMain": "182d5e6abc4f7c98eeb95703a4bc6c3560a4bcde",
   "owner": "t51/canon-34plus",
@@ -10,10 +10,11 @@
     "waveB": 17,
     "waveC": 16,
     "waveD": 7,
-    "waveE": 1,
+    "waveE": 2,
     "overlaps": [
       {"eventId":"EVT_35_AGT_001","waves":["B","D"]},
-      {"eventId":"EVT_35_RECORD_001","waves":["C","D"]}
+      {"eventId":"EVT_35_RECORD_001","waves":["C","D"]},
+      {"eventId":"EVT_37_SHORT_001","waves":["B","E"]}
     ],
     "strictCodexReady": 0
   },
@@ -69,12 +70,12 @@
     {"eventId":"EVT_36_CCH_001","waves":["D"],"seeds":["SEED_YOUNGER_COACH"],"requires":["certified_current_coach_identity_and_affiliation"],"forbid":["invented_coach","age_inference_from_role"]},
     {"eventId":"EVT_36_RECORD_001","waves":["C"],"seeds":["SEED_700_MATCH_CHOICE"],"requires":["authoritative_career_appearance_threshold_or_record_context"],"forbid":["fabricated_700th_match"]},
     {"eventId":"EVT_36_PEER_001","waves":["D"],"seeds":["SEED_PEER_RETIREMENT_MIRROR"],"requires":["certified_veteran_peer_identity_and_career_state"],"forbid":["invented_peer_retirement"]},
-    {"eventId":"EVT_36_LOWER_001","waves":["B"],"seeds":["SEED_DROP_LEVEL_TO_PLAY"],"requires":["real_lower_level_offer_or_market_option"],"forbid":["tier_change_without_offer"]},
+    {"eventId":"EVT_36_LOWER_001","waves":["B"],"seeds":["SEED_DROP_LEVEL_TO_PLAY"],"requires":["real_lower_level_offer_or_market_option"],"forbid":["tier_change_without_offer","agent8_terminal_retirement_transition"],"terminalChoiceDelegation":{"choice":"prefer_retirement_at_high_level","owner":"agent9"}},
     {"eventId":"EVT_36_MED_001","waves":["A"],"seeds":["SEED_POST_CAREER_BODY_RISK"],"requires":["explicit_medical_body_history"],"forbid":["age_only_health_risk","invented_named_doctor","terminal_retirement"]},
-    {"eventId":"EVT_37_SHORT_001","waves":["B"],"seeds":["SEED_THREE_MONTH_CONTRACT"],"requires":["real_short_duration_offer_terms"],"forbid":["synthetic_short_contract"]},
+    {"eventId":"EVT_37_SHORT_001","waves":["B","E"],"seeds":["SEED_THREE_MONTH_CONTRACT"],"requires":["authoritative_unattached_free_agent_state","real_short_duration_offer_terms"],"forbid":["synthetic_short_contract","monthsRemaining_zero_as_free_agency"]},
     {"eventId":"EVT_37_HOME_001","waves":["B"],"seeds":["SEED_TEN_MATCH_HOME_RETURN"],"requires":["real_home_return_offer","representable_short_term_terms"],"forbid":["sentimental_return_as_offer"]},
     {"eventId":"EVT_37_PEN_001","waves":["C"],"seeds":["SEED_FAREWELL_PENALTY"],"requires":["real_match","real_penalty_opportunity","authoritative_penalty_hierarchy_or_assignment"],"forbid":["cinematic_penalty_fabrication"]},
-    {"eventId":"EVT_38_RICH_001","waves":["B"],"seeds":["SEED_LAST_HUGE_OFFER"],"requires":["real_high_value_formal_offer"],"forbid":["reputation_as_offer","direct_signing"]},
+    {"eventId":"EVT_38_RICH_001","waves":["B"],"seeds":["SEED_LAST_HUGE_OFFER"],"requires":["real_high_value_formal_offer"],"forbid":["reputation_as_offer","direct_signing","agent8_terminal_retirement_transition"],"terminalChoiceDelegation":{"choice":"reject_and_retire","owner":"agent9"}},
     {"eventId":"EVT_38_MARKET_001","waves":["E"],"seeds":["SEED_MARKET_SILENCE_END","SEED_MARKET_FLOOR_FINAL"],"requires":["authoritative_unattached_free_agent_state","real_market_silence_window","formal_offer_history"],"forbid":["monthsRemaining_zero_as_free_agency","no_offer_as_retirement","marketHeat_as_market_silence"]}
   ]
 }
