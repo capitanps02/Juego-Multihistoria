@@ -2,20 +2,21 @@
 
 Fuente técnica: GitHub. Base de esta pasada: `main@da3b356ac1c9c3376052189573e5a30f89b71cf0`.
 
-Objetivo: entregar defectos pequeños, reproducibles y con ownership claro. Codex no debe recibir tareas genéricas del tipo «arreglar QA».
+Objetivo: entregar defectos pequeños, reproducibles y con ownership claro. Codex no debe recibir tareas genéricas del tipo «arreglar QA» ni duplicar fixes que ya existen en una rama propietaria.
 
 ## Flujo
 
 1. Elegir una fila `status=ready` de `implementation-ready.json`.
-2. Reproducir primero el test indicado sobre el base exacto o sobre el PR propietario cuando la tarea sea de integración.
-3. Cambiar solo los archivos permitidos por el ownership.
-4. Hacer verde la reproducción sin relajar el test.
-5. Ejecutar acceptance tests y regresiones vecinas.
-6. Reportar HEAD exacto y CI. No merge automático.
+2. Si `tasks` está vacío, no inventar trabajo: consultar blockers/owner PRs del registro.
+3. Reproducir primero el test indicado sobre el base exacto o sobre el PR propietario cuando la tarea sea de integración.
+4. Cambiar solo los archivos permitidos por el ownership.
+5. Hacer verde la reproducción sin relajar el test.
+6. Ejecutar acceptance tests y regresiones vecinas.
+7. Reportar HEAD exacto y CI. No merge automático.
 
 ## Bugs abiertos reproducidos en main
 
-- T5-QA-016 / issue #61 — player authority en retirada.
+- T5-QA-016 / issue #61 — player authority en retirada. El runtime de `main` conserva el bypass, pero PR #118 ya implementa el fix dirigido; no duplicar ese código desde Codex. QA debe certificar su integración/re-ground cuando lineage lo permita.
 - T5-QA-028 / issue #130 — contrato vencido permanece registrado/activo durante años. Reproducción dirigida `loyal/512000`: 6669 días a 0 meses y 419 apariciones añadidas en la última certificación dirigida. El contrato de Pass A ya está especificado; la implementación espera a que PR #156 fije la frontera final del simulador.
 
 ## Blocker de PR candidato
@@ -33,8 +34,10 @@ Objetivo: entregar defectos pequeños, reproducibles y con ownership claro. Code
 
 El rojo observado en la simulación estratificada no era #130: el validador confundía una cesión internacional válida (`LOAN_ACTIVE=true`, `ownerClub != registrationClub`, `route=abroad`) con una incoherencia. El validador ahora usa la autoridad de ownership y existe una regresión específica para esa combinación.
 
-## T5-QA-028: contrato definido, implementación secuenciada
+## Por qué no hay tareas Codex QA desbloqueadas ahora
 
-Issue #130 ya define Pass A: `monthsRemaining=0` implica empleo no activo/unattached como autoridad derivada, mientras club/owner/registration permanecen solo como provenance histórica; no deben añadirse apariciones ordinarias ni autoridad institucional de club, y los reads consumen 0 RNG. PR #170 ya está integrado, pero PR #156 sigue abierto/draft y mueve la frontera autoritativa de world simulation. Por ello #130 no entra todavía en `implementation-ready.json`: hay que aplicar Pass A una sola vez sobre el boundary final tras resolver #156.
+- #61: el fix ya existe en PR #118; duplicarlo crearía dos implementaciones del mismo state machine. Sigue abierto hasta integración real y regresión exact-head.
+- #130: Pass A está definido, pero PR #156 sigue abierto/draft y mueve la frontera autoritativa de world simulation. Aplicarlo antes obligaría a parchear dos layouts.
+- #133: es blocker del owner LOCK23/PR #122, no ownership QA.
 
-No improvisar `route=free_agent`, salario 0, club sentinel, transferencia forzada, contrato sintético ni retirada automática.
+No improvisar `route=free_agent`, salario 0, club sentinel, transferencia forzada, contrato sintético ni retirada automática. No auto-merge.
