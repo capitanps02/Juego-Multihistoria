@@ -6,12 +6,15 @@ on:
     paths:
       - 'src/simulation/late-career-engine.ts'
       - 'src/epilogue/generator.ts'
+      - 'src/epilogue/career-summary.ts'
       - 'src/content/events/34_plus/**'
       - 'scripts/test-t536-t537-retirement.mjs'
+      - 'scripts/test-t536-career-summary.mjs'
       - 'scripts/test-t537-family-minimums.mjs'
       - 'scripts/test-t536-status-writer-inventory.mjs'
       - 'scripts/test-t537-epilogue-profiles.mjs'
       - 'analysis/T5.36-T5.37/**'
+      - 'analysis/CODEX/retirement/**'
       - 'project/workstreams/T536_T537_RETIREMENT_EPILOGUES.md'
       - '.github/workflows/t536-retirement-epilogues.yml'
   workflow_dispatch:
@@ -37,4 +40,4 @@ jobs:
         run: npm run build
 
       - name: T5.36 and T5.37 retirement gates
-        run: node --test scripts/test-t536-t537-retirement.mjs scripts/test-t537-family-minimums.mjs scripts/test-t536-status-writer-inventory.mjs scripts/test-t537-epilogue-profiles.mjs
+        run: node --test scripts/test-t536-t537-retirement.mjs scripts/test-t536-career-summary.mjs scripts/test-t537-family-minimums.mjs scripts/test-t536-status-writer-inventory.mjs scripts/test-t537-epilogue-profiles.mjs
