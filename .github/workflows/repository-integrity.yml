@@ -67,6 +67,9 @@ jobs:
       - name: T5 cross-workstream integration probes
         run: node --test scripts/test-t5-integration-probes.mjs
 
+      - name: T5 state validator unit tests
+        run: node --test scripts/test-t5-state-validator.mjs
+
       - name: T5 stratified simulation
         env:
           T5_QA_OUTPUT: qa-artifacts/t5-stratified.json
