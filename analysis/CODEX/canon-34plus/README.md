@@ -6,20 +6,40 @@ Runtime re-grounded on `main@fa3c8bae524fef62e4eb9802e895df88588998c4` on 2026-0
 - Canonical principals in source block 34+: **50**.
 - Agent 8 ordinary late-career ownership: **43**.
 - Agent 9 terminal/retirement ownership: **7** (`EVT_37_ANNOUNCE_001` plus six `EVT_RET_*`).
-- Engine 34+ conditionals: **32**; there is still no authoritative canonical conditional-ID inventory, so semantic completion cannot be inferred from the count.
+- Canonical Pasada-7 conditionals: **32 exact IDs** from section 25.13 of the Documento Maestro.
+- Engine 34+ conditionals: **32**, but count equality is misleading: only **5 IDs overlap exactly**, **27 canonical IDs are absent**, **27 engine technical IDs are not canonical**, and **0/32 canonical conditionals are semantically accredited in runtime**.
 - Historical engine-only principal extras: **30**.
-- Identity reconciliation: **50/50 classified** (4 same-identity, 3 replacements, 13 needs-reimplementation, 30 canonical-missing).
+- Principal identity reconciliation: **50/50 classified** (4 same-identity, 3 replacements, 13 needs-reimplementation, 30 canonical-missing).
+- Conditional identity reconciliation: **32/32 canonical IDs identified**; implementation remains **0/32 accredited** under issue **#192**.
 
 ## Runtime vs preparation
-This branch intentionally contains **no new active 34+ canonical event implementation yet**. Terminal career retirement remains owned by Agent 9 / PR #118.
+This branch intentionally contains **no new active 34+ canonical principal implementation yet**. Terminal career retirement remains owned by Agent 9 / PR #118.
 
-- ordinary canonical runtime implemented on Agent-8 branch: **0/43**;
-- strict integration/Codex-ready: **0/43** while Wave 0 remains incomplete;
-- canonical-card preparation: **43/43 = 100%**;
-- authority classification: **43/43**;
+- ordinary canonical principals runtime implemented on Agent-8 branch: **0/43**;
+- strict principal integration/Codex-ready: **0/43** while Wave 0 remains incomplete;
+- canonical principal-card preparation: **43/43 = 100%**;
+- principal authority classification: **43/43**;
+- canonical conditional identities reconciled: **32/32**;
+- canonical conditional runtime accreditation: **0/32**;
 - exact Pasada-7 seed ownership classified: **54/54** plus 14 inherited/derived bridge-memory concepts.
 
-Preparation is complete; activation is blocked by shared lineage/seed migration and scene-specific authorities, not by missing canonical cards.
+Principal preparation is complete; activation is blocked by shared lineage/seed migration and scene-specific authorities. Conditional identity reconciliation is also complete, but exact canonical conditional content still requires reimplementation under #192.
+
+## Conditional deck correction
+The Documento Maestro section **25.13 — Baraja condicional, 32 eventos que pueden alterar el final** is the authoritative conditional inventory.
+
+Current engine `src/content/events/34_plus/conditional-events.ts` also contains 32 rows, but 29 are generated through a generic helper with `canonStatus:"technical_adaptation"`. Generic body/choices/effects and proxy-style gates do not establish canonical equivalence.
+
+Exact-ID overlap is only:
+- `CEVT_34_MAJOR_COMEBACK`;
+- `CEVT_36_NO_MEDICAL_CLEARANCE`;
+- `CEVT_38_OFFER_AFTER_RETIREMENT_ANNOUNCED`;
+- `CEVT_RET_NO_LAST_MATCH`;
+- `CEVT_RET_STORYBOOK_LAST_GOAL`.
+
+All five still require canonical reimplementation because their current gates/effects can fabricate or proxy facts that canon requires to be factual. In particular, `CEVT_RET_STORYBOOK_LAST_GOAL` cannot create a goal from a narrative choice, and `CEVT_RET_NO_LAST_MATCH` cannot infer an unavailable last match merely from elapsed retirement time.
+
+`CEVT_RET_RECONSIDER` is not one of the 32 canonical IDs. The canonical reconsideration identity is `CEVT_38_RETIREMENT_REVERSAL`; no automatic alias/rewrite is authorized. See `CONDITIONAL_RECONCILIATION.json`, `CONDITIONAL_HANDOFF.md` and issue **#192**.
 
 ## Current lineage position
 Main remains on certified generation H for active content. The newer leadership and market-authority commits do not change `EVENTS`, content identity, RNG or schema. Agent 8 must still wait for all intervening canonical generations, especially 23–30 and final 30–34, to become authoritative. Issue #59 owns the multigeneration migration/evidence contract.
@@ -62,14 +82,14 @@ Cross-wave scenes:
 Detailed canonical cards and QA packages exist for Waves A–E. `WAVE_B_COMPLETE_INDEX.json` composes the market wave without duplicating the full `EVT_35_DUAL_001` card stored in Wave D.
 
 ## Wave 0 — mandatory before runtime activation
-No ordinary 34+ principal should be registered until all common prerequisites are satisfied:
+No ordinary 34+ principal or canonical conditional should be registered until all common prerequisites are satisfied:
 1. issue #59 reaches the actual authoritative immediate predecessor;
 2. T5.2 / **#180** applies `T52_SEED_HANDOFF.json` and preserves provenance/migration semantics;
 3. predecessor memories consumed by 34+ are canonical and use correct live/historical semantics;
 4. pending/history/event fingerprints remain migration-safe.
 
 ## First activation batch after Wave 0
-Wave A remains the first safe target:
+Wave A remains the first safe principal target:
 - `EVT_35_FAM_001`;
 - `EVT_35_BODY_001`;
 - `EVT_35_IMG_001`;
@@ -77,9 +97,12 @@ Wave A remains the first safe target:
 
 They are fully specified in `WAVE_A_IMPLEMENTATION.json` and `WAVE_A_TEST_MATRIX.md`, but remain inactive until Wave 0 lands.
 
+Conditional work is tracked separately in **#192** and must use exact Pasada-7 identities rather than treating the existing technical deck as canonical.
+
 ## Shared owner routing
 - lineage: **#59**;
 - 34+ seed catalog/provenance: **#180**;
+- 34+ exact conditional deck: **#192**;
 - match/calendar/competition facts: **#124** + PR #156;
 - concrete national selection: **#174**;
 - veteran 34+ offers/terms: **#176**;
@@ -88,4 +111,4 @@ They are fully specified in `WAVE_A_IMPLEMENTATION.json` and `WAVE_A_TEST_MATRIX
 - terminal career retirement: **PR #118 / Agent 9**.
 
 ## Hard boundary
-Agent 8 may create veteran pressure, uncertainty, adaptation, international-retirement choices and explicit decisions to continue. It must not announce/close **career** retirement, fabricate last match/goal/selection, turn no-offer into retirement, infer NPC identities, or mutate club/contract outside authoritative market APIs.
+Agent 8 may create veteran pressure, uncertainty, adaptation, international-retirement choices and explicit decisions to continue. It must not announce/close **career** retirement, fabricate last match/goal/selection, turn no-offer into retirement, infer NPC identities, or mutate club/contract outside authoritative market APIs. Existing technical conditionals must not be relabeled canonical without exact identity, factual trigger and semantic proof.
