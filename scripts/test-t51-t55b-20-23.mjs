@@ -160,15 +160,16 @@ test('T5.5-B contract scenes never mutate contract authority or club directly', 
   }
 });
 
-test('T5.5-B resolves captain knowledge through the authoritative live slot', () => {
+test('T5.5-B captain knowledge fails closed until a 20-23 live captain slot is certified', () => {
   const state = stateFor(21, 525520);
   state.professional.lockerPower = 60;
-  const captainId = resolveLockerSlot(state, 'captain');
-  assert.ok(captainId, 'test route needs a certified current-club captain');
+  assert.equal(resolveLockerSlot(state, 'captain'), null, '20-23 currently has no authoritative captain assignment');
+  const rules = NPC_EVENT_KNOWLEDGE_RULES.filter(rule => rule.eventId === 'EVT_21_CAP_001');
+  assert.equal(rules.length, 1);
+  assert.deepEqual(rules[0].targetSlots, ['captain']);
   const result = resolveChoice(state, byId('EVT_21_CAP_001'), 'DISSENT_MINORITY', true);
-  assert.equal(npcKnows(result.state, captainId, 'EVT_21_CAP_001'), true);
-  assert.equal(getNpcKnowledgeRecord(result.state, captainId, 'EVT_21_CAP_001')?.source, 'witnessed');
-  assert.equal(npcKnows(result.state, 'NPC_PLR_11', 'EVT_21_CAP_001'), captainId === 'NPC_PLR_11');
+  assert.equal(npcKnows(result.state, 'NPC_PLR_10', 'EVT_21_CAP_001'), false, 'UDV captain must not be guessed for an uncertified phase');
+  assert.equal(npcKnows(result.state, 'NPC_PLR_11', 'EVT_21_CAP_001'), false, 'UDV vice-captain must not be guessed');
 });
 
 test('T5.5-B press knowledge follows public/informed channels and silence informs nobody', () => {
