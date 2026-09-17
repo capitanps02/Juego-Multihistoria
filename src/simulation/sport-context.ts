@@ -14,6 +14,7 @@ import {
   type ScheduledFixture,
   type SquadStatus
 } from "./match-model.js";
+import { currentPenaltyHierarchyContext, type MatchImportance } from "./penalty-context.js";
 
 export type SportFactAvailability = "known" | "unavailable";
 export type MatchContextStatus = "authoritative" | "no_current_match";
@@ -95,6 +96,13 @@ export interface CurrentMatchContext {
   decisionMinute: number | null;
   scoreAtDecision: { home: number; away: number } | null;
   debutDecisionContext: boolean;
+  penaltyHierarchyContext: boolean;
+  matchImportance: MatchImportance | null;
+  designatedPenaltyTakerId: string | null;
+  designatedTakerMissedEarlier: boolean | null;
+  penaltyDecisionMinute: number | null;
+  penaltyScoreAtDecision: { home: number; away: number } | null;
+  penaltyPressure: number | null;
 }
 
 const unavailable = (): SportFactAvailability => "unavailable";
@@ -184,7 +192,7 @@ export function getSportContext(state: GameState): SportContext {
   };
 }
 
-/** Current-match projection over the persisted match row for today's football cycle. */
+/** Current-match projection over persisted match and match-moment facts for today's football cycle. */
 export function getCurrentMatchContext(state: GameState): CurrentMatchContext {
   const match = currentOfficialMatch(state);
   if (!match) {
@@ -207,7 +215,14 @@ export function getCurrentMatchContext(state: GameState): CurrentMatchContext {
       injury: null,
       decisionMinute: null,
       scoreAtDecision: null,
-      debutDecisionContext: false
+      debutDecisionContext: false,
+      penaltyHierarchyContext: false,
+      matchImportance: null,
+      designatedPenaltyTakerId: null,
+      designatedTakerMissedEarlier: null,
+      penaltyDecisionMinute: null,
+      penaltyScoreAtDecision: null,
+      penaltyPressure: null
     };
   }
   const canonicalDebutDecision = match.player.debut === true
@@ -216,6 +231,7 @@ export function getCurrentMatchContext(state: GameState): CurrentMatchContext {
     && match.decisionContext.minute === 78
     && match.decisionContext.scoreHome === 1
     && match.decisionContext.scoreAway === 1;
+  const penalty = currentPenaltyHierarchyContext(state);
   return {
     status: "authoritative",
     fixtureId: match.id,
@@ -235,6 +251,13 @@ export function getCurrentMatchContext(state: GameState): CurrentMatchContext {
     injury: match.player.injuryUnavailable,
     decisionMinute: match.decisionContext?.minute ?? null,
     scoreAtDecision: match.decisionContext ? { home: match.decisionContext.scoreHome, away: match.decisionContext.scoreAway } : null,
-    debutDecisionContext: canonicalDebutDecision
+    debutDecisionContext: canonicalDebutDecision,
+    penaltyHierarchyContext: penalty !== null && penalty.fixtureId === match.id,
+    matchImportance: penalty?.importance ?? null,
+    designatedPenaltyTakerId: penalty?.designatedTakerId ?? null,
+    designatedTakerMissedEarlier: penalty?.designatedTakerMissedEarlier ?? null,
+    penaltyDecisionMinute: penalty?.minute ?? null,
+    penaltyScoreAtDecision: penalty ? { home: penalty.scoreHome, away: penalty.scoreAway } : null,
+    penaltyPressure: penalty?.pressure ?? null
   };
 }
