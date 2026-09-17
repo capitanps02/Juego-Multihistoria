@@ -40,7 +40,7 @@ Actualizados el 17 de septiembre de 2026. Estos indicadores separan el crédito 
 | Indicador | Valor | Base verificable |
 |---|---:|---|
 | Progreso global acreditado | 33,51 % | `project/PLAN_PASADAS.md`; T5 aún no cierra ninguna pasada oficial. |
-| Migración del guardado publicado a PlayCanvas | 100 % | `84871…` está publicado; sucesor `99ec…` validado y pendiente de publicación. |
+| Migración del guardado publicado a PlayCanvas | 100 % | Asset `306862614` con `99ec…`; Launch recupera 9 dic 2026 / 6 decisiones sin avisos ni errores. |
 | T3 Android | 75 % (3/4 hitos) | Falta exclusivamente la evidencia en teléfono Android físico de T3.4. |
 | T5 oficial acreditado | 0 % de su bloque | Ninguna pasada T5 completa; no se asigna peso parcial. |
 | Primer lote canónico 23–26 | 7/12 escenas (58,3 %) | Tres T5.10, tres T5.11 y `EVT_23_PRS_001` activos en el catálogo real. |
@@ -59,4 +59,5 @@ Actualizados el 17 de septiembre de 2026. Estos indicadores separan el crédito 
 - 17 de septiembre de 2026: `84871…` publicado en PlayCanvas asset `306862614`. Launch `seed-repairs=1` recuperó el guardado existente en 1 nov 2026, 6 decisiones, sin errores ni avisos; no se ejecutó ninguna simulación.
 - 17 de septiembre de 2026: integrado el gate de readiness T5.2. La auditoría cubre 210/210 seeds, sin cadena runtime imposible y con 57/57 pruebas T5.2 correctas. El crédito oficial T5 se mantiene en 0 %: `canonicalClosureComplete` exige una clasificación canónica explícita por seed y el registro está correctamente vacío (0/210), por lo que no se inventaron cierres.
 - Próximo cierre oficial verificable: T5.5 requiere tres escenas (`EVT_20_BRUNO_001`, `EVT_20_AGT_001`, `EVT_21_SOC_001`) que siguen bloqueadas por autoridad/provenance real; no existe todavía una implementación candidata en GitHub.
-- 17 de septiembre de 2026: integrado el wiring deportivo #124 sobre `main` actual. Cuatro escenas 18–20 ahora consumen hechos persistidos de partido, calendario y objetivo, sin proxies. Generación `99ec70cd…`, ruta adyacente desde `84871…`, 132/132 pruebas dirigidas y bundle PlayCanvas generado; pendiente de publicación/Launch.
+- 17 de septiembre de 2026: integrado el wiring deportivo #124 sobre `main` actual. Cuatro escenas 18–20 ahora consumen hechos persistidos de partido, calendario y objetivo, sin proxies. Generación `99ec70cd…`, ruta adyacente desde `84871…`, 132/132 pruebas dirigidas y bundle PlayCanvas publicado.
+- 17 de septiembre de 2026: `99ec70cd…` publicado en PlayCanvas asset `306862614`. Launch `sport-context=1` recuperó el guardado existente en 9 dic 2026, 6 decisiones, sin errores ni avisos; no se ejecutó ninguna simulación.
