@@ -6,6 +6,7 @@ import { getNpcKnowledgeRecord, npcKnows } from '../dist/core/npc-knowledge.js';
 import { reconcileNpcKnowledgeFromHistoryInPlace } from '../dist/narrative/npc-knowledge-reconciliation.js';
 import { resolveChoiceInPlace } from '../dist/narrative/resolver.js';
 import { GameSession } from '../dist/session/game-session.js';
+import './test-t53-backfill-baseline.mjs';
 
 const byId = id => {
   const event = EVENTS.find(candidate => candidate.id === id);
