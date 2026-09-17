@@ -1,0 +1,76 @@
+{
+  "version": 1,
+  "generatedAt": "2026-09-17",
+  "source": "Documento Maestro section 25.13",
+  "ownerIssue": 192,
+  "status": "authority_classification_preimplementation",
+  "summary": {
+    "canonicalConditionals": 32,
+    "runtimeAccredited": 0,
+    "allEntriesClassified": 32,
+    "note": "Domain counts overlap; one conditional may require several factual authorities."
+  },
+  "knownSharedOwners": {
+    "content_lineage": {"issue": 59},
+    "seed_memory": {"issue": 180},
+    "sport_match_calendar": {"issue": 124, "candidatePullRequest": 156},
+    "national_selection": {"issue": 174},
+    "veteran_market_contract": {"issue": 176},
+    "free_agency": {"issue": 130},
+    "npc_affiliation_identity": {"issue": 177, "relatedCoachIssue": 169},
+    "terminal_retirement": {"pullRequest": 118, "owner": "agent9"}
+  },
+  "unassignedSharedAuthorityGaps": [
+    "individual_award_history_and_win",
+    "club_financial_state",
+    "commercial_sponsor_state",
+    "stadium_availability_or_external_closed-door_context",
+    "explicit_staff_crisis_and_temporary_player_coach_context",
+    "generic_record_definition_and_competitor_record_fact"
+  ],
+  "entries": [
+    {"id":"CEVT_34_LATE_BALLON_WIN","requiredDomains":["individual_award_history_and_win","sport_match_calendar","veteran_market_contract"],"ownerRefs":[124,176],"unassigned":["individual_award_history_and_win"],"status":"blocked"},
+    {"id":"CEVT_34_MAJOR_COMEBACK","requiredDomains":["medical_injury_rehab_history","sport_match_calendar"],"ownerRefs":[124],"unassigned":["medical_injury_rehab_history_if_not_authoritative"],"status":"same_id_needs_reimplementation"},
+    {"id":"CEVT_34_COACH_BECOMES_DIRECTOR","requiredDomains":["npc_affiliation_identity","veteran_market_contract"],"ownerRefs":[177,169,176],"status":"blocked"},
+    {"id":"CEVT_34_RIVAS_RETURNS","requiredDomains":["seed_memory","npc_affiliation_identity","veteran_market_contract"],"ownerRefs":[180,177,176],"status":"blocked"},
+    {"id":"CEVT_34_CLARA_EXCLUSIVE","requiredDomains":["seed_memory","npc_affiliation_identity","terminal_retirement"],"ownerRefs":[180,177,"PR118"],"status":"blocked_terminal_boundary"},
+    {"id":"CEVT_34_NANO_DIRECTOR","requiredDomains":["seed_memory","npc_affiliation_identity","veteran_market_contract"],"ownerRefs":[180,177,176],"status":"blocked"},
+    {"id":"CEVT_34_ADRIAN_LAST_DERBY","requiredDomains":["seed_memory","npc_affiliation_identity","sport_match_calendar"],"ownerRefs":[180,177,124],"status":"blocked"},
+    {"id":"CEVT_34_FAMILY_CLUB_BUYIN","requiredDomains":["seed_memory","family_business_or_investment_state"],"ownerRefs":[180],"unassigned":["family_business_or_investment_state_if_not_authoritative"],"status":"blocked"},
+    {"id":"CEVT_34_CLUB_RELEGATION","requiredDomains":["sport_match_calendar","competition_outcome","veteran_market_contract"],"ownerRefs":[124,176],"status":"blocked"},
+    {"id":"CEVT_34_CLUB_PROMOTION","requiredDomains":["sport_match_calendar","competition_outcome"],"ownerRefs":[124],"status":"blocked"},
+    {"id":"CEVT_34_MANAGER_SACKED_AFTER_PROMISE","requiredDomains":["npc_affiliation_identity","coach_chronology","veteran_market_contract","role_promise_history"],"ownerRefs":[177,169,176],"unassigned":["role_promise_history_if_not_encoded"],"status":"blocked"},
+    {"id":"CEVT_34_SUCCESSOR_INJURED","requiredDomains":["npc_affiliation_identity","successor_certification","medical_injury_state","sport_match_calendar"],"ownerRefs":[177,124],"status":"blocked"},
+
+    {"id":"CEVT_35_UDV_FINANCIAL_CRISIS","requiredDomains":["home_route","club_financial_state","veteran_market_contract"],"ownerRefs":[176],"unassigned":["club_financial_state"],"status":"blocked"},
+    {"id":"CEVT_35_UDV_CUP_RUN","requiredDomains":["sport_match_calendar","competition_outcome","match_load"],"ownerRefs":[124],"status":"blocked"},
+    {"id":"CEVT_35_NT_TOURNAMENT_INJURY","requiredDomains":["national_selection","medical_injury_state"],"ownerRefs":[174],"status":"blocked"},
+    {"id":"CEVT_35_NT_FINAL_GOAL","requiredDomains":["national_selection","sport_match_calendar","match_result_goal_or_assist"],"ownerRefs":[174,124],"status":"blocked"},
+    {"id":"CEVT_35_NT_FINAL_BENCH","requiredDomains":["national_selection","sport_match_calendar","match_bench_and_result"],"ownerRefs":[174,124],"status":"blocked"},
+    {"id":"CEVT_35_PUBLIC_FEUD_RETURNS","requiredDomains":["seed_memory","npc_affiliation_identity","public_media_history"],"ownerRefs":[180,177],"unassigned":["public_media_history_if_not_authoritative"],"status":"blocked"},
+    {"id":"CEVT_35_SPONSOR_EXIT","requiredDomains":["commercial_sponsor_state"],"ownerRefs":[],"unassigned":["commercial_sponsor_state"],"status":"blocked_unowned_authority"},
+    {"id":"CEVT_35_SPONSOR_LATE_BOOM","requiredDomains":["commercial_sponsor_state","public_media_history"],"ownerRefs":[],"unassigned":["commercial_sponsor_state","public_media_history_if_not_authoritative"],"status":"blocked_unowned_authority"},
+
+    {"id":"CEVT_36_YOUTH_ASSIST","requiredDomains":["npc_affiliation_identity","successor_or_mentee_certification","sport_match_calendar","assist_and_goal_fact"],"ownerRefs":[177,124],"status":"blocked"},
+    {"id":"CEVT_36_YOUTH_REPLACES_YOU","requiredDomains":["npc_affiliation_identity","successor_or_mentee_certification","sport_match_calendar","role_usage_history"],"ownerRefs":[177,124],"status":"blocked"},
+    {"id":"CEVT_36_RECORD_BROKEN_BY_OTHER","requiredDomains":["generic_record_definition_and_competitor_record_fact","npc_affiliation_identity"],"ownerRefs":[177],"unassigned":["generic_record_definition_and_competitor_record_fact"],"status":"blocked"},
+    {"id":"CEVT_36_NO_MEDICAL_CLEARANCE","requiredDomains":["veteran_market_contract","medical_evaluation_fact"],"ownerRefs":[176],"unassigned":["medical_evaluation_fact_if_not_authoritative"],"status":"same_id_needs_reimplementation"},
+    {"id":"CEVT_36_ONE_LAST_CHAMPIONS_RUN","requiredDomains":["sport_match_calendar","continental_competition_identity","competition_outcome"],"ownerRefs":[124],"status":"blocked"},
+
+    {"id":"CEVT_37_PLAYER_COACH_EMERGENCY","requiredDomains":["npc_affiliation_identity","explicit_staff_crisis_and_temporary_player_coach_context"],"ownerRefs":[177,169],"unassigned":["explicit_staff_crisis_and_temporary_player_coach_context"],"status":"blocked"},
+    {"id":"CEVT_37_EMPTY_STADIUM_FAREWELL","requiredDomains":["sport_match_calendar","stadium_availability_or_external_closed-door_context","terminal_retirement"],"ownerRefs":[124,"PR118"],"unassigned":["stadium_availability_or_external_closed-door_context"],"status":"blocked_terminal_boundary"},
+    {"id":"CEVT_37_LAST_DERBY","requiredDomains":["sport_match_calendar","rivalry_context","terminal_retirement"],"ownerRefs":[124,"PR118"],"status":"blocked_terminal_boundary"},
+
+    {"id":"CEVT_38_OFFER_AFTER_RETIREMENT_ANNOUNCED","requiredDomains":["veteran_market_contract","terminal_retirement"],"ownerRefs":[176,"PR118"],"status":"same_id_needs_reimplementation_terminal_shared"},
+    {"id":"CEVT_38_RETIREMENT_REVERSAL","requiredDomains":["veteran_market_contract","terminal_retirement"],"ownerRefs":[176,"PR118"],"status":"canonical_missing_terminal_shared"},
+    {"id":"CEVT_RET_NO_LAST_MATCH","requiredDomains":["sport_match_calendar","medical_or_suspension_unavailability","terminal_retirement"],"ownerRefs":[124,"PR118"],"status":"same_id_needs_reimplementation_agent9"},
+    {"id":"CEVT_RET_STORYBOOK_LAST_GOAL","requiredDomains":["sport_match_calendar","actual_goal_fact","terminal_retirement"],"ownerRefs":[124,"PR118"],"status":"same_id_needs_reimplementation_agent9"}
+  ],
+  "rules": [
+    "Every entry also inherits issue #59 lineage and issue #180 seed/provenance rules where applicable.",
+    "Owner refs do not imply the owner currently exposes every listed factual domain.",
+    "Unassigned authority gaps must remain fail-closed until coordination assigns or implements a factual producer.",
+    "No technical flag, aggregate score or generic choice shell may substitute for an unavailable domain.",
+    "Terminal-retirement state mutation remains Agent 9 / PR #118 ownership."
+  ]
+}
