@@ -1,0 +1,66 @@
+name: T5.2 temporary seed provenance refresh
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/t52-seed-provenance-refresh-temp.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    if: github.event.head_commit.message == 'ci(t5.2): temporary seed provenance refresh'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact main
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Regenerate seed Codex handoff from exact source head
+        shell: bash
+        run: |
+          set -euo pipefail
+          SOURCE_SHA="$(git rev-parse HEAD)"
+          echo "Regenerating seed handoff from ${SOURCE_SHA}"
+          CODEX_BASE_COMMIT="${SOURCE_SHA}" node scripts/generate-codex-seed-handoff.mjs
+
+      - name: Remove temporary provenance markers
+        shell: bash
+        run: |
+          rm -f \
+            analysis/CODEX/seeds/.provenance-refresh-required \
+            analysis/CODEX/seeds/.refresh-owner \
+            analysis/CODEX/seeds/.refresh-status \
+            analysis/CODEX/seeds/PROVENANCE_REFRESH.md \
+            analysis/CODEX/seeds/PROVENANCE_REFRESH_TASK.json \
+            analysis/CODEX/seeds/README_REFRESH_NOTICE.md
+
+      - name: Commit generated evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add analysis/CODEX/seeds
+          if git diff --cached --quiet; then
+            echo 'No generated provenance changes found.'
+            exit 1
+          fi
+          git commit -m 'docs(t5.2): refresh seed matrix provenance'
+          git push origin HEAD:main
