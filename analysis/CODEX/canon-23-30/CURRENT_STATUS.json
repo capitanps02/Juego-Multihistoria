@@ -4,7 +4,6 @@
   "branch": "t51/canon-23-30",
   "baseMain": "fa3c8bae524fef62e4eb9802e895df88588998c4",
   "regroundCommit": "43749a9f577b50537cf68a05411e0c911a446e8f",
-  "comparisonAfterReground": {"ahead": 10, "behind": 0},
   "activeCatalogChangedByAgent6": false,
   "schemaChangedByAgent6": false,
   "rngPolicyChangedByAgent6": false,
@@ -15,14 +14,19 @@
     "EVT_25_CON_001",
     "EVT_25_MKT_001",
     "EVT_26_BRIDGE_001",
-    "EVT_26_DOC_001"
+    "EVT_26_DOC_001",
+    "EVT_27_IMG_001"
   ],
   "absorbedByMain": ["EVT_23_PRS_001", "EVT_23_EUR_001", "EVT_23_HOME_001", "EVT_23_MONEY_001"],
   "age26Audit": {
+    "CAP": "blocked: certified locker captain assignments stop at phase 23_26",
     "MED": "blocked: recoveryMargin exists but authoritative schedule density does not",
     "DOC": "implemented staged: access negotiation only, no publication side effect",
-    "RIV": "blocked: ADRIAN_MIRROR exists but compatible rival level is not persisted"
+    "RIV": "blocked: ADRIAN_MIRROR exists but compatible rival level is not persisted",
+    "TEAM_002": "blocked: YOUNG_MENTOR has no authoritative current youngster/loan/coach-request target"
   },
-  "nextMicrobatch": ["EVT_26_CAP_001", "EVT_26_TEAM_002"],
-  "notes": "Historical seed origins remain immutable; staged canonical origins need integrator-owned seed/catalog lineage."
+  "age27Progress": {
+    "IMG": "implemented staged using GLOBAL_IMAGE or exact STATE26_MEDIA_POWER thresholds"
+  },
+  "nextMicrobatch": ["EVT_27_BODY_001", "EVT_27_HOME_001", "EVT_27_MONEY_001"]
 }

@@ -7,15 +7,15 @@
     "EVT_25_CON_001",
     "EVT_25_MKT_001",
     "EVT_26_BRIDGE_001",
-    "EVT_26_DOC_001"
+    "EVT_26_DOC_001",
+    "EVT_27_IMG_001"
   ],
-  "codexReady": [
-    {"id":"EVT_26_CAP_001","priority":1,"constraints":["authoritative captain/locker target only","fail closed","no age/reputation inference"]}
-  ],
-  "auditNext": ["EVT_26_TEAM_002"],
+  "auditNext": ["EVT_27_BODY_001", "EVT_27_HOME_001", "EVT_27_MONEY_001"],
   "blockedAfterAudit": [
+    {"id":"EVT_26_CAP_001","reason":"no certified captain slot for phase 26_30"},
     {"id":"EVT_26_MED_001","reason":"no authoritative schedule density"},
-    {"id":"EVT_26_RIV_001","reason":"no persisted compatible competitive level for Adrián"}
+    {"id":"EVT_26_RIV_001","reason":"no persisted compatible competitive level for Adrián"},
+    {"id":"EVT_26_TEAM_002","reason":"no authoritative young teammate + loan + coach request context"}
   ],
   "doNotImplementUntilAuthorityExists": ["EVT_24_MATCH_001", "EVT_25_NAT_001", "EVT_26_MATCH_001", "EVT_26_NAT_002", "EVT_26_FINAL_001"]
 }

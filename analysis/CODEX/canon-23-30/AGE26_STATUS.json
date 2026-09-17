@@ -3,11 +3,11 @@
   "slots": [
     {"id":"EVT_26_BRIDGE_001","status":"blocked_lineage","implementation":"staged_complete","note":"Integrator must activate adjacent generation and preserve historical seed origins."},
     {"id":"EVT_26_MATCH_001","status":"blocked_shared_authority","needs":"authoritative fixture/result/player-participation facts"},
-    {"id":"EVT_26_CAP_001","status":"codex_ready","guard":"Use only authoritative captain/locker slots; fail closed; never infer from age or reputation."},
+    {"id":"EVT_26_CAP_001","status":"blocked_shared_authority","needs":"certified current captain slot in phase 26_30; existing locker assignment is UDV/23_26 only"},
     {"id":"EVT_26_MED_001","status":"blocked_shared_authority","needs":"authoritative fixture/calendar density; recoveryMargin already exists"},
     {"id":"EVT_26_DOC_001","status":"blocked_lineage","implementation":"staged_complete","guard":"Negotiates access only; no publication or NPC knowledge mutation."},
     {"id":"EVT_26_RIV_001","status":"blocked_shared_authority","needs":"persisted evidence that Adrián is at a compatible competitive level in addition to ADRIAN_MIRROR"},
-    {"id":"EVT_26_TEAM_002","status":"blocked_shared_authority","needs":"verified current-club institutional target; otherwise fail closed"},
+    {"id":"EVT_26_TEAM_002","status":"blocked_shared_authority","needs":"authoritative young teammate identity plus real loan context and coach request"},
     {"id":"EVT_26_NAT_002","status":"blocked_shared_authority","needs":"authoritative national-team selection/role history"},
     {"id":"EVT_26_FINAL_001","status":"blocked_shared_authority","needs":"real final, bench/start/appearance and result facts"},
     {"id":"EVT_26_EUR_001","status":"blocked_shared_authority","needs":"real European match participation/start/bench context for semantic correction"}
