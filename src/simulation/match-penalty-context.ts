@@ -112,6 +112,19 @@ function expectedSetup(state: GameState, match: OfficialMatchRecord): PenaltyDec
   };
 }
 
+function sameSetup(a: PenaltyDecisionSetup, b: Record<string, unknown>): boolean {
+  return a.id === b.id
+    && a.fixtureId === b.fixtureId
+    && a.date === b.date
+    && a.club === b.club
+    && a.designatedTakerRef === b.designatedTakerRef
+    && a.priorMissMinute === b.priorMissMinute
+    && a.decisionMinute === b.decisionMinute
+    && a.scoreHome === b.scoreHome
+    && a.scoreAway === b.scoreAway
+    && b.highProfile === true;
+}
+
 export function getPenaltySetupStore(state: GameState): PenaltySetupStore | null {
   const value = state.world[STORE_KEY];
   if (!plainRecord(value) || value.version !== 1 || !Array.isArray(value.contexts)) return null;
@@ -134,7 +147,9 @@ export function recordPenaltyDecisionSetupInPlace(
   state: GameState,
   match: OfficialMatchRecord | null = currentOfficialMatch(state)
 ): PenaltyDecisionSetup | null {
-  if (!match || match.date !== state.date || match.club !== state.professional.registrationClub) return null;
+  const authoritative = currentOfficialMatch(state);
+  if (!match || !authoritative || authoritative.id !== match.id) return null;
+  if (match.date !== state.date || match.club !== state.professional.registrationClub) return null;
   const existing = getPenaltySetupStore(state)?.contexts.find(row => row.fixtureId === match.id);
   if (existing) return existing;
 
@@ -164,7 +179,9 @@ export function inspectPenaltySetupStore(value: unknown, state: GameState): Pena
   if (!Array.isArray(value.contexts) || value.contexts.length > 5000) return { path: `${path}.contexts`, reason: "invalid penalty setup list" };
 
   const matchStore = getSportMatchModelStore(state);
-  const matches = new Map(matchStore?.fixtures.map(row => [row.id, row]) ?? []);
+  const matches = new Map<string, OfficialMatchRecord>(
+    matchStore?.fixtures.map(row => [row.id, row] as const) ?? []
+  );
   const ids = new Set<string>();
   let previousDate = "";
 
@@ -200,7 +217,7 @@ export function inspectPenaltySetupStore(value: unknown, state: GameState): Pena
     if (!match) return { path: `${rowPath}.fixtureId`, reason: "setup references unknown fixture" };
     if (match.date !== row.date || match.club !== row.club) return { path: rowPath, reason: "setup identity does not match fixture" };
     const expected = expectedSetup(state, match);
-    if (!expected || JSON.stringify(expected) !== JSON.stringify(row)) return { path: rowPath, reason: "setup is inconsistent with authoritative sporting producer" };
+    if (!expected || !sameSetup(expected, row)) return { path: rowPath, reason: "setup is inconsistent with authoritative sporting producer" };
   }
   return null;
 }
