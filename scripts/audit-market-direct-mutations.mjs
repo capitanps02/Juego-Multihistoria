@@ -39,6 +39,18 @@ function propertyName(node) {
   return null;
 }
 
+function enclosingFunctionName(node) {
+  let current = node;
+  while (current) {
+    if (ts.isFunctionDeclaration(current) && current.name) return current.name.text;
+    if ((ts.isFunctionExpression(current) || ts.isArrowFunction(current)) && current.parent && ts.isVariableDeclaration(current.parent) && ts.isIdentifier(current.parent.name)) {
+      return current.parent.name.text;
+    }
+    current = current.parent;
+  }
+  return null;
+}
+
 function withinProposalStaging(node) {
   let current = node;
   while (current) {
@@ -56,10 +68,22 @@ function withinProposalStaging(node) {
 
 function classify(file, node) {
   const p = rel(file);
+  const fn = enclosingFunctionName(node);
   if (p === 'src/simulation/offers.ts') return 'valid_authority';
   if (p === 'src/content/initial-state.ts') return 'initialization';
   if (p.includes('migration') || p.includes('/migrations/')) return 'migration';
   if (withinProposalStaging(node)) return 'proposal_staging';
+  // Age-20 adaptation is a transactional proposal builder: adaptState20ToProfessional
+  // snapshots CareerTerms, calls adaptProfessionalContext, restores `before` with
+  // applyTerms(), then materialises the proposed terms through CareerOffer.
+  if (p === 'src/simulation/professional-adapter.ts' && fn === 'adaptProfessionalContext') return 'transition_proposal_builder';
+  // Contract time erosion belongs to calendar authority. Reaching zero is *not* free
+  // agency; #130 owns the still-blocked employment-resolution transition.
+  if (p === 'src/simulation/world-simulator.ts' && fn === 'monthlyContractTick') return 'calendar_contract_tick';
+  // Resolver currently repairs owner/registration after legacy event effects mutate club.
+  // This is compatibility debt, not a permitted signing authority, and must disappear as
+  // content is converted to CareerOffer bridges.
+  if (p === 'src/narrative/resolver.ts' && fn === 'resolveChoiceInPlace') return 'legacy_runtime_bridge';
   if (p.startsWith('src/content/events/')) return 'legacy_debt';
   return 'unsafe_runtime';
 }
