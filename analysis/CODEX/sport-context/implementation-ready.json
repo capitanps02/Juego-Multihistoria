@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 1,
+  "baseCommit": "291c73eb8c8d74f843060bcb61687a592880e2ea",
+  "branch": "integration/t5-sport-context-current",
+  "tasks": [
+    {
+      "id": "CODEX-SPORT-INFRA-001",
+      "status": "implemented",
+      "eventId": null,
+      "requiredFacts": ["currentSeason", "sportingClub", "careerAppearances", "officialDebutRecorded"],
+      "requiredApis": ["getSportContext", "getCurrentMatchContext"],
+      "allowedFiles": ["src/simulation/sport-context.ts", "src/simulation/club-contract-intent.ts", "scripts/test-t5-sport-context.mjs"],
+      "forbiddenFiles": ["src/content/events/**"],
+      "acceptanceTests": ["read consumes 0 RNG", "read mutates 0 state", "registration club drives sportingClub", "narrativeConditionRoot exposes facts.sport/facts.match", "unavailable match facts stay null even when proxies are high"]
+    },
+    {
+      "id": "CODEX-FOOTBALL-001",
+      "status": "implemented",
+      "eventId": null,
+      "requiredFacts": ["footballMoment.penaltyOutcome"],
+      "requiredApis": ["resolvePenaltyMomentInPlace", "playerPenaltyAttempt"],
+      "allowedFiles": ["src/simulation/football-moments.ts", "scripts/test-t5-football-moments.mjs"],
+      "forbiddenFiles": ["src/content/events/**"],
+      "acceptanceTests": ["football RNG only", "exactly one draw on first resolution", "same moment ID replays", "different inputs for resolved ID fail", "unknown namespaces fail before RNG", "no stat mutation"]
+    },
+    {
+      "id": "CODEX-SPORT-SAVE-001",
+      "status": "implemented",
+      "eventId": null,
+      "requiredFacts": ["footballMoment.persistedStoreValidation"],
+      "requiredApis": ["inspectFootballMomentStore", "assertGameState"],
+      "allowedFiles": ["src/save/validation.ts", "scripts/test-saves.mjs", "scripts/test-t5-football-moments.mjs"],
+      "forbiddenFiles": ["src/content/events/**"],
+      "acceptanceTests": ["unknown moment ID rejected", "unknown outcome rejected", "malformed store rejected", "unsupported row version rejected", "non-canonical input signature rejected", "actor/signature mismatch rejected", "probability inconsistent with persisted inputs rejected", "future resolvedAt rejected", "session restore rejects corrupt row", "validation consumes 0 RNG"]
+    },
+    {
+      "id": "CODEX-SPORT-MODEL-001",
+      "status": "needs_owner_decision",
+      "eventId": null,
+      "requiredFacts": ["fixture", "competition", "match history", "squad selection", "starting XI", "per-match stats"],
+      "requiredApis": ["future authoritative producer behind getSportContext/getCurrentMatchContext"],
+      "allowedFiles": ["src/simulation/**", "src/core/types.ts", "src/save/**", "scripts/**"],
+      "forbiddenFiles": ["src/content/events/**", "src/catalog/npcs.ts", "src/catalog/seeds.ts"],
+      "acceptanceTests": ["no invented club/competition schedule", "old saves remain valid or migrate explicitly", "fixture IDs stable", "club switch/loan changes relevant fixtures", "reads consume 0 RNG", "results persist and replay"]
+    },
+    {
+      "id": "CODEX-SPORT-018-MATCH-001",
+      "status": "blocked",
+      "eventId": "EVT_18_MATCH_001",
+      "requiredFacts": ["currentMatchContext", "playerAppeared", "score at decision", "competition", "opponent"],
+      "requiredApis": ["getCurrentMatchContext with real producer"],
+      "allowedFiles": ["src/content/events/18_20/canonical-events.ts", "scripts/**"],
+      "forbiddenFiles": ["src/simulation/football-moments.ts"],
+      "acceptanceTests": ["does not trigger merely because OFFICIAL_DEBUT is true", "decision match state is factual", "negative context fails closed"]
+    },
+    {
+      "id": "CODEX-SPORT-018-PRS-001",
+      "status": "blocked",
+      "eventId": "EVT_18_PRS_001",
+      "requiredFacts": ["firstMatchSquadCall OR officialDebutRecorded", "local attention"],
+      "requiredApis": ["getSportContext firstMatchSquadCall"],
+      "allowedFiles": ["src/content/events/18_20/**", "scripts/**"],
+      "forbiddenFiles": ["src/simulation/football-moments.ts"],
+      "acceptanceTests": ["preseason call is not a match call", "called-up-but-unused path is distinguishable from appearance"]
+    },
+    {
+      "id": "CODEX-SPORT-018-SOC-001",
+      "status": "blocked",
+      "eventId": "EVT_18_SOC_001",
+      "requiredFacts": ["hoursToNextFixture", "nextTrainingAfterWindow"],
+      "requiredApis": ["authoritative calendar producer"],
+      "allowedFiles": ["src/content/events/18_20/**", "scripts/**"],
+      "forbiddenFiles": ["src/simulation/football-moments.ts"],
+      "acceptanceTests": ["blocked inside 24h before official fixture", "month/seasonDay is not sufficient evidence"]
+    },
+    {
+      "id": "CODEX-SPORT-018-END-001",
+      "status": "blocked",
+      "eventId": "EVT_18_END_001",
+      "requiredFacts": ["remainingLeagueMatches", "seasonObjectiveStatus"],
+      "requiredApis": ["authoritative fixture calendar", "objective projection"],
+      "allowedFiles": ["src/content/events/18_20/**", "scripts/**"],
+      "forbiddenFiles": ["src/simulation/football-moments.ts"],
+      "acceptanceTests": ["only last four league matches", "objective must still be open", "udvSeasonResolved false alone is insufficient"]
+    },
+    {
+      "id": "CODEX-SPORT-024-MATCH-001",
+      "status": "blocked",
+      "eventId": "EVT_24_MATCH_001",
+      "requiredFacts": ["currentMatchContext", "player on field", "designated taker prior miss", "score/context", "footballMoment.penaltyOutcome"],
+      "requiredApis": ["getCurrentMatchContext with real producer", "resolvePenaltyMomentInPlace"],
+      "allowedFiles": ["src/content/events/23_26/**", "scripts/**"],
+      "forbiddenFiles": ["src/catalog/npcs.ts", "src/simulation/offers.ts"],
+      "acceptanceTests": ["choice decides hierarchy not goal/miss", "penalty uses football RNG", "save/replay is idempotent", "social seed does not overwrite sporting outcome"]
+    },
+    {
+      "id": "CODEX-SPORT-026-MATCH-001",
+      "status": "blocked",
+      "eventId": "EVT_26_MATCH_001",
+      "requiredFacts": ["currentMatchContext", "record chase context", "footballMoment.penaltyOutcome"],
+      "requiredApis": ["getCurrentMatchContext with real producer", "resolvePenaltyMomentInPlace"],
+      "allowedFiles": ["src/content/events/26_30/**", "scripts/**"],
+      "forbiddenFiles": ["src/catalog/seeds.ts unless coordinated with T5.2"],
+      "acceptanceTests": ["record context is factual", "football outcome is not narrative RNG", "no duplicate goal/stat mutation"]
+    },
+    {
+      "id": "CODEX-SPORT-026-NAT-002",
+      "status": "blocked",
+      "eventId": "EVT_26_NAT_002",
+      "requiredFacts": ["club starter status", "national-team bench/call status"],
+      "requiredApis": ["competition-neutral squad/match selection authority"],
+      "allowedFiles": ["src/content/events/26_30/**", "scripts/**"],
+      "forbiddenFiles": ["full national-team subsystem rewrite"],
+      "acceptanceTests": ["club and national contexts are distinct", "nationalRole alone does not fabricate one match benching"]
+    },
+    {
+      "id": "CODEX-SPORT-026-FINAL-001",
+      "status": "blocked",
+      "eventId": "EVT_26_FINAL_001",
+      "requiredFacts": ["final competition fixture", "bench/starter status", "appearance status"],
+      "requiredApis": ["getCurrentMatchContext with real producer"],
+      "allowedFiles": ["src/content/events/26_30/**", "scripts/**"],
+      "forbiddenFiles": ["synthetic FINAL_CONTEXT flag as sole proof"],
+      "acceptanceTests": ["fixture is actually a final", "bench fact comes from selection", "no fabricated final from narrative flag"]
+    },
+    {
+      "id": "CODEX-SPORT-RETIREMENT-LAST-MATCH",
+      "status": "blocked",
+      "eventId": null,
+      "requiredFacts": ["last real appearance", "last start", "last goal", "remainingOfficialMatches"],
+      "requiredApis": ["authoritative historical match log"],
+      "allowedFiles": ["retirement content owner files after sporting model integration"],
+      "forbiddenFiles": ["synthetic last match generation in narrative"],
+      "acceptanceTests": ["last match is historical fact", "no age-only inference", "no fixture from previous club after transfer"]
+    }
+  ]
+}
