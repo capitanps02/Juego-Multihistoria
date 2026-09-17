@@ -8,6 +8,40 @@ const clamp=(x:number,min=0,max=100)=>Math.min(max,Math.max(min,x));
 const num=(x:unknown,f=0)=>typeof x==="number"?x:f;
 type RetirementStatus=GameState["retirement"]["status"];
 
+export type RetirementSportingBoundary="unavailable"|"matches_remaining"|"season_complete";
+
+type RetirementSportContext={
+  remainingOfficialMatches:unknown;
+  availability:{remainingOfficialMatches?:unknown};
+};
+
+/**
+ * Read-only retirement projection over shared sport authority.
+ *
+ * Main currently exposes this field as unavailable/null, while the authoritative match
+ * model upgrades it to known/number. Keeping the input structural and `unknown` makes
+ * retirement forward-compatible without claiming sporting authority itself.
+ */
+export function retirementSportingBoundary(sportContext:RetirementSportContext):RetirementSportingBoundary{
+  const availability=sportContext.availability?.remainingOfficialMatches;
+  const remaining=sportContext.remainingOfficialMatches;
+  if(availability!=="known"||typeof remaining!=="number"||!Number.isFinite(remaining)||remaining<0)return "unavailable";
+  return remaining>0?"matches_remaining":"season_complete";
+}
+
+/**
+ * Authoritative fixtures outrank the legacy administrative timeout. While fixtures remain,
+ * an announced player stays playable even if the contract has expired or the old timeout
+ * elapsed. Once the modeled season is complete, closure may happen immediately. If the
+ * sport authority is unavailable (legacy/current-main fallback), preserve prior behavior.
+ */
+export function shouldCloseAnnouncedCareer(sportContext:RetirementSportContext,administrativeFallback:boolean):boolean{
+  const boundary=retirementSportingBoundary(sportContext);
+  if(boundary==="matches_remaining")return false;
+  if(boundary==="season_complete")return true;
+  return administrativeFallback;
+}
+
 const RETIREMENT_TRANSITIONS:Record<RetirementStatus,ReadonlySet<RetirementStatus>>={
   playing:new Set<RetirementStatus>(["decided"]),
   decided:new Set<RetirementStatus>(["announced","playing"]),
@@ -244,9 +278,10 @@ export function lateCareerWeek(state:GameState):void{
     const month=Number(state.date.slice(5,7));
     state.flags.LAST_MATCH_WINDOW=[2,3,4,5,6].includes(month)&&state.retirement.daysInStatus>=21;
 
-    // Administrative closure is allowed after the announced farewell window. It closes state only;
-    // the closure type reflects recorded participation and never invents a ceremonial match.
-    if(state.retirement.daysInStatus>=120||(num(state.contract.monthsRemaining)<=0&&state.retirement.daysInStatus>=90)){
+    // Shared fixture authority outranks the legacy administrative timeout. Until that
+    // authority is integrated/available, the exact previous fallback remains in force.
+    const administrativeClose=state.retirement.daysInStatus>=120||(num(state.contract.monthsRemaining)<=0&&state.retirement.daysInStatus>=90);
+    if(shouldCloseAnnouncedCareer(sportContext,administrativeClose)){
       const closure=state.flags.LAST_MATCH_PLAYED?"last_match_played":"no_last_match";
       closeCareer(state,state.retirement.reason??"administrative_close",closure);
     }

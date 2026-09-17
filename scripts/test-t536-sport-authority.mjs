@@ -2,7 +2,11 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createInitialState } from '../dist/content/initial-state.js';
 import { getCurrentMatchContext, getSportContext } from '../dist/simulation/sport-context.js';
-import { lateCareerWeek } from '../dist/simulation/late-career-engine.js';
+import {
+  lateCareerWeek,
+  retirementSportingBoundary,
+  shouldCloseAnnouncedCareer
+} from '../dist/simulation/late-career-engine.js';
 
 function announcedState(){
   const state=createInitialState(53638);
@@ -76,4 +80,23 @@ test('T5.36 no appearance delta cannot synthesize a last match',()=>{
   lateCareerWeek(state);
   assert.notEqual(state.flags.LAST_MATCH_PLAYED,true);
   assert.equal(getCurrentMatchContext(state).playerAppeared,null);
+});
+
+test('T5.36 retirement closure defers to authoritative remaining fixtures and preserves unavailable fallback',()=>{
+  const unavailable={remainingOfficialMatches:null,availability:{remainingOfficialMatches:'unavailable'}};
+  const remaining={remainingOfficialMatches:3,availability:{remainingOfficialMatches:'known'}};
+  const complete={remainingOfficialMatches:0,availability:{remainingOfficialMatches:'known'}};
+  const invalid={remainingOfficialMatches:-1,availability:{remainingOfficialMatches:'known'}};
+
+  assert.equal(retirementSportingBoundary(unavailable),'unavailable');
+  assert.equal(retirementSportingBoundary(remaining),'matches_remaining');
+  assert.equal(retirementSportingBoundary(complete),'season_complete');
+  assert.equal(retirementSportingBoundary(invalid),'unavailable');
+
+  assert.equal(shouldCloseAnnouncedCareer(remaining,true),false,'authoritative fixtures must suppress legacy timeout');
+  assert.equal(shouldCloseAnnouncedCareer(remaining,false),false);
+  assert.equal(shouldCloseAnnouncedCareer(complete,false),true,'authoritative season end may close immediately');
+  assert.equal(shouldCloseAnnouncedCareer(unavailable,true),true,'legacy/unavailable path preserves administrative fallback');
+  assert.equal(shouldCloseAnnouncedCareer(unavailable,false),false);
+  assert.equal(shouldCloseAnnouncedCareer(invalid,true),true,'invalid sporting data fails back to established administrative behavior');
 });
