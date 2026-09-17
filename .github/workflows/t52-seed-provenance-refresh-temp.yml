@@ -31,6 +31,9 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Generate T5.2 lifecycle evidence
+        run: node scripts/audit-t52.mjs
+
       - name: Regenerate seed Codex handoff from exact source head
         shell: bash
         run: |
