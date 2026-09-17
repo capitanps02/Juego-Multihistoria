@@ -1,0 +1,43 @@
+name: T5.1 Agent 6 Canon 23-30
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/content/events/23_26/**'
+      - 'src/content/events/26_30/**'
+      - 'src/narrative/offer-bridge.ts'
+      - 'src/simulation/club-contract-intent.ts'
+      - 'scripts/test-t51-agent6-*.mjs'
+      - 'scripts/t52-historical-seed-consumers.mjs'
+      - 'analysis/CODEX/canon-23-30/**'
+      - '.github/workflows/t51-agent6-canon-23-30.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  canon-23-30:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Agent 6 focused regressions
+        run: >-
+          node --test
+          scripts/test-t51-agent6-lock23.mjs
+          scripts/test-t51-agent6-mkt25.mjs
+          scripts/test-t51-agent6-offers23-25.mjs
+          scripts/test-t51-agent6-prs23.mjs
+          scripts/test-t51-agent6-age26-bridge.mjs
+      - name: T5.2 historical/direct seed read audit
+        run: node scripts/audit-t52-simulation-seed-direct-reads.mjs
+      - name: Shared offer bridge regressions
+        run: node --test scripts/test-t51-offer-bridge.mjs scripts/test-t51-offer-bridge-provenance.mjs
