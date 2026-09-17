@@ -1,4 +1,5 @@
 import './test-t5-match-model.mjs';
+import './test-t5-penalty-context.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createInitialState } from '../dist/content/initial-state.js';
@@ -43,6 +44,7 @@ test('sport context/2 aggregate proxies cannot fabricate persisted match or squa
   assert.equal(context.availability.firstMatchSquadCall, 'unavailable');
   assert.equal(match.status, 'no_current_match');
   assert.equal(match.playerAppeared, null);
+  assert.equal(match.penaltyDecisionContext, false);
 });
 
 test('sport context/3 registration club is the sporting club and fixture authority for transfers and loans', () => {
@@ -69,6 +71,7 @@ test('sport context/4 legacy debut flag alone never fabricates a current match o
   assert.equal(match.status, 'no_current_match');
   assert.equal(match.playerAppeared, null);
   assert.equal(match.result, null);
+  assert.equal(match.penaltyDecisionContext, false);
 });
 
 test('sport context/5 narrative condition root exposes calendar/match facts without persistence or RNG', () => {
@@ -79,6 +82,7 @@ test('sport context/5 narrative condition root exposes calendar/match facts with
   assert.ok(root.facts.sport.nextFixture);
   assert.equal(root.facts.match.status, 'no_current_match');
   assert.equal(root.facts.match.playerStarted, null);
+  assert.equal(root.facts.match.penaltyDecisionContext, false);
   assert.equal(Object.prototype.hasOwnProperty.call(state, 'facts'), false);
   assert.deepEqual(state, before);
 });
