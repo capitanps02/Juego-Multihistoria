@@ -14,18 +14,19 @@ Implement only ordinary late-career 34+ canon. Terminal career retirement, last-
 4. `analysis/CODEX/canon-34plus/IDENTITY_RECONCILIATION.json`
 5. `analysis/CODEX/canon-34plus/CONDITIONAL_RECONCILIATION.json`
 6. `analysis/CODEX/canon-34plus/CONDITIONAL_HANDOFF.md`
-7. `analysis/CODEX/canon-34plus/CANONICAL_CARD_COVERAGE.json`
-8. `analysis/CODEX/canon-34plus/implementation-ready.json`
-9. `analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md`
-10. `analysis/CODEX/canon-34plus/T52_SEED_HANDOFF.json`
-11. `analysis/CODEX/canon-34plus/UNLOCK_WAVES.md`
-12. `analysis/CODEX/canon-34plus/AUTHORITY_MATRIX.json`
-13. Wave A–E implementation/test packages under the same directory.
-14. `analysis/CODEX/canon-34plus/VETERAN_LATE_STATE.md`
-15. `analysis/CODEX/canon-34plus/BLOCKERS.md`
-16. `analysis/CODEX/canon-34plus/CONTINUITY_CHAINS.md`
-17. `analysis/CODEX/canon-34plus/RETIREMENT_HANDOFF.md`
-18. canonical source `analysis/2026-09-11/guion-extraido.txt`, especially section 25.13 for the exact conditional deck.
+7. `analysis/CODEX/canon-34plus/CONDITIONAL_AUTHORITY_MATRIX.json`
+8. `analysis/CODEX/canon-34plus/CANONICAL_CARD_COVERAGE.json`
+9. `analysis/CODEX/canon-34plus/implementation-ready.json`
+10. `analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md`
+11. `analysis/CODEX/canon-34plus/T52_SEED_HANDOFF.json`
+12. `analysis/CODEX/canon-34plus/UNLOCK_WAVES.md`
+13. `analysis/CODEX/canon-34plus/AUTHORITY_MATRIX.json`
+14. Wave A–E implementation/test packages under the same directory.
+15. `analysis/CODEX/canon-34plus/VETERAN_LATE_STATE.md`
+16. `analysis/CODEX/canon-34plus/BLOCKERS.md`
+17. `analysis/CODEX/canon-34plus/CONTINUITY_CHAINS.md`
+18. `analysis/CODEX/canon-34plus/RETIREMENT_HANDOFF.md`
+19. canonical source `analysis/2026-09-11/guion-extraido.txt`, especially section 25.13 for the exact conditional deck.
 
 ## Current execution status
 Canonical principal preparation is complete but runtime activation is not:
@@ -33,14 +34,17 @@ Canonical principal preparation is complete but runtime activation is not:
 - ordinary principal runtime implemented on Agent-8 branch: **0/43**;
 - strict principal `codexReady`: **0/43** until Wave 0 and the task-specific authorities are present.
 
-Canonical conditionals are now identity-reconciled separately:
+Canonical conditionals are identity- and authority-classified separately:
 - Pasada-7 canonical conditional IDs: **32**;
 - engine 34+ conditional rows: **32**;
 - exact-ID overlap: **5**;
 - exact-ID rows semantically accredited: **0**;
 - canonical exact IDs missing from engine: **27**;
 - engine technical exact IDs absent from canon: **27**;
-- owner issue: **#192**.
+- conditional identity/content owner: **#192**;
+- missing shared factual-authority owner: **#195**;
+- conditional authority matrix coverage: **32/32**;
+- currently unresolved shared factual domains: **8**.
 
 Do not infer conditional completion from count equality. The current engine deck is mostly generic `technical_adaptation` content and is not canonical merely because it contains 32 rows.
 
@@ -57,7 +61,7 @@ Intentional overlaps:
 - `EVT_35_RECORD_001` = C+D;
 - `EVT_37_SHORT_001` = B+E.
 
-Unique ordinary principal coverage remains **43/43**. `AUTHORITY_MATRIX.json` is the principal dependency contract and `SHARED_OWNER_ROUTING.json` maps dependencies to current owner issues/PRs and known residual gaps. A cross-wave principal activates only when every required authority exists.
+Unique ordinary principal coverage remains **43/43**. `AUTHORITY_MATRIX.json` is the principal dependency contract. `CONDITIONAL_AUTHORITY_MATRIX.json` is the conditional dependency contract. `SHARED_OWNER_ROUTING.json` maps those dependencies to current owner issues/PRs and known residual gaps.
 
 ## Conditional canon contract
 The authoritative conditional inventory is section **25.13 — Baraja condicional, 32 eventos que pueden alterar el final**.
@@ -73,13 +77,24 @@ Five current engine IDs collide exactly with canon and all five still require se
 
 `CEVT_RET_RECONSIDER` is not a canonical Pasada-7 ID. Canon uses `CEVT_38_RETIREMENT_REVERSAL`. Do not create an alias or rewrite historical/pending provenance without explicit migration authority and Agent-9/shared-retirement agreement.
 
-Issue **#192** owns conditional canonical content reconciliation/implementation. Terminal/shared-retirement conditionals remain bounded by Agent 9 / PR #118.
+Issue **#192** owns exact canonical conditional content reconciliation/implementation. Issue **#195** owns assignment/producer-or-fail-closed decisions for eight factual domains that no existing shared contract currently proves:
+- individual award history/win;
+- major-injury rehabilitation history + successful return;
+- club financial state;
+- commercial sponsor state;
+- club medical-evaluation/clearance fact;
+- stadium/external closed-door context;
+- explicit staff crisis + temporary player-coach context;
+- generic record definition + competitor record fact.
+
+Terminal/shared-retirement conditionals remain bounded by Agent 9 / PR #118.
 
 ## Shared owner routing
 Do not rebuild these contracts inside Agent 8. Use their owner workstreams:
 - successive content lineage: **issue #59**;
 - 34+ canonical seed catalog/provenance application: **issue #180**, consuming `T52_SEED_HANDOFF.json`;
 - exact 34+ conditional canon implementation: **issue #192**;
+- missing factual authorities unique to canonical conditionals: **issue #195**;
 - factual match/calendar/competition context: **issue #124** plus **PR #156** authoritative match-history work;
 - concrete national preselection/final squad facts: **issue #174**;
 - veteran 34+ `CareerOffer` generation and late-career term representability: **issue #176**;
@@ -107,7 +122,7 @@ Principal Wave A:
 
 Use `WAVE_A_IMPLEMENTATION.json` and `WAVE_A_TEST_MATRIX.md` exactly. Do not register partial shells if a required factual gate is unavailable.
 
-For conditionals, use `CONDITIONAL_RECONCILIATION.json` / `CONDITIONAL_HANDOFF.md`; do not activate generic shells. Every canonical conditional needs its exact factual trigger and scene-specific semantics.
+For conditionals, use `CONDITIONAL_RECONCILIATION.json`, `CONDITIONAL_HANDOFF.md` and `CONDITIONAL_AUTHORITY_MATRIX.json`; do not activate generic shells. Every canonical conditional needs its exact factual trigger, scene-specific semantics and all routed factual authorities.
 
 ## Existing authorities to consume
 - formal offers: persisted `CareerOffer`, `respondToOffer()` and the offer bridge;
@@ -143,7 +158,7 @@ For conditionals, use `CONDITIONAL_RECONCILIATION.json` / `CONDITIONAL_HANDOFF.m
 - `EVT_35_RECORD_001` needs both a factual sporting record and certified identity when another player is named.
 - `EVT_37_PEN_001` still needs a real penalty opportunity/assignment/outcome plus farewell context.
 - No inferred agent/captain/current coach/successor/peer/family identity.
-- Existing generic conditional gates such as `roleScore`, aggregate caps, `agentControl`, narrative flags or legacy technical seeds are not factual authority when canon requires a concrete match, selection, offer, medical, NPC or retirement fact.
+- Existing generic conditional gates such as `roleScore`, aggregate caps, `agentControl`, narrative flags or legacy technical seeds are not factual authority when canon requires a concrete match, selection, offer, medical, NPC, award, sponsor, club-finance, record or retirement fact.
 - Preserve history, seed provenance and pending-decision fingerprint semantics.
 - Do not reuse legacy `SEEN_*`/cooldowns to suppress distinct canonical replacements.
 - Do not freeze/register contentIdentity or migration edges before #59 authorizes the adjacent generation.
@@ -155,6 +170,7 @@ For conditionals, use `CONDITIONAL_RECONCILIATION.json` / `CONDITIONAL_HANDOFF.m
 ## Required QA per active batch
 - focused scene/authority tests;
 - exact conditional-ID/trigger tests for any #192 batch;
+- negative/fail-closed tests for every #195 domain consumed;
 - 33→34, 34→35, 35→36, 36→37 and later supported ages;
 - elite, rotation, injured, one-club, journeyman, return-club and weak-market trajectories;
 - veteran contract cases including one-year renewal, rejected renewal, lower-level offer, short contract and return offer;
