@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "generatedAt": "2026-09-17",
   "baseMain": "fa3c8bae524fef62e4eb9802e895df88588998c4",
   "ownerBranch": "t51/canon-34plus",
@@ -7,23 +7,53 @@
     "ordinaryPrincipals": 43,
     "canonicalCardsPrepared": 43,
     "runtimeActivated": 0,
-    "strictCodexReady": 0
+    "strictCodexReady": 0,
+    "canonicalConditionals": 32,
+    "conditionalIdentitiesReconciled": 32,
+    "conditionalRuntimeAccredited": 0
   },
   "globalPrerequisites": [
     {
       "owner": "shared_integration",
       "issue": 59,
       "appliesToAllOrdinaryScenes": true,
+      "appliesToCanonicalConditionals": true,
       "contract": "34+ may register only after the actual authoritative immediate predecessor exists; create one adjacent predecessor_to_34plus content generation and preserve migration evidence"
     },
     {
       "owner": "t52_seed_lifecycle",
       "issue": 180,
       "appliesToAllOrdinaryScenes": true,
+      "appliesToCanonicalConditionals": true,
       "contract": "apply the 54 exact Pasada-7 canonical seed identities and 14 bridge-memory dispositions from T52_SEED_HANDOFF.json without provenance rewrite or heuristic aliases"
     }
   ],
   "routes": [
+    {
+      "domain": "canonical_conditional_content",
+      "ownerIssue": 192,
+      "canonicalCount": 32,
+      "engineCount": 32,
+      "exactIdOverlap": 5,
+      "exactIdSemanticallyAccredited": 0,
+      "canonicalMissingExactId": 27,
+      "engineTechnicalExtraExactId": 27,
+      "handoff": ["CONDITIONAL_RECONCILIATION.json","CONDITIONAL_HANDOFF.md"],
+      "sameIdNeedsReimplementation": [
+        "CEVT_34_MAJOR_COMEBACK",
+        "CEVT_36_NO_MEDICAL_CLEARANCE",
+        "CEVT_38_OFFER_AFTER_RETIREMENT_ANNOUNCED",
+        "CEVT_RET_NO_LAST_MATCH",
+        "CEVT_RET_STORYBOOK_LAST_GOAL"
+      ],
+      "terminalBoundary": [
+        "CEVT_38_OFFER_AFTER_RETIREMENT_ANNOUNCED",
+        "CEVT_38_RETIREMENT_REVERSAL",
+        "CEVT_RET_NO_LAST_MATCH",
+        "CEVT_RET_STORYBOOK_LAST_GOAL"
+      ],
+      "rule": "exact canonical IDs and factual scene-specific triggers only; generic technical rows are not canonical accreditation; no automatic alias from CEVT_RET_RECONSIDER to CEVT_38_RETIREMENT_REVERSAL"
+    },
     {
       "domain": "veteran_market_contract",
       "ownerIssue": 176,
@@ -126,7 +156,8 @@
       "owner": "agent9",
       "ordinarySceneBoundaryOnly": true,
       "eventsWithCareerRetirementChoiceOrTerminalHandoff": ["EVT_36_LOWER_001","EVT_38_MARKET_001","EVT_38_RICH_001"],
-      "rule": "Agent 8 may present the ordinary dilemma but career-terminal state transition/announcement/closure stays with Agent 9"
+      "canonicalConditionalsWithTerminalBoundary": ["CEVT_38_OFFER_AFTER_RETIREMENT_ANNOUNCED","CEVT_38_RETIREMENT_REVERSAL","CEVT_RET_NO_LAST_MATCH","CEVT_RET_STORYBOOK_LAST_GOAL"],
+      "rule": "Agent 8 may present ordinary dilemmas and prepare conditional contracts, but career-terminal state transition/announcement/closure stays with Agent 9"
     },
     {
       "domain": "agent8_context_specific",
@@ -135,5 +166,5 @@
       "rule": "first activation batch after global Wave 0; each card still requires its factual family/body/image/medical gates from WAVE_A_IMPLEMENTATION.json"
     }
   ],
-  "codexRule": "Do not mark an event ready because one routed authority lands. Re-evaluate the full AUTHORITY_MATRIX entry plus Wave 0 against the then-current main; unavailable facts fail closed and proxies are forbidden."
+  "codexRule": "Do not mark a principal or conditional ready because one routed authority lands. Re-evaluate its full factual contract plus Wave 0 against the then-current main; unavailable facts fail closed and proxies are forbidden."
 }
