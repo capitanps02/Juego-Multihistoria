@@ -1,0 +1,257 @@
+{
+  "id": "CEVT_19_NANO_01",
+  "ageWindow": [
+    19,
+    19
+  ],
+  "phase": "18_20",
+  "family": "conditional",
+  "gates": [
+    {
+      "path": "flags.UNSOLICITED_NANO_HELP",
+      "op": "eq",
+      "value": true
+    },
+    {
+      "path": "flags.HAS_SEED_NANO_SHADOW",
+      "op": "eq",
+      "value": true
+    }
+  ],
+  "cooldown": 99999,
+  "repeatable": false,
+  "weight": 7,
+  "text": {
+    "title": "No me llames para arreglarme la vida",
+    "body": "Nano descubre que moviste un contacto por él sin pedir permiso. La oportunidad puede ser buena y, aun así, el gesto puede dolerle."
+  },
+  "intel": {
+    "visible": [
+      "Nano sabe que el contacto salió de ti."
+    ],
+    "uncertain": [
+      "No sabes si su enfado pesa más que el valor profesional de la oportunidad."
+    ]
+  },
+  "choices": [
+    {
+      "id": "APOLOGIZE",
+      "label": "Explicar por qué lo hiciste y pedir disculpas por no preguntar",
+      "intentTags": [
+        "repair"
+      ],
+      "outcomeIds": [
+        "APOLOGIZE__PRIMARY",
+        "APOLOGIZE__SECONDARY"
+      ]
+    },
+    {
+      "id": "DEFEND",
+      "label": "Defender que era una oportunidad y no una humillación",
+      "intentTags": [
+        "defend"
+      ],
+      "outcomeIds": [
+        "DEFEND__PRIMARY",
+        "DEFEND__SECONDARY"
+      ]
+    },
+    {
+      "id": "WITHDRAW",
+      "label": "Retirar el contacto si todavía es posible y dejar que decida él",
+      "intentTags": [
+        "autonomy"
+      ],
+      "outcomeIds": [
+        "WITHDRAW__PRIMARY",
+        "WITHDRAW__SECONDARY"
+      ]
+    }
+  ],
+  "outcomes": [
+    {
+      "id": "APOLOGIZE__PRIMARY",
+      "baseWeight": 55,
+      "effects": [
+        {
+          "kind": "numeric",
+          "path": "rel.NPC_PLR_14.trust",
+          "delta": 8,
+          "min": 0,
+          "max": 100
+        },
+        {
+          "kind": "numeric",
+          "path": "rel.NPC_PLR_14.resentment",
+          "delta": -8,
+          "min": 0,
+          "max": 100
+        }
+      ],
+      "messages": [
+        "Nano separa el enfado del contacto y acepta que la relación necesita nuevos límites."
+      ],
+      "seedTransitions": [
+        {
+          "seedId": "SEED_NANO_SHADOW",
+          "action": "create",
+          "intensity": 70,
+          "payload": {
+            "help": "repaired"
+          }
+        }
+      ],
+      "historyTags": [
+        "repair",
+        "primary_interpretation"
+      ]
+    },
+    {
+      "id": "APOLOGIZE__SECONDARY",
+      "baseWeight": 45,
+      "effects": [
+        {
+          "kind": "numeric",
+          "path": "rel.NPC_PLR_14.resentment",
+          "delta": 4,
+          "min": 0,
+          "max": 100
+        }
+      ],
+      "messages": [
+        "La disculpa llega, pero para él confirma que asumiste que sabías qué necesitaba."
+      ],
+      "historyTags": [
+        "repair",
+        "secondary_interpretation"
+      ]
+    },
+    {
+      "id": "DEFEND__PRIMARY",
+      "baseWeight": 55,
+      "effects": [
+        {
+          "kind": "flag",
+          "flag": "NANO_OPPORTUNITY",
+          "value": true
+        },
+        {
+          "kind": "numeric",
+          "path": "rel.NPC_PLR_14.affinity",
+          "delta": 3,
+          "min": 0,
+          "max": 100
+        }
+      ],
+      "messages": [
+        "El contacto acaba funcionando y Nano reconoce que la ayuda tenía valor."
+      ],
+      "historyTags": [
+        "defend",
+        "primary_interpretation"
+      ]
+    },
+    {
+      "id": "DEFEND__SECONDARY",
+      "baseWeight": 45,
+      "effects": [
+        {
+          "kind": "flag",
+          "flag": "NANO_OPPORTUNITY",
+          "value": true
+        },
+        {
+          "kind": "numeric",
+          "path": "rel.NPC_PLR_14.resentment",
+          "delta": 10,
+          "min": 0,
+          "max": 100
+        }
+      ],
+      "messages": [
+        "Que funcione profesionalmente no arregla la sensación de haber perdido autonomía."
+      ],
+      "historyTags": [
+        "defend",
+        "secondary_interpretation"
+      ]
+    },
+    {
+      "id": "WITHDRAW__PRIMARY",
+      "baseWeight": 55,
+      "effects": [
+        {
+          "kind": "numeric",
+          "path": "rel.NPC_PLR_14.trust",
+          "delta": 6,
+          "min": 0,
+          "max": 100
+        },
+        {
+          "kind": "flag",
+          "flag": "UNSOLICITED_NANO_HELP",
+          "value": false
+        }
+      ],
+      "messages": [
+        "Recuperar su control rebaja el conflicto."
+      ],
+      "historyTags": [
+        "autonomy",
+        "primary_interpretation"
+      ]
+    },
+    {
+      "id": "WITHDRAW__SECONDARY",
+      "baseWeight": 45,
+      "effects": [
+        {
+          "kind": "numeric",
+          "path": "rel.NPC_PLR_14.trust",
+          "delta": 3,
+          "min": 0,
+          "max": 100
+        },
+        {
+          "kind": "flag",
+          "flag": "NANO_OPPORTUNITY",
+          "value": false
+        }
+      ],
+      "messages": [
+        "Nano aprecia el límite, pero la oportunidad desaparece con él."
+      ],
+      "historyTags": [
+        "autonomy",
+        "secondary_interpretation"
+      ]
+    }
+  ],
+  "seedsRead": [
+    "SEED_NANO_SHADOW"
+  ],
+  "seedsWrite": [
+    "SEED_NANO_SHADOW"
+  ],
+  "npcRefs": [
+    "NPC_PLR_14"
+  ],
+  "tags": [
+    "nano",
+    "friendship",
+    "help"
+  ],
+  "presentation": {
+    "layoutHint": "decision",
+    "preloadPriority": "normal",
+    "assets": [
+      {
+        "id": "hero_cevt_19_nano_01",
+        "type": "image",
+        "role": "hero",
+        "fallbackId": "generic_conditional"
+      }
+    ]
+  },
+  "canonStatus": "technical_adaptation"
+}

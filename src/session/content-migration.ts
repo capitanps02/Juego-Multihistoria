@@ -7,6 +7,7 @@ import {
   type LegacyEventEvidence
 } from "./pre-t51-legacy-registry.js";
 import { POST_T51_CONTENT_SOURCES } from "./post-t51-legacy-registry.js";
+import { PLAYCANVAS_PRE_T41_IDENTITY, PLAYCANVAS_PRE_T41_EVIDENCE } from "./playcanvas-legacy-registry.js";
 import {
   FROZEN_OFFER_BRIDGE_SOURCES,
   type FrozenOfferBridgeEventEvidence
@@ -63,6 +64,13 @@ const postLegacySourcesWithBridgeEvidence: Readonly<Record<string, ContentEviden
 
 /** Validation-only historical catalogs. They never join EventIndex or scheduling. */
 export const LEGACY_CONTENT_SOURCES: Readonly<Record<string, ContentEvidenceSource>> = {
+  [PLAYCANVAS_PRE_T41_IDENTITY]: {
+    contentIdentity: PLAYCANVAS_PRE_T41_IDENTITY,
+    engineBuild: "0.8.0-t2.2",
+    sessionVersions: [1, 2, 3],
+    events: PLAYCANVAS_PRE_T41_EVIDENCE,
+    offerBridges: {}
+  },
   [PRE_T51_CONTENT_IDENTITY]: {
     contentIdentity: PRE_T51_CONTENT_IDENTITY,
     engineBuild: "0.8.0-t2.5",
@@ -84,6 +92,14 @@ export const T51_EUR_ELIGIBILITY_CONTENT_IDENTITY = "de9ef2f501c015705a28d54afd1
  * lineage (A -> B -> C), not as a matrix of shortcuts from every old version.
  */
 export const CONTENT_MIGRATION_ROUTES: readonly ContentMigrationRoute[] = [
+  {
+    sourceContentIdentity: PLAYCANVAS_PRE_T41_IDENTITY,
+    targetContentIdentity: PRE_T51_CONTENT_IDENTITY,
+    // Preserve the exact historical pending definition and all scheduler state.
+    // This patch adds seed closure to future WITHDRAW outcomes, not a new scene.
+    schedulerMappings: [],
+    seedOriginMappings: []
+  },
   {
     sourceContentIdentity: PRE_T51_CONTENT_IDENTITY,
     targetContentIdentity: T51_B1A_CONTENT_IDENTITY,

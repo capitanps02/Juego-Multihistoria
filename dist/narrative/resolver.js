@@ -1,8 +1,21 @@
+import { knowledgeRulesFor } from "../catalog/npc-knowledge-rules.js";
+import { SEED_CATALOG } from "../catalog/seeds.js";
+import { getSeedScopePolicy } from "../catalog/seed-scope.js";
 import { conditionsPass } from "../core/conditions.js";
+import { forgetExpiredNpcKnowledgeInPlace, rememberNpcFactInPlace } from "../core/npc-knowledge.js";
 import { getPath, setPath } from "../core/path.js";
 import { DeterministicRng } from "../core/rng.js";
 import { syncRetirementState } from "../simulation/late-career-engine.js";
+import { captureNpcKnowledgeTargetContext, resolveNpcKnowledgeTargets } from "./npc-knowledge-targets.js";
+const TERMINAL_SEED_STATES = new Set(["resolved", "expired"]);
+const SEED_DEFINITIONS = new Map(SEED_CATALOG.map(seed => [seed.id, seed]));
+const SCOPE_CLUB_PAYLOAD = "__t52OriginClub";
+const TERMINAL_REASON_PAYLOAD = "__t52TerminalReason";
+const TERMINAL_DATE_PAYLOAD = "__t52TerminalDate";
 function cloneState(state) { return structuredClone(state); }
+function isLiveSeed(state, seedId) {
+    return state.seeds.some(seed => seed.id === seedId && !TERMINAL_SEED_STATES.has(seed.state));
+}
 function applyEffect(state, effect) {
     if (effect.kind === "flag") {
         state.flags[effect.flag] = effect.value;
@@ -18,27 +31,62 @@ function applyEffect(state, effect) {
     const next = current + effect.delta;
     setPath(state, effect.path, Math.min(effect.max ?? Infinity, Math.max(effect.min ?? -Infinity, next)));
 }
+function bindScopeMetadata(state, seed) {
+    const policy = getSeedScopePolicy(seed.id);
+    if (policy.club === "origin_club" && typeof seed.payload[SCOPE_CLUB_PAYLOAD] !== "string") {
+        seed.payload[SCOPE_CLUB_PAYLOAD] = state.club;
+    }
+}
+function inferOriginClub(state, seed) {
+    const stored = seed.payload[SCOPE_CLUB_PAYLOAD];
+    if (typeof stored === "string")
+        return stored;
+    for (let i = state.history.length - 1; i >= 0; i -= 1) {
+        const entry = state.history[i];
+        if (entry.eventId === seed.originEvent && entry.season === seed.originSeason)
+            return entry.club;
+    }
+    return undefined;
+}
+function markSeedExpired(state, seed, reason) {
+    seed.state = "expired";
+    seed.lastTouchedDate = state.date;
+    seed.payload[TERMINAL_REASON_PAYLOAD] = reason;
+    seed.payload[TERMINAL_DATE_PAYLOAD] = state.date;
+}
 function applySeedTransition(state, t, event) {
-    const existing = state.seeds.find(s => s.id === t.seedId && !["resolved", "expired"].includes(s.state));
+    if (t.action === "create" && !SEED_DEFINITIONS.has(t.seedId)) {
+        throw new Error(`Unknown seed ${t.seedId} in ${event.id}`);
+    }
+    const existing = state.seeds.find(s => s.id === t.seedId && !TERMINAL_SEED_STATES.has(s.state));
     const presenceFlag = `HAS_${t.seedId}`;
     if (t.action === "create") {
-        if (!existing)
-            state.seeds.push({
+        if (!existing) {
+            const created = {
                 id: t.seedId, state: "dormant", intensity: t.intensity ?? 50,
                 originEvent: event.id, originSeason: state.season, npcRefs: event.npcRefs ?? [],
-                payload: t.payload ?? {}, lastTouchedDate: state.date
-            });
+                payload: { ...(t.payload ?? {}) }, expiresAfter: t.expiresAfter, lastTouchedDate: state.date
+            };
+            bindScopeMetadata(state, created);
+            state.seeds.push(created);
+        }
         else {
             existing.intensity = Math.max(existing.intensity, t.intensity ?? existing.intensity);
             Object.assign(existing.payload, t.payload ?? {});
+            if (t.expiresAfter !== undefined)
+                existing.expiresAfter = t.expiresAfter;
             existing.lastTouchedDate = state.date;
+            bindScopeMetadata(state, existing);
         }
         state.flags[presenceFlag] = true;
         return;
     }
+    // Missing/non-live targets are a safe no-op: terminal transitions are idempotent.
     if (!existing)
         return;
     existing.lastTouchedDate = state.date;
+    if (t.expiresAfter !== undefined)
+        existing.expiresAfter = t.expiresAfter;
     if (t.action === "activate")
         existing.state = "active";
     if (t.action === "intensify")
@@ -50,14 +98,67 @@ function applySeedTransition(state, t, event) {
     if (t.action === "resolve") {
         existing.state = "resolved";
         existing.consumedBy = event.id;
+        existing.payload[TERMINAL_REASON_PAYLOAD] = "resolved";
+        existing.payload[TERMINAL_DATE_PAYLOAD] = state.date;
         state.flags[presenceFlag] = false;
     }
     if (t.action === "expire") {
-        existing.state = "expired";
+        markSeedExpired(state, existing, "explicit_transition");
         state.flags[presenceFlag] = false;
     }
     if (!["resolve", "expire"].includes(t.action))
         state.flags[presenceFlag] = true;
+}
+export function syncSeedPresenceFlagsInPlace(state) {
+    // Persisted SeedInstances are authoritative for their own presence, including
+    // unknown future IDs. Existing known HAS_SEED_* flags are also reconciled so a
+    // stale truthy flag can be cleared even when the SeedInstance is missing.
+    // Do not materialize absent false flags for every catalog ID: that would change
+    // the serialized save shape without representing any narrative fact.
+    const ids = new Set(state.seeds.map(seed => seed.id));
+    for (const flag of Object.keys(state.flags)) {
+        if (!flag.startsWith("HAS_SEED_"))
+            continue;
+        const seedId = flag.slice(4);
+        if (SEED_DEFINITIONS.has(seedId))
+            ids.add(seedId);
+    }
+    for (const seedId of ids)
+        state.flags[`HAS_${seedId}`] = isLiveSeed(state, seedId);
+}
+/**
+ * Apply lifecycle scope after the clock or career context changes.
+ * Eligibility remains derived from event gates; it is intentionally not persisted as a second source of truth.
+ */
+export function expireDueSeedsInPlace(state) {
+    const expired = new Set();
+    for (const seed of state.seeds) {
+        if (TERMINAL_SEED_STATES.has(seed.state))
+            continue;
+        const definition = SEED_DEFINITIONS.get(seed.id);
+        const policy = getSeedScopePolicy(seed.id);
+        let reason;
+        if (seed.expiresAfter && seed.expiresAfter <= state.date)
+            reason = "explicit_date";
+        const maxAge = definition?.ageWindow[1];
+        if (!reason && policy.expireAtAgeWindowEnd && maxAge !== null && maxAge !== undefined && state.age > maxAge) {
+            reason = "age_window";
+        }
+        if (!reason && policy.season === "origin_season" && seed.originSeason !== state.season) {
+            reason = "season_scope";
+        }
+        if (!reason && policy.club === "origin_club") {
+            const originClub = inferOriginClub(state, seed);
+            if (originClub !== undefined && originClub !== state.club)
+                reason = "club_scope";
+        }
+        if (reason) {
+            markSeedExpired(state, seed, reason);
+            expired.add(seed.id);
+        }
+    }
+    syncSeedPresenceFlagsInPlace(state);
+    return [...expired];
 }
 function outcomeWeight(state, outcome) {
     let weight = outcome.baseWeight;
@@ -73,9 +174,37 @@ function outcomeWeight(state, outcome) {
     }
     return { weight: Math.max(0, weight), modifiers: reasons };
 }
+function resolvedNpcKnowledgeWrites(event, choiceId, outcomeId, targetContext) {
+    return knowledgeRulesFor(event.id, choiceId, outcomeId).map(rule => ({
+        rule,
+        npcIds: resolveNpcKnowledgeTargets(rule, targetContext)
+    }));
+}
+function recordResolvedNpcKnowledge(state, event, choiceId, outcomeId, eventClub, writes) {
+    forgetExpiredNpcKnowledgeInPlace(state);
+    for (const { rule, npcIds } of writes) {
+        for (const npcId of npcIds) {
+            rememberNpcFactInPlace(state, npcId, {
+                factId: rule.factId ?? event.id,
+                eventId: event.id,
+                choiceId,
+                outcomeId,
+                source: rule.source,
+                certainty: rule.certainty,
+                memory: rule.memory,
+                expiresAfterDays: rule.expiresAfterDays,
+                relationshipMemory: rule.relationshipMemory,
+                club: eventClub
+            });
+        }
+    }
+}
 function resolveChoiceCore(next, event, choiceId, qa = false) {
     const previousClub = next.club;
     const previousRetirementStatus = next.retirement?.status ?? "playing";
+    // Role-based knowledge recipients belong to the scene-entry context. Capture
+    // them before any immediate/outcome effect can move the player or an NPC.
+    const knowledgeTargetContext = captureNpcKnowledgeTargetContext(next);
     const choice = event.choices.find(c => c.id === choiceId);
     if (!choice)
         throw new Error(`Unknown choice ${choiceId} for ${event.id}`);
@@ -105,7 +234,13 @@ function resolveChoiceCore(next, event, choiceId, qa = false) {
         p.ownerClub = next.flags.LOAN_ACTIVE ? String(next.world.ownerClub ?? previousClub) : next.club;
         next.world.ownerClub = p.ownerClub;
         p.route = next.flags.ABROAD_ROUTE ? "abroad" : next.flags.LOAN_ACTIVE ? "loan" : next.club === "UDV" ? "home" : "domestic";
+        expireDueSeedsInPlace(next);
     }
+    const knowledgeWrites = resolvedNpcKnowledgeWrites(event, choiceId, selected.id, knowledgeTargetContext);
+    const historyNpcRefs = [...new Set([
+            ...(event.npcRefs ?? []),
+            ...knowledgeWrites.flatMap(write => write.npcIds)
+        ])];
     next.eventCooldowns[event.id] = event.cooldown;
     next.flags[`SEEN_${event.id}`] = true;
     next.familyLastSeen[event.family] = next.runtime.day;
@@ -115,9 +250,10 @@ function resolveChoiceCore(next, event, choiceId, qa = false) {
     next.history.push({
         eventId: event.id, date: next.date, season: next.season, choiceId,
         outcomeId: selected.id, club: next.club,
-        snapshot: { family: event.family, npcRefs: event.npcRefs ?? [], tags: event.tags ?? [], age: next.age },
+        snapshot: { family: event.family, npcRefs: historyNpcRefs, tags: event.tags ?? [], age: next.age },
         salience: 70, visibility: "private"
     });
+    recordResolvedNpcKnowledge(next, event, choiceId, selected.id, previousClub, knowledgeWrites);
     return {
         state: next, eventId: event.id, choiceId, outcomeId: selected.id,
         messages: selected.messages, presentation: event.presentation,

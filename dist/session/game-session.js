@@ -1,8 +1,11 @@
-import { marketState, respondToOffer } from "../simulation/offers.js";
+import { careerTerms, marketState, respondToOffer } from "../simulation/offers.js";
 import { EVENTS } from "../content/events/index.js";
 import { createInitialState } from "../content/initial-state.js";
 import { EventIndex } from "../narrative/event-index.js";
 import { scheduleEvent } from "../narrative/scheduler.js";
+import { eligibleChoices, isChoiceEligible } from "../narrative/choice-eligibility.js";
+import { offerDispositionForChoice, selectOfferBridgeEvent } from "../narrative/offer-bridge.js";
+import { reconcileNpcKnowledgeFromHistoryInPlace } from "../narrative/npc-knowledge-reconciliation.js";
 import { resolveChoiceInPlace } from "../narrative/resolver.js";
 import { advanceWorldDayInPlace } from "../simulation/world-simulator.js";
 import { maybeEmitMicroFeed } from "../simulation/microfeed.js";
@@ -14,7 +17,9 @@ import { ENGINE_BUILD } from "../core/build.js";
 import { assertGameState, parseSaveJson, record, validateData } from "../save/validation.js";
 import { assertSessionSnapshot } from "./validate-session.js";
 import { NPC_CATALOG } from "../catalog/npcs.js";
-export const SESSION_VERSION = 2;
+import { contentIdentity } from "./content-identity.js";
+import { applyMigrationPathInPlace, applyPostLegacyResolutionPathInPlace, buildActiveEventEvidence, CONTENT_MIGRATION_ROUTES, findMigrationPath, LEGACY_CONTENT_SOURCES, legacyContentSource } from "./content-migration.js";
+export const SESSION_VERSION = 3;
 export const SESSION_BUILD = ENGINE_BUILD;
 function publicOffer(o) {
     const terms = (t) => ({ club: t.club, ownerClub: t.ownerClub, registrationClub: t.registrationClub, leagueTier: t.leagueTier, months: t.months, salary: t.salary, releaseClause: t.releaseClause, loan: t.loan });
@@ -33,11 +38,6 @@ function requireThat(condition, code, message) {
         throw new SessionError(code, message);
 }
 function validId(value) { return typeof value === "string" && value.length > 0 && value.length <= 200; }
-async function contentIdentity(events) {
-    const bytes = new TextEncoder().encode(JSON.stringify(events));
-    const hash = await globalThis.crypto.subtle.digest("SHA-256", bytes);
-    return Array.from(new Uint8Array(hash), b => b.toString(16).padStart(2, "0")).join("");
-}
 function commandFingerprint(c) {
     requireThat(c && validId(c.commandId) && Number.isSafeInteger(c.expectedRevision) && c.expectedRevision >= 0, "INVALID_COMMAND", "Comando o revisión no válidos.");
     if (c.type === "continue") {
@@ -56,6 +56,37 @@ function commandFingerprint(c) {
     requireThat(c.type === "acknowledge", "INVALID_COMMAND", "Tipo de comando desconocido.");
     return JSON.stringify([c.type, c.expectedRevision]);
 }
+function requireEvidence(evidence, eventId, code = "INVALID_SAVE") {
+    const row = evidence[eventId];
+    requireThat(row, code, `No existe evidencia de contenido para ${eventId}.`);
+    return row;
+}
+function upgradeToV3(snapshot, sourceContentIdentity, sourceEvidence) {
+    if (snapshot.sessionVersion === 3)
+        return snapshot;
+    const next = snapshot;
+    next.decisionProvenance = next.state.history.map(entry => ({
+        sourceContentIdentity,
+        eventFingerprint: requireEvidence(sourceEvidence, entry.eventId).fingerprint
+    }));
+    if (next.pendingDecision) {
+        const eventEvidence = requireEvidence(sourceEvidence, next.pendingDecision.event.id);
+        next.pendingDecision = {
+            instanceId: next.pendingDecision.instanceId,
+            event: next.pendingDecision.event,
+            provenance: { sourceContentIdentity, eventFingerprint: eventEvidence.fingerprint }
+        };
+    }
+    next.sessionVersion = SESSION_VERSION;
+    return next;
+}
+function reconcileKnowledge(snapshot, activeEvidence, legacyCertifications) {
+    reconcileNpcKnowledgeFromHistoryInPlace(snapshot.state, {
+        decisionProvenance: snapshot.decisionProvenance,
+        activeEventEvidence: activeEvidence,
+        legacyCertifications
+    });
+}
 /**
  * Interactive single-writer boundary. Reads never schedule, resolve or draw RNG.
  * The low-level simulator remains available for headless QA.
@@ -63,11 +94,17 @@ function commandFingerprint(c) {
 export class GameSession {
     #snapshot;
     #index;
+    #activeEvidence;
+    #migrationRoutes;
+    #contentSources;
     #commit;
     #queue = Promise.resolve();
-    constructor(snapshot, events, commit) {
+    constructor(snapshot, events, activeEvidence, commit, migrationRoutes = CONTENT_MIGRATION_ROUTES, contentSources = LEGACY_CONTENT_SOURCES) {
         this.#snapshot = structuredClone(snapshot);
         this.#index = new EventIndex(structuredClone(events));
+        this.#activeEvidence = activeEvidence;
+        this.#migrationRoutes = migrationRoutes;
+        this.#contentSources = contentSources;
         this.#commit = commit ?? (async () => { });
     }
     static async create(seed, options = {}) {
@@ -75,13 +112,15 @@ export class GameSession {
         const sessionId = options.sessionId ?? globalThis.crypto.randomUUID();
         requireThat(validId(sessionId), "INVALID_SESSION", "Identificador de partida no válido.");
         const events = structuredClone(options.events ?? EVENTS);
+        const activeContentIdentity = await contentIdentity(events);
+        const activeEvidence = await buildActiveEventEvidence(events);
         const snapshot = {
-            sessionVersion: SESSION_VERSION, build: SESSION_BUILD, contentIdentity: await contentIdentity(events),
+            sessionVersion: SESSION_VERSION, build: SESSION_BUILD, contentIdentity: activeContentIdentity,
             sessionId, revision: 0, microfeeds: options.microfeeds ?? true, state: createInitialState(seed),
-            pendingDecision: null, pendingResult: null, receipts: [], journal: [], needsWorldAdvance: false
+            pendingDecision: null, pendingResult: null, receipts: [], journal: [], decisionProvenance: [], needsWorldAdvance: false
         };
         marketState(snapshot.state);
-        const session = new GameSession(snapshot, events, options.commit);
+        const session = new GameSession(snapshot, events, activeEvidence, options.commit, options.migrationRoutes ?? CONTENT_MIGRATION_ROUTES, options.contentSources ?? LEGACY_CONTENT_SOURCES);
         await session.#commit(structuredClone(snapshot), null);
         return session;
     }
@@ -90,17 +129,57 @@ export class GameSession {
         validateData(snapshot);
         snapshot = structuredClone(snapshot);
         const events = structuredClone(options.events ?? EVENTS);
+        const activeContentIdentity = await contentIdentity(events);
+        const activeEvidence = await buildActiveEventEvidence(events);
+        const contentSources = options.contentSources ?? LEGACY_CONTENT_SOURCES;
         const header = record(snapshot, "session");
         requireThat(typeof header.contentIdentity === "string", "INVALID_SAVE", "Falta la identidad del contenido.");
-        requireThat(header.contentIdentity === await contentIdentity(events), "CONTENT_CHANGED", "El contenido cambió; conserva la partida para migrarla antes de continuar.");
-        assertSessionSnapshot(snapshot, events);
-        snapshot.sessionVersion = SESSION_VERSION;
-        marketState(snapshot.state);
-        snapshot.build = SESSION_BUILD; // Existing narrative and RNG are preserved; new offers require explicit consent.
-        return new GameSession(snapshot, events, options.commit);
+        requireThat(header.contentIdentity === activeContentIdentity, "CONTENT_CHANGED", "El contenido cambió; conserva la partida para migrarla antes de continuar.");
+        await assertSessionSnapshot(snapshot, { events, activeContentIdentity, activeEvidence, contentSources });
+        const next = upgradeToV3(snapshot, activeContentIdentity, activeEvidence);
+        reconcileKnowledge(next, activeEvidence, options.knowledgeLegacyCertifications);
+        marketState(next.state);
+        next.build = SESSION_BUILD; // Existing narrative and RNG are preserved; new offers require explicit consent.
+        await assertSessionSnapshot(next, { events, activeContentIdentity, activeEvidence, contentSources });
+        return new GameSession(next, events, activeEvidence, options.commit, options.migrationRoutes ?? CONTENT_MIGRATION_ROUTES, contentSources);
+    }
+    /**
+     * Explicit content migration path. Normal resume remains strict.
+     * Migration validates the source first, consumes no RNG/scheduling, and does not persist by itself.
+     */
+    static async migrateAndResume(snapshot, options = {}) {
+        validateData(snapshot);
+        snapshot = structuredClone(snapshot);
+        const events = structuredClone(options.events ?? EVENTS);
+        const activeContentIdentity = await contentIdentity(events);
+        const activeEvidence = await buildActiveEventEvidence(events);
+        const routes = options.migrationRoutes ?? CONTENT_MIGRATION_ROUTES;
+        const contentSources = options.contentSources ?? LEGACY_CONTENT_SOURCES;
+        const header = record(snapshot, "session");
+        requireThat(typeof header.contentIdentity === "string", "INVALID_SAVE", "Falta la identidad del contenido.");
+        const sourceContentIdentity = header.contentIdentity;
+        if (sourceContentIdentity === activeContentIdentity)
+            return GameSession.resume(snapshot, options);
+        const path = findMigrationPath(sourceContentIdentity, activeContentIdentity, routes);
+        requireThat(path, "CONTENT_MIGRATION_UNSUPPORTED", "Esta versión del contenido no tiene una ruta de migración única y aprobada.");
+        const source = legacyContentSource(sourceContentIdentity, contentSources);
+        requireThat(source, "CONTENT_MIGRATION_UNSUPPORTED", "No existe evidencia registrada para el catálogo de origen.");
+        await assertSessionSnapshot(snapshot, { events, activeContentIdentity, activeEvidence, contentSources });
+        const next = upgradeToV3(snapshot, sourceContentIdentity, source.events);
+        applyMigrationPathInPlace(next.state, path);
+        reconcileKnowledge(next, activeEvidence, options.knowledgeLegacyCertifications);
+        marketState(next.state);
+        next.contentIdentity = activeContentIdentity;
+        next.sessionVersion = SESSION_VERSION;
+        next.build = SESSION_BUILD;
+        await assertSessionSnapshot(next, { events, activeContentIdentity, activeEvidence, contentSources });
+        return new GameSession(next, events, activeEvidence, options.commit, routes, contentSources);
     }
     static async fromSave(raw, options = {}) {
         return GameSession.resume(parseSaveJson(raw), options);
+    }
+    static async migrateFromSave(raw, options = {}) {
+        return GameSession.migrateAndResume(parseSaveJson(raw), options);
     }
     /** Full snapshot for persistence/QA, never feed this object to the player UI. */
     exportSnapshot() { return structuredClone(this.#snapshot); }
@@ -121,7 +200,7 @@ export class GameSession {
             contacts: NPC_CATALOG.map(n => ({ id: n.id, name: n.name, role: n.role })),
             decision: p ? { instanceId: p.instanceId, family: p.event.family, title: p.event.text.title, body: p.event.text.body,
                 visible: p.event.intel.visible, uncertain: p.event.intel.uncertain,
-                choices: p.event.choices.map(c => ({ id: c.id, label: c.label })) } : null,
+                choices: eligibleChoices(s, p.event).map(c => ({ id: c.id, label: c.label })) } : null,
             result, resultCategory: result ? (lastEvent?.family === "sport" ? "match" : "story") : null,
             journal: this.#snapshot.journal
         });
@@ -156,12 +235,38 @@ export class GameSession {
             const pending = next.pendingDecision;
             requireThat(pending && pending.instanceId === command.pendingInstanceId, "STALE_DECISION", "Esta escena ya no está pendiente.");
             const choice = pending.event.choices.find(c => c.id === command.choiceId);
-            requireThat(choice, "INVALID_CHOICE", "La elección no pertenece a esta escena.");
+            requireThat(choice && isChoiceEligible(next.state, choice), "INVALID_CHOICE", "La elección no pertenece a esta escena o no está disponible.");
+            const bridgeDisposition = offerDispositionForChoice(pending.event, choice.id);
+            const beforeOfferTerms = bridgeDisposition ? careerTerms(next.state) : null;
+            if (bridgeDisposition)
+                requireThat(next.state.market?.pending, "STALE_OFFER", "La oferta asociada a esta escena ya no está pendiente.");
             const result = resolveChoiceInPlace(next.state, pending.event, choice.id);
-            next.pendingResult = { title: pending.event.text.title, choiceLabel: choice.label, messages: result.messages };
+            let messages = result.messages;
+            if (bridgeDisposition) {
+                requireThat(JSON.stringify(careerTerms(next.state)) === JSON.stringify(beforeOfferTerms), "INVALID_OFFER_BRIDGE", "Una escena de oferta no puede modificar términos contractuales mediante efectos narrativos.");
+                const historyIndex = next.state.history.length - 1;
+                const historyEntry = next.state.history[historyIndex];
+                requireThat(historyEntry?.eventId === pending.event.id && historyEntry.choiceId === choice.id, "INVALID_OFFER_BRIDGE", "La decisión narrativa no coincide con el historial recién resuelto.");
+                const offerId = next.state.market?.pending?.id;
+                requireThat(offerId, "STALE_OFFER", "La oferta asociada desapareció antes de confirmar la elección.");
+                const offerDecision = respondToOffer(next.state, offerId, bridgeDisposition, {
+                    kind: "narrative_choice",
+                    historyIndex,
+                    eventId: pending.event.id,
+                    choiceId: choice.id
+                });
+                messages = [...result.messages, offerDecision.explanation];
+            }
+            next.pendingResult = { title: pending.event.text.title, choiceLabel: choice.label, messages };
             next.journal.push({ date: next.state.date, ...structuredClone(next.pendingResult) });
+            next.decisionProvenance.push(structuredClone(pending.provenance));
             next.pendingDecision = null;
             next.needsWorldAdvance = true;
+            if (pending.provenance.sourceContentIdentity !== next.contentIdentity) {
+                const path = findMigrationPath(pending.provenance.sourceContentIdentity, next.contentIdentity, this.#migrationRoutes);
+                requireThat(path, "CONTENT_MIGRATION_UNSUPPORTED", "La escena legacy pendiente ya no tiene una ruta de compatibilidad única y aprobada.");
+                applyPostLegacyResolutionPathInPlace(next.state, pending.event.id, path);
+            }
             generateEpilogue(next.state);
         }
         else {
@@ -183,6 +288,16 @@ export class GameSession {
         maybeEmitMicroFeed(next.state, feeds, next.microfeeds);
         generateEpilogue(next.state);
     }
+    #presentEvent(next, eventId) {
+        const evidence = requireEvidence(this.#activeEvidence, eventId, "CONTENT_CHANGED");
+        const canonicalEvent = this.#index.events.find(event => event.id === eventId);
+        requireThat(canonicalEvent, "CONTENT_CHANGED", "La escena programada ya no existe en el catálogo activo.");
+        next.pendingDecision = {
+            instanceId: `${next.sessionId}:${next.revision + 1}`,
+            event: structuredClone(canonicalEvent),
+            provenance: { sourceContentIdentity: next.contentIdentity, eventFingerprint: evidence.fingerprint }
+        };
+    }
     #advance(next, maxDays) {
         let days = 0;
         if (next.needsWorldAdvance) {
@@ -192,11 +307,15 @@ export class GameSession {
         }
         // No unbounded autoplay. If no event appears, commit progress and let the UI yield.
         while (next.state.retirement.status !== "closed") {
-            if (next.state.market?.pending)
+            if (next.state.market?.pending) {
+                const bridge = selectOfferBridgeEvent(next.state, this.#index.events);
+                if (bridge)
+                    this.#presentEvent(next, bridge.id);
                 return;
+            }
             const scheduled = scheduleEvent(next.state, this.#index);
             if (scheduled) {
-                next.pendingDecision = { instanceId: `${next.sessionId}:${next.revision + 1}`, event: structuredClone(scheduled.event) };
+                this.#presentEvent(next, scheduled.event.id);
                 return;
             }
             if (days >= maxDays)
