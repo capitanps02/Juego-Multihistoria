@@ -101,10 +101,13 @@ function materializeJanuary(state: GameState): CareerOfferKind | null {
 
 function materializeSummer(state: GameState): CareerOfferKind | null {
   if (seen(state, "EVT_18_SUM_001")) return null;
-  if (state.professional.ownerClub !== "UDV") return null;
+  // The first-signing scene is a UDV employment negotiation. An active loan has its own
+  // return/continuity lifecycle and must not be reclassified as a renewal merely because
+  // UDV still owns the player.
+  if (state.professional.ownerClub !== "UDV" || state.professional.registrationClub !== "UDV") return null;
+  if (state.flags.LOAN_ACTIVE) return null;
 
   const market = num(state.reputation.marketHeat, 5);
-  const role = num(state.sport.roleScore, 18);
   const externalPlausible = market >= 34 && (state.flags.OFFICIAL_DEBUT === true || num(state.sport.appearances) >= 3);
   const external = externalPlausible && producerRoll(state, "age18:summer:kind") % 100 < 38;
 
@@ -136,14 +139,9 @@ function materializeSummer(state: GameState): CareerOfferKind | null {
       draft.contract.monthsRemaining = months;
       draft.contract.salaryMonthly = salary;
       draft.contract.releaseClause = releaseClause;
-      // Renewal preserves the current registration context, including an active loan.
-      draft.professional.route = state.professional.route;
-      draft.flags.LOAN_ACTIVE = state.flags.LOAN_ACTIVE;
     });
   }
 
-  // `role` is deliberately read only as causal context; formal terms remain CareerOffer-owned.
-  void role;
   return state.market?.pending ? careerOfferKind(state.market.pending) : null;
 }
 
