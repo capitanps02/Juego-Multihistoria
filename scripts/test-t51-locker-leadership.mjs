@@ -1,3 +1,4 @@
+import './test-t51-role-expectation.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createInitialState } from '../dist/content/initial-state.js';
