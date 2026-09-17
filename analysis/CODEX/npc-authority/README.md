@@ -2,9 +2,9 @@
 
 Fecha: 2026-09-17
 
-Base de `main` inspeccionada: `ebef17057156c7721fc4a041552c9cf1b3fdb6ba`.
+Base autoritativa de re-ground: `main@782b92c9a496293aeb33ad8b39f522a927374d6f`.
 Rama de autoridad: `t5/npc-authority`.
-Runtime probado por esta pasada hasta: `04a6048d89cdd5c366e7b766435c4910cedb6d4a`.
+Runtime authority re-grounded: `a83b49caf5921ee8619c9c8466e94b968b4434cd`.
 
 ## Resuelto
 

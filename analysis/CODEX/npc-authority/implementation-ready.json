@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "ebef17057156c7721fc4a041552c9cf1b3fdb6ba",
-  "runtimeAuthorityCommit": "04a6048d89cdd5c366e7b766435c4910cedb6d4a",
+  "baseCommit": "782b92c9a496293aeb33ad8b39f522a927374d6f",
+  "runtimeAuthorityCommit": "a83b49caf5921ee8619c9c8466e94b968b4434cd",
   "generatedAt": "2026-09-17",
   "branch": "t5/npc-authority",
   "tasks": [

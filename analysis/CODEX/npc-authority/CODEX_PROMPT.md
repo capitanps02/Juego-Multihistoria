@@ -10,12 +10,8 @@ Antes de modificar nada:
 
 1. inspecciona el `main` real más reciente;
 2. inspecciona `t5/npc-authority`;
-3. comprueba que contiene como mínimo los commits runtime:
-   - `24d1a6b571bea701edda09da2d4df64a7f6fdd33` — resolvers de autoridad;
-   - `36e9b526f17cf14cb303d552c2260943deb023f7` — target slots de autoridad;
-   - `7e6d51c903b60195994723d47ff9ee157de000f2` — resolución dinámica de knowledge targets;
-   - `04a6048d89cdd5c366e7b766435c4910cedb6d4a` — regresiones de contratos compartidos.
-4. base histórica de esta pasada: `main@ebef17057156c7721fc4a041552c9cf1b3fdb6ba`.
+3. comprueba que la rama contiene las APIs de autoridad `resolveActiveAgent`, `certifyActiveAgentInPlace`, `clearActiveAgentInPlace`, `resolveCurrentClubInstitutionalNpc` y los targets dinámicos `activeAgent` / `currentClubInstitutional`;
+4. referencia de re-ground de esta pasada: `main@782b92c9a496293aeb33ad8b39f522a927374d6f`, con runtime authority en `a83b49caf5921ee8619c9c8466e94b968b4434cd`. Los commits previos al re-ground son evidencia histórica, no ancestry autoritativa actual;
 5. lee completos:
    - `analysis/CODEX/npc-authority/README.md`;
    - `analysis/CODEX/npc-authority/implementation-ready.json`;
