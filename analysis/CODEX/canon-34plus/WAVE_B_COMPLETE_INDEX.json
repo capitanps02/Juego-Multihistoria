@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "generatedAt": "2026-09-17",
+  "wave": "B",
+  "expectedEvents": 18,
+  "coverageComplete": true,
+  "corePackage": "WAVE_B_IMPLEMENTATION.json",
+  "corePackageEvents": 17,
+  "overlapPackageEvents": 1,
+  "events": [
+    {"eventId":"EVT_34_BRIDGE_001","detailFile":"WAVE_B_IMPLEMENTATION.json"},
+    {"eventId":"EVT_34_PAY_001","detailFile":"WAVE_B_IMPLEMENTATION.json"},
+    {"eventId":"EVT_34_HOME_001","detailFile":"WAVE_B_IMPLEMENTATION.json"},
+    {"eventId":"EVT_34_AGT_001","detailFile":"WAVE_B_IMPLEMENTATION.json"},
+    {"eventId":"EVT_34_CON_001","detailFile":"WAVE_B_IMPLEMENTATION.json"},
+    {"eventId":"EVT_34_MAR_001","detailFile":"WAVE_B_IMPLEMENTATION.json"},
+    {"eventId":"EVT_35_MKT_001","detailFile":"WAVE_B_IMPLEMENTATION.json"},
+    {"eventId":"EVT_35_CON_001","detailFile":"WAVE_B_IMPLEMENTATION.json"},
+    {"eventId":"EVT_35_FAREWELL_001","detailFile":"WAVE_B_IMPLEMENTATION.json"},
+    {"eventId":"EVT_35_AGT_001","detailFile":"WAVE_B_IMPLEMENTATION.json","also":"WAVE_D_IMPLEMENTATION.json"},
+    {"eventId":"EVT_35_DUAL_001","detailFile":"WAVE_D_IMPLEMENTATION.json","reason":"Canonical card requires both a real playing offer/salary context and certified institutional-role authority."},
+    {"eventId":"EVT_35_JAN_001","detailFile":"WAVE_B_IMPLEMENTATION.json"},
+    {"eventId":"EVT_35_HOME_001","detailFile":"WAVE_B_IMPLEMENTATION.json"},
+    {"eventId":"EVT_36_CON_001","detailFile":"WAVE_B_IMPLEMENTATION.json"},
+    {"eventId":"EVT_36_LOWER_001","detailFile":"WAVE_B_IMPLEMENTATION.json"},
+    {"eventId":"EVT_37_SHORT_001","detailFile":"WAVE_B_IMPLEMENTATION.json","also":"WAVE_E_IMPLEMENTATION.json"},
+    {"eventId":"EVT_37_HOME_001","detailFile":"WAVE_B_IMPLEMENTATION.json"},
+    {"eventId":"EVT_38_RICH_001","detailFile":"WAVE_B_IMPLEMENTATION.json"}
+  ],
+  "note": "The 17-event core file predates discovery that EVT_35_DUAL_001 is also market/contract dependent. The canonical card is not duplicated: WAVE_D_IMPLEMENTATION.json is its single detailed source, while this index composes the complete 18-event Wave B dependency set."
+}
