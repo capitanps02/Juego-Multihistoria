@@ -4,6 +4,8 @@ import fs from 'node:fs';
 import { EVENTS } from '../dist/content/events/index.js';
 
 const debt = JSON.parse(fs.readFileSync('analysis/T5.1/canon-30-34-conditional-seed-read-debt.json', 'utf8'));
+const readiness = JSON.parse(fs.readFileSync('analysis/T5.1/canon-30-34-implementation-readiness.json', 'utf8'));
+const migrationHandoff = JSON.parse(fs.readFileSync('analysis/T5.1/canon-30-34-migration-handoff.json', 'utf8'));
 const contentIdentitySource = fs.readFileSync('src/session/content-identity.ts', 'utf8');
 const byId = new Map(EVENTS.map(event => [event.id, event]));
 
@@ -25,6 +27,16 @@ test('conditional seed debt classifies exactly the seven owner 30-34 mismatches'
     [...debt.rows].map(row => [row.eventId, row.seedId]).sort(),
     [...EXPECTED.entries()].sort()
   );
+});
+
+test('conditional seed debt follows the current branch baseline and target freeze handoff', () => {
+  assert.equal(readiness.base, `main@${debt.sourceMainSha}`);
+  assert.equal(debt.sourceMainSha, migrationHandoff.sourceMainSha);
+  assert.equal(debt.identityConstraint.currentTargetContentIdentity, readiness.currentTarget.contentIdentity);
+  assert.equal(debt.identityConstraint.currentTargetContentIdentity, migrationHandoff.observedTargetContentIdentity);
+  assert.equal(debt.identityConstraint.targetFreezeFixture, readiness.currentTarget.fixture);
+  assert.equal(debt.identityConstraint.targetFreezeFixture, migrationHandoff.consumer.targetFreezeFixture);
+  assert.equal(debt.identityConstraint.routeRegistrationOwner, 'coordination/integration');
 });
 
 test('all seven callbacks are real positive runtime seed consumers', () => {
