@@ -42,16 +42,17 @@ function canonicalDebutState() {
   throw new Error('No deterministic canonical debut context found in directed seed range');
 }
 
-test('match model/1 public simulator preserves core simulation and RNG apart from the additive fact store', () => {
+test('match model/1 public simulator preserves core simulation and RNG apart from additive sporting fact stores', () => {
   const wrapped = createInitialState(8811);
   const core = createInitialState(8811);
   for (let day = 0; day < 70; day += 1) {
     advanceWorldDayInPlace(wrapped);
     advanceCoreWorldDayInPlace(core);
   }
-  const withoutStore = structuredClone(wrapped);
-  delete withoutStore.world.sportMatchModel;
-  assert.deepEqual(withoutStore, core);
+  const withoutStores = structuredClone(wrapped);
+  delete withoutStores.world.sportMatchModel;
+  delete withoutStores.world.sportPenaltySetups;
+  assert.deepEqual(withoutStores, core);
   assert.deepEqual(wrapped.rngState, core.rngState);
   assert.ok(getSportMatchModelStore(wrapped)?.fixtures.length > 0);
 });
