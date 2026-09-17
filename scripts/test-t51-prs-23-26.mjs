@@ -12,6 +12,8 @@ import {
   T51_T510_CONTENT_IDENTITY,
   T51_T511_CONTENT_IDENTITY,
   T51_PRS_CONTENT_IDENTITY,
+  T51_EUR_ELIGIBILITY_CONTENT_IDENTITY,
+  T51_PRS_CAUSAL_CONTENT_IDENTITY,
   applyMigrationRouteInPlace,
   findMigrationPath,
   findMigrationRoute
@@ -22,6 +24,8 @@ const ID = 'EVT_23_PRS_001';
 const TARGET_IDENTITY = '88751a2107c035826162968991e3a1808b2f4573afa3a3a20a3efa376fa8af1f';
 const D_FIXTURE = JSON.parse(fs.readFileSync(`qa/fixtures/t5.1/post-t51-sources/${T51_T511_CONTENT_IDENTITY}.json`, 'utf8'));
 const E_FIXTURE = JSON.parse(fs.readFileSync(`qa/fixtures/t5.1/post-t51-sources/${T51_PRS_CONTENT_IDENTITY}.json`, 'utf8'));
+const F_FIXTURE = JSON.parse(fs.readFileSync(`qa/fixtures/t5.1/post-t51-sources/${T51_EUR_ELIGIBILITY_CONTENT_IDENTITY}.json`, 'utf8'));
+const G_FIXTURE = JSON.parse(fs.readFileSync(`qa/fixtures/t5.1/post-t51-sources/${T51_PRS_CAUSAL_CONTENT_IDENTITY}.json`, 'utf8'));
 
 const press = () => {
   const rows = EVENTS_23_26.filter(event => event.id === ID);
@@ -203,4 +207,62 @@ test('real frozen D snapshot reaches frozen E semantics with no RNG drift', asyn
   applyMigrationRouteInPlace(migratedState, route);
   assert.deepEqual(migratedState, stateBefore);
   assert.deepEqual(migratedState.rngState, rngBefore);
+});
+
+
+test('PRS causal G is the unique adjacent successor of F', async () => {
+  const actualIdentity = await contentIdentity(G_FIXTURE.events);
+  assert.equal(actualIdentity, T51_PRS_CAUSAL_CONTENT_IDENTITY);
+  const route = findMigrationRoute(T51_EUR_ELIGIBILITY_CONTENT_IDENTITY, actualIdentity, CONTENT_MIGRATION_ROUTES);
+  assert.ok(route);
+  assert.deepEqual(route.schedulerMappings ?? [], [{
+    kind: 'same_scene',
+    legacyEventId: ID,
+    canonicalEventId: ID
+  }]);
+  assert.deepEqual(route.seedOriginMappings ?? [], []);
+  for (const old of [PRE_T51_CONTENT_IDENTITY, T51_B1A_CONTENT_IDENTITY, T51_T510_CONTENT_IDENTITY, T51_T511_CONTENT_IDENTITY, T51_PRS_CONTENT_IDENTITY]) {
+    assert.equal(findMigrationRoute(old, actualIdentity, CONTENT_MIGRATION_ROUTES), undefined, `no shortcut from ${old}`);
+  }
+  const path = findMigrationPath(PRE_T51_CONTENT_IDENTITY, actualIdentity, CONTENT_MIGRATION_ROUTES);
+  assert.deepEqual(path?.map(row => [row.sourceContentIdentity, row.targetContentIdentity]), [
+    [PRE_T51_CONTENT_IDENTITY, T51_B1A_CONTENT_IDENTITY],
+    [T51_B1A_CONTENT_IDENTITY, T51_T510_CONTENT_IDENTITY],
+    [T51_T510_CONTENT_IDENTITY, T51_T511_CONTENT_IDENTITY],
+    [T51_T511_CONTENT_IDENTITY, T51_PRS_CONTENT_IDENTITY],
+    [T51_PRS_CONTENT_IDENTITY, T51_EUR_ELIGIBILITY_CONTENT_IDENTITY],
+    [T51_EUR_ELIGIBILITY_CONTENT_IDENTITY, T51_PRS_CAUSAL_CONTENT_IDENTITY]
+  ]);
+});
+
+test('F -> G preserves PRS seen/cooldown, history, seeds and RNG', () => {
+  const route = findMigrationRoute(T51_EUR_ELIGIBILITY_CONTENT_IDENTITY, T51_PRS_CAUSAL_CONTENT_IDENTITY, CONTENT_MIGRATION_ROUTES);
+  assert.ok(route);
+  const state = createInitialState(51151);
+  state.age = 23;
+  state.phase = '23_26';
+  state.flags.SEEN_EVT_23_PRS_001 = true;
+  state.eventCooldowns[ID] = 777;
+  state.seeds.push({ id: 'SEED_ELITE_ROLE_BARGAIN', state: 'resolved', intensity: 55, originEvent: 'EVT_23_BRIDGE_001', originSeason: state.season, npcRefs: [], payload: { stance: 'role_guarantees' } });
+  state.history.push({ eventId: ID, date: '2027-01-10', season: state.season, choiceId: 'B', outcomeId: 'B_PRIMARY', club: state.club, snapshot: { age: 23, family: 'press' }, salience: 70, visibility: 'public' });
+  const before = { history: structuredClone(state.history), seeds: structuredClone(state.seeds), rng: structuredClone(state.rngState) };
+  applyMigrationRouteInPlace(state, route);
+  assert.deepEqual(state.history, before.history);
+  assert.deepEqual(state.seeds, before.seeds);
+  assert.deepEqual(state.rngState, before.rng);
+  assert.equal(state.flags.SEEN_EVT_23_PRS_001, true);
+  assert.equal(state.eventCooldowns[ID], 777);
+});
+
+test('real frozen F snapshot migrates to G without RNG drift', async () => {
+  assert.equal(await contentIdentity(F_FIXTURE.events), T51_EUR_ELIGIBILITY_CONTENT_IDENTITY);
+  const sessionF = await GameSession.create(51152, { sessionId: 't511-prs-f-g', events: F_FIXTURE.events });
+  const before = sessionF.exportSnapshot();
+  const rngBefore = structuredClone(before.state.rngState);
+  const historyBefore = structuredClone(before.state.history);
+  const migrated = await GameSession.migrateAndResume(before, { events: G_FIXTURE.events });
+  const after = migrated.exportSnapshot();
+  assert.equal(after.contentIdentity, T51_PRS_CAUSAL_CONTENT_IDENTITY);
+  assert.deepEqual(after.state.rngState, rngBefore);
+  assert.deepEqual(after.state.history, historyBefore);
 });
