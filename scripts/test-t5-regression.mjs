@@ -1,3 +1,4 @@
+import './test-t5-state-validator.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { EVENTS } from '../dist/content/events/index.js';
