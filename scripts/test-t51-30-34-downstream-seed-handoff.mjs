@@ -4,6 +4,8 @@ import fs from 'node:fs';
 import { EVENTS } from '../dist/content/events/index.js';
 
 const handoff = JSON.parse(fs.readFileSync('analysis/T5.1/canon-30-34-downstream-seed-handoff.json', 'utf8'));
+const lifecycle = JSON.parse(fs.readFileSync('analysis/T5.1/canon-30-34-seed-lifecycle.json', 'utf8'));
+const readiness = JSON.parse(fs.readFileSync('analysis/T5.1/canon-30-34-implementation-readiness.json', 'utf8'));
 
 const EXPECTED_BOUNDARY_SEEDS = [
   'SEED_72H_LIMIT',
@@ -33,7 +35,7 @@ function seedWriters(seedId) {
   ).map(event => event.id).sort();
 }
 
-test('downstream handoff is explicitly non-prescriptive and preserves future valid consumers', () => {
+test('downstream handoff is explicitly non-prescriptive and anchored to the current 30-34 baseline', () => {
   assert.equal(handoff.schemaVersion, 1);
   assert.equal(handoff.policy.structuralReadIsNotConsumption, true);
   assert.equal(handoff.policy.nameSimilarityIsNotCausality, true);
@@ -42,6 +44,10 @@ test('downstream handoff is explicitly non-prescriptive and preserves future val
   assert.equal(handoff.policy.futureValidConsumerAllowed, true);
   assert.equal(handoff.policy.downstreamOwnerMustChooseReaderTerminalOrOpen, true);
   assert.match(handoff.integrationRule, /non-prescriptive/i);
+  assert.equal(handoff.sourceMainSha, lifecycle.sourceMainSha);
+  assert.equal(readiness.base, `main@${handoff.sourceMainSha}`);
+  assert.equal(handoff.consumerMatrixEvidence.snapshotBaseCommit, 'cda24da1a688cc245695cd007c50d458c4e1e7d7');
+  assert.match(handoff.consumerMatrixEvidence.rule, /evidence snapshot/i);
 });
 
 test('boundary handoff contains exactly the six reviewed 30-34 seeds and no orphan-writer seed', () => {
@@ -51,6 +57,8 @@ test('boundary handoff contains exactly the six reviewed 30-34 seeds and no orph
   assert.equal(ids.some(id => ORPHAN_SEEDS.has(id)), false);
   assert.equal(handoff.handoffs.every(row => row.currentStatus === 'review_required_no_demonstrated_live_consumer'), true);
   assert.equal(handoff.handoffs.every(row => row.reviewTarget && row.requiredDecision), true);
+  assert.deepEqual([...lifecycle.downstreamBoundaryHandoff.seeds].sort(), EXPECTED_BOUNDARY_SEEDS);
+  assert.equal(lifecycle.downstreamBoundaryHandoff.path, 'analysis/T5.1/canon-30-34-downstream-seed-handoff.json');
 });
 
 test('producer evidence matches current runtime writers without editorial provenance aliases', () => {
