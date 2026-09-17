@@ -31,7 +31,27 @@ const press = () => {
 const labels = event => event.choices.map(choice => choice.label);
 const effectPaths = event => event.outcomes.flatMap(outcome => outcome.effects ?? []).map(effect => effect.kind === 'flag' ? `flags.${effect.flag}` : effect.path);
 
-test('PRS activates the exact canonical identity and four decisions', () => {
+function prsState(seed = 51121, stance = 'role_guarantees') {
+  const state = createInitialState(seed);
+  state.age = 23;
+  state.phase = '23_26';
+  state.professional.initializedAt23 = true;
+  state.professional.roleScoreAt23 = 70;
+  state.sport.roleScore = 55;
+  state.professional.roleSecurity = 55;
+  state.seeds.push({
+    id: 'SEED_ELITE_ROLE_BARGAIN',
+    state: 'dormant',
+    intensity: 55,
+    originEvent: 'EVT_23_BRIDGE_001',
+    originSeason: state.season,
+    npcRefs: [],
+    payload: { stance }
+  });
+  return state;
+}
+
+test('PRS activates the canonical four decisions without changing contract authority', () => {
   const event = press();
   assert.equal(event.text.title, 'Decisión técnica');
   assert.deepEqual(labels(event), [
@@ -45,27 +65,66 @@ test('PRS activates the exact canonical identity and four decisions', () => {
   assert.deepEqual(event.seedsWrite ?? [], []);
 });
 
-test('PRS requires a real role decline after the prior elite-role bargain', () => {
+test('PRS trigger requires exact age-23 guarantee provenance plus a material relative role drop', () => {
   const event = press();
   assert.deepEqual(event.gates, [
-    { path: 'sport.roleScore', op: 'lte', value: 48 },
-    { path: 'professional.roleSecurity', op: 'lte', value: 55 },
-    { path: 'flags.HAS_SEED_ELITE_ROLE_BARGAIN', op: 'eq', value: true }
+    { path: 'facts.roleGuaranteeAt23', op: 'eq', value: true },
+    { path: 'facts.roleDropSince23', op: 'gte', value: 15 },
+    { path: 'professional.roleSecurity', op: 'lte', value: 55 }
   ]);
-  const state = createInitialState(51121);
-  state.age = 23;
-  state.phase = '23_26';
-  state.sport.roleScore = 40;
-  state.professional.roleSecurity = 42;
-  state.flags.HAS_SEED_ELITE_ROLE_BARGAIN = false;
-  assert.equal(eventGatesPass(state, event), false);
-  state.flags.HAS_SEED_ELITE_ROLE_BARGAIN = true;
+
+  const state = prsState();
+  assert.equal(eventGatesPass(state, event), true, '70 -> 55 is the exact 15-point threshold');
+
+  state.sport.roleScore = 56;
+  assert.equal(eventGatesPass(state, event), false, '14-point drop must stay below the technical threshold');
+
+  state.sport.roleScore = 54;
+  assert.equal(eventGatesPass(state, event), true, '16-point drop remains eligible');
+
+  state.professional.roleSecurity = 56;
+  assert.equal(eventGatesPass(state, event), false, 'role crisis must still be present');
+});
+
+test('PRS rejects the other three bridge stances even when the same seed id and role drop exist', () => {
+  const event = press();
+  for (const [index, stance] of ['security_over_role', 'wait_market', 'agent_listens'].entries()) {
+    const state = prsState(51130 + index, stance);
+    assert.equal(eventGatesPass(state, event), false, stance);
+  }
+});
+
+test('PRS rejects generic HAS_SEED flag, wrong origin and missing age-23 snapshot', () => {
+  const event = press();
+
+  const generic = createInitialState(51140);
+  generic.age = 23;
+  generic.phase = '23_26';
+  generic.professional.initializedAt23 = true;
+  generic.professional.roleScoreAt23 = 75;
+  generic.sport.roleScore = 40;
+  generic.professional.roleSecurity = 40;
+  generic.flags.HAS_SEED_ELITE_ROLE_BARGAIN = true;
+  assert.equal(eventGatesPass(generic, event), false, 'flag presence is not historical provenance');
+
+  const wrongOrigin = prsState(51141);
+  wrongOrigin.seeds.at(-1).originEvent = 'EVT_FAKE_SOURCE';
+  assert.equal(eventGatesPass(wrongOrigin, event), false, 'same seed id from another source is insufficient');
+
+  const noSnapshot = prsState(51142);
+  noSnapshot.professional.initializedAt23 = false;
+  assert.equal(eventGatesPass(noSnapshot, event), false, 'without the authoritative 23 snapshot roleDropSince23 fails closed');
+});
+
+test('PRS accepts historical guarantee evidence after the seed becomes terminal', () => {
+  const event = press();
+  const state = prsState(51143);
+  const seed = state.seeds.at(-1);
+  seed.state = 'resolved';
+  seed.consumedBy = 'LATER_EVENT';
   assert.equal(eventGatesPass(state, event), true);
-  state.sport.roleScore = 70;
-  assert.equal(eventGatesPass(state, event), false);
-  state.sport.roleScore = 40;
-  state.professional.roleSecurity = 75;
-  assert.equal(eventGatesPass(state, event), false);
+  seed.state = 'expired';
+  assert.equal(eventGatesPass(state, event), true);
 });
 
 test('PRS treats the minutes promise as an attributed claim and never mutates contract or market authority', () => {
@@ -77,7 +136,7 @@ test('PRS treats the minutes promise as an attributed claim and never mutates co
   assert.ok(event.outcomes.every(outcome => (outcome.seedTransitions ?? []).length === 0));
 });
 
-test('PRS frozen E catalog preserves only the adjacent D -> E migration edge', async () => {
+test('historical frozen E catalog preserves only the adjacent D -> E migration edge', async () => {
   const actualIdentity = await contentIdentity(E_FIXTURE.events);
   assert.equal(actualIdentity, TARGET_IDENTITY);
   assert.equal(actualIdentity, T51_PRS_CONTENT_IDENTITY);
@@ -105,7 +164,7 @@ test('PRS frozen E catalog preserves only the adjacent D -> E migration edge', a
   }]);
 });
 
-test('D -> E preserves historical truth and releases only PRS scheduler suppression', () => {
+test('historical D -> E preserves truth and releases only PRS scheduler suppression', () => {
   const route = findMigrationRoute(T51_T511_CONTENT_IDENTITY, TARGET_IDENTITY, CONTENT_MIGRATION_ROUTES);
   assert.ok(route);
   const state = createInitialState(51122);
