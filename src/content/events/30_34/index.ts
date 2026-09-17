@@ -39,11 +39,66 @@ const applyCanonicalSharedTriggers=(event:EventDefinition):EventDefinition=>{
   } as EventDefinition & {gateAlternatives:Condition[][]};
 };
 
+type OfferDisposition="accept"|"reject"|"delegate"|"counter"|"defer";
+type OfferBridgeEvent=EventDefinition&{offerBridge:{choiceActions:Record<string,OfferDisposition>}};
+
+const withOfferBridge=(
+  event:EventDefinition,
+  extraGates:Condition[],
+  choiceActions:Record<string,OfferDisposition>
+):EventDefinition=>({
+  ...event,
+  gates:[...(event.gates??[]),...extraGates],
+  offerBridge:{choiceActions},
+  tags:[...new Set([...(event.tags??[]),"t51_offer_authority_bridge"])]
+} as OfferBridgeEvent);
+
+/**
+ * Only bridge scenes whose canonical decision can be represented by the single
+ * authoritative pending CareerOffer. Multi-offer comparisons intentionally stay
+ * outside this mapping until the market authority can represent them without proxies.
+ */
+const applyCareerOfferBridge=(event:EventDefinition):EventDefinition=>{
+  if(event.id==="EVT_31_HOME_001"){
+    return withOfferBridge(
+      event,
+      [{path:"market.pending.terms.club",op:"eq",value:"UDV"}],
+      {A:"accept",B:"defer",C:"counter",D:"reject"}
+    );
+  }
+  if(event.id==="EVT_32_HOME_001"){
+    return withOfferBridge(
+      event,
+      [{path:"market.pending.terms.club",op:"eq",value:"UDV"}],
+      {A:"accept",B:"counter",C:"counter",D:"defer"}
+    );
+  }
+  if(event.id==="EVT_32_CON_001"){
+    return withOfferBridge(
+      event,
+      [
+        {path:"market.pending.reason",op:"eq",value:"Renovación de contrato"},
+        {path:"market.pending.terms.months",op:"eq",value:12}
+      ],
+      {A:"accept",B:"counter",C:"counter",D:"reject"}
+    );
+  }
+  return event;
+};
+
 const authorityOwnedPath=(effect:Effect):boolean=>{
-  if(effect.kind==="flag") return false;
+  if(effect.kind==="flag"){
+    return effect.flag==="ABROAD_ROUTE" || effect.flag==="LOAN_ACTIVE" || effect.flag==="BIG_CLUB";
+  }
   return effect.path==="club"
+    || effect.path==="tier"
+    || effect.path==="world.ownerClub"
     || effect.path==="professional.ownerClub"
     || effect.path==="professional.registrationClub"
+    || effect.path==="professional.leagueTier"
+    || effect.path==="professional.clubPrestigeTier"
+    || effect.path==="professional.clubPrestigeScore"
+    || effect.path==="professional.route"
     || effect.path.startsWith("contract.");
 };
 
@@ -79,7 +134,8 @@ const enforceCareerAuthority=(event:EventDefinition):EventDefinition=>{
 const principal:EventDefinition[]=PRINCIPAL_EVENTS_30_34.map(original=>{
   const selected=overrides.get(original.id)??original;
   const triggered=applyCanonicalSharedTriggers(selected);
-  const event=enforceCareerAuthority(triggered);
+  const bridged=applyCareerOfferBridge(triggered);
+  const event=enforceCareerAuthority(bridged);
   if(!reimplementedIds.has(event.id)) return event;
   const tags=[...(event.tags??[]).filter(tag=>tag!=="t51_verified_same_identity"),"t51_canonical_reimplementation"];
   return {...event,canonStatus:"technical_adaptation",tags:[...new Set(tags)]};
