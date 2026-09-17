@@ -48,12 +48,12 @@ Unique ordinary coverage remains **43/43**. `AUTHORITY_MATRIX.json` is the machi
 ## Shared owner routing
 Do not rebuild these contracts inside Agent 8. Use their owner workstreams:
 - successive content lineage: **issue #59**;
-- 34+ seed catalog/provenance: **T5.2 / Agent 2**, consuming `T52_SEED_HANDOFF.json`;
-- factual match/calendar/competition context: **issue #124** plus the shared authoritative match-model workstream;
+- 34+ canonical seed catalog/provenance application: **issue #180**, consuming `T52_SEED_HANDOFF.json`;
+- factual match/calendar/competition context: **issue #124** plus **PR #156** authoritative match-history work;
 - concrete national preselection/final squad facts: **issue #174**;
-- veteran 34+ `CareerOffer` generation and late-career term representability: **issue #176**;
+- veteran 34+ `CareerOffer` generation and late-career term representability: **issue #176**; offer lifecycle hardening may also depend on shared **PR #173**;
 - authoritative free agency / expired-employment transition: **issue #130**;
-- late-career coach/successor/peer/institutional identity: **issue #177**;
+- late-career coach/successor/peer/institutional identity: **issue #177**, composing narrower shared work such as **PR #150** and coach chronology **#169**;
 - terminal career retirement/last-match closure/epilogues: **PR #118 / Agent 9**.
 
 If an owner contract is not integrated into the current base, leave the dependent 34+ scene blocked. Never implement a local proxy to bypass an upstream issue.
@@ -61,11 +61,11 @@ If an owner contract is not integrated into the current base, leave the dependen
 ## Wave 0 — mandatory before any active 34+ registration
 1. issue #59 must identify the actual authoritative predecessor; do not freeze a provisional shortcut;
 2. final predecessor generations, especially 30–34, must be authoritative;
-3. T5.2 must apply `T52_SEED_HANDOFF.json` so the 54 exact Pasada-7 seeds exist with safe provenance/migration semantics;
+3. issue #180 must apply `T52_SEED_HANDOFF.json` so the 54 exact Pasada-7 seeds exist with safe provenance/migration semantics;
 4. predecessor memories consumed by 34+ must use canonical live/historical semantics;
 5. save/history/pending-decision fingerprints must remain compatible.
 
-When 34+ becomes the next real generation, calculate only the adjacent predecessor→34+ edge from the then-current catalog. Never reuse a stale hash from this branch.
+Current main already contains a certified earlier canonical generation H for 18–23. This is lineage progress, not permission to skip 23–30/30–34. When 34+ becomes the next real generation, calculate only the adjacent predecessor→34+ edge from the then-current catalog. Never reuse a stale hash from this branch.
 
 ## First activation target after Wave 0
 Wave A:
@@ -86,8 +86,8 @@ Use `WAVE_A_IMPLEMENTATION.json` and `WAVE_A_TEST_MATRIX.md` exactly. Do not reg
 - national team: `resolveNationalTeamAuthority()` for historical/pool/cycle/international-retirement facts;
 - national-team limitation: current resolver deliberately exposes `concreteCallupKnown=false` and `tournamentSquadKnown=false`; #174 owns the concrete selection-cycle facts;
 - active agent: `resolveActiveAgent()`; null is meaningful;
-- coach/successor/peer/institutional identity: certified authority only; #177 owns the missing late-career contract;
-- seed memory: `projectSeedMemory()` / exact live/historical instances; never infer semantic payload from a seed name.
+- coach/successor/peer/institutional identity: certified authority only; #177 owns the remaining late-career composition contract;
+- seed memory: `projectSeedMemory()` / exact live/historical instances; issue #180 owns Pasada-7 catalog application, never infer semantic payload from a seed name.
 
 ## Hard rules
 - Never directly mutate `state.club`, owner/registration club or contract terms from a narrative choice.
