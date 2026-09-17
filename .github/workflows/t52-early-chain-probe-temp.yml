@@ -1,0 +1,61 @@
+name: T5.2 early chain probe temp
+
+on:
+  pull_request:
+    branches:
+      - t5/seed-34plus-catalog
+    paths:
+      - 'analysis/T5.2/seed-closure-classifications.json'
+      - 'scripts/audit-t52.mjs'
+      - 'scripts/generate-codex-seed-handoff.mjs'
+      - 'scripts/t52-causal-seed-facts.mjs'
+      - 'src/content/events/18_20/**'
+      - '.github/workflows/t52-early-chain-probe-temp.yml'
+  workflow_dispatch:
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Generate T5.2 evidence
+        shell: bash
+        run: |
+          node scripts/audit-t52.mjs
+          node scripts/audit-t52-handoff.mjs
+          node scripts/audit-t52-deferred.mjs
+          node scripts/audit-t52-simulation-seed-direct-reads.mjs
+          node scripts/audit-t52-closure-readiness.mjs || true
+      - name: Print only early-chain diagnostics
+        shell: bash
+        run: |
+          node --input-type=module <<'EOF'
+          import fs from 'node:fs';
+          const ids = new Set([
+            'SEED_BRUNO_FAVOR',
+            'SEED_MENA_EARLY_READ',
+            'SEED_EXIT_STYLE_UDV',
+            'SEED_BODY_PRECEDENT',
+            'SEED_PHYSIO_CONFIDENCE',
+            'SEED_COACH_PUBLIC'
+          ]);
+          const report = JSON.parse(fs.readFileSync('analysis/T5.2/closure-readiness.json', 'utf8'));
+          console.log(JSON.stringify({
+            registry: report.classificationRegistry,
+            rows: report.rows.filter(row => ids.has(row.id)).map(row => ({
+              id: row.id,
+              owner: row.owner,
+              topology: row.topology,
+              verifiedProducerEventIds: row.verifiedProducerEventIds,
+              verifiedRuntimeEventConsumerIds: row.verifiedRuntimeEventConsumerIds,
+              verifiedFeasiblePairs: row.verifiedFeasiblePairs
+            }))
+          }, null, 2));
+          if (!report.rules.classificationRegistryValid) process.exitCode = 1;
+          EOF
