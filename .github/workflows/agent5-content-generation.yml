@@ -36,10 +36,11 @@ jobs:
           p = Path('src/session/content-migration.ts')
           text = p.read_text()
           marker = 'T51_AGENT5_18_23_CONTENT_IDENTITY'
+          source = 'de9ef2f501c015705a28d54afd140259356f15566d424511e6dbf67769c9bd19'
           target = '025e92fe1d5e18cc2ad63cf947996ad7a2a3ed2af4ce234f742a2fff733b5a31'
 
           if marker not in text:
-              constant_anchor = 'export const T51_EUR_ELIGIBILITY_CONTENT_IDENTITY = "de9ef2f501c015705a28d54afd140259356f15566d424511e6dbf67769c9bd19";\n'
+              constant_anchor = f'export const T51_EUR_ELIGIBILITY_CONTENT_IDENTITY = "{source}";\n'
               assert constant_anchor in text
               text = text.replace(
                   constant_anchor,
@@ -47,8 +48,6 @@ jobs:
                   1
               )
 
-              tail = '''  seedOriginMappings: []\n}\n];'''
-              assert tail in text
               ids = [
                   'EVT_20_LIFE_001',
                   'EVT_20_ABR_001',
@@ -67,12 +66,46 @@ jobs:
                   '      { kind: "distinct_scene", legacyEventId: "' + event_id + '", canonicalEventId: "' + event_id + '", clearCanonicalSeen: true, clearCanonicalCooldown: true }'
                   for event_id in ids
               )
-              edge = f'''  seedOriginMappings: []\n}},\n  {{\n    sourceContentIdentity: T51_EUR_ELIGIBILITY_CONTENT_IDENTITY,\n    targetContentIdentity: {marker},\n    schedulerMappings: [\n{mappings}\n    ],\n    seedOriginMappings: []\n  }}\n];'''
-              text = text.replace(tail, edge, 1)
+              edge = f'''  {{\n    sourceContentIdentity: T51_EUR_ELIGIBILITY_CONTENT_IDENTITY,\n    targetContentIdentity: {marker},\n    schedulerMappings: [\n{mappings}\n    ],\n    seedOriginMappings: []\n  }}'''
+
+              routes_start = text.index('export const CONTENT_MIGRATION_ROUTES')
+              routes_end = text.index('\n];', routes_start)
+              before = text[:routes_end].rstrip()
+              assert before.endswith('}')
+              text = before + ',\n' + edge + text[routes_end:]
               p.write_text(text)
+
+          final = p.read_text()
+          assert f'export const {marker} = "{target}";' in final
+          assert 'sourceContentIdentity: T51_EUR_ELIGIBILITY_CONTENT_IDENTITY' in final
+          assert f'targetContentIdentity: {marker}' in final
+          assert final.count(f'targetContentIdentity: {marker}') == 1
+          print('Agent 5 migration edge present in TypeScript source')
 
       - name: Build exact active catalog
         run: npm run build
+
+      - name: Verify compiled Agent 5 route
+        run: |
+          node --input-type=module <<'NODE'
+          import {
+            CONTENT_MIGRATION_ROUTES,
+            findMigrationPath,
+            T51_EUR_ELIGIBILITY_CONTENT_IDENTITY,
+            T51_AGENT5_18_23_CONTENT_IDENTITY
+          } from './dist/session/content-migration.js';
+          const edge = CONTENT_MIGRATION_ROUTES.find(route =>
+            route.sourceContentIdentity === T51_EUR_ELIGIBILITY_CONTENT_IDENTITY &&
+            route.targetContentIdentity === T51_AGENT5_18_23_CONTENT_IDENTITY
+          );
+          if (!edge) throw new Error('Compiled Agent 5 migration edge missing');
+          if ((edge.schedulerMappings ?? []).length !== 12) {
+            throw new Error(`Expected 12 Agent 5 scheduler mappings, got ${(edge.schedulerMappings ?? []).length}`);
+          }
+          const path = findMigrationPath(T51_EUR_ELIGIBILITY_CONTENT_IDENTITY, T51_AGENT5_18_23_CONTENT_IDENTITY);
+          if (!path || path.length !== 1) throw new Error('Compiled Agent 5 adjacent path is not unique');
+          console.log(JSON.stringify({ ok: true, schedulerMappings: edge.schedulerMappings.length }));
+          NODE
 
       - name: Freeze active source if needed
         shell: bash
