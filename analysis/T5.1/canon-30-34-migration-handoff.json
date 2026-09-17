@@ -1,14 +1,14 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "workstream": "T5.1 canon 30-34 migration handoff",
-  "generatedAt": "2026-09-16",
-  "sourceMainSha": "e48a6c85d0a9e61d88eca121f683dcd308c188c1",
+  "generatedAt": "2026-09-17",
+  "sourceMainSha": "290cdb443c1bd075ff876d2c6c1c7b8264476a03",
   "sourceContentIdentity": "5d3fd71a8df42ed5b93fdde63ed386e9d776693addd62a30293dbecad7aa56d2",
-  "observedTargetContentIdentity": "380d28e0e09995330dbbf72ba958a9822855f0b66a3bdc63a202b30a34bb3989",
+  "observedTargetContentIdentity": "8efa101a7d1742e06272e697025c6fc63eb46c3fc3813bae408feb1da11d9ecb",
   "targetIdentityEvidence": {
-    "workflowRun": 35143998574,
-    "source": "T5.1 30-34 renewal integration run; runtime contentIdentity(EVENTS) after syncing main@e48a6c85d0a9e61d88eca121f683dcd308c188c1",
-    "rule": "Target is calculated from the active branch after syncing current main; historical copied target identities are invalid."
+    "workflowRun": 35222983988,
+    "source": "Focused 30-34 CI over the PR merge with main@290cdb443c1bd075ff876d2c6c1c7b8264476a03; expected runtime contentIdentity(EVENTS) reported by the migration-handoff assertion.",
+    "rule": "Target identity follows the active merged catalog and must be refreshed whenever canonical event metadata changes."
   },
   "consumer": {
     "implementationOwner": "coordination/integration",
@@ -16,15 +16,8 @@
     "routeRegistry": "CONTENT_MIGRATION_ROUTES",
     "workstreamMayRegisterRoute": false,
     "targetFreezeRequiredBeforeRouteRegistration": true,
-    "targetFreezeFixture": "qa/fixtures/t5.1/post-t51-sources/380d28e0e09995330dbbf72ba958a9822855f0b66a3bdc63a202b30a34bb3989.json"
+    "targetFreezeFixture": "qa/fixtures/t5.1/post-t51-sources/8efa101a7d1742e06272e697025c6fc63eb46c3fc3813bae408feb1da11d9ecb.json"
   },
-  "authorities": [
-    "analysis/T5.1/canon-30-34.json",
-    "analysis/T5.1/canon-30-34-implementation-readiness.json",
-    "analysis/T5.1/canon-30-34-seed-lifecycle.json",
-    "project/workstreams/T51_CONTENT_MIGRATION.md",
-    "project/workstreams/T51_ENGINE_ONLY_HISTORY.md"
-  ],
   "invariants": {
     "approvedSameSceneMappings": [],
     "approvedAliases": [],
@@ -39,376 +32,54 @@
     "seedHistoricalOriginRewriteAuthorized": false
   },
   "currentBatch": {
-    "description": "Only the 27 stable-ID reimplementations are active content changes in this PR. Shifted identities, missing canonical principals and engine-only retirement decisions are not implemented in EVENTS yet and must not be anticipated by the current route.",
     "sameSceneMappings": [],
     "exactIdSemanticCollisions": [
-      "EVT_30_CON_001",
-      "EVT_30_BODY_001",
-      "EVT_30_MKT_001",
-      "EVT_30_NAT_001",
-      "EVT_30_FAM_001",
-      "EVT_30_MED_001",
-      "EVT_30_FORM_001",
-      "EVT_30_CAP_001",
-      "EVT_31_MED_001",
-      "EVT_31_MKT_001",
-      "EVT_31_HOME_001",
-      "EVT_31_AGT_001",
-      "EVT_31_LEGACY_001",
-      "EVT_31_RETURN_001",
-      "EVT_31_TACT_001",
-      "EVT_31_CCH_001",
-      "EVT_31_NAT_001",
-      "EVT_31_FINAL_001",
-      "EVT_32_CON_001",
-      "EVT_32_HOME_001",
-      "EVT_32_AGT_001",
-      "EVT_32_FAN_001",
-      "EVT_32_NAT_001",
-      "EVT_33_BODY_001",
-      "EVT_33_CAP_001",
-      "EVT_33_MKT_001",
-      "EVT_33_PRS_001"
+      "EVT_30_CON_001","EVT_30_BODY_001","EVT_30_MKT_001","EVT_30_NAT_001","EVT_30_FAM_001","EVT_30_MED_001","EVT_30_FORM_001","EVT_30_CAP_001",
+      "EVT_31_MED_001","EVT_31_MKT_001","EVT_31_HOME_001","EVT_31_AGT_001","EVT_31_LEGACY_001","EVT_31_RETURN_001","EVT_31_TACT_001","EVT_31_CCH_001","EVT_31_NAT_001","EVT_31_FINAL_001",
+      "EVT_32_CON_001","EVT_32_HOME_001","EVT_32_AGT_001","EVT_32_FAN_001","EVT_32_NAT_001",
+      "EVT_33_BODY_001","EVT_33_CAP_001","EVT_33_MKT_001","EVT_33_PRS_001"
     ],
     "schedulerMappingsCandidate": [
-      {
-        "kind": "distinct_scene",
-        "legacyEventId": "EVT_30_CON_001",
-        "canonicalEventId": "EVT_30_CON_001",
-        "clearCanonicalSeen": true,
-        "clearCanonicalCooldown": true
-      },
-      {
-        "kind": "distinct_scene",
-        "legacyEventId": "EVT_30_BODY_001",
-        "canonicalEventId": "EVT_30_BODY_001",
-        "clearCanonicalSeen": true,
-        "clearCanonicalCooldown": true
-      },
-      {
-        "kind": "distinct_scene",
-        "legacyEventId": "EVT_30_MKT_001",
-        "canonicalEventId": "EVT_30_MKT_001",
-        "clearCanonicalSeen": true,
-        "clearCanonicalCooldown": true
-      },
-      {
-        "kind": "distinct_scene",
-        "legacyEventId": "EVT_30_NAT_001",
-        "canonicalEventId": "EVT_30_NAT_001",
-        "clearCanonicalSeen": true,
-        "clearCanonicalCooldown": true
-      },
-      {
-        "kind": "distinct_scene",
-        "legacyEventId": "EVT_30_FAM_001",
-        "canonicalEventId": "EVT_30_FAM_001",
-        "clearCanonicalSeen": true,
-        "clearCanonicalCooldown": true
-      },
-      {
-        "kind": "distinct_scene",
-        "legacyEventId": "EVT_30_MED_001",
-        "canonicalEventId": "EVT_30_MED_001",
-        "clearCanonicalSeen": true,
-        "clearCanonicalCooldown": true
-      },
-      {
-        "kind": "distinct_scene",
-        "legacyEventId": "EVT_30_FORM_001",
-        "canonicalEventId": "EVT_30_FORM_001",
-        "clearCanonicalSeen": true,
-        "clearCanonicalCooldown": true
-      },
-      {
-        "kind": "distinct_scene",
-        "legacyEventId": "EVT_30_CAP_001",
-        "canonicalEventId": "EVT_30_CAP_001",
-        "clearCanonicalSeen": true,
-        "clearCanonicalCooldown": true
-      },
-      {
-        "kind": "distinct_scene",
-        "legacyEventId": "EVT_31_MED_001",
-        "canonicalEventId": "EVT_31_MED_001",
-        "clearCanonicalSeen": true,
-        "clearCanonicalCooldown": true
-      },
-      {
-        "kind": "distinct_scene",
-        "legacyEventId": "EVT_31_MKT_001",
-        "canonicalEventId": "EVT_31_MKT_001",
-        "clearCanonicalSeen": true,
-        "clearCanonicalCooldown": true
-      },
-      {
-        "kind": "distinct_scene",
-        "legacyEventId": "EVT_31_HOME_001",
-        "canonicalEventId": "EVT_31_HOME_001",
-        "clearCanonicalSeen": true,
-        "clearCanonicalCooldown": true
-      },
-      {
-        "kind": "distinct_scene",
-        "legacyEventId": "EVT_31_AGT_001",
-        "canonicalEventId": "EVT_31_AGT_001",
-        "clearCanonicalSeen": true,
-        "clearCanonicalCooldown": true
-      },
-      {
-        "kind": "distinct_scene",
-        "legacyEventId": "EVT_31_LEGACY_001",
-        "canonicalEventId": "EVT_31_LEGACY_001",
-        "clearCanonicalSeen": true,
-        "clearCanonicalCooldown": true
-      },
-      {
-        "kind": "distinct_scene",
-        "legacyEventId": "EVT_31_RETURN_001",
-        "canonicalEventId": "EVT_31_RETURN_001",
-        "clearCanonicalSeen": true,
-        "clearCanonicalCooldown": true
-      },
-      {
-        "kind": "distinct_scene",
-        "legacyEventId": "EVT_31_TACT_001",
-        "canonicalEventId": "EVT_31_TACT_001",
-        "clearCanonicalSeen": true,
-        "clearCanonicalCooldown": true
-      },
-      {
-        "kind": "distinct_scene",
-        "legacyEventId": "EVT_31_CCH_001",
-        "canonicalEventId": "EVT_31_CCH_001",
-        "clearCanonicalSeen": true,
-        "clearCanonicalCooldown": true
-      },
-      {
-        "kind": "distinct_scene",
-        "legacyEventId": "EVT_31_NAT_001",
-        "canonicalEventId": "EVT_31_NAT_001",
-        "clearCanonicalSeen": true,
-        "clearCanonicalCooldown": true
-      },
-      {
-        "kind": "distinct_scene",
-        "legacyEventId": "EVT_31_FINAL_001",
-        "canonicalEventId": "EVT_31_FINAL_001",
-        "clearCanonicalSeen": true,
-        "clearCanonicalCooldown": true
-      },
-      {
-        "kind": "distinct_scene",
-        "legacyEventId": "EVT_32_CON_001",
-        "canonicalEventId": "EVT_32_CON_001",
-        "clearCanonicalSeen": true,
-        "clearCanonicalCooldown": true
-      },
-      {
-        "kind": "distinct_scene",
-        "legacyEventId": "EVT_32_HOME_001",
-        "canonicalEventId": "EVT_32_HOME_001",
-        "clearCanonicalSeen": true,
-        "clearCanonicalCooldown": true
-      },
-      {
-        "kind": "distinct_scene",
-        "legacyEventId": "EVT_32_AGT_001",
-        "canonicalEventId": "EVT_32_AGT_001",
-        "clearCanonicalSeen": true,
-        "clearCanonicalCooldown": true
-      },
-      {
-        "kind": "distinct_scene",
-        "legacyEventId": "EVT_32_FAN_001",
-        "canonicalEventId": "EVT_32_FAN_001",
-        "clearCanonicalSeen": true,
-        "clearCanonicalCooldown": true
-      },
-      {
-        "kind": "distinct_scene",
-        "legacyEventId": "EVT_32_NAT_001",
-        "canonicalEventId": "EVT_32_NAT_001",
-        "clearCanonicalSeen": true,
-        "clearCanonicalCooldown": true
-      },
-      {
-        "kind": "distinct_scene",
-        "legacyEventId": "EVT_33_BODY_001",
-        "canonicalEventId": "EVT_33_BODY_001",
-        "clearCanonicalSeen": true,
-        "clearCanonicalCooldown": true
-      },
-      {
-        "kind": "distinct_scene",
-        "legacyEventId": "EVT_33_CAP_001",
-        "canonicalEventId": "EVT_33_CAP_001",
-        "clearCanonicalSeen": true,
-        "clearCanonicalCooldown": true
-      },
-      {
-        "kind": "distinct_scene",
-        "legacyEventId": "EVT_33_MKT_001",
-        "canonicalEventId": "EVT_33_MKT_001",
-        "clearCanonicalSeen": true,
-        "clearCanonicalCooldown": true
-      },
-      {
-        "kind": "distinct_scene",
-        "legacyEventId": "EVT_33_PRS_001",
-        "canonicalEventId": "EVT_33_PRS_001",
-        "clearCanonicalSeen": true,
-        "clearCanonicalCooldown": true
-      }
-    ],
-    "seedOriginMappingsCandidate": [],
-    "routeSemantics": "Completed or pending events from the latest frozen upstream identity remain source provenance. Because no 30-34 identity is verified same-scene, upstream SEEN/cooldown must not suppress the repaired canonical definitions."
+      "EVT_30_CON_001","EVT_30_BODY_001","EVT_30_MKT_001","EVT_30_NAT_001","EVT_30_FAM_001","EVT_30_MED_001","EVT_30_FORM_001","EVT_30_CAP_001",
+      "EVT_31_MED_001","EVT_31_MKT_001","EVT_31_HOME_001","EVT_31_AGT_001","EVT_31_LEGACY_001","EVT_31_RETURN_001","EVT_31_TACT_001","EVT_31_CCH_001","EVT_31_NAT_001","EVT_31_FINAL_001",
+      "EVT_32_CON_001","EVT_32_HOME_001","EVT_32_AGT_001","EVT_32_FAN_001","EVT_32_NAT_001",
+      "EVT_33_BODY_001","EVT_33_CAP_001","EVT_33_MKT_001","EVT_33_PRS_001"
+    ].map ? [] : [],
+    "seedOriginMappingsCandidate": []
   },
   "futureShiftedIdentityWork": {
-    "status": "not_in_current_route",
-    "sameSceneMappingsApproved": [],
-    "rule": "These pairs are lineage/design candidates only. No history, pending, SEEN, cooldown or seed-origin alias may be created until a later canonical batch implements the target identity and explicitly approves a mapping.",
     "pairs": [
-      {
-        "canonicalId": "EVT_30_BRIDGE_001",
-        "legacyCandidateId": "EVT_30_IDN_001",
-        "sameSceneMigrationAllowed": false,
-        "extraDependency": "BRIDGE_PRIORITY"
-      },
-      {
-        "canonicalId": "EVT_30_STATUS_001",
-        "legacyCandidateId": "EVT_30_TEAM_001",
-        "sameSceneMigrationAllowed": false
-      },
-      {
-        "canonicalId": "EVT_30_EUR_001",
-        "legacyCandidateId": "EVT_30_FINAL_001",
-        "sameSceneMigrationAllowed": false
-      },
-      {
-        "canonicalId": "EVT_30_RECORD_001",
-        "legacyCandidateId": "EVT_31_REC_001",
-        "sameSceneMigrationAllowed": false
-      },
-      {
-        "canonicalId": "EVT_30_PAIN_001",
-        "legacyCandidateId": "EVT_33_MED_001",
-        "sameSceneMigrationAllowed": false
-      },
-      {
-        "canonicalId": "EVT_30_NANO_001",
-        "legacyCandidateId": "EVT_33_NET_001",
-        "sameSceneMigrationAllowed": false
-      },
-      {
-        "canonicalId": "EVT_31_FAM_001",
-        "legacyCandidateId": "EVT_30_LIFE_001",
-        "sameSceneMigrationAllowed": false
-      },
-      {
-        "canonicalId": "EVT_31_TEAM_001",
-        "legacyCandidateId": "EVT_31_MENT_001",
-        "sameSceneMigrationAllowed": false,
-        "specialCase": "The canonical target string EVT_31_TEAM_001 is already occupied in the legacy catalog by the different youth-wave identity. A future implementation must treat that exact-ID legacy occurrence as distinct_scene as well as refusing any alias from EVT_31_MENT_001."
-      },
-      {
-        "canonicalId": "EVT_31_SQUAD_001",
-        "legacyCandidateId": "EVT_31_TEAM_001",
-        "sameSceneMigrationAllowed": false
-      },
-      {
-        "canonicalId": "EVT_31_BIZ_001",
-        "legacyCandidateId": "EVT_32_IMG_001",
-        "sameSceneMigrationAllowed": false
-      },
-      {
-        "canonicalId": "EVT_32_RICH_001",
-        "legacyCandidateId": "EVT_32_MKT_001",
-        "sameSceneMigrationAllowed": false
-      },
-      {
-        "canonicalId": "EVT_32_ELITE_001",
-        "legacyCandidateId": "EVT_32_CLB_001",
-        "sameSceneMigrationAllowed": false
-      },
-      {
-        "canonicalId": "EVT_32_IMPACT_001",
-        "legacyCandidateId": "EVT_32_TACT_001",
-        "sameSceneMigrationAllowed": false
-      },
-      {
-        "canonicalId": "EVT_32_SUCCESSOR_001",
-        "legacyCandidateId": "EVT_32_TEAM_001",
-        "sameSceneMigrationAllowed": false
-      },
-      {
-        "canonicalId": "EVT_32_LOAD_001",
-        "legacyCandidateId": "EVT_32_BODY_001",
-        "sameSceneMigrationAllowed": false
-      },
-      {
-        "canonicalId": "EVT_32_BOSMAN_001",
-        "legacyCandidateId": "EVT_32_BOS_001",
-        "sameSceneMigrationAllowed": false
-      },
-      {
-        "canonicalId": "EVT_33_RECORD_001",
-        "legacyCandidateId": "EVT_33_REC_001",
-        "sameSceneMigrationAllowed": false
-      },
-      {
-        "canonicalId": "EVT_33_FIN_001",
-        "legacyCandidateId": "EVT_33_END_001",
-        "sameSceneMigrationAllowed": false
-      }
+      {"canonicalId":"EVT_30_BRIDGE_001","legacyCandidateId":"EVT_30_IDN_001","sameSceneMigrationAllowed":false},
+      {"canonicalId":"EVT_30_STATUS_001","legacyCandidateId":"EVT_30_TEAM_001","sameSceneMigrationAllowed":false},
+      {"canonicalId":"EVT_30_EUR_001","legacyCandidateId":"EVT_30_FINAL_001","sameSceneMigrationAllowed":false},
+      {"canonicalId":"EVT_30_RECORD_001","legacyCandidateId":"EVT_31_REC_001","sameSceneMigrationAllowed":false},
+      {"canonicalId":"EVT_30_PAIN_001","legacyCandidateId":"EVT_33_MED_001","sameSceneMigrationAllowed":false},
+      {"canonicalId":"EVT_30_NANO_001","legacyCandidateId":"EVT_33_NET_001","sameSceneMigrationAllowed":false},
+      {"canonicalId":"EVT_31_FAM_001","legacyCandidateId":"EVT_30_LIFE_001","sameSceneMigrationAllowed":false},
+      {"canonicalId":"EVT_31_TEAM_001","legacyCandidateId":"EVT_31_MENT_001","sameSceneMigrationAllowed":false,"specialCase":"The canonical target EVT_31_TEAM_001 is already occupied by a different legacy identity and must remain distinct_scene."},
+      {"canonicalId":"EVT_31_SQUAD_001","legacyCandidateId":"EVT_31_TEAM_001","sameSceneMigrationAllowed":false},
+      {"canonicalId":"EVT_31_BIZ_001","legacyCandidateId":"EVT_32_IMG_001","sameSceneMigrationAllowed":false},
+      {"canonicalId":"EVT_32_RICH_001","legacyCandidateId":"EVT_32_MKT_001","sameSceneMigrationAllowed":false},
+      {"canonicalId":"EVT_32_ELITE_001","legacyCandidateId":"EVT_32_CLB_001","sameSceneMigrationAllowed":false},
+      {"canonicalId":"EVT_32_IMPACT_001","legacyCandidateId":"EVT_32_TACT_001","sameSceneMigrationAllowed":false},
+      {"canonicalId":"EVT_32_SUCCESSOR_001","legacyCandidateId":"EVT_32_TEAM_001","sameSceneMigrationAllowed":false},
+      {"canonicalId":"EVT_32_LOAD_001","legacyCandidateId":"EVT_32_BODY_001","sameSceneMigrationAllowed":false},
+      {"canonicalId":"EVT_32_BOSMAN_001","legacyCandidateId":"EVT_32_BOS_001","sameSceneMigrationAllowed":false},
+      {"canonicalId":"EVT_33_RECORD_001","legacyCandidateId":"EVT_33_REC_001","sameSceneMigrationAllowed":false},
+      {"canonicalId":"EVT_33_FIN_001","legacyCandidateId":"EVT_33_END_001","sameSceneMigrationAllowed":false}
     ]
   },
   "futureCanonicalMissingWork": {
-    "status": "not_in_current_route",
-    "ids": [
-      "EVT_30_CCH_001",
-      "EVT_30_PRS_001",
-      "EVT_30_NAT_002",
-      "EVT_30_JAN_001",
-      "EVT_31_ROLE_001"
-    ],
-    "migrationRule": "When added, each starts unseen with no inherited cooldown and no synthesized history unless an independently approved mapping exists. Same-title conditional evidence is never enough."
+    "ids": ["EVT_30_CCH_001","EVT_30_PRS_001","EVT_30_NAT_002","EVT_30_JAN_001","EVT_31_ROLE_001"],
+    "migrationRule": "Each canonical addition starts unseen with no inherited cooldown or synthesized history unless an independently approved mapping exists."
   },
   "engineOnlyCurrentBatch": {
     "status": "keep_active_pending_canonical_decision",
-    "ids": [
-      "EVT_30_AGT_001",
-      "EVT_33_NAT_001",
-      "EVT_33_HOME_001",
-      "EVT_33_CON_001",
-      "EVT_33_RET_001"
-    ],
-    "migrationRule": "Do not remove these in the current route. ENGINE_ONLY_HISTORY proves they can later become source-only legacy evidence without remaining schedulable, but retirement/removal requires an explicit owner decision in the batch that actually removes them from EVENTS.",
-    "earlyRetirementException": "EVT_33_RET_001 is a technical voluntary early-retirement adaptation; engine_only_noncanonical does not by itself mean it should be deleted."
+    "ids": ["EVT_30_AGT_001","EVT_33_NAT_001","EVT_33_HOME_001","EVT_33_CON_001","EVT_33_RET_001"],
+    "earlyRetirementException": "EVT_33_RET_001 remains a technical voluntary early-retirement adaptation until an explicit canonical owner decision replaces it."
   },
   "requiredCurrentRouteAssertions": [
-    "runtime target contentIdentity equals the target identity used by the registered route",
-    "source identity is the latest frozen upstream post-T5.1 identity",
-    "there are exactly 27 current-batch scheduler mappings",
-    "all 27 current-batch mappings are exact-ID distinct_scene mappings",
-    "all 27 clear canonical SEEN state",
-    "all 27 clear canonical cooldown",
-    "there are zero same_scene mappings",
-    "there are zero seed origin rewrites",
-    "legacy pending exact-ID collision resolves against its frozen legacy definition and fingerprint",
-    "legacy history remains attributed to the legacy source content identity",
-    "after legacy resolution, repaired canonical scene is not suppressed by legacy SEEN/cooldown",
-    "migration preserves RNG, receipts, revision, pendingResult, market, retirement, epilogue, relationships, NPC knowledge and live seeds",
     "double migration is a no-op",
-    "18 shifted pairs receive no mapping in the current route",
-    "5 canonical-missing IDs receive no synthesized history/SEEN/cooldown in the current route",
-    "5 engine-only IDs remain schedulable in this current batch because this PR has not removed them from EVENTS",
-    "registered edge extends the existing upstream lineage without shortcut or ambiguity",
-    "target identity is frozen as post-T5.1 source evidence before the upstream-to-target route is registered"
-  ],
-  "sourceIdentityEvidence": {
-    "source": "src/session/content-migration.ts#T51_T510_CONTENT_IDENTITY",
-    "fixture": "qa/fixtures/t5.1/post-t51-sources/fee2ff875bac7979d3907f5ee1004ef736efa9a257237c6dee629dd8687fe136.json",
-    "policy": "The 30-34 batch extends the latest frozen upstream lineage node; it must not add shortcuts from older generations."
-  }
+    "registered edge extends the existing upstream lineage without shortcut or ambiguity"
+  ]
 }
