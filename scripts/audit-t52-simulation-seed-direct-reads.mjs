@@ -1,10 +1,12 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { SEED_CATALOG } from '../dist/catalog/seeds.js';
 import { SIMULATION_SEED_CONSUMERS } from './t52-simulation-seed-consumers.mjs';
 import { HISTORICAL_SEED_CONSUMERS } from './t52-historical-seed-consumers.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const DEFAULT_KNOWN_SEED_IDS = new Set(SEED_CATALOG.map(seed => seed.id));
 
 function walkTsFiles(dir) {
   const out = [];
@@ -54,7 +56,8 @@ function validHistoricalRegistration(row) {
 export function auditDirectSimulationSeedReads(
   liveRegistry = SIMULATION_SEED_CONSUMERS,
   simulationDir = path.join(root, 'src/simulation'),
-  historicalRegistry = HISTORICAL_SEED_CONSUMERS
+  historicalRegistry = HISTORICAL_SEED_CONSUMERS,
+  knownSeedIds = DEFAULT_KNOWN_SEED_IDS
 ) {
   const observedUses = [];
   for (const file of walkTsFiles(simulationDir)) {
@@ -70,6 +73,7 @@ export function auditDirectSimulationSeedReads(
   const liveKeys = new Set(liveRegistry.map(key));
   const historicalKeys = new Set(historicalRegistry.map(key));
   const registeredKeys = new Set([...liveKeys, ...historicalKeys]);
+  const knownSeedIdSet = knownSeedIds instanceof Set ? knownSeedIds : new Set(knownSeedIds ?? []);
 
   const ambiguousRegistrations = [...liveKeys]
     .filter(value => historicalKeys.has(value))
@@ -85,6 +89,17 @@ export function auditDirectSimulationSeedReads(
       ageWindow: row?.ageWindow ?? null,
       surface: row?.surface ?? null
     }));
+  const unknownHistoricalSeedIds = historicalRegistry
+    .filter(row => (
+      typeof row?.seedId === 'string' &&
+      /^SEED_[A-Z0-9_]+$/.test(row.seedId) &&
+      !knownSeedIdSet.has(row.seedId)
+    ))
+    .map(row => ({
+      file: row.file,
+      seedId: row.seedId,
+      surface: row.surface
+    }));
   const duplicateHistoricalRegistrations = [...historicalRegistry.reduce((counts, row) => {
     const value = key(row);
     counts.set(value, (counts.get(value) ?? 0) + 1);
@@ -99,6 +114,7 @@ export function auditDirectSimulationSeedReads(
     ambiguousRegistrations.length === 0 &&
     staleHistoricalRegistrations.length === 0 &&
     invalidHistoricalRegistrations.length === 0 &&
+    unknownHistoricalSeedIds.length === 0 &&
     duplicateHistoricalRegistrations.length === 0
   );
 
@@ -115,6 +131,7 @@ export function auditDirectSimulationSeedReads(
     ambiguousRegistrations,
     staleHistoricalRegistrations,
     invalidHistoricalRegistrations,
+    unknownHistoricalSeedIds,
     duplicateHistoricalRegistrations,
     pass
   };
@@ -131,6 +148,7 @@ function main() {
     ambiguousRegistrations: report.ambiguousRegistrations,
     staleHistoricalRegistrations: report.staleHistoricalRegistrations,
     invalidHistoricalRegistrations: report.invalidHistoricalRegistrations,
+    unknownHistoricalSeedIds: report.unknownHistoricalSeedIds,
     duplicateHistoricalRegistrations: report.duplicateHistoricalRegistrations,
     pass: report.pass
   }, null, 2));
