@@ -1,5 +1,9 @@
 {
   "workstream": "retirement-epilogues",
+  "statusModel": {
+    "implemented": "Implemented on t5/retirement-epilogues with dedicated regression evidence; Codex must not duplicate it.",
+    "blocked": "Prepared but must not be guessed around until the named external authority exists."
+  },
   "batches": [
     {
       "lot": "A",
@@ -7,11 +11,13 @@
       "tasks": [
         {
           "id": "CODEX-RET-001",
-          "status": "ready",
-          "task": "Audit/add terminal contemplation copy without changing retirement.status until an explicit retirement choice is made",
-          "requiredState": "playing",
-          "forbiddenEffects": ["retire by age", "retire because no offers", "retire because injury", "write RETIRED=true"],
-          "acceptanceTests": ["status remains playing on continue/wait choices", "no RNG in pure fact projection"]
+          "status": "implemented",
+          "task": "Terminal contemplation keeps retirement.status=playing until an explicit retirement choice is made.",
+          "evidence": [
+            "src/content/events/34_plus/retirement-terminal-overrides.ts",
+            "scripts/test-t536-t537-retirement.mjs#playing-to-decided",
+            "scripts/test-t536-t537-retirement.mjs#no-market-does-not-retire"
+          ]
         }
       ]
     },
@@ -21,20 +27,31 @@
       "tasks": [
         {
           "id": "CODEX-RET-002",
-          "status": "ready",
-          "task": "Extend explicit pre-announcement continue/reconsideration content using the existing decided->playing contract",
-          "requiredState": "decided",
-          "forbiddenEffects": ["announced->playing", "closed->playing", "implicit reconsideration from offer RNG"],
-          "acceptanceTests": ["explicit RETURN can restore playing only with valid reconsideration window", "public announcement remains irreversible in normal gameplay"]
+          "status": "implemented",
+          "task": "Explicit pre-announcement reconsideration uses the decided->playing contract and cannot reopen announced/closed retirement.",
+          "evidence": [
+            "src/simulation/late-career-engine.ts",
+            "src/content/events/34_plus/retirement-terminal-overrides.ts#CEVT_RET_RECONSIDER",
+            "scripts/test-t536-t537-retirement.mjs#reconsideration-and-forbidden-reversals"
+          ]
         },
         {
           "id": "CODEX-RET-003",
-          "status": "ready",
-          "task": "Bind public announcement choices to T5.3 live knowledge rules without backfilling private intent",
+          "status": "implemented",
+          "task": "Public retirement announcement choices publish live NPC knowledge only through authoritative role targets; WAIT keeps private intent private.",
           "eventId": "EVT_RET_ANNOUNCE_001",
-          "requiredState": "decided",
-          "forbiddenEffects": ["teach NPCs private retirement intent", "edit frozen NPC backfill v1"],
-          "acceptanceTests": ["private WAIT path creates no public knowledge", "public path can create only evidenced public knowledge"]
+          "evidence": [
+            "src/catalog/npc-knowledge-rules.ts#EVT_RET_ANNOUNCE_001",
+            "src/narrative/npc-knowledge-targets.ts",
+            "scripts/test-t536-npc-announcement.mjs",
+            "scripts/test-t53-dynamic-targets.mjs"
+          ],
+          "safety": [
+            "choice and outcome scoped",
+            "activeAgent/currentClubInstitutional/captain/star fail closed when unresolved",
+            "no frozen T5.3 backfill rewrite",
+            "no WAIT knowledge write"
+          ]
         }
       ]
     },
@@ -44,17 +61,21 @@
       "tasks": [
         {
           "id": "CODEX-RET-004",
-          "status": "ready",
-          "task": "Add final-phase narrative scenes that consume existing facts but never grant an appearance, goal or win",
-          "requiredState": "announced",
-          "forbiddenEffects": ["increment sport.appearances", "synthetic goal", "synthetic fixture", "synthetic victory"],
-          "acceptanceTests": ["same sporting state before/after narrative-only choice", "terminal narrative consumes no football RNG unless delegated to sport authority"]
+          "status": "implemented",
+          "task": "Final-phase narrative consumes facts and intent but never grants an appearance, goal, result or victory.",
+          "evidence": [
+            "src/content/events/34_plus/retirement-terminal-overrides.ts#EVT_RET_LASTMATCH_001",
+            "src/simulation/late-career-engine.ts",
+            "scripts/test-t536-sport-authority.mjs",
+            "scripts/test-t536-t537-retirement.mjs#last-match"
+          ]
         },
         {
           "id": "CODEX-RET-005",
           "status": "blocked",
-          "task": "Replace aggregate post-announcement appearance observation with full LastMatchFact fixture/minutes/result model",
-          "blocker": "SportContext has landed, but getCurrentMatchContext() still reports no_authoritative_match_model and fixture/opponent/competition/squad/minutes/result/goals/assists remain unavailable"
+          "task": "Replace aggregate post-announcement appearance observation with full LastMatchFact fixture/minutes/result model.",
+          "blocker": "SportContext has landed, but getCurrentMatchContext() still reports no_authoritative_match_model and fixture/opponent/competition/squad/minutes/result/goals/assists remain unavailable.",
+          "unblockContract": "A persisted authoritative fixture/match-history model exposing exact match identity and player participation facts."
         }
       ]
     },
@@ -64,17 +85,20 @@
       "tasks": [
         {
           "id": "CODEX-RET-006",
-          "status": "ready",
-          "task": "Use closeCareer as the terminal operation for new terminal integration points; keep calls idempotent",
-          "requiredState": "announced",
-          "forbiddenEffects": ["duplicate epilogue", "duplicate history", "consume RNG", "reopen closed career"],
-          "acceptanceTests": ["double close is no-op", "closed save/load remains terminal"]
+          "status": "implemented",
+          "task": "closeCareer is the terminal operation, is idempotent, consumes zero closure RNG and cannot reopen closed careers.",
+          "evidence": [
+            "src/simulation/late-career-engine.ts#closeCareer",
+            "scripts/test-t536-t537-retirement.mjs#closed-and-idempotence",
+            "scripts/test-t536-t537-retirement.mjs#save-restore"
+          ]
         },
         {
           "id": "CODEX-RET-007",
           "status": "blocked",
-          "task": "Make closure fixture/season-end aware instead of relying on coarse timing/contract proxies",
-          "blocker": "SportContext deliberately exposes remainingOfficialMatches/nextFixture/match-day facts as unavailable"
+          "task": "Make closure fixture/season-end aware instead of relying on coarse timing/contract proxies.",
+          "blocker": "SportContext deliberately exposes remainingOfficialMatches/nextFixture/match-day facts as unavailable.",
+          "unblockContract": "Authoritative remaining-official-fixtures and season-end boundary facts."
         }
       ]
     },
@@ -84,11 +108,12 @@
       "tasks": [
         {
           "id": "CODEX-RET-008",
-          "status": "ready",
-          "task": "Consume buildCareerSummary() for presentation/debug output and keep unsupported facts null/omitted",
-          "requiredFacts": ["closed or active GameState"],
-          "forbiddenEffects": ["derive goals from reputation", "derive trophies from trophyCapital as a count", "invent fixture detail"],
-          "acceptanceTests": ["read-only", "save/load reproduces identical closed summary"]
+          "status": "implemented",
+          "task": "buildCareerSummary() is a read-only factual projection and keeps unsupported facts null/omitted.",
+          "evidence": [
+            "src/epilogue/career-summary.ts",
+            "scripts/test-t536-career-summary.mjs"
+          ]
         }
       ]
     },
@@ -98,10 +123,13 @@
       "tasks": [
         {
           "id": "CODEX-RET-009",
-          "status": "ready",
-          "task": "Add deterministic prose variants inside already-supported ending families using factual evidence arrays",
-          "forbiddenEffects": ["free RNG on render", "good/bad tier ranking", "invent family/statue/trophy/reconciliation"],
-          "acceptanceTests": ["same save => same text", "different evidence profiles do not converge to identical text"]
+          "status": "implemented",
+          "task": "Epilogue prose is deterministic and evidence-gated across supported ending families.",
+          "evidence": [
+            "src/epilogue/generator.ts",
+            "scripts/test-t537-family-minimums.mjs",
+            "scripts/test-t537-epilogue-profiles.mjs"
+          ]
         }
       ]
     },
@@ -111,20 +139,26 @@
       "tasks": [
         {
           "id": "CODEX-RET-010",
-          "status": "ready",
-          "task": "Add regression fixtures for active, decided, announced and closed legacy saves without changing content lineage",
-          "forbiddenEffects": ["retire active save on load", "regenerate frozen epilogue", "rewrite history", "consume RNG"],
-          "acceptanceTests": ["active old save stays active", "announced survives save/load", "closed remains terminal", "pending decision uses frozen definition"]
+          "status": "implemented",
+          "task": "Active, decided, announced and closed saves retain retirement semantics without history/RNG rewriting.",
+          "evidence": [
+            "analysis/CODEX/retirement/SAVE_COMPATIBILITY.md",
+            "scripts/test-t536-t537-retirement.mjs#legacy-save-and-schema7",
+            "scripts/test-t536-t537-retirement.mjs#save-restore"
+          ]
         },
         {
           "id": "CODEX-RET-011",
           "status": "blocked",
-          "task": "Freeze terminal contentIdentity and register final migration edge",
-          "blocker": "PR #15 / ordinary 34+ generation is not yet complete/integrated/frozen; terminal must follow the authoritative 34+ generation"
+          "task": "Freeze terminal contentIdentity and register final migration edge.",
+          "blocker": "PR #15 / ordinary 34+ generation is not yet complete/integrated/frozen; terminal must follow the authoritative 34+ generation.",
+          "unblockContract": "Complete and frozen authoritative ordinary 34+ generation plus its exact adjacent source contentIdentity."
         }
       ]
     }
   ],
-  "readyCount": 8,
-  "blockedCount": 3
+  "implementedCount": 8,
+  "readyCount": 0,
+  "blockedCount": 3,
+  "remainingCodexAction": "Do not duplicate implemented lots. Wait for or help the owning workstreams deliver the three unblock contracts, then integrate only RET-005/007/011."
 }
