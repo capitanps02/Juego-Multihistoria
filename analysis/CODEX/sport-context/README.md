@@ -1,8 +1,8 @@
 # Sport Context — Codex handoff
 
-Base audit: `main@ebef17057156c7721fc4a041552c9cf1b3fdb6ba`.
-Branch: `t5/sport-context`.
-PR: #141.
+Base de integración actual: `main@291c73eb8c8d74f843060bcb61687a592880e2ea`.
+Rama: `integration/t5-sport-context-current`.
+Fuente histórica del diseño: PR #141 (`t5/sport-context`).
 
 ## Purpose
 
