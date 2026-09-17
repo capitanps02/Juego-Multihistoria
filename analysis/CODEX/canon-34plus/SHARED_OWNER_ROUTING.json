@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "generatedAt": "2026-09-17",
   "baseMain": "fa3c8bae524fef62e4eb9802e895df88588998c4",
   "ownerBranch": "t51/canon-34plus",
@@ -13,177 +13,156 @@
     "conditionalAuthorityMatrixCoverage": 32,
     "conditionalRuntimeAccredited": 0
   },
+  "lineage": {
+    "issue": 59,
+    "migrationGraphImplementedOnMain": true,
+    "currentActiveGeneration": "H",
+    "currentActiveIdentity": "84871fae2bec92d74d1e607e0a48943e2e530a062d315a829cfe75eda9fe0886",
+    "agent8SuccessorAuthorizedNow": false,
+    "reason": "coordination reserves the next serialized content turn for earlier approved repairs after PR #156; 34+ must wait for the authoritative final 30-34 predecessor",
+    "rule": "never register a parallel H successor, shortcut or stale provisional target"
+  },
   "globalPrerequisites": [
     {
       "owner": "shared_integration",
       "issue": 59,
-      "appliesToAllOrdinaryScenes": true,
-      "appliesToCanonicalConditionals": true,
-      "contract": "34+ may register only after the actual authoritative immediate predecessor exists; create one adjacent predecessor_to_34plus content generation and preserve migration evidence"
+      "contract": "34+ may register only at its serialized turn after the actual authoritative final 30-34 predecessor; migration graph already exists but edge ownership remains serialized"
     },
     {
       "owner": "t52_seed_lifecycle",
       "issue": 180,
-      "appliesToAllOrdinaryScenes": true,
-      "appliesToCanonicalConditionals": true,
-      "contract": "apply the 54 exact Pasada-7 canonical seed identities and 14 bridge-memory dispositions from T52_SEED_HANDOFF.json without provenance rewrite or heuristic aliases"
+      "pullRequest": 191,
+      "state": "ready_for_review_not_integrated",
+      "contract": "PR #191 implements the 54 exact Pasada-7 IDs, 45+9 ownership and 14 bridge dispositions; Agent 8 must wait until it is actually in main"
     }
+  ],
+  "sharedRuntimeOrder": [
+    {"step":1,"owner":"sport_boundary","issue":124,"pullRequest":156,"state":"open_draft_repository_integrity_running"},
+    {"step":2,"owner":"market_state_v2","issue":157,"state":"contract_ready_after_156"},
+    {"step":3,"owner":"employment_unattached","issue":130,"state":"implementation_ready_after_156_and_preferably_after_157"},
+    {"step":4,"owner":"veteran_market_producer","issue":176,"state":"contract_ready_after_157_and_130"}
   ],
   "routes": [
     {
       "domain": "canonical_conditional_content",
       "ownerIssue": 192,
-      "sharedAuthorityGapIssue": 195,
       "canonicalCount": 32,
-      "engineCount": 32,
-      "exactIdOverlap": 5,
-      "exactIdSemanticallyAccredited": 0,
-      "canonicalMissingExactId": 27,
-      "engineTechnicalExtraExactId": 27,
       "authorityMatrixCoverage": 32,
-      "unresolvedSharedAuthorityDomains": 8,
+      "runtimeAccredited": 0,
+      "formerCoordinationGapIssue": {"issue":195,"state":"closed_completed"},
+      "explicitFactOwners": [176,199,200,201],
       "handoff": ["CONDITIONAL_RECONCILIATION.json","CONDITIONAL_HANDOFF.md","CONDITIONAL_AUTHORITY_MATRIX.json"],
-      "sameIdNeedsReimplementation": [
-        "CEVT_34_MAJOR_COMEBACK",
-        "CEVT_36_NO_MEDICAL_CLEARANCE",
-        "CEVT_38_OFFER_AFTER_RETIREMENT_ANNOUNCED",
-        "CEVT_RET_NO_LAST_MATCH",
-        "CEVT_RET_STORYBOOK_LAST_GOAL"
-      ],
-      "terminalBoundary": [
-        "CEVT_38_OFFER_AFTER_RETIREMENT_ANNOUNCED",
-        "CEVT_38_RETIREMENT_REVERSAL",
-        "CEVT_RET_NO_LAST_MATCH",
-        "CEVT_RET_STORYBOOK_LAST_GOAL"
-      ],
-      "rule": "exact canonical IDs and factual scene-specific triggers only; generic technical rows are not canonical accreditation; no automatic alias from CEVT_RET_RECONSIDER to CEVT_38_RETIREMENT_REVERSAL"
+      "rule": "exact canonical IDs and factual triggers only; all former #195 domains are explicitly routed but remain fail-closed until their owner facts exist"
     },
     {
-      "domain": "conditional_missing_factual_authorities",
-      "ownerIssue": 195,
-      "domains": [
-        "individual_award_history_and_win",
-        "major_injury_rehab_history_and_successful_return",
-        "club_financial_state",
-        "commercial_sponsor_state",
-        "club_medical_evaluation_or_clearance_fact",
-        "stadium_availability_or_external_closed-door_context",
-        "explicit_staff_crisis_and_temporary_player_coach_context",
-        "generic_record_definition_and_competitor_record_fact"
+      "domain": "seed_catalog_provenance",
+      "ownerIssue": 180,
+      "pullRequest": 191,
+      "state": "ready_for_review_not_integrated",
+      "implementedContract": [
+        "54 exact Pasada-7 canonical seed identities",
+        "45 Agent-8 ordinary plus 9 Agent-9 terminal producers",
+        "14 bridge-memory concepts separated",
+        "no fuzzy technical-to-canonical alias",
+        "legacy provenance preserved"
       ],
-      "rule": "coordination must assign/reuse a factual producer or explicitly keep dependent conditionals fail-closed; local Agent-8 flags/proxies are forbidden"
-    },
-    {
-      "domain": "veteran_market_contract",
-      "ownerIssue": 176,
-      "upstreamAlreadyIntegrated": [
-        "CareerOffer formal authority",
-        "offer/session bridge",
-        "stale-offer fail-closed eligibility",
-        "deterministic pendingCareerOfferKind",
-        "renewal-reason authority cleanup",
-        "direct market mutation audit",
-        "detached exact eligible CareerOffer facts on narrative read surface"
-      ],
-      "stillMissing": [
-        "authoritative 34+ veteran renewal/transfer/return/lower-level/high-value/short-offer generation",
-        "explicit representability decisions for canonical salary/bonus/exit/role/liaison/ambassador/short-duration terms"
-      ],
-      "events": [
-        "EVT_34_AGT_001","EVT_34_BRIDGE_001","EVT_34_CON_001","EVT_34_HOME_001","EVT_34_MAR_001","EVT_34_PAY_001",
-        "EVT_35_AGT_001","EVT_35_CON_001","EVT_35_DUAL_001","EVT_35_FAREWELL_001","EVT_35_HOME_001","EVT_35_JAN_001","EVT_35_MKT_001",
-        "EVT_36_CON_001","EVT_36_LOWER_001","EVT_37_HOME_001","EVT_37_SHORT_001","EVT_38_RICH_001"
-      ]
-    },
-    {
-      "domain": "free_agency",
-      "ownerIssue": 130,
-      "stillMissing": [
-        "authoritative unattached player employment/registration/salary/sporting state",
-        "factual elapsed market-silence history for EVT_38_MARKET_001"
-      ],
-      "events": ["EVT_37_SHORT_001","EVT_38_MARKET_001"]
-    },
-    {
-      "domain": "concrete_national_selection",
-      "ownerIssue": 174,
-      "upstreamAlreadyIntegrated": [
-        "resolveNationalTeamAuthority aggregate/history/pool/cycle facts",
-        "international-retirement invariant distinct from career retirement"
-      ],
-      "stillMissing": [
-        "concrete current preselection/call-up/omission/final-squad facts"
-      ],
-      "events": ["EVT_34_NT_001","EVT_34_NT_002","EVT_35_NT_001"]
+      "rule": "do not treat declarations as runtime-produced before canonical producer scenes exist"
     },
     {
       "domain": "sport_match_usage_calendar",
       "ownerIssue": 124,
       "candidatePullRequest": 156,
-      "candidateStateAtAudit": "open_draft_not_integrated",
-      "candidateProvides": [
-        "official fixture identity",
-        "next/previous fixture and remaining league fixtures",
-        "real match squad call/bench/start/appearance/minutes",
-        "injury-unavailable fact",
-        "historical usage rows"
+      "state": "open_draft_repository_integrity_running",
+      "providesWhenIntegrated": [
+        "official league fixture identity",
+        "next_previous_fixture_and_remaining_league_fixtures",
+        "squad_bench_start_appearance_minutes",
+        "injury_unavailable_fact",
+        "historical_usage_rows"
       ],
-      "candidateExplicitlyDoesNotProvide": [
-        "per-match final result",
-        "goals/assists/cards",
-        "penalty opportunity/assignment/outcome",
-        "concrete national selection",
-        "generic record authority",
-        "non-league final identity unless separately produced"
-      ],
-      "events": [
-        "EVT_34_BODY_001","EVT_34_FAN_001","EVT_34_LOAD_001","EVT_34_MATCH_001","EVT_34_NT_001","EVT_34_NT_002","EVT_34_ROLE_001","EVT_34_TRAVEL_001",
-        "EVT_35_BENCH_001","EVT_35_FINAL_001","EVT_35_NT_001","EVT_35_RECORD_001","EVT_35_TACT_001",
-        "EVT_36_BODY_001","EVT_36_RECORD_001","EVT_37_PEN_001"
-      ],
-      "knownResidualExamplesAfterPR156": {
-        "EVT_34_MATCH_001": "decisive goal/result still missing",
-        "EVT_34_TRAVEL_001": "team win/result still missing",
-        "EVT_35_FINAL_001": "authoritative final/competition context still missing",
-        "EVT_35_RECORD_001": "record definition/surpass fact still missing",
-        "EVT_36_RECORD_001": "record authority still missing",
-        "EVT_37_PEN_001": "penalty opportunity/assignment/outcome still missing"
-      }
+      "doesNotProvide": [
+        "per_match_final_result",
+        "goals_assists_cards",
+        "award_or_record_truth",
+        "concrete_national_selection",
+        "stadium_incident_truth"
+      ]
     },
     {
-      "domain": "late_career_npc_identity",
+      "domain": "rich_sporting_history_records_awards",
+      "ownerIssue": 199,
+      "state": "open_after_156",
+      "owns": ["match_results_goals_assists_cards_when_produced","awards","record_definition_holder_progress_surpass"]
+    },
+    {
+      "domain": "injury_rehab_history",
+      "ownerIssue": 200,
+      "state": "open_after_156",
+      "owns": ["injury_episode_chronology","rehab_and_clearance","factual_post_return_linkage"],
+      "composesWith": [124,199]
+    },
+    {
+      "domain": "club_world_incidents",
+      "ownerIssue": 201,
+      "state": "open_design_gate",
+      "owns": ["club_financial_state","commercial_sponsor_state","stadium_external_closed_door_context","staff_crisis_player_coach_context"],
+      "rule": "choose exact canonical/system producer or keep fail-closed; no random booleans/proxies"
+    },
+    {
+      "domain": "market_state_v2",
+      "ownerIssue": 157,
+      "state": "contract_ready_after_156",
+      "contract": "one authoritative 0..N open CareerOffer collection, exact offer IDs, v1 migration, durable superseded/withdrawn provenance and ambiguity-fail-closed narrative selection"
+    },
+    {
+      "domain": "employment_unattached",
+      "ownerIssue": 130,
+      "state": "implementation_ready_after_156",
+      "states": ["contracted","unattached","expired_pending_resolution"],
+      "contract": "new-game natural expiry contracted->unattached once and 0-RNG; old ambiguous zero-month saves fail closed; unattached has no ordinary club salary/football/renewal authority"
+    },
+    {
+      "domain": "veteran_market_contract",
+      "ownerIssue": 176,
+      "state": "contract_ready_after_157_and_130",
+      "alreadyIntegrated": ["exact eligible CareerOffer narrative reads","stale-offer fail-closed eligibility","offer/session bridge","direct market mutation audit"],
+      "remaining": ["34plus veteran offer production","representable late-career terms","veteran market approach/medical-assessment facts"],
+      "unsupportedWithoutDedicatedAuthority": ["guaranteed_minutes","bonuses","bilateral_termination_not_release_clause","liaison_role","ambassador_role"]
+    },
+    {
+      "domain": "concrete_national_selection",
+      "ownerIssue": 174,
+      "state": "codex_ready_after_156",
+      "contract": "persist ordinary called_up/omitted publications plus separate tournament preliminary/final squad facts; never infer from aggregate national status"
+    },
+    {
+      "domain": "late_career_identity_routing",
       "ownerIssue": 177,
       "relatedCoachIssue": 169,
-      "upstreamAlreadyIntegrated": [
-        "resolveActiveAgent fail-closed",
-        "resolveCurrentPlayerClubLeadership",
-        "listCertifiedPlayerClubLeadership",
-        "resolveCertifiedPlayerLeadershipSuccessor explicit-certification-only"
-      ],
-      "stillMissing": [
-        "factual young signing/current younger competitor when required",
-        "current coach/change plus age/generation",
-        "veteran peer plus explicit peer-retirement fact",
-        "ordinary 34+ institutional counterparty",
-        "record-breaking young-player identity bound to factual record"
-      ],
-      "events": ["EVT_34_DORSAL_001","EVT_34_MENTOR_001","EVT_35_AGT_001","EVT_35_DUAL_001","EVT_35_RECORD_001","EVT_36_CCH_001","EVT_36_PEER_001"]
+      "state": "routing_guard_not_standalone_runtime_pass",
+      "decisions": {
+        "EVT_35_AGT_001": "existing resolveActiveAgent or null",
+        "EVT_35_DUAL_001": "generic club voice allowed; no persistent institutional NPC required",
+        "EVT_36_CCH_001": "coach tenure/profile routes to #169; persistent NPC not required",
+        "EVT_34_DORSAL_001": "generic young actor allowed unless named continuity/T5.3 effects required",
+        "EVT_34_MENTOR_001": "generic young actor allowed under same boundary",
+        "EVT_35_RECORD_001": "record routes to #199; named actor only if canon requires and certifies it",
+        "EVT_36_PEER_001": "blocked until exact peer identity plus causal retirement history exists"
+      }
     },
     {
       "domain": "terminal_career_retirement",
       "ownerPullRequest": 118,
       "owner": "agent9",
-      "ordinarySceneBoundaryOnly": true,
-      "eventsWithCareerRetirementChoiceOrTerminalHandoff": ["EVT_36_LOWER_001","EVT_38_MARKET_001","EVT_38_RICH_001"],
-      "canonicalConditionalsWithTerminalBoundary": ["CEVT_38_OFFER_AFTER_RETIREMENT_ANNOUNCED","CEVT_38_RETIREMENT_REVERSAL","CEVT_RET_NO_LAST_MATCH","CEVT_RET_STORYBOOK_LAST_GOAL"],
-      "rule": "Agent 8 may present ordinary dilemmas and prepare conditional contracts, but career-terminal state transition/announcement/closure stays with Agent 9"
+      "state": "open_draft",
+      "rule": "Agent 8 never owns career-terminal state transition, announcement, last-match closure or epilogues"
     },
     {
       "domain": "agent8_context_specific",
       "owner": "agent8_after_wave0",
       "events": ["EVT_35_FAM_001","EVT_35_BODY_001","EVT_35_IMG_001","EVT_36_MED_001"],
-      "rule": "first activation batch after global Wave 0; each card still requires its factual family/body/image/medical gates from WAVE_A_IMPLEMENTATION.json"
+      "rule": "first prepared principal activation batch after lineage and seed Wave 0 genuinely land"
     }
   ],
-  "codexRule": "Do not mark a principal or conditional ready because one routed authority lands. Re-evaluate its full factual contract plus Wave 0 against the then-current main; unavailable facts fail closed and proxies are forbidden."
+  "codexRule": "Do not mark a principal or conditional ready because one owner contract exists. Re-evaluate the exact current main, serialized lineage, PR #191 seed integration and every factual owner. Missing facts fail closed; proxies are forbidden."
 }
