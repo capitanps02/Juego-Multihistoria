@@ -1,0 +1,175 @@
+{
+  "schemaVersion": 1,
+  "scope": "T5.1 canon 30-34 shared-authority debt",
+  "sourceMainSha": "176317c5708995bb72fa40af9dd45dffc9838093",
+  "principle": "Concrete match, squad, competition, offer and contract-clause claims must come from an authoritative shared surface. Aggregate form, reputation, age, role, month and narrative flags are not substitutes.",
+  "sharedSurfaces": {
+    "sport": {
+      "path": "src/simulation/sport-context.ts",
+      "known": [
+        "currentSeason",
+        "sportingClub",
+        "ownerClub",
+        "leagueTier",
+        "careerAppearances",
+        "officialDebutRecorded"
+      ],
+      "currentlyUnavailable": [
+        "currentCompetition",
+        "nextFixture",
+        "previousFixture",
+        "hoursToNextFixture",
+        "isMatchDay",
+        "isTrainingWindow",
+        "remainingOfficialMatches",
+        "remainingLeagueMatches",
+        "seasonObjectiveStatus",
+        "currentStanding",
+        "currentSquadStatus",
+        "match.competition",
+        "match.opponent",
+        "match.result",
+        "match.playerCalledUp",
+        "match.playerOnBench",
+        "match.playerStarted",
+        "match.playerAppeared",
+        "match.minutes",
+        "match.goals",
+        "match.assists",
+        "match.cards",
+        "match.injury"
+      ]
+    },
+    "market": {
+      "path": "src/simulation/offers.ts",
+      "shape": "MarketState.pending is zero-or-one CareerOffer",
+      "careerTerms": [
+        "club",
+        "tier",
+        "months",
+        "salary",
+        "releaseClause",
+        "ownerClub",
+        "registrationClub",
+        "leagueTier",
+        "prestigeTier",
+        "prestigeScore",
+        "route",
+        "abroad",
+        "loan",
+        "bigClub"
+      ],
+      "missingForCanon30_34": [
+        "simultaneous comparable offers",
+        "automatic-renewal-by-minutes clause",
+        "minutes threshold attached to a formal offer"
+      ]
+    }
+  },
+  "scenes": [
+    {
+      "eventId": "EVT_31_FINAL_001",
+      "status": "protected_fail_closed",
+      "canonicalClaim": "The decision is specifically about a final and a planned role/minutes context.",
+      "requiredFacts": [
+        "facts.sport.currentCompetition exists",
+        "facts.sport.nextFixture exists"
+      ],
+      "currentBehavior": "Blocked while shared sport authority returns null; role/form/final flags cannot bypass the missing fixture/competition facts.",
+      "codexAction": "Keep the fail-closed gates. Replace nulls only from the future authoritative competition/fixture store."
+    },
+    {
+      "eventId": "EVT_33_BODY_001",
+      "status": "protected_fail_closed",
+      "canonicalClaim": "The decision concerns two high-intensity starts separated by less than 72 hours.",
+      "requiredFacts": [
+        "facts.sport.nextFixture exists",
+        "facts.sport.hoursToNextFixture exists"
+      ],
+      "currentBehavior": "Blocked while fixture timing is unavailable; recoveryMargin alone cannot manufacture a congested schedule.",
+      "codexAction": "Keep the fail-closed gates and connect them only to authoritative fixture timing."
+    },
+    {
+      "eventId": "EVT_32_FAN_001",
+      "status": "blocked_missing_authority",
+      "canonicalClaim": "The player has just played a clearly bad match and the stadium reaction is part of the scene.",
+      "currentApproximation": [
+        "professional.legacyCapital >= 45",
+        "sport.form <= 48"
+      ],
+      "missingFacts": [
+        "authoritative player appearance in the relevant match",
+        "authoritative per-match performance assessment",
+        "authoritative crowd/stadium reaction"
+      ],
+      "risk": "Aggregate form can currently satisfy the sporting side of the trigger without proving that the described match occurred.",
+      "codexAction": "Do not reinterpret sport.form as a match rating. Add/use explicit match-performance and crowd-response facts before certifying or unblocking this scene."
+    },
+    {
+      "eventId": "EVT_31_RETURN_001",
+      "status": "blocked_missing_authority",
+      "canonicalClaim": "The player has medical clearance after injury/surgery, training data is still below prior levels, and the coach must decide whether to call him up now.",
+      "currentApproximation": [
+        "flags.RECOVERING_INJURY == true"
+      ],
+      "missingFacts": [
+        "authoritative medical clearance",
+        "authoritative recent training-load/readiness evidence",
+        "authoritative immediate squad-call context"
+      ],
+      "risk": "RECOVERING_INJURY proves neither clearance nor an imminent call-up decision.",
+      "codexAction": "Keep this as technical adaptation until medical/training/squad authority exposes the exact facts; do not infer clearance from recovery flags."
+    },
+    {
+      "eventId": "EVT_32_NAT_001",
+      "status": "blocked_missing_authority",
+      "canonicalClaim": "The player is inside a 30-player preselection for a 26-player major-tournament squad and competes for overlapping roles.",
+      "currentApproximation": [
+        "professional.nationalStanding >= 40"
+      ],
+      "missingFacts": [
+        "authoritative national-team preselection membership",
+        "authoritative tournament context",
+        "authoritative roster-size/cut context",
+        "authoritative role competition"
+      ],
+      "risk": "nationalStanding is a standing score, not evidence that the described 30-to-26 selection exists.",
+      "codexAction": "Require a national-team roster authority before certifying the trigger; do not derive preselection from nationalStanding."
+    },
+    {
+      "eventId": "EVT_31_MKT_001",
+      "status": "blocked_multi_offer_authority",
+      "canonicalClaim": "Two simultaneous formal proposals are compared: two years as a star versus one year at an elite contender.",
+      "currentAuthority": "MarketState.pending persists one CareerOffer.",
+      "risk": "A single pending offer cannot prove either the existence or the terms of both alternatives.",
+      "codexAction": "Do not add offerBridge until market authority supports multiple simultaneous offers with persistent identity/provenance."
+    },
+    {
+      "eventId": "EVT_33_MKT_001",
+      "status": "blocked_multi_offer_authority",
+      "canonicalClaim": "Four concrete proposal types are simultaneously available: continuity, title contender specialist, rich league, and UDV leadership.",
+      "currentApproximation": [
+        "reputation.marketHeat >= 30"
+      ],
+      "currentAuthority": "MarketState.pending persists one CareerOffer.",
+      "risk": "marketHeat can trigger a scene that narrates four proposals that the authoritative market has not represented.",
+      "codexAction": "Treat this as the same multi-offer blocker class as EVT_31_MKT_001. Do not bridge or certify from marketHeat."
+    },
+    {
+      "eventId": "EVT_32_CON_001",
+      "status": "formal_offer_consumed_clause_parity_blocked",
+      "canonicalClaim": "The formal one-year renewal includes automatic renewal based on a known minutes threshold.",
+      "currentBridge": "Requires a formal same-club 12-month renewal with reason 'Renovación de contrato'.",
+      "currentAuthority": "CareerTerms has no automatic-renewal-by-minutes or minutes-threshold field.",
+      "risk": "A generic 12-month renewal can satisfy the bridge even though the canonical clause cannot be represented or verified.",
+      "codexAction": "Preserve CareerOffer ownership and provenance, but do not mark full contract parity complete until the shared formal-offer model can represent the minutes clause."
+    }
+  ],
+  "implementationRules": [
+    "No generic sport gate may be added solely to make a test pass.",
+    "No missing match fact may be replaced by sport.form, roleScore, age, reputation, coach trust, month, seasonDay or a narrative flag.",
+    "No multi-offer scene may be certified from MarketState.pending while it remains single-offer.",
+    "No contractual clause may be claimed as authoritative if CareerTerms cannot persist it.",
+    "Authority gaps remain technical-adaptation debt, not aliases or verified identity."
+  ]
+}
