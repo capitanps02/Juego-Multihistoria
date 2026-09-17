@@ -43,10 +43,10 @@ test('authority-debt registry covers every currently classified 30-34 scene bloc
   const actual = authorityDebt.scenes.map(scene => scene.eventId).sort();
   assert.equal(new Set(actual).size, actual.length, 'authority debt must not duplicate scene ids');
   assert.deepEqual(actual, expected.sort());
-  assert.equal(authorityDebt.sourceMainSha, 'fa3c8bae524fef62e4eb9802e895df88588998c4');
+  assert.equal(authorityDebt.sourceMainSha, '5f4d14bca4d696cfafadb58b64034c7cd40cc147');
 });
 
-test('C005 exact sport gaps stay explicit while shared match/squad authority is unavailable', () => {
+test('C005 exact sport gaps stay explicit after the shared weekly match-model upgrade', () => {
   const expected = new Map([
     ['EVT_30_FORM_001', 'blocked_missing_sport_history_authority'],
     ['EVT_31_RETURN_001', 'blocked_missing_authority'],
@@ -68,7 +68,7 @@ test('C005 exact sport gaps stay explicit while shared match/squad authority is 
   assert.equal(EVENTS.some(event => event.id === 'EVT_31_ROLE_001'), false, 'EVT_31_ROLE_001 remains a coordinated canonical-missing addition');
 });
 
-test('aggregate veteran proxies do not materialize the exact C005 match/squad facts', () => {
+test('aggregate veteran proxies do not fabricate match/squad production beyond the new fixture calendar', () => {
   const state = veteranState(32);
   state.sport.form = 100;
   state.sport.roleScore = 100;
@@ -80,9 +80,11 @@ test('aggregate veteran proxies do not materialize the exact C005 match/squad fa
   const before = structuredClone(state);
   const root = narrativeConditionRoot(state);
 
+  assert.equal(root.facts.sport.currentCompetition, 'league', 'the new calendar legitimately exposes the next scheduled league competition');
+  assert.ok(root.facts.sport.nextFixture, 'the new calendar legitimately exposes a scheduled league fixture');
+  assert.equal(typeof root.facts.sport.hoursToNextFixture, 'number');
+
   for (const [label, value] of [
-    ['sport.currentCompetition', root.facts.sport.currentCompetition],
-    ['sport.nextFixture', root.facts.sport.nextFixture],
     ['sport.previousFixture', root.facts.sport.previousFixture],
     ['sport.currentSquadStatus', root.facts.sport.currentSquadStatus],
     ['match.competition', root.facts.match.competition],
@@ -95,10 +97,19 @@ test('aggregate veteran proxies do not materialize the exact C005 match/squad fa
     ['match.minutes', root.facts.match.minutes],
     ['match.goals', root.facts.match.goals]
   ]) {
-    assert.equal(value, null, `${label} must stay unavailable rather than deriving from form/role/standing/flags`);
+    assert.equal(value, null, `${label} must stay unavailable without a persisted current/previous match row or unsupported result/goal model`);
   }
 
   assert.deepEqual(state, before, 'authority projection must remain read-only and consume no RNG');
+});
+
+test('new weekly fixture facts do not certify the two previously protected scene claims', () => {
+  const finalDebt = authorityDebt.scenes.find(scene => scene.eventId === 'EVT_31_FINAL_001');
+  const bodyDebt = authorityDebt.scenes.find(scene => scene.eventId === 'EVT_33_BODY_001');
+  assert.equal(finalDebt?.status, 'partial_guard_insufficient_after_match_model');
+  assert.equal(bodyDebt?.status, 'partial_guard_insufficient_after_match_model');
+  assert.match(finalDebt.risk, /ordinary scheduled league fixture/i);
+  assert.match(bodyDebt.risk, /144\/168-hour league gap/i);
 });
 
 test('formal CareerTerms cannot yet prove the minutes-based renewal clause asserted by EVT_32_CON_001', () => {
