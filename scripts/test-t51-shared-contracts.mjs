@@ -1,3 +1,4 @@
+import './test-t5-coach-change-authority.mjs';
 import './test-t51-locker-leadership.mjs';
 import assert from 'node:assert/strict';
 import test from 'node:test';
