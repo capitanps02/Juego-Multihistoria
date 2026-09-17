@@ -44,5 +44,7 @@ Actualizados el 17 de septiembre de 2026. Estos indicadores separan el crédito 
 | T3 Android | 75 % (3/4 hitos) | Falta exclusivamente la evidencia en teléfono Android físico de T3.4. |
 | T5 oficial acreditado | 0 % de su bloque | Ninguna pasada T5 completa; no se asigna peso parcial. |
 | Primer lote canónico 23–26 | 7/12 escenas (58,3 %) | Tres T5.10, tres T5.11 y `EVT_23_PRS_001` activos en el catálogo real. |
+| Contenido funcional 20–23 | 12/51 escenas (23,5 %) | T5.5 aporta 9/12 y T5.6 aporta 3/12; ambos siguen siendo lotes incompletos. |
 
 - 17 de septiembre de 2026: integrado el contrato T5 de resultado deportivo determinista (`29fc684`): utiliza solo RNG `football`, persiste e idempotentemente reutiliza el hecho resuelto y no altera `contentIdentity`. Sigue pendiente el contenido canónico de `EVT_24_MATCH_001`, que será su primer consumidor.
+- 17 de septiembre de 2026: integrado el lote canónico 20–23 (`T5.5-A`, `T5.5-B`, `T5.6-A`): doce escenas dejan de usar shells genéricos. La migración se completa con las tres aristas adyacentes `de9… → 6a9… → 6e55… → ce2…`, con evidencia congelada para cada generación; no hay atajos ni reinterpretación de decisiones pendientes.
