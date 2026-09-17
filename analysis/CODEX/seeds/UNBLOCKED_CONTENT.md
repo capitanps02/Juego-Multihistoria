@@ -1,6 +1,6 @@
 # Unblocked seed content
 
-Base: `cda24da1a688cc245695cd007c50d458c4e1e7d7`.
+Base: `d9cd3cf3b9d1f23ab2f082b66ef4a01f6177e7f2`.
 
 | Evento | Seed | Bloqueo anterior | Infraestructura nueva | Estado Codex |
 | --- | --- | --- | --- | --- |
@@ -12,4 +12,4 @@ Base: `cda24da1a688cc245695cd007c50d458c4e1e7d7`.
 
 **Codex ready exact count: 5.**
 
-Additional declared-read-only consumers discovered by the machine-readable matrix: **37**. They remain blocked until their canonical owner provides semantics; they were not reclassified heuristically.
+Additional declared-read-only consumers discovered by the machine-readable matrix: **38**. They remain blocked until their canonical owner provides semantics; they were not reclassified heuristically.

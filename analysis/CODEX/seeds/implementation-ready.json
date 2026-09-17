@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "cda24da1a688cc245695cd007c50d458c4e1e7d7",
+  "baseCommit": "d9cd3cf3b9d1f23ab2f082b66ef4a01f6177e7f2",
   "branch": "t5/seed-lifecycle-agent2",
   "architecture": {
     "seedProjection": "src/narrative/seed-memory.ts",
@@ -222,7 +222,7 @@
     }
   ],
   "discovery": {
-    "blockedDeclaredReadOnlyConsumers": 37,
+    "blockedDeclaredReadOnlyConsumers": 38,
     "sourceOfTruth": "analysis/CODEX/seeds/SEED_CONSUMER_MATRIX.json",
     "rule": "Do not promote blocked consumers to ready without canonical-owner evidence."
   }

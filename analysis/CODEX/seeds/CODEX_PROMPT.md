@@ -1,6 +1,6 @@
 # CODEX PROMPT — T5.2 causal seed consumers
 
-Work in repository `capitanps02/Juego-Multihistoria`. Base for this handoff: `cda24da1a688cc245695cd007c50d458c4e1e7d7`. Create a fresh implementation branch from the current main or rebase safely; never develop on main and never auto-merge.
+Work in repository `capitanps02/Juego-Multihistoria`. Base for this handoff: `d9cd3cf3b9d1f23ab2f082b66ef4a01f6177e7f2`. Create a fresh implementation branch from the current main or rebase safely; never develop on main and never auto-merge.
 
 The architecture is already resolved:
 

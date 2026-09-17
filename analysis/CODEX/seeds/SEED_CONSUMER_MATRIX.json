@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "cda24da1a688cc245695cd007c50d458c4e1e7d7",
+  "baseCommit": "d9cd3cf3b9d1f23ab2f082b66ef4a01f6177e7f2",
   "principles": {
     "structuralValidityIsNotCanonicalClosure": true,
     "seedsReadIsNotCausalConsumption": true,
@@ -10,9 +10,9 @@
   "counts": {
     "totalSeeds": 210,
     "liveConsumerRegistrations": 22,
-    "historicalConsumerRegistrations": 0,
+    "historicalConsumerRegistrations": 1,
     "codexReadyEvents": 5,
-    "blockedDeclaredReadOnlyConsumers": 37
+    "blockedDeclaredReadOnlyConsumers": 38
   },
   "seeds": [
     {
@@ -1952,14 +1952,17 @@
         "EVT_23_BRIDGE_001",
         "EVT_23_MKT_001"
       ],
-      "liveConsumers": [
+      "liveConsumers": [],
+      "historicalConsumers": [
         {
-          "kind": "event_condition",
-          "eventId": "EVT_23_PRS_001",
-          "context": "gate"
+          "file": "src/simulation/club-contract-intent.ts",
+          "ageWindow": [
+            23,
+            23
+          ],
+          "surface": "hasRoleGuaranteeAt23"
         }
       ],
-      "historicalConsumers": [],
       "payloadSemantics": {
         "choice": [
           "A",
@@ -2003,6 +2006,10 @@
       "blockedConsumers": [
         {
           "eventId": "EVT_23_EUR_001",
+          "reason": "declared_seedsRead_without_proven_causal_use; owner semantics required"
+        },
+        {
+          "eventId": "EVT_23_PRS_001",
           "reason": "declared_seedsRead_without_proven_causal_use; owner semantics required"
         },
         {
