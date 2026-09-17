@@ -1,6 +1,7 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "ebef17057156c7721fc4a041552c9cf1b3fdb6ba",
+  "runtimeAuditBaseCommit": "ebef17057156c7721fc4a041552c9cf1b3fdb6ba",
+  "coordinationRegroundCommit": "c2a0b3ab9f63ac335d334846ee730fa7c6d1e6b6",
   "authorityFile": "src/simulation/offers.ts",
   "transitions": [
     {
@@ -112,19 +113,19 @@
       "rng": "none",
       "saveSafe": true,
       "status": "BLOCKED_FOR_RESOLUTION",
-      "reason": "Runtime has no authoritative free-agent/unattached representation; issue #130 confirms zombie employment state.",
+      "reason": "Issue #130 confirms zombie employment. The model allows professional.route=free_agent and classifiers mention free agency, but no production transition establishes that route together with authoritative club/owner/registration/salary/football semantics; GameState.club remains required string.",
       "tests": ["scripts/test-t5-market-contract-authority.mjs"]
     },
     {
       "transition": "enter_free_agency",
       "authority": null,
-      "preconditions": [],
+      "preconditions": ["approved meaning for route=free_agent", "approved unattached club/owner/registration representation", "approved salary and football availability semantics"],
       "mutations": [],
       "history": [],
       "rng": "none required by contract",
       "saveSafe": false,
-      "status": "NOT_MODELLED",
-      "reason": "Requires approved shared save/employment/calendar/football semantics before implementation.",
+      "status": "PARTIALLY_SCAFFOLDED_NOT_AUTHORISED",
+      "reason": "A route token and classifier labels exist, but there is no complete production employment transition. Requires approved shared save/employment/calendar/football semantics before implementation.",
       "tests": []
     },
     {
