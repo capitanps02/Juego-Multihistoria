@@ -144,11 +144,12 @@ test('football moments/10 non-player actors require explicit sporting attributes
   assert.deepEqual(state.rngState.narrative, beforeNarrative);
 });
 
-test('football moments/11 invalid moment ids fail before RNG is consumed', () => {
+test('football moments/11 malformed and unknown moment ids fail before RNG is consumed', () => {
   const state = createInitialState(8511);
   const input = attempt(state);
   const before = streams(state);
-  assert.throws(() => resolvePenaltyMomentInPlace(state, { ...input, momentId: 'bad id with spaces' }), /Invalid football moment id/);
+  assert.throws(() => resolvePenaltyMomentInPlace(state, { ...input, momentId: 'bad id with spaces' }), /football moment id/);
+  assert.throws(() => resolvePenaltyMomentInPlace(state, { ...input, momentId: 'EVT_99_MATCH_999:TAKE:penalty' }), /Unknown football moment id/);
   assert.deepEqual(state.rngState, before);
 });
 
@@ -175,6 +176,10 @@ test('football moments/12 save boundary accepts valid rows and rejects malformed
   const badStore = structuredClone(raw);
   badStore.world.footballMomentResults = [];
   assert.throws(() => loadSave(JSON.stringify(badStore)), invalidSave);
+  const unknownMoment = structuredClone(raw);
+  unknownMoment.world.footballMomentResults['EVT_99_MATCH_999:TAKE:penalty'] = unknownMoment.world.footballMomentResults[momentId];
+  delete unknownMoment.world.footballMomentResults[momentId];
+  assert.throws(() => loadSave(JSON.stringify(unknownMoment)), invalidSave);
 });
 
 test('football moments/13 validation consumes 0 RNG and does not mutate a valid persisted store', () => {
@@ -193,4 +198,25 @@ test('football moments/14 session restore rejects a corrupt persisted sporting f
   const momentId = Object.keys(snapshot.state.world.footballMomentResults)[0];
   snapshot.state.world.footballMomentResults[momentId].outcome = 'impossible';
   await assert.rejects(GameSession.resume(snapshot), invalidSave);
+});
+
+test('football moments/15 resolver does not double-own aggregate statistics or relationships', () => {
+  const state = createInitialState(8515);
+  const sportBefore = structuredClone(state.sport);
+  const relationsBefore = structuredClone(state.relationships);
+  const professionalBefore = structuredClone(state.professional);
+  resolvePenaltyMomentInPlace(state, attempt(state));
+  assert.deepEqual(state.sport, sportBefore);
+  assert.deepEqual(state.relationships, relationsBefore);
+  assert.deepEqual(state.professional, professionalBefore);
+});
+
+test('football moments/16 different registered moment ids consume independent football draws', () => {
+  const state = createInitialState(8516);
+  const before = state.rngState.football.draws;
+  const first = resolvePenaltyMomentInPlace(state, attempt(state, 'EVT_24_MATCH_001:TAKE:penalty'));
+  const second = resolvePenaltyMomentInPlace(state, attempt(state, 'EVT_26_MATCH_001:RECORD:penalty'));
+  assert.notEqual(first.draw, second.draw);
+  assert.equal(state.rngState.football.draws, before + 2);
+  assert.equal(Object.keys(state.world.footballMomentResults).length, 2);
 });
