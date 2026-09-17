@@ -4,6 +4,8 @@ Re-grounded sobre `main@176317c5708995bb72fa40af9dd45dffc9838093`.
 
 El Documento Maestro sigue siendo autoridad canónica. Una API compartida que devuelva `null` / `unavailable` no autoriza proxies: la escena debe fallar cerrado.
 
+Mapa scene-by-scene de deuda compartida: `analysis/T5.1/canon-30-34-authority-debt.json`.
+
 ## Cerrado en esta rama
 
 ### C30-34-CODEX-001 — authority guard
@@ -18,7 +20,7 @@ El Documento Maestro sigue siendo autoridad canónica. Una API compartida que de
 
 Regression test: todo evento activo `phase === "30_34"` debe quedar sin efectos authority-owned.
 
-### C30-34-CODEX-002 — offer bridges y provenance
+### C30-34-CODEX-002 — consumo formal de ofertas y provenance
 
 Tres escenas consumen una `CareerOffer` formal:
 
@@ -33,8 +35,11 @@ Cobertura focal:
 - `counter` y `defer` cierran la oferta sin aplicar `CareerTerms`;
 - `accept` aplica exactamente los términos pendientes;
 - provenance narrativa conserva `eventId`, `choiceId` y disposition;
-- una oferta pendiente sigue siendo autoritativa tras save/restore equivalente;
-- `EVT_31_MKT_001` permanece fuera de `offerBridge` porque exige comparar dos ofertas simultáneas y el runtime solo persiste una.
+- una oferta pendiente sigue siendo autoritativa tras save/restore equivalente.
+
+**Importante:** esto cierra ownership/provenance, no toda la paridad contractual. `EVT_32_CON_001` afirma una renovación automática ligada a un umbral de minutos, pero `CareerTerms` no persiste ninguna cláusula ni umbral de ese tipo. Mantener `technical_adaptation` hasta que la autoridad formal pueda representarlo.
+
+`EVT_31_MKT_001` permanece fuera de `offerBridge` porque exige comparar dos ofertas simultáneas y el runtime solo persiste una.
 
 ### C30-34-CODEX-003 — deuda deportiva caracterizada y dos falsos positivos cerrados
 
@@ -56,28 +61,37 @@ No se han añadido gates genéricos a escenas ambiguas: cada dependencia deporti
 - `EVT_33_BODY_001` no pasa aunque se eleven recuperación y proxies deportivos históricos;
 - evaluar estos gates no muta estado.
 
-El workflow focal ejecuta ya esta suite. Run `35225530285`: **SUCCESS**.
+El workflow focal ejecuta ya esta suite. Último run documental validado `35228776102`: **SUCCESS**.
 
 ## Implementable ahora por Codex
 
 ### C30-34-CODEX-005 — continuar caracterización deportiva solo con semántica demostrable
 
-Revisar las escenas restantes una a una. Para cualquier escena que requiera de forma inequívoca:
-
-- convocatoria;
-- titularidad/suplencia;
-- minutos;
-- gol/asistencia;
-- resultado;
-- semifinal/final/competición;
-- secuencia temporal concreta de partidos;
-- regreso efectivo tras lesión;
-
-registrar el hecho exacto requerido y mantener la escena bloqueada mientras ese hecho sea `null`/`unavailable`.
+Revisar las escenas restantes una a una. Para cualquier escena que requiera de forma inequívoca convocatoria, titularidad, minutos, acción de partido, resultado, competición, secuencia temporal de fixtures o regreso efectivo tras lesión, registrar el hecho exacto requerido y mantener la escena bloqueada mientras sea `null`/`unavailable`.
 
 No inferir desde edad, `roleScore`, forma, reputación, confianza del entrenador, `seasonDay`, mes ni flags narrativos.
 
-Especialmente, no convertir `EVT_30_FORM_001` en una lectura ficticia de “últimos seis partidos” hasta que exista historial deportivo autoritativo suficiente. `EVT_32_FAN_001` tampoco debe reinterpretarse como rendimiento de partido sin una fuente exacta que modele esa semántica.
+Deuda ya caracterizada que **no** debe resolverse con proxies:
+
+- `EVT_32_FAN_001`: necesita aparición/rendimiento del partido y reacción de grada; `sport.form` no es un rating de ese partido.
+- `EVT_31_RETURN_001`: `RECOVERING_INJURY` no demuestra alta médica, readiness de entrenamiento ni contexto inmediato de convocatoria.
+- `EVT_32_NAT_001`: `nationalStanding` no demuestra estar en una prelista 30→26 para un torneo.
+- `EVT_30_FORM_001`: no fabricar historial longitudinal de partidos desde una forma agregada.
+
+### C30-34-CODEX-006 — autoridad multi-oferta
+
+`MarketState.pending` es cero-o-una `CareerOffer`. Dos escenas canónicas requieren pluralidad real:
+
+- `EVT_31_MKT_001`: compara dos propuestas simultáneas.
+- `EVT_33_MKT_001`: afirma cuatro rutas/propuestas concretas simultáneas.
+
+No usar `marketHeat` para fabricar esas ofertas. La solución pertenece al mercado compartido: colección persistible de ofertas activas con identidad/provenance y decisiones independientes.
+
+### C30-34-CODEX-007 — cláusula formal de renovación por minutos
+
+`EVT_32_CON_001` ya consume una renovación formal de 12 meses, pero `CareerTerms` solo modela club/tier/meses/salario/cláusula de rescisión/ownership/prestige/route/loan/bigClub. No existe cláusula `renewalByMinutes` ni threshold persistible.
+
+Codex no debe certificar paridad de este evento hasta que una API compartida modele la cláusula sin romper saves. La rama 30–34 no debe extender por su cuenta el schema contractual global.
 
 ## Blockers duros actuales
 
@@ -96,9 +110,10 @@ Especialmente, no convertir `EVT_30_FORM_001` en una lectura ficticia de “últ
 
 Por tanto esta rama no debe fabricar hechos de partido. La read surface existe; el store autoritativo todavía no.
 
-### EVT_31_MKT_001 — dos ofertas simultáneas
+### Market / contract authority
 
-El canon compara dos propuestas a la vez. `MarketState.pending` representa una sola `CareerOffer`. No convertir esta escena en bridge hasta que mercado modele comparación múltiple con identidad/provenance persistible.
+- `MarketState.pending` representa una sola oferta: bloquea `EVT_31_MKT_001` y `EVT_33_MKT_001`.
+- `CareerTerms` no representa renovación automática por minutos: bloquea paridad completa de `EVT_32_CON_001`.
 
 ### 18 identidades desplazadas
 
@@ -138,7 +153,7 @@ Fixture requerido antes de registrar la ruta:
 
 El workstream no registra por sí mismo `CONTENT_MIGRATION_ROUTES` ni congela el target global. Eso sigue siendo ownership de coordinación/integración.
 
-La suite `Repository integrity` run `35225530340` pasa build/final gate, T5.2, sport context/football moments, saves, T5.3 y registros T5.1 previos, y se detiene exactamente en `freeze-t51-active-source --check` porque ese fixture aún no existe. Este fallo es el sentinel esperado y no debe silenciarse desde esta rama.
+La suite `Repository integrity` se mantiene roja por el sentinel `freeze-t51-active-source --check` mientras ese fixture no exista. No silenciarlo desde esta rama.
 
 ## Invariantes
 
@@ -147,5 +162,7 @@ La suite `Repository integrity` run `35225530340` pasa build/final gate, T5.2, s
 - Documento Maestro prevalece;
 - empleo/contrato solo desde `CareerOffer/respondToOffer`;
 - hechos deportivos concretos solo desde autoridad deportiva real;
+- multi-oferta solo desde autoridad de mercado real;
+- cláusulas contractuales solo si el modelo formal puede persistirlas;
 - sin aliases silenciosos;
 - sin renombrados destructivos.
