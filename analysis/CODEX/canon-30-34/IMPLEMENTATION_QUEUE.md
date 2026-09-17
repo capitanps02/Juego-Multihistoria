@@ -98,6 +98,10 @@ Pendientes que requieren hechos exactos, no proxies:
 - `EVT_32_FAN_001`: aparición/rendimiento real + reacción de grada;
 - `EVT_32_NAT_001`: prelista/torneo real.
 
+Ratchet validado en `scripts/test-t51-30-34-authority-gaps.mjs`: los cinco blockers deben permanecer explícitos, los cuatro eventos ya existentes siguen `technical_adaptation`, `EVT_31_ROLE_001` permanece ausente y maximizar forma/roleScore/nationalStanding/roleSecurity o flags no puede materializar hechos de competición, fixture, convocatoria, banquillo, titularidad, aparición, minutos, resultado o goles. La proyección se mantiene read-only.
+
+No añadir gates nuevos a estos eventos antes del freeze/edge del target actual: hacerlo movería `contentIdentity` y pertenece al siguiente batch coordinado.
+
 ### C30-34-CODEX-006 — autoridad multi-oferta
 
 `EVT_31_MKT_001` necesita dos ofertas simultáneas; `EVT_33_MKT_001`, cuatro rutas/propuestas. `getEligibleCareerOffers()` ya existe, pero deriva del único `MarketState.pending`, por lo que hoy devuelve como máximo una oferta. El nombre plural no cierra este blocker.
@@ -172,13 +176,13 @@ Freeze que coordinación/integración deberá crear antes de registrar la ruta:
 
 ## Validación exacta
 
-Último HEAD de runtime/guards validado antes de este cierre documental: `877cb81c3d3596710135014ba21bfa69b1652677`.
+Último HEAD de runtime/guards validado: `af830cbf371fb7c81d32149b255b7101ae0c769b`.
 
-- T5.1 canon 30–34 run `35260723794` — **SUCCESS**;
-- T5 Market Contract Authority run `35260723792` — **SUCCESS**;
-- Repository Integrity run `35260723819` — **FAILURE únicamente en el sentinel esperado** `freeze-t51-active-source --check`.
+- T5.1 canon 30–34 run `35261630245` — **SUCCESS**;
+- T5 Market Contract Authority run `35261630355` — **SUCCESS**;
+- Repository Integrity run `35261630238` — **FAILURE únicamente en el sentinel esperado** `freeze-t51-active-source --check`.
 
-En `35260723819`, `npm test` completó correctamente build, T5.2, saves, T5.3, registries y offer bridges antes de fallar porque todavía no existe:
+En `35261630238`, `npm test` completó correctamente build, T5.2, saves, T5.3, registries y offer bridges antes de fallar exclusivamente porque todavía no existe:
 
 `qa/fixtures/t5.1/post-t51-sources/9151d6620739f5f63face23f412abdeca9898cac8e510cc44d86c1468da8d0f4.json`
 
