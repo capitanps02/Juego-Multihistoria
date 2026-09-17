@@ -22,11 +22,21 @@
     {"id":"EVT_23_CON_001","status":"blocked_lineage"},
     {"id":"EVT_25_CON_001","status":"blocked_lineage"},
     {"id":"EVT_25_MKT_001","status":"blocked_lineage"},
-    {"id":"EVT_26_BRIDGE_001","status":"blocked_lineage"}
+    {"id":"EVT_26_BRIDGE_001","status":"blocked_lineage"},
+    {"id":"EVT_26_DOC_001","status":"blocked_lineage"},
+    {"id":"EVT_27_IMG_001","status":"blocked_lineage"},
+    {"id":"EVT_27_BODY_001","status":"blocked_lineage"},
+    {"id":"EVT_27_CON_001","status":"blocked_lineage"},
+    {"id":"EVT_28_MEDIA_001","status":"blocked_lineage"},
+    {"id":"EVT_29_FIN_001","status":"blocked_lineage"}
   ],
   "highPriorityBlocked": [
     {"id":"EVT_24_MATCH_001","status":"blocked_shared_authority","needs":"authoritative fixture/match/squad producer"},
     {"id":"EVT_25_AGT_001","status":"blocked_shared_authority","needs":"certified active-agent identity for relevant careers"},
-    {"id":"EVT_25_NAT_001","status":"blocked_shared_authority","needs":"authoritative national-team call/role history"}
+    {"id":"EVT_25_NAT_001","status":"blocked_shared_authority","needs":"authoritative national-team call/role history"},
+    {"id":"EVT_26_MED_001","status":"blocked_shared_authority","needs":"authoritative calendar density in addition to recovery state"},
+    {"id":"EVT_26_RIV_001","status":"blocked_shared_authority","needs":"persisted competitive level/context for Adrian"},
+    {"id":"EVT_27_MED_001","status":"blocked_shared_authority","needs":"surgery-compatible diagnosis authority"},
+    {"id":"EVT_27_AWARD_001","status":"blocked_shared_authority","needs":"authoritative award nomination/vote authority"}
   ]
 }

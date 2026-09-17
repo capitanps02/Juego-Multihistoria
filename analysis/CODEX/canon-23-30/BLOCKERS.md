@@ -4,11 +4,13 @@
 
 Agent 6 exact-ID candidates remain staged. Activation, active catalog identity, adjacent content generation, migration edges and pending-save semantics belong to the integration owner.
 
-Current staged set: LOCK23, MKT23, CON23, CON25, MKT25, BRIDGE26, DOC26, IMG27, BODY27, CON27 and MEDIA28.
+Current staged set: LOCK23, MKT23, CON23, CON25, MKT25, BRIDGE26, DOC26, IMG27, BODY27, CON27, MEDIA28 and FIN29.
 
 DOC26 causal correction: rejecting the documentary creates no `SEED_DOCUMENTARY_ACCESS`. Only actual access-grant choices create that seed, and they keep `published=false` until the later release event.
 
 MEDIA28 is gate-complete from real `SEED_DOCUMENTARY_ACCESS`, but canonical `SEED_DOCUMENTARY_FALLOUT` is absent from the current global seed catalog. Integrator must register that seed and canonical origin/age before the candidate can resolve safely. Existing historical origins must remain untouched.
+
+FIN29 uses an already-canonical `SEED_AGE30_PRIORITY` origin and preserves the four historical priority tokens. Its remaining blocker is only same-ID active placeholder replacement/contentIdentity migration; `maximum` is the one additive token for the fifth canonical choice.
 
 ## Shared authority blockers
 
@@ -27,4 +29,4 @@ MEDIA28 is gate-complete from real `SEED_DOCUMENTARY_ACCESS`, but canonical `SEE
 
 ## Hard invariants
 
-No synthetic CareerOffer or fixture. No direct `state.club` mutation. No narrative football-result RNG. No captain inference from age/reputation. Salary is not patrimonio. Access rejected is not access granted. Never rewrite historical `SeedInstance.originEvent`.
+No synthetic CareerOffer or fixture. No direct `state.club` mutation. No narrative football-result RNG. No captain inference from age/reputation. Salary is not patrimonio. Access rejected is not access granted. Age-30 priority is advisory, never a route lock. Never rewrite historical `SeedInstance.originEvent`.

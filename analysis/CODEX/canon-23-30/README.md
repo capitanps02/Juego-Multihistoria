@@ -1,6 +1,8 @@
 # Agent 6 — Canon 23–30
 
-Status after safe re-ground on `main@fa3c8bae524fef62e4eb9802e895df88588998c4`.
+Status after safe re-ground on `main@fa3c8bae524fef62e4eb9802e895df88588998c4` and subsequent staged implementation through `EVT_29_FIN_001`.
+
+Current compare: branch is 17 commits ahead and 0 behind main at the recorded status point.
 
 ## Scope
 
@@ -13,10 +15,16 @@ Ownership is canonical blocks 23–26 and 26–30. This branch does not own glob
 - `EVT_23_CON_001` — formal renewal CareerOffer only.
 - `EVT_25_CON_001` — formal renewal CareerOffer only.
 - `EVT_25_MKT_001` — direct recruitment is interest, never a synthetic offer.
-- `EVT_26_BRIDGE_001` — canonical age-26 transition and `SEED_PEAK_IDENTITY` origin for new careers.
+- `EVT_26_BRIDGE_001` — canonical age-26 transition.
+- `EVT_26_DOC_001` — documentary access with privacy boundary; rejection grants no access.
+- `EVT_27_IMG_001` — personal-brand decision from real image/media state.
+- `EVT_27_BODY_001` — peak-load decision from existing peak/optimization memory.
+- `EVT_27_CON_001` — real same-club renewal with a numeric release clause.
+- `EVT_28_MEDIA_001` — documentary fallout only after real access.
+- `EVT_29_FIN_001` — five canonical age-30 priorities, advisory rather than route-locking.
 - `src/narrative/offer-bridge.ts` — exact `CareerOfferKind` filtering.
 
-All six event definitions remain outside the active event catalog until the integration owner lands lineage/migration changes.
+All staged event definitions remain outside the active event catalog until the integration owner lands lineage/contentIdentity/migration changes.
 
 ## Already active on main
 
@@ -24,6 +32,6 @@ All six event definitions remain outside the active event catalog until the inte
 
 ## Safety rules
 
-No synthetic offers or fixtures. No direct club mutation. No narrative RNG for football results. No captain/national/agent inference. Historical seed `originEvent` is immutable. Private knowledge does not become public without a transmission/publication path.
+No synthetic offers or fixtures. No direct club mutation. No narrative RNG for football results. No captain/national/agent inference. Historical seed `originEvent` is immutable. Private knowledge does not become public without a transmission/publication path. Age-30 priority can guide later narrative but cannot invalidate otherwise legal player choices.
 
 See the JSON status files and blocker/handoff documents in this folder for Codex execution order.

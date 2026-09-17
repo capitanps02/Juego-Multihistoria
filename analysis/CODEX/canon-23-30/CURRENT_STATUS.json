@@ -3,13 +3,17 @@
   "scope": "canon-23-30",
   "branch": "t51/canon-23-30",
   "baseMain": "fa3c8bae524fef62e4eb9802e895df88588998c4",
+  "branchHead": "5110c05dedc50a06d57bfc0af734d6dfcdcbfb09",
+  "ahead": 17,
+  "behind": 0,
   "regroundCommit": "43749a9f577b50537cf68a05411e0c911a446e8f",
   "activeCatalogChangedByAgent6": false,
   "schemaChangedByAgent6": false,
   "rngPolicyChangedByAgent6": false,
   "stagedImplemented": [
     "EVT_23_LOCK_001", "EVT_23_MKT_001", "EVT_23_CON_001", "EVT_25_CON_001", "EVT_25_MKT_001",
-    "EVT_26_BRIDGE_001", "EVT_26_DOC_001", "EVT_27_IMG_001", "EVT_27_BODY_001", "EVT_27_CON_001", "EVT_28_MEDIA_001"
+    "EVT_26_BRIDGE_001", "EVT_26_DOC_001", "EVT_27_IMG_001", "EVT_27_BODY_001", "EVT_27_CON_001",
+    "EVT_28_MEDIA_001", "EVT_29_FIN_001"
   ],
   "age27BlockedAfterAudit": {
     "PRS": "requires authoritative negative stadium/fan reaction, not merely publicMyth",
@@ -24,5 +28,8 @@
   "age28Progress": {
     "MEDIA": "staged gate-complete from real documentary access; fallout seed catalog registration remains integrator-owned"
   },
-  "nextMicrobatch": ["EVT_28_MKT_001", "EVT_28_PRS_001", "EVT_28_MED_001", "EVT_28_TACT_001"]
+  "age29Progress": {
+    "FIN": "staged canonical five-choice Pasada-5 close; SEED_AGE30_PRIORITY origin is already canonical; active same-ID placeholder/contentIdentity replacement remains integrator-owned"
+  },
+  "nextMicrobatch": ["EVT_28_FORM_001", "EVT_28_IMG_001", "EVT_29_TACT_001", "EVT_29_FORM_001"]
 }
