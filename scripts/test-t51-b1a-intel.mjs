@@ -1,9 +1,11 @@
 import fs from 'node:fs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { EVENTS } from '../dist/content/events/index.js';
 import { EVENTS_18_20 as BASE_EVENTS_18_20 } from '../dist/content/events/18_20/canonical-events.js';
-import { T51_B1A_INTEL_EVENT_IDS } from '../dist/content/events/18_20/t51-b1a-intel-overrides.js';
+import {
+  T51_B1A_INTEL_EVENT_IDS,
+  applyT51B1aIntelRepairs
+} from '../dist/content/events/18_20/t51-b1a-intel-overrides.js';
 import { contentIdentity } from '../dist/session/content-identity.js';
 import {
   CONTENT_MIGRATION_ROUTES,
@@ -20,6 +22,7 @@ const EXPECTED = {
 };
 
 const B1A_FIXTURE = JSON.parse(fs.readFileSync(`qa/fixtures/t5.1/post-t51-sources/${T51_B1A_CONTENT_IDENTITY}.json`, 'utf8'));
+const B1A_EVENTS = applyT51B1aIntelRepairs(BASE_EVENTS_18_20);
 
 const byId = (events, id) => {
   const event = events.find(candidate => candidate.id === id);
@@ -35,20 +38,20 @@ function comparableWithoutIntel(event) {
 test('T5.1 B1a repairs exactly the three certified 18-20 intel blocks', () => {
   assert.deepEqual([...T51_B1A_INTEL_EVENT_IDS].sort(), Object.keys(EXPECTED).sort());
   for (const [id, intel] of Object.entries(EXPECTED)) {
-    const active = byId(EVENTS, id);
+    const repaired = byId(B1A_EVENTS, id);
     const frozenBase = byId(BASE_EVENTS_18_20, id);
-    assert.deepEqual(active.intel, intel, `${id}: active intel differs from certified canon`);
-    assert.notStrictEqual(active, frozenBase, `${id}: repair must return a fresh event object`);
-    assert.deepEqual(comparableWithoutIntel(active), comparableWithoutIntel(frozenBase), `${id}: B1a changed data outside intel`);
+    assert.deepEqual(repaired.intel, intel, `${id}: B1a intel differs from certified canon`);
+    assert.notStrictEqual(repaired, frozenBase, `${id}: repair must return a fresh event object`);
+    assert.deepEqual(comparableWithoutIntel(repaired), comparableWithoutIntel(frozenBase), `${id}: B1a changed data outside intel`);
     assert.notDeepEqual(frozenBase.intel, intel, `${id}: frozen base was mutated`);
   }
 });
 
-test('T5.1 B1a leaves all other base 18-20 events untouched', () => {
+test('T5.1 B1a leaves all other base 18-20 events untouched before later overlays', () => {
   const repaired = new Set(T51_B1A_INTEL_EVENT_IDS);
   for (const base of BASE_EVENTS_18_20) {
     if (repaired.has(base.id)) continue;
-    assert.strictEqual(byId(EVENTS, base.id), base, `${base.id}: out-of-scope definition changed`);
+    assert.strictEqual(byId(B1A_EVENTS, base.id), base, `${base.id}: B1a changed an out-of-scope definition`);
   }
 });
 
