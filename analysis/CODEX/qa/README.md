@@ -1,6 +1,6 @@
 # QA → Codex handoff
 
-Fuente técnica: GitHub. Base de esta pasada: `main@da3b356ac1c9c3376052189573e5a30f89b71cf0`.
+Fuente técnica: GitHub. Base de esta pasada: `main@fa3c8bae524fef62e4eb9802e895df88588998c4`.
 
 Objetivo: entregar defectos pequeños, reproducibles y con ownership claro. Codex no debe recibir tareas genéricas del tipo «arreglar QA» ni duplicar fixes que ya existen en una rama propietaria.
 
@@ -17,11 +17,8 @@ Objetivo: entregar defectos pequeños, reproducibles y con ownership claro. Code
 ## Bugs abiertos reproducidos en main
 
 - T5-QA-016 / issue #61 — player authority en retirada. El runtime de `main` conserva el bypass, pero PR #118 ya implementa el fix dirigido; no duplicar ese código desde Codex. QA debe certificar su integración/re-ground cuando lineage lo permita.
-- T5-QA-028 / issue #130 — contrato vencido permanece registrado/activo durante años. Reproducción dirigida `loyal/512000`: 6669 días a 0 meses y 419 apariciones añadidas en la última certificación dirigida. El contrato de Pass A ya está especificado; la implementación espera a que PR #156 fije la frontera final del simulador.
-
-## Blocker de PR candidato
-
-- T5-QA-027 / issue #133 / PR #122 — la elección de escalar al capitán debe fallar cerrado cuando no existe un target autoritativo.
+- T5-QA-028 / issue #130 — contrato vencido permanece registrado/activo durante años. Reproducción dirigida `loyal/512000`: 6669 días a 0 meses y 419 apariciones añadidas. `main@fa3c8b` incorpora hechos exactos de `CareerOffer`, pero no una transición autoritativa a empleo unattached; Pass A sigue esperando a que PR #156 fije la frontera final del simulador.
+- T5-QA-027 / issue #133 — el histórico PR #122 está cerrado/no integrable; la futura implementación H de LOCK23 debe ocultar la escalada al capitán cuando no exista target autoritativo.
 
 ## Resueltos
 
@@ -38,6 +35,6 @@ El rojo observado en la simulación estratificada no era #130: el validador conf
 
 - #61: el fix ya existe en PR #118; duplicarlo crearía dos implementaciones del mismo state machine. Sigue abierto hasta integración real y regresión exact-head.
 - #130: Pass A está definido, pero PR #156 sigue abierto/draft y mueve la frontera autoritativa de world simulation. Aplicarlo antes obligaría a parchear dos layouts.
-- #133: es blocker del owner LOCK23/PR #122, no ownership QA.
+- #133: pertenece al owner LOCK23 sobre la lineage H actual, no al ownership QA.
 
 No improvisar `route=free_agent`, salario 0, club sentinel, transferencia forzada, contrato sintético ni retirada automática. No auto-merge.

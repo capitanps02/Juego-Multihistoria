@@ -1,7 +1,7 @@
 # QA T5 — regresión y auditoría independiente
 
 Rama: `qa/t5-regression`  
-Re-ground actual: `main@da3b356ac1c9c3376052189573e5a30f89b71cf0`  
+Re-ground actual: `main@fa3c8bae524fef62e4eb9802e895df88588998c4`  
 Owner: QA independiente
 
 QA intenta falsar invariantes. No reescribe canon ni corrige silenciosamente runtime de otros workstreams. Los defectos de runtime se convierten en reproducciones, issues y handoffs acotados; no se pide a Codex duplicar un fix ya existente en la rama propietaria.
@@ -13,8 +13,8 @@ QA intenta falsar invariantes. No reescribe canon ni corrige silenciosamente run
 - T5-QA-022 — **RESOLVED** — `footballMomentResults` se valida en el boundary de `loadSave`; issue #100 cerrado; probe QA usa un moment id registrado.
 - T5-QA-023 — **RESOLVED** — PRS23 usa `facts.roleGuaranteeAt23` + `facts.roleDropSince23` con regresiones negativas; issue #109 cerrado.
 - T5-QA-025 — **RESOLVED** — cierre de catálogo para historical seed consumers integrado; issue #131 cerrado.
-- T5-QA-027 — **OPEN / P2 / candidate PR blocker** — LOCK23 choice D sigue sin eligibility de captain en PR #122. Issue #133.
-- T5-QA-028 — **OPEN / P1 / sequencing-blocked** — contract expiry zombie. Issue #130. Exact replay: run `35214465940`, job `105179515812`, artifact `10494278670`. Pass A está especificado; PR #156 debe fijar primero la frontera final de world simulation.
+- T5-QA-027 — **OPEN / P2 / future H owner implementation** — historical PR #122 está cerrado/no integrable; issue #133 exige que la futura LOCK23 H falle cerrado si no existe capitán autoritativo.
+- T5-QA-028 — **OPEN / P1 / sequencing-blocked** — contract expiry zombie. Issue #130. Exact replay: run `35214465940`, job `105179515812`, artifact `10494278670`. `main@fa3c8b` integra hechos exactos de CareerOffer, no la transición autoritativa a empleo unattached; PR #156 debe fijar primero la frontera final de world simulation.
 
 ## T5-QA-028 evidence
 
@@ -30,7 +30,7 @@ QA intenta falsar invariantes. No reescribe canon ni corrige silenciosamente run
 
 El contrato de implementación ya está fijado en #130: `monthsRemaining=0` debe implicar empleo no activo/unattached como autoridad derivada; los strings del último club son provenance, no empleo vivo; football e institutional NPC deben fallar cerrado; los reads son 0 RNG; aceptar una nueva oferta formal reactiva empleo a través de la autoridad CareerOffer. No se introduce sentinel club ni una solución route-only.
 
-PR #170 ya está integrado. PR #156 continúa abierto/draft y mueve el body del simulador a `world-simulator-core.ts`; por eso Pass A debe aplicarse después sobre el boundary definitivo y no duplicarse.
+PR #156 sigue abierto/draft y ya está re-groundado sobre `main@fa3c8b`; mueve el body del simulador a `world-simulator-core.ts`. Por eso Pass A debe aplicarse después sobre el boundary definitivo y no duplicarse en el layout anterior.
 
 ## Codex-ready QA
 
