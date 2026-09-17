@@ -1,3 +1,4 @@
+import './test-t5-match-model.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createInitialState } from '../dist/content/initial-state.js';
@@ -6,7 +7,7 @@ import { getCurrentMatchContext, getSportContext } from '../dist/simulation/spor
 
 function rng(state) { return structuredClone(state.rngState); }
 
-test('sport context/1 projection is read-only and consumes zero RNG', () => {
+test('sport context/1 projection is read-only, exposes schedule and consumes zero RNG', () => {
   const state = createInitialState(8701);
   const before = structuredClone(state);
   const beforeRng = rng(state);
@@ -14,12 +15,16 @@ test('sport context/1 projection is read-only and consumes zero RNG', () => {
   const match = getCurrentMatchContext(state);
   assert.equal(context.currentSeason, state.season);
   assert.equal(context.sportingClub, state.professional.registrationClub);
-  assert.equal(match.status, 'no_authoritative_match_model');
+  assert.equal(context.currentCompetition, 'league');
+  assert.ok(context.nextFixture);
+  assert.equal(context.nextFixture.club, state.professional.registrationClub);
+  assert.equal(context.availability.nextFixture, 'known');
+  assert.equal(match.status, 'no_current_match');
   assert.deepEqual(state, before);
   assert.deepEqual(state.rngState, beforeRng);
 });
 
-test('sport context/2 unavailable match/calendar facts stay null instead of using role/form/age proxies', () => {
+test('sport context/2 aggregate proxies cannot fabricate persisted match or squad facts', () => {
   const state = createInitialState(8702);
   state.sport.roleScore = 99;
   state.sport.form = 99;
@@ -28,20 +33,19 @@ test('sport context/2 unavailable match/calendar facts stay null instead of usin
   state.flags.FIRST_TEAM_ATTENTION = true;
   state.flags.OFFICIAL_DEBUT = true;
   const context = getSportContext(state);
-  assert.equal(context.nextFixture, null);
-  assert.equal(context.hoursToNextFixture, null);
-  assert.equal(context.currentCompetition, null);
-  assert.equal(context.remainingOfficialMatches, null);
-  assert.equal(context.remainingLeagueMatches, null);
-  assert.equal(context.seasonObjectiveStatus, null);
+  const match = getCurrentMatchContext(state);
+  assert.ok(context.nextFixture, 'calendar is produced independently of aggregate role/form proxies');
+  assert.ok(context.remainingLeagueMatches > 0);
   assert.equal(context.currentSquadStatus, null);
   assert.equal(context.firstMatchSquadCall, null);
   assert.equal(context.firstStart, null);
   assert.equal(context.firstGoal, null);
-  assert.equal(context.availability.nextFixture, 'unavailable');
+  assert.equal(context.availability.firstMatchSquadCall, 'unavailable');
+  assert.equal(match.status, 'no_current_match');
+  assert.equal(match.playerAppeared, null);
 });
 
-test('sport context/3 registration club is the sporting club authority for transfers and loans', () => {
+test('sport context/3 registration club is the sporting club and fixture authority for transfers and loans', () => {
   const state = createInitialState(8703);
   state.club = 'Loan FC';
   state.professional.ownerClub = 'Parent FC';
@@ -50,9 +54,10 @@ test('sport context/3 registration club is the sporting club authority for trans
   const context = getSportContext(state);
   assert.equal(context.sportingClub, 'Loan FC');
   assert.equal(context.ownerClub, 'Parent FC');
+  assert.equal(context.nextFixture.club, 'Loan FC');
 });
 
-test('sport context/4 legacy debut flag is exposed only as coarse history, not as a fabricated current match', () => {
+test('sport context/4 legacy debut flag alone never fabricates a current match or match milestone', () => {
   const state = createInitialState(8704);
   state.flags.OFFICIAL_DEBUT = true;
   state.sport.appearances = 1;
@@ -61,17 +66,18 @@ test('sport context/4 legacy debut flag is exposed only as coarse history, not a
   assert.equal(context.officialDebutRecorded, true);
   assert.equal(context.careerAppearances, 1);
   assert.equal(context.firstAppearance, null);
+  assert.equal(match.status, 'no_current_match');
   assert.equal(match.playerAppeared, null);
   assert.equal(match.result, null);
 });
 
-test('sport context/5 narrative condition root exposes sport and match facts without persistence or RNG', () => {
+test('sport context/5 narrative condition root exposes calendar/match facts without persistence or RNG', () => {
   const state = createInitialState(8705);
   const before = structuredClone(state);
   const root = narrativeConditionRoot(state);
   assert.equal(root.facts.sport.sportingClub, state.professional.registrationClub);
-  assert.equal(root.facts.sport.nextFixture, null);
-  assert.equal(root.facts.match.status, 'no_authoritative_match_model');
+  assert.ok(root.facts.sport.nextFixture);
+  assert.equal(root.facts.match.status, 'no_current_match');
   assert.equal(root.facts.match.playerStarted, null);
   assert.equal(Object.prototype.hasOwnProperty.call(state, 'facts'), false);
   assert.deepEqual(state, before);
