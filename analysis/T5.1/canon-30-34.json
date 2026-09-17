@@ -1,7 +1,7 @@
 {
   "task": "T5.1",
   "scope": "30_34",
-  "generatedAt": "2026-09-16",
+  "generatedAt": "2026-09-17",
   "branch": "t51/canon-30-34",
   "source": {
     "traceability": "analysis/2026-09-11/t1/principal-traceability.json",
@@ -47,7 +47,7 @@
       "engineId": "EVT_30_CON_001",
       "status": "needs_reimplementation",
       "title": "Uno más o tres",
-      "implementation": "canonical decision semantics implemented; canonical trigger contract <=18 months OR club wants renewal is now represented exactly through gateAlternatives and facts.clubWantsRenewal. The scene remains needs_reimplementation because knowledge/consequence/seed/NPC/save-continuity identity parity is not fully proven"
+      "implementation": "canonical decision semantics implemented; canonical trigger contract <=18 months OR club wants renewal is represented exactly through gateAlternatives and facts.clubWantsRenewal. Formal contract ownership is delegated to shared CareerOffer authority. The scene remains needs_reimplementation because hidden-state, seed and continuity identity parity is not fully proven"
     },
     {
       "canonicalId": "EVT_30_BODY_001",
@@ -101,7 +101,7 @@
       "engineId": "EVT_30_FORM_001",
       "status": "needs_reimplementation",
       "title": "Seis partidos, cinco goles",
-      "implementation": "canonical semantics implemented; six-match history trigger approximated"
+      "implementation": "canonical semantics implemented; exact six-match/five-goal history remains blocked by missing authoritative recent-match history"
     },
     {
       "canonicalId": "EVT_30_CCH_001",
@@ -114,7 +114,7 @@
       "engineId": "EVT_30_CAP_001",
       "status": "needs_reimplementation",
       "title": "Otro lleva el brazalete",
-      "implementation": "canonical semantics implemented; succession trigger parity pending"
+      "implementation": "canonical semantics implemented; canonical high LOCKER_WEIGHT trigger remains unproved because shared locker authority has no 30_34 assignment or approved mapping from professional.lockerPower"
     },
     {
       "canonicalId": "EVT_30_RECORD_001",
@@ -164,14 +164,14 @@
       "engineId": "EVT_31_MKT_001",
       "status": "needs_reimplementation",
       "title": "Dos años de estrella o uno de élite",
-      "implementation": "canonical override; contract/market trigger approximated"
+      "implementation": "canonical override; canonical comparison requires two simultaneous formal offers while MarketState persists at most one pending CareerOffer. getEligibleCareerOffers remains singleton-backed"
     },
     {
       "canonicalId": "EVT_31_HOME_001",
       "engineId": "EVT_31_HOME_001",
       "status": "needs_reimplementation",
       "title": "Valdoria llama con 31",
-      "implementation": "canonical override; UDV compatibility part of trigger not represented"
+      "implementation": "canonical override with formal UDV CareerOffer bridge and provenance; remaining semantic/identity parity is not fully proven"
     },
     {
       "canonicalId": "EVT_31_AGT_001",
@@ -204,7 +204,7 @@
       "engineId": "EVT_31_RETURN_001",
       "status": "needs_reimplementation",
       "title": "Volver sin ritmo",
-      "implementation": "canonical override; return gate represented, readiness semantics remain uncertain"
+      "implementation": "canonical override; RECOVERING_INJURY does not prove medical clearance, training readiness or immediate squad-call context"
     },
     {
       "canonicalId": "EVT_31_TACT_001",
@@ -244,7 +244,7 @@
       "engineId": "EVT_31_FINAL_001",
       "status": "needs_reimplementation",
       "title": "La final de 70 minutos",
-      "implementation": "canonical override; FINAL_CONTEXT + roleScore approximate plausible-final/ROLE_FIT trigger"
+      "implementation": "canonical override; now fails closed unless authoritative current competition and next fixture exist. Exact planned-minutes/role parity remains unproved"
     },
     {
       "canonicalId": "EVT_31_BIZ_001",
@@ -257,7 +257,7 @@
       "engineId": "EVT_32_CON_001",
       "status": "needs_reimplementation",
       "title": "Contrato de un año renovable",
-      "implementation": "canonical override; renewal context approximated by contract horizon"
+      "implementation": "canonical override with formal same-club 12-month renewal CareerOffer bridge; automatic renewal by minutes and its threshold remain unmodelled in CareerTerms"
     },
     {
       "canonicalId": "EVT_32_RICH_001",
@@ -276,7 +276,7 @@
       "engineId": "EVT_32_HOME_001",
       "status": "needs_reimplementation",
       "title": "Valdoria te ofrece el brazalete",
-      "implementation": "canonical override; UDV compatibility part of trigger not fully represented"
+      "implementation": "canonical override with formal UDV CareerOffer bridge and provenance; captaincy/identity parity remains incomplete"
     },
     {
       "canonicalId": "EVT_32_AGT_001",
@@ -302,7 +302,7 @@
       "engineId": "EVT_32_FAN_001",
       "status": "needs_reimplementation",
       "title": "Te cantan después de jugar mal",
-      "implementation": "canonical override; legacyCapital + current form approximate high legacy + bad-match trigger"
+      "implementation": "canonical override; legacyCapital + aggregate form cannot prove the concrete bad match or crowd reaction"
     },
     {
       "canonicalId": "EVT_32_LOAD_001",
@@ -315,7 +315,7 @@
       "engineId": "EVT_32_NAT_001",
       "status": "needs_reimplementation",
       "title": "La lista final",
-      "implementation": "canonical override; tournament context not explicitly represented, nationalStanding is available"
+      "implementation": "canonical override; nationalStanding does not prove the canonical 30-player preselection, 26-player cut or tournament context"
     },
     {
       "canonicalId": "EVT_32_BOSMAN_001",
@@ -328,7 +328,7 @@
       "engineId": "EVT_33_BODY_001",
       "status": "needs_reimplementation",
       "title": "Dos partidos en 72 horas",
-      "implementation": "canonical override; reduced recovery approximated by recoveryMargin"
+      "implementation": "canonical override; now fails closed unless authoritative next fixture and hours-to-next-fixture exist. Remaining high-intensity/start-role parity is unproved"
     },
     {
       "canonicalId": "EVT_33_RECORD_001",
@@ -341,14 +341,14 @@
       "engineId": "EVT_33_CAP_001",
       "status": "needs_reimplementation",
       "title": "Entregar el brazalete",
-      "implementation": "canonical override; captaincy+succession approximated through successionPressure"
+      "implementation": "canonical override; current main-captain authority is explicit and fail-closed across club changes, while successionPressure remains a technical adaptation for the succession dimension"
     },
     {
       "canonicalId": "EVT_33_MKT_001",
       "engineId": "EVT_33_MKT_001",
       "status": "needs_reimplementation",
       "title": "Cuatro futuros",
-      "implementation": "canonical five-option market scene implemented; open-market trigger approximated with marketHeat"
+      "implementation": "canonical five-option market scene implemented; four concrete proposal types cannot be certified because shared market authority persists at most one eligible CareerOffer"
     },
     {
       "canonicalId": "EVT_33_PRS_001",
@@ -395,110 +395,32 @@
     "status": "requires_manual_review",
     "reason": "The current T5.1 source set has no canonical conditional-ID inventory. Count/title/theme matches cannot establish identity.",
     "events": [
-      {
-        "engineId": "CEVT_30_BODY_01",
-        "status": "requires_manual_review"
-      },
-      {
-        "engineId": "CEVT_30_PROJECT_01",
-        "status": "requires_manual_review"
-      },
-      {
-        "engineId": "CEVT_30_HOME_01",
-        "status": "requires_manual_review"
-      },
-      {
-        "engineId": "CEVT_30_NAT_01",
-        "status": "requires_manual_review"
-      },
-      {
-        "engineId": "CEVT_30_AGENT_01",
-        "status": "requires_manual_review"
-      },
-      {
-        "engineId": "CEVT_30_RIVAL_01",
-        "status": "requires_manual_review"
-      },
-      {
-        "engineId": "CEVT_30_FAN_01",
-        "status": "requires_manual_review"
-      },
-      {
-        "engineId": "CEVT_31_SURGERY_01",
-        "status": "requires_manual_review"
-      },
-      {
-        "engineId": "CEVT_31_SUCCESSOR_01",
-        "status": "requires_manual_review"
-      },
-      {
-        "engineId": "CEVT_31_COACH_01",
-        "status": "requires_manual_review"
-      },
-      {
-        "engineId": "CEVT_31_NTLOAD_01",
-        "status": "requires_manual_review"
-      },
-      {
-        "engineId": "CEVT_31_FINAL_01",
-        "status": "requires_manual_review"
-      },
-      {
-        "engineId": "CEVT_31_BUSINESS_01",
-        "status": "requires_manual_review"
-      },
-      {
-        "engineId": "CEVT_31_RIVAS_01",
-        "status": "requires_manual_review"
-      },
-      {
-        "engineId": "CEVT_32_RICH_01",
-        "status": "requires_manual_review"
-      },
-      {
-        "engineId": "CEVT_32_REPLACE_01",
-        "status": "requires_manual_review"
-      },
-      {
-        "engineId": "CEVT_32_HOME_01",
-        "status": "requires_manual_review"
-      },
-      {
-        "engineId": "CEVT_32_BOSMAN_01",
-        "status": "requires_manual_review"
-      },
-      {
-        "engineId": "CEVT_32_NT_01",
-        "status": "requires_manual_review"
-      },
-      {
-        "engineId": "CEVT_32_FAN_01",
-        "status": "requires_manual_review"
-      },
-      {
-        "engineId": "CEVT_33_RECOVERY_01",
-        "status": "requires_manual_review"
-      },
-      {
-        "engineId": "CEVT_33_RECORD_01",
-        "status": "requires_manual_review"
-      },
-      {
-        "engineId": "CEVT_33_RET_01",
-        "status": "requires_manual_review"
-      },
-      {
-        "engineId": "CEVT_33_HOME_01",
-        "status": "requires_manual_review"
-      },
-      {
-        "engineId": "CEVT_33_CONTRACT_01",
-        "status": "requires_manual_review"
-      },
-      {
-        "engineId": "CEVT_33_MARKET_01",
-        "status": "requires_manual_review"
-      }
+      { "engineId": "CEVT_30_BODY_01", "status": "requires_manual_review" },
+      { "engineId": "CEVT_30_PROJECT_01", "status": "requires_manual_review" },
+      { "engineId": "CEVT_30_HOME_01", "status": "requires_manual_review" },
+      { "engineId": "CEVT_30_NAT_01", "status": "requires_manual_review" },
+      { "engineId": "CEVT_30_AGENT_01", "status": "requires_manual_review" },
+      { "engineId": "CEVT_30_RIVAL_01", "status": "requires_manual_review" },
+      { "engineId": "CEVT_30_FAN_01", "status": "requires_manual_review" },
+      { "engineId": "CEVT_31_SURGERY_01", "status": "requires_manual_review" },
+      { "engineId": "CEVT_31_SUCCESSOR_01", "status": "requires_manual_review" },
+      { "engineId": "CEVT_31_COACH_01", "status": "requires_manual_review" },
+      { "engineId": "CEVT_31_NTLOAD_01", "status": "requires_manual_review" },
+      { "engineId": "CEVT_31_FINAL_01", "status": "requires_manual_review" },
+      { "engineId": "CEVT_31_BUSINESS_01", "status": "requires_manual_review" },
+      { "engineId": "CEVT_31_RIVAS_01", "status": "requires_manual_review" },
+      { "engineId": "CEVT_32_RICH_01", "status": "requires_manual_review" },
+      { "engineId": "CEVT_32_REPLACE_01", "status": "requires_manual_review" },
+      { "engineId": "CEVT_32_HOME_01", "status": "requires_manual_review" },
+      { "engineId": "CEVT_32_BOSMAN_01", "status": "requires_manual_review" },
+      { "engineId": "CEVT_32_NT_01", "status": "requires_manual_review" },
+      { "engineId": "CEVT_32_FAN_01", "status": "requires_manual_review" },
+      { "engineId": "CEVT_33_RECOVERY_01", "status": "requires_manual_review" },
+      { "engineId": "CEVT_33_RECORD_01", "status": "requires_manual_review" },
+      { "engineId": "CEVT_33_RET_01", "status": "requires_manual_review" },
+      { "engineId": "CEVT_33_HOME_01", "status": "requires_manual_review" },
+      { "engineId": "CEVT_33_CONTRACT_01", "status": "requires_manual_review" },
+      { "engineId": "CEVT_33_MARKET_01", "status": "requires_manual_review" }
     ],
     "crossTypeWarnings": [
       {
@@ -518,7 +440,7 @@
     {
       "id": "DEP_T51_EVENT_ID_MIGRATION",
       "kind": "save_continuity",
-      "description": "Latest frozen upstream lineage node is 5d3fd71a8df42ed5b93fdde63ed386e9d776693addd62a30293dbecad7aa56d2. Integration must freeze the active 30-34 target 380d28e0e09995330dbbf72ba958a9822855f0b66a3bdc63a202b30a34bb3989 as post-T5.1 source evidence, then register/certify the unique latest-upstream -> target edge for the 27 stable exact-ID semantic changes. Shifted IDs remain deferred."
+      "description": "Latest frozen upstream lineage node is 84871fae2bec92d74d1e607e0a48943e2e530a062d315a829cfe75eda9fe0886. Integration must freeze the active 30-34 target 9151d6620739f5f63face23f412abdeca9898cac8e510cc44d86c1468da8d0f4 as post-T5.1 source evidence, then review/register the approved latest-upstream -> target edge for the 27 stable exact-ID semantic changes. Shifted IDs remain deferred and sameSceneMigrationAllowed stays false."
     },
     {
       "id": "DEP_T51_BRIDGE_PRIORITY",
@@ -528,12 +450,7 @@
     {
       "id": "DEP_T51_SEED_TOPOLOGY",
       "kind": "seed_lifecycle",
-      "description": "Open seeds must receive consumers/terminal transitions only when canonical evidence or an owning downstream block proves them; T5.2 findings must not be silenced with invented consumers."
-    },
-    {
-      "id": "DEP_T51_T510_TEST_LINEAGE_STALENESS",
-      "kind": "shared_test_contract",
-      "description": "scripts/test-t51-t510-23-26.mjs validates T5.10 by assuming contentIdentity(EVENTS) remains T51_T510_CONTENT_IDENTITY and by resuming historical snapshots directly into that identity. A downstream canonical batch legitimately changes the active target, so shared integration must make the two lineage tests historical-node aware without weakening T5.10 content assertions."
+      "description": "Open seeds must receive consumers/terminal transitions only when canonical evidence or an owning downstream block proves them; T5.2 findings must not be silenced with invented consumers. SEED_LAST_PEAK_CONTRACT is additionally referenced by canonical EVT_30_CON_001 but has no current runtime catalog definition and must not be synthesized by similarity."
     }
   ],
   "verifiedBehavior": [
@@ -547,35 +464,46 @@
     },
     {
       "claim": "Frozen save compatibility is not the current blocker.",
-      "evidence": "Repository integrity run 35114618548 passed the frozen save suite including examples/save-v08-seed-424242.json after the consolidated main migration work; the run later failed specifically because the changed content identity had no registered route."
+      "evidence": "Current Repository Integrity completes build, T5.2, saves, T5.3, registries and offer-bridge checks before stopping only at the missing target-freeze sentinel for 9151d662..."
     },
     {
-      "claim": "EVT_30_CON_001 now uses the canonical renewal OR trigger without the former reachability proxy.",
+      "claim": "EVT_30_CON_001 uses the canonical renewal OR trigger without the former reachability proxy.",
       "evidence": "The active catalog uses gateAlternatives for contract.monthsRemaining <= 18 OR facts.clubWantsRenewal == true; dedicated tests cover both positive routes and the closed negative case."
+    },
+    {
+      "claim": "Plural eligible-offer reads do not imply multi-offer persistence.",
+      "evidence": "getEligibleCareerOffers is derived from getActiveCareerOffers, which wraps the singleton MarketState.pending CareerOffer. Focused tests prove cardinality remains at most one."
+    },
+    {
+      "claim": "Current-club captain authority is explicit for EVT_33_CAP_001.",
+      "evidence": "The scene requires facts.playerClubLeadership.currentRole == captain and fails closed for captain_group, secondary_captain, proxy flags/seeds and club changes."
     }
   ],
   "integrationStatus": {
-    "syncedBaselineMain": "e48a6c85d0a9e61d88eca121f683dcd308c188c1",
+    "syncedBaselineMain": "fa3c8bae524fef62e4eb9802e895df88588998c4",
     "sharedChoiceEligibility": "available_in_main",
     "sharedOrGateContract": "available_in_main",
     "contentMigrationArchitecture": "available_in_main",
     "contentMigrationRoute": "handoff_latest_upstream_to_target_freeze_and_registration_pending",
     "frozenSaveCompatibility": "passing_before_route_gate",
-    "targetedT51Run": 35143998574,
-    "targetedT51Result": "32_of_32_veteran_focused_pass",
+    "targetedT51Run": 35259032622,
+    "targetedT51Result": "focused_workstream_pass",
     "temporaryValidationWorkflowRemoved": true,
     "mergeReady": false,
-    "contentMigrationLineage": "PRE_T51_to_latest_frozen_5d3fd71a8df4_available_in_main",
-    "targetContentIdentity": "380d28e0e09995330dbbf72ba958a9822855f0b66a3bdc63a202b30a34bb3989",
+    "contentMigrationLineage": "frozen_upstream_84871fae2bec92d74d1e607e0a48943e2e530a062d315a829cfe75eda9fe0886_available_in_main",
+    "targetContentIdentity": "9151d6620739f5f63face23f412abdeca9898cac8e510cc44d86c1468da8d0f4",
     "sharedB1aTest": "resolved_in_main_lineage_aware",
     "offerSessionBridge": "available_in_main",
-    "contentMigrationTargetFreeze": "pending:380d28e0e09995330dbbf72ba958a9822855f0b66a3bdc63a202b30a34bb3989.json",
+    "eligibleOfferRead": "available_in_main_singleton_pending_only",
+    "playerClubLeadershipAuthority": "available_in_main_and_consumed_by_EVT_33_CAP_001",
+    "veteranLockerAssignment30_34": "missing_fail_closed",
+    "contentMigrationTargetFreeze": "pending:9151d6620739f5f63face23f412abdeca9898cac8e510cc44d86c1468da8d0f4.json",
     "offerSessionBridgeValidation": "pass",
     "contentMigrationChecker": "expected_missing_target_freeze_before_route_registration",
-    "contentMigrationSourceIdentity": "5d3fd71a8df42ed5b93fdde63ed386e9d776693addd62a30293dbecad7aa56d2",
-    "sharedT510Test": "known_downstream_lineage_stale_2_tests",
+    "contentMigrationSourceIdentity": "84871fae2bec92d74d1e607e0a48943e2e530a062d315a829cfe75eda9fe0886",
+    "sharedT510Test": "resolved_in_main_lineage_aware",
     "renewalIntentFact": "available_in_main_and_consumed",
-    "officialIntegrityRun": 35144089866,
+    "officialIntegrityRun": 35258681318,
     "officialIntegrityResult": "blocked_only_at_missing_target_freeze_sentinel_after_build_saves_t52_t53_pass"
   },
   "implementationProgress": {
@@ -611,19 +539,21 @@
     "count": 27,
     "safeStableIdSetComplete": true,
     "runtimeCanonStatus": "technical_adaptation",
-    "reasonNotVerified": "Strict identity requires exact trigger, choices, knowledge, consequences, seeds/NPC and continuity. These scenes now carry canonical decision semantics but at least one trigger/state or downstream-continuity element remains approximate or unproved."
+    "reasonNotVerified": "Strict identity requires exact trigger, choices, knowledge, consequences, seeds/NPC and continuity. These scenes carry canonical decision semantics but at least one trigger/state or downstream-continuity element remains approximate or unproved."
   },
   "implementationDisposition": {
     "safeNow": [
       "Keep partial canonical reimplementations as technical_adaptation until semantic parity is complete.",
       "Use stable-ID overrides to avoid destructive event-ID migration.",
-      "Use EVT_30_CON_001 with the exact shared OR trigger contract; keep technical_adaptation until the remaining identity dimensions are proven.",
+      "Use EVT_30_CON_001 with the exact shared OR trigger contract; keep technical_adaptation until remaining identity dimensions are proven.",
+      "Keep shared-authority gaps fail-closed or explicitly classified; never replace absent sport/market/leadership facts with aggregate proxies.",
       "Add regression tests for canonical option semantics, classification completeness, no silent aliases and no age-only terminal retirement."
     ],
     "deferred": [
       "Do not author the shared contentIdentity migration route from this workstream; coordinate it with the integration owner.",
       "Do not rename shifted IDs until save-continuity migration/alias behavior is approved.",
       "Do not add missing canonical IDs in a way that changes global principal counts before integration coordination approves the inventory change.",
+      "Do not materialize SEED_LAST_PEAK_CONTRACT without an approved T5.2/canonical definition.",
       "Do not edit aging, retirement machine, scheduler, save schema, NPC core or UI from this workstream."
     ]
   }
