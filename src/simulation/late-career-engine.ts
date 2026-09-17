@@ -51,7 +51,7 @@ function applyStatusSideEffects(state:GameState,previous:RetirementStatus,status
     state.flags.RETIREMENT_WAS_ANNOUNCED=true;
     state.flags.RETIREMENT_DECISION_CONTEXT=false;
     state.flags.RECONSIDERATION_WINDOW=false;
-    const appearances=getSportContext(state).current.appearances;
+    const appearances=getSportContext(state).careerAppearances;
     state.world.retirementAppearancesAtAnnouncement=appearances;
     state.world.retirementObservedAppearances=appearances;
     state.world.retirementLastAppearanceDate=null;
@@ -230,10 +230,10 @@ export function lateCareerWeek(state:GameState):void{
   if(state.retirement.status==="decided")state.flags.ADMIN_ANNOUNCEMENT_FALLBACK=false;
 
   if(state.retirement.status==="announced"){
-    // SportContext owns the authoritative aggregate. Retirement only observes its delta;
-    // it never upgrades unavailable fixture/minutes/result/goal fields into invented facts.
+    // SportContext owns the known career-appearance aggregate. Retirement only observes
+    // its delta and never upgrades unavailable match fields into invented facts.
     const sportContext=getSportContext(state);
-    const appearances=sportContext.current.appearances;
+    const appearances=sportContext.careerAppearances;
     const observed=num(state.world.retirementObservedAppearances,num(state.world.retirementAppearancesAtAnnouncement,appearances));
     if(appearances>observed){
       state.flags.LAST_MATCH_PLAYED=true;
