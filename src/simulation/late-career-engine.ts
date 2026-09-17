@@ -2,6 +2,7 @@ import { DeterministicRng } from "../core/rng.js";
 import type { GameState } from "../core/types.js";
 import { generateEpilogue } from "../epilogue/generator.js";
 import { contractEmploymentStatus, getActiveCareerOffers } from "./offers.js";
+import { getSportContext } from "./sport-context.js";
 
 const clamp=(x:number,min=0,max=100)=>Math.min(max,Math.max(min,x));
 const num=(x:unknown,f=0)=>typeof x==="number"?x:f;
@@ -50,7 +51,7 @@ function applyStatusSideEffects(state:GameState,previous:RetirementStatus,status
     state.flags.RETIREMENT_WAS_ANNOUNCED=true;
     state.flags.RETIREMENT_DECISION_CONTEXT=false;
     state.flags.RECONSIDERATION_WINDOW=false;
-    const appearances=num(state.sport.appearances);
+    const appearances=getSportContext(state).current.appearances;
     state.world.retirementAppearancesAtAnnouncement=appearances;
     state.world.retirementObservedAppearances=appearances;
     state.world.retirementLastAppearanceDate=null;
@@ -229,10 +230,11 @@ export function lateCareerWeek(state:GameState):void{
   if(state.retirement.status==="decided")state.flags.ADMIN_ANNOUNCEMENT_FALLBACK=false;
 
   if(state.retirement.status==="announced"){
-    // The football simulator already increments appearances. We only observe that factual delta;
-    // retirement content never manufactures an appearance, minutes or a goal.
-    const observed=num(state.world.retirementObservedAppearances,num(state.world.retirementAppearancesAtAnnouncement,num(state.sport.appearances)));
-    const appearances=num(state.sport.appearances);
+    // SportContext owns the authoritative aggregate. Retirement only observes its delta;
+    // it never upgrades unavailable fixture/minutes/result/goal fields into invented facts.
+    const sportContext=getSportContext(state);
+    const appearances=sportContext.current.appearances;
+    const observed=num(state.world.retirementObservedAppearances,num(state.world.retirementAppearancesAtAnnouncement,appearances));
     if(appearances>observed){
       state.flags.LAST_MATCH_PLAYED=true;
       state.world.retirementObservedAppearances=appearances;
