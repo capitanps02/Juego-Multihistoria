@@ -2,7 +2,7 @@
   "generatedAt": "2026-09-17",
   "owner": "agent8",
   "branch": "t51/canon-34plus",
-  "baseMain": "da3b356ac1c9c3376052189573e5a30f89b71cf0",
+  "baseMain": "a7a0bb575ac8824c3e52975e8861a97e29f94830",
   "scope": {
     "canonicalPrincipals": 50,
     "ordinaryAgent8": 43,
@@ -41,8 +41,8 @@
   },
   "lineage": {
     "currentMainGeneration": "H",
-    "currentMainGenerationScope": "certified_canonical_18_23_plus_shared_player_club_leadership_authority",
-    "currentMainCommit": "da3b356ac1c9c3376052189573e5a30f89b71cf0",
+    "currentMainGenerationScope": "certified_canonical_18_23_plus_shared_non_content_authorities",
+    "currentMainCommit": "a7a0bb575ac8824c3e52975e8861a97e29f94830",
     "eventsChangedByLatestMainCommit": false,
     "immediate34PlusPredecessorAuthoritative": false,
     "rule": "wait_for_all_intervening_generations_and_register_only_adjacent_final_predecessor_to_34plus_edge"
@@ -52,12 +52,21 @@
     "seedCatalog": {"issue": 180, "owner": "t52_agent2", "handoff": "T52_SEED_HANDOFF.json"},
     "matchCalendarCompetition": {"issue": 124, "pullRequest": 156, "owner": "shared_sport_authority"},
     "nationalConcreteSelection": {"issue": 174, "owner": "shared_national_selection_authority"},
-    "veteranMarketContracts": {"issue": 176, "relatedPullRequest": 173, "owner": "shared_market_contract_authority"},
+    "veteranMarketContracts": {"issue": 176, "owner": "shared_market_contract_authority"},
     "freeAgency": {"issue": 130, "owner": "shared_market_employment_state"},
     "lateCareerNpcIdentity": {"issue": 177, "relatedCoachIssue": 169, "owner": "shared_t53_npc_affiliation_authority"},
     "terminalRetirement": {"pullRequest": 118, "owner": "agent9"}
   },
   "currentSharedAuthorities": {
+    "marketOfferLifecycle": {
+      "formalOfferAuthority": "CareerOffer",
+      "staleOfferEligibilityFailClosed": true,
+      "pendingCareerOfferKindDeterministic": true,
+      "renewalReasonAuthorityHardened": true,
+      "directMarketMutationAuditIntegrated": true,
+      "veteran34PlusOfferGenerationAvailable": false,
+      "impact": "improves safe consumption of formal offers but does not create veteran renewals/transfers or resolve unsupported late-career terms; issue_176 remains active"
+    },
     "nationalTeam": {
       "resolver": "resolveNationalTeamAuthority",
       "historicalAndPoolFacts": true,
@@ -79,7 +88,7 @@
   "verifiedCurrentBlockers": {
     "contentLineage": "issue_59; generation_H_is_integrated_but_final_30_34_predecessor_is_not_yet_authoritative",
     "seedCatalog": "issue_180; 54_exact_34plus_seed_ids_not_applied_to_main_yet",
-    "veteranRenewalGeneration": "issue_176; clubWantsRenewal_returns_false_at_age_gte_34",
+    "veteranRenewalGeneration": "issue_176; formal offer lifecycle is hardened but authoritative veteran 34plus offer generation remains missing",
     "contractRepresentability": "issue_176; canonical_bonus_exit_role_liaison_ambassador_terms_need_explicit_authority_decision",
     "freeAgency": "issue_130; expired_pending_resolution_is_not_unattached",
     "sport": "issue_124_plus_PR_156; fixture_usage_result_record_and_specific_medical_facts_fail_closed_when_absent",
