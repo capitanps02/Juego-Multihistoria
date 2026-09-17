@@ -2,13 +2,13 @@
   "schemaVersion": 2,
   "workstream": "T5.1 canon 30-34 migration handoff",
   "generatedAt": "2026-09-17",
-  "sourceMainSha": "6d2239ae1f89be97a7c5cf117d456cff9218aade",
-  "sourceContentIdentity": "5d3fd71a8df42ed5b93fdde63ed386e9d776693addd62a30293dbecad7aa56d2",
-  "observedTargetContentIdentity": "14164e54ec4250e50b915c29c959b35a56ff7ccd249a99c4ad026925af2d8c07",
+  "sourceMainSha": "182d5e6abc4f7c98eeb95703a4bc6c3560a4bcde",
+  "sourceContentIdentity": "303527efcc42c17e502257c3d7c613facafa10c8ed113810b64a1d7ebc6d0bb1",
+  "observedTargetContentIdentity": "00355375a47c53eb2d50ead6eff7c7b67b70cddf91ac6ec6aed251b5b3b77cbf",
   "targetIdentityEvidence": {
-    "workflowRun": 35229622659,
-    "source": "Focused 30-34 CI after re-ground to main@6d2239a passed the full trigger, career authority, authority-gap, sport-authority, readiness and migration-handoff suite with the same active catalog target identity.",
-    "rule": "Target identity follows the active merged catalog and must be refreshed whenever canonical event metadata changes."
+    "workflowRun": 35236949333,
+    "source": "Focused PR CI after main advanced to 182d5e6 proved all C012 conditional-seed guards and calculated runtime contentIdentity 00355375...77cbf; the only focused failure was the then-stale handoff target 14164e54...8c07.",
+    "rule": "Target identity follows the active merged catalog and must be refreshed whenever upstream canonical event metadata changes."
   },
   "consumer": {
     "implementationOwner": "coordination/integration",
@@ -16,7 +16,7 @@
     "routeRegistry": "CONTENT_MIGRATION_ROUTES",
     "workstreamMayRegisterRoute": false,
     "targetFreezeRequiredBeforeRouteRegistration": true,
-    "targetFreezeFixture": "qa/fixtures/t5.1/post-t51-sources/14164e54ec4250e50b915c29c959b35a56ff7ccd249a99c4ad026925af2d8c07.json"
+    "targetFreezeFixture": "qa/fixtures/t5.1/post-t51-sources/00355375a47c53eb2d50ead6eff7c7b67b70cddf91ac6ec6aed251b5b3b77cbf.json"
   },
   "invariants": {
     "approvedSameSceneMappings": [],
