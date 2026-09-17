@@ -2,10 +2,12 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createInitialState } from '../dist/content/initial-state.js';
 import { loadSave, serializeSave } from '../dist/save/save.js';
+import { narrativeConditionRoot } from '../dist/simulation/club-contract-intent.js';
 import {
   careerOfferKind,
   careerTerms,
   contractEmploymentStatus,
+  eligibleCareerOfferKind,
   getActiveCareerOffers,
   getEligibleLoanOffers,
   getEligibleRenewalOffers,
@@ -26,6 +28,8 @@ test('formal offer queries are detached, deterministic and distinguish renewal/t
     draft.contract.salaryMonthly += 500;
   });
   assert.equal(careerOfferKind(renewal.market.pending), 'renewal');
+  assert.equal(eligibleCareerOfferKind(renewal), 'renewal');
+  assert.equal(narrativeConditionRoot(renewal).facts.pendingCareerOfferKind, 'renewal');
   assert.equal(getEligibleRenewalOffers(renewal).length, 1);
   assert.equal(getEligibleTransferOffers(renewal).length, 0);
   assert.equal(getEligibleLoanOffers(renewal).length, 0);
@@ -40,6 +44,8 @@ test('formal offer queries are detached, deterministic and distinguish renewal/t
     draft.contract.salaryMonthly = 5000;
   });
   assert.equal(careerOfferKind(transfer.market.pending), 'transfer');
+  assert.equal(eligibleCareerOfferKind(transfer), 'transfer');
+  assert.equal(narrativeConditionRoot(transfer).facts.pendingCareerOfferKind, 'transfer');
   assert.equal(getEligibleTransferOffers(transfer).length, 1);
 
   const loan = createInitialState(303);
@@ -51,6 +57,8 @@ test('formal offer queries are detached, deterministic and distinguish renewal/t
     draft.flags.LOAN_ACTIVE = true;
   });
   assert.equal(careerOfferKind(loan.market.pending), 'loan');
+  assert.equal(eligibleCareerOfferKind(loan), 'loan');
+  assert.equal(narrativeConditionRoot(loan).facts.pendingCareerOfferKind, 'loan');
   assert.equal(getEligibleLoanOffers(loan).length, 1);
 });
 
@@ -63,9 +71,13 @@ test('eligible queries fail closed when live CareerTerms no longer match the off
   });
   assert.equal(getActiveCareerOffers(state).length, 1, 'the pending proposal remains inspectable');
   assert.equal(getEligibleTransferOffers(state).length, 1);
+  assert.equal(eligibleCareerOfferKind(state), 'transfer');
+  assert.equal(narrativeConditionRoot(state).facts.pendingCareerOfferKind, 'transfer');
   state.contract.salaryMonthly += 1;
   assert.equal(getActiveCareerOffers(state).length, 1, 'read-only active query does not erase stale evidence');
   assert.equal(getEligibleTransferOffers(state).length, 0, 'stale proposal is not eligible for narrative acceptance');
+  assert.equal(eligibleCareerOfferKind(state), null, 'stale pending offer has no eligible semantic kind');
+  assert.equal(narrativeConditionRoot(state).facts.pendingCareerOfferKind, null, 'narrative gates fail closed on stale offer');
   assert.throws(() => respondToOffer(state, state.market.pending.id, 'accept'), /condiciones han cambiado/);
   assert.deepEqual(state.rngState, rng);
 });
@@ -82,6 +94,7 @@ test('pending formal offer survives save/load without mutating its terms or RNG'
   assert.deepEqual(restored.market.pending, before);
   assert.deepEqual(restored.rngState, rng);
   assert.equal(getEligibleTransferOffers(restored).length, 1);
+  assert.equal(narrativeConditionRoot(restored).facts.pendingCareerOfferKind, 'transfer');
 });
 
 test('loan start keeps parent club through save/load and accepted return is deterministic', () => {
