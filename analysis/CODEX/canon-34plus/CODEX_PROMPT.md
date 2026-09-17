@@ -78,9 +78,10 @@ Wave A:
 Use `WAVE_A_IMPLEMENTATION.json` and `WAVE_A_TEST_MATRIX.md` exactly. Do not register partial shells if a required factual gate is unavailable.
 
 ## Existing authorities to consume
-- formal offers: persisted `CareerOffer`, eligible offer queries, `respondToOffer()`, offer bridge;
-- offer lifecycle now integrated on current main: stale offers fail closed, pending offer kind is deterministic, renewal-reason authority is hardened and direct-market-mutation audit is active;
-- market limitation: those lifecycle guarantees do **not** create missing veteran 34+ offers or unsupported terms; #176 owns generation/representability;
+- formal offers: persisted `CareerOffer`, `respondToOffer()` and the offer bridge;
+- exact offer read surface: current main exposes detached **exact eligible `CareerOffer` facts** to narrative reads. Use those factual rows for offer-gated scenes; do not rebuild offer truth from `marketHeat`, rumors, flags, seeds or contract guesses;
+- offer lifecycle: stale offers fail closed, pending offer kind is deterministic, renewal-reason authority is hardened and direct-market-mutation audit is active;
+- market limitation: exact eligible-offer reads and lifecycle guarantees do **not** create missing veteran 34+ offers or unsupported terms; #176 owns generation/representability;
 - contract employment: `contractEmploymentStatus()`;
 - free agency: `monthsRemaining == 0` remains insufficient; #130 owns authoritative unattached state;
 - sport: `getSportContext()` / `getCurrentMatchContext()`; unavailable means unavailable;
@@ -97,8 +98,8 @@ Use `WAVE_A_IMPLEMENTATION.json` and `WAVE_A_TEST_MATRIX.md` exactly. Do not reg
 
 ## Hard rules
 - Never directly mutate `state.club`, owner/registration club or contract terms from a narrative choice.
-- Do not create veteran offers inside narrative content. Signable scenes require real compatible `CareerOffer` rows.
-- Rumors, `marketHeat` and narrative flags are not formal offers.
+- Do not create veteran offers inside narrative content. Signable scenes require a real compatible `CareerOffer` exposed by the authoritative offer surface.
+- Rumors, `marketHeat`, narrative flags and seed presence are not formal offers.
 - `monthsRemaining == 0` is not free agency.
 - `EVT_37_SHORT_001` requires actual free agency before its three-month-offer premise can be valid.
 - No age-only retirement or age-only sporting decline.
