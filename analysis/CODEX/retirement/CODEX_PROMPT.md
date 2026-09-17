@@ -8,7 +8,7 @@ Never auto-merge.
 
 ## Mission
 
-Advance only the terminal retirement/epilogue layer. Ordinary active 34+ veteran career is owned by `t51/canon-34plus-career` and must remain active until an explicit terminal process begins.
+Advance only the terminal retirement/epilogue layer. Ordinary active 34+ veteran career is owned by PR #15 / `t51/canon-34plus` and must remain active until an explicit terminal process begins.
 
 Current terminal machine:
 
@@ -38,13 +38,24 @@ Only explicit pre-announcement reconsideration may do `decided -> playing`. `ann
 
 ## Sporting authority boundary
 
-PR #141 / issue #124 currently establishes that main has no authoritative fixture/calendar/competition/squad/minutes/result model. `sport.appearances` is an aggregate/cumulative authority only. Until that changes:
+PR #141 has landed the read-only authority in `src/simulation/sport-context.ts`.
 
-- you may use the observed post-announcement appearance delta as a limited factual last-appearance signal;
-- you must leave fixture/opponent/competition/minutes/starter/result/goals/assists unknown unless an authoritative sport fact exists;
-- never project those fields from role/form/age/date.
+Use:
 
-When sport authority lands, consume it; do not reimplement the sport simulator here.
+- `getSportContext(state).careerAppearances` as the known cumulative appearance aggregate;
+- `getSportContext(state).availability` to distinguish known facts from unavailable facts;
+- `getCurrentMatchContext(state)` for current-match facts. At the present contract it returns `status="no_authoritative_match_model"` and null match details.
+
+Current unavailable facts include fixture identity, opponent, competition/current match, squad call, starter/bench, exact minutes, result, goals and assists. Therefore:
+
+- a post-announcement increase in `careerAppearances` may prove that at least one later appearance occurred;
+- it does **not** identify which fixture was the last appearance;
+- `retirementLastAppearanceDate` in the current bridge is an observation/week date, not an authoritative fixture timestamp;
+- leave unsupported `LastMatchFact` fields null/omitted;
+- never infer match facts from role, form, age, season day, month, reputation, narrative flags or a football-moment receipt;
+- `football-moments` is evidence for isolated moments and is not a substitute for persisted match history.
+
+When authoritative fixture/match history lands, consume it here; do not reimplement the sport simulator.
 
 ## Contract / market authority boundary
 
@@ -66,6 +77,12 @@ Hard rules:
 - zero formal offers may open a retirement reflection scene but cannot close the career;
 - a post-announcement-offer scene requires a real `CareerOffer`; do not roll one from `marketHeat` or RNG;
 - the current market authority normally blocks new offer materialization once retirement is not `playing`; if post-announcement offer generation is desired, that is a market-owner contract change, not a retirement workaround.
+
+## 34+ boundary
+
+Read PR #15 before any terminal catalog change. It currently reconciles 34+ identities but explicitly leaves a large ordinary-content backlog and does not authorize a provisional contentIdentity freeze. Do not treat identity classification as completed ordinary gameplay content.
+
+Terminal content must not register its final lineage edge until the immediately preceding active 34+ generation is integrated and frozen by coordination.
 
 ## Seeds
 
@@ -93,8 +110,8 @@ G. save compatibility tests
 
 At minimum run/build the dedicated retirement suite:
 
-`node --test scripts/test-t536-t537-retirement.mjs scripts/test-t536-career-summary.mjs scripts/test-t536-market-authority.mjs scripts/test-t537-family-minimums.mjs scripts/test-t536-status-writer-inventory.mjs scripts/test-t537-epilogue-profiles.mjs`
+`node --test scripts/test-t536-t537-retirement.mjs scripts/test-t536-career-summary.mjs scripts/test-t536-market-authority.mjs scripts/test-t536-sport-authority.mjs scripts/test-t537-family-minimums.mjs scripts/test-t536-status-writer-inventory.mjs scripts/test-t537-epilogue-profiles.mjs`
 
-Also run the repository save/determinism/integrity gates available on the current head. Do not weaken a failing lineage/freeze sentinel; report it as the expected blocker if it is the only failure.
+Also run the repository save/determinism/integrity gates available on the current head. Do not weaken a failing lineage/freeze sentinel; report it as the expected blocker only after build and ordinary authority tests are green.
 
 Before handing off, report exact HEAD, ahead/behind, changed EVENTS, schema/RNG/contentIdentity/migration changes, exact tests, blockers and remaining Codex-ready task count.
