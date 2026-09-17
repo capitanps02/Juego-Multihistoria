@@ -159,7 +159,7 @@ export function validateGameSave(value: unknown, version: number): void {
   }
   if (version >= 3 || s.careerStateTags !== undefined) strings(s.careerStateTags,"careerStateTags");
   for (const key of ["contract","finances","body","selection","reputation","control","sport","world","personality","flags","eventCooldowns","familyLastSeen","narrativePressure"]) record(s[key],key);
-  const footballMomentIssue = inspectFootballMomentStore(record(s.world,"world").footballMomentResults);
+  const footballMomentIssue = inspectFootballMomentStore(record(s.world,"world").footballMomentResults, s.date as string);
   if (footballMomentIssue) ensure(false, footballMomentIssue.path, footballMomentIssue.reason);
   const requiredNumbers: Record<string,string[]> = {
     contract:["monthsRemaining","salaryMonthly"],finances:["cash"],body:["risk","fatigue","fitness"],
