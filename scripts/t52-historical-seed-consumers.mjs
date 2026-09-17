@@ -8,8 +8,8 @@ export const HISTORICAL_SEED_CONSUMERS = [
   {
     file: 'src/simulation/club-contract-intent.ts',
     seedId: 'SEED_ELITE_ROLE_BARGAIN',
-    ageWindow: [23, null],
-    surface: 'hasRoleGuaranteeAt23 / narrativeCausalFacts.roleGuaranteeAt23',
-    rationale: 'The fact depends on persisted evidence that EVT_23_BRIDGE_001 recorded stance=role_guarantees; terminal/expired seed state does not erase that historical conversation.'
+    ageWindow: [23, 23],
+    surface: 'hasRoleGuaranteeAt23',
+    rationale: 'Exact historical provenance for the age-23 bridge role-guarantee conversation; terminality does not erase the factual prior expectation.'
   }
 ];
