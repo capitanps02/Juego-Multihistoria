@@ -14,11 +14,11 @@ This matrix distinguishes committed legacy fixtures from deterministic snapshots
 | retirement decided | deterministic snapshot | reconsideration only before announcement | required |
 | retirement announced | deterministic snapshot | non-reopenable, last-appearance provenance | required |
 | career closed | long-career QA result | terminal state + factual epilogue | existing generated |
-| loan | deterministic offer snapshot | ownerClub/registrationClub/return | required |
+| loan | deterministic offer snapshot | ownerClub/registrationClub/return; international loan permits `route=abroad` | partial generated + dedicated QA regression |
 | pending transfer | deterministic market snapshot | CareerOffer lifecycle across save/load | required |
 | injured | deterministic sport snapshot | injury persistence + match absence | required |
 | captain context | deterministic UDV 23–26 snapshot | dynamic target survives save/load | required |
-| football moment pre-draw | PR #93 candidate | no result yet, 0 RNG on read | blocked |
-| football moment post-draw | PR #93 candidate | idempotent persisted result | blocked by #100 |
+| football moment pre-draw | current football moment tests | no persisted result yet; read path consumes 0 RNG | covered generated |
+| football moment post-draw | current football moment + QA integration tests | idempotent persisted result; malformed result rejected at `loadSave` boundary | covered; #100 resolved |
 
 Acceptance for every materialized fixture: `serialize -> load -> semantic equality`, no RNG drift on read/migration, and no reinterpretation of historical event meaning.

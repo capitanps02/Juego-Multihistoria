@@ -1,6 +1,6 @@
 # QA → Codex handoff
 
-Fuente técnica: GitHub. Base de esta pasada: `main@782b92c9a496293aeb33ad8b39f522a927374d6f`.
+Fuente técnica: GitHub. Base de esta pasada: `main@182d5e6abc4f7c98eeb95703a4bc6c3560a4bcde`.
 
 Objetivo: entregar defectos pequeños, reproducibles y con ownership claro. Codex no debe recibir tareas genéricas del tipo «arreglar QA».
 
@@ -16,18 +16,22 @@ Objetivo: entregar defectos pequeños, reproducibles y con ownership claro. Code
 ## Bugs abiertos reproducidos en main
 
 - T5-QA-016 / issue #61 — player authority en retirada.
-- T5-QA-023 / issue #109 — provenance exacta de expectativa de rol para PRS23.
-- T5-QA-028 / issue #130 — contrato vencido permanece registrado/activo durante años. Reproducción exacta `loyal/512000` sobre `main@782b92c9`: 6669 días a 0 meses y 419 apariciones añadidas.
+- T5-QA-028 / issue #130 — contrato vencido permanece registrado/activo durante años. Reproducción dirigida `loyal/512000`: 6669 días a 0 meses y 419 apariciones añadidas en la última certificación dirigida; el contrato laboral compartido sigue sin transición autoritativa.
 
-## Blockers de PR candidatos
+## Blocker de PR candidato
 
-- T5-QA-022 / issue #100 / PR #93 — validación de footballMomentResults al cargar.
-- T5-QA-027 / issue #133 / PR #122 — choice de captain debe fallar cerrado sin target.
+- T5-QA-027 / issue #133 / PR #122 — la elección de escalar al capitán debe fallar cerrado cuando no existe un target autoritativo.
 
-## Resueltos en esta ventana
+## Resueltos
 
 - T5-QA-021 / #92 — baseline histórica NPC v1 integrada.
+- T5-QA-022 / #100 — `footballMomentResults` malformado falla en el boundary de carga; la regresión usa un moment id registrado.
+- T5-QA-023 / #109 — generación G usa provenance exacta (`roleGuaranteeAt23`) + caída factual (`roleDropSince23`) y cubre B/C/D negativos.
 - T5-QA-025 / #131 — historical seed consumers cierran contra `SEED_CATALOG` sin entrar en el grafo live.
+
+## Simulación QA
+
+El rojo observado en la simulación estratificada no era #130: el validador confundía una cesión internacional válida (`LOAN_ACTIVE=true`, `ownerClub != registrationClub`, `route=abroad`) con una incoherencia. El validador ahora usa la autoridad de ownership y existe una regresión específica para esa combinación.
 
 ## T5-QA-028 no es todavía implementation-ready
 
