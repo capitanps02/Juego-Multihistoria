@@ -1,4 +1,5 @@
 import type { ChoiceDefinition, EventDefinition, OutcomeDefinition } from "../../../core/types.js";
+import type { EventWithOfferBridge } from "../../../narrative/offer-bridge.js";
 
 const n=(path:string,delta:number,min=0,max=100)=>({kind:"numeric" as const,path,delta,min,max});
 const s=(path:string,value:any)=>({kind:"set" as const,path,value});
@@ -184,13 +185,14 @@ export function applyRetirementTerminalOverrides(principal:EventDefinition[],con
   const postAnnounceOffer=conditional.find(event=>event.id==="CEVT_38_OFFER_AFTER_RETIREMENT_ANNOUNCED");
   if(postAnnounceOffer){
     postAnnounceOffer.gates=[{path:"retirement.status",op:"eq",value:"announced"},{path:"flags.POST_ANNOUNCE_OFFER",op:"eq",value:true}];
-    postAnnounceOffer.text={title:"Una oferta después del anuncio",body:"Llega una propuesta cuando la retirada ya es pública. Puedes escucharla o rechazarla, pero el anuncio no se deshace."};
-    postAnnounceOffer.intel={visible:["oferta real","retirada ya anunciada"],uncertain:["cómo se interpretará haberla escuchado"]};
+    postAnnounceOffer.text={title:"Una oferta después del anuncio",body:"Existe una propuesta formal materializada después de que la retirada se hiciera pública. Puedes aplazarla o rechazarla, pero el anuncio no se deshace."};
+    postAnnounceOffer.intel={visible:["CareerOffer formal pendiente","retirada ya anunciada"],uncertain:["cómo se interpretará haberla escuchado"]};
     postAnnounceOffer.choices=[
       c("ACKNOWLEDGE","Escucharla sin reabrir la retirada",[f("POST_ANNOUNCE_OFFER",false),f("RECONSIDERATION_WINDOW",false)]),
       c("DECLINE","Rechazarla y mantener el anuncio",[f("POST_ANNOUNCE_OFFER",false),f("RECONSIDERATION_WINDOW",false)])
     ];
-    postAnnounceOffer.outcomes=outcomes(postAnnounceOffer.choices,"El estado permanece announced.");
+    postAnnounceOffer.outcomes=outcomes(postAnnounceOffer.choices,"El estado permanece announced y la oferta se cierra mediante la autoridad CareerOffer.");
+    (postAnnounceOffer as EventWithOfferBridge).offerBridge={choiceActions:{ACKNOWLEDGE:"defer",DECLINE:"reject"}};
     terminal(postAnnounceOffer);
     postAnnounceOffer.canonStatus="technical_adaptation";
   }
