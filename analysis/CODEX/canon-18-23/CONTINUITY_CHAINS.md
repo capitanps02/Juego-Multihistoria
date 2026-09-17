@@ -50,4 +50,10 @@ Rivas role, Vela staff transition, Nano opportunity, Montalbán reappearance, Ad
 
 ## Identity boundary
 
-T5.5/T5.6 rewrites with the same string IDs are `distinct_scene`, not aliases. Coordinator integration must freeze the current supported generation and add adjacent migration edges. History and pending rows resolve against their saved source content identity + fingerprint.
+T5.5/T5.6 rewrites with the same string IDs are `distinct_scene`, not aliases. Agent 5 is registered as the adjacent generation **G → H**:
+
+- G: `303527efcc42c17e502257c3d7c613facafa10c8ed113810b64a1d7ebc6d0bb1`
+- H: `84871fae2bec92d74d1e607e0a48943e2e530a062d315a829cfe75eda9fe0886`
+- H contains the 12 Agent 5 same-ID semantic rewrites as explicit `distinct_scene` scheduler mappings.
+
+History and pending rows resolve against their saved source content identity + fingerprint. The exact H source is frozen in `qa/fixtures/t5.1/post-t51-sources/84871fae2bec92d74d1e607e0a48943e2e530a062d315a829cfe75eda9fe0886.json`. Future batches must extend the lineage from the then-current generation; do not add PRE→latest shortcuts or resurrect the discarded branch-only `025e92fe…` generation.

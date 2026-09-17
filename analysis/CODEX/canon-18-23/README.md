@@ -1,6 +1,6 @@
 # Agent 5 — Canon 18–23 / Codex handoff
 
-Base audited during this pass: `main@2b4e0e1697dec5cc4376957228cafe9988b7d0a2` (re-check main before integration).
+Base reconciled during this pass: `main@182d5e6abc4f7c98eeb95703a4bc6c3560a4bcde` (re-check main before any future integration).
 Branch: `t51/canon-18-23-agent5`.
 PR: #155.
 
@@ -53,9 +53,17 @@ The five #125 callbacks consume scope-aware live SeedInstance payload projection
 
 ## Identity / migration
 
-Same string ID is not semantic identity. The T5.5/T5.6 same-ID rewrites are `distinct_scene` mappings and require coordinator-owned adjacent contentIdentity integration. Pending/history must retain saved source identity + fingerprint. Do not create aliases or PRE→latest shortcuts.
+Same string ID is not semantic identity. The T5.5/T5.6 same-ID rewrites are registered as `distinct_scene` mappings; pending/history retain saved source identity + fingerprint and are never treated as aliases.
 
-**EVENTS changes in this branch require coordinator content-generation integration.**
+Agent 5 is now an explicit adjacent content generation on top of the integrated PRS causal generation:
+
+- source G: `303527efcc42c17e502257c3d7c613facafa10c8ed113810b64a1d7ebc6d0bb1`
+- Agent 5 H: `84871fae2bec92d74d1e607e0a48943e2e530a062d315a829cfe75eda9fe0886`
+- route: **G → H**
+- scheduler rewrites: **12 `distinct_scene` mappings**
+- exact H freeze: `qa/fixtures/t5.1/post-t51-sources/84871fae2bec92d74d1e607e0a48943e2e530a062d315a829cfe75eda9fe0886.json`
+
+The historical registry and frozen offer-bridge evidence were regenerated from H. Do not recreate the discarded branch-only `025e92fe…` generation or add PRE→latest shortcuts.
 
 ## Files
 
@@ -72,4 +80,4 @@ Same string ID is not semantic identity. The T5.5/T5.6 same-ID rewrites are `dis
 3. `seedsRead` is not causal consumption.
 4. No guessed captain, active agent or current-club institutional NPC.
 5. No narrative RNG for facts owned by sport/market/medical simulation.
-6. New/rewritten EVENTS require adjacent contentIdentity handoff; Agent 5 does not register the global route.
+6. If a later Codex batch changes `EVENTS` beyond H, it must create the **next adjacent generation from the then-current main**, preserve source identity/fingerprint semantics and receive its own freeze/migration evidence. Do not mutate or bypass G → H.
