@@ -1,0 +1,21 @@
+{
+  "task": "T5.2 seed consumer matrix provenance refresh",
+  "status": "required",
+  "reason": "SEED_CONSUMER_MATRIX.json was merged with stale baseCommit metadata",
+  "observedStaleBaseCommit": "adf1bffa7298bff6d7cebab88a3388c559cd3588",
+  "mustRegenerateFromExactMain": true,
+  "manualRowEditingForbidden": true,
+  "removeMarkerOnlyWithRegeneratedMatrix": true,
+  "requiredGates": [
+    "focused T5.2 tests",
+    "Repository Integrity"
+  ],
+  "forbiddenChanges": [
+    "EVENTS",
+    "contentIdentity",
+    "seed definitions",
+    "save schema",
+    "RNG semantics",
+    "scheduler semantics"
+  ]
+}
