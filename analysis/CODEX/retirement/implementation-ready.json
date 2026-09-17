@@ -3,14 +3,14 @@
   "snapshot": {
     "date": "2026-09-17",
     "mainAtAudit": "fa3c8bae524fef62e4eb9802e895df88588998c4",
-    "branchHeadBeforeMetadataRefresh": "cb8e0b275a3ee70d92b88f66b4fea5f04b47fc83",
-    "relationToMainAtAudit": "75_ahead_0_behind",
-    "terminalWorkflowRun": 35259606532,
+    "lastCertifiedRetirementHead": "8d2a872b18da9e773be2fd5bae2909a229d792f1",
+    "lastCertifiedRelationToMain": "77_ahead_0_behind",
+    "terminalWorkflowRun": 35261462069,
     "terminalWorkflowResult": "success_45_of_45",
-    "repositoryIntegrityRun": 35259606562,
+    "repositoryIntegrityRun": 35261462040,
     "repositoryIntegrityState": "expected_fail_closed_active_source_freeze_sentinel",
     "provisionalTerminalContentIdentity": "06cebf93a642ff776670356449777255cb8afe009b424d9cb0a22b44e158dcb0",
-    "note": "Metadata commits may advance the branch after this snapshot. Re-read the real branch and exact-head CI before integration. Never freeze the provisional terminal identity before ordinary 34+ is final."
+    "note": "Documentation commits after lastCertifiedRetirementHead require exact-head re-certification. Never freeze the provisional terminal identity before ordinary 34+ is final."
   },
   "rules": [
     "Do not duplicate tasks marked implemented.",
@@ -20,7 +20,9 @@
     "Do not weaken or pre-freeze the terminal contentIdentity sentinel.",
     "Terminal lineage must be adjacent to the real frozen ordinary 34+ generation.",
     "Current main already contains the multi-hop migration-path engine; #59 owns future serial edge/freeze registration.",
-    "For the eight #195 factual domains, unsupported/fail-closed is an explicit valid release state; never replace missing authority with local narrative proxies."
+    "Issue #195 is coordination-complete. Its former gaps are routed to #176/#199/#200/#201 and remain fail-closed until those facts exist.",
+    "Legacy CEVT_RET_RECONSIDER must never be renamed or reinterpreted as canonical CEVT_38_RETIREMENT_REVERSAL.",
+    "Closed retirement remains terminal; a future canonical comeback may only be a narrowly authorized announced->playing transaction before closure."
   ],
   "terminalConditionalAccreditation": {
     "guard": "src/content/events/34_plus/retirement-terminal-canonical-guard.ts",
@@ -30,22 +32,27 @@
       {
         "id": "CEVT_38_OFFER_AFTER_RETIREMENT_ANNOUNCED",
         "canonStatus": "technical_adaptation",
-        "reason": "Real CareerOffer handling exists, but canonical reconsideration/reversal semantics remain a separate terminal contract."
+        "reason": "Consumer uses real CareerOffer authority, but ordinary market cannot yet produce a new formal offer while retirement is announced. #176 owns the narrow producer."
       },
       {
         "id": "CEVT_RET_RECONSIDER",
         "canonStatus": "technical_adaptation",
-        "reason": "Legacy pre-announcement reconsideration ID is not canonical CEVT_38_RETIREMENT_REVERSAL and must never be silently aliased."
+        "reason": "Legacy private pre-announcement decided->playing scene. It is not canonical CEVT_38_RETIREMENT_REVERSAL and must never be silently aliased."
+      },
+      {
+        "id": "CEVT_38_RETIREMENT_REVERSAL",
+        "canonStatus": "missing_blocked",
+        "reason": "Exact canonical ID needs a concrete later post-announcement CareerOffer/provenance and an ambiguity-safe exceptional announced->playing transaction. Contract is CANONICAL_REVERSAL_CONTRACT.md."
       },
       {
         "id": "CEVT_RET_NO_LAST_MATCH",
         "canonStatus": "technical_adaptation",
-        "reason": "Current elapsed-time/no-appearance compatibility closure does not prove the canonical injury-or-suspension cause."
+        "reason": "Current timer/no-appearance compatibility closure does not prove canonical injury/suspension causation. #200 owns factual injury chronology; suspension remains unsupported unless a discipline authority lands."
       },
       {
         "id": "CEVT_RET_STORYBOOK_LAST_GOAL",
         "canonStatus": "technical_adaptation",
-        "reason": "Scene is evidence-gated and non-synthetic, but authoritative last-match goal production is still unavailable."
+        "reason": "Scene remains non-synthetic, but authoritative exact-last-fixture goal production belongs to #199 and is not integrated."
       }
     ]
   },
@@ -77,26 +84,17 @@
     {
       "id": "CODEX-RET-005",
       "status": "blocked",
-      "readiness": "partially_unblocked_shared_last_appearance_candidate_green_not_integrated",
+      "readiness": "partially_unblocked_fact_owners_assigned",
       "task": "Replace aggregate post-announcement appearance observation with a rich authoritative LastMatchFact and factual terminal no-last-match/last-goal evidence.",
-      "producer": {
+      "matchProducer": {
         "pr": 156,
         "branch": "t5/authoritative-match-model",
-        "currentHead": "bbb491fac05fe4d981ae9e6c518c0a2c5aa57de7",
+        "head": "bbb491fac05fe4d981ae9e6c518c0a2c5aa57de7",
         "relationToMainAtAudit": "4_ahead_0_behind",
-        "state": "open_not_integrated_repository_integrity_long_careers_in_progress",
         "repositoryIntegrityRun": 35259511375,
-        "passedBeforeCurrentStep": [
-          "project validation",
-          "PlayCanvas integration regression",
-          "build T5 QA target",
-          "authoritative sport model",
-          "pre-content freeze sentinel",
-          "determinism and RNG isolation",
-          "age boundaries",
-          "content references"
-        ],
-        "providesCandidate": [
+        "repositoryIntegrityResult": "success",
+        "integrationState": "certified_not_integrated",
+        "provides": [
           "fixture identity/date",
           "registration club/opponent/home-away/league competition",
           "calledUp/onBench/started/appeared/minutes/injuryUnavailable",
@@ -110,29 +108,41 @@
         "branch": "t5/sport-retirement-read-optimization",
         "base": "t5/authoritative-match-model",
         "head": "e8a6585d7d47cf9089f161bf6a126d777dbd1444",
-        "mergeable": true,
+        "mergeableAtAudit": true,
         "focusedRun": 35260631695,
         "focusedResult": "success_18_of_18",
         "api": "getLastPlayerAppearanceContext(state)",
-        "contract": [
-          "historical store absent => explicit unavailable",
-          "initialized store with no appearance => authoritative match:null",
-          "otherwise latest persisted official row where player.appeared=true, skipping newer non-appearances",
-          "read-only and zero RNG"
-        ],
         "integrationState": "focused_green_stacked_not_integrated"
       },
-      "stillMissing": [
-        "authoritative per-match final result",
-        "authoritative goals",
-        "authoritative assists/cards",
-        "authoritative suspension fact when canon requires suspension"
-      ],
+      "richSportingHistory": {
+        "issue": 199,
+        "agent9ConsumerComment": 5719715820,
+        "requiredForRetirement": [
+          "final result when factually produced",
+          "goals/assists/cards linked to exact fixture",
+          "exact latest-appearance fixture goal for CEVT_RET_STORYBOOK_LAST_GOAL"
+        ],
+        "state": "open_not_integrated"
+      },
+      "injuryChronology": {
+        "issue": 200,
+        "agent9ConsumerComment": 5719718516,
+        "requiredForRetirement": [
+          "active factual injury episode",
+          "unavailability interval",
+          "no later appearance + terminal sporting boundary composition"
+        ],
+        "state": "open_not_integrated"
+      },
+      "suspensionAuthority": {
+        "state": "unsupported",
+        "rule": "Card count is not a suspension. A future explicit persisted ban/suspension fact may satisfy the alternative canonical trigger."
+      },
       "canonicalConditionalDebt": [
-        "CEVT_RET_NO_LAST_MATCH requires factual injury/suspension causing the career to end without a final on-field match; current timer closure is compatibility only.",
-        "CEVT_RET_STORYBOOK_LAST_GOAL remains non-canonical until a real authoritative last-match goal fact exists."
+        "CEVT_RET_NO_LAST_MATCH may become supported through the factual injury path before suspension exists; current timer compatibility path remains noncanonical.",
+        "CEVT_RET_STORYBOOK_LAST_GOAL requires a factual goal on the exact latest-player-appearance fixture from #199."
       ],
-      "unblockContract": "Accept #202 into the sport producer (or equivalent public API), fully certify/integrate the resulting #156 successor, then consume the public last-appearance read. Keep result/goals/assists/cards/suspension null or blocked until factual authority exists."
+      "unblockContract": "Integrate a certified #156 successor including #202 or equivalent public last-appearance API; integrate the exact #199/#200 facts used by the supported terminal branches; then replace aggregate retirement observations with those public reads. Keep every unavailable subfact null/fail-closed."
     },
     {
       "id": "CODEX-RET-006",
@@ -186,38 +196,58 @@
       "seedCatalog": {
         "issue": 180,
         "pr": 191,
-        "branch": "t5/seed-34plus-catalog",
         "head": "d8f724893cfcb40d2b81f995d8ed08179bbd6f52",
         "focusedRun": 35246851382,
-        "focusedResult": "success",
         "repositoryIntegrityRun": 35246851472,
-        "repositoryIntegrityResult": "success",
-        "contract": "54 canonical IDs = 45 ordinary + 9 terminal; 14 bridge concepts inherited/derived",
-        "integrationState": "certified_not_integrated"
+        "state": "certified_not_integrated",
+        "contract": "54 canonical IDs = 45 ordinary + 9 terminal; 14 bridge concepts inherited/derived"
       },
       "ordinary34plus": {
         "pr": 15,
         "branch": "t51/canon-34plus",
-        "headAtAudit": "20f3b41cca5e4faf9f40d523ea256325891044da",
-        "relationToMainAtAudit": "79_ahead_0_behind",
+        "headAtAudit": "c99fce052918540a52c3992ccd8152282f26a34b",
         "preparedCards": "43/43",
-        "runtimeImplemented": "0/43",
-        "repositoryIntegrityRun": 35259834450,
+        "runtimePrincipalImplemented": "0/43",
+        "canonicalConditionalsClassified": "32/32",
+        "runtimeConditionalAccredited": "0/32",
+        "unresolvedSharedAuthorityDomains": 0,
+        "sharedAuthorityGapIssue195": "closed_completed",
+        "routedOwners": [176, 199, 200, 201],
+        "repositoryIntegrityRun": 35262171147,
         "repositoryIntegrityResult": "success",
-        "conditionalOwner": 192,
-        "canonicalConditionalCount": 32,
-        "exactIdOverlap": 5,
-        "exactIdSemanticallyAccredited": 0,
-        "sharedAuthorityGapIssue": 195,
-        "sharedAuthorityGapDecision": "eight missing factual domains explicitly unsupported/fail-closed until real producers exist",
         "contentState": "prepared_certified_but_not_runtime_active"
       },
-      "unblockContract": "Integrate remaining predecessor generations in order; integrate #191 at the correct serial point; encode #195 fail-closed decisions, implement/accredit supported #192 conditionals and activate/integrate ordinary 34+ runtime; freeze that exact ordinary 34+ identity through #59; then re-ground retirement and register only the adjacent ordinary34plus->terminal edge. Never freeze a provisional terminal candidate early."
+      "unblockContract": "Integrate remaining predecessor generations in order; integrate #191 at the correct serial point; integrate required owner facts and activate/accredit supported #192/PR #15 34+ runtime; freeze that exact ordinary 34+ identity through #59; then re-ground retirement and register only the adjacent ordinary34plus->terminal edge."
+    },
+    {
+      "id": "CODEX-RET-012",
+      "status": "blocked",
+      "readiness": "design_ready_waiting_for_market_producer_and_offer_staging",
+      "task": "Implement canonical CEVT_38_RETIREMENT_REVERSAL as an exceptional post-announcement comeback without weakening ordinary terminality.",
+      "canonicalId": "CEVT_38_RETIREMENT_REVERSAL",
+      "mustRemainDistinctFrom": "CEVT_RET_RECONSIDER",
+      "marketDependency": {
+        "issue": 176,
+        "agent9ConsumerComment": 5719664852,
+        "currentGap": "ordinary proposeCareerChange is playing-only, so no normal authoritative new CareerOffer is produced while retirement is announced"
+      },
+      "contractFile": "analysis/CODEX/retirement/CANONICAL_REVERSAL_CONTRACT.md",
+      "requiredSemantics": [
+        "closed remains terminal and generated epilogues are never erased",
+        "future exception is narrowly authorized announced->playing before closure",
+        "Stage A post-announcement contact and Stage B reversal offer are ambiguity-safe and cannot both match the same unsupported offer state",
+        "a deferred/rejected proposal is not silently reactivated; comeback requires a concrete compatible offer/provenance",
+        "accepted terms flow only through respondToOffer/offerBridge",
+        "rhythm/reputation/control costs apply once",
+        "fake flags, stale offers, marketHeat, age and RNG cannot authorize reversal",
+        "legacy history/provenance is not renamed to the canonical ID"
+      ],
+      "unblockContract": "#176 supplies deterministic post-announcement offer production/provenance; Agent 9 then implements the exact canonical event/transition with mutually exclusive offer-bridge staging and directed GameSession/save tests."
     }
   ],
   "implementedCount": 9,
   "readyCount": 0,
-  "blockedCount": 2,
+  "blockedCount": 3,
   "partiallyUnblockedCount": 1,
-  "codexNextAction": "Do not duplicate implemented retirement lots. RET-005 now has a focused-green public last-appearance candidate in #202 but still waits on producer acceptance/integration plus factual result/goal/assist/suspension authority where canon requires them. RET-011 waits on serial predecessor generations, #191 integration at the correct point, #195 fail-closed matrix updates, #192/PR #15 ordinary 34+ runtime activation/freeze, then the adjacent terminal migration edge."
+  "codexNextAction": "Do not duplicate implemented retirement lots. RET-005 waits on integration of #156+#202/equivalent plus the exact #199/#200 facts used by supported terminal branches. RET-011 waits on serial ordinary 34+ runtime activation/freeze. RET-012 is design-ready but must not be coded until #176 supplies ambiguity-safe factual post-announcement CareerOffer staging/provenance."
 }
