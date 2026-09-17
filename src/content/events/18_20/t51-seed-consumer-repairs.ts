@@ -75,13 +75,19 @@ const PATCHES: Record<string, Patch> = {
   }
 };
 
+const NPC_REF_ADDITIONS: Record<string, string[]> = {
+  CEVT_18_CCH_01: ["NPC_DIR_02"]
+};
+
 export function applyT51SeedConsumerRepairs(events: readonly EventDefinition[]): EventDefinition[] {
   return events.map(event => {
     const eventPatch = PATCHES[event.id];
     if (!eventPatch) return event;
+    const extraNpcRefs = NPC_REF_ADDITIONS[event.id] ?? [];
     return {
       ...event,
       canonStatus: "verified",
+      ...(extraNpcRefs.length ? { npcRefs: [...new Set([...(event.npcRefs ?? []), ...extraNpcRefs])] } : {}),
       outcomes: event.outcomes.map(outcome => {
         const additions = eventPatch[outcome.id];
         return additions?.length ? { ...outcome, modifiers: [...(outcome.modifiers ?? []), ...additions] } : outcome;
