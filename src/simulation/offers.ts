@@ -62,14 +62,18 @@ export function getActiveCareerOffers(s: GameState): readonly CareerOffer[] {
   const pending = s.market?.pending;
   return pending ? [structuredClone(pending)] : [];
 }
+function getEligibleCareerOffers(s: GameState): readonly CareerOffer[] {
+  const current = careerTerms(s);
+  return getActiveCareerOffers(s).filter(offer => sameTerms(current, offer.before));
+}
 export function getEligibleTransferOffers(s: GameState): readonly CareerOffer[] {
-  return getActiveCareerOffers(s).filter(offer => careerOfferKind(offer) === "transfer");
+  return getEligibleCareerOffers(s).filter(offer => careerOfferKind(offer) === "transfer");
 }
 export function getEligibleLoanOffers(s: GameState): readonly CareerOffer[] {
-  return getActiveCareerOffers(s).filter(offer => careerOfferKind(offer) === "loan");
+  return getEligibleCareerOffers(s).filter(offer => careerOfferKind(offer) === "loan");
 }
 export function getEligibleRenewalOffers(s: GameState): readonly CareerOffer[] {
-  return getActiveCareerOffers(s).filter(offer => careerOfferKind(offer) === "renewal");
+  return getEligibleCareerOffers(s).filter(offer => careerOfferKind(offer) === "renewal");
 }
 
 /**
