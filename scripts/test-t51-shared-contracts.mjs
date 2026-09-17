@@ -3,8 +3,16 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createInitialState } from '../dist/content/initial-state.js';
 import { ambiguousEvent } from '../dist/content/events/18_20/helpers.js';
+import { captureNpcKnowledgeTargetContext, resolveNpcKnowledgeTargets } from '../dist/narrative/npc-knowledge-targets.js';
 import { scheduleEvent } from '../dist/narrative/scheduler.js';
+import { loadSave, serializeSave } from '../dist/save/save.js';
 import { GameSession } from '../dist/session/game-session.js';
+import {
+  certifyActiveAgentInPlace,
+  clearActiveAgentInPlace,
+  resolveActiveAgent,
+  resolveCurrentClubInstitutionalNpc
+} from '../dist/simulation/npc-authority.js';
 
 function baseEvent() {
   return {
@@ -130,4 +138,78 @@ test('ambiguousEvent preserves per-choice eligibility for canonical 18-20 conten
     }]
   });
   assert.deepEqual(event.choices[0].eligibility, [{ path: 'flags.REAL_EXIT_AVAILABLE', op: 'eq', value: true }]);
+});
+
+test('active-agent authority ignores contacts, seeds, relationship scores and legacy control signals', () => {
+  const state = createInitialState(6101);
+  state.flags.AGENT_CONTACT_HECTOR = true;
+  state.flags.AGENT_CONTACT_PRISMA = true;
+  state.flags.AGENT_ACTIVE = true;
+  state.flags.HAS_SEED_FIRST_AGENT = true;
+  state.professional.agentControl = 0;
+  state.relationships.find(row => row.npcId === 'NPC_AGT_01').trust = 100;
+  state.relationships.find(row => row.npcId === 'NPC_AGT_02').affinity = 100;
+
+  const before = structuredClone(state);
+  assert.equal(resolveActiveAgent(state), null);
+  assert.deepEqual(state, before, 'authority resolver must be read-only and consume no RNG');
+});
+
+test('explicit hire, switch and termination are the only active-agent authority transitions', () => {
+  const state = createInitialState(6102);
+  certifyActiveAgentInPlace(state, 'NPC_AGT_01');
+  assert.equal(resolveActiveAgent(state), 'NPC_AGT_01');
+  assert.equal(state.flags.AGENT_ACTIVE, true);
+
+  certifyActiveAgentInPlace(state, 'NPC_AGT_02');
+  assert.equal(resolveActiveAgent(state), 'NPC_AGT_02');
+
+  clearActiveAgentInPlace(state);
+  assert.equal(resolveActiveAgent(state), null);
+  assert.equal(state.flags.AGENT_ACTIVE, false);
+});
+
+test('active-agent authority survives save/load without a schema migration', () => {
+  const state = createInitialState(6103);
+  certifyActiveAgentInPlace(state, 'NPC_AGT_02');
+  const restored = loadSave(serializeSave(state));
+  assert.equal(resolveActiveAgent(restored), 'NPC_AGT_02');
+  assert.deepEqual(restored.world.npcAuthority, state.world.npcAuthority);
+});
+
+test('current-club institutional authority is UDV-specific and fails closed after a club change', () => {
+  const state = createInitialState(6104);
+  state.age = 21;
+  state.phase = '20_23';
+  assert.equal(resolveCurrentClubInstitutionalNpc(state), 'NPC_DIR_02');
+
+  state.relationships.find(row => row.npcId === 'NPC_DIR_02').trust = 100;
+  state.club = 'RIVAL_CF';
+  assert.equal(resolveCurrentClubInstitutionalNpc(state), null);
+
+  state.npcs.find(row => row.id === 'NPC_DIR_02').club = 'RIVAL_CF';
+  assert.equal(resolveCurrentClubInstitutionalNpc(state), null, 'an uncertified move must not create institutional authority');
+});
+
+test('dynamic knowledge targets capture agent and institution at scene entry and keep 20-23 captain generic', () => {
+  const state = createInitialState(6105);
+  state.age = 21;
+  state.phase = '20_23';
+  certifyActiveAgentInPlace(state, 'NPC_AGT_01');
+  const before = structuredClone(state);
+  const context = captureNpcKnowledgeTargetContext(state);
+
+  assert.equal(context.activeAgent, 'NPC_AGT_01');
+  assert.equal(context.currentClubInstitutional, 'NPC_DIR_02');
+  assert.equal(context.lockerSlots.captain, null, 'no persistent 20-23 captain is certified');
+  assert.deepEqual(
+    resolveNpcKnowledgeTargets({
+      eventId: 'AUTHORITY_FIXTURE',
+      npcIds: [],
+      targetSlots: ['activeAgent', 'currentClubInstitutional', 'captain'],
+      source: 'informed'
+    }, context),
+    ['NPC_AGT_01', 'NPC_DIR_02']
+  );
+  assert.deepEqual(state, before, 'capturing authoritative targets must be read-only and consume no RNG');
 });
