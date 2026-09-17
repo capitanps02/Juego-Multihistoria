@@ -8,6 +8,8 @@ export interface CareerTerms {
   abroad: boolean; loan: boolean; bigClub: boolean;
 }
 export interface CareerOffer { id: string; date: string; reason: string; before: CareerTerms; terms: CareerTerms; }
+export type CareerOfferKind = "renewal" | "transfer" | "loan" | "loan_return" | "loan_conversion";
+export type ContractEmploymentStatus = "active_contract" | "expiring" | "expired_pending_resolution" | "retired";
 /** Direct player actions exposed by the ordinary offer screen and persisted in market.history.action. */
 export type OfferAction = "accept" | "reject" | "delegate";
 /** Narrative decisions may close an offer without changing the persisted action enum. */
@@ -41,6 +43,48 @@ export function careerTerms(s: GameState): CareerTerms {
 function sameTerms(a: CareerTerms, b: CareerTerms): boolean {
   return JSON.stringify(a)===JSON.stringify(b);
 }
+
+/**
+ * Read-only semantic classification over the persisted CareerOffer shape.
+ * No extra offer type is persisted: historical saves remain schema-compatible.
+ */
+export function careerOfferKind(offer: CareerOffer): CareerOfferKind {
+  const { before, terms } = offer;
+  if (terms.loan) return "loan";
+  if (before.loan && !terms.loan && terms.club === before.ownerClub && terms.ownerClub === before.ownerClub) return "loan_return";
+  if (before.loan && !terms.loan && terms.club === before.registrationClub && terms.ownerClub === before.registrationClub) return "loan_conversion";
+  if (terms.club !== before.club || terms.ownerClub !== before.ownerClub || terms.registrationClub !== before.registrationClub) return "transfer";
+  return "renewal";
+}
+
+/** Returns detached formal offers so callers cannot mutate market.pending accidentally. */
+export function getActiveCareerOffers(s: GameState): readonly CareerOffer[] {
+  const pending = s.market?.pending;
+  return pending ? [structuredClone(pending)] : [];
+}
+export function getEligibleTransferOffers(s: GameState): readonly CareerOffer[] {
+  return getActiveCareerOffers(s).filter(offer => careerOfferKind(offer) === "transfer");
+}
+export function getEligibleLoanOffers(s: GameState): readonly CareerOffer[] {
+  return getActiveCareerOffers(s).filter(offer => careerOfferKind(offer) === "loan");
+}
+export function getEligibleRenewalOffers(s: GameState): readonly CareerOffer[] {
+  return getActiveCareerOffers(s).filter(offer => careerOfferKind(offer) === "renewal");
+}
+
+/**
+ * Employment status is deliberately derived from the existing save schema.
+ * `months===0` is NOT treated as free agency: current runtime has no authoritative
+ * unattached/free-agent representation yet, so expiry remains pending resolution.
+ */
+export function contractEmploymentStatus(s: GameState): ContractEmploymentStatus {
+  if (s.retirement.status !== "playing") return "retired";
+  const months = Number(s.contract.monthsRemaining);
+  if (months <= 0) return "expired_pending_resolution";
+  if (months <= 6) return "expiring";
+  return "active_contract";
+}
+
 function renewalWasRejectedFromSameTerms(market: MarketState, reason: string, before: CareerTerms): boolean {
   if(reason!==FORMAL_RENEWAL_REASON)return false;
   return market.history.some(decision=>{
