@@ -8,8 +8,10 @@ on:
       - 'src/catalog/npc-knowledge-rules.ts'
       - 'scripts/test-t51-t55a-20-23.mjs'
       - 'scripts/test-t51-t55b-20-23.mjs'
+      - 'scripts/test-t51-t56a-20-23.mjs'
       - 'scripts/report-t51-t55a-20-23-identity.mjs'
       - 'scripts/report-t51-t55b-20-23-identity.mjs'
+      - 'scripts/report-t51-t56a-20-23-identity.mjs'
       - 'analysis/T5.1/**20-23**'
       - '.github/workflows/t51-canon-20-23.yml'
   workflow_dispatch:
@@ -31,9 +33,13 @@ jobs:
         run: node --test scripts/test-t51-t55a-20-23.mjs
       - name: T5.5-B captain press contract semantics and authority
         run: node --test scripts/test-t51-t55b-20-23.mjs
+      - name: T5.6-A status and locker semantics, seed scope and RNG
+        run: node --test scripts/test-t51-t56a-20-23.mjs
       - name: Emit microbatch A migration evidence
         run: node scripts/report-t51-t55a-20-23-identity.mjs
       - name: Emit microbatch B migration evidence
         run: node scripts/report-t51-t55b-20-23-identity.mjs
+      - name: Emit microbatch T5.6-A migration evidence
+        run: node scripts/report-t51-t56a-20-23-identity.mjs
       - name: T5 content references and lifecycle
         run: node scripts/qa-t5-content.mjs
