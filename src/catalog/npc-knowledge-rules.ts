@@ -215,6 +215,13 @@ export const NPC_EVENT_KNOWLEDGE_RULES: NpcEventKnowledgeRule[] = [
       "TRUSTED_JOURNALIST",
       "CLUB_ORGANIZES"
     ],
+    outcomeIds: [
+      "LOCKER_CLUB_FAMILY_PUBLIC_OUT",
+      "FAMILY_CLUB_PUBLIC_OUT",
+      "DIRECT_VIDEO_OUT",
+      "TRUSTED_JOURNALIST_OUT",
+      "CLUB_ORGANIZES_OUT"
+    ],
     npcIds: [],
     targetSlots: ["captain", "star", "activeAgent", "currentClubInstitutional"],
     source: "public",
