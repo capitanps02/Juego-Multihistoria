@@ -2,7 +2,7 @@
   "generatedAt": "2026-09-17",
   "owner": "agent8",
   "branch": "t51/canon-34plus",
-  "baseMain": "c41e7de20daf3bd672ae54646428e921761008c8",
+  "baseMain": "da3b356ac1c9c3376052189573e5a30f89b71cf0",
   "scope": {
     "canonicalPrincipals": 50,
     "ordinaryAgent8": 43,
@@ -41,8 +41,9 @@
   },
   "lineage": {
     "currentMainGeneration": "H",
-    "currentMainGenerationScope": "certified_canonical_18_23",
-    "currentMainCommit": "c41e7de20daf3bd672ae54646428e921761008c8",
+    "currentMainGenerationScope": "certified_canonical_18_23_plus_shared_player_club_leadership_authority",
+    "currentMainCommit": "da3b356ac1c9c3376052189573e5a30f89b71cf0",
+    "eventsChangedByLatestMainCommit": false,
     "immediate34PlusPredecessorAuthoritative": false,
     "rule": "wait_for_all_intervening_generations_and_register_only_adjacent_final_predecessor_to_34plus_edge"
   },
@@ -53,7 +54,7 @@
     "nationalConcreteSelection": {"issue": 174, "owner": "shared_national_selection_authority"},
     "veteranMarketContracts": {"issue": 176, "relatedPullRequest": 173, "owner": "shared_market_contract_authority"},
     "freeAgency": {"issue": 130, "owner": "shared_market_employment_state"},
-    "lateCareerNpcIdentity": {"issue": 177, "relatedPullRequest": 150, "relatedCoachIssue": 169, "owner": "shared_t53_npc_affiliation_authority"},
+    "lateCareerNpcIdentity": {"issue": 177, "relatedCoachIssue": 169, "owner": "shared_t53_npc_affiliation_authority"},
     "terminalRetirement": {"pullRequest": 118, "owner": "agent9"}
   },
   "currentSharedAuthorities": {
@@ -64,6 +65,15 @@
       "concreteCallupKnown": false,
       "tournamentSquadKnown": false,
       "impact": "improves historical/international-retirement semantics but does not unblock concrete prelist/callup/omission scenes"
+    },
+    "playerClubLeadership": {
+      "currentResolver": "resolveCurrentPlayerClubLeadership",
+      "historyResolver": "listCertifiedPlayerClubLeadership",
+      "successorResolver": "resolveCertifiedPlayerLeadershipSuccessor",
+      "currentLeadershipFailClosed": true,
+      "namedSuccessorRequiresExplicitCertification": true,
+      "mainCaptainWriterAvailableFromAuditedEarlierCanon": false,
+      "impactOnWaveD": "partial_authority_only; EVT_34_DORSAL_001 and EVT_34_MENTOR_001 remain blocked until a factual young signing/competitor/successor context exists; coach/peer/institutional facts remain external"
     }
   },
   "verifiedCurrentBlockers": {
@@ -74,7 +84,7 @@
     "freeAgency": "issue_130; expired_pending_resolution_is_not_unattached",
     "sport": "issue_124_plus_PR_156; fixture_usage_result_record_and_specific_medical_facts_fail_closed_when_absent",
     "nationalTeamConcrete": "issue_174; concrete current callup_prelist_omission_and_tournament_squad facts remain unavailable",
-    "lateNpcSquad": "issue_177_plus_PR_150_and_issue_169; ordinary_34plus_institutional_squad_coach_successor_peer_identity_incomplete",
+    "lateNpcSquad": "issue_177_plus_issue_169; player leadership authority is integrated but ordinary 34plus coach_young_competitor_named_successor_peer_and_institutional identity remains incomplete",
     "terminalRetirement": "agent9_pr118; protagonist career-retirement choices inside ordinary scenes delegate terminal transition"
   },
   "preparedPackages": [
