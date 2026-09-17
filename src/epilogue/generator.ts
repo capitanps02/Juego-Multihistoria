@@ -34,7 +34,7 @@ export const ENDING_FAMILY_RULES:Record<EndingFamily,EndingFamilyAuditRule>={
   END_WORLD_LEGEND:{positive:["victoria/título registrado","publicMyth >= 75","trophyCapital >= 55","legacyCapital >= 70"],negative:["sin evidencia de victoria/título"],conflicts:conflictsFor("END_WORLD_LEGEND"),priority:100},
   END_ONE_CLUB_MYTH:{positive:["un solo club registrado","permanencia larga o tag canónico","legado/mito suficiente"],negative:["más de un club registrado"],conflicts:conflictsFor("END_ONE_CLUB_MYTH"),priority:94},
   END_HOME_PRODIGAL:{positive:["regreso factual a UDV","existió otro club antes"],negative:["sin regreso factual","carrera de un solo club"],conflicts:conflictsFor("END_HOME_PRODIGAL"),priority:86},
-  END_GREAT_PRO:{positive:["carrera profesional cerrada","historial o estado profesional válido"],negative:["carrera abierta"],conflicts:conflictsFor("END_GREAT_PRO"),priority:25},
+  END_GREAT_PRO:{positive:["carrera profesional cerrada","ocho temporadas registradas o al menos veinte hechos de carrera"],negative:["trayectoria demasiado breve sin evidencia equivalente"],conflicts:conflictsFor("END_GREAT_PRO"),priority:25},
   END_TACTICAL_SECOND_CAREER:{positive:["reinvención táctica registrada"],negative:["sin reinvención"],conflicts:conflictsFor("END_TACTICAL_SECOND_CAREER"),priority:78},
   END_JOURNEYMAN_VETERAN:{positive:["tres o más clubes registrados o tag canónico"],negative:["un solo club"],conflicts:conflictsFor("END_JOURNEYMAN_VETERAN"),priority:82},
   END_MARKET_SILENCE:{positive:["NO_MARKET_RETIREMENT_CHOSEN"],negative:["simple ausencia temporal de oferta"],conflicts:conflictsFor("END_MARKET_SILENCE"),priority:90},
@@ -123,7 +123,7 @@ export function endingFamilySupported(state:GameState,id:EndingFamily):boolean{
     case "END_WORLD_LEGEND":return won&&p.publicMyth>=75&&p.trophyCapital>=55&&p.legacyCapital>=70;
     case "END_ONE_CLUB_MYTH":return clubs.size===1&&(tags.has("STATE34_ONE_CLUB_ICON")||(seasons>=10&&p.legacyCapital>=50)||(seasons>=14&&p.publicMyth>=45));
     case "END_HOME_PRODIGAL":return state.club==="UDV"&&has(state,"HOME_RETURN_30")&&[...clubs].some(club=>club!=="UDV");
-    case "END_GREAT_PRO":return state.history.length>0||p.initializedAt20||state.age>=18;
+    case "END_GREAT_PRO":return seasons>=8||state.history.length>=20;
     case "END_TACTICAL_SECOND_CAREER":return has(state,"ROLE_REINVENTED_30")||tags.has("STATE34_REINVENTED_CREATOR");
     case "END_JOURNEYMAN_VETERAN":return clubs.size>=3||tags.has("STATE34_JOURNEYMAN_VETERAN");
     case "END_MARKET_SILENCE":return has(state,"NO_MARKET_RETIREMENT_CHOSEN");
@@ -151,7 +151,7 @@ export function endingFamilyEvidence(state:GameState,id:EndingFamily):string[]{
     case "END_WORLD_LEGEND":return ["title_evidence",`publicMyth=${p.publicMyth}`,`trophyCapital=${p.trophyCapital}`,`legacyCapital=${p.legacyCapital}`];
     case "END_ONE_CLUB_MYTH":return [`clubs=${[...clubs].join(",")}`,`seasons=${recordedSeasons(state).size}`,`legacyCapital=${p.legacyCapital}`];
     case "END_HOME_PRODIGAL":return ["HOME_RETURN_30",`finalClub=${state.club}`,`clubs=${[...clubs].join(",")}`];
-    case "END_GREAT_PRO":return ["retirement.status=closed",`retirementAge=${state.age}`,`historyEntries=${state.history.length}`];
+    case "END_GREAT_PRO":return ["retirement.status=closed",`recordedSeasons=${recordedSeasons(state).size}`,`historyEntries=${state.history.length}`];
     case "END_TACTICAL_SECOND_CAREER":return [has(state,"ROLE_REINVENTED_30")?"ROLE_REINVENTED_30":"STATE34_REINVENTED_CREATOR"];
     case "END_JOURNEYMAN_VETERAN":return [`clubs=${[...clubs].join(",")}`];
     case "END_MARKET_SILENCE":return ["NO_MARKET_RETIREMENT_CHOSEN"];
@@ -198,16 +198,15 @@ export function selectEndingFamilies(state:GameState):EndingFamily[]{
     if(selected.every(existing=>endingFamiliesCompatible(existing,candidate.id)))selected.push(candidate.id);
   }
 
-  // Every valid closed career has an objective baseline family. If no specialized family is
-  // supported, absence of such evidence is itself the factual fallback for UNFINISHED.
+  // Long-form careers can use GREAT_PRO as a factual baseline; otherwise UNFINISHED is the
+  // neutral fallback when no specialized family is supported. Neither is granted by age alone.
   for(const fallback of ["END_GREAT_PRO","END_UNFINISHED_FEELING"] as EndingFamily[]){
     if(selected.length>=2)break;
     if(endingFamilySupported(state,fallback)&&!selected.includes(fallback)&&selected.every(existing=>endingFamiliesCompatible(existing,fallback)))selected.push(fallback);
   }
 
-  // Defensive totality: do not throw or invent. If a malformed synthetic state somehow has
-  // fewer than two compatible supported candidates, return every supported fact we do have.
-  // Real GameState closures satisfy the two factual fallback predicates above.
+  // Defensive totality: do not throw or invent. If a malformed synthetic state has fewer than
+  // two supported families, return only the supported facts rather than manufacturing a label.
   for(const candidate of candidates){
     if(selected.length>=2)break;
     if(!selected.includes(candidate.id)&&selected.every(existing=>endingFamiliesCompatible(existing,candidate.id)))selected.push(candidate.id);
