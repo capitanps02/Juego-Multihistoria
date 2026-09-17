@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { EVENTS } from '../dist/content/events/index.js';
 import { createInitialState } from '../dist/content/initial-state.js';
 import { closeCareer } from '../dist/simulation/late-career-engine.js';
-import { serializeSave, loadSave } from '../dist/save/save.js';
+import { loadSave } from '../dist/save/save.js';
 
 function collectStatusWrites(value,out=[]){
   if(Array.isArray(value)){
@@ -70,6 +70,7 @@ test('T5.36 legacy 30-34 bridge is narrowly keyed to the explicit historical ret
 test('T5.36 schema-7 historical early-retirement flag is reconstructed, not newly decided on load',()=>{
   const state=createInitialState(53692);
   state.age=33;
+  state.phase='30_34';
   state.flags.EARLY_RETIRED_30_34=true;
   const legacy=structuredClone(state);
   legacy.schemaVersion=7;
