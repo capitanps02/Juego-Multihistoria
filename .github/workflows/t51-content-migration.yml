@@ -7,6 +7,8 @@ on:
     branches: [main]
     paths:
       - 'src/session/**'
+      - 'src/content/events/**'
+      - 'src/simulation/**'
       - 'scripts/generate-t51-legacy-registry.mjs'
       - 'scripts/check-t51-content-migration-route.mjs'
       - 'scripts/test-t51-content-migration.mjs'
@@ -30,6 +32,36 @@ jobs:
       - run: npm ci
       - name: Build
         run: npm run build
+
+      # Temporary integration probe for the serialized #123 + #124 generation.
+      # It generates evidence from the exact compiled EVENTS catalog; it never writes
+      # back to the repository. The artifact is consumed by the coordinator and this
+      # probe is removed before final certification.
+      - name: Generate exact combined T5.1 evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          PROVISIONAL="99ec70cdb10e20069e5281dac5b56e2146779cc462add1c47fc7d8ea6fa5ef28"
+          rm -f "qa/fixtures/t5.1/post-t51-sources/${PROVISIONAL}.json"
+          ID=$(node --input-type=module -e 'import { EVENTS } from "./dist/content/events/index.js"; import { contentIdentity } from "./dist/session/content-identity.js"; console.log(await contentIdentity(EVENTS));')
+          echo "Combined content identity: ${ID}"
+          node scripts/freeze-t51-active-source.mjs
+          node scripts/generate-t51-post-legacy-registry.mjs
+          node scripts/generate-t51-offer-bridge-evidence.mjs
+          mkdir -p generated-combined/qa/fixtures/t5.1/post-t51-sources generated-combined/src/session
+          cp "qa/fixtures/t5.1/post-t51-sources/${ID}.json" "generated-combined/qa/fixtures/t5.1/post-t51-sources/${ID}.json"
+          cp src/session/post-t51-legacy-registry.ts generated-combined/src/session/post-t51-legacy-registry.ts
+          cp src/session/frozen-offer-bridge-evidence.ts generated-combined/src/session/frozen-offer-bridge-evidence.ts
+          printf '%s\n' "${ID}" > generated-combined/content-identity.txt
+
+      - name: Upload exact combined T5.1 evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: t51-123-124-generated-${{ github.run_id }}
+          path: generated-combined
+          if-no-files-found: error
+          retention-days: 1
+
       - name: Frozen legacy registry is reproducible
         run: node scripts/generate-t51-legacy-registry.mjs --check
       - name: Active content has an explicit migration route when required
