@@ -68,4 +68,14 @@ jobs:
         run: node --test scripts/test-t5-integration-probes.mjs
 
       - name: T5 stratified simulation
+        env:
+          T5_QA_OUTPUT: qa-artifacts/t5-stratified.json
         run: node scripts/qa-t5-sim.mjs
+
+      - name: Upload T5 stratified simulation diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: t5-stratified-diagnostics
+          path: qa-artifacts/t5-stratified.json
+          if-no-files-found: warn
