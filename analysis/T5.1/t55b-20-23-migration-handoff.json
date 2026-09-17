@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "workstream": "T51_CANON_20_23",
+  "microbatch": "T5.5-B",
+  "generatedAt": "2026-09-17",
+  "routeOwner": "coordinator/integrator",
+  "registerGlobalRouteHere": false,
+  "lineagePolicy": "adjacent_edges_only",
+  "sourceContentIdentity": "6a9c66ab3afaec76299662afb2a662e19203f8c6c430a87cc458b8608965a651",
+  "targetContentIdentity": "6e552f606ace400d7b535747fbf7ba6078c60fd92889d4a360eb4db0bfb1013a",
+  "sourceGeneration": "T5.5-A canonical 20-23 frozen generation",
+  "targetGeneration": "T5.5-B canonical 20-23 generation",
+  "sourceEvidence": {
+    "fixture": "qa/fixtures/t5.1/post-t51-sources/6a9c66ab3afaec76299662afb2a662e19203f8c6c430a87cc458b8608965a651.json",
+    "registry": "POST_T51_CONTENT_SOURCES[6a9c66ab3afaec76299662afb2a662e19203f8c6c430a87cc458b8608965a651]",
+    "frozenIdentityRequired": true
+  },
+  "targetEvidence": {
+    "reporter": "scripts/report-t51-t55b-20-23-identity.mjs",
+    "ciRun": 35207575673,
+    "focusedTestsPassed": 20,
+    "microbatchBTestsPassed": 10,
+    "t5ContentHardErrors": 0,
+    "inventoryAtCertification": {
+      "events": 388,
+      "seeds": 210,
+      "npcs": 20
+    }
+  },
+  "invariants": {
+    "preserveHistory": true,
+    "preserveDecisionProvenance": true,
+    "preserveLegacyPendingDefinition": true,
+    "preserveSeedsUnlessExplicitlyMapped": true,
+    "seedOriginMappings": [],
+    "consumeRng": false,
+    "reinterpretPendingByStringId": false,
+    "clearSeenGlobally": false,
+    "clearCooldownGlobally": false,
+    "mutateContractDuringMigration": false
+  },
+  "mappings": [
+    {
+      "kind": "distinct_scene",
+      "legacyEventId": "EVT_21_CAP_001",
+      "canonicalEventId": "EVT_21_CAP_001",
+      "sourceFingerprint": "d68e4f4bdcbf40909dee36a27e66bef1540f30e803b3637e7a1491a8aedc3bda",
+      "targetFingerprint": "57586c4472e860e000f485ce7561fb5c0b69305e9106b92b9ea7e4ccedbf7f0e",
+      "clearCanonicalSeen": true,
+      "clearCanonicalCooldown": true,
+      "pendingBehavior": "preserve_source_definition_by_saved_source_identity_and_fingerprint",
+      "historyBehavior": "preserve_history_and_provenance",
+      "knowledgeNote": "Canonical scene uses the live captain target slot and must fail closed while 20-23 has no authoritative captain assignment; never substitute a fixed UDV captain."
+    },
+    {
+      "kind": "distinct_scene",
+      "legacyEventId": "EVT_21_PRS_001",
+      "canonicalEventId": "EVT_21_PRS_001",
+      "sourceFingerprint": "be0b033b7a92d6192adfbb5b8dedd467d533129311ec96508dc428abb9743942",
+      "targetFingerprint": "da74543c81442c036e3dc5a2552c49718d6b35cf902bf9d96702cfd7841f71de",
+      "clearCanonicalSeen": true,
+      "clearCanonicalCooldown": true,
+      "pendingBehavior": "preserve_source_definition_by_saved_source_identity_and_fingerprint",
+      "historyBehavior": "preserve_history_and_provenance",
+      "knowledgeNote": "Only explicit public corrections inform Clara; silence does not reveal player intent and CLUB_CORRECT does not target a fixed UDV director."
+    },
+    {
+      "kind": "distinct_scene",
+      "legacyEventId": "EVT_22_CON_001",
+      "canonicalEventId": "EVT_22_CON_001",
+      "sourceFingerprint": "ef4d050ed205415386614ee0fe0de14ffd8383b2981a977ce054cb429699a26c",
+      "targetFingerprint": "3b68069336e51e4b47abdc87227555221d1b2e5479dfb2a7da7295ecc4769ac3",
+      "clearCanonicalSeen": true,
+      "clearCanonicalCooldown": true,
+      "pendingBehavior": "preserve_source_definition_by_saved_source_identity_and_fingerprint",
+      "historyBehavior": "preserve_history_and_provenance",
+      "contractAuthority": "Narrative effects express strategy only; no contract.* mutation. Any actual renewal remains CareerOffer-authoritative."
+    },
+    {
+      "kind": "distinct_scene",
+      "legacyEventId": "EVT_22_CON_002",
+      "canonicalEventId": "EVT_22_CON_002",
+      "sourceFingerprint": "7ff007a58bd6ec44fcc3b25ba4fadad318b2dfde2e8b21885ee6f6cb8121973b",
+      "targetFingerprint": "60e1597049d225b892559719c017c47011421c9f3ceb0e9ef35d589cdda9da39",
+      "clearCanonicalSeen": true,
+      "clearCanonicalCooldown": true,
+      "pendingBehavior": "preserve_source_definition_by_saved_source_identity_and_fingerprint",
+      "historyBehavior": "preserve_history_and_provenance",
+      "contractAuthority": "Narrative effects express willingness to run down, sell or renew only; no transfer/renewal is executed outside CareerOffer authority."
+    }
+  ],
+  "blockers": [
+    {
+      "id": "20_23_live_captain_slot",
+      "affects": ["EVT_21_CAP_001"],
+      "requirement": "Authoritative current-club captain assignment for phase 20_23 if persistent named-NPC memory is required.",
+      "currentBehavior": "Fail closed: scene remains playable, but no guessed captain NPC receives persistent knowledge.",
+      "recommendedOwner": "T5.3 NPC/relationships or coordinator"
+    },
+    {
+      "id": "current_club_institutional_npc_target",
+      "affects": ["EVT_21_PRS_001", "EVT_22_CON_001", "EVT_22_CON_002"],
+      "requirement": "Authoritative resolver for the current club's institutional recipient before persisting director knowledge.",
+      "currentBehavior": "Fail closed: never assign these facts to fixed UDV director NPC_DIR_02 after possible club changes.",
+      "recommendedOwner": "T5.3 NPC/relationships or coordinator"
+    }
+  ],
+  "integrationInstructions": [
+    "Freeze targetContentIdentity as an intermediate supported source before any T5.5-C or later 20-23 microbatch changes EVENTS.",
+    "Coordinator should add exactly one adjacent source→target route for this generation; do not add PRE/A-predecessor→B shortcuts.",
+    "Apply SEEN/cooldown release only to the four mappings above and only for target canonical scheduling state.",
+    "Do not rewrite pending/history rows by string ID; resolve them against saved source identity and fingerprint evidence.",
+    "Do not synthesize NPC knowledge while either blocker above remains unresolved.",
+    "Do not mutate contract state during migration; CareerOffer remains authoritative."
+  ]
+}
