@@ -1,12 +1,12 @@
 # Canon 34+ blockers
 
-Every ordinary Agent-8 principal now has a canonical card. Remaining blockers are shared-authority or lineage work and must be consumed from their named owner contracts rather than solved with narrative proxies.
+Every ordinary Agent-8 principal now has a canonical card, and the full Pasada-7 conditional identity deck is now known. Remaining blockers are shared-authority, lineage or exact-content implementation work and must be consumed from their named owner contracts rather than solved with narrative proxies.
 
 ## B1 — Successive content lineage
 **Owner:** shared integration.  
 **Issue:** **#59**.  
 **Missing contract:** deterministic successive content migration/source evidence through the actual immediately preceding canonical generation. Current main has certified earlier generation H plus shared non-content authorities, but final canonical 30–34 is not yet the authoritative immediate predecessor of 34+.  
-**Effect:** all 43 ordinary cards are prepared, but Agent 8 must not freeze/register a provisional 34+ content identity, migration shortcut or history rewrite.
+**Effect:** all 43 ordinary cards are prepared and all 32 canonical conditional IDs are identified, but Agent 8 must not freeze/register a provisional 34+ content identity, migration shortcut or history rewrite.
 
 ## B2 — 34+ seed catalog/lifecycle integration
 **Owner:** T5.2 / Agent 2.  
@@ -48,7 +48,18 @@ Every ordinary Agent-8 principal now has a canonical card. Remaining blockers ar
 ## B7 — Terminal career retirement
 **Owner:** Agent 9 / **PR #118**.  
 Terminal-owned principals: `EVT_37_ANNOUNCE_001`, `EVT_RET_FAM_001`, `EVT_RET_BODY_001`, `EVT_RET_HIGH_001`, `EVT_RET_LOW_001`, `EVT_RET_ANNOUNCE_001`, `EVT_RET_LASTMATCH_001`.  
-Agent 8 may expose ordinary scenes whose choices include a career-retirement option, but the terminal state transition/announcement/closure is delegated to Agent 9. International retirement is separate and represented by shared national-team authority.
+Agent 8 may expose ordinary scenes whose choices include a career-retirement option, but the terminal state transition/announcement/closure is delegated to Agent 9. International retirement is separate and represented by shared national-team authority. Terminal/shared-retirement conditionals in #192 follow the same boundary.
+
+## B8 — Exact Pasada-7 conditional deck
+**Owner:** Agent 8 content reconciliation with Agent-9 boundary for terminal conditionals.  
+**Issue:** **#192 — reconcile and implement exact Pasada-7 conditional deck**.  
+**Canonical source:** Documento Maestro section 25.13.  
+**Reconciled identity facts:** canonical count 32; engine count 32; exact-ID overlap 5; canonical exact IDs missing 27; technical engine exact IDs absent from canon 27; canonical conditionals semantically accredited in runtime **0/32**.  
+**Why count equality is invalid evidence:** 29/32 current engine rows are generic `technical_adaptation` shells sharing generic body/choices/effects. Several gates use proxies that no longer satisfy factual-authority rules.  
+**Exact-ID collisions needing canonical reimplementation:** `CEVT_34_MAJOR_COMEBACK`, `CEVT_36_NO_MEDICAL_CLEARANCE`, `CEVT_38_OFFER_AFTER_RETIREMENT_ANNOUNCED`, `CEVT_RET_NO_LAST_MATCH`, `CEVT_RET_STORYBOOK_LAST_GOAL`.  
+**Special migration boundary:** current engine `CEVT_RET_RECONSIDER` is not a canonical Pasada-7 ID. Canon uses `CEVT_38_RETIREMENT_REVERSAL`; no silent alias, journal rewrite or pending-decision reinterpretation is authorized.  
+**Terminal conditional boundary:** `CEVT_38_OFFER_AFTER_RETIREMENT_ANNOUNCED`, `CEVT_38_RETIREMENT_REVERSAL`, `CEVT_RET_NO_LAST_MATCH`, `CEVT_RET_STORYBOOK_LAST_GOAL` require Agent-9/shared retirement coordination.  
+**Evidence:** `CONDITIONAL_RECONCILIATION.json` and `CONDITIONAL_HANDOFF.md`.
 
 ## Closure rule for Agent 8
-Agent 8 does not close these shared issues by adding proxies to narrative content. An ordinary scene becomes eligible for implementation only when Wave 0 plus every named downstream authority in `AUTHORITY_MATRIX.json` is factual on the current integration base. Until then its canonical card remains prepared-but-blocked.
+Agent 8 does not close shared issues by adding proxies to narrative content. An ordinary principal becomes eligible for implementation only when Wave 0 plus every named downstream authority in `AUTHORITY_MATRIX.json` is factual on the current integration base. A canonical conditional becomes eligible only when #192's exact identity/scene contract plus its factual authorities and the same Wave-0 lineage/provenance requirements are satisfied. Until then content remains prepared/reconciled-but-blocked.
