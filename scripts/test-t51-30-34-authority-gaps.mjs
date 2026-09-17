@@ -46,6 +46,61 @@ test('authority-debt registry covers every currently classified 30-34 scene bloc
   assert.equal(authorityDebt.sourceMainSha, 'fa3c8bae524fef62e4eb9802e895df88588998c4');
 });
 
+test('C005 exact sport gaps stay explicit while shared match/squad authority is unavailable', () => {
+  const expected = new Map([
+    ['EVT_30_FORM_001', 'blocked_missing_sport_history_authority'],
+    ['EVT_31_RETURN_001', 'blocked_missing_authority'],
+    ['EVT_31_ROLE_001', 'canonical_missing_and_sport_blocked'],
+    ['EVT_32_FAN_001', 'blocked_missing_authority'],
+    ['EVT_32_NAT_001', 'blocked_missing_authority']
+  ]);
+
+  for (const [eventId, status] of expected) {
+    const row = authorityDebt.scenes.find(scene => scene.eventId === eventId);
+    assert.ok(row, `${eventId}: missing authority-debt row`);
+    assert.equal(row.status, status, `${eventId}: blocker status changed; review C005 explicitly`);
+    assert.ok((row.missingFacts ?? []).length > 0, `${eventId}: exact missing facts must remain enumerated`);
+  }
+
+  for (const id of ['EVT_30_FORM_001', 'EVT_31_RETURN_001', 'EVT_32_FAN_001', 'EVT_32_NAT_001']) {
+    assert.equal(byId(id).canonStatus, 'technical_adaptation', `${id}: do not promote while exact sport authority is missing`);
+  }
+  assert.equal(EVENTS.some(event => event.id === 'EVT_31_ROLE_001'), false, 'EVT_31_ROLE_001 remains a coordinated canonical-missing addition');
+});
+
+test('aggregate veteran proxies do not materialize the exact C005 match/squad facts', () => {
+  const state = veteranState(32);
+  state.sport.form = 100;
+  state.sport.roleScore = 100;
+  state.professional.nationalStanding = 100;
+  state.professional.roleSecurity = 100;
+  state.flags.RECOVERING_INJURY = true;
+  state.flags.FINAL_CONTEXT = true;
+
+  const before = structuredClone(state);
+  const root = narrativeConditionRoot(state);
+
+  for (const [label, value] of [
+    ['sport.currentCompetition', root.facts.sport.currentCompetition],
+    ['sport.nextFixture', root.facts.sport.nextFixture],
+    ['sport.previousFixture', root.facts.sport.previousFixture],
+    ['sport.currentSquadStatus', root.facts.sport.currentSquadStatus],
+    ['match.competition', root.facts.match.competition],
+    ['match.opponent', root.facts.match.opponent],
+    ['match.result', root.facts.match.result],
+    ['match.playerCalledUp', root.facts.match.playerCalledUp],
+    ['match.playerOnBench', root.facts.match.playerOnBench],
+    ['match.playerStarted', root.facts.match.playerStarted],
+    ['match.playerAppeared', root.facts.match.playerAppeared],
+    ['match.minutes', root.facts.match.minutes],
+    ['match.goals', root.facts.match.goals]
+  ]) {
+    assert.equal(value, null, `${label} must stay unavailable rather than deriving from form/role/standing/flags`);
+  }
+
+  assert.deepEqual(state, before, 'authority projection must remain read-only and consume no RNG');
+});
+
 test('formal CareerTerms cannot yet prove the minutes-based renewal clause asserted by EVT_32_CON_001', () => {
   const state = createInitialState(320032);
   const terms = careerTerms(state);
