@@ -10,6 +10,7 @@ on:
       - 'scripts/test-t536-t537-retirement.mjs'
       - 'scripts/test-t537-family-minimums.mjs'
       - 'scripts/test-t536-status-writer-inventory.mjs'
+      - 'scripts/test-t537-epilogue-profiles.mjs'
       - 'analysis/T5.36-T5.37/**'
       - 'project/workstreams/T536_T537_RETIREMENT_EPILOGUES.md'
       - '.github/workflows/t536-retirement-epilogues.yml'
@@ -36,4 +37,4 @@ jobs:
         run: npm run build
 
       - name: T5.36 and T5.37 retirement gates
-        run: node --test scripts/test-t536-t537-retirement.mjs scripts/test-t537-family-minimums.mjs scripts/test-t536-status-writer-inventory.mjs
+        run: node --test scripts/test-t536-t537-retirement.mjs scripts/test-t537-family-minimums.mjs scripts/test-t536-status-writer-inventory.mjs scripts/test-t537-epilogue-profiles.mjs
