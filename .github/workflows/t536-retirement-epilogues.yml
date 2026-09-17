@@ -8,6 +8,8 @@ on:
       - 'src/epilogue/generator.ts'
       - 'src/content/events/34_plus/**'
       - 'scripts/test-t536-t537-retirement.mjs'
+      - 'analysis/T5.36-T5.37/**'
+      - 'project/workstreams/T536_T537_RETIREMENT_EPILOGUES.md'
       - '.github/workflows/t536-retirement-epilogues.yml'
   workflow_dispatch:
 
