@@ -2,13 +2,13 @@
   "schemaVersion": 2,
   "workstream": "T5.1 canon 30-34 migration handoff",
   "generatedAt": "2026-09-17",
-  "sourceMainSha": "c41e7de20daf3bd672ae54646428e921761008c8",
+  "sourceMainSha": "da3b356ac1c9c3376052189573e5a30f89b71cf0",
   "sourceContentIdentity": "84871fae2bec92d74d1e607e0a48943e2e530a062d315a829cfe75eda9fe0886",
-  "observedTargetContentIdentity": "3ecee9e2329be03cb566c459fc1aecd0c32d759354aadf40061494873e392ba5",
+  "observedTargetContentIdentity": "9151d6620739f5f63face23f412abdeca9898cac8e510cc44d86c1468da8d0f4",
   "targetIdentityEvidence": {
-    "workflowRun": 35242289109,
-    "source": "Focused PR CI after re-ground on Agent 5 generation H calculated runtime contentIdentity 3ecee9e2...92ba5; 54/55 tests passed and the only failure was the stale previous target.",
-    "rule": "Target identity follows the active merged catalog and must be refreshed whenever upstream canonical event metadata changes."
+    "workflowRun": 35243921486,
+    "source": "Focused PR CI after integrating shared player club leadership authority passed 58/59 tests; all four new leadership regressions passed and the only failure was the stale previous target. Runtime contentIdentity is 9151d662...8d0f4.",
+    "rule": "Target identity follows the active merged catalog and must be refreshed whenever upstream canonical event metadata or workstream event gates change."
   },
   "consumer": {
     "implementationOwner": "coordination/integration",
@@ -16,7 +16,7 @@
     "routeRegistry": "CONTENT_MIGRATION_ROUTES",
     "workstreamMayRegisterRoute": false,
     "targetFreezeRequiredBeforeRouteRegistration": true,
-    "targetFreezeFixture": "qa/fixtures/t5.1/post-t51-sources/3ecee9e2329be03cb566c459fc1aecd0c32d759354aadf40061494873e392ba5.json"
+    "targetFreezeFixture": "qa/fixtures/t5.1/post-t51-sources/9151d6620739f5f63face23f412abdeca9898cac8e510cc44d86c1468da8d0f4.json"
   },
   "invariants": {
     "approvedSameSceneMappings": [],
