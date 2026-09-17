@@ -1,6 +1,7 @@
 import { NPC_CATALOG } from "../catalog/npcs.js";
 import { careerTerms } from "../simulation/offers.js";
 import { AGE_MILESTONES } from "../simulation/age-milestones.js";
+import { inspectFootballMomentStore } from "../simulation/football-moments.js";
 function assertMarket(value, state) {
     const m = record(value, "market");
     ensure(m.version === 1, "market.version", "versión no compatible");
@@ -212,6 +213,9 @@ export function validateGameSave(value, version) {
         strings(s.careerStateTags, "careerStateTags");
     for (const key of ["contract", "finances", "body", "selection", "reputation", "control", "sport", "world", "personality", "flags", "eventCooldowns", "familyLastSeen", "narrativePressure"])
         record(s[key], key);
+    const footballMomentIssue = inspectFootballMomentStore(record(s.world, "world").footballMomentResults, s.date);
+    if (footballMomentIssue)
+        ensure(false, footballMomentIssue.path, footballMomentIssue.reason);
     const requiredNumbers = {
         contract: ["monthsRemaining", "salaryMonthly"], finances: ["cash"], body: ["risk", "fatigue", "fitness"],
         reputation: ["prestige", "mediaHeat", "marketHeat"], control: ["career", "agentDependency"],

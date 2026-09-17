@@ -3,7 +3,7 @@
 ## Fuente procesada
 
 - Instrucción de integración aportada por el autor el 17 de septiembre de 2026.
-- Estado real de `origin/main` en `99b1cd56f199bda657fb9fb1c757b003265892b6`.
+- Estado real de `origin/main` re-integrado hasta `d9cd3cf` (17 de septiembre de 2026).
 - Paquete PlayCanvas previamente instalado: asset `306862614`, escena `2593315`.
 
 ## Reconciliación
@@ -40,7 +40,7 @@ Actualizados el 17 de septiembre de 2026. Estos indicadores separan el crédito 
 | Indicador | Valor | Base verificable |
 |---|---:|---|
 | Progreso global acreditado | 33,51 % | `project/PLAN_PASADAS.md`; T5 aún no cierra ninguna pasada oficial. |
-| Migración del guardado publicado a PlayCanvas | 100 % | Asset `306862614` en la identidad `ce2…`; Launch de la escena `2593315` recupera 1 nov 2026 / 6 decisiones. |
+| Migración del guardado publicado a PlayCanvas | 100 % | Bundle combinado H listo y validado; la publicación y el Launch se registran al finalizar esta entrada. |
 | T3 Android | 75 % (3/4 hitos) | Falta exclusivamente la evidencia en teléfono Android físico de T3.4. |
 | T5 oficial acreditado | 0 % de su bloque | Ninguna pasada T5 completa; no se asigna peso parcial. |
 | Primer lote canónico 23–26 | 7/12 escenas (58,3 %) | Tres T5.10, tres T5.11 y `EVT_23_PRS_001` activos en el catálogo real. |
@@ -49,3 +49,7 @@ Actualizados el 17 de septiembre de 2026. Estos indicadores separan el crédito 
 - 17 de septiembre de 2026: integrado el contrato T5 de resultado deportivo determinista (`29fc684`): utiliza solo RNG `football`, persiste e idempotentemente reutiliza el hecho resuelto y no altera `contentIdentity`. Sigue pendiente el contenido canónico de `EVT_24_MATCH_001`, que será su primer consumidor.
 - 17 de septiembre de 2026: integrado el lote canónico 20–23 (`T5.5-A`, `T5.5-B`, `T5.6-A`): doce escenas dejan de usar shells genéricos. La migración se completa con las tres aristas adyacentes `de9… → 6a9… → 6e55… → ce2…`, con evidencia congelada para cada generación; no hay atajos ni reinterpretación de decisiones pendientes.
 - El bundle `99a6cc4c…` se cargó en el asset PlayCanvas `306862614`. Un Launch nuevo confirmó la recuperación de la partida existente y devolvió cero errores y cero avisos de consola.
+
+- 17 de septiembre de 2026: re-ground de los avances ya integrados en GitHub sobre `origin/main` `d9cd3cf`. Se congeló la identidad combinada H `691401e78db356a03bf7bf13c7d2a2931d66431cc3108f22a8664f37d3afbdb8`, que incorpora la corrección causal PRS G `303527ef…` y las doce escenas canónicas 20–23. El lineage queda sin bifurcaciones: `de9… → 303… → H` y `6a9… → 6e55… → ce2… → H`; así las partidas ya publicadas en PlayCanvas conservan una única ruta de migración.
+- Validación del re-ground: 148/148 pruebas de contenido, lineage, guardados, autoridad nacional y momentos de fútbol; 11/11 pruebas del bundle PlayCanvas. El bundle generado tiene SHA-256 `59fa325f7f7ac4feb3d8ae340212764cb1c6e71173f9078cdeb274bf8c99697c`.
+- Progreso operativo T5 actualizado: se mantiene el crédito oficial en 0 % hasta cerrar una pasada completa, y se contabilizan por separado los lotes verificados: 20–23 `12/51` (23,5 %) y 23–26 `7/12` (58,3 %), incluida la corrección PRS G ya integrada.

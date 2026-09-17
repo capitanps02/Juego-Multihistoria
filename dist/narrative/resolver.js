@@ -5,6 +5,7 @@ import { conditionsPass } from "../core/conditions.js";
 import { forgetExpiredNpcKnowledgeInPlace, rememberNpcFactInPlace } from "../core/npc-knowledge.js";
 import { getPath, setPath } from "../core/path.js";
 import { DeterministicRng } from "../core/rng.js";
+import { narrativeConditionRoot } from "../simulation/club-contract-intent.js";
 import { syncRetirementState } from "../simulation/late-career-engine.js";
 import { captureNpcKnowledgeTargetContext, resolveNpcKnowledgeTargets } from "./npc-knowledge-targets.js";
 const TERMINAL_SEED_STATES = new Set(["resolved", "expired"]);
@@ -210,10 +211,14 @@ function resolveChoiceCore(next, event, choiceId, qa = false) {
         throw new Error(`Unknown choice ${choiceId} for ${event.id}`);
     for (const e of choice.immediateEffects ?? [])
         applyEffect(next, e);
+    // All declarative Condition surfaces resolve against the same read-only causal
+    // fact projection. Compute it after immediate effects so existing ordering is
+    // preserved while outcomes/modifiers gain the same facts as gates/eligibility.
+    const conditionRoot = narrativeConditionRoot(next);
     const possible = event.outcomes
         .filter(o => choice.outcomeIds.includes(o.id))
-        .filter(o => conditionsPass(next, o.conditions ?? []))
-        .map(o => ({ outcome: o, ...outcomeWeight(next, o) }))
+        .filter(o => conditionsPass(conditionRoot, o.conditions ?? []))
+        .map(o => ({ outcome: o, ...outcomeWeight(conditionRoot, o) }))
         .filter(o => o.weight > 0);
     if (!possible.length)
         throw new Error(`No plausible outcomes for ${event.id}/${choiceId}`);

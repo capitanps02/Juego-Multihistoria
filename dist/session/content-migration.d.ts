@@ -44,9 +44,11 @@ export declare const T51_T510_CONTENT_IDENTITY = "fee2ff875bac7979d3907f5ee1004e
 export declare const T51_T511_CONTENT_IDENTITY = "5d3fd71a8df42ed5b93fdde63ed386e9d776693addd62a30293dbecad7aa56d2";
 export declare const T51_PRS_CONTENT_IDENTITY = "88751a2107c035826162968991e3a1808b2f4573afa3a3a20a3efa376fa8af1f";
 export declare const T51_EUR_ELIGIBILITY_CONTENT_IDENTITY = "de9ef2f501c015705a28d54afd140259356f15566d424511e6dbf67769c9bd19";
+export declare const T51_PRS_CAUSAL_CONTENT_IDENTITY = "303527efcc42c17e502257c3d7c613facafa10c8ed113810b64a1d7ebc6d0bb1";
 export declare const T51_T55A_20_23_CONTENT_IDENTITY = "6a9c66ab3afaec76299662afb2a662e19203f8c6c430a87cc458b8608965a651";
 export declare const T51_T55B_20_23_CONTENT_IDENTITY = "6e552f606ace400d7b535747fbf7ba6078c60fd92889d4a360eb4db0bfb1013a";
 export declare const T51_T56A_20_23_CONTENT_IDENTITY = "ce2f30ea24934787fb116627c727e4adf6c7bd05f8b8e79f415a20643e3fd58f";
+export declare const T51_COMBINED_PRS20_23_CONTENT_IDENTITY = "691401e78db356a03bf7bf13c7d2a2931d66431cc3108f22a8664f37d3afbdb8";
 /**
  * Explicit identity-bound edges. Successive canonical batches extend this as a
  * lineage (A -> B -> C), not as a matrix of shortcuts from every old version.

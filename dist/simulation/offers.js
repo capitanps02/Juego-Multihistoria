@@ -12,6 +12,53 @@ export function careerTerms(s) {
 function sameTerms(a, b) {
     return JSON.stringify(a) === JSON.stringify(b);
 }
+/**
+ * Read-only semantic classification over the persisted CareerOffer shape.
+ * No extra offer type is persisted: historical saves remain schema-compatible.
+ */
+export function careerOfferKind(offer) {
+    const { before, terms } = offer;
+    if (terms.loan)
+        return "loan";
+    if (before.loan && !terms.loan && terms.club === before.ownerClub && terms.ownerClub === before.ownerClub)
+        return "loan_return";
+    if (before.loan && !terms.loan && terms.club === before.registrationClub && terms.ownerClub === before.registrationClub)
+        return "loan_conversion";
+    if (terms.club !== before.club || terms.ownerClub !== before.ownerClub || terms.registrationClub !== before.registrationClub)
+        return "transfer";
+    return "renewal";
+}
+/** Returns detached formal offers so callers cannot mutate market.pending accidentally. */
+export function getActiveCareerOffers(s) {
+    const pending = s.market?.pending;
+    return pending ? [structuredClone(pending)] : [];
+}
+export function getEligibleTransferOffers(s) {
+    return getActiveCareerOffers(s).filter(offer => careerOfferKind(offer) === "transfer");
+}
+export function getEligibleLoanOffers(s) {
+    return getActiveCareerOffers(s).filter(offer => careerOfferKind(offer) === "loan");
+}
+export function getEligibleRenewalOffers(s) {
+    return getActiveCareerOffers(s).filter(offer => careerOfferKind(offer) === "renewal");
+}
+/**
+ * Employment status is deliberately conservative over the existing save schema.
+ * The model has a `professional.route="free_agent"` token and classifiers that read it,
+ * but current production code has no authoritative transition that also establishes
+ * unattached club/owner/registration/salary/football semantics. Therefore months===0
+ * remains pending resolution rather than being silently promoted to free agency.
+ */
+export function contractEmploymentStatus(s) {
+    if (s.retirement.status !== "playing")
+        return "retired";
+    const months = Number(s.contract.monthsRemaining);
+    if (months <= 0)
+        return "expired_pending_resolution";
+    if (months <= 6)
+        return "expiring";
+    return "active_contract";
+}
 function renewalWasRejectedFromSameTerms(market, reason, before) {
     if (reason !== FORMAL_RENEWAL_REASON)
         return false;

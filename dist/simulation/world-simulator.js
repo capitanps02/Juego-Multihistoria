@@ -345,14 +345,15 @@ function professionalWeek(state, rng) {
         p.bodyLoad = clamp(p.bodyLoad * 0.94 + num(state.body.fatigue, 15) * 0.035 + num(state.body.risk, 18) * 0.025 + (rng.next() - 0.52) * 2.2);
         p.commercialPower = clamp(p.commercialPower * 0.97 + media * 0.018 + num(state.reputation.prestige, 0) * 0.012 + (rng.next() - 0.5) * 1.3);
         p.publicPolarization = clamp(p.publicPolarization * 0.96 + Math.max(0, media - market * 0.55) * 0.025 + (rng.next() - 0.5) * 1.5);
-        const nationalGate = p.nationalHeat >= 38 && (p.leagueTier === 1 || role >= 67) && form >= 48;
+        const nationalRetired = state.flags.NATIONAL_RETIRED === true;
+        const nationalGate = !nationalRetired && p.nationalHeat >= 38 && (p.leagueTier === 1 || role >= 67) && form >= 48;
         state.flags.NATIONAL_GATE_OPEN = nationalGate;
-        if (!state.flags.NATIONAL_CALLED && nationalGate && rng.next() < 0.028) {
+        if (!nationalRetired && !state.flags.NATIONAL_CALLED && nationalGate && rng.next() < 0.028) {
             state.flags.NATIONAL_CALLED = true;
             p.nationalRole = "fringe";
             p.nationalStanding = clamp(Math.max(p.nationalStanding, 34));
         }
-        if (state.flags.NATIONAL_CALLED) {
+        if (!nationalRetired && state.flags.NATIONAL_CALLED) {
             const campP = clamp(0.05 + p.nationalStanding / 800 + p.nationalHeat / 1000, 0.05, 0.25);
             if (rng.next() < campP) {
                 const caps = 1 + (rng.next() < 0.18 ? 1 : 0);
@@ -366,7 +367,7 @@ function professionalWeek(state, rng) {
                 }
             }
         }
-        state.flags.NATIONAL_TOURNAMENT_CYCLE = [3, 4, 5, 6].includes(month) && [24, 28, 32].includes(state.age) && p.nationalStanding >= 38;
+        state.flags.NATIONAL_TOURNAMENT_CYCLE = !nationalRetired && [3, 4, 5, 6].includes(month) && [24, 28, 32].includes(state.age) && p.nationalStanding >= 38;
         const continentalBase = p.leagueTier === 1 && p.clubPrestigeTier >= 3;
         state.flags.CONTINENTAL_CONTEXT = continentalBase && ([8, 9, 10, 11, 2, 3, 4, 5].includes(month));
         if (continentalBase && !state.flags.CONTINENTAL_REGISTERED && rng.next() < 0.06)

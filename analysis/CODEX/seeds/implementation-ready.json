@@ -1,0 +1,229 @@
+{
+  "schemaVersion": 1,
+  "baseCommit": "cda24da1a688cc245695cd007c50d458c4e1e7d7",
+  "branch": "t5/seed-lifecycle-agent2",
+  "architecture": {
+    "seedProjection": "src/narrative/seed-memory.ts",
+    "conditionRoot": "src/simulation/club-contract-intent.ts#narrativeConditionRoot",
+    "outcomeParity": "src/narrative/resolver.ts",
+    "liveRegistry": "scripts/t52-simulation-seed-consumers.mjs",
+    "historicalRegistry": "scripts/t52-historical-seed-consumers.mjs"
+  },
+  "tasks": [
+    {
+      "id": "CODEX-SEED-001",
+      "status": "ready",
+      "priority": "high",
+      "eventId": "CEVT_18_BRUNO_01",
+      "seedIds": [
+        "SEED_BRUNO_FAVOR"
+      ],
+      "requiredApis": [
+        "getBrunoFavorState",
+        "facts.brunoFavorStance"
+      ],
+      "filesToInspect": [
+        "src/content/events/18_20/canonical-events.ts",
+        "src/content/events/18_20/conditional-events.ts",
+        "src/narrative/seed-memory.ts"
+      ],
+      "allowedFiles": [
+        "src/content/events/18_20/conditional-events.ts",
+        "scripts/test-t51-early-seed-consumers.mjs",
+        "package.json"
+      ],
+      "forbiddenFiles": [
+        "src/core/types.ts",
+        "src/narrative/resolver.ts",
+        "src/narrative/scheduler.ts",
+        "src/catalog/seeds.ts"
+      ],
+      "expectedBehavior": [
+        "Read the exact live payload stance; do not treat seed presence as gratitude.",
+        "Cover helped, overhelped, no_promise, refused, hidden_self, betrayed, staff and code_broken without inventing NPC knowledge.",
+        "At least one eligibility/outcome/effect/relationship consequence must differ causally by real stance."
+      ],
+      "testsRequired": [
+        "same RNG seed + same state is deterministic",
+        "different documented stance changes a canonical consequence",
+        "terminal/historical instance is not treated as live"
+      ]
+    },
+    {
+      "id": "CODEX-SEED-002",
+      "status": "ready",
+      "priority": "high",
+      "eventId": "CEVT_18_CCH_01",
+      "seedIds": [
+        "SEED_COACH_PUBLIC",
+        "SEED_MENA_EARLY_READ"
+      ],
+      "requiredApis": [
+        "getCoachPublicMemory",
+        "getMenaEarlyRead",
+        "facts.coachPublicStance",
+        "facts.menaEarlyRead",
+        "facts.menaEarlyContext"
+      ],
+      "filesToInspect": [
+        "src/content/events/18_20/canonical-events.ts",
+        "src/content/events/18_20/principal-additions.ts",
+        "src/content/events/18_20/conditional-events.ts",
+        "src/narrative/seed-memory.ts"
+      ],
+      "allowedFiles": [
+        "src/content/events/18_20/conditional-events.ts",
+        "scripts/test-t51-early-seed-consumers.mjs",
+        "package.json"
+      ],
+      "forbiddenFiles": [
+        "src/core/npc-knowledge.ts",
+        "src/core/types.ts",
+        "src/narrative/resolver.ts",
+        "src/catalog/seeds.ts"
+      ],
+      "expectedBehavior": [
+        "Use exact public-coach stance and Mena-read payloads as causal memory.",
+        "Do not grant knowledge to unrelated NPCs or the whole dressing room.",
+        "Make reception/role consequences differ only where the relevant actor can causally use that memory."
+      ],
+      "testsRequired": [
+        "Mena-specific memory affects a Mena-facing consequence",
+        "unrelated NPC knowledge is unchanged",
+        "0 extra RNG draws beyond the existing outcome draw"
+      ]
+    },
+    {
+      "id": "CODEX-SEED-003",
+      "status": "ready",
+      "priority": "high",
+      "eventId": "CEVT_18_RELEG_01",
+      "seedIds": [
+        "SEED_EXIT_STYLE_UDV"
+      ],
+      "requiredApis": [
+        "getExitStyleMemory",
+        "facts.exitStyleJanuary",
+        "facts.exitStyleEnd",
+        "facts.exitStyleSummer",
+        "facts.exitStyleMarket18",
+        "facts.exitStyleYear19"
+      ],
+      "filesToInspect": [
+        "src/content/events/18_20/canonical-events.ts",
+        "src/content/events/18_20/principal-additions.ts",
+        "src/content/events/18_20/conditional-events.ts"
+      ],
+      "allowedFiles": [
+        "src/content/events/18_20/conditional-events.ts",
+        "scripts/test-t51-early-seed-consumers.mjs",
+        "package.json"
+      ],
+      "forbiddenFiles": [
+        "src/simulation/offers.ts",
+        "src/core/types.ts",
+        "src/narrative/resolver.ts",
+        "src/catalog/seeds.ts"
+      ],
+      "expectedBehavior": [
+        "Combine real exit-style memory with current contract, club situation and route.",
+        "Do not apply one generic result to loan, clean transfer, contested exit, renewal or conflict histories.",
+        "Do not reinterpret SEED_FIRST_FREE_AGENCY as effective contract state."
+      ],
+      "testsRequired": [
+        "two documented exit histories produce different causal consequences",
+        "current contract remains authoritative",
+        "save/history provenance unchanged"
+      ]
+    },
+    {
+      "id": "CODEX-SEED-004",
+      "status": "ready",
+      "priority": "high",
+      "eventId": "CEVT_19_INJ_01",
+      "seedIds": [
+        "SEED_BODY_PRECEDENT",
+        "SEED_PHYSIO_CONFIDENCE"
+      ],
+      "requiredApis": [
+        "getBodyPrecedent",
+        "getPhysioConfidenceMemory",
+        "facts.bodyPrecedentPattern",
+        "facts.bodyPrecedentEarly",
+        "facts.bodyPrecedentReturn19",
+        "facts.physioConfidencePattern",
+        "facts.physioConfidenceReturn19"
+      ],
+      "filesToInspect": [
+        "src/content/events/18_20/canonical-events.ts",
+        "src/content/events/18_20/principal-additions.ts",
+        "src/content/events/18_20/conditional-events.ts"
+      ],
+      "allowedFiles": [
+        "src/content/events/18_20/conditional-events.ts",
+        "scripts/test-t51-early-seed-consumers.mjs",
+        "package.json"
+      ],
+      "forbiddenFiles": [
+        "src/core/rng.ts",
+        "src/simulation/world-simulator.ts",
+        "src/core/types.ts",
+        "src/narrative/resolver.ts"
+      ],
+      "expectedBehavior": [
+        "Use body/physio memory to change existing outcome conditions or modifiers, never to make the medical result deterministic.",
+        "Preserve the existing narrative RNG stream and draw order.",
+        "Do not introduce a new medical or narrative RNG stream."
+      ],
+      "testsRequired": [
+        "documented body memories alter weights/eligibility without forcing certainty",
+        "narrative draw count unchanged versus same event resolution structure",
+        "deterministic replay for same state and RNG"
+      ]
+    },
+    {
+      "id": "CODEX-SEED-005",
+      "status": "ready",
+      "priority": "high",
+      "eventId": "CEVT_19_RETURN_01",
+      "seedIds": [
+        "SEED_EXIT_STYLE_UDV"
+      ],
+      "requiredApis": [
+        "getExitStyleMemory",
+        "projectSeedMemory"
+      ],
+      "filesToInspect": [
+        "src/content/events/18_20/canonical-events.ts",
+        "src/content/events/18_20/principal-additions.ts",
+        "src/content/events/18_20/conditional-events.ts"
+      ],
+      "allowedFiles": [
+        "src/content/events/18_20/conditional-events.ts",
+        "scripts/test-t51-early-seed-consumers.mjs",
+        "package.json"
+      ],
+      "forbiddenFiles": [
+        "src/simulation/offers.ts",
+        "src/core/types.ts",
+        "src/narrative/resolver.ts",
+        "src/catalog/seeds.ts"
+      ],
+      "expectedBehavior": [
+        "Read how the player left, current relation/status, original club continuity and loan-return state.",
+        "Do not collapse every return into identical roleScore deltas.",
+        "Use historical existence explicitly only if the owner decides a terminal exit-memory fact must remain relevant."
+      ],
+      "testsRequired": [
+        "clean loan and conflict history differ",
+        "owner/current club continuity is respected",
+        "no originEvent/history rewrite"
+      ]
+    }
+  ],
+  "discovery": {
+    "blockedDeclaredReadOnlyConsumers": 37,
+    "sourceOfTruth": "analysis/CODEX/seeds/SEED_CONSUMER_MATRIX.json",
+    "rule": "Do not promote blocked consumers to ready without canonical-owner evidence."
+  }
+}

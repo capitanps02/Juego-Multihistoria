@@ -51,9 +51,9 @@ const PRESS = ambiguousEvent({
         }
     ],
     gates: [
-        { path: "sport.roleScore", op: "lte", value: 48 },
-        { path: "professional.roleSecurity", op: "lte", value: 55 },
-        { path: "flags.HAS_SEED_ELITE_ROLE_BARGAIN", op: "eq", value: true }
+        { path: "facts.roleGuaranteeAt23", op: "eq", value: true },
+        { path: "facts.roleDropSince23", op: "gte", value: 15 },
+        { path: "professional.roleSecurity", op: "lte", value: 55 }
     ],
     timeWindow: { months: [10, 11, 12, 1, 2] },
     weight: 20,

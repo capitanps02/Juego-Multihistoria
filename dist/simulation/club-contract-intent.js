@@ -1,7 +1,11 @@
+import { earlyCareerSeedFacts } from "../narrative/seed-memory.js";
 import { lockerSlotAffinity } from "./locker-leadership.js";
+import { getCurrentMatchContext, getSportContext } from "./sport-context.js";
 export const CLUB_WANTS_RENEWAL_FACT = "facts.clubWantsRenewal";
 export const LOCKER_CAPTAIN_AFFINITY_FACT = "facts.lockerCaptainAffinity";
 export const LOCKER_STAR_AFFINITY_FACT = "facts.lockerStarAffinity";
+export const ROLE_DROP_SINCE_23_FACT = "facts.roleDropSince23";
+export const ROLE_GUARANTEE_AT_23_FACT = "facts.roleGuaranteeAt23";
 export const CLUB_RENEWAL_INTENT_MAX_MONTHS = 24;
 export const CLUB_RENEWAL_INTENT_THRESHOLD = 0.50;
 export const FORMAL_RENEWAL_REASON = "Renovación de contrato";
@@ -49,11 +53,39 @@ export function clubWantsRenewal(state) {
         return false;
     return clubRenewalPropensity(state) >= CLUB_RENEWAL_INTENT_THRESHOLD;
 }
+/**
+ * Raw factual drop from the role snapshot captured when the age-23 professional
+ * state is initialized. This shared fact deliberately does not define how large a
+ * drop must be before a narrative scene considers it material.
+ */
+export function roleDropSince23(state) {
+    if (state.age < 23 || !state.professional.initializedAt23)
+        return 0;
+    return Math.max(0, num(state.professional.roleScoreAt23) - num(state.sport.roleScore));
+}
+/**
+ * Historical evidence that the canonical age-23 bridge established a concrete role
+ * expectation. This is intentionally a persisted-history read: terminality or later
+ * consumption does not erase that the conversation happened. Generic seed presence,
+ * other origins and the other three bridge stances are not sufficient.
+ */
+export function hasRoleGuaranteeAt23(state) {
+    if (state.age < 23)
+        return false;
+    return state.seeds.some(seed => seed.id === "SEED_ELITE_ROLE_BARGAIN"
+        && seed.originEvent === "EVT_23_BRIDGE_001"
+        && seed.payload.stance === "role_guarantees");
+}
 export function narrativeCausalFacts(state) {
     return {
+        ...earlyCareerSeedFacts(state),
         clubWantsRenewal: clubWantsRenewal(state),
         lockerCaptainAffinity: lockerSlotAffinity(state, "captain"),
-        lockerStarAffinity: lockerSlotAffinity(state, "star")
+        lockerStarAffinity: lockerSlotAffinity(state, "star"),
+        roleDropSince23: roleDropSince23(state),
+        roleGuaranteeAt23: hasRoleGuaranteeAt23(state),
+        sport: getSportContext(state),
+        match: getCurrentMatchContext(state)
     };
 }
 /**

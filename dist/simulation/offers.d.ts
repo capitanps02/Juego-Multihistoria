@@ -22,6 +22,8 @@ export interface CareerOffer {
     before: CareerTerms;
     terms: CareerTerms;
 }
+export type CareerOfferKind = "renewal" | "transfer" | "loan" | "loan_return" | "loan_conversion";
+export type ContractEmploymentStatus = "active_contract" | "expiring" | "expired_pending_resolution" | "retired";
 /** Direct player actions exposed by the ordinary offer screen and persisted in market.history.action. */
 export type OfferAction = "accept" | "reject" | "delegate";
 /** Narrative decisions may close an offer without changing the persisted action enum. */
@@ -49,6 +51,24 @@ export interface MarketState {
 }
 export declare function marketState(s: GameState): MarketState;
 export declare function careerTerms(s: GameState): CareerTerms;
+/**
+ * Read-only semantic classification over the persisted CareerOffer shape.
+ * No extra offer type is persisted: historical saves remain schema-compatible.
+ */
+export declare function careerOfferKind(offer: CareerOffer): CareerOfferKind;
+/** Returns detached formal offers so callers cannot mutate market.pending accidentally. */
+export declare function getActiveCareerOffers(s: GameState): readonly CareerOffer[];
+export declare function getEligibleTransferOffers(s: GameState): readonly CareerOffer[];
+export declare function getEligibleLoanOffers(s: GameState): readonly CareerOffer[];
+export declare function getEligibleRenewalOffers(s: GameState): readonly CareerOffer[];
+/**
+ * Employment status is deliberately conservative over the existing save schema.
+ * The model has a `professional.route="free_agent"` token and classifiers that read it,
+ * but current production code has no authoritative transition that also establishes
+ * unattached club/owner/registration/salary/football semantics. Therefore months===0
+ * remains pending resolution rather than being silently promoted to free agency.
+ */
+export declare function contractEmploymentStatus(s: GameState): ContractEmploymentStatus;
 export declare function applyTerms(s: GameState, t: CareerTerms): void;
 /** Run the world's proposal on a detached state. No signature or destination leaks. */
 export declare function proposeCareerChange(s: GameState, reason: string, propose: (draft: GameState) => void): void;
