@@ -1,6 +1,11 @@
 import type { GameState } from "../core/types.js";
 import { earlyCareerSeedFacts, type EarlyCareerSeedFacts } from "../narrative/seed-memory.js";
 import { lockerSlotAffinity } from "./locker-leadership.js";
+import {
+  listCertifiedPlayerClubLeadership,
+  resolveCurrentPlayerClubLeadership,
+  type PlayerClubLeadershipRole
+} from "./player-leadership-authority.js";
 import { getCurrentMatchContext, getSportContext, type CurrentMatchContext, type SportContext } from "./sport-context.js";
 
 export const CLUB_WANTS_RENEWAL_FACT = "facts.clubWantsRenewal" as const;
@@ -8,6 +13,8 @@ export const LOCKER_CAPTAIN_AFFINITY_FACT = "facts.lockerCaptainAffinity" as con
 export const LOCKER_STAR_AFFINITY_FACT = "facts.lockerStarAffinity" as const;
 export const ROLE_DROP_SINCE_23_FACT = "facts.roleDropSince23" as const;
 export const ROLE_GUARANTEE_AT_23_FACT = "facts.roleGuaranteeAt23" as const;
+export const PLAYER_CLUB_LEADERSHIP_ROLE_FACT = "facts.playerClubLeadership.currentRole" as const;
+export const PLAYER_CLUB_MAIN_CAPTAIN_HISTORY_FACT = "facts.playerClubLeadership.hasCertifiedMainCaptainHistory" as const;
 export const CLUB_RENEWAL_INTENT_MAX_MONTHS = 24;
 export const CLUB_RENEWAL_INTENT_THRESHOLD = 0.50;
 export const FORMAL_RENEWAL_REASON = "Renovación de contrato";
@@ -85,12 +92,35 @@ export function hasRoleGuaranteeAt23(state: GameState): boolean {
   );
 }
 
+export interface PlayerClubLeadershipFacts {
+  /** Explicit current-club certification only; stale former-club rows resolve null. */
+  currentRole: PlayerClubLeadershipRole | null;
+  /** Historical evidence of an explicit main-club captain certification. */
+  hasCertifiedMainCaptainHistory: boolean;
+}
+
+/**
+ * Read-only adapter from the shared leadership authority into narrative conditions.
+ * It deliberately excludes lockerPower, captaincy-window flags and seeds so those
+ * proxies cannot become formal captaincy by passing through the condition root.
+ */
+export function playerClubLeadershipFacts(state: GameState): PlayerClubLeadershipFacts {
+  const current = resolveCurrentPlayerClubLeadership(state);
+  return {
+    currentRole: current?.role ?? null,
+    hasCertifiedMainCaptainHistory: listCertifiedPlayerClubLeadership(state)
+      .some(row => row.role === "captain")
+  };
+}
+
 export interface NarrativeCausalFacts extends EarlyCareerSeedFacts {
   clubWantsRenewal: boolean;
   lockerCaptainAffinity: number | null;
   lockerStarAffinity: number | null;
   roleDropSince23: number;
   roleGuaranteeAt23: boolean;
+  /** Formal current/historical club leadership facts; no influence proxies. */
+  playerClubLeadership: PlayerClubLeadershipFacts;
   /** Authoritative/read-only sporting projection. Unavailable sporting facts are null. */
   sport: SportContext;
   /** Current match projection. Fails closed until a real match producer exists. */
@@ -105,6 +135,7 @@ export function narrativeCausalFacts(state: GameState): NarrativeCausalFacts {
     lockerStarAffinity: lockerSlotAffinity(state, "star"),
     roleDropSince23: roleDropSince23(state),
     roleGuaranteeAt23: hasRoleGuaranteeAt23(state),
+    playerClubLeadership: playerClubLeadershipFacts(state),
     sport: getSportContext(state),
     match: getCurrentMatchContext(state)
   };
