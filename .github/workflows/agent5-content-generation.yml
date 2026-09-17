@@ -1,0 +1,113 @@
+name: Agent 5 content generation
+
+on:
+  push:
+    branches: [t51/canon-18-23-agent5]
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout Agent 5 branch
+        uses: actions/checkout@v4
+        with:
+          ref: t51/canon-18-23-agent5
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Register adjacent Agent 5 migration edge
+        shell: python
+        run: |
+          from pathlib import Path
+
+          p = Path('src/session/content-migration.ts')
+          text = p.read_text()
+          marker = 'T51_AGENT5_18_23_CONTENT_IDENTITY'
+          target = '025e92fe1d5e18cc2ad63cf947996ad7a2a3ed2af4ce234f742a2fff733b5a31'
+
+          if marker not in text:
+              constant_anchor = 'export const T51_EUR_ELIGIBILITY_CONTENT_IDENTITY = "de9ef2f501c015705a28d54afd140259356f15566d424511e6dbf67769c9bd19";\n'
+              assert constant_anchor in text
+              text = text.replace(
+                  constant_anchor,
+                  constant_anchor + f'export const {marker} = "{target}";\n',
+                  1
+              )
+
+              tail = '''  seedOriginMappings: []\n}\n];'''
+              assert tail in text
+              ids = [
+                  'EVT_20_LIFE_001',
+                  'EVT_20_ABR_001',
+                  'EVT_21_RIV_001',
+                  'CEVT_21_ABR_01',
+                  'CEVT_21_MEDIA_01',
+                  'EVT_21_CAP_001',
+                  'EVT_21_PRS_001',
+                  'EVT_22_CON_001',
+                  'EVT_22_CON_002',
+                  'EVT_20_STATUS_001',
+                  'EVT_20_LOCK_001',
+                  'EVT_20_LOCK_002'
+              ]
+              mappings = ',\n'.join(
+                  '      { kind: "distinct_scene", legacyEventId: "' + event_id + '", canonicalEventId: "' + event_id + '", clearCanonicalSeen: true, clearCanonicalCooldown: true }'
+                  for event_id in ids
+              )
+              edge = f'''  seedOriginMappings: []\n}},\n  {{\n    sourceContentIdentity: T51_EUR_ELIGIBILITY_CONTENT_IDENTITY,\n    targetContentIdentity: {marker},\n    schedulerMappings: [\n{mappings}\n    ],\n    seedOriginMappings: []\n  }}\n];'''
+              text = text.replace(tail, edge, 1)
+              p.write_text(text)
+
+      - name: Build exact active catalog
+        run: npm run build
+
+      - name: Freeze active source if needed
+        shell: bash
+        run: |
+          set -euo pipefail
+          if node scripts/freeze-t51-active-source.mjs --check; then
+            echo "Active source already frozen"
+          else
+            node scripts/freeze-t51-active-source.mjs
+          fi
+
+      - name: Regenerate historical evidence
+        run: |
+          node scripts/generate-t51-post-legacy-registry.mjs
+          node scripts/generate-t51-offer-bridge-evidence.mjs
+
+      - name: Validate full repository gates
+        run: npm test
+
+      - name: Validate Agent 5 focused suites
+        run: node --test scripts/test-t51-agent11-18-20.mjs scripts/test-t51-early-seed-consumers.mjs scripts/test-t51-t55a-20-23.mjs scripts/test-t51-t55b-20-23.mjs scripts/test-t51-t56a-20-23.mjs
+
+      - name: Commit generated migration evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/session/content-migration.ts \
+            qa/fixtures/t5.1/post-t51-sources/025e92fe1d5e18cc2ad63cf947996ad7a2a3ed2af4ce234f742a2fff733b5a31.json \
+            src/session/post-t51-legacy-registry.ts \
+            src/session/frozen-offer-bridge-evidence.ts
+          if git diff --cached --quiet; then
+            echo "No generated changes to commit"
+            exit 0
+          fi
+          git commit -m "T5.1: register Agent 5 content generation"
+          git push origin HEAD:t51/canon-18-23-agent5
