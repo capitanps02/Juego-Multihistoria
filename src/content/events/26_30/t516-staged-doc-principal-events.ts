@@ -57,9 +57,7 @@ const DOCUMENTARY = ambiguousEvent({
       primaryMessage: "Rechazas el documental. No se concede acceso y la temporada sigue sin una cámara adicional dentro de los espacios privados.",
       secondaryMessage: "Conservas control, aunque renuncias a una oportunidad de ampliar marca y relato personal.",
       primaryEffects: [n("professional.careerControl", 4), n("professional.commercialPower", -1)],
-      secondaryEffects: [n("professional.careerControl", 3), n("professional.publicMyth", -1)],
-      primarySeedTransitions: [seedCreate("SEED_DOCUMENTARY_ACCESS", 45, { stance: "reject", accessScope: "none", published: false })],
-      secondarySeedTransitions: [seedCreate("SEED_DOCUMENTARY_ACCESS", 48, { stance: "reject", accessScope: "none", published: false })]
+      secondaryEffects: [n("professional.careerControl", 3), n("professional.publicMyth", -1)]
     }
   ],
   gates: [{ path: "professional.publicMyth", op: "gte", value: 35 }],

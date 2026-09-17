@@ -4,23 +4,27 @@
 
 Agent 6 exact-ID candidates remain staged. Activation, active catalog identity, adjacent content generation, migration edges and pending-save semantics belong to the integration owner.
 
-Staged now: `EVT_23_LOCK_001`, `EVT_23_MKT_001`, `EVT_23_CON_001`, `EVT_25_CON_001`, `EVT_25_MKT_001`, `EVT_26_BRIDGE_001`, `EVT_26_DOC_001`, `EVT_27_IMG_001`, `EVT_27_BODY_001`, `EVT_27_CON_001`.
+Current staged set: LOCK23, MKT23, CON23, CON25, MKT25, BRIDGE26, DOC26, IMG27, BODY27, CON27 and MEDIA28.
 
-`EVT_27_CON_001` consumes only a compatible formal renewal CareerOffer with a real numeric release clause. Accept applies exact pending terms through offer authority; all alternative clause structures are counters and do not mutate current CareerTerms.
+DOC26 causal correction: rejecting the documentary creates no `SEED_DOCUMENTARY_ACCESS`. Only actual access-grant choices create that seed, and they keep `published=false` until the later release event.
 
-Seed lineage note: canonical age-27 scenes introduce origins that current legacy seed metadata may still attribute to later generic events. Integrator must extend origin/age lineage without rewriting existing historical SeedInstances.
+MEDIA28 is gate-complete from real `SEED_DOCUMENTARY_ACCESS`, but canonical `SEED_DOCUMENTARY_FALLOUT` is absent from the current global seed catalog. Integrator must register that seed and canonical origin/age before the candidate can resolve safely. Existing historical origins must remain untouched.
 
 ## Shared authority blockers
 
-- Match/final scenes: no authoritative fixture/result/squad/player-participation store.
-- `EVT_26_CAP_001`: current captain assignment is certified only for UDV/23_26.
-- `EVT_26_MED_001`: recovery margin exists, but high calendar density cannot be proven without fixtures.
-- `EVT_26_RIV_001`: Adrián exists, but his compatible competitive tier/form is not persisted.
-- `EVT_26_TEAM_002`: no authoritative current youngster + loan proposal + coach request context.
-- `EVT_27_HOME_001`: `HOME_INSTITUTION` is available, but the canonical trigger also requires patrimonio. There is no authoritative net-worth model/cutoff; `moneyComfort`, salary and cash must not be silently treated as equivalent to ownership wealth.
-- `EVT_27_MONEY_001`: canonical trigger is high patrimonio. Current state has cash/moneyComfort but no authoritative net-worth aggregate or canonical “high” threshold.
-- National scenes: national standing is not a call-up or role history.
+- Fixtures/results/squad/player participation remain unavailable for match/final/fan-stadium assertions.
+- CAP26: current captain assignment is certified only for UDV/23_26.
+- MED26: no authoritative calendar density.
+- RIV26: no persisted compatible competitive tier/form for Adrián.
+- TEAM26_002: no authoritative current youngster + loan + coach request context.
+- HOME27/MONEY27: no authoritative net-worth aggregate/canonical high-patrimonio threshold. Salary is not patrimonio.
+- PRS27: high public myth does not prove that the home stadium actually booed the player.
+- MKT27: current CareerOffer authority has exact financial/destination terms but not the promised coach, budget, sporting role or project-face powers required by canon.
+- MED27: chronic-body memory does not prove a surgery-compatible diagnosis.
+- TACT27: role adaptability does not prove a coach proposed a reconversion.
+- AWARD27: no authoritative award nomination/vote system.
+- STAR27: no certified second superstar/current-club commercial proposal.
 
 ## Hard invariants
 
-No synthetic CareerOffer or fixture. No direct `state.club` mutation. No narrative football-result RNG. No captain inference from age/reputation. Salary is not patrimonio. Never rewrite historical `SeedInstance.originEvent`.
+No synthetic CareerOffer or fixture. No direct `state.club` mutation. No narrative football-result RNG. No captain inference from age/reputation. Salary is not patrimonio. Access rejected is not access granted. Never rewrite historical `SeedInstance.originEvent`.

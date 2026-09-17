@@ -8,30 +8,21 @@
   "schemaChangedByAgent6": false,
   "rngPolicyChangedByAgent6": false,
   "stagedImplemented": [
-    "EVT_23_LOCK_001",
-    "EVT_23_MKT_001",
-    "EVT_23_CON_001",
-    "EVT_25_CON_001",
-    "EVT_25_MKT_001",
-    "EVT_26_BRIDGE_001",
-    "EVT_26_DOC_001",
-    "EVT_27_IMG_001",
-    "EVT_27_BODY_001",
-    "EVT_27_CON_001"
+    "EVT_23_LOCK_001", "EVT_23_MKT_001", "EVT_23_CON_001", "EVT_25_CON_001", "EVT_25_MKT_001",
+    "EVT_26_BRIDGE_001", "EVT_26_DOC_001", "EVT_27_IMG_001", "EVT_27_BODY_001", "EVT_27_CON_001", "EVT_28_MEDIA_001"
   ],
-  "age26Audit": {
-    "CAP": "blocked: certified locker captain assignments stop at phase 23_26",
-    "MED": "blocked: recoveryMargin exists but authoritative schedule density does not",
-    "DOC": "implemented staged: access negotiation only, no publication side effect",
-    "RIV": "blocked: ADRIAN_MIRROR exists but compatible rival level is not persisted",
-    "TEAM_002": "blocked: YOUNG_MENTOR has no authoritative current youngster/loan/coach-request target"
+  "age27BlockedAfterAudit": {
+    "PRS": "requires authoritative negative stadium/fan reaction, not merely publicMyth",
+    "MKT": "CareerOffer lacks promised coach/budget/role/project-face terms required by canon",
+    "MED": "requires a compatible surgical diagnosis absent from current medical authority",
+    "TACT": "requires an authoritative coach/system reconversion proposal",
+    "AWARD": "requires an authoritative nomination/award gate",
+    "STAR": "requires a certified second superstar in current club and commercial proposal",
+    "HOME": "no authoritative high-net-worth model/cutoff",
+    "MONEY": "no authoritative high-net-worth model/cutoff"
   },
-  "age27Progress": {
-    "IMG": "implemented staged using GLOBAL_IMAGE or exact STATE26_MEDIA_POWER thresholds",
-    "BODY": "implemented staged using live SELF_OPTIMIZATION or repository high PEAK_STATUS convention (55)",
-    "CON": "implemented staged from a compatible formal renewal with real release clause and contractPower >= 65",
-    "HOME": "blocked: HOME_INSTITUTION exists but no authoritative high-net-worth model/cutoff",
-    "MONEY": "blocked: no authoritative high-net-worth model/cutoff; salary is not used as patrimonio"
+  "age28Progress": {
+    "MEDIA": "staged gate-complete from real documentary access; fallout seed catalog registration remains integrator-owned"
   },
-  "nextMicrobatch": ["EVT_27_PRS_001", "EVT_27_MKT_001", "EVT_27_MED_001"]
+  "nextMicrobatch": ["EVT_28_MKT_001", "EVT_28_PRS_001", "EVT_28_MED_001", "EVT_28_TACT_001"]
 }

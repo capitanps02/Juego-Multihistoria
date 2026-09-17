@@ -32,16 +32,21 @@ test('Agent6 DOC26 matches the canonical documentary decision surface', () => {
   assert.equal(eventGatesPass(lowProfile, event), false);
 });
 
-test('Agent6 DOC26 records negotiated access without pretending footage was published', () => {
-  for (const choiceId of ['BROAD_ACCESS', 'PRIVATE_ZONES', 'LIMITED_VETO', 'REJECT']) {
+test('Agent6 DOC26 grants access only for the three accepting choices and never publishes footage', () => {
+  for (const choiceId of ['BROAD_ACCESS', 'PRIVATE_ZONES', 'LIMITED_VETO']) {
     const state = state26(61610 + choiceId.length);
     const beforeKnowledge = structuredClone(state.npcs.map(npc => npc.knowledge));
     const result = resolveChoice(state, event, choiceId);
     const memory = result.state.seeds.find(seed => seed.id === 'SEED_DOCUMENTARY_ACCESS');
     assert.equal(memory?.originEvent, 'EVT_26_DOC_001');
     assert.equal(memory?.payload.published, false);
+    assert.equal(result.state.flags.HAS_SEED_DOCUMENTARY_ACCESS, true);
     assert.deepEqual(result.state.npcs.map(npc => npc.knowledge), beforeKnowledge, 'proposal must not publish private facts');
   }
+
+  const rejected = resolveChoice(state26(61629), event, 'REJECT').state;
+  assert.equal(rejected.seeds.some(seed => seed.id === 'SEED_DOCUMENTARY_ACCESS'), false);
+  assert.notEqual(rejected.flags.HAS_SEED_DOCUMENTARY_ACCESS, true);
 });
 
 test('Agent6 DOC26 proposal gate is read-only and consumes no RNG', () => {
