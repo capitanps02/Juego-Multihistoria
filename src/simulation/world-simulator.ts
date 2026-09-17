@@ -1,6 +1,7 @@
 import type { GameState } from "../core/types.js";
 import { advanceWorldDayInPlace as advanceCoreWorldDayInPlace } from "./world-simulator-core.js";
 import { closeLeagueObjectiveInPlace, recordOfficialMatchInPlace, remainingLeagueFixtures } from "./match-model.js";
+import { recordPenaltyHierarchyContextInPlace } from "./penalty-context.js";
 
 const num = (value: unknown, fallback = 0): number =>
   typeof value === "number" && Number.isFinite(value) ? value : fallback;
@@ -26,6 +27,8 @@ export function advanceWorldDayInPlace(next: GameState): GameState {
       debutOccurred: !beforeDebut && next.flags.OFFICIAL_DEBUT === true,
       injuryUnavailable: next.body.acuteInjury === true && !appeared
     });
+
+    if (match) recordPenaltyHierarchyContextInPlace(next, match);
 
     // The legacy udvSeasonResolved flag can flip on the first May tick while
     // scheduled league fixtures still remain. It is therefore not authoritative
