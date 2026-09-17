@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "baseCommit": "6d2239ae1f89be97a7c5cf117d456cff9218aade",
+  "baseCommit": "d9cd3cf3b9d1f23ab2f082b66ef4a01f6177e7f2",
   "originalAuthorityMergeCommit": "782b92c9a496293aeb33ad8b39f522a927374d6f",
   "branch": "t5/market-contract-followup",
   "contentIdentityChangedByThisWorkstream": false,
@@ -193,15 +193,15 @@
     },
     {
       "id": "CODEX-MKT-LIFECYCLE-001",
-      "status": "blocked",
+      "status": "blocked_on_system_closure_and_time_policy",
       "issue": 165,
       "eventId": null,
       "ageRange": "cross_age",
       "requiredOfferType": "offer_lifecycle",
-      "blocker": "CareerOffer has no authoritative expiry/withdrawal/supersession transition or provenance-safe close reason.",
+      "blocker": "CareerOffer has no authoritative expiry/withdrawal/supersession transition or provenance-safe system close reason. In addition, advanceWorldDayInPlace returns while market.pending exists, so calendar time cannot reach an expiry boundary. assertMarket also computes market.sequence only from player decision history plus pending state, so a separate closure ledger needs an explicit compatibility rule.",
       "requiredApis": [],
-      "forbidden": ["encoding club-side expiry as player reject"],
-      "acceptanceTests": ["deterministic calendar expiry", "withdrawn cannot be accepted", "CareerTerms unchanged", "close reason save/load", "0 RNG"]
+      "forbidden": ["encoding club-side expiry as player reject", "expiresAt without reachable time progression", "clearing pending without durable closure provenance", "decrementing or reusing market.sequence"],
+      "acceptanceTests": ["deterministic reachable expiry boundary", "withdrawn cannot be accepted", "superseded closure provenance", "CareerTerms unchanged", "close reason save/load", "offer ids remain monotonic", "0 RNG"]
     }
   ]
 }
