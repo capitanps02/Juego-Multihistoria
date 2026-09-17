@@ -1,0 +1,186 @@
+{
+  "task": "T5.1/T5.2 integration",
+  "scope": "30_34",
+  "generatedAt": "2026-09-17",
+  "branch": "t51/canon-30-34",
+  "sourceMainSha": "6d2239ae1f89be97a7c5cf117d456cff9218aade",
+  "sources": [
+    "analysis/T5.1/canon-30-34.json",
+    "analysis/T5.2/README.md",
+    "analysis/T5.2/CANONICAL_SEED_PRIORITIES.md",
+    "src/content/events/30_34/principal-events.ts",
+    "src/content/events/30_34/canonical-reimplementations.ts",
+    "src/content/events/30_34/canonical-reimplementations-31b.ts",
+    "src/content/events/30_34/canonical-reimplementations-32a.ts",
+    "src/content/events/30_34/canonical-reimplementations-33a.ts"
+  ],
+  "policy": {
+    "noArtificialClosures": true,
+    "onlyProvenConsumers": true,
+    "seedsReadIsNotCausalConsumption": true,
+    "legacySeedsRemainCompatible": true,
+    "crossBlockReadersAreDependenciesNotInventedLinks": true,
+    "frozenSaveBaselinesAreNotSilentlyRewritten": true,
+    "canonicalMissingSeedsMustNotBeWiredToLegacyProxies": true
+  },
+  "stableIdReimplementations": 27,
+  "latestSharedAuditSnapshot": {
+    "workflowRun": 35235694077,
+    "owner": "t51/canon-30-34",
+    "totalSeeds": 52,
+    "runtimeProduced": 48,
+    "withoutRuntimeProducer": 4,
+    "withConsumers": 13,
+    "withoutConsumers": 39,
+    "noProducerAndNoConsumer": 4,
+    "terminalTransitionDefined": 0,
+    "openEndedWithoutTerminalTransition": 52,
+    "interpretation": "Open-ended is not automatically a defect. The four no-producer/no-consumer rows are intentionally held for their canonical-missing writers. The shared audit's withConsumers count is structural runtime evidence and must not be conflated with owner-certified canonical consumption."
+  },
+  "orphanCanonicalMappings": [
+    {
+      "seed": "SEED_ROLE_COMMUNICATION",
+      "canonicalWriter": "EVT_30_CCH_001",
+      "canonicalTitle": "Te enteras por la pizarra",
+      "runtimeStatus": "canonical_missing",
+      "rule": "Create only from the canonical scene/outcome that establishes communication or absence of communication about role."
+    },
+    {
+      "seed": "SEED_FALSE_ULTIMATUM",
+      "canonicalWriter": "EVT_30_PRS_001",
+      "canonicalTitle": "El ultimátum que nunca diste",
+      "runtimeStatus": "canonical_missing",
+      "rule": "Do not synthesize the precedent from a generic or legacy press event."
+    },
+    {
+      "seed": "SEED_NATIONAL_ABSENCE",
+      "canonicalWriter": "EVT_30_NAT_002",
+      "canonicalTitle": "La selección gana sin ti",
+      "runtimeStatus": "canonical_missing",
+      "rule": "Do not infer automatically from any technical non-call-up; the canonical scene must establish the absence and its consequence."
+    },
+    {
+      "seed": "SEED_SPECIALIST_BIGCLUB",
+      "canonicalWriter": "EVT_30_JAN_001",
+      "canonicalTitle": "Enero: especialista de lujo",
+      "runtimeStatus": "canonical_missing",
+      "rule": "Create only from the canonical decision/outcome about the specialist role at a big club, never from a generic market shell."
+    }
+  ],
+  "orphanMigrationRule": "PASADA_6_30_34 remains editorial catalog provenance and is not a runtime originEvent. New instances use the real canonical event that produced them. Existing historical SeedInstance.originEvent is preserved unless an independently approved rewriteExisting mapping exists.",
+  "causalChainsConfirmed": [],
+  "causalChainsConfirmedMeaning": "No same-block link in the seven reviewed principal-event pairs is owner-certified as causal consumption yet. Promotion requires an actual positive seed-dependent gate, gateAlternative, choice eligibility, outcome condition/modifier, registered simulation edge, or explicit terminal transition whose semantics match the canonical memory.",
+  "declaredReadLinks": [
+    {
+      "seed": "SEED_AGE30_CONTRACT",
+      "writer": "EVT_30_CON_001",
+      "readers": ["EVT_31_MKT_001", "EVT_32_CON_001"],
+      "classification": "declared_memory_context_not_causal_consumption",
+      "reason": "Both readers list the seed in seedsRead, but their current reachability is driven by contract/market facts rather than seed presence or payload."
+    },
+    {
+      "seed": "SEED_MATCH_SELECTIVITY",
+      "writer": "EVT_30_BODY_001",
+      "readers": ["EVT_33_BODY_001"],
+      "classification": "declared_memory_context_not_causal_consumption",
+      "reason": "The reader lists the seed, but its current gates use recovery and authoritative fixture timing; no seed-dependent branch is implemented."
+    },
+    {
+      "seed": "SEED_NATIONAL_PHASEDOWN",
+      "writer": "EVT_30_NAT_001",
+      "readers": ["EVT_32_NAT_001"],
+      "classification": "declared_memory_context_not_causal_consumption",
+      "reason": "The reader lists the seed, but current reachability uses nationalStanding and does not depend on seed presence or payload."
+    },
+    {
+      "seed": "SEED_CAPTAIN_HANDOVER",
+      "writer": "EVT_30_CAP_001",
+      "readers": ["EVT_33_CAP_001"],
+      "classification": "declared_memory_context_not_causal_consumption",
+      "reason": "The reader lists the seed, but current reachability uses successionPressure and does not require the handover memory."
+    },
+    {
+      "seed": "SEED_AGENT_LAST_CONTRACT",
+      "writer": "EVT_30_MKT_001",
+      "readers": ["EVT_31_AGT_001"],
+      "classification": "declared_memory_context_not_causal_consumption",
+      "reason": "The reader lists the seed, but current reachability uses contract horizon; no seed-dependent decision branch is implemented."
+    },
+    {
+      "seed": "SEED_SURGERY_31",
+      "writer": "EVT_31_MED_001",
+      "readers": ["EVT_31_RETURN_001"],
+      "classification": "declared_memory_context_not_causal_consumption",
+      "reason": "The comeback scene lists surgery memory but currently gates only on RECOVERING_INJURY; surgery choice payload does not alter reachability or outcomes."
+    },
+    {
+      "seed": "SEED_HOME_RETURN_31",
+      "writer": "EVT_31_HOME_001",
+      "readers": ["EVT_32_HOME_001"],
+      "classification": "declared_memory_context_not_causal_consumption",
+      "reason": "The later home scene lists the earlier return memory but currently gates on homePull; no branch reads whether the prior answer was return, delay, objectives or support-without-signing."
+    }
+  ],
+  "declaredReadPromotionRule": "Do not promote a declaredReadLink merely because seedsRead names the same seed. A promotion must identify the exact runtime causal surface and explain why the seed payload/state materially changes reachability, eligibility, outcome or terminal disposition.",
+  "inboundReads": [
+    {
+      "seed": "SEED_SURGERY_TIMING",
+      "reader": "EVT_31_MED_001",
+      "status": "cross_block_dependency",
+      "note": "Writer belongs outside the owned 30-34 canonical block; this workstream does not fabricate it."
+    },
+    {
+      "seed": "SEED_CHRONIC_BODY",
+      "reader": "EVT_31_MED_001",
+      "status": "cross_block_dependency",
+      "note": "The explicit HAS_SEED_CHRONIC_BODY gate is mirrored in seedsRead so T5.2 lifecycle accounting sees the dependency without fabricating its writer. This is a real positive seed-dependent gate, unlike the seven declared-only links above."
+    },
+    {
+      "seed": "SEED_EARLY_HOME_RETURN",
+      "reader": "EVT_31_HOME_001",
+      "status": "cross_block_dependency",
+      "note": "Writer belongs outside the owned 30-34 canonical block; this workstream does not fabricate it."
+    }
+  ],
+  "openWithinStableSet": [
+    "SEED_LAST_BIG_MOVE_WINDOW",
+    "SEED_FAMILY_ANCHOR",
+    "SEED_RELOCATION_LIMIT",
+    "SEED_MEDICAL_AUTHORITY",
+    "SEED_FALSE_RESURGENCE",
+    "SEED_LAST_BIG_MOVE_31",
+    "SEED_SELF_REPRESENTATION_PREP",
+    "SEED_LEGACY_ACADEMY",
+    "SEED_COMEBACK_PACING",
+    "SEED_ROLE_REINVENTION_32",
+    "SEED_NEW_COACH_RESET",
+    "SEED_CLUB_NT_LOAD_TENSION",
+    "SEED_MANAGED_FINAL_ROLE",
+    "SEED_ROLLING_CONTRACT",
+    "SEED_HOME_CAPTAIN_OFFER",
+    "SEED_SELF_REPRESENTATION",
+    "SEED_FAN_LEGACY_BUFFER",
+    "SEED_FINAL_NT_SQUAD",
+    "SEED_72H_LIMIT",
+    "SEED_VETERAN_LEADERSHIP_FINAL",
+    "SEED_FINAL_FOUR_WAYS",
+    "SEED_AGE34_PRIORITY",
+    "SEED_RETIREMENT_PUBLIC_TONE",
+    "SEED_HOME_PULL_PUBLIC"
+  ],
+  "openWithinStableSetMeaning": "No owner-certified causal reader is proven among the 27 stable-ID reimplementations for these rows. This is not evidence that the seed should be consumed or expired here; T5.2 policy forbids artificial closure.",
+  "retirementSafety": {
+    "publicRetirementToneSeed": "SEED_RETIREMENT_PUBLIC_TONE",
+    "terminalFlag": "EARLY_RETIRED_30_34",
+    "rule": "Creating or reading retirement-related memory must not set the terminal club-retirement flag unless the player explicitly chooses the terminal retirement action."
+  },
+  "compatibilityDiagnostics": {
+    "seed424242": {
+      "finding": "final-gate-v08 regenerates examples/save-v08-seed-424242.json before the frozen save test; canonical content changes therefore mutate the generated golden career even when schema migration is unchanged.",
+      "firstObservedDivergenceBeforeTriggerFix": "EVT_30_CON_001 was excluded by an incomplete <=18-month gate while the canonical trigger is <=18 months OR club wants renewal; EVT_30_IDN_001 occupied the deterministic slot instead.",
+      "localAction": "EVT_30_CON_001 now consumes the shared renewal-intent OR gate instead of approximating it.",
+      "globalDependency": "Frozen golden-career fixture policy must distinguish save-schema compatibility from intentional canonical simulation changes; this workstream will not silently update the expected hash."
+    }
+  },
+  "integrationStatus": "four_orphan_writers_identified_pending_coordinated_missing_scene_batch; seven_declared_seed_reads_declassified_from_causal_chains; remaining_open_seeds_require_proven_downstream_classification"
+}

@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "scope": "30_34 boundary seed handoff to downstream veteran/retirement owners",
+  "sourceMainSha": "182d5e6abc4f7c98eeb95703a4bc6c3560a4bcde",
+  "consumerMatrixEvidence": {
+    "path": "analysis/CODEX/seeds/SEED_CONSUMER_MATRIX.json",
+    "snapshotBaseCommit": "cda24da1a688cc245695cd007c50d458c4e1e7d7",
+    "rule": "The matrix is an evidence snapshot, not sole current authority. Current runtime writers in this branch are authoritative for producer provenance; current-main source search is used only to corroborate downstream consumer evidence."
+  },
+  "policy": {
+    "structuralReadIsNotConsumption": true,
+    "nameSimilarityIsNotCausality": true,
+    "noArtificialTerminality": true,
+    "noConsumerInventedByThisWorkstream": true,
+    "futureValidConsumerAllowed": true,
+    "downstreamOwnerMustChooseReaderTerminalOrOpen": true
+  },
+  "handoffs": [
+    {"seedId":"SEED_AGE34_PRIORITY","currentProducerEvidence":["EVT_33_CON_001","EVT_33_END_001","EVT_33_MKT_001"],"currentStatus":"review_required_no_demonstrated_live_consumer","reviewTarget":"34+ contract, market and age-transition content","requiredDecision":"Register a semantically real downstream reader, define a canonically supported terminal disposition, or explicitly keep the seed open. Its three current writers represent converging late-career priority decisions and must not be collapsed to one provenance source."},
+    {"seedId":"SEED_RETIREMENT_PUBLIC_TONE","currentProducerEvidence":["EVT_33_PRS_001"],"currentStatus":"review_required_no_demonstrated_live_consumer","reviewTarget":"retirement/public-tone content","requiredDecision":"Use only if downstream retirement/public scenes truly react to the established public tone; otherwise leave open or terminalize only with canonical evidence."},
+    {"seedId":"SEED_HOME_PULL_PUBLIC","currentProducerEvidence":["EVT_33_HOME_001","EVT_33_PRS_001"],"currentStatus":"review_required_no_demonstrated_live_consumer","reviewTarget":"34+ home-return and retirement-location content","requiredDecision":"A downstream scene may read it only when a prior public home commitment materially changes that scene. Preserve whether the memory came from the direct home promise or the retirement interview; do not synthesize a single fake origin."},
+    {"seedId":"SEED_FINAL_FOUR_WAYS","currentProducerEvidence":["EVT_33_MKT_001"],"currentStatus":"review_required_no_demonstrated_live_consumer","reviewTarget":"34+ market/late-career transition content","requiredDecision":"Do not consume from a generic veteran-market event; the downstream reader must react to the actual four-way late-career choice memory."},
+    {"seedId":"SEED_VETERAN_LEADERSHIP_FINAL","currentProducerEvidence":["EVT_33_CAP_001"],"currentStatus":"review_required_no_demonstrated_live_consumer","reviewTarget":"34+ leadership/legacy content","requiredDecision":"Use only where veteran leadership history changes responsibility, succession or legacy; otherwise leave open."},
+    {"seedId":"SEED_72H_LIMIT","currentProducerEvidence":["EVT_33_BODY_001"],"currentStatus":"review_required_no_demonstrated_live_consumer","reviewTarget":"34+ physical-load/medical content","requiredDecision":"A reader must react specifically to the established short-turnaround physical limit; generic age/fatigue is not equivalent."}
+  ],
+  "nonBoundaryOpenSeedExample": {
+    "seedId": "SEED_LAST_BIG_MOVE_WINDOW",
+    "producerEvidence": ["EVT_30_MKT_001"],
+    "status": "still_open_not_promoted_to_boundary_handoff",
+    "reason": "Current source search also finds no demonstrated live reader, but its age-30 semantics do not by themselves prove a 34+/retirement boundary ownership. It remains in ordinary T5.2 open-seed classification."
+  },
+  "integrationRule": "This handoff is deliberately non-prescriptive. Downstream owners may add a proven consumer without changing the producer or rewriting history. If no consumer is canonically justified, keeping the seed open is preferable to an invented read or terminal transition."
+}

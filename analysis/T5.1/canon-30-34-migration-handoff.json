@@ -1,0 +1,378 @@
+{
+  "schemaVersion": 2,
+  "workstream": "T5.1 canon 30-34 migration handoff",
+  "generatedAt": "2026-09-17",
+  "sourceMainSha": "fa3c8bae524fef62e4eb9802e895df88588998c4",
+  "sourceContentIdentity": "df1b8939f29c7bca65829dbfa2a0c4a2fcb5c8cc8f1ea08eb96592edc4dcd6fc",
+  "observedTargetContentIdentity": "189176d8799f9cd5da956ef7c5a43bdaa7733ad5e98b919232ecf7311b458b0a",
+  "targetIdentityEvidence": {
+    "workflowRun": 35243921486,
+    "source": "Integración re-grounded sobre la generación publicada df1b; el catálogo runtime actual produce 189176d8...458b0a.",
+    "rule": "Target identity follows the active merged catalog and must be refreshed whenever upstream canonical event metadata or workstream event gates change."
+  },
+  "consumer": {
+    "implementationOwner": "coordination/integration",
+    "routeFile": "src/session/content-migration.ts",
+    "routeRegistry": "CONTENT_MIGRATION_ROUTES",
+    "workstreamMayRegisterRoute": false,
+    "targetFreezeRequiredBeforeRouteRegistration": true,
+    "targetFreezeFixture": "qa/fixtures/t5.1/post-t51-sources/189176d8799f9cd5da956ef7c5a43bdaa7733ad5e98b919232ecf7311b458b0a.json"
+  },
+  "invariants": {
+    "approvedSameSceneMappings": [],
+    "approvedAliases": [],
+    "unknownIdentityAccepted": false,
+    "legacyDefinitionScheduled": false,
+    "legacyHistoryRewrittenAsCanonical": false,
+    "legacyPendingReboundToNewDefinition": false,
+    "legacySeenSuppressesNonEquivalentCanonical": false,
+    "legacyCooldownSuppressesNonEquivalentCanonical": false,
+    "migrationConsumesRng": false,
+    "migrationSchedulesEvents": false,
+    "seedHistoricalOriginRewriteAuthorized": false
+  },
+  "currentBatch": {
+    "sameSceneMappings": [],
+    "exactIdSemanticCollisions": [
+      "EVT_30_CON_001",
+      "EVT_30_BODY_001",
+      "EVT_30_MKT_001",
+      "EVT_30_NAT_001",
+      "EVT_30_FAM_001",
+      "EVT_30_MED_001",
+      "EVT_30_FORM_001",
+      "EVT_30_CAP_001",
+      "EVT_31_MED_001",
+      "EVT_31_MKT_001",
+      "EVT_31_HOME_001",
+      "EVT_31_AGT_001",
+      "EVT_31_LEGACY_001",
+      "EVT_31_RETURN_001",
+      "EVT_31_TACT_001",
+      "EVT_31_CCH_001",
+      "EVT_31_NAT_001",
+      "EVT_31_FINAL_001",
+      "EVT_32_CON_001",
+      "EVT_32_HOME_001",
+      "EVT_32_AGT_001",
+      "EVT_32_FAN_001",
+      "EVT_32_NAT_001",
+      "EVT_33_BODY_001",
+      "EVT_33_CAP_001",
+      "EVT_33_MKT_001",
+      "EVT_33_PRS_001"
+    ],
+    "schedulerMappingsCandidate": [
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_30_CON_001",
+        "canonicalEventId": "EVT_30_CON_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_30_BODY_001",
+        "canonicalEventId": "EVT_30_BODY_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_30_MKT_001",
+        "canonicalEventId": "EVT_30_MKT_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_30_NAT_001",
+        "canonicalEventId": "EVT_30_NAT_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_30_FAM_001",
+        "canonicalEventId": "EVT_30_FAM_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_30_MED_001",
+        "canonicalEventId": "EVT_30_MED_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_30_FORM_001",
+        "canonicalEventId": "EVT_30_FORM_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_30_CAP_001",
+        "canonicalEventId": "EVT_30_CAP_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_31_MED_001",
+        "canonicalEventId": "EVT_31_MED_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_31_MKT_001",
+        "canonicalEventId": "EVT_31_MKT_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_31_HOME_001",
+        "canonicalEventId": "EVT_31_HOME_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_31_AGT_001",
+        "canonicalEventId": "EVT_31_AGT_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_31_LEGACY_001",
+        "canonicalEventId": "EVT_31_LEGACY_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_31_RETURN_001",
+        "canonicalEventId": "EVT_31_RETURN_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_31_TACT_001",
+        "canonicalEventId": "EVT_31_TACT_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_31_CCH_001",
+        "canonicalEventId": "EVT_31_CCH_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_31_NAT_001",
+        "canonicalEventId": "EVT_31_NAT_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_31_FINAL_001",
+        "canonicalEventId": "EVT_31_FINAL_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_32_CON_001",
+        "canonicalEventId": "EVT_32_CON_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_32_HOME_001",
+        "canonicalEventId": "EVT_32_HOME_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_32_AGT_001",
+        "canonicalEventId": "EVT_32_AGT_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_32_FAN_001",
+        "canonicalEventId": "EVT_32_FAN_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_32_NAT_001",
+        "canonicalEventId": "EVT_32_NAT_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_33_BODY_001",
+        "canonicalEventId": "EVT_33_BODY_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_33_CAP_001",
+        "canonicalEventId": "EVT_33_CAP_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_33_MKT_001",
+        "canonicalEventId": "EVT_33_MKT_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_33_PRS_001",
+        "canonicalEventId": "EVT_33_PRS_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      }
+    ],
+    "seedOriginMappingsCandidate": []
+  },
+  "futureShiftedIdentityWork": {
+    "pairs": [
+      {
+        "canonicalId": "EVT_30_BRIDGE_001",
+        "legacyCandidateId": "EVT_30_IDN_001",
+        "sameSceneMigrationAllowed": false
+      },
+      {
+        "canonicalId": "EVT_30_STATUS_001",
+        "legacyCandidateId": "EVT_30_TEAM_001",
+        "sameSceneMigrationAllowed": false
+      },
+      {
+        "canonicalId": "EVT_30_EUR_001",
+        "legacyCandidateId": "EVT_30_FINAL_001",
+        "sameSceneMigrationAllowed": false
+      },
+      {
+        "canonicalId": "EVT_30_RECORD_001",
+        "legacyCandidateId": "EVT_31_REC_001",
+        "sameSceneMigrationAllowed": false
+      },
+      {
+        "canonicalId": "EVT_30_PAIN_001",
+        "legacyCandidateId": "EVT_33_MED_001",
+        "sameSceneMigrationAllowed": false
+      },
+      {
+        "canonicalId": "EVT_30_NANO_001",
+        "legacyCandidateId": "EVT_33_NET_001",
+        "sameSceneMigrationAllowed": false
+      },
+      {
+        "canonicalId": "EVT_31_FAM_001",
+        "legacyCandidateId": "EVT_30_LIFE_001",
+        "sameSceneMigrationAllowed": false
+      },
+      {
+        "canonicalId": "EVT_31_TEAM_001",
+        "legacyCandidateId": "EVT_31_MENT_001",
+        "sameSceneMigrationAllowed": false,
+        "specialCase": "The canonical target string EVT_31_TEAM_001 is already occupied in the legacy catalog by a different youth-wave identity; it remains distinct_scene."
+      },
+      {
+        "canonicalId": "EVT_31_SQUAD_001",
+        "legacyCandidateId": "EVT_31_TEAM_001",
+        "sameSceneMigrationAllowed": false
+      },
+      {
+        "canonicalId": "EVT_31_BIZ_001",
+        "legacyCandidateId": "EVT_32_IMG_001",
+        "sameSceneMigrationAllowed": false
+      },
+      {
+        "canonicalId": "EVT_32_RICH_001",
+        "legacyCandidateId": "EVT_32_MKT_001",
+        "sameSceneMigrationAllowed": false
+      },
+      {
+        "canonicalId": "EVT_32_ELITE_001",
+        "legacyCandidateId": "EVT_32_CLB_001",
+        "sameSceneMigrationAllowed": false
+      },
+      {
+        "canonicalId": "EVT_32_IMPACT_001",
+        "legacyCandidateId": "EVT_32_TACT_001",
+        "sameSceneMigrationAllowed": false
+      },
+      {
+        "canonicalId": "EVT_32_SUCCESSOR_001",
+        "legacyCandidateId": "EVT_32_TEAM_001",
+        "sameSceneMigrationAllowed": false
+      },
+      {
+        "canonicalId": "EVT_32_LOAD_001",
+        "legacyCandidateId": "EVT_32_BODY_001",
+        "sameSceneMigrationAllowed": false
+      },
+      {
+        "canonicalId": "EVT_32_BOSMAN_001",
+        "legacyCandidateId": "EVT_32_BOS_001",
+        "sameSceneMigrationAllowed": false
+      },
+      {
+        "canonicalId": "EVT_33_RECORD_001",
+        "legacyCandidateId": "EVT_33_REC_001",
+        "sameSceneMigrationAllowed": false
+      },
+      {
+        "canonicalId": "EVT_33_FIN_001",
+        "legacyCandidateId": "EVT_33_END_001",
+        "sameSceneMigrationAllowed": false
+      }
+    ]
+  },
+  "futureCanonicalMissingWork": {
+    "ids": [
+      "EVT_30_CCH_001",
+      "EVT_30_PRS_001",
+      "EVT_30_NAT_002",
+      "EVT_30_JAN_001",
+      "EVT_31_ROLE_001"
+    ],
+    "migrationRule": "Each canonical addition starts unseen with no inherited cooldown or synthesized history unless an independently approved mapping exists."
+  },
+  "engineOnlyCurrentBatch": {
+    "status": "keep_active_pending_canonical_decision",
+    "ids": [
+      "EVT_30_AGT_001",
+      "EVT_33_NAT_001",
+      "EVT_33_HOME_001",
+      "EVT_33_CON_001",
+      "EVT_33_RET_001"
+    ],
+    "earlyRetirementException": "EVT_33_RET_001 remains a technical voluntary early-retirement adaptation until an explicit canonical owner decision replaces it."
+  },
+  "requiredCurrentRouteAssertions": [
+    "double migration is a no-op",
+    "registered edge extends the existing upstream lineage without shortcut or ambiguity"
+  ]
+}
