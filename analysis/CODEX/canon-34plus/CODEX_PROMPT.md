@@ -1,186 +1,166 @@
-# Codex prompt — ordinary Canon 34+
+# Codex prompt — Canon 34+ / Agent 8
 
 Repo: `capitanps02/Juego-Multihistoria`  
-Base: latest `main`  
 Branch: `t51/canon-34plus`  
-No auto-merge.
+Base: always re-check latest `main`.  
+No auto-merge. Do not register 34+ runtime until #59 authorizes its serialized turn.
 
-Implement only ordinary late-career 34+ canon. Terminal career retirement, last-match closure and epilogues belong to Agent 9 / PR #118.
+## Ownership
+Implement only ordinary late-career 34+ content. Terminal protagonist retirement, announcement, final career closure, last-match terminal handling and epilogues belong to Agent 9 / PR #118.
 
 ## Read first
-1. `analysis/CODEX/canon-34plus/CURRENT_STATE.json`
-2. `analysis/CODEX/canon-34plus/SHARED_OWNER_ROUTING.json`
-3. `analysis/CODEX/canon-34plus/CANON_STATUS.json`
-4. `analysis/CODEX/canon-34plus/IDENTITY_RECONCILIATION.json`
-5. `analysis/CODEX/canon-34plus/CONDITIONAL_RECONCILIATION.json`
-6. `analysis/CODEX/canon-34plus/CONDITIONAL_HANDOFF.md`
-7. `analysis/CODEX/canon-34plus/CONDITIONAL_AUTHORITY_MATRIX.json`
-8. `analysis/CODEX/canon-34plus/CANONICAL_CARD_COVERAGE.json`
-9. `analysis/CODEX/canon-34plus/implementation-ready.json`
-10. `analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md`
-11. `analysis/CODEX/canon-34plus/T52_SEED_HANDOFF.json`
-12. `analysis/CODEX/canon-34plus/UNLOCK_WAVES.md`
-13. `analysis/CODEX/canon-34plus/AUTHORITY_MATRIX.json`
-14. Wave A–E implementation/test packages under the same directory.
-15. `analysis/CODEX/canon-34plus/VETERAN_LATE_STATE.md`
-16. `analysis/CODEX/canon-34plus/BLOCKERS.md`
-17. `analysis/CODEX/canon-34plus/CONTINUITY_CHAINS.md`
-18. `analysis/CODEX/canon-34plus/RETIREMENT_HANDOFF.md`
-19. canonical source `analysis/2026-09-11/guion-extraido.txt`, especially section 25.13 for the exact conditional deck.
+1. `CURRENT_STATE.json`
+2. `SHARED_OWNER_ROUTING.json`
+3. `CANON_STATUS.json`
+4. `AUTHORITY_MATRIX.json`
+5. `CONDITIONAL_RECONCILIATION.json`
+6. `CONDITIONAL_AUTHORITY_MATRIX.json`
+7. `CONDITIONAL_HANDOFF.md`
+8. `CANONICAL_CARD_COVERAGE.json`
+9. `implementation-ready.json`
+10. `SEED_OWNERSHIP.md`
+11. `T52_SEED_HANDOFF.json`
+12. Wave A–E implementation/test packages
+13. `BLOCKERS.md`
+14. `CONTINUITY_CHAINS.md`
+15. `RETIREMENT_HANDOFF.md`
+16. canonical source `analysis/2026-09-11/guion-extraido.txt`, especially section 25.13.
 
-## Current execution status
-Canonical principal preparation is complete but runtime activation is not:
-- ordinary canonical principal cards prepared: **43/43 = 100%**;
-- ordinary principal runtime implemented on Agent-8 branch: **0/43**;
-- strict principal `codexReady`: **0/43** until Wave 0 and the task-specific authorities are present.
+## Current preparation state
+- principal canon: **50**, split 43 Agent 8 + 7 Agent 9;
+- principal identities reconciled: **50/50**;
+- ordinary principal cards prepared: **43/43**;
+- Agent-8 principal runtime: **0/43**;
+- canonical conditionals: **32 exact IDs**;
+- conditional identity/authority coverage: **32/32**;
+- canonical conditional runtime accreditation: **0/32**;
+- Pasada-7 seeds: **54 exact IDs**, 45 ordinary + 9 terminal, plus 14 bridge concepts.
 
-Canonical conditionals are identity- and authority-classified separately:
-- Pasada-7 canonical conditional IDs: **32**;
-- engine 34+ conditional rows: **32**;
-- exact-ID overlap: **5**;
-- exact-ID rows semantically accredited: **0**;
-- canonical exact IDs missing from engine: **27**;
-- engine technical exact IDs absent from canon: **27**;
-- conditional identity/content owner: **#192**;
-- missing shared factual-authority owner: **#195**;
-- conditional authority matrix coverage: **32/32**;
-- currently unresolved shared factual domains: **8**.
+Preparation does not equal activation.
 
-Do not infer conditional completion from count equality. The current engine deck is mostly generic `technical_adaptation` content and is not canonical merely because it contains 32 rows.
+## Absolute lineage rule
+Issue #59's multi-hop migration engine is already on main, but serialized content ownership still blocks 34+.
 
-Dependency membership for ordinary principals:
-- Wave A: 4 context/body/family/image scenes;
-- Wave B: 18 market/contract scenes;
-- Wave C: 16 sport/usage/selection scenes;
-- Wave D: 7 NPC/squad scenes;
-- Wave E: 2 free-agency scenes.
+Current active chain is `PRE -> B1a -> C -> D -> E -> F -> G -> H`. Coordination explicitly states that no 26–30, 30–34 or 34+ branch may register a successor from H now. Earlier repairs serialize first; then 26–30; then 30–34; only after the final authoritative 30–34 predecessor may 34+ become next.
 
-Intentional overlaps:
-- `EVT_35_AGT_001` = B+D;
-- `EVT_35_DUAL_001` = B+D;
-- `EVT_35_RECORD_001` = C+D;
-- `EVT_37_SHORT_001` = B+E.
+Therefore:
+- do not freeze a 34+ contentIdentity now;
+- do not add a parallel H successor;
+- do not reuse any historical/provisional target hash;
+- at the actual 34+ turn, re-ground and calculate only the adjacent predecessor→34+ generation.
 
-Unique ordinary principal coverage remains **43/43**. `AUTHORITY_MATRIX.json` is the principal dependency contract. `CONDITIONAL_AUTHORITY_MATRIX.json` is the conditional dependency contract. `SHARED_OWNER_ROUTING.json` maps those dependencies to current owner issues/PRs and known residual gaps.
+## Seed prerequisite
+Issue #180 is implemented in **PR #191**, which is ready for review and exact-head green but not yet integrated.
 
-## Conditional canon contract
-The authoritative conditional inventory is section **25.13 — Baraja condicional, 32 eventos que pueden alterar el final**.
+PR #191 provides:
+- 54 exact canonical Pasada-7 seed IDs;
+- exact 45+9 producer split;
+- exact producer provenance;
+- 14 bridge-memory dispositions;
+- no fuzzy legacy→canonical aliasing.
 
-Use exact canonical IDs. Do not map technical rows by title/theme similarity and do not preserve a technical gate merely because the ID matches.
+Do not fabricate seed instances before their canonical producer occurs, and do not activate 34+ while PR #191 is absent from main.
 
-Five current engine IDs collide exactly with canon and all five still require semantic reimplementation:
-- `CEVT_34_MAJOR_COMEBACK` — real major injury + successful 7–10 month rehab + factual strong return;
-- `CEVT_36_NO_MEDICAL_CLEARANCE` — real interested club + factual medical evaluation/clearance failure or special conditions;
-- `CEVT_38_OFFER_AFTER_RETIREMENT_ANNOUNCED` — real formal market approach after announcement;
-- `CEVT_RET_NO_LAST_MATCH` — factual injury/suspension/availability cause, not elapsed-time inference;
-- `CEVT_RET_STORYBOOK_LAST_GOAL` — factual last-match goal, never created by choosing a narrative option.
+## Shared runtime implementation order
+For market/free-agency work, follow this dependency chain exactly:
 
-`CEVT_RET_RECONSIDER` is not a canonical Pasada-7 ID. Canon uses `CEVT_38_RETIREMENT_REVERSAL`. Do not create an alias or rewrite historical/pending provenance without explicit migration authority and Agent-9/shared-retirement agreement.
+`PR #156 / #124 -> #157 -> #130 -> #176`
 
-Issue **#192** owns exact canonical conditional content reconciliation/implementation. Issue **#195** owns assignment/producer-or-fail-closed decisions for eight factual domains that no existing shared contract currently proves:
-- individual award history/win;
-- major-injury rehabilitation history + successful return;
-- club financial state;
-- commercial sponsor state;
-- club medical-evaluation/clearance fact;
-- stadium/external closed-door context;
-- explicit staff crisis + temporary player-coach context;
-- generic record definition + competitor record fact.
+### #156 sport boundary
+Candidate authoritative weekly match/usage producer. Once integrated it can expose factual fixture/calendar/squad/bench/start/appearance/minutes/injury-unavailable history.
 
-Terminal/shared-retirement conditionals remain bounded by Agent 9 / PR #118.
+It deliberately does **not** establish results, goals, assists, cards, awards or generic records.
 
-## Shared owner routing
-Do not rebuild these contracts inside Agent 8. Use their owner workstreams:
-- successive content lineage: **issue #59**;
-- 34+ canonical seed catalog/provenance application: **issue #180**, consuming `T52_SEED_HANDOFF.json`;
-- exact 34+ conditional canon implementation: **issue #192**;
-- missing factual authorities unique to canonical conditionals: **issue #195**;
-- factual match/calendar/competition context: **issue #124** plus **PR #156** authoritative match-history work;
-- concrete national preselection/final squad facts: **issue #174**;
-- veteran 34+ `CareerOffer` generation and late-career term representability: **issue #176**;
-- authoritative free agency / expired-employment transition: **issue #130**;
-- late-career coach/successor/peer/institutional identity: **issue #177**, with coach chronology **#169** where relevant;
-- terminal career retirement/last-match closure/epilogues: **PR #118 / Agent 9**.
+### #157 MarketState v2
+Do not build veteran market against the singular `market.pending` model and then rewrite it. #157 will define one authoritative formal-offer collection, stable offer IDs, deterministic v1 migration, exact selection and durable system closure provenance.
 
-If an owner contract is not integrated into the current base, leave the dependent principal/conditional blocked. Never implement a local proxy to bypass an upstream issue.
+### #130 employment/unattached
+Implementation-ready contract after #156, preferably composed after #157:
+- `contracted`;
+- `unattached`;
+- `expired_pending_resolution` for ambiguous legacy zero-month saves.
 
-## Wave 0 — mandatory before any active 34+ registration
-1. issue #59 must identify the actual authoritative predecessor; do not freeze a provisional shortcut;
-2. final predecessor generations, especially 30–34, must be authoritative;
-3. issue #180 must apply `T52_SEED_HANDOFF.json` so the 54 exact Pasada-7 seeds exist with safe provenance/migration semantics;
-4. predecessor memories consumed by 34+ must use canonical live/historical semantics;
-5. save/history/pending-decision fingerprints must remain compatible.
+A real new-game natural expiry transitions `contracted -> unattached` once, deterministically and 0 RNG. While unattached there is no ordinary club salary/football/renewal/current-club authority. Accepted formal offer is the only reattachment path. No retirement is implied.
 
-Current main remains on certified active content generation H while additional shared non-content authorities land. This is lineage progress, not permission to skip 23–30/30–34. When 34+ becomes the next real generation, calculate only the adjacent predecessor→34+ edge from the then-current catalog. Never reuse a stale hash from this branch.
+### #176 veteran market
+Implement after #157/#130. It owns factual veteran offer production and veteran approach/medical-assessment facts.
 
-## First activation target after Wave 0
-Principal Wave A:
+Already representable: salary, months, numeric release clause when truly a release clause, destination/owner/registration/loan/tier.
+
+Do not pretend the formal terms represent:
+- guaranteed minutes/starting obligation;
+- bonuses;
+- bilateral termination distinct from a numeric release clause;
+- player+liaison role;
+- ambassador/commercial role.
+
+A failed club medical is not a CareerOffer. Use #176's factual veteran approach/assessment authority when implemented.
+
+## Other factual owners
+- **#174** — concrete ordinary list publications and tournament preliminary/final squad facts; implement after #156.
+- **#199** — final result/goals/assists/cards when produced, awards and record truth.
+- **#200** — real injury episode + rehab/clearance/return chronology.
+- **#201** — finance, sponsor, stadium/closed-door and staff-crisis/player-coach world incidents, or explicit fail-closed decision where no justified producer exists.
+- **#169** — coach tenure/change/profile facts.
+- **#177** — routing guard only, not a new generic NPC subsystem.
+
+## Late-career actor rules
+Use `AUTHORITY_MATRIX.json` v4.
+
+- `EVT_35_AGT_001`: existing `resolveActiveAgent()` or explicit null. No #177 implementation dependency.
+- `EVT_35_DUAL_001`: generic club voice is allowed unless canon requires named continuity; do not attach guessed T5.3 knowledge/relationship effects.
+- `EVT_36_CCH_001`: factual coach tenure/profile comes from #169; do not force a persistent NPC.
+- `EVT_34_DORSAL_001` and `EVT_34_MENTOR_001`: generic non-persistent young actor is allowed only if canon does not require cross-scene named continuity or relationship/knowledge mutation.
+- `EVT_35_RECORD_001`: record truth is #199; persistent identity only when explicitly required/certified.
+- `EVT_36_PEER_001`: remain fail-closed until exact peer identity + causal peer-retirement history exists.
+
+## Conditional canon
+Documento Maestro section 25.13 defines **32** canonical conditional IDs. Current engine also has 32 rows, but that is not coverage:
+- exact overlap: 5;
+- same-ID semantically accredited: 0;
+- canonical missing exact IDs: 27;
+- technical engine extra exact IDs: 27;
+- runtime-accredited canonical conditionals: 0/32.
+
+Issue **#192** owns exact conditional content. The former #195 gap is coordination-complete; use the explicit owners in `CONDITIONAL_AUTHORITY_MATRIX.json` v3:
+- awards/records -> #199;
+- major injury/rehab -> #200;
+- finance/sponsor/stadium/staff crisis -> #201;
+- medical clearance -> #176.
+
+Do not treat closed #195 as proof those facts exist.
+
+Five same-ID rows still require reimplementation:
+- `CEVT_34_MAJOR_COMEBACK`;
+- `CEVT_36_NO_MEDICAL_CLEARANCE`;
+- `CEVT_38_OFFER_AFTER_RETIREMENT_ANNOUNCED`;
+- `CEVT_RET_NO_LAST_MATCH`;
+- `CEVT_RET_STORYBOOK_LAST_GOAL`.
+
+`CEVT_RET_RECONSIDER` is not canonical. Canon uses `CEVT_38_RETIREMENT_REVERSAL`; no silent alias, history rewrite or pending-decision reinterpretation.
+
+## First principal activation target
+Only after serialized Wave 0 is actually satisfied:
 - `EVT_35_FAM_001`;
 - `EVT_35_BODY_001`;
 - `EVT_35_IMG_001`;
 - `EVT_36_MED_001`.
 
-Use `WAVE_A_IMPLEMENTATION.json` and `WAVE_A_TEST_MATRIX.md` exactly. Do not register partial shells if a required factual gate is unavailable.
-
-For conditionals, use `CONDITIONAL_RECONCILIATION.json`, `CONDITIONAL_HANDOFF.md` and `CONDITIONAL_AUTHORITY_MATRIX.json`; do not activate generic shells. Every canonical conditional needs its exact factual trigger, scene-specific semantics and all routed factual authorities.
-
-## Existing authorities to consume
-- formal offers: persisted `CareerOffer`, `respondToOffer()` and the offer bridge;
-- exact offer read surface: current main exposes detached **exact eligible `CareerOffer` facts** to narrative reads. Use those factual rows for offer-gated scenes; do not rebuild offer truth from `marketHeat`, rumors, flags, seeds or contract guesses;
-- offer lifecycle: stale offers fail closed, pending offer kind is deterministic, renewal-reason authority is hardened and direct-market-mutation audit is active;
-- market limitation: exact eligible-offer reads and lifecycle guarantees do **not** create missing veteran 34+ offers or unsupported terms; #176 owns generation/representability;
-- contract employment: `contractEmploymentStatus()`;
-- free agency: `monthsRemaining == 0` remains insufficient; #130 owns authoritative unattached state;
-- sport: `getSportContext()` / `getCurrentMatchContext()`; unavailable means unavailable;
-- PR #156 is only a candidate until integrated. Its contract can supply fixture/call-up/bench/start/appearance/minutes/calendar facts, but explicitly does not supply final results, goals/assists/cards, generic record truth or penalties;
-- football moments: only registered IDs are factual;
-- national team: `resolveNationalTeamAuthority()` for historical/pool/cycle/international-retirement facts;
-- national-team limitation: current resolver deliberately exposes `concreteCallupKnown=false` and `tournamentSquadKnown=false`; #174 owns concrete selection-cycle facts;
-- active agent: `resolveActiveAgent()`; null is meaningful;
-- player club leadership: `resolveCurrentPlayerClubLeadership()` / historical leadership facts;
-- named successor: `resolveCertifiedPlayerLeadershipSuccessor()` only; null is meaningful and must not be replaced by relationship/npcRefs/prominence heuristics;
-- leadership limitation: audited earlier canon does not establish a general main-captain writer and audited successor actors remain generic unless explicitly identified; this does not auto-unblock `EVT_34_DORSAL_001` or `EVT_34_MENTOR_001`;
-- current coach/peer/institutional identity: certified authority only; #177/#169 own remaining gaps;
-- seed memory: `projectSeedMemory()` / exact live/historical instances; issue #180 owns Pasada-7 catalog application, never infer semantic payload from a seed name.
+Do not activate these now.
 
 ## Hard rules
-- Never directly mutate `state.club`, owner/registration club or contract terms from a narrative choice.
-- Do not create veteran offers inside narrative content. Signable scenes require a real compatible `CareerOffer` exposed by the authoritative offer surface.
-- Rumors, `marketHeat`, narrative flags and seed presence are not formal offers.
-- `monthsRemaining == 0` is not free agency.
-- `EVT_37_SHORT_001` requires actual free agency before its three-month-offer premise can be valid.
-- No age-only retirement or age-only sporting decline.
-- No synthetic fixture, minutes, start, bench, goal, final, record, call-up, omission, tournament squad, penalty or last-match fact.
-- International retirement is distinct from career retirement and must not change `retirement.status`.
-- `EVT_34_BODY_001` needs a real preceding match before describing post-match pain.
-- `EVT_34_MATCH_001` still needs real knockout/goal/result authority even if usage history exists.
-- `EVT_34_TRAVEL_001` still needs a factual team result.
-- `EVT_35_RECORD_001` needs both a factual sporting record and certified identity when another player is named.
-- `EVT_37_PEN_001` still needs a real penalty opportunity/assignment/outcome plus farewell context.
-- No inferred agent/captain/current coach/successor/peer/family identity.
-- Existing generic conditional gates such as `roleScore`, aggregate caps, `agentControl`, narrative flags or legacy technical seeds are not factual authority when canon requires a concrete match, selection, offer, medical, NPC, award, sponsor, club-finance, record or retirement fact.
-- Preserve history, seed provenance and pending-decision fingerprint semantics.
-- Do not reuse legacy `SEEN_*`/cooldowns to suppress distinct canonical replacements.
-- Do not freeze/register contentIdentity or migration edges before #59 authorizes the adjacent generation.
-- Do not auto-close seeds at retirement.
-- Career-retirement options appearing inside ordinary scenes delegate the terminal transition to Agent 9.
-- Terminal conditionals do not authorize Agent 8 to mutate terminal retirement state independently.
-- If an authority is unavailable, leave the task blocked; never substitute a proxy.
+- no direct club/owner/registration/contract mutation from narrative choices;
+- no synthetic CareerOffer;
+- no `marketHeat`, rumor, seed or flag as formal offer;
+- no `monthsRemaining == 0` as free agency;
+- no synthetic fixture/start/bench/minutes/result/goal/assist/record/award/call-up/omission/penalty/last-match fact;
+- no inferred persistent NPC identity;
+- no age-only decline or retirement;
+- no technical conditional proxy as canonical factual authority;
+- preserve history, pending fingerprints, seed provenance and frozen legacy definitions;
+- no mass seed closure at retirement;
+- terminal career state changes remain Agent 9;
+- unavailable fact => fail closed.
 
-## Required QA per active batch
-- focused scene/authority tests;
-- exact conditional-ID/trigger tests for any #192 batch;
-- negative/fail-closed tests for every #195 domain consumed;
-- 33→34, 34→35, 35→36, 36→37 and later supported ages;
-- elite, rotation, injured, one-club, journeyman, return-club and weak-market trajectories;
-- veteran contract cases including one-year renewal, rejected renewal, lower-level offer, short contract and return offer;
-- free agency only after authoritative unattached-player semantics exist;
-- national-team cases: historical participant, pool active, international retirement, no concrete call-up known;
-- save/load and pending-decision provenance;
-- seed producer/consumer/scope audit;
-- no automatic career retirement and no synthetic last match/goal;
-- migration coverage for replaced/retired technical conditional IDs before any deletion;
-- `npm run build`;
-- `npm test`;
-- migration tests;
-- Repository Integrity on the exact candidate HEAD.
+## QA when an active batch eventually becomes authorized
+Run focused scene/authority tests, save/load and pending provenance, seed producer/scope audit, migration tests, `npm run build`, `npm test` and Repository Integrity on the exact candidate HEAD. Never cite a prior HEAD's green run as certification after modifying the branch.
