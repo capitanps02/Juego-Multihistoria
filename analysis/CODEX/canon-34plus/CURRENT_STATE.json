@@ -48,12 +48,12 @@
   },
   "downstreamOwners": {
     "contentLineage": {"issue": 59, "owner": "shared_integration"},
-    "seedCatalog": {"owner": "t52_agent2", "handoff": "T52_SEED_HANDOFF.json"},
-    "matchCalendarCompetition": {"issue": 124, "owner": "shared_sport_authority"},
+    "seedCatalog": {"issue": 180, "owner": "t52_agent2", "handoff": "T52_SEED_HANDOFF.json"},
+    "matchCalendarCompetition": {"issue": 124, "pullRequest": 156, "owner": "shared_sport_authority"},
     "nationalConcreteSelection": {"issue": 174, "owner": "shared_national_selection_authority"},
-    "veteranMarketContracts": {"issue": 176, "owner": "shared_market_contract_authority"},
+    "veteranMarketContracts": {"issue": 176, "relatedPullRequest": 173, "owner": "shared_market_contract_authority"},
     "freeAgency": {"issue": 130, "owner": "shared_market_employment_state"},
-    "lateCareerNpcIdentity": {"issue": 177, "owner": "shared_t53_npc_affiliation_authority"},
+    "lateCareerNpcIdentity": {"issue": 177, "relatedPullRequest": 150, "relatedCoachIssue": 169, "owner": "shared_t53_npc_affiliation_authority"},
     "terminalRetirement": {"pullRequest": 118, "owner": "agent9"}
   },
   "currentSharedAuthorities": {
@@ -68,13 +68,13 @@
   },
   "verifiedCurrentBlockers": {
     "contentLineage": "issue_59; generation_H_is_integrated_but_final_30_34_predecessor_is_not_yet_authoritative",
-    "seedCatalog": "54_exact_34plus_seed_ids_not_applied_to_main_yet",
+    "seedCatalog": "issue_180; 54_exact_34plus_seed_ids_not_applied_to_main_yet",
     "veteranRenewalGeneration": "issue_176; clubWantsRenewal_returns_false_at_age_gte_34",
     "contractRepresentability": "issue_176; canonical_bonus_exit_role_liaison_ambassador_terms_need_explicit_authority_decision",
     "freeAgency": "issue_130; expired_pending_resolution_is_not_unattached",
-    "sport": "issue_124_and_shared_match_authority; fixture_usage_result_record_and_specific_medical_facts_fail_closed_when_absent",
+    "sport": "issue_124_plus_PR_156; fixture_usage_result_record_and_specific_medical_facts_fail_closed_when_absent",
     "nationalTeamConcrete": "issue_174; concrete current callup_prelist_omission_and_tournament_squad facts remain unavailable",
-    "lateNpcSquad": "issue_177; ordinary_34plus_institutional_squad_coach_successor_peer_identity_incomplete",
+    "lateNpcSquad": "issue_177_plus_PR_150_and_issue_169; ordinary_34plus_institutional_squad_coach_successor_peer_identity_incomplete",
     "terminalRetirement": "agent9_pr118; protagonist career-retirement choices inside ordinary scenes delegate terminal transition"
   },
   "preparedPackages": [
