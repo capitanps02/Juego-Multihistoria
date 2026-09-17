@@ -14,9 +14,15 @@
     "EVT_23_CON_001",
     "EVT_25_CON_001",
     "EVT_25_MKT_001",
-    "EVT_26_BRIDGE_001"
+    "EVT_26_BRIDGE_001",
+    "EVT_26_DOC_001"
   ],
   "absorbedByMain": ["EVT_23_PRS_001", "EVT_23_EUR_001", "EVT_23_HOME_001", "EVT_23_MONEY_001"],
-  "nextMicrobatch": ["EVT_26_MED_001", "EVT_26_DOC_001", "EVT_26_RIV_001"],
-  "notes": "Re-ground excludes stale local club-contract-intent, historical consumer registry and duplicate PRS23 artifacts."
+  "age26Audit": {
+    "MED": "blocked: recoveryMargin exists but authoritative schedule density does not",
+    "DOC": "implemented staged: access negotiation only, no publication side effect",
+    "RIV": "blocked: ADRIAN_MIRROR exists but compatible rival level is not persisted"
+  },
+  "nextMicrobatch": ["EVT_26_CAP_001", "EVT_26_TEAM_002"],
+  "notes": "Historical seed origins remain immutable; staged canonical origins need integrator-owned seed/catalog lineage."
 }
