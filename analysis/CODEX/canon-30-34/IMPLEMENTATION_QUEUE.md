@@ -1,6 +1,6 @@
 # Codex implementation queue — Canon 30–34
 
-Re-grounded sobre `main@290cdb443c1bd075ff876d2c6c1c7b8264476a03`.
+Re-grounded sobre `main@cfb9459934fcd09e52300027f47935f773e60823`.
 
 El Documento Maestro sigue siendo autoridad canónica. Una API compartida que devuelva `null` / `unavailable` no autoriza proxies: la escena debe fallar cerrado.
 
