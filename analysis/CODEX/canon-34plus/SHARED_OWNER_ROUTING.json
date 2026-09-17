@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "generatedAt": "2026-09-17",
   "baseMain": "fa3c8bae524fef62e4eb9802e895df88588998c4",
   "ownerBranch": "t51/canon-34plus",
@@ -10,6 +10,7 @@
     "strictCodexReady": 0,
     "canonicalConditionals": 32,
     "conditionalIdentitiesReconciled": 32,
+    "conditionalAuthorityMatrixCoverage": 32,
     "conditionalRuntimeAccredited": 0
   },
   "globalPrerequisites": [
@@ -32,13 +33,16 @@
     {
       "domain": "canonical_conditional_content",
       "ownerIssue": 192,
+      "sharedAuthorityGapIssue": 195,
       "canonicalCount": 32,
       "engineCount": 32,
       "exactIdOverlap": 5,
       "exactIdSemanticallyAccredited": 0,
       "canonicalMissingExactId": 27,
       "engineTechnicalExtraExactId": 27,
-      "handoff": ["CONDITIONAL_RECONCILIATION.json","CONDITIONAL_HANDOFF.md"],
+      "authorityMatrixCoverage": 32,
+      "unresolvedSharedAuthorityDomains": 8,
+      "handoff": ["CONDITIONAL_RECONCILIATION.json","CONDITIONAL_HANDOFF.md","CONDITIONAL_AUTHORITY_MATRIX.json"],
       "sameIdNeedsReimplementation": [
         "CEVT_34_MAJOR_COMEBACK",
         "CEVT_36_NO_MEDICAL_CLEARANCE",
@@ -53,6 +57,21 @@
         "CEVT_RET_STORYBOOK_LAST_GOAL"
       ],
       "rule": "exact canonical IDs and factual scene-specific triggers only; generic technical rows are not canonical accreditation; no automatic alias from CEVT_RET_RECONSIDER to CEVT_38_RETIREMENT_REVERSAL"
+    },
+    {
+      "domain": "conditional_missing_factual_authorities",
+      "ownerIssue": 195,
+      "domains": [
+        "individual_award_history_and_win",
+        "major_injury_rehab_history_and_successful_return",
+        "club_financial_state",
+        "commercial_sponsor_state",
+        "club_medical_evaluation_or_clearance_fact",
+        "stadium_availability_or_external_closed-door_context",
+        "explicit_staff_crisis_and_temporary_player_coach_context",
+        "generic_record_definition_and_competitor_record_fact"
+      ],
+      "rule": "coordination must assign/reuse a factual producer or explicitly keep dependent conditionals fail-closed; local Agent-8 flags/proxies are forbidden"
     },
     {
       "domain": "veteran_market_contract",
