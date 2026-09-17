@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "782b92c9a496293aeb33ad8b39f522a927374d6f",
-  "branch": "t5/seed-lifecycle-agent2",
+  "baseCommit": "06762a0557c4e92b189e52151c71d6c1af831ee5",
+  "branch": "integration/t5-seed-memory-current",
   "architecture": {
     "seedProjection": "src/narrative/seed-memory.ts",
     "conditionRoot": "src/simulation/club-contract-intent.ts#narrativeConditionRoot",
@@ -99,6 +99,7 @@
   "discovery": {
     "blockedDeclaredReadOnlyConsumers": 37,
     "sourceOfTruth": "analysis/CODEX/seeds/SEED_CONSUMER_MATRIX.json",
+    "matrixMetadataNote": "The matrix was generated on the pre-NPC/sport catalog composition. Neither shared integration changed EVENTS or SEED_CATALOG, so its seed topology remains semantically valid; regenerate with CODEX_BASE_COMMIT on the next seed/content catalog change.",
     "rule": "Do not promote blocked consumers to ready without canonical-owner evidence."
   }
 }
