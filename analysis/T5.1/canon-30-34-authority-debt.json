@@ -1,8 +1,15 @@
 {
   "schemaVersion": 1,
   "scope": "T5.1 canon 30-34 shared-authority debt",
-  "sourceMainSha": "176317c5708995bb72fa40af9dd45dffc9838093",
+  "sourceMainSha": "6d2239ae1f89be97a7c5cf117d456cff9218aade",
   "principle": "Concrete match, squad, competition, offer and contract-clause claims must come from an authoritative shared surface. Aggregate form, reputation, age, role, month and narrative flags are not substitutes.",
+  "upstreamReview": {
+    "newFactsAtSourceMain": [
+      "facts.roleDropSince23",
+      "facts.roleGuaranteeAt23"
+    ],
+    "resultFor30_34": "No previously blocked scene can be certified from these facts alone. In particular canonical-missing EVT_31_ROLE_001 is 'Tres goles y al banquillo' and still needs authoritative match production plus bench/squad context; historical role expectation does not prove the described current sporting event."
+  },
   "sharedSurfaces": {
     "sport": {
       "path": "src/simulation/sport-context.ts",
@@ -163,6 +170,21 @@
       "currentAuthority": "CareerTerms has no automatic-renewal-by-minutes or minutes-threshold field.",
       "risk": "A generic 12-month renewal can satisfy the bridge even though the canonical clause cannot be represented or verified.",
       "codexAction": "Preserve CareerOffer ownership and provenance, but do not mark full contract parity complete until the shared formal-offer model can represent the minutes clause."
+    },
+    {
+      "eventId": "EVT_31_ROLE_001",
+      "status": "canonical_missing_and_sport_blocked",
+      "canonicalClaim": "Canonical title: 'Tres goles y al banquillo'.",
+      "newSharedFactsReviewed": [
+        "facts.roleDropSince23",
+        "facts.roleGuaranteeAt23"
+      ],
+      "missingFacts": [
+        "authoritative recent goal history for the relevant matches",
+        "authoritative bench/squad decision after that production"
+      ],
+      "risk": "The new historical role facts describe expectation/drop history, not the concrete three-goal-plus-bench sporting event.",
+      "codexAction": "Do not use the new role facts as a substitute trigger. Keep the canonical addition in the coordinated missing-ID batch until sport authority can represent its exact context."
     }
   ],
   "implementationRules": [
