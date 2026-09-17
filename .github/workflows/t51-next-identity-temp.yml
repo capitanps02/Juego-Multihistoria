@@ -1,20 +1,44 @@
-name: T5.11 next content identity temp
+name: T5.11 freeze G temp
 
 on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: write
+
 jobs:
-  identity:
+  freeze:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 8
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
       - run: npm ci
       - run: npm run build
-      - name: Print next content identity
-        run: node scripts/print-t51-next-content-identity.mjs
+      - name: Verify next identity
+        run: |
+          identity=$(node scripts/print-t51-next-content-identity.mjs | sed -n 's/^T51_NEXT_CONTENT_IDENTITY=//p')
+          test "$identity" = "303527efcc42c17e502257c3d7c613facafa10c8ed113810b64a1d7ebc6d0bb1"
+      - name: Freeze G and regenerate validation registries
+        run: |
+          node scripts/freeze-t51-active-source.mjs
+          node scripts/generate-t51-post-legacy-registry.mjs
+          node scripts/generate-t51-offer-bridge-evidence.mjs
+      - name: Commit generated evidence to PR branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            qa/fixtures/t5.1/post-t51-sources/303527efcc42c17e502257c3d7c613facafa10c8ed113810b64a1d7ebc6d0bb1.json \
+            src/session/post-t51-legacy-registry.ts \
+            src/session/frozen-offer-bridge-evidence.ts
+          git commit -m "T5.11 PRS: freeze G validation evidence"
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
