@@ -269,33 +269,6 @@ export const NPC_EVENT_KNOWLEDGE_RULES: NpcEventKnowledgeRule[] = [
     certainty: 100,
     memory: "strong",
     relationshipMemory: false
-  },
-  {
-    eventId: "EVT_21_PRS_001",
-    choiceIds: ["CLUB_CORRECT"],
-    npcIds: ["NPC_DIR_02"],
-    source: "informed",
-    certainty: 100,
-    memory: "temporary",
-    relationshipMemory: true
-  },
-  {
-    eventId: "EVT_22_CON_001",
-    choiceIds: ["OPEN_RENEWAL_NOW", "SHORT_EXTENSION_CLAUSE", "NO_RENEWAL_FOR_NOW"],
-    npcIds: ["NPC_DIR_02"],
-    source: "informed",
-    certainty: 100,
-    memory: "strong",
-    relationshipMemory: true
-  },
-  {
-    eventId: "EVT_22_CON_002",
-    choiceIds: ["ACCEPT_SALE_PATH", "RENEW_STRONG_UPGRADE"],
-    npcIds: ["NPC_DIR_02"],
-    source: "informed",
-    certainty: 100,
-    memory: "strong",
-    relationshipMemory: true
   }
 ];
 
