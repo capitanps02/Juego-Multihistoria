@@ -53,8 +53,8 @@
         {
           "id": "CODEX-RET-005",
           "status": "blocked",
-          "task": "Replace aggregate last-appearance observation with full LastMatchFact fixture/minutes/result model",
-          "blocker": "PR #141 / issue #124: no authoritative fixture/calendar/match model on main"
+          "task": "Replace aggregate post-announcement appearance observation with full LastMatchFact fixture/minutes/result model",
+          "blocker": "SportContext has landed, but getCurrentMatchContext() still reports no_authoritative_match_model and fixture/opponent/competition/squad/minutes/result/goals/assists remain unavailable"
         }
       ]
     },
@@ -74,7 +74,7 @@
           "id": "CODEX-RET-007",
           "status": "blocked",
           "task": "Make closure fixture/season-end aware instead of relying on coarse timing/contract proxies",
-          "blocker": "authoritative remaining-fixtures and season-end facts unavailable"
+          "blocker": "SportContext deliberately exposes remainingOfficialMatches/nextFixture/match-day facts as unavailable"
         }
       ]
     },
@@ -120,7 +120,7 @@
           "id": "CODEX-RET-011",
           "status": "blocked",
           "task": "Freeze terminal contentIdentity and register final migration edge",
-          "blocker": "complete active 34+ generation has not landed/frozen"
+          "blocker": "PR #15 / ordinary 34+ generation is not yet complete/integrated/frozen; terminal must follow the authoritative 34+ generation"
         }
       ]
     }
