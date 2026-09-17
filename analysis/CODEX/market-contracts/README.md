@@ -2,7 +2,7 @@
 
 Original market authority integrated through PR #142 / merge commit `782b92c9a496293aeb33ad8b39f522a927374d6f`.
 
-Current follow-up base: `main@06762a0557c4e92b189e52151c71d6c1af831ee5`  
+Current follow-up base: `main@290cdb443c1bd075ff876d2c6c1c7b8264476a03`  
 Follow-up branch: `t5/market-contract-followup`
 
 ## Scope
