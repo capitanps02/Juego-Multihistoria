@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 3,
+  "schemaVersion": 4,
   "generatedAt": "2026-09-17",
   "workstream": "T51_CANON_20_23",
   "branch": "t51/canon-20-23",
@@ -18,26 +18,27 @@
     "criticalCollisionEVT_21_RIV_001ReplacedAsDistinctScene": true,
     "notes": [
       "The historical 27 principal and 3 conditional same-ID cards were revalidated against current main before authoring.",
-      "T5.5-A and T5.5-B replace nine active shells through local overlays; remaining same-ID debt still flows through the generic factories.",
-      "EVT_21_RIV_001 canonical means Adrian/SEED_ADRIAN_MIRROR while the frozen source identity continues validating the old Rivas/HAS_SEED_RIVAS_TRUST definition.",
-      "Microbatch B is frozen as contentIdentity 6e552f606ace400d7b535747fbf7ba6078c60fd92889d4a360eb4db0bfb1013a after 20/20 focused tests and zero T5 content hard errors."
+      "T5.5-A, T5.5-B and T5.6-A replace twelve active shells through local overlays; remaining same-ID debt still flows through generic factories.",
+      "EVT_21_RIV_001 canonical means Adrian/SEED_ADRIAN_MIRROR while frozen source evidence preserves the old Rivas/HAS_SEED_RIVAS_TRUST definition.",
+      "T5.6-A is frozen as contentIdentity ce2f30ea24934787fb116627c727e4adf6c7bd05f8b8e79f415a20643e3fd58f after 28/28 focused tests and zero T5 content hard errors.",
+      "EVT_21_SOC_001 was reclassified as blocked because its full canonical epistemics require authoritative active-agent identity/provenance; it is not counted as functional."
     ]
   },
   "inventory": {
     "canonicalTotal": 51,
     "principals": 33,
     "conditionals": 18,
-    "verifiedFunctional": 9,
-    "verifiedFunctionalPrincipals": 7,
+    "verifiedFunctional": 12,
+    "verifiedFunctionalPrincipals": 10,
     "verifiedFunctionalConditionals": 2,
-    "needsReimplementation": 21,
+    "needsReimplementation": 18,
     "canonicalMissing": 21,
     "legacyOnly": 21,
     "legacyOnlyPrincipals": 6,
     "legacyOnlyConditionals": 15
   },
   "principalNeedsReimplementation": [
-    "EVT_20_MKT_001","EVT_20_MED_001","EVT_20_AGT_001","EVT_20_STATUS_001","EVT_20_CCH_001","EVT_20_LOCK_001","EVT_20_LOCK_002","EVT_20_BRUNO_001",
+    "EVT_20_MKT_001","EVT_20_MED_001","EVT_20_AGT_001","EVT_20_CCH_001","EVT_20_BRUNO_001",
     "EVT_21_MONEY_001","EVT_21_AGT_001","EVT_21_NAT_001","EVT_21_IMG_001","EVT_21_MED_001","EVT_21_CCH_002",
     "EVT_22_LOCK_001","EVT_22_HOME_001","EVT_22_MKT_001","EVT_22_MED_001","EVT_22_TACT_001","EVT_22_DDL_001"
   ],
@@ -53,20 +54,24 @@
     "CEVT_20_LOAN_01","CEVT_20_ABR_01","CEVT_20_AGENT_01","CEVT_20_BODY_01","CEVT_20_HOME_01","CEVT_20_BRUNO_01","CEVT_21_CAPTAIN_01","CEVT_21_NAT_01","CEVT_21_CONTRACT_01","CEVT_21_ADRIAN_01","CEVT_21_FAMILY_01","CEVT_22_DEADLINE_01","CEVT_22_INJ_01","CEVT_22_LOANBUY_01","CEVT_22_RETURN_01"
   ],
   "priorityBlockers": {
-    "matchAuthority": ["EVT_20_MATCH_003"],
+    "activeAgentIdentityAndProvenance": ["EVT_20_BRUNO_001","EVT_20_AGT_001","EVT_21_SOC_001","EVT_21_AGT_001"],
+    "matchAuthority": ["EVT_20_MATCH_003","EVT_21_MED_001","EVT_22_TACT_001"],
     "conditionalMarketFact": ["EVT_20_JAN_001"],
-    "offerAndLoanPlanAuthority": ["EVT_21_MKT_001","CEVT_21_LOAN_01"],
-    "activeAgentIdentity": ["EVT_20_BRUNO_001","EVT_20_AGT_001"],
+    "offerAndLoanPlanAuthority": ["EVT_20_MKT_001","EVT_21_MKT_001","CEVT_21_LOAN_01","EVT_22_MKT_001","EVT_22_MED_001","EVT_22_DDL_001"],
+    "officialSelectionFact": ["EVT_21_NAT_001"],
+    "realImageOffer": ["EVT_21_IMG_001"],
+    "realCoachChange": ["EVT_21_CCH_002"],
     "liveCaptain20_23": ["EVT_21_CAP_001 persistent named-NPC memory only"],
     "currentClubInstitutionalNpc": ["EVT_21_PRS_001 CLUB_CORRECT memory","EVT_22_CON_001 club knowledge","EVT_22_CON_002 club knowledge"],
     "externalWorldFacts": ["CEVT_20_RIVAS_01","CEVT_20_VELA_01","CEVT_20_NANO_01","CEVT_20_MONT_01","CEVT_20_ADR_01","CEVT_21_BIGCLUB_01","CEVT_22_UDV_01","CEVT_22_ADR_02","CEVT_22_SOC_02","CEVT_22_SHOCK_01"],
-    "compoundMedicalFacts": ["CEVT_20_PAULA_01","CEVT_21_INJ_01"],
-    "marketProvenance": ["CEVT_21_AGENT_02","CEVT_22_BRUNO_02"]
+    "compoundMedicalFacts": ["EVT_20_MED_001","CEVT_20_PAULA_01","CEVT_21_INJ_01"],
+    "marketProvenance": ["CEVT_21_AGENT_02","CEVT_22_BRUNO_02"],
+    "realHomeFixture": ["EVT_22_HOME_001"],
+    "lockerSaleConflict": ["EVT_22_LOCK_001"]
   },
   "seedsInScope": [
     "SEED_FIRST_BIG_MONEY","SEED_AGENT_POWER","SEED_FOREIGN_ADAPT","SEED_MEDICAL_DISCLOSURE","SEED_TEAMMATE_COVER","SEED_BRUNO_FAVOR","SEED_FAMILY_MONEY","SEED_SELECTION_SNUB","SEED_SPONSOR_IMAGE","SEED_FIRST_CAPTAIN_ROOM","SEED_PUBLIC_CONTRACT","SEED_ADRIAN_MIRROR","SEED_TACTICAL_SACRIFICE","SEED_FIRST_FREE_AGENCY","SEED_LOCKER_VOTE","SEED_HOME_DISTANCE","SEED_DEADLINE_DAY","SEED_CONTRACT_HARDLINE","SEED_CLARA_CHANNEL","SEED_DANI_NORMALITY","SEED_AGENT_OMISSION","SEED_EXIT_STYLE_UDV","SEED_BODY_PRECEDENT"
   ],
-  "npcDependencies": ["NPC_PLR_12","NPC_PLR_15","NPC_PRS_01","NPC_AGT_01","NPC_AGT_02","NPC_FAM_01","NPC_FAM_02","NPC_MED_01","NPC_SOC_01","NPC_PLR_10","NPC_PLR_11","NPC_CCH_02","NPC_DIR_02","NPC_ACA_01"],
   "officialPassBacklog": {
     "T5.5": ["EVT_20_ABR_001","EVT_20_BRUNO_001","EVT_21_RIV_001","CEVT_21_ABR_01","CEVT_21_MEDIA_01","EVT_22_CON_001","EVT_22_CON_002","EVT_20_LIFE_001","EVT_20_AGT_001","EVT_21_CAP_001","EVT_21_PRS_001","EVT_21_SOC_001"],
     "T5.6": ["EVT_20_MED_001","EVT_20_STATUS_001","EVT_20_CCH_001","EVT_20_LOCK_001","EVT_20_LOCK_002","EVT_21_MONEY_001","EVT_21_AGT_001","EVT_21_NAT_001","EVT_21_IMG_001","EVT_21_MED_001","EVT_21_CCH_002","EVT_21_PRS_002"],
@@ -87,19 +92,27 @@
       "targetContentIdentity": "6e552f606ace400d7b535747fbf7ba6078c60fd92889d4a360eb4db0bfb1013a",
       "migrationHandoff": "analysis/T5.1/t55b-20-23-migration-handoff.json",
       "qa": "20/20 focused A+B tests green; T5 content hardErrors=0"
+    },
+    {
+      "id": "T5.6-A",
+      "scenes": ["EVT_20_STATUS_001","EVT_20_LOCK_001","EVT_20_LOCK_002"],
+      "targetContentIdentity": "ce2f30ea24934787fb116627c727e4adf6c7bd05f8b8e79f415a20643e3fd58f",
+      "migrationHandoff": "analysis/T5.1/t56a-20-23-migration-handoff.json",
+      "qa": "28/28 focused A+B+T5.6-A tests green; T5 content hardErrors=0"
     }
   ],
   "nextSafeWork": {
-    "T5.5": ["EVT_21_SOC_001"],
-    "blockedT5.5": ["EVT_20_BRUNO_001","EVT_20_AGT_001"],
-    "policy": "After EVT_21_SOC_001, move immediately to unlocked T5.6 scenes instead of inventing active-agent infrastructure."
+    "blockedT5.5": ["EVT_20_BRUNO_001","EVT_20_AGT_001","EVT_21_SOC_001"],
+    "T5.6CandidatesRequiringRevalidation": ["EVT_21_MONEY_001","EVT_20_CCH_001","EVT_20_MED_001","EVT_21_PRS_002"],
+    "policy": "Continue with scenes whose complete trigger, knowledge and authority can be proven from existing state. Skip immediately when an external fact, active-agent identity, offer, fixture, selection or medical provenance is missing."
   },
   "progress": {
     "T5.5": "9/12",
-    "global": "9/51",
-    "globalPercent": 17.6,
-    "principals": "7/33",
-    "principalPercent": 21.2,
+    "T5.6": "3/12",
+    "global": "12/51",
+    "globalPercent": 23.5,
+    "principals": "10/33",
+    "principalPercent": 30.3,
     "conditionals": "2/18",
     "conditionalPercent": 11.1
   }
