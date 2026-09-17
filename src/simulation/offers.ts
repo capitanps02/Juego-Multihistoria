@@ -73,9 +73,11 @@ export function getEligibleRenewalOffers(s: GameState): readonly CareerOffer[] {
 }
 
 /**
- * Employment status is deliberately derived from the existing save schema.
- * `months===0` is NOT treated as free agency: current runtime has no authoritative
- * unattached/free-agent representation yet, so expiry remains pending resolution.
+ * Employment status is deliberately conservative over the existing save schema.
+ * The model has a `professional.route="free_agent"` token and classifiers that read it,
+ * but current production code has no authoritative transition that also establishes
+ * unattached club/owner/registration/salary/football semantics. Therefore months===0
+ * remains pending resolution rather than being silently promoted to free agency.
  */
 export function contractEmploymentStatus(s: GameState): ContractEmploymentStatus {
   if (s.retirement.status !== "playing") return "retired";
