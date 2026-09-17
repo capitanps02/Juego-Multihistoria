@@ -1,267 +1,138 @@
 {
   "workstream": "retirement-epilogues",
-  "integrationSnapshot": {
+  "snapshot": {
     "date": "2026-09-17",
     "mainAtAudit": "fa3c8bae524fef62e4eb9802e895df88588998c4",
-    "retirementCertifiedHeadBeforeThisSync": "a35dae2f6c2985ce12756a38248dbac0b4c3d2e6",
-    "retirementCertification": {
-      "dedicatedRunId": 35244654520,
-      "dedicatedConclusion": "success",
+    "retirementSynchronizedHead": "a7caeba7732c3d527a12144c5ee33dc724d0f9b6",
+    "retirementCompareAtCertification": "68_ahead_0_behind",
+    "retirementDedicatedCI": {
+      "runId": 35245103819,
+      "result": "success",
       "build": "pass",
-      "retirementGates": "pass"
+      "t536_t537_gates": "pass"
     },
-    "lineageSentinel": {
-      "policy": "fail_closed_until_preceding_ordinary_34plus_generation_is_integrated_and_frozen",
-      "previousUnfrozenTerminalCandidate": "4f7c783521a463509ac8bf9a0646b6c0aeaff6861a8d01ab8b1e43c19641e93b"
+    "repositoryIntegrity": {
+      "runId": 35245103825,
+      "result": "expected_fail_closed_active_source_freeze_sentinel",
+      "ordinaryValidationBeforeSentinel": "pass",
+      "unfrozenTerminalCandidate": "4f7c783521a463509ac8bf9a0646b6c0aeaff6861a8d01ab8b1e43c19641e93b"
     }
   },
-  "statusModel": {
-    "implemented": "Implemented on t5/retirement-epilogues with dedicated regression evidence; Codex must not duplicate it.",
-    "blocked": "Prepared but must not be guessed around until the named external authority exists or is integrated.",
-    "partially_unblocked": "An external candidate provides part of the required authority, but the task is not integration-ready yet."
-  },
-  "batches": [
+  "rules": [
+    "Do not duplicate tasks marked implemented.",
+    "Do not consume an unmerged producer-private store shape.",
+    "Do not infer unsupported match result, goals or assists.",
+    "Do not weaken or pre-freeze the terminal contentIdentity sentinel.",
+    "Terminal lineage must be adjacent to the real frozen ordinary 34+ generation."
+  ],
+  "tasks": [
     {
-      "lot": "A",
-      "name": "Retirement contemplation",
-      "tasks": [
-        {
-          "id": "CODEX-RET-001",
-          "status": "implemented",
-          "task": "Terminal contemplation keeps retirement.status=playing until an explicit retirement choice is made.",
-          "evidence": [
-            "src/content/events/34_plus/retirement-terminal-overrides.ts",
-            "scripts/test-t536-t537-retirement.mjs#playing-to-decided",
-            "scripts/test-t536-t537-retirement.mjs#no-market-does-not-retire"
-          ]
-        }
-      ]
+      "id": "CODEX-RET-001",
+      "status": "implemented",
+      "task": "Retirement contemplation keeps status=playing until an explicit retirement choice.",
+      "evidence": ["src/content/events/34_plus/retirement-terminal-overrides.ts", "scripts/test-t536-t537-retirement.mjs"]
     },
     {
-      "lot": "B",
-      "name": "Continue / announce decisions",
-      "tasks": [
-        {
-          "id": "CODEX-RET-002",
-          "status": "implemented",
-          "task": "Explicit pre-announcement reconsideration uses the decided->playing contract and cannot reopen announced/closed retirement.",
-          "evidence": [
-            "src/simulation/late-career-engine.ts",
-            "src/content/events/34_plus/retirement-terminal-overrides.ts#CEVT_RET_RECONSIDER",
-            "scripts/test-t536-t537-retirement.mjs#reconsideration-and-forbidden-reversals"
-          ]
+      "id": "CODEX-RET-002",
+      "status": "implemented",
+      "task": "Pre-announcement reconsideration uses decided->playing and cannot reopen announced/closed retirement.",
+      "evidence": ["src/simulation/late-career-engine.ts", "scripts/test-t536-t537-retirement.mjs"]
+    },
+    {
+      "id": "CODEX-RET-003",
+      "status": "implemented",
+      "task": "Public announcement writes NPC knowledge only through authoritative live role targets; WAIT remains private.",
+      "evidence": ["src/catalog/npc-knowledge-rules.ts", "src/narrative/npc-knowledge-targets.ts", "scripts/test-t536-npc-announcement.mjs", "scripts/test-t53-dynamic-targets.mjs"]
+    },
+    {
+      "id": "CODEX-RET-004",
+      "status": "implemented",
+      "task": "Final-phase narrative consumes facts but never grants an appearance, goal, result or victory.",
+      "evidence": ["src/content/events/34_plus/retirement-terminal-overrides.ts", "scripts/test-t536-sport-authority.mjs"]
+    },
+    {
+      "id": "CODEX-RET-005",
+      "status": "blocked",
+      "readiness": "partially_unblocked_not_integration_ready",
+      "task": "Replace aggregate post-announcement appearance observation with a rich authoritative LastMatchFact.",
+      "producer": {
+        "pr": 156,
+        "branch": "t5/authoritative-match-model",
+        "currentHead": "05ac9cb123d413697de086b8099a6f5c3015d344",
+        "relationToMainAtAudit": "2_ahead_2_behind",
+        "state": "open_draft_not_integrated",
+        "currentExactHeadCI": {
+          "runId": 35244948064,
+          "statusAtAudit": "in_progress",
+          "sampledStep": "project_validation_running"
         },
-        {
-          "id": "CODEX-RET-003",
-          "status": "implemented",
-          "task": "Public retirement announcement choices publish live NPC knowledge only through authoritative role targets; WAIT keeps private intent private.",
-          "eventId": "EVT_RET_ANNOUNCE_001",
-          "evidence": [
-            "src/catalog/npc-knowledge-rules.ts#EVT_RET_ANNOUNCE_001",
-            "src/narrative/npc-knowledge-targets.ts",
-            "scripts/test-t536-npc-announcement.mjs",
-            "scripts/test-t53-dynamic-targets.mjs"
-          ],
-          "safety": [
-            "choice and outcome scoped",
-            "activeAgent/currentClubInstitutional/captain/star fail closed when unresolved",
-            "no frozen T5.3 backfill rewrite",
-            "no WAIT knowledge write"
-          ]
-        }
-      ]
-    },
-    {
-      "lot": "C",
-      "name": "Final-phase scenes",
-      "tasks": [
-        {
-          "id": "CODEX-RET-004",
-          "status": "implemented",
-          "task": "Final-phase narrative consumes facts and intent but never grants an appearance, goal, result or victory.",
-          "evidence": [
-            "src/content/events/34_plus/retirement-terminal-overrides.ts#EVT_RET_LASTMATCH_001",
-            "src/simulation/late-career-engine.ts",
-            "scripts/test-t536-sport-authority.mjs",
-            "scripts/test-t536-t537-retirement.mjs#last-match"
-          ]
+        "priorHeadEvidence": {
+          "head": "30764bafacd9712ed39af8f176312ec8ffa8a8d4",
+          "runId": 35243389440,
+          "projectValidation": "pass",
+          "playcanvas": "pass",
+          "qaBuild": "pass",
+          "preContentFreezeSentinel": "pass",
+          "termination": "cancelled_during_determinism_after_newer_commit_superseded_run_not_a_proven_determinism_failure"
         },
-        {
-          "id": "CODEX-RET-005",
-          "status": "blocked",
-          "readiness": "partially_unblocked_by_PR_156_not_integration_ready",
-          "task": "Replace aggregate post-announcement appearance observation with full LastMatchFact fixture/minutes/result model.",
-          "currentMainBlocker": "Main still lacks the integrated persisted authoritative match history required by retirement.",
-          "candidateAuthority": {
-            "pr": 156,
-            "branch": "t5/authoritative-match-model",
-            "headAtAudit": "30764bafacd9712ed39af8f176312ec8ffa8a8d4",
-            "currentMainAtAudit": "fa3c8bae524fef62e4eb9802e895df88588998c4",
-            "relationAtAudit": "1_ahead_2_behind",
-            "stateAtAudit": "open_draft_not_integrated",
-            "historicalCertificationOnCandidateHead": {
-              "repositoryIntegrityRunId": 35243389440,
-              "projectValidation": "pass",
-              "playcanvas": "pass",
-              "qaBuild": "pass",
-              "preContentFreezeSentinel": "pass",
-              "determinismAtLatestAudit": "running"
-            },
-            "provides": [
-              "persisted official league fixture identity",
-              "registration club/opponent/homeAway/competition",
-              "calledUp/onBench/started/appeared/minutes/injuryUnavailable",
-              "next and previous fixture surfaces",
-              "remaining official/league fixture facts",
-              "save validation and deterministic replay with zero additional RNG"
-            ],
-            "stillMissingForFullLastMatchFact": [
-              "authoritative per-match final result",
-              "authoritative goals",
-              "authoritative assists",
-              "shared read helper for last fixture in history where player.appeared=true when immediately previous fixture was a non-appearance"
-            ]
-          },
-          "unblockContract": "Re-ground, fully certify and integrate PR #156 (or successor), then expose a read-only last-professional-appearance query plus result/goals/assists only if the canonical rich LastMatchFact continues to require them. Until then keep unsupported fields null and preserve aggregate fallback."
-        }
-      ]
+        "provides": ["fixture identity/date", "registration club/opponent/home-away/league competition", "calledUp/onBench/started/appeared/minutes/injuryUnavailable", "next/previous fixture", "remaining official/league fixture counts", "save validation and deterministic replay contract"],
+        "stillMissing": ["authoritative per-match final result", "authoritative goals", "authoritative assists", "shared last history fixture where player.appeared=true"]
+      },
+      "unblockContract": "Re-ground and fully certify PR #156 or successor, integrate it into main, then add/read last-professional-appearance facts. Keep unsupported details null until an authority exists."
     },
     {
-      "lot": "D",
-      "name": "Career closure",
-      "tasks": [
-        {
-          "id": "CODEX-RET-006",
-          "status": "implemented",
-          "task": "closeCareer is the terminal operation, is idempotent, consumes zero closure RNG and cannot reopen closed careers.",
-          "evidence": [
-            "src/simulation/late-career-engine.ts#closeCareer",
-            "scripts/test-t536-t537-retirement.mjs#closed-and-idempotence",
-            "scripts/test-t536-t537-retirement.mjs#save-restore"
-          ]
-        },
-        {
-          "id": "CODEX-RET-007",
-          "status": "blocked",
-          "readiness": "producer_candidate_historically_playcanvas_green_but_2_behind_current_main_and_not_integrated",
-          "task": "Make closure fixture/season-end aware instead of relying on coarse timing/contract proxies.",
-          "currentMainBlocker": "The authoritative persisted match producer required by retirement is not integrated into current main.",
-          "candidateAuthority": {
-            "pr": 156,
-            "branch": "t5/authoritative-match-model",
-            "headAtAudit": "30764bafacd9712ed39af8f176312ec8ffa8a8d4",
-            "currentMainAtAudit": "fa3c8bae524fef62e4eb9802e895df88588998c4",
-            "relationAtAudit": "1_ahead_2_behind",
-            "provides": [
-              "SportContext remaining league/official fixture facts",
-              "SportContext nextFixture and previousFixture",
-              "hoursToNextFixture/training-window facts",
-              "current squad and participation/minutes facts",
-              "official weekly league fixture progression through Aug-May",
-              "persisted objective closure for existing UDV season resolution"
-            ],
-            "requiredCertificationBeforeConsumption": [
-              "re-ground candidate to current main",
-              "complete exact-head Repository Integrity producer suite",
-              "retain exact-head PlayCanvas green evidence on the re-grounded head",
-              "integration into main or a clean successor before retirement rewiring"
-            ],
-            "historicalCertificationOnAuditedHead": {
-              "repositoryIntegrityRunId": 35243389440,
-              "projectValidation": "pass",
-              "playcanvas": "pass",
-              "qaBuild": "pass",
-              "preContentFreezeSentinel": "pass",
-              "determinismAtLatestAudit": "running",
-              "integratedIntoMain": false
-            }
-          },
-          "unblockContract": "After PR #156 (or its clean successor) is re-grounded, fully exact-head certified and integrated into main, replace the coarse administrative final-window trigger with a fail-closed sporting boundary based on authoritative remainingOfficialMatches/nextFixture while preserving announced-state playability, idempotence and legacy-store compatibility. Do not copy the unmerged producer into the retirement branch."
-        }
-      ]
+      "id": "CODEX-RET-006",
+      "status": "implemented",
+      "task": "closeCareer is terminal, idempotent, consumes zero closure RNG and cannot reopen closed careers.",
+      "evidence": ["src/simulation/late-career-engine.ts", "scripts/test-t536-t537-retirement.mjs"]
     },
     {
-      "lot": "E",
-      "name": "Epilogue facts",
-      "tasks": [
-        {
-          "id": "CODEX-RET-008",
-          "status": "implemented",
-          "task": "buildCareerSummary() is a read-only factual projection and keeps unsupported facts null/omitted.",
-          "evidence": [
-            "src/epilogue/career-summary.ts",
-            "scripts/test-t536-career-summary.mjs"
-          ]
-        }
-      ]
+      "id": "CODEX-RET-007",
+      "status": "blocked",
+      "task": "Make career closure fixture/season-end aware rather than relying on coarse time/contract proxies.",
+      "producer": {
+        "pr": 156,
+        "currentHead": "05ac9cb123d413697de086b8099a6f5c3015d344",
+        "relationToMainAtAudit": "2_ahead_2_behind",
+        "exactHeadRunId": 35244948064,
+        "exactHeadCIAtAudit": "in_progress",
+        "requiredBeforeConsumption": ["re-ground to current main", "complete exact-head Repository Integrity", "exact-head PlayCanvas green", "integration into main or clean successor"]
+      },
+      "unblockContract": "After the producer is integrated, gate administrative closure on authoritative remainingOfficialMatches/nextFixture while preserving announced-state playability, idempotence and fail-closed legacy-store compatibility."
     },
     {
-      "lot": "F",
-      "name": "Epilogue narratives",
-      "tasks": [
-        {
-          "id": "CODEX-RET-009",
-          "status": "implemented",
-          "task": "Epilogue prose is deterministic and evidence-gated across supported ending families.",
-          "evidence": [
-            "src/epilogue/generator.ts",
-            "scripts/test-t537-family-minimums.mjs",
-            "scripts/test-t537-epilogue-profiles.mjs"
-          ]
-        }
-      ]
+      "id": "CODEX-RET-008",
+      "status": "implemented",
+      "task": "buildCareerSummary() is a read-only factual projection and keeps unsupported facts null/omitted.",
+      "evidence": ["src/epilogue/career-summary.ts", "scripts/test-t536-career-summary.mjs"]
     },
     {
-      "lot": "G",
-      "name": "Legacy / save compatibility",
-      "tasks": [
-        {
-          "id": "CODEX-RET-010",
-          "status": "implemented",
-          "task": "Active, decided, announced and closed saves retain retirement semantics without history/RNG rewriting.",
-          "evidence": [
-            "analysis/CODEX/retirement/SAVE_COMPATIBILITY.md",
-            "scripts/test-t536-t537-retirement.mjs#legacy-save-and-schema7",
-            "scripts/test-t536-t537-retirement.mjs#save-restore"
-          ]
-        },
-        {
-          "id": "CODEX-RET-011",
-          "status": "blocked",
-          "readiness": "explicit_upstream_chain_identified",
-          "task": "Freeze terminal contentIdentity and register final migration edge.",
-          "blocker": "The ordinary 34+ generation does not exist in runtime yet and therefore cannot be the frozen adjacent predecessor of terminal retirement.",
-          "upstreamChain": {
-            "step1Lineage": {
-              "issue": 59,
-              "stateAtAudit": "open",
-              "contract": "deterministic multigeneration migration path/evidence infrastructure; 0 RNG; no scheduling/choice resolution; exact pending fingerprints; fail-closed missing/ambiguous routes"
-            },
-            "step2Seeds": {
-              "issue": 180,
-              "stateAtAudit": "open",
-              "contract": "54 exact canonical Pasada-7 seed IDs = 45 ordinary + 9 terminal; 14 bridge-memory concepts are inherited/derived and must not auto-produce at age 34; no fuzzy ID rename or provenance rewrite"
-            },
-            "step3Ordinary34Plus": {
-              "pr": 15,
-              "branch": "t51/canon-34plus",
-              "relationAtAuditToMain": "59_ahead_1_behind",
-              "preparedCards": "43/43",
-              "runtimeImplemented": "0/43",
-              "strictCodexReady": "0/43_until_Wave_0_complete",
-              "contentState": "generation_H_remains_active_no_provisional_34plus_freeze"
-            },
-            "step4Terminal": "Only after the exact ordinary 34+ generation is implemented, integrated and frozen may retirement register the adjacent ordinary34plus->terminal edge."
-          },
-          "previousUnfrozenTerminalCandidate": "4f7c783521a463509ac8bf9a0646b6c0aeaff6861a8d01ab8b1e43c19641e93b",
-          "unblockContract": "Integrate #59 and #180, activate/integrate/freeze the authoritative ordinary 34+ generation from PR #15, then register only the exact adjacent ordinary-34+ -> terminal migration edge. No PRE_T51 shortcut and no guessed target hash."
-        }
-      ]
+      "id": "CODEX-RET-009",
+      "status": "implemented",
+      "task": "Epilogue prose is deterministic and evidence-gated across supported ending families.",
+      "evidence": ["src/epilogue/generator.ts", "scripts/test-t537-family-minimums.mjs", "scripts/test-t537-epilogue-profiles.mjs"]
+    },
+    {
+      "id": "CODEX-RET-010",
+      "status": "implemented",
+      "task": "Active, decided, announced and closed saves retain retirement semantics without history/RNG rewriting.",
+      "evidence": ["analysis/CODEX/retirement/SAVE_COMPATIBILITY.md", "scripts/test-t536-t537-retirement.mjs"]
+    },
+    {
+      "id": "CODEX-RET-011",
+      "status": "blocked",
+      "task": "Freeze terminal contentIdentity and register the final adjacent migration edge.",
+      "upstreamChain": [
+        {"issue": 59, "stateAtAudit": "open", "contract": "deterministic multigeneration migration lineage with 0 RNG and fail-closed route evidence"},
+        {"issue": 180, "stateAtAudit": "open", "contract": "54 exact canonical Pasada-7 seed IDs = 45 ordinary + 9 terminal; 14 bridge concepts inherited/derived"},
+        {"pr": 15, "branch": "t51/canon-34plus", "relationToMainAtAudit": "59_ahead_1_behind", "preparedCards": "43/43", "runtimeImplemented": "0/43", "strictCodexReady": "0/43_until_Wave_0_complete", "contentState": "generation_H_active_no_provisional_34plus_freeze"}
+      ],
+      "unblockContract": "Integrate #59 and #180; activate, integrate and freeze the authoritative ordinary 34+ generation from PR #15; then register only the exact adjacent ordinary34plus->terminal edge. No PRE_T51 shortcut and no guessed hash."
     }
   ],
   "implementedCount": 8,
   "readyCount": 0,
   "blockedCount": 3,
   "partiallyUnblockedCount": 2,
-  "remainingCodexAction": "Do not duplicate implemented lots. RET-007 remains blocked on re-ground + exact-head certification + integration of PR #156 (or clean successor). RET-005 remains partial because rich result/goals/assists and last-appeared-fixture lookup are absent. RET-011 now has an explicit upstream chain: #59 + #180 -> PR #15 ordinary runtime/freeze -> terminal adjacent migration. There is no safe terminal contentIdentity work to perform before that chain completes."
+  "codexNextAction": "Do not duplicate implemented retirement lots. RET-005 and RET-007 wait on re-grounded, exact-head-certified, integrated match authority. RET-011 waits on #59 + #180 -> PR #15 ordinary 34+ runtime/freeze -> terminal adjacent migration."
 }
