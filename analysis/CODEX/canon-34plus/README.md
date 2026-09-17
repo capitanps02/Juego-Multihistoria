@@ -1,22 +1,38 @@
 # Canon 34+ — Agent 8
 
-Reconciled against `main@782b92c9a496293aeb33ad8b39f522a927374d6f` on 2026-09-17.
+Runtime re-grounded on `main@176317c5708995bb72fa40af9dd45dffc9838093` on 2026-09-17. Identity reconciliation remains the audited 50/50 classification produced before this re-ground; the intervening `main` commits are T5.2 provenance/closure infrastructure and do not alter the 34+ canonical principal inventory.
 
 ## Scope
 - Canonical principals in source block 34+: **50**.
 - Agent 8 ordinary late-career ownership: **43**.
 - Agent 9 terminal/retirement ownership: **7** (`EVT_37_ANNOUNCE_001` plus six `EVT_RET_*`).
-- Engine 34+ conditionals: **32**; no canonical conditional-ID inventory exists, so their semantic completion is not inferred from the count.
+- Engine 34+ conditionals: **32**; there is still no canonical conditional-ID inventory, so semantic completion cannot be inferred from the count.
 - Historical engine-only principal extras: **30**.
+- Identity reconciliation: **50/50 classified** (4 same-identity, 3 replacements, 13 needs-reimplementation, 30 canonical-missing).
 
-## Current conclusion
-The historical `t51/canon-34plus` implementation mixed useful analysis with terminal retirement code that is now owned by PR #118. This re-ground keeps the branch history but drops superseded terminal implementation from the active tree and replaces it with an Agent-8-only Codex handoff.
+## Runtime status on this branch
+This branch intentionally contains **no new active 34+ canonical event implementation yet**. The old branch mixed Agent-8 content with terminal retirement code; the active tree is now re-grounded on current `main`, while terminal implementation remains owned by Agent 9 / PR #118.
 
-`CareerOffer` authority is now on `main`; this unlocks preparation of veteran renewal/transfer scenes, but activation still requires exact canonical seed mapping and content-lineage integration. Free agency is not yet authoritative: an expired contract remains `expired_pending_resolution`.
+Strict integration-ready count is currently **0/43 ordinary principals**. All 43 ordinary scenes have explicit Codex task rows, but activation still depends on shared content lineage and on correcting the 34+ seed catalog/migration from the owner decision in `SEED_OWNERSHIP.md`.
 
-Sporting facts remain the largest blocker: current main still has no authoritative fixture/match/squad/minutes store. Do not infer starts, bench use, goals, finals or call-ups from age, `roleScore`, form or reputation.
+## Authorities now available on main
+- Market: `CareerOffer`, offer queries, `respondToOffer()` and offer bridge.
+- Sport: `getSportContext()` / `getCurrentMatchContext()` are integrated and fail closed for fixture/minutes/start/bench/goal/selection facts that do not exist.
+- Football moments: persisted authority exists only for explicitly registered moments; current registry does not cover 34+ scenes.
+- NPC: `resolveActiveAgent()` is integrated; missing authority returns null. Late-career club institutional actors are still uncertified.
+- Seeds: scope-aware live/historical projections, closure-readiness audit and the explicit owner-classification registry are integrated. The registry mechanism is now authoritative, but the 34+ catalog still contains technical placeholder identities; `SEED_OWNERSHIP.md` supplies the owner decision needed before those identities can be migrated/classified safely.
+
+## Closed ownership question
+Agent 8 classified the 14 34+ bridge-memory concepts and reconciled the **54 exact Pasada-7 canonical seed identities**. See `SEED_OWNERSHIP.md`. This removes the semantic ambiguity about “68 new seeds”: 14 are inherited/derived concepts and 54 are Pasada-7 memories, with **45 ordinary producers** and **9 terminal producers**.
+
+## Main remaining blockers
+1. successive content lineage / issue #59;
+2. T5.2 catalog + migration application of `SEED_OWNERSHIP.md` and subsequent closure-registry entries where evidence permits;
+3. veteran offer generation: ordinary renewal intent still stops at `age >= 34`, so `CareerOffer` can represent veteran terms but the world does not yet authoritatively generate the needed 34+ proposals;
+4. free-agency employment semantics;
+5. fixture/match/squad/recent-minutes and national-selection authority;
+6. late-career institutional/squad NPC authority;
+7. terminal retirement remains Agent 9.
 
 ## Hard boundary
-Agent 8 may create veteran pressure, uncertainty and explicit decisions to continue. It must not announce/close retirement, fabricate last match/goal, convert no-offer into retirement, or mutate club/contract outside `CareerOffer`.
-
-Files in this folder are the current handoff for Codex and Agent 9.
+Agent 8 may create veteran pressure, uncertainty, adaptation and explicit decisions to continue. It must not announce/close retirement, fabricate last match/goal/selection, turn no-offer into retirement, infer NPC identities, or mutate club/contract outside `CareerOffer`.
