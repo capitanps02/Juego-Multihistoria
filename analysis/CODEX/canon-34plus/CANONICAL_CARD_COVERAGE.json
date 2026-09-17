@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "generatedAt": "2026-09-17",
+  "owner": "t51/canon-34plus",
+  "canonicalOrdinaryExpected": 43,
+  "uniqueCanonicalCardsPrepared": 43,
+  "coverageComplete": true,
+  "waves": {
+    "A": ["EVT_35_FAM_001","EVT_35_BODY_001","EVT_35_IMG_001","EVT_36_MED_001"],
+    "B": ["EVT_34_BRIDGE_001","EVT_34_PAY_001","EVT_34_HOME_001","EVT_34_AGT_001","EVT_34_CON_001","EVT_34_MAR_001","EVT_35_MKT_001","EVT_35_CON_001","EVT_35_FAREWELL_001","EVT_35_AGT_001","EVT_35_DUAL_001","EVT_35_JAN_001","EVT_35_HOME_001","EVT_36_CON_001","EVT_36_LOWER_001","EVT_37_SHORT_001","EVT_37_HOME_001","EVT_38_RICH_001"],
+    "C": ["EVT_34_NT_001","EVT_34_LOAD_001","EVT_34_ROLE_001","EVT_34_BODY_001","EVT_34_MATCH_001","EVT_34_NT_002","EVT_34_FAN_001","EVT_34_TRAVEL_001","EVT_35_TACT_001","EVT_35_BENCH_001","EVT_35_RECORD_001","EVT_35_FINAL_001","EVT_35_NT_001","EVT_36_BODY_001","EVT_36_RECORD_001","EVT_37_PEN_001"],
+    "D": ["EVT_34_DORSAL_001","EVT_34_MENTOR_001","EVT_35_DUAL_001","EVT_35_AGT_001","EVT_35_RECORD_001","EVT_36_CCH_001","EVT_36_PEER_001"],
+    "E": ["EVT_37_SHORT_001","EVT_38_MARKET_001"]
+  },
+  "counts": {"A":4,"B":18,"C":16,"D":7,"E":2},
+  "overlaps": [
+    {"eventId":"EVT_35_AGT_001","waves":["B","D"]},
+    {"eventId":"EVT_35_DUAL_001","waves":["B","D"]},
+    {"eventId":"EVT_35_RECORD_001","waves":["C","D"]},
+    {"eventId":"EVT_37_SHORT_001","waves":["B","E"]}
+  ],
+  "packages": {
+    "A": ["WAVE_A_IMPLEMENTATION.json","WAVE_A_TEST_MATRIX.md"],
+    "B": ["WAVE_B_IMPLEMENTATION.json","WAVE_B_TEST_MATRIX.md","WAVE_D_IMPLEMENTATION.json#EVT_35_DUAL_001"],
+    "C": ["WAVE_C_IMPLEMENTATION.json","WAVE_C_TEST_MATRIX.md"],
+    "D": ["WAVE_D_IMPLEMENTATION.json","WAVE_D_TEST_MATRIX.md"],
+    "E": ["WAVE_E_IMPLEMENTATION.json","WAVE_E_TEST_MATRIX.md"]
+  },
+  "note": "Coverage complete means canonical card extraction/preparation is complete. It does not mean runtime implementation or Codex readiness; Wave 0 and scene-specific authorities still gate activation."
+}
