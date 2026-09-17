@@ -3,7 +3,7 @@
   "scope": "30_34",
   "generatedAt": "2026-09-17",
   "branch": "t51/canon-30-34",
-  "sourceMainSha": "6d2239ae1f89be97a7c5cf117d456cff9218aade",
+  "sourceMainSha": "fa3c8bae524fef62e4eb9802e895df88588998c4",
   "sources": [
     "analysis/T5.1/canon-30-34.json",
     "analysis/T5.2/README.md",
@@ -21,11 +21,12 @@
     "legacySeedsRemainCompatible": true,
     "crossBlockReadersAreDependenciesNotInventedLinks": true,
     "frozenSaveBaselinesAreNotSilentlyRewritten": true,
-    "canonicalMissingSeedsMustNotBeWiredToLegacyProxies": true
+    "canonicalMissingSeedsMustNotBeWiredToLegacyProxies": true,
+    "canonicalReferenceOutsideCatalogIsNotPermissionToSynthesizeSeed": true
   },
   "stableIdReimplementations": 27,
   "latestSharedAuditSnapshot": {
-    "workflowRun": 35235694077,
+    "workflowRun": 35258681318,
     "owner": "t51/canon-30-34",
     "totalSeeds": 52,
     "runtimeProduced": 48,
@@ -35,7 +36,7 @@
     "noProducerAndNoConsumer": 4,
     "terminalTransitionDefined": 0,
     "openEndedWithoutTerminalTransition": 52,
-    "interpretation": "Open-ended is not automatically a defect. The four no-producer/no-consumer rows are intentionally held for their canonical-missing writers. The shared audit's withConsumers count is structural runtime evidence and must not be conflated with owner-certified canonical consumption."
+    "interpretation": "Open-ended is not automatically a defect. The four no-producer/no-consumer rows are intentionally held for their canonical-missing writers. The shared audit's withConsumers count is structural runtime evidence and must not be conflated with owner-certified canonical consumption. Repository Integrity reached this audit successfully before the expected target-freeze sentinel."
   },
   "orphanCanonicalMappings": [
     {
@@ -65,6 +66,14 @@
       "canonicalTitle": "Enero: especialista de lujo",
       "runtimeStatus": "canonical_missing",
       "rule": "Create only from the canonical decision/outcome about the specialist role at a big club, never from a generic market shell."
+    }
+  ],
+  "canonicalReferencesOutsideRuntimeCatalog": [
+    {
+      "seed": "SEED_LAST_PEAK_CONTRACT",
+      "canonicalReaderOrWriterContext": "EVT_30_CON_001",
+      "status": "missing_unclassified_runtime_definition",
+      "rule": "Do not create, rename or map this seed to an existing 30-34 seed by semantic similarity. T5.2/canonical ownership must define identity, payload, scope, producer and any real consumer before materialization."
     }
   ],
   "orphanMigrationRule": "PASADA_6_30_34 remains editorial catalog provenance and is not a runtime originEvent. New instances use the real canonical event that produced them. Existing historical SeedInstance.originEvent is preserved unless an independently approved rewriteExisting mapping exists.",
@@ -97,7 +106,7 @@
       "writer": "EVT_30_CAP_001",
       "readers": ["EVT_33_CAP_001"],
       "classification": "declared_memory_context_not_causal_consumption",
-      "reason": "The reader lists the seed, but current reachability uses successionPressure and does not require the handover memory."
+      "reason": "The reader lists the seed, but current reachability requires explicit current-club main-captain authority plus successionPressure; it does not require this seed or inspect its payload."
     },
     {
       "seed": "SEED_AGENT_LAST_CONTRACT",
@@ -169,6 +178,18 @@
     "SEED_HOME_PULL_PUBLIC"
   ],
   "openWithinStableSetMeaning": "No owner-certified causal reader is proven among the 27 stable-ID reimplementations for these rows. This is not evidence that the seed should be consumed or expired here; T5.2 policy forbids artificial closure.",
+  "downstreamBoundaryHandoff": {
+    "path": "analysis/T5.1/canon-30-34-downstream-seed-handoff.json",
+    "seeds": [
+      "SEED_AGE34_PRIORITY",
+      "SEED_RETIREMENT_PUBLIC_TONE",
+      "SEED_HOME_PULL_PUBLIC",
+      "SEED_FINAL_FOUR_WAYS",
+      "SEED_VETERAN_LEADERSHIP_FINAL",
+      "SEED_72H_LIMIT"
+    ],
+    "rule": "34+/retirement owners must classify a real downstream reader, explicit terminal disposition or continued-open state from evidence. This workstream does not invent one."
+  },
   "retirementSafety": {
     "publicRetirementToneSeed": "SEED_RETIREMENT_PUBLIC_TONE",
     "terminalFlag": "EARLY_RETIRED_30_34",
@@ -176,11 +197,11 @@
   },
   "compatibilityDiagnostics": {
     "seed424242": {
-      "finding": "final-gate-v08 regenerates examples/save-v08-seed-424242.json before the frozen save test; canonical content changes therefore mutate the generated golden career even when schema migration is unchanged.",
+      "finding": "Historical diagnostic: final-gate-v08 regenerates examples/save-v08-seed-424242.json before the frozen save test; canonical content changes can mutate the generated golden career even when schema migration is unchanged.",
       "firstObservedDivergenceBeforeTriggerFix": "EVT_30_CON_001 was excluded by an incomplete <=18-month gate while the canonical trigger is <=18 months OR club wants renewal; EVT_30_IDN_001 occupied the deterministic slot instead.",
       "localAction": "EVT_30_CON_001 now consumes the shared renewal-intent OR gate instead of approximating it.",
-      "globalDependency": "Frozen golden-career fixture policy must distinguish save-schema compatibility from intentional canonical simulation changes; this workstream will not silently update the expected hash."
+      "currentStatus": "Current Repository Integrity passes save/schema validation before stopping at the expected missing target-freeze sentinel; no frozen-save compatibility defect is currently attributed to this workstream."
     }
   },
-  "integrationStatus": "four_orphan_writers_identified_pending_coordinated_missing_scene_batch; seven_declared_seed_reads_declassified_from_causal_chains; remaining_open_seeds_require_proven_downstream_classification"
+  "integrationStatus": "four_orphan_writers_identified_pending_coordinated_missing_scene_batch; one_additional_canonical_seed_reference_missing_runtime_definition; seven_declared_seed_reads_declassified_from_causal_chains; six_boundary_seeds_handed_off_without_invented_consumers; remaining_open_seeds_require_proven_downstream_classification"
 }
