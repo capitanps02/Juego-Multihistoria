@@ -259,3 +259,27 @@ test('prepared seed-trigger prerequisites are explicit and do not widen their sc
   assert.deepEqual(load.gates,[{path:'flags.HAS_SEED_MATCH_SELECTIVITY',op:'eq',value:true}]);
   assert.equal(EVENTS.some(event=>['EVT_30_NANO_001','EVT_31_FAM_001','EVT_32_LOAD_001'].includes(event.id)),false);
 });
+
+
+test('all 18 shifted principals are either active canonical scenes or owner-complete prepared definitions', () => {
+  const shiftedIds=[
+    'EVT_30_BRIDGE_001','EVT_30_STATUS_001','EVT_30_EUR_001','EVT_30_RECORD_001','EVT_30_PAIN_001','EVT_30_NANO_001',
+    'EVT_31_FAM_001','EVT_31_TEAM_001','EVT_31_SQUAD_001','EVT_31_BIZ_001',
+    'EVT_32_RICH_001','EVT_32_ELITE_001','EVT_32_IMPACT_001','EVT_32_SUCCESSOR_001','EVT_32_LOAD_001','EVT_32_BOSMAN_001',
+    'EVT_33_RECORD_001','EVT_33_FIN_001'
+  ];
+  const active=new Set(EVENTS.map(event=>event.id));
+  const prepared=new Set([
+    ...PREPARED_SHIFTED_CANON_30_34_A,
+    ...PREPARED_SHIFTED_CANON_30_34_B,
+    ...PREPARED_SHIFTED_CANON_30_34_C
+  ].map(event=>event.id));
+  assert.equal(shiftedIds.length,18);
+  assert.equal(new Set(shiftedIds).size,18);
+  assert.deepEqual(
+    shiftedIds.filter(id=>!active.has(id)&&!prepared.has(id)),
+    []
+  );
+  assert.equal(shiftedIds.filter(id=>active.has(id)).length,4);
+  assert.equal(shiftedIds.filter(id=>prepared.has(id)).length,14);
+});
