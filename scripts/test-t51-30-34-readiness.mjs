@@ -61,7 +61,8 @@ test('T5.1 30-34 readiness particiona exactamente los 50 principales en 27/18/4 
   assert.equal(readiness.summary.totalCanonicalPrincipals, 50);
   assert.equal(byStatus('stable_semantics_implemented_shared_parity_gap').length, 27);
   assert.equal(byStatus('shifted_identity_requires_migration').length, 18);
-  assert.equal(byStatus('canonical_missing_requires_coordinated_addition').length, 4);\n  assert.equal(byStatus('canonical_addition_implemented_shared_parity_gap').length, 1);
+  assert.equal(byStatus('canonical_missing_requires_coordinated_addition').length, 4);
+  assert.equal(byStatus('canonical_addition_implemented_shared_parity_gap').length, 1);
   assert.equal(readiness.summary.verifiedSameIdentity, 0);
   assert.equal(readiness.summary.approvedAliases, 0);
   assert.equal(readiness.summary.safeStableIdSetComplete, true);
@@ -108,7 +109,8 @@ test('T5.1 30-34 readiness conserva tres writers missing y registra el writer ca
   assert.equal(readiness.summary.canonicalMissingWithOrphanSeedWriterOwnership, 3);
   assert.equal(readiness.seedWriterBatch.withoutRuntimeProducer, 3);
   assert.equal(readiness.seedWriterBatch.mappings.length, 3);
-  assert.equal(seedLifecycle.orphanCanonicalMappings.length, 3);\n  assert.deepEqual(seedLifecycle.resolvedCanonicalWriters.map(row => row.seed), ['SEED_ROLE_COMMUNICATION']);
+  assert.equal(seedLifecycle.orphanCanonicalMappings.length, 3);
+  assert.deepEqual(seedLifecycle.resolvedCanonicalWriters.map(row => row.seed), ['SEED_ROLE_COMMUNICATION']);
 
   for (const mapping of readiness.seedWriterBatch.mappings) {
     assert.equal(expected.get(mapping.seed), mapping.canonicalEventId, `${mapping.seed}: writer canónico inesperado`);
@@ -119,7 +121,12 @@ test('T5.1 30-34 readiness conserva tres writers missing y registra el writer ca
     assert.equal(event.writesSeed, mapping.seed);
   }
 
-  const communication = readiness.events.find(event => event.canonicalId === 'EVT_30_CCH_001');\n  assert.equal(communication.status, 'canonical_addition_implemented_shared_parity_gap');\n  assert.equal(communication.engineId, 'EVT_30_CCH_001');\n  assert.equal(communication.writesSeed, 'SEED_ROLE_COMMUNICATION');\n\n  const role = readiness.events.find(event => event.canonicalId === 'EVT_31_ROLE_001');
+  const communication = readiness.events.find(event => event.canonicalId === 'EVT_30_CCH_001');
+  assert.equal(communication.status, 'canonical_addition_implemented_shared_parity_gap');
+  assert.equal(communication.engineId, 'EVT_30_CCH_001');
+  assert.equal(communication.writesSeed, 'SEED_ROLE_COMMUNICATION');
+
+  const role = readiness.events.find(event => event.canonicalId === 'EVT_31_ROLE_001');
   assert.ok(role.dependencies.includes('SPORT_AUTHORITY'));
   assert.equal(role.dependencies.includes('CANONICAL_SEED_WRITER'), false);
 });
