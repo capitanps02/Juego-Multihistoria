@@ -19,6 +19,7 @@ import { narrativeCausalFacts } from '../dist/simulation/club-contract-intent.js
 import { certifyActiveAgentInPlace } from '../dist/simulation/npc-authority.js';
 import { captureNpcKnowledgeTargetContext, resolveNpcKnowledgeTargets } from '../dist/narrative/npc-knowledge-targets.js';
 import { proposeCareerChange } from '../dist/simulation/offers.js';
+import { recordOfficialMatchInPlace } from '../dist/simulation/match-model.js';
 import { loadSave, serializeSave } from '../dist/save/save.js';
 
 const event = id => {
@@ -233,6 +234,47 @@ test('A5 ready/8 staged NPC provenance uses only explicit participants and A1 dy
   assert.deepEqual(resolveNpcKnowledgeTargets(directorRule, context), []);
 });
 
+
+test('A5 ready/9 WAIT_THREE_MATCHES is measured by three persisted official fixtures, not by time or role proxies', () => {
+  const scene=event('EVT_20_CCH_001');
+  let state=stateAt(510091,20,'2028-08-01');
+  state.runtime.day=1;
+
+  resolveChoiceInPlace(state,scene,'WAIT_THREE_MATCHES');
+  let fact=narrativeCausalFacts(state).coachPromiseWait;
+  assert.ok(fact);
+  assert.equal(fact.choiceDate,'2028-08-01');
+  assert.equal(fact.officialMatchesElapsed,0);
+  assert.equal(fact.complete,false);
+
+  const rngAfterChoice=structuredClone(state.rngState);
+  const dates=[
+    ['2028-08-08',7],
+    ['2028-08-15',14],
+    ['2028-08-22',21]
+  ];
+
+  dates.forEach(([date,day],index)=>{
+    state.date=date;
+    state.runtime.day=day;
+    const row=recordOfficialMatchInPlace(state,{appeared:false,debutOccurred:false,injuryUnavailable:false});
+    assert.ok(row,'expected official fixture '+date);
+    fact=narrativeCausalFacts(state).coachPromiseWait;
+    assert.ok(fact);
+    assert.equal(fact.officialMatchesElapsed,index+1);
+    assert.equal(fact.complete,index+1>=3);
+    assert.deepEqual(state.rngState,rngAfterChoice,'fixture/fact projection must consume zero RNG');
+
+    if(index===1){
+      state=loadSave(serializeSave(state));
+      fact=narrativeCausalFacts(state).coachPromiseWait;
+      assert.equal(fact.officialMatchesElapsed,2,'two-match progress survives save/restore');
+      assert.equal(fact.complete,false);
+    }
+  });
+
+  assert.equal(narrativeCausalFacts(state).coachPromiseWait.complete,true);
+});
 
 test('A5 canon blocker/1 EVT_18_END_002 is canon-resolved owner-side without coach-status proxy', () => {
   const scene = A5_EVT_18_END_002_OWNER_READY;
