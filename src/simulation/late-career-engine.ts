@@ -97,6 +97,8 @@ function applyStatusSideEffects(state:GameState,previous:RetirementStatus,status
     state.world.retirementLastAppearanceDate=null;
     state.flags.LAST_MATCH_PLAYED=false;
   } else if(status==="playing"){
+    state.retirement.decidedDate=null;
+    state.retirement.announcedDate=null;
     state.flags.RETIREMENT_ANNOUNCED=false;
     state.flags.RETIREMENT_DECISION_CONTEXT=false;
     state.flags.RECONSIDERATION_WINDOW=false;
