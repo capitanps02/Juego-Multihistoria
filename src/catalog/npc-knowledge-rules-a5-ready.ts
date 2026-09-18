@@ -144,5 +144,74 @@ export const A5_READY_NPC_KNOWLEDGE_RULES: NpcEventKnowledgeRule[] = [
     certainty: 100,
     memory: "strong",
     relationshipMemory: true
-  }
+  }  {
+    eventId: "EVT_20_AGT_001",
+    choiceIds: ["BROAD_CONTROL", "REPORT_ALL", "SPLIT_FUNCTIONS", "NO_CENTRALIZE"],
+    npcIds: [],
+    targetSlots: ["activeAgent"],
+    source: "informed",
+    certainty: 100,
+    memory: "strong",
+    relationshipMemory: true
+  },
+  {
+    eventId: "EVT_20_BRUNO_001",
+    choiceIds: ["AUTHORIZE_NOTIFY"],
+    npcIds: ["NPC_PLR_12"],
+    targetSlots: ["activeAgent"],
+    source: "informed",
+    certainty: 100,
+    memory: "strong",
+    relationshipMemory: true
+  },
+  {
+    eventId: "EVT_20_BRUNO_001",
+    choiceIds: ["AUTHORIZE_PRIVATE", "ASK_PROOF", "DECLINE_HELP"],
+    npcIds: ["NPC_PLR_12"],
+    source: "informed",
+    certainty: 100,
+    memory: "strong",
+    relationshipMemory: true
+  },
+  {
+    eventId: "EVT_21_AGT_001",
+    choiceIds: ["ACCEPT_TARGETS", "KEEP_TERMS", "SPLIT_IMAGE"],
+    npcIds: [],
+    targetSlots: ["activeAgent"],
+    source: "informed",
+    certainty: 100,
+    memory: "strong",
+    relationshipMemory: true
+  },
+  {
+    eventId: "EVT_21_NAT_001",
+    choiceIds: ["PRIVATE_CHECK"],
+    npcIds: [],
+    targetSlots: ["activeAgent"],
+    source: "informed",
+    certainty: 100,
+    memory: "temporary",
+    relationshipMemory: false
+  },
+  {
+    eventId: "EVT_21_CCH_002",
+    choiceIds: ["SOUND_MARKET"],
+    npcIds: [],
+    targetSlots: ["activeAgent"],
+    source: "informed",
+    certainty: 100,
+    memory: "strong",
+    relationshipMemory: true
+  },
+  {
+    eventId: "EVT_22_TACT_001",
+    choiceIds: ["SCOUT_CONTEXT"],
+    npcIds: [],
+    targetSlots: ["activeAgent"],
+    source: "informed",
+    certainty: 100,
+    memory: "temporary",
+    relationshipMemory: false
+  },
+
 ];
