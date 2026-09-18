@@ -8,7 +8,7 @@ test('late sponsor boom needs factual viral/new-market history, never marketHeat
  const s=createInitialState(22001);s.age=35;s.phase='34_plus';s.retirement.status='playing';
  s.professional.commercialPower=100;s.reputation.marketHeat=100;
  assert.equal(isSponsorLateBoomEligible(s),false);
- s.microfeeds.push({id:'FEED_26_30_ORG_02',date:s.date,text:'viral history'});
+ s.microfeeds.push({id:'FEED_26_30_ORG_02',date:s.date,family:'brand',text:'viral history'});
  assert.equal(isSponsorLateBoomEligible(s),true);
 });
 test('late sponsor boom also accepts factual transatlantic/new-rich-market history',()=>{
