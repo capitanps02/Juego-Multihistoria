@@ -4,6 +4,7 @@ import { STAGED_PRINCIPAL_SPORT_BATCH } from "./staged-principal-sport-batch.js"
 import { STAGED_PRINCIPAL_ROLE_BATCH } from "./staged-principal-role-batch.js";
 import { STAGED_EXTERNAL_PRINCIPALS } from "./staged-principal-awaiting-external.js";
 import { STAGED_ORDINARY_CANONICAL_CONDITIONALS } from "./staged-conditional-ordinary.js";
+import { STAGED_MEMORY_CONDITIONALS } from "./staged-conditional-memory.js";
 import { TERMINAL_CONDITIONAL_HANDOFFS } from "./terminal-conditional-handoff.js";
 
 export const A8_STAGED_PRINCIPALS: readonly EventDefinition[] = [
@@ -13,8 +14,10 @@ export const A8_STAGED_PRINCIPALS: readonly EventDefinition[] = [
   ...STAGED_EXTERNAL_PRINCIPALS.map(row=>row.event)
 ];
 
-export const A8_STAGED_ORDINARY_CONDITIONALS: readonly EventDefinition[] =
-  STAGED_ORDINARY_CANONICAL_CONDITIONALS.map(row=>row.event);
+export const A8_STAGED_ORDINARY_CONDITIONALS: readonly EventDefinition[] = [
+  ...STAGED_MEMORY_CONDITIONALS,
+  ...STAGED_ORDINARY_CANONICAL_CONDITIONALS.map(row=>row.event)
+];
 
 export const A8_TERMINAL_CONDITIONAL_HANDOFFS = TERMINAL_CONDITIONAL_HANDOFFS;
 
