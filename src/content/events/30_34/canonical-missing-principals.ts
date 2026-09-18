@@ -189,6 +189,12 @@ const SPECIALIST_BIGCLUB = ambiguousEvent({
   body: "Un gigante europeo pregunta por una cesión o traspaso corto para usarte en grandes noches y rotaciones. Jugarías menos liga que ahora, pero entrarías en una plantilla con opciones reales de título máximo.",
   visible: ["Conoces duración, salario, expectativa de minutos y competiciones de la propuesta."],
   uncertain: ["No sabes si acabarás siendo un arma de banquillo útil o simple seguro de plantilla."],
+  timeWindow: { months: [1] },
+  gates: [{ path: "facts.pendingCareerOffer.terms.bigClub", op: "eq", value: true }],
+  gateAlternatives: [
+    [{ path: "facts.pendingCareerOfferKind", op: "eq", value: "transfer" }],
+    [{ path: "facts.pendingCareerOfferKind", op: "eq", value: "loan" }]
+  ],
   seedsWrite: ["SEED_SPECIALIST_BIGCLUB"],
   choices: [
     {
@@ -228,9 +234,14 @@ const SPECIALIST_BIGCLUB = ambiguousEvent({
       secondarySeedTransitions: seed("SEED_SPECIALIST_BIGCLUB", "D", "short_definitive_move")
     }
   ],
-  tags: ["t51_canonical_missing_prepared", "t51_blocked_specialist_offer_authority"],
+  tags: ["t51_canonical_missing_addition", "t51_offer_authority_bridge", "t51_bigclub_offer_required"],
   canonStatus: "technical_adaptation"
 });
+
+const SPECIALIST_BIGCLUB_ACTIVE = {
+  ...SPECIALIST_BIGCLUB,
+  offerBridge: { choiceActions: { A: "accept", B: "reject", C: "counter", D: "counter" } }
+} as EventDefinition & { offerBridge: { choiceActions: Record<string, "accept" | "reject" | "counter"> } };
 
 const FORM_VS_PLAN = ambiguousEvent({
   id: "EVT_31_ROLE_001",
@@ -409,12 +420,12 @@ const AGE34_BRIDGE = ambiguousEvent({
 export const BLOCKED_CANONICAL_ADDITIONS_30_34: EventDefinition[] = [
   FALSE_ULTIMATUM,
   NATIONAL_ABSENCE,
-  SPECIALIST_BIGCLUB,
   FORM_VS_PLAN
 ];
 
 export const CANONICAL_ADDITIONS_30_34: EventDefinition[] = [
   VETERAN_LABEL_BRIDGE,
   ROLE_COMMUNICATION,
+  SPECIALIST_BIGCLUB_ACTIVE,
   AGE34_BRIDGE
 ];
