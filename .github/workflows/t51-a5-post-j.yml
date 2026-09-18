@@ -1,0 +1,61 @@
+name: T51 A5 post-J activation
+# Serialized immediately after generation J.
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: ['t51/a5-post-j-ready']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  a5-post-j:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Post-J finite batch and identity
+        run: node --test scripts/test-t51-a5-post-j.mjs
+      - name: Refresh T5.2 lifecycle evidence for focused test
+        run: node scripts/audit-t52.mjs
+      - name: Causal fact registry
+        run: node --test scripts/test-t52-causal-seed-facts.mjs
+      - name: Shared choice/NPC contracts
+        run: node --test scripts/test-t51-shared-contracts.mjs scripts/test-t53-dynamic-targets.mjs
+      - name: Freeze K source and regenerate migration evidence
+        run: |
+          if [ -f "qa/fixtures/t5.1/post-t51-sources/4fcc0855296617a312a41fab9ac3ff8d97ef1901e4ae7a8a5cd0b315dd19dca4.json" ]; then
+            node scripts/freeze-t51-active-source.mjs --check
+            node scripts/generate-t51-post-legacy-registry.mjs --check
+            node scripts/generate-t51-offer-bridge-evidence.mjs --check
+          else
+            node scripts/freeze-t51-active-source.mjs
+            node scripts/generate-t51-post-legacy-registry.mjs
+            node scripts/generate-t51-offer-bridge-evidence.mjs
+          fi
+          npm run build
+          node scripts/check-t51-content-migration-route.mjs
+          node --test scripts/test-t51-content-migration.mjs scripts/test-t51-content-lineage.mjs scripts/test-t51-migration-source-policy.mjs
+      - name: Persist generated K evidence on branch
+        if: github.event_name == 'pull_request'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "qa/fixtures/t5.1/post-t51-sources/4fcc0855296617a312a41fab9ac3ff8d97ef1901e4ae7a8a5cd0b315dd19dca4.json" src/session/post-t51-legacy-registry.ts src/session/frozen-offer-bridge-evidence.ts
+          if git diff --cached --quiet; then
+            echo "K evidence already frozen"
+            exit 0
+          fi
+          git commit -m "test(A5): freeze post-J content source K"
+          git push origin HEAD:${{ github.head_ref }}
