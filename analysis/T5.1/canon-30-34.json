@@ -77,7 +77,8 @@
       "canonicalId": "EVT_30_STATUS_001",
       "engineId": "EVT_30_TEAM_001",
       "status": "needs_reimplementation",
-      "title": "El dorsal"
+      "title": "El dorsal",
+      "implementation": "canonical dorsal scene active under EVT_30_STATUS_001; exact YOUNG_SUCCESSOR seed gate; legacy EVT_30_TEAM_001 superseded; writes SEED_DORSAL_SUCCESSION only because SEED_SUCCESSOR_PEAK has no runtime catalog identity."
     },
     {
       "canonicalId": "EVT_30_FAM_001",
@@ -646,9 +647,10 @@
     "shiftedCanonicalImplemented": [
       "EVT_30_BRIDGE_001",
       "EVT_33_FIN_001",
-      "EVT_32_IMPACT_001"
+      "EVT_32_IMPACT_001",
+      "EVT_30_STATUS_001"
     ],
-    "shiftedCanonicalImplementedCount": 3
+    "shiftedCanonicalImplementedCount": 4
   },
   "implementationDisposition": {
     "safeNow": [
