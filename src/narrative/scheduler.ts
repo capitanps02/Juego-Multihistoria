@@ -7,6 +7,7 @@ import { EventIndex } from "./event-index.js";
 import { eligibleChoices, eventWithEligibleChoices } from "./choice-eligibility.js";
 import { eventGatesPass } from "./event-gates.js";
 import { mandatoryTransitionPriorityActive } from "./transition-priority.js";
+import { employmentStatus } from "../simulation/employment.js";
 
 export interface SchedulerOptions { qa?: boolean; currentTick?: number; ignoreRhythmGate?: boolean; }
 type Period = { key: string; cap: number };
@@ -80,6 +81,8 @@ function rhythmPass(state:GameState,event:EventDefinition,options:SchedulerOptio
   const sameHeavy=ctx.recent3.filter(h=>h.snapshot.family===event.family).length; if((event.family==="medical"||event.family==="contract")&&sameHeavy>=2)return false; return true;
 }
 function isEligible(state:GameState,event:EventDefinition,options:SchedulerOptions,ctx:TickContext):boolean {
+  const employment = employmentStatus(state);
+  if ((employment === "unattached" || employment === "expired_pending_resolution") && ["sport","team","captaincy"].includes(event.family)) return false;
   const maxAge=event.ageWindow[1]??Infinity; if(state.age<event.ageWindow[0]||state.age>maxAge||state.phase!==event.phase)return false;
   const mandatoryTransition=mandatoryTransitionPriorityActive(state,event);
   if(!mandatoryTransition && state.phase==="34_plus" && event.family!=="conditional" && !(event.tags??[]).includes("retirement_terminal")){
