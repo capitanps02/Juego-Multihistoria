@@ -1,42 +1,229 @@
 {
-  "version": 5,
-  "generatedAt": "2026-09-17",
+  "version": 6,
+  "generatedAt": "2026-09-18",
   "baseMain": "5f4d14bca4d696cfafadb58b64034c7cd40cc147",
   "ownerBranch": "t51/canon-34plus",
-  "principals": {"canonicalCount":50,"agent8Ordinary":43,"agent9Terminal":7,"identityReconciled":50,"ordinaryCardsPrepared":43,"ordinaryAuthorityMatrixCoverage":43,"runtimeImplementedOnAgent8Branch":0,"strictCodexReady":0},
-  "conditionals": {"canonicalSource":"Documento Maestro section 25.13","canonicalCount":32,"engineCount":32,"identityReconciled":32,"authorityMatrixCoverage":32,"runtimeAccredited":0,"exactIdOverlap":5,"exactIdSemanticallyAccredited":0,"canonicalMissingExactId":27,"engineTechnicalExtraExactId":27,"ownerIssue":192,"formerGapIssue":{"issue":195,"state":"closed_completed"},"unresolvedSharedAuthorityDomains":0,"routedFactOwners":[176,199,200,201]},
-  "seeds": {"canonicalPasada7Identities":54,"ordinaryAgent8Producers":45,"terminalAgent9Producers":9,"bridgeMemoryConcepts":14,"ownerIssue":180,"pullRequest":191,"implementationState":"green_ready_not_integrated_on_current_main","catalogAppliedToMain":false},
-  "lineage": {"ownerIssue":59,"migrationGraphImplemented":true,"activeContentGeneration":"H","activeContentIdentity":"84871fae2bec92d74d1e607e0a48943e2e530a062d315a829cfe75eda9fe0886","agent8SuccessorAuthorizedNow":false,"immediate34PlusPredecessorAuthoritative":false},
-  "sportBoundary": {"issue":124,"pullRequest":156,"integrated":true,"mainCommit":"5f4d14bca4d696cfafadb58b64034c7cd40cc147","facts":["fixture_identity","calendar","squad_call","bench","start","appearance","minutes","injury_unavailable","usage_history"],"notFacts":["result","goals","assists","cards","awards","records","concrete_national_selection","stadium_incident"]},
+  "principals": {
+    "canonicalCount": 50,
+    "agent8Ordinary": 43,
+    "agent9Terminal": 7,
+    "identityReconciled": 50,
+    "ordinaryCardsPrepared": 43,
+    "ordinaryAuthorityMatrixCoverage": 43,
+    "runtimeImplementedOnAgent8Branch": 0,
+    "strictCodexReady": 0
+  },
+  "conditionals": {
+    "canonicalSource": "Documento Maestro section 25.13",
+    "canonicalCount": 32,
+    "engineCount": 32,
+    "identityReconciled": 32,
+    "authorityMatrixCoverage": 32,
+    "runtimeAccredited": 0,
+    "exactIdOverlap": 5,
+    "exactIdSemanticallyAccredited": 0,
+    "canonicalMissingExactId": 27,
+    "engineTechnicalExtraExactId": 27,
+    "ownerIssue": 192,
+    "formerGapIssue": {
+      "issue": 195,
+      "state": "closed_completed"
+    },
+    "unresolvedSharedAuthorityDomains": 0,
+    "routedFactOwners": [
+      176,
+      199,
+      200,
+      201
+    ]
+  },
+  "seeds": {
+    "canonicalPasada7Identities": 54,
+    "ordinaryAgent8Producers": 45,
+    "terminalAgent9Producers": 9,
+    "bridgeMemoryConcepts": 14,
+    "ownerIssue": 180,
+    "pullRequest": 191,
+    "implementationState": "green_ready_not_integrated_on_current_main",
+    "catalogAppliedToMain": false
+  },
+  "lineage": {
+    "ownerIssue": 59,
+    "migrationGraphImplemented": true,
+    "activeContentGeneration": "H",
+    "activeContentIdentity": "84871fae2bec92d74d1e607e0a48943e2e530a062d315a829cfe75eda9fe0886",
+    "agent8SuccessorAuthorizedNow": false,
+    "immediate34PlusPredecessorAuthoritative": false
+  },
+  "sportBoundary": {
+    "issue": 124,
+    "pullRequest": 156,
+    "integrated": true,
+    "mainCommit": "5f4d14bca4d696cfafadb58b64034c7cd40cc147",
+    "facts": [
+      "fixture_identity",
+      "calendar",
+      "squad_call",
+      "bench",
+      "start",
+      "appearance",
+      "minutes",
+      "injury_unavailable",
+      "usage_history"
+    ],
+    "notFacts": [
+      "result",
+      "goals",
+      "assists",
+      "cards",
+      "awards",
+      "records",
+      "concrete_national_selection",
+      "stadium_incident"
+    ]
+  },
   "marketChain": [
-    {"order":1,"issue":175,"pullRequest":207,"scope":"CareerOffer rich side-term context","state":"green_ready_not_integrated"},
-    {"order":2,"issue":157,"scope":"MarketState v2","state":"waiting_207"},
-    {"order":3,"issue":130,"scope":"employment/unattached","state":"contract_ready_coordinate_with_157"},
-    {"order":4,"issue":176,"scope":"veteran market producer","state":"waiting_157_130"}
+    {
+      "order": 1,
+      "issue": 175,
+      "pullRequest": 207,
+      "scope": "CareerOffer rich side-term context",
+      "state": "green_ready_not_integrated"
+    },
+    {
+      "order": 2,
+      "issue": 157,
+      "scope": "MarketState v2",
+      "state": "waiting_207"
+    },
+    {
+      "order": 3,
+      "issue": 130,
+      "scope": "employment/unattached",
+      "state": "contract_ready_coordinate_with_157"
+    },
+    {
+      "order": 4,
+      "issue": 176,
+      "scope": "veteran market producer",
+      "state": "waiting_157_130"
+    }
   ],
-  "independentWorkAfter156": [174,199,200],
-  "sharedAuthorities": {"exactEligibleCareerOfferFacts":true,"richCareerOfferContextOnMain":false,"multiOfferMarketStateV2":false,"veteran34PlusOfferGeneration":false,"authoritativeUnattachedEmployment":false,"clubFixtureUsageHistoryOnMain":true,"concreteNationalSelection":false,"richSportHistoryAwardsRecords":false,"injuryRehabEpisodeHistory":false,"clubWorldIncidents":false,"playerClubLeadership":true,"lateCareerNpcRoutingStandaloneSubsystemRequired":false,"terminalRetirementOwner":"agent9_pr118"},
-  "routingRefinements": {"activeAgent":"existing resolveActiveAgent or null","institutionalVoice":"generic club voice allowed unless named continuity is canon-required","coach":"#169 tenure/profile; persistent NPC not automatically required","youngSuccessorCompetitor":"generic non-persistent actor allowed where no named continuity/T5.3 effects are required","recordTruth":"#199","peerRetirement":"still fail-closed until exact peer plus causal retirement history exists"},
+  "independentWorkAfter156": [
+    174,
+    199,
+    200
+  ],
+  "sharedAuthorities": {
+    "exactEligibleCareerOfferFacts": true,
+    "richCareerOfferContextOnMain": false,
+    "multiOfferMarketStateV2": false,
+    "veteran34PlusOfferGeneration": false,
+    "authoritativeUnattachedEmployment": false,
+    "clubFixtureUsageHistoryOnMain": true,
+    "concreteNationalSelection": false,
+    "richSportHistoryAwardsRecords": false,
+    "injuryRehabEpisodeHistory": false,
+    "clubWorldIncidents": false,
+    "playerClubLeadership": true,
+    "lateCareerNpcRoutingStandaloneSubsystemRequired": false,
+    "terminalRetirementOwner": "agent9_pr118"
+  },
+  "routingRefinements": {
+    "activeAgent": "existing resolveActiveAgent or null",
+    "institutionalVoice": "generic club voice allowed unless named continuity is canon-required",
+    "coach": "#169 tenure/profile; persistent NPC not automatically required",
+    "youngSuccessorCompetitor": "generic non-persistent actor allowed where no named continuity/T5.3 effects are required",
+    "recordTruth": "#199",
+    "peerRetirement": "still fail-closed until exact peer plus causal retirement history exists"
+  },
   "blockers": [
-    {"issue":59,"scope":"serialized lineage / Wave 0"},
-    {"issue":180,"pullRequest":191,"scope":"exact Pasada-7 seed catalog in current main / Wave 0"},
-    {"issue":192,"scope":"exact canonical 34+ conditional content"},
-    {"issue":175,"pullRequest":207,"scope":"validated CareerOffer.context prerequisite before MarketState v2"},
-    {"issue":157,"scope":"authoritative multi-offer MarketState v2 after #207"},
-    {"issue":130,"scope":"authoritative employment/unattached state coordinated with #157"},
-    {"issue":176,"scope":"veteran CareerOffer production and market assessment"},
-    {"issue":174,"scope":"concrete national selection"},
-    {"issue":199,"scope":"rich sporting history, awards and records"},
-    {"issue":200,"scope":"injury episode and rehabilitation history"},
-    {"issue":201,"scope":"club finance/sponsor/stadium/staff-crisis incidents"},
-    {"issue":169,"scope":"coach tenure/profile where consumed"},
-    {"issue":177,"scope":"routing guard; explicit peer-retirement history remains unresolved"},
-    {"pullRequest":118,"scope":"terminal career retirement and terminal conditionals"}
+    {
+      "issue": 59,
+      "scope": "serialized lineage / Wave 0"
+    },
+    {
+      "issue": 180,
+      "pullRequest": 191,
+      "scope": "exact Pasada-7 seed catalog in current main / Wave 0"
+    },
+    {
+      "issue": 192,
+      "scope": "exact canonical 34+ conditional content"
+    },
+    {
+      "issue": 175,
+      "pullRequest": 207,
+      "scope": "validated CareerOffer.context prerequisite before MarketState v2"
+    },
+    {
+      "issue": 157,
+      "scope": "authoritative multi-offer MarketState v2 after #207"
+    },
+    {
+      "issue": 130,
+      "scope": "authoritative employment/unattached state coordinated with #157"
+    },
+    {
+      "issue": 176,
+      "scope": "veteran CareerOffer production and market assessment"
+    },
+    {
+      "issue": 174,
+      "scope": "concrete national selection"
+    },
+    {
+      "issue": 199,
+      "scope": "rich sporting history, awards and records"
+    },
+    {
+      "issue": 200,
+      "scope": "injury episode and rehabilitation history"
+    },
+    {
+      "issue": 201,
+      "scope": "club finance/sponsor/stadium/staff-crisis incidents"
+    },
+    {
+      "issue": 169,
+      "scope": "coach tenure/profile where consumed"
+    },
+    {
+      "pullRequest": 118,
+      "scope": "terminal career retirement and terminal conditionals"
+    }
   ],
   "closedOrIntegrated": [
-    {"issue":124,"pullRequest":156,"state":"integrated"},
-    {"issue":195,"state":"closed_completed_routing"}
+    {
+      "issue": 124,
+      "pullRequest": 156,
+      "state": "integrated"
+    },
+    {
+      "issue": 195,
+      "state": "closed_completed_routing"
+    },
+    {
+      "issue": 177,
+      "state": "closed_completed_routing_guard"
+    }
   ],
-  "activation": {"ordinaryFirstBatchAfterWave0":["EVT_35_FAM_001","EVT_35_BODY_001","EVT_35_IMG_001","EVT_36_MED_001"],"contentIdentityFreezeAllowedNow":false,"autoMergeAllowed":false,"condition":"serialized 34+ turn + exact seed authority integrated + exact factual authorities for selected scene"},
-  "authoritativeCurrentSnapshot": "CURRENT_STATE.json"
+  "activation": {
+    "ordinaryFirstBatchAfterWave0": [
+      "EVT_35_FAM_001",
+      "EVT_35_BODY_001",
+      "EVT_35_IMG_001",
+      "EVT_36_MED_001"
+    ],
+    "contentIdentityFreezeAllowedNow": false,
+    "autoMergeAllowed": false,
+    "condition": "serialized 34+ turn + exact seed authority integrated + exact factual authorities for selected scene"
+  },
+  "authoritativeCurrentSnapshot": "CURRENT_STATE.json",
+  "qa": {
+    "previousCertifiedHead": "aed49c362e6dda02bc981e0ea8d83d152604f840",
+    "repositoryIntegrityRun": 35263846340,
+    "conclusion": "success",
+    "currentRefreshRequiresNewExactHeadCertification": true
+  }
 }
