@@ -4,6 +4,8 @@ import { EVENTS } from '../dist/content/events/index.js';
 import { createInitialState } from '../dist/content/initial-state.js';
 import { eventGatesPass } from '../dist/narrative/event-gates.js';
 import { certifyPlayerClubLeadershipInPlace } from '../dist/simulation/player-leadership-authority.js';
+import { offerBridgeEligible, offerDispositionForChoice } from '../dist/narrative/offer-bridge.js';
+import { proposeCareerChange } from '../dist/simulation/offers.js';
 
 const event = EVENTS.find(row => row.id === 'EVT_30_CCH_001');
 
@@ -73,4 +75,31 @@ test('EVT_33_FIN_001 retirement reflection stays non-terminal', () => {
     assert.equal(JSON.stringify(outcome.effects ?? []).includes('EARLY_RETIRED_30_34'),false);
     assert.equal((outcome.seedTransitions ?? []).some(row=>row.seedId==='SEED_RETIREMENT_DISTANCE_PROFILE'),true);
   }
+});
+
+
+test('EVT_30_JAN_001 requires a live eligible formal big-club transfer/loan offer', () => {
+  const jan=EVENTS.find(row=>row.id==='EVT_30_JAN_001');
+  assert.ok(jan);
+  assert.deepEqual(jan.choices.map(choice=>choice.id),['A','B','C','D']);
+  assert.deepEqual(jan.seedsWrite,['SEED_SPECIALIST_BIGCLUB']);
+  assert.deepEqual(['A','B','C','D'].map(id=>offerDispositionForChoice(jan,id)),['accept','reject','counter','counter']);
+
+  const state=createInitialState(300401);
+  state.age=30; state.phase='30_34'; state.date='2038-01-08'; state.professional.initializedAt30=true;
+  proposeCareerChange(state,'Propuesta de mercado',draft=>{
+    draft.club='Gigante FC'; draft.tier=1;
+    draft.professional.ownerClub='Gigante FC';
+    draft.professional.registrationClub='Gigante FC';
+    draft.professional.leagueTier=1;
+    draft.professional.clubPrestigeTier=4;
+    draft.professional.clubPrestigeScore=90;
+    draft.flags.BIG_CLUB=true;
+    draft.contract.salaryMonthly=Number(draft.contract.salaryMonthly)+5000;
+  });
+  assert.ok(state.market?.pending);
+  assert.equal(offerBridgeEligible(state,jan),true);
+
+  state.contract.salaryMonthly=Number(state.contract.salaryMonthly)+1;
+  assert.equal(offerBridgeEligible(state,jan),false,'stale formal offer must fail closed');
 });
