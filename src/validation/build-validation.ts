@@ -32,7 +32,7 @@ export function validateBuild(events: EventDefinition[] = EVENTS): BuildIssue[] 
   const phase20 = events.filter(e => e.phase === "20_23");
   const principal20 = phase20.filter(e => e.family !== "conditional");
   const conditional20 = phase20.filter(e => e.family === "conditional");
-  if (principal20.length !== 33) issues.push({ level: "error", code: "canonPrincipalCount20_23", subject: "20_23", message: `Se esperaban 33 eventos principales; hay ${principal20.length}.` });
+  if (principal20.length !== 36) issues.push({ level: "error", code: "canonPrincipalCount20_23", subject: "20_23", message: `Se esperaban 36 eventos principales; hay ${principal20.length}.` });
   if (conditional20.length !== 18) issues.push({ level: "error", code: "canonConditionalCount20_23", subject: "20_23", message: `Se esperaban 18 condicionales; hay ${conditional20.length}.` });
 
   const phase23 = events.filter(e => e.phase === "23_26");
@@ -65,7 +65,7 @@ export function validateBuild(events: EventDefinition[] = EVENTS): BuildIssue[] 
   if (conditional34.length !== 32) issues.push({ level:"error",code:"canonConditionalCount34Plus",subject:"34_plus",message:`Se esperaban 32 condicionales; hay ${conditional34.length}.`});
   if (MICROFEEDS_34_PLUS.length < 50) issues.push({ level:"error",code:"canonMicrofeedCount34Plus",subject:"34_plus",message:`Se esperaban al menos 50 microfeeds; hay ${MICROFEEDS_34_PLUS.length}.`});
   for (const id of duplicateIds([...MICROFEEDS_26_30,...MICROFEEDS_30_34,...MICROFEEDS_34_PLUS].map(f=>f.id))) issues.push({ level:"error",code:"uniqueMicrofeedIds",subject:id,message:"ID de microfeed duplicado."});
-  if(events.filter(e=>e.family!=="conditional").length!==254) issues.push({level:"error",code:"globalPrincipalCount",subject:"global",message:`Se esperaban 254 principales; hay ${events.filter(e=>e.family!=="conditional").length}.`});
+  if(events.filter(e=>e.family!=="conditional").length!==257) issues.push({level:"error",code:"globalPrincipalCount",subject:"global",message:`Se esperaban 257 principales; hay ${events.filter(e=>e.family!=="conditional").length}.`});
   if(events.filter(e=>e.family==="conditional").length!==134) issues.push({level:"error",code:"globalConditionalCount",subject:"global",message:`Se esperaban 134 condicionales; hay ${events.filter(e=>e.family==="conditional").length}.`});
 
   const allPrincipal = events.filter(e=>e.family!=="conditional");
