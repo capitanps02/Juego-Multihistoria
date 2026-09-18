@@ -380,7 +380,20 @@ export class GameSession {
       const bridgeDisposition = offerDispositionForChoice(pending.event, choice.id);
       const beforeOfferTerms = bridgeDisposition ? careerTerms(next.state) : null;
       if (bridgeDisposition) requireThat(next.state.market?.pending, "STALE_OFFER", "La oferta asociada a esta escena ya no está pendiente.");
-      const result = resolveChoiceInPlace(next.state, pending.event, choice.id);
+      let result;
+      try {
+        result = resolveChoiceInPlace(next.state, pending.event, choice.id);
+      } catch (error) {
+        if (bridgeDisposition
+          && error instanceof Error
+          && error.message.startsWith("Narrative effect cannot ")) {
+          throw new SessionError(
+            "INVALID_OFFER_BRIDGE",
+            "Una escena de oferta no puede modificar autoridad contractual o de empleo mediante efectos narrativos."
+          );
+        }
+        throw error;
+      }
       let messages = result.messages;
       if (bridgeDisposition) {
         requireThat(JSON.stringify(careerTerms(next.state)) === JSON.stringify(beforeOfferTerms), "INVALID_OFFER_BRIDGE", "Una escena de oferta no puede modificar términos contractuales mediante efectos narrativos.");
