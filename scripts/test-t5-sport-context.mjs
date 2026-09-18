@@ -1,3 +1,4 @@
+// A4 cumulative sport exact-head certification trigger.
 import './test-t5-match-model.mjs';
 import './test-t5-competition-context.mjs';
 import './test-t5-penalty-context.mjs';
