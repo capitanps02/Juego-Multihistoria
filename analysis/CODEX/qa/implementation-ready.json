@@ -5,23 +5,28 @@
     {
       "bugId": "T5-QA-029",
       "issue": 212,
-      "status": "ready",
+      "status": "owner_fix_open",
       "severity": "P2",
       "area": "saves-sport-authority",
+      "ownerPr": 214,
+      "ownerBranch": "codex/t5-match-save-invariants",
+      "ownerHead": "b688017e996449f88822dc7c54162c3f3b3e3c2f",
+      "ownerCompare": "3 ahead / 0 behind main@5f4d14bca4d696cfafadb58b64034c7cd40cc147",
+      "ownerCiRun": 35330315528,
       "reproduction": "npm run build && node --test scripts/test-t5-match-model-known-bug.mjs",
       "failingTest": "scripts/test-t5-match-model-known-bug.mjs",
       "expected": "Match-model v1 save validation rejects producer-impossible player facts, unsupported firstGoal authority, and semantically wrong/non-first milestone pointers.",
-      "actual": "main@5f4d14bc integrated the authoritative match store while its validator still accepts those corrupted persisted states.",
+      "actual": "Owner PR #214 implements the directed fix on the exact current main with the QA known-bug reproduction and full producer parity; duplicate PR #218 was closed as superseded.",
       "owner": "match-model-save-validation",
-      "allowedFiles": ["src/simulation/match-model.ts", "scripts/test-t5-match-model.mjs", "scripts/test-t5-match-model-known-bug.mjs"],
-      "forbiddenFiles": ["src/content/events/**", "src/content/content-identity*", "project/t51/**"],
+      "codexAction": "Do not implement a duplicate runtime fix. Re-check PR #214 exact-head CI and post-merge regression only.",
       "acceptanceTests": [
         "Known-bug reproduction turns green without weakening assertions.",
-        "loadSave() and assertGameState() reject bench without call-up, zero-minute appearance, non-null firstGoal, wrong-predicate milestones and non-first milestone pointers.",
+        "loadSave() and assertGameState() reject bench without call-up, called-up non-starter without bench, zero-minute appearance, non-null firstGoal, wrong-predicate milestones and non-first milestone pointers.",
         "Valid bench/substitute/starter rows still round-trip.",
         "Validation/read paths consume zero RNG and mutate no state.",
         "node --test scripts/test-t5-match-model.mjs scripts/test-t5-sport-context.mjs",
-        "Repository Integrity succeeds on the exact fix HEAD."
+        "Repository Integrity succeeds on the exact PR #214 HEAD.",
+        "After integration into main, QA reruns the original reproduction before marking resolved."
       ]
     },
     {
@@ -33,7 +38,7 @@
       "reproduction": "npm run build && node --test scripts/test-t5-contract-expiry-known-bug.mjs",
       "failingTest": "scripts/test-t5-contract-expiry-known-bug.mjs",
       "expected": "Contract expiry produces deterministic unattached employment authority; ordinary club football, renewal and institutional-club authority fail closed until a formal CareerOffer reactivates employment.",
-      "actual": "The Pass A contract is fully specified and #156 has landed, but coordinator sequencing now requires #207 CareerOffer.context then #157 MarketState v2 before the employment patch so reattachment uses one final formal-offer authority.",
+      "actual": "The Pass A contract is fully specified and #156 has landed, but coordinator sequencing requires #207 CareerOffer.context then #157 MarketState v2 before the employment patch so reattachment uses one final formal-offer authority.",
       "owner": "shared-contract-employment",
       "blockedBy": [207, 157],
       "unblockCriteria": [
