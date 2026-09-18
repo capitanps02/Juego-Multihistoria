@@ -14,6 +14,7 @@ import { maturityWeek, runMaturityPreseason } from "./ageing-engine.js";
 import { lateCareerPreseason, lateCareerWeek, closeCareer } from "./late-career-engine.js";
 import { recordAgeMilestone } from "./age-milestones.js";
 import { expireDueSeedsInPlace } from "../narrative/resolver.js";
+import { recordConcreteNationalTeamCallupInPlace } from "./national-team-authority.js";
 
 const clamp = (x: number, min = 0, max = 100) => Math.min(max, Math.max(min, x));
 const num = (x: unknown, fallback = 0) => typeof x === "number" ? x : fallback;
@@ -115,6 +116,7 @@ function updateContextFlags(state: GameState, rng: DeterministicRng): void {
   else state.world.marketWindowOpen = false;
 }
 function footballWeek(state: GameState): void {
+  recordConcreteNationalTeamCallupInPlace(state);
   const rng = new DeterministicRng(state.rngState.football);
   const form = clamp(num(state.sport.form, 50) * 0.82 + 50 * 0.18 + (rng.next() - 0.5) * 11);
   const trust = state.relationships.find(r => r.npcId === "NPC_CCH_01")?.trust ?? 45;
