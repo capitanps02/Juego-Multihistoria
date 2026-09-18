@@ -19,6 +19,7 @@ function assertEmployment(value: unknown): void {
   const state = legacy.record(value, "state");
   if (state.employment === undefined) return;
   const employment = legacy.record(state.employment, "employment");
+  legacy.ensure(Object.keys(employment).sort().join() === "previous,since,status,version", "employment", "campos incorrectos");
   legacy.ensure(employment.version === 1, "employment.version", "versión no compatible");
   legacy.oneOf(employment.status, EMPLOYMENT_STATUSES, "employment.status");
   legacy.date(employment.since, "employment.since");
@@ -34,11 +35,17 @@ function assertEmployment(value: unknown): void {
     legacy.date(previous.endedDate, "employment.previous.endedDate");
     legacy.ensure(previous.reason === "contract_expired", "employment.previous.reason", "causa desconocida");
   }
+  const contract = legacy.record(state.contract, "contract");
+  const flags = legacy.record(state.flags, "flags");
+  if (employment.status === "contracted" || employment.status === "loaned") {
+    legacy.ensure(Number(contract.monthsRemaining) > 0, "employment.status", "empleo activo requiere contrato vigente");
+    legacy.ensure((employment.status === "loaned") === (flags.LOAN_ACTIVE === true), "employment.status", "estado de cesión incoherente");
+  }
   if (employment.status === "unattached") {
-    legacy.ensure(Number(legacy.record(state.contract, "contract").monthsRemaining) === 0, "employment.status", "unattached requiere contrato expirado");
-    legacy.ensure(Number(legacy.record(state.contract, "contract").salaryMonthly) === 0, "employment.status", "unattached no puede cobrar salario contractual");
+    legacy.ensure(Number(contract.monthsRemaining) === 0, "employment.status", "unattached requiere contrato expirado");
+    legacy.ensure(Number(contract.salaryMonthly) === 0, "employment.status", "unattached no puede cobrar salario contractual");
     legacy.ensure(legacy.record(state.professional, "professional").route === "free_agent", "employment.status", "ruta no corresponde a unattached");
-    legacy.ensure(legacy.record(state.flags, "flags").LOAN_ACTIVE === false, "employment.status", "unattached no puede seguir cedido");
+    legacy.ensure(flags.LOAN_ACTIVE === false, "employment.status", "unattached no puede seguir cedido");
   }
 }
 
