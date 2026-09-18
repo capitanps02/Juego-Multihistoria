@@ -8,6 +8,7 @@ import { DeterministicRng } from "../core/rng.js";
 import type { ChoiceDefinition, Effect, EventDefinition, GameState, OutcomeDefinition, ResolutionResult, SeedInstance, SeedTransition } from "../core/types.js";
 import { narrativeConditionRoot } from "../simulation/club-contract-intent.js";
 import { syncRetirementState } from "../simulation/late-career-engine.js";
+import { currentEmploymentClub } from "../simulation/offers.js";
 import {
   captureNpcKnowledgeTargetContext,
   resolveNpcKnowledgeTargets,
@@ -28,6 +29,19 @@ function isLiveSeed(state: GameState, seedId: string): boolean {
 
 function applyEffect(state: GameState, effect: Effect): void {
   if (effect.kind === "flag") { state.flags[effect.flag] = effect.value; return; }
+
+  if (effect.path === "contract.monthsRemaining" && currentEmploymentClub(state) === null) {
+    const current = getPath(state, effect.path);
+    const next = effect.kind === "set"
+      ? effect.value
+      : typeof current === "number"
+        ? current + effect.delta
+        : current;
+    if (typeof next === "number" && next > 0) {
+      throw new Error("Narrative effect cannot restore employment without a formal CareerOffer.");
+    }
+  }
+
   if (effect.kind === "set") { setPath(state, effect.path, effect.value); return; }
   const current = getPath(state, effect.path);
   if (typeof current !== "number") throw new Error(`Numeric effect targets non-number: ${effect.path}`);
