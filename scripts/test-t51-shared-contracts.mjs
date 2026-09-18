@@ -1,3 +1,4 @@
+import './test-t5-lock23-captain-choice-guard.mjs';
 import './test-t5-national-team-authority.mjs';
 import './test-t5-player-leadership-authority.mjs';
 import './test-t51-locker-leadership.mjs';
