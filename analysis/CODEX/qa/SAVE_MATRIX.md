@@ -6,8 +6,11 @@ This matrix distinguishes committed legacy fixtures from deterministic snapshots
 |---|---|---|---|
 | legacy schema v8 | `examples/save-v08-seed-424242.json` | imported schema baseline, history, seeds, RNG, round-trip | existing |
 | Session v3 current | `scripts/test-t5-save-compat.mjs` | serialize/load semantic equality | existing generated |
-| pending legacy decision | T5.1 migration tests | frozen definition/fingerprint through migration | existing generated |
+| pending legacy decision | `scripts/test-t51-content-migration.mjs` | frozen definition/fingerprint; tampered pending rejected before identity change; migration read-only | covered through current generation H |
 | early career | deterministic age 18–19 snapshot | seeds/NPC/pending | required |
+| content lineage | `scripts/test-t51-content-lineage.mjs` | unique A→B→C path; A→C and B→C migration; pending A decision to C; mixed provenance | covered through generation H; final generations pending |
+| migration integrity | `scripts/test-t51-content-migration.mjs` | history/seeds/NPC/market/receipts/RNG preserved; idempotent; unknown identity and tampered pending fail closed | covered through generation H |
+| NPC knowledge save/reconcile | `scripts/test-t53-reconciliation.mjs` | resume reconstruction, historical provenance, no RNG/history rewrite, fingerprint collision fail-closed | covered generated |
 | mid career | deterministic age 23–26 snapshot | role provenance/market/contract | required |
 | veteran | deterministic age 31–33 snapshot | long history/contract/role | required |
 | 34+ playing | deterministic age 35+ snapshot | continuation without forced retirement | required |
@@ -15,13 +18,13 @@ This matrix distinguishes committed legacy fixtures from deterministic snapshots
 | retirement announced | deterministic snapshot | non-reopenable, last-appearance provenance | required |
 | career closed | long-career QA result | terminal state + factual epilogue | existing generated |
 | loan | deterministic offer snapshot | owner/registration/return; international loan may use `route=abroad` | partial generated + regression |
-| pending transfer | deterministic market snapshot | CareerOffer lifecycle across save/load | required |
-| expired employment | loyal/512000 known-bug | zero-month state must become authoritative unattached and survive save/load | **open #130 / implementation-ready** |
+| pending transfer | `scripts/test-t51-offer-bridge.mjs`, `scripts/test-offers.mjs` | CareerOffer survives strict save/resume; accepted terms persist exactly once across reload/replay | covered generated |
+| expired employment | `scripts/test-t5-contract-expiry-known-bug.mjs` | 1→0 unattached, save/load+RNG, no old-club play, formal re-employment, determinism | **4 directed regressions prepared; open #130, blocked by #207 -> #157** |
 | injured | deterministic sport snapshot | injury persistence + match absence | required |
-| captain context | deterministic UDV 23–26 snapshot | dynamic target survives save/load | required |
+| captain context | `scripts/test-t5-player-leadership-authority.mjs`, T5.3 dynamic-target tests | explicit leadership survives save/load; off-club authority fails closed; no heuristic captain | partial: writer gap #161 remains |
 | football moment pre-draw | football moment tests | no persisted result; read path 0 RNG | covered generated |
 | football moment post-draw | football moment + QA integration tests | idempotent result; malformed result rejected at load | covered; #100 resolved |
 | sportMatchModel valid | `scripts/test-t5-match-model.mjs` | fixture store round-trip + current corruption cases | covered baseline |
-| sportMatchModel impossible authority | `scripts/test-t5-match-model-known-bug.mjs` | bench/call-up, minutes, firstGoal, milestone semantics/firstness | **open #212 / failing known-bug repro** |
+| sportMatchModel impossible authority | `scripts/test-t5-match-model-known-bug.mjs` | bench/call-up, minutes, firstGoal, milestone semantics/firstness | **PR #214 re-grounded on current main; exact-head RI pending** |
 
 Acceptance for every materialized fixture: `serialize -> load -> semantic equality`, no RNG drift on read/migration, and no reinterpretation of historical event meaning.
