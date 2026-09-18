@@ -2,6 +2,8 @@ import type { GameState } from "../core/types.js";
 import { materializeAge18MarketOfferInPlace } from "./early-career-market.js";
 import { advanceWorldDayInPlace as advanceCoreWorldDayInPlace } from "./world-simulator-core.js";
 import { closeLeagueObjectiveInPlace, recordOfficialMatchInPlace, remainingLeagueFixtures } from "./match-model.js";
+import { recordCoreFinalCompetitionMomentInPlace } from "./competition-context.js";
+import { recordPenaltyDecisionSetupInPlace } from "./match-penalty-context.js";
 
 const num = (value: unknown, fallback = 0): number =>
   typeof value === "number" && Number.isFinite(value) ? value : fallback;
@@ -16,6 +18,7 @@ export function advanceWorldDayInPlace(next: GameState): GameState {
   const beforeDate = next.date;
   const beforeAppearances = num(next.sport.appearances);
   const beforeDebut = next.flags.OFFICIAL_DEBUT === true;
+  const beforeFinalContext = next.flags.FINAL_CONTEXT === true;
 
   advanceCoreWorldDayInPlace(next);
   if (next.date === beforeDate) return next;
@@ -24,6 +27,10 @@ export function advanceWorldDayInPlace(next: GameState): GameState {
   // The paired active content overlay consumes them through the existing offer bridge.
   materializeAge18MarketOfferInPlace(next);
 
+  if (!beforeFinalContext && next.flags.FINAL_CONTEXT === true) {
+    recordCoreFinalCompetitionMomentInPlace(next);
+  }
+
   if (next.runtime.day % 7 === 0) {
     const appeared = num(next.sport.appearances) > beforeAppearances;
     const match = recordOfficialMatchInPlace(next, {
@@ -31,6 +38,8 @@ export function advanceWorldDayInPlace(next: GameState): GameState {
       debutOccurred: !beforeDebut && next.flags.OFFICIAL_DEBUT === true,
       injuryUnavailable: next.body.acuteInjury === true && !appeared
     });
+
+    if (match) recordPenaltyDecisionSetupInPlace(next, match);
 
     // The legacy udvSeasonResolved flag can flip on the first May tick while
     // scheduled league fixtures still remain. It is therefore not authoritative
