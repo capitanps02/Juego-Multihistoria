@@ -29,9 +29,9 @@ test('La selección gana sin ti conditional is superseded cross-type without ali
 });
 
 test('removing non-canonical callbacks does not invent replacement seed consumers',()=>{
-  assert.equal(debt.classification,'resolved_by_removal_no_canonical_identity');
-  assert.equal(debt.summary.runtimePositiveSeedGates,0);
-  assert.equal(debt.summary.runtimeMetadataFixDeferred,0);
-  assert.equal(debt.resolution.removedEventIds.length,7);
+  assert.equal(debt.classification,'resolved_all_26_remove_supersede_no_authoritative_canonical_identity');
+  assert.equal(debt.summary.activeCallbacksRemaining,0);
+  assert.equal(debt.summary.removeSupersede,26);
+  assert.equal(debt.resolution.removedEventIds.length,26);
   assert.match(debt.resolution.rule,/no replacement consumer is invented/i);
 });
