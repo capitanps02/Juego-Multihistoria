@@ -114,8 +114,6 @@ test('T5-QA-028c: unattached player cannot accumulate ordinary old-club appearan
   assert.equal(contractEmploymentStatus(state), 'unattached');
 
   const oldEmployment = employment(state);
-  const rngAtExpiry = structuredClone(state.rngState);
-
   for (let day = 0; day < 120; day += 1) {
     if (state.market?.pending) respondToOffer(state, state.market.pending.id, 'reject');
     advanceWorldDayInPlace(state);
@@ -128,6 +126,7 @@ test('T5-QA-028c: unattached player cannot accumulate ordinary old-club appearan
   );
 
   if (state.market?.pending) respondToOffer(state, state.market.pending.id, 'reject');
+  const rngBeforeOffer = structuredClone(state.rngState);
   proposeCareerChange(state, 'QA formal re-employment', draft => {
     draft.club = 'QA_REEMPLOY_FC';
     draft.professional.ownerClub = 'QA_REEMPLOY_FC';
@@ -145,7 +144,7 @@ test('T5-QA-028c: unattached player cannot accumulate ordinary old-club appearan
   assert.equal(state.professional.ownerClub, 'QA_REEMPLOY_FC');
   assert.equal(state.professional.registrationClub, 'QA_REEMPLOY_FC');
   assert.ok(Number(state.contract.monthsRemaining) > 0);
-  assert.notDeepEqual(state.rngState, rngAtExpiry, '120 simulated days may consume world RNG before the formal offer; the offer read/accept path itself is covered by market 0-RNG tests');
+  assert.deepEqual(state.rngState, rngBeforeOffer, 'formal re-employment offer generation/acceptance must consume 0 RNG');
 });
 
 test('T5-QA-028d: loyal/512000 expiry boundary is deterministic', () => {
