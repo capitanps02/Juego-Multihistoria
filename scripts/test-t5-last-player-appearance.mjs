@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { createInitialState } from '../dist/content/initial-state.js';
 import { recordOfficialMatchInPlace } from '../dist/simulation/match-model.js';
 import { getLastPlayerAppearanceContext, getSportContext } from '../dist/simulation/sport-context.js';
+import { retirementLastAppearanceFact } from '../dist/simulation/retirement-authority.js';
 import { loadSave, serializeSave } from '../dist/save/save.js';
 
 function matchDayState(seed = 9700) {
@@ -32,6 +33,22 @@ test('last appearance/1 skips later non-appearance and exposes the exact factual
   assert.deepEqual(context.match?.result, first.result);
   assert.equal(context.match?.stats?.goals, first.stats.goals);
   assert.equal(getSportContext(state).lastPlayerAppearanceContext.match?.id, first.id);
+
+  const fact = retirementLastAppearanceFact(state);
+  assert.equal(fact.status, 'authoritative');
+  assert.equal(fact.fixtureId, first.id);
+  assert.equal(fact.date, first.date);
+  assert.equal(fact.competition, first.competition);
+  assert.equal(fact.opponent, first.opponent);
+  assert.equal(fact.homeAway, first.homeAway);
+  assert.equal(fact.club, first.club);
+  assert.equal(fact.started, first.player.started);
+  assert.equal(fact.appeared, true);
+  assert.equal(fact.minutes, first.player.minutes);
+  assert.deepEqual(fact.result, first.result);
+  assert.equal(fact.goals, first.stats.goals);
+  assert.equal(fact.assists, first.stats.assists);
+  assert.deepEqual(fact.cards, { yellow: first.stats.yellowCards, red: first.stats.redCards });
 });
 
 test('last appearance/2 historical row keeps identity while unsupported rich fields stay unknown', () => {
@@ -64,6 +81,9 @@ test('last appearance/3 initialized store with no appearance is authoritative no
   assert.equal(context.status, 'authoritative');
   assert.equal(context.match, null);
   assert.equal(getSportContext(state).availability.lastPlayerAppearanceContext, 'known');
+  const fact = retirementLastAppearanceFact(state);
+  assert.equal(fact.status, 'authoritative_none');
+  assert.equal(fact.fixtureId, null);
 });
 
 test('last appearance/4 historical save without store is explicitly unavailable', () => {
@@ -73,6 +93,7 @@ test('last appearance/4 historical save without store is explicitly unavailable'
   assert.equal(context.status, 'historical_match_store_not_initialized');
   assert.equal(context.match, null);
   assert.equal(getSportContext(state).availability.lastPlayerAppearanceContext, 'unavailable');
+  assert.equal(retirementLastAppearanceFact(state).status, 'unavailable');
 });
 
 test('last appearance/5 read is mutation/RNG free and stable across save/load', () => {
