@@ -101,8 +101,8 @@ export function hasRoleGuaranteeAt23(state: GameState): boolean {
 /**
  * Exact, detached projection of the one formal offer that is still compatible with
  * live CareerTerms. Narrative conditions can inspect destination, salary, duration,
- * release clause and registration semantics without receiving mutation authority.
- * Stale offers fail closed to null.
+ * release clause, registration semantics and explicitly frozen narrative context
+ * without receiving mutation authority. Stale offers fail closed to null.
  */
 export interface PendingCareerOfferFacts {
   id: string;
