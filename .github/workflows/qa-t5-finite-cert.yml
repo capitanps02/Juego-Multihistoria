@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - qa/t5-finite-cert
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
