@@ -103,3 +103,20 @@ test('EVT_30_JAN_001 requires a live eligible formal big-club transfer/loan offe
   state.contract.salaryMonthly=Number(state.contract.salaryMonthly)+1;
   assert.equal(offerBridgeEligible(state,jan),false,'stale formal offer must fail closed');
 });
+
+
+test('EVT_32_IMPACT_001 replaces the generic legacy shell and only uses the certified reinvention route', () => {
+  const impact=EVENTS.find(row=>row.id==='EVT_32_IMPACT_001');
+  assert.ok(impact);
+  assert.equal(EVENTS.some(row=>row.id==='EVT_32_TACT_001'),false);
+  assert.deepEqual(impact.choices.map(choice=>choice.id),['A','B','C','D']);
+  assert.deepEqual(impact.seedsRead,['SEED_ROLE_REINVENTION_32']);
+  assert.deepEqual(impact.seedsWrite,['SEED_LOW_STATS_HIGH_IMPACT']);
+
+  const state=createInitialState(320401);
+  state.age=32; state.phase='30_34'; state.date='2040-09-04'; state.professional.initializedAt30=true;
+  state.flags.ROLE_REINVENTED_30=false;
+  assert.equal(eventGatesPass(state,impact),false);
+  state.flags.ROLE_REINVENTED_30=true;
+  assert.equal(eventGatesPass(state,impact),true);
+});
