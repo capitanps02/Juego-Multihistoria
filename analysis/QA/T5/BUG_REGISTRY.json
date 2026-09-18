@@ -158,6 +158,26 @@
       "test": "scripts/test-t5-captain-gap-known-bug.mjs",
       "firstSeenCommit": "5f4d14bca4d696cfafadb58b64034c7cd40cc147",
       "lastVerifiedCommit": "5f4d14bca4d696cfafadb58b64034c7cd40cc147"
+    },
+    {
+      "id": "T5-QA-031",
+      "severity": "P2",
+      "status": "open",
+      "area": "market-save-validation",
+      "reproduction": [
+        "create formal CareerOffer",
+        "persist malformed optional context (empty required text / unknown kind / extra authority field)",
+        "serializeSave/loadSave must reject",
+        "npm run build && node --test scripts/test-t5-offer-context-known-bug.mjs"
+      ],
+      "expected": "Malformed CareerOffer.context fails closed at serialize/load boundaries while historical offers without context remain valid.",
+      "actual": "PR #207 adds validated producer/read APIs for CareerOffer.context, but assertMarket() in validation-legacy.ts does not validate context and permits extra offer fields, so malformed persisted rich-offer authority is accepted by save validation.",
+      "owner": "market-save-authority",
+      "issue": 175,
+      "ownerPr": 207,
+      "test": "scripts/test-t5-offer-context-known-bug.mjs",
+      "firstSeenCommit": "49f16b21c8f68f1439901437dcf16e1384966de2",
+      "lastVerifiedCommit": "49f16b21c8f68f1439901437dcf16e1384966de2"
     }
   ]
 }
