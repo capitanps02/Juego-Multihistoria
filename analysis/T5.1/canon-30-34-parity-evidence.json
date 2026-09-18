@@ -90,7 +90,7 @@
           "status": "blocked_pending_registered_content_migration",
           "classification": "distinct_scene_exact_id_collision",
           "sourceContentIdentity": "84871fae2bec92d74d1e607e0a48943e2e530a062d315a829cfe75eda9fe0886",
-          "targetContentIdentity": "9151d6620739f5f63face23f412abdeca9898cac8e510cc44d86c1468da8d0f4",
+          "targetContentIdentity": "db72c94ee93ad928e08e86a59f5063060a963e17edfc7b5e25198e1da6fd1eb1",
           "targetFreezeRequired": true,
           "routeRegistrationOwner": "coordination/integration"
         }
