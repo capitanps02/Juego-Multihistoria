@@ -13,6 +13,7 @@ import { adaptState30ToMaturity } from "./maturity-adapter.js";
 import { maturityWeek, runMaturityPreseason } from "./ageing-engine.js";
 import { lateCareerPreseason, lateCareerWeek, closeCareer } from "./late-career-engine.js";
 import { recordAgeMilestone } from "./age-milestones.js";
+import { certifyCoachChangeInPlace } from "./coach-change-authority.js";
 import { expireDueSeedsInPlace } from "../narrative/resolver.js";
 
 const clamp = (x: number, min = 0, max = 100) => Math.min(max, Math.max(min, x));
@@ -98,7 +99,10 @@ function updateContextFlags(state: GameState, rng: DeterministicRng): void {
   }
 
   const coachSecurity = num(state.world.coachSecurity, 48);
-  if (!state.flags.COACH_FIRED && coachSecurity < 24 && rng.next() < 0.18) state.flags.COACH_FIRED = true;
+  if (!state.flags.COACH_FIRED && coachSecurity < 24 && rng.next() < 0.18) {
+    state.flags.COACH_FIRED = true;
+    certifyCoachChangeInPlace(state, "security_firing");
+  }
 
   if (state.age === 19 && market >= 42 && !state.flags.BIG_CLUB_INTEREST && rng.next() < 0.055) state.flags.BIG_CLUB_INTEREST = true;
   if (state.age === 19 && state.flags.AGENT_ACTIVE && state.flags.HAS_SEED_AGENT_OMISSION && !state.flags.AGENT_SECOND_DISCREPANCY && rng.next() < 0.035) state.flags.AGENT_SECOND_DISCREPANCY = true;
