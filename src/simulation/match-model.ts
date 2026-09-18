@@ -437,6 +437,21 @@ export function previousOfficialMatch(state: GameState): OfficialMatchRecord | n
   return null;
 }
 
+export function scheduledLeagueFixtures(state: GameState, horizonDays = 14): ScheduledFixture[] {
+  if (!Number.isInteger(horizonDays) || horizonDays < 0 || horizonDays > 370) return [];
+  const fixtures: ScheduledFixture[] = [];
+  const hasCurrent = currentOfficialMatch(state) !== null;
+  const startYear = Number(state.season.slice(0, 4));
+  const seasonEnd = `${startYear + 1}-05-31`;
+  for (let offset = hasCurrent ? 1 : 0; offset <= horizonDays; offset += 1) {
+    const date = addDays(state.date, offset);
+    if (date > seasonEnd) break;
+    if (!isOfficialMatchDay(state, offset)) continue;
+    fixtures.push(fixtureProjection(state, date));
+  }
+  return fixtures;
+}
+
 export function nextScheduledFixture(state: GameState): ScheduledFixture | null {
   const hasCurrent = currentOfficialMatch(state) !== null;
   for (let offset = hasCurrent ? 1 : 0; offset <= 370; offset += 1) {
