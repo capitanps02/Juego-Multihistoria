@@ -16,7 +16,7 @@ QA intenta falsar invariantes. No reescribe canon ni corrige silenciosamente run
 - T5-QA-022 — **RESOLVED** — #100.
 - T5-QA-023 — **RESOLVED** — #109.
 - T5-QA-025 — **RESOLVED** — #131.
-- T5-QA-027 — **OPEN / P2 / serialized owner** — #133.
+- T5-QA-027 — **OPEN / P2 / serialized owner** — #133; permanent future-canonical guard integrated in QA shared contract gate.
 - T5-QA-028 — **OPEN / P1 / spec-ready, execution-blocked** — #130; cadena `#207 -> #157 -> #130 -> #176`.
 - T5-QA-029 — **OPEN / P2 / owner-fix PR #214** — #212; re-grounded en `main@49f16b21...`, HEAD `78c0ca4e...`, 1 ahead / 0 behind; exact-head RI `35336619877` pendiente.
 - T5-QA-030 — **OPEN / P2 / canon owner** — #161. `EVT_33_CAP_001` en main sigue con gates vacíos; reproducción permanente exige fail-closed sin captain real.
@@ -68,6 +68,7 @@ Ejecución bloqueada hasta:
 
 - `scripts/test-t5-contract-expiry-known-bug.mjs` — T5-QA-028.
 - `scripts/test-t5-retirement-save-known-bug.mjs` — T5-QA-016d/e.
+- `scripts/test-t5-lock23-captain-choice-guard.mjs` — T5-QA-027/#133 permanent canonical guard.
 - `scripts/test-t5-match-model-known-bug.mjs` — T5-QA-029.
 - `scripts/test-t5-captain-gap-known-bug.mjs` — T5-QA-030/#161.
 - `scripts/test-t5-offer-context-known-bug.mjs` — T5-QA-031/#175/#207.
@@ -80,12 +81,12 @@ QA no mergea su propio PR. Un bug solo pasa a `resolved` tras fix integrado y re
 ## A10 finite certification score
 
 - Infraestructura QA: **50/50**
-- A10-1 P1/P2: **11/15**
+- A10-1 P1/P2: **12/15**
 - A10-2 Saves/migrations: **4/10**
 - A10-3 Cross-system invariants: **3/10**
 - A10-4 Long-career/determinism: **5/10**
 - A10-5 Final certification: **0/5**
-- **TOTAL: 73/100**
+- **TOTAL: 74/100**
 
 A10-2 ya acredita en la suite existente: lineage A→B→C, pending frozen-definition, tamper fail-closed, conservación de history/seeds/NPC/market/receipts/RNG, offer save/resume y player-leadership save/load. Faltan generaciones finales y estados terminales integrados.
 
