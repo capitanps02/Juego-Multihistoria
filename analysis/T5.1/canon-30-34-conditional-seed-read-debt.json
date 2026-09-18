@@ -19,11 +19,11 @@
     "contentIdentityChurnMustBeCoordinated": true
   },
   "identityConstraint": {
-    "currentTargetContentIdentity": "9151d6620739f5f63face23f412abdeca9898cac8e510cc44d86c1468da8d0f4",
+    "currentTargetContentIdentity": "db72c94ee93ad928e08e86a59f5063060a963e17edfc7b5e25198e1da6fd1eb1",
     "currentTargetFreezePending": true,
-    "targetFreezeFixture": "qa/fixtures/t5.1/post-t51-sources/9151d6620739f5f63face23f412abdeca9898cac8e510cc44d86c1468da8d0f4.json",
+    "targetFreezeFixture": "qa/fixtures/t5.1/post-t51-sources/db72c94ee93ad928e08e86a59f5063060a963e17edfc7b5e25198e1da6fd1eb1.json",
     "routeRegistrationOwner": "coordination/integration",
-    "reasonForDeferringSeedsReadMetadataMutation": "contentIdentity is SHA-256 over JSON.stringify(EVENTS); adding seedsRead to these runtime definitions would create a new catalog identity while target 9151d662... is still awaiting its integration-owned freeze and migration edge. Classification and guard can close now without changing runtime content."
+    "reasonForDeferringSeedsReadMetadataMutation": "contentIdentity is SHA-256 over JSON.stringify(EVENTS); adding seedsRead would create another catalog identity while target db72c94e... is awaiting its integration-owned freeze and migration edge."
   },
   "rows": [
     {
@@ -118,5 +118,5 @@
       "canonicalCertification": "blocked_missing_authoritative_conditional_identity"
     }
   ],
-  "nextSafeAction": "After coordination freezes/registers target 9151d662... and an authoritative conditional identity decision exists, add exact seedsRead metadata for rows that remain approved runtime callbacks, then freeze/register the resulting new content identity. Until then preserve the working positive HAS_SEED gates and do not label the callbacks canonically verified."
+  "nextSafeAction": "After coordination freezes/registers target db72c94e... and an authoritative conditional identity decision exists, apply only approved conditional metadata/runtime changes in a subsequent explicit content batch."
 }
