@@ -234,6 +234,7 @@ export interface EarlyCareerSeedFacts {
   daniNormalityPattern: string | null;
   claraChannelMode: string | null;
   agentPowerChoice: string | null;
+  agentOmissionLive: boolean;
   publicContractChoice: string | null;
   bodyPrecedentPattern: string | null;
   bodyPrecedentEarly: string | null;
@@ -268,6 +269,7 @@ export function earlyCareerSeedFacts(state: GameState): EarlyCareerSeedFacts {
     daniNormalityPattern: getDaniNormalityPattern(state),
     claraChannelMode: getClaraChannelMode(state),
     agentPowerChoice: getAgentPowerChoice(state),
+    agentOmissionLive: projectSeedMemory(state, "SEED_AGENT_OMISSION").live,
     publicContractChoice: getPublicContractChoice(state),
     bodyPrecedentPattern: body.pattern,
     bodyPrecedentEarly: body.early,
