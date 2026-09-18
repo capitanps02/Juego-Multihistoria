@@ -3,7 +3,7 @@
 | Área | Invariante | Test/Gate | Estado | Owner |
 |---|---|---|---|---|
 | seeds | lifecycle único + referencias/catálogos cerrados | `qa:t5:content`, T5.2 direct-read audit | covered; #131 resolved | T5.2/tooling |
-| NPC | world fact != NPC knowledge; provenance histórica estable | `test:t53`, `qa:t5:integration` | covered; #92 resolved | T5.3 |
+| NPC | world fact != NPC knowledge; provenance histórica estable; persisted knowledge exact-valid | `test:t53`, `qa:t5:integration`, `test-t5-npc-knowledge-save-known-bug.mjs` | **T5.3 causal behavior covered; P2 T5-QA-032 save-boundary gap open #241** | T5.3/save |
 | market | offer IDs únicos; action/accept coherent; persisted optional offer context exact-valid | `qa:t5:fast` + market authority + `test-t5-offer-context-known-bug.mjs` | **P2 T5-QA-031: malformed persisted context accepted; owner PR #207** | market/save |
 | contracts | meses/salario no negativos; expiry no zombie; unattached save/load; no old-club play; formal re-employment; deterministic boundary | `scripts/test-t5-contract-expiry-known-bug.mjs` | **4 directed regressions prepared; open T5-QA-028 / #130; blocked by #207 -> #157** | shared contracts/employment |
 | loans | `LOAN_ACTIVE` exige owner distinto de registration; `route=abroad` válido en cesión internacional | state-validator + stratified sim | covered | market/QA |
