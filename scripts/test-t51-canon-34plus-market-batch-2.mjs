@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import test from 'node:test';
+import { createInitialState } from '../dist/content/initial-state.js';
+import { STAGED_MARKET_BATCH_2,isStagedMarketBatch2Eligible } from '../dist/content/events/34_plus/staged-principal-market-batch-2.js';
+
+const expected=['EVT_35_FAREWELL_001','EVT_35_AGT_001','EVT_35_JAN_001','EVT_35_HOME_001','EVT_36_CON_001','EVT_36_LOWER_001','EVT_37_SHORT_001','EVT_37_HOME_001','EVT_38_RICH_001','EVT_38_MARKET_001'];
+test('market batch 2 exposes ten exact fully-staged principals',()=>{assert.deepEqual(STAGED_MARKET_BATCH_2.map(e=>e.id),expected);for(const e of STAGED_MARKET_BATCH_2){assert.equal(e.canonStatus,'verified');assert.ok(e.choices.length>=4);assert.ok(e.tags.includes('awaiting_external_fact'));}});
+test('market batch 2 fails closed without exact external facts',()=>{const s=createInitialState(19001);s.age=40;s.phase='34_plus';s.retirement.status='playing';for(const id of expected){assert.equal(isStagedMarketBatch2Eligible(s,id,false),false);assert.equal(isStagedMarketBatch2Eligible(s,id,true),true);}});
+test('market batch 2 seeds are created only by their exact producer event',()=>{for(const e of STAGED_MARKET_BATCH_2)for(const c of e.choices){const outs=e.outcomes.filter(o=>c.outcomeIds.includes(o.id));assert.equal(outs.length,2);for(const o of outs)for(const seedId of e.seedsWrite??[])assert.ok((o.seedTransitions??[]).some(t=>t.action==='create'&&t.seedId===seedId),`${e.id}/${c.id}/${seedId}`);}});
+test('market batch 2 never directly mutates external authorities',()=>{const bad=[/^contract\./,/^club$/,/^tier$/,/^retirement\.status$/,/^professional\.registrationClub$/,/^professional\.ownerClub$/,/^professional\.leagueTier$/];for(const e of STAGED_MARKET_BATCH_2)for(const o of e.outcomes)for(const fx of o.effects??[])if('path'in fx)assert.equal(bad.some(re=>re.test(fx.path)),false,`${e.id}/${fx.path}`);});
+test('retirement-looking choices remain non-terminal in A8',()=>{for(const id of ['EVT_36_LOWER_001','EVT_38_RICH_001','EVT_38_MARKET_001']){const e=STAGED_MARKET_BATCH_2.find(x=>x.id===id);assert.equal(e.outcomes.some(o=>o.effects.some(fx=>'path'in fx&&fx.path==='retirement.status')),false);}});
