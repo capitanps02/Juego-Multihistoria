@@ -25,7 +25,7 @@ test('seed lifecycle follows the current 30-34 baseline and keeps external canon
   assert.equal(readiness.base, `main@${lifecycle.sourceMainSha}`);
   assert.deepEqual(
     lifecycle.canonicalReferencesOutsideRuntimeCatalog.map(row => row.seed),
-    ['SEED_LAST_PEAK_CONTRACT']
+    ['SEED_LAST_PEAK_CONTRACT','SEED_SUCCESSOR_PEAK','SEED_SUCCESSION_DECISION','SEED_PARALLEL_NEGOTIATION']
   );
   const external = lifecycle.canonicalReferencesOutsideRuntimeCatalog[0];
   assert.equal(external.status, 'missing_unclassified_runtime_definition');
