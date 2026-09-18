@@ -26,9 +26,9 @@
   },
   "counts": {
     "canonicalPrincipals": 50,
-    "enginePrincipals": 50,
-    "needsReimplementation": 45,
-    "canonicalMissing": 5,
+    "enginePrincipals": 51,
+    "needsReimplementation": 46,
+    "canonicalMissing": 4,
     "approvedAliases": 0,
     "verifiedSameIdentity": 0,
     "engineOnlyNoncanonical": 5,
@@ -105,9 +105,10 @@
     },
     {
       "canonicalId": "EVT_30_CCH_001",
-      "engineId": null,
-      "status": "canonical_missing",
-      "title": "Te enteras por la pizarra"
+      "engineId": "EVT_30_CCH_001",
+      "status": "needs_reimplementation",
+      "title": "Te enteras por la pizarra",
+      "implementation": "canonical principal added with exact visible information, uncertainty, four choices and SEED_ROLE_COMMUNICATION writer; current-club main-captain authority provides one exact canonical trigger route. STATUS_INERTIA-high remains blocked because canon does not quantify its threshold; no coach identity is invented."
     },
     {
       "canonicalId": "EVT_30_CAP_001",
@@ -621,7 +622,11 @@
     "count": 27,
     "safeStableIdSetComplete": true,
     "runtimeCanonStatus": "technical_adaptation",
-    "reasonNotVerified": "Strict identity requires exact trigger, choices, knowledge, consequences, seeds/NPC and continuity. These scenes carry canonical decision semantics but at least one trigger/state or downstream-continuity element remains approximate or unproved."
+    "reasonNotVerified": "Strict identity requires exact trigger, choices, knowledge, consequences, seeds/NPC and continuity. These scenes carry canonical decision semantics but at least one trigger/state or downstream-continuity element remains approximate or unproved.",
+    "canonicalAdditionsImplemented": [
+      "EVT_30_CCH_001"
+    ],
+    "canonicalAdditionsCount": 1
   },
   "implementationDisposition": {
     "safeNow": [
