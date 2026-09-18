@@ -1,0 +1,50 @@
+name: T5.1 canon 30-34
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'analysis/T5.1/canon-30-34*.json'
+      - 'project/workstreams/T51_CANON_30_34.md'
+      - 'scripts/test-t51-30-34-*.mjs'
+      - 'src/content/events/30_34/**'
+      - '.github/workflows/t51-canon-30-34.yml'
+  workflow_dispatch:
+
+jobs:
+  focused-veteran-canon:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Validate 30-34 canon, authority and migration handoff
+        run: >-
+          node --test
+          scripts/test-t51-30-34-trigger.mjs
+          scripts/test-t51-30-34-missing-principals.mjs
+          scripts/test-t51-30-34-career-authority.mjs
+          scripts/test-t51-30-34-authority-gaps.mjs
+          scripts/test-t51-30-34-sport-authority.mjs
+          scripts/test-t51-30-34-contract-clause-handoff.mjs
+          scripts/test-t51-30-34-multi-offer-handoff.mjs
+          scripts/test-t51-30-34-seed-handoff.mjs
+          scripts/test-t51-30-34-downstream-seed-handoff.mjs
+          scripts/test-t51-30-34-seed-consumption.mjs
+          scripts/test-t51-30-34-conditional-seed-reads.mjs
+          scripts/test-t51-30-34-conditionals.mjs
+          scripts/test-t51-30-34-readiness.mjs
+          scripts/test-t51-30-34-migration-handoff.mjs

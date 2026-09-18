@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "workstream": "T5.1 canon 30-34 strict parity evidence",
+  "generatedAt": "2026-09-17",
+  "authority": {
+    "masterTraceability": "analysis/2026-09-11/t1/principal-traceability.json",
+    "canonicalSourceBlock": "B1051",
+    "canonicalId": "EVT_30_CON_001",
+    "activeCatalog": "src/content/events/30_34/index.ts",
+    "migrationHandoff": "analysis/T5.1/canon-30-34-migration-handoff.json"
+  },
+  "events": {
+    "EVT_30_CON_001": {
+      "overallStatus": "needs_reimplementation",
+      "runtimeCanonStatus": "technical_adaptation",
+      "promotionAllowed": false,
+      "dimensions": {
+        "id": {
+          "status": "exact",
+          "canonical": "EVT_30_CON_001",
+          "runtime": "EVT_30_CON_001"
+        },
+        "titleAndPremise": {
+          "status": "semantic_parity_demonstrated",
+          "canonicalTitle": "Uno más o tres",
+          "runtimeTitle": "Uno más o tres"
+        },
+        "trigger": {
+          "status": "exact_contract_implemented",
+          "canonical": "Contrato <=18 meses o club quiere renovar.",
+          "runtimeAlternatives": [
+            "contract.monthsRemaining <= 18",
+            "facts.clubWantsRenewal == true"
+          ]
+        },
+        "visibleKnowledge": {
+          "status": "semantic_parity_demonstrated",
+          "canonical": "Duración, salario, bonus, cláusulas y rol comunicado.",
+          "runtime": "Conoces duración, salario, bonus, cláusulas y el rol comunicado en cada fórmula."
+        },
+        "uncertainty": {
+          "status": "semantic_parity_demonstrated",
+          "canonical": "No sabes cómo estará tu cuerpo a los 33 ni si el mercado seguirá abierto el próximo verano.",
+          "runtime": "No sabes cómo estará tu cuerpo a los 33 ni si el mercado seguirá abierto el próximo verano."
+        },
+        "choices": {
+          "status": "exact_labels_demonstrated",
+          "canonicalLabels": [
+            "Un año y libertad",
+            "Tres años y seguridad",
+            "Dos años con salario intermedio y cláusula de salida",
+            "No firmar todavía y escuchar mercado"
+          ]
+        },
+        "hiddenState": {
+          "status": "mapping_unproven",
+          "canonicalConcepts": [
+            "VETERAN_LEVERAGE",
+            "EARNINGS_SECURITY",
+            "BODY_RISK",
+            "CONTRACT_POWER"
+          ],
+          "note": "Runtime has analogous professional/body variables, but this workstream has no approved one-to-one canonical mapping proving that EARNINGS_SECURITY and BODY_RISK semantics are identical to the active state paths used by the implementation."
+        },
+        "resolution": {
+          "status": "semantic_coverage_but_probability_parity_unproven",
+          "canonical": "Esperar puede mejorar ofertas o hacer que el club fiche sustituto. La seguridad puede ser valiosa o convertirse en contrato-trampa.",
+          "runtimeAdaptation": "ambiguousEvent emits fixed 55/45 primary/secondary outcome weights plus numeric effects. The Master Document gives qualitative branches, not canonical probabilities or exact numeric deltas."
+        },
+        "seeds": {
+          "status": "canonical_reference_missing_in_runtime",
+          "canonical": [
+            "SEED_AGE30_CONTRACT (nueva)",
+            "SEED_LAST_PEAK_CONTRACT"
+          ],
+          "runtimeDeclaredWrite": [
+            "SEED_AGE30_CONTRACT"
+          ],
+          "missingOrUnclassified": [
+            "SEED_LAST_PEAK_CONTRACT"
+          ],
+          "policy": "Do not invent a producer, reader, consumer or lifecycle for SEED_LAST_PEAK_CONTRACT until T5.2/canonical evidence defines its semantics. The current runtime catalog does not contain that seed id."
+        },
+        "npcKnowledge": {
+          "status": "no_explicit_named_npc_dependency_in_canonical_source",
+          "runtimeNpcRefs": [],
+          "note": "This does not authorize inferred NPC knowledge; T5.3 provenance rules still apply to any later consumer."
+        },
+        "saveContinuity": {
+          "status": "blocked_pending_registered_content_migration",
+          "classification": "distinct_scene_exact_id_collision",
+          "sourceContentIdentity": "84871fae2bec92d74d1e607e0a48943e2e530a062d315a829cfe75eda9fe0886",
+          "targetContentIdentity": "d02b2f86559b9c280570999794e7c39bf860b2d083f20d69f20fb689973ec15f",
+          "targetFreezeRequired": true,
+          "routeRegistrationOwner": "coordination/integration"
+        }
+      },
+      "blockingReasons": [
+        "SEED_LAST_PEAK_CONTRACT canonical lifecycle is absent/unclassified in runtime",
+        "canonical hidden-state mapping is not fully proven",
+        "55/45 outcome probabilities and numeric deltas are technical adaptations rather than canonical facts",
+        "target content freeze and registered migration edge are still pending"
+      ],
+      "decision": "Keep needs_reimplementation / technical_adaptation. Do not promote to verified_same_identity."
+    }
+  }
+}
