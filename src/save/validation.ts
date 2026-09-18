@@ -1,5 +1,6 @@
 import type { GameState } from "../core/types.js";
 import { inspectSportMatchModelStore } from "../simulation/match-model.js";
+import { inspectPenaltySetupStore } from "../simulation/match-penalty-context.js";
 import * as legacy from "./validation-legacy.js";
 import type { EmploymentStatus } from "../simulation/employment.js";
 import { isVeteranMarketApproach } from "../simulation/veteran-market.js";
@@ -13,6 +14,13 @@ function assertSportMatchModel(value: unknown): void {
   if (issue) legacy.ensure(false, issue.path, issue.reason);
 }
 
+
+function assertPenaltySetupStore(value: unknown): void {
+  const state = value as GameState;
+  const world = legacy.record(state.world, "world");
+  const issue = inspectPenaltySetupStore(world.sportPenaltySetups, state);
+  if (issue) legacy.ensure(false, issue.path, issue.reason);
+}
 
 const EMPLOYMENT_STATUSES: EmploymentStatus[] = ["contracted","loaned","unattached","expired_pending_resolution"];
 
@@ -74,6 +82,7 @@ function assertEmployment(value: unknown): void {
 export function validateGameSave(value: unknown, version: number): void {
   legacy.validateGameSave(value, version);
   assertSportMatchModel(value);
+  assertPenaltySetupStore(value);
   assertEmployment(value);
   assertVeteranMarketFacts(value);
 }
@@ -82,6 +91,7 @@ export function validateGameSave(value: unknown, version: number): void {
 export function assertGameState(value: unknown): asserts value is GameState {
   legacy.assertGameState(value);
   assertSportMatchModel(value);
+  assertPenaltySetupStore(value);
   assertEmployment(value);
   assertVeteranMarketFacts(value);
 }
