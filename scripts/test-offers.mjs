@@ -5,7 +5,7 @@ import { createInitialState } from '../dist/content/initial-state.js';
 import {
  careerTerms,proposeCareerChange,respondToOffer,
  careerOfferKind,getActiveCareerOffers,getEligibleTransferOffers,getEligibleLoanOffers,getEligibleRenewalOffers,
- contractEmploymentStatus
+ contractEmploymentStatus,currentEmploymentClub
 } from '../dist/simulation/offers.js';
 import { advanceWorldDayInPlace } from '../dist/simulation/world-simulator.js';
 import { assertGameState } from '../dist/save/validation.js';
@@ -82,12 +82,13 @@ test('authoritative offer queries classify formal offers without exposing mutabl
  proposeCareerChange(loan,'Cesión',d=>{d.club='Development Club';d.flags.LOAN_ACTIVE=true;d.professional.route='loan';});
  assert.equal(careerOfferKind(loan.market.pending),'loan');assert.equal(getEligibleLoanOffers(loan).length,1);
 });
-test('contract expiry is exposed as pending resolution, never silently relabelled free agency',()=>{
+test('contract expiry derives unattached employment while preserving club provenance',()=>{
  const s=createInitialState(104);
- s.contract.monthsRemaining=7;assert.equal(contractEmploymentStatus(s),'active_contract');
- s.contract.monthsRemaining=6;assert.equal(contractEmploymentStatus(s),'expiring');
- s.contract.monthsRemaining=0;assert.equal(contractEmploymentStatus(s),'expired_pending_resolution');
- assert.equal(s.club,'UDV');assert.equal(s.professional.ownerClub,'UDV');
+ s.contract.monthsRemaining=7;assert.equal(contractEmploymentStatus(s),'active_contract');assert.equal(currentEmploymentClub(s),'UDV');
+ s.contract.monthsRemaining=6;assert.equal(contractEmploymentStatus(s),'expiring');assert.equal(currentEmploymentClub(s),'UDV');
+ s.contract.monthsRemaining=0;assert.equal(contractEmploymentStatus(s),'unattached');assert.equal(currentEmploymentClub(s),null);
+ assert.equal(s.club,'UDV');assert.equal(s.professional.ownerClub,'UDV');assert.equal(s.professional.registrationClub,'UDV');
+ s.professional.route='free_agent';assert.equal(contractEmploymentStatus(s),'unattached');assert.equal(currentEmploymentClub(s),null);
  s.retirement.status='closed';assert.equal(contractEmploymentStatus(s),'retired');
 });
 test('corrupt offers, authority records and receipt mismatches are rejected',async()=>{
