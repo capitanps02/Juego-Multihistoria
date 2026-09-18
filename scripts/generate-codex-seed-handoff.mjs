@@ -30,7 +30,7 @@ const ownerGroups = [
 ];
 const ownerBySeed = new Map(ownerGroups.flatMap(([owner, seeds]) => seeds.map(seed => [seed.id, owner])));
 
-const readyTasks = [
+const candidateTasks = [
   {
     id: 'CODEX-SEED-001', status: 'ready', priority: 'high', eventId: 'CEVT_18_BRUNO_01',
     seedIds: ['SEED_BRUNO_FAVOR'],
@@ -103,6 +103,15 @@ const readyTasks = [
   }
 ];
 
+function taskHasIntegratedCausalEvidence(task) {
+  return task.seedIds.every(seedId => {
+    const row = lifecycleById.get(seedId);
+    return Boolean(row && causalEventRead(row, task.eventId));
+  });
+}
+
+const integratedTasks = candidateTasks.filter(taskHasIntegratedCausalEvidence);
+const readyTasks = candidateTasks.filter(task => !taskHasIntegratedCausalEvidence(task));
 const readyByEvent = new Map(readyTasks.map(task => [task.eventId, task]));
 
 function payloadSemantics(seedId) {
@@ -191,6 +200,7 @@ const matrixDoc = {
     liveConsumerRegistrations: SIMULATION_SEED_CONSUMERS.length,
     historicalConsumerRegistrations: HISTORICAL_SEED_CONSUMERS.length,
     codexReadyEvents: readyTasks.length,
+    integratedCausalEvents: integratedTasks.length,
     blockedDeclaredReadOnlyConsumers: blockedConsumerCount
   },
   seeds: matrix
@@ -208,6 +218,9 @@ const implementationReady = {
     historicalRegistry: 'scripts/t52-historical-seed-consumers.mjs'
   },
   tasks: readyTasks,
+  integratedTasks: integratedTasks.map(task => ({
+    id: task.id, eventId: task.eventId, seedIds: task.seedIds, status: 'integrated'
+  })),
   discovery: {
     blockedDeclaredReadOnlyConsumers: blockedConsumerCount,
     sourceOfTruth: 'analysis/CODEX/seeds/SEED_CONSUMER_MATRIX.json',
@@ -223,11 +236,12 @@ const tableRows = readyTasks.map(task => {
     ? 'seedsRead existed but outcomes used raw state and memory did not affect weights'
     : 'seedsRead existed but payload did not causally alter the scene';
   return `| ${task.eventId} | ${seed} | ${previous} | scope-aware SeedInstance projections + condition-root parity | ready |`;
-}).join('\n');
+}).join('\n') || '| — | — | — | — | no pending ready tasks |';
 const unblockMd = `# Unblocked seed content\n\nBase: \`${baseCommit}\`.\n\n| Evento | Seed | Bloqueo anterior | Infraestructura nueva | Estado Codex |\n| --- | --- | --- | --- | --- |\n${tableRows}\n\n**Codex ready exact count: ${readyTasks.length}.**\n\nAdditional declared-read-only consumers discovered by the machine-readable matrix: **${blockedConsumerCount}**. They remain blocked until their canonical owner provides semantics; they were not reclassified heuristically.\n`;
 
 const promptTasks = readyTasks.map((task, index) => `${index + 1}. **${task.id} / ${task.eventId}** — seeds: ${task.seedIds.join(', ')}. APIs: ${task.requiredApis.join(', ')}.`).join('\n');
-const codexPrompt = `# CODEX PROMPT — T5.2 causal seed consumers\n\nWork in repository \`capitanps02/Juego-Multihistoria\`. Base for this handoff: \`${baseCommit}\`. Create a fresh implementation branch from the current main or rebase safely; never develop on main and never auto-merge.\n\nThe architecture is already resolved:\n\n- \`src/narrative/seed-memory.ts\`: exact, read-only, scope-aware SeedInstance projections;\n- \`narrativeConditionRoot\`: exposes exact live payload scalars under \`facts.*\`;\n- \`src/narrative/resolver.ts\`: gates, eligibility, outcome conditions and modifiers share the causal root;\n- live and historical direct consumers are separate registries; historical IDs fail closed against the catalog;\n- projections/audits consume 0 RNG and do not mutate saves/history.\n\nImplement these ready tasks in order:\n\n${promptTasks}\n\nFor each task, read its full contract in \`analysis/CODEX/seeds/implementation-ready.json\`. Do not infer seed meaning from ID or \`HAS_SEED_*\`; inspect exact payload semantics in \`SEED_CONSUMER_MATRIX.json\`.\n\nHard prohibitions: no schema changes, no global RNG changes, no scheduler changes, no contentIdentity changes unless EVENTS truly change and the owner migration process explicitly authorizes it, no originEvent/history rewrite, no NPC omniscience, no CareerOffer changes, no fake consumers for green audits.\n\nTesting order: directed unit/integration tests first, then save/load/migration gates, then Repository Integrity. Do not substitute bulk simulations for unit tests. Same state + same RNG must produce the same result.\n\nOwnership: these five scene edits belong to \`t51/canon-18-23\`; T5.2 owns only the shared causal infrastructure. Do not implement rows marked blocked in the matrix without owner evidence.\n`;
+const promptTaskText = promptTasks || 'No pending Codex seed-consumer tasks remain from this handoff; integrated tasks are recorded in implementation-ready.json.';
+const codexPrompt = `# CODEX PROMPT — T5.2 causal seed consumers\n\nWork in repository \`capitanps02/Juego-Multihistoria\`. Base for this handoff: \`${baseCommit}\`. Create a fresh implementation branch from the current main or rebase safely; never develop on main and never auto-merge.\n\nThe architecture is already resolved:\n\n- \`src/narrative/seed-memory.ts\`: exact, read-only, scope-aware SeedInstance projections;\n- \`narrativeConditionRoot\`: exposes exact live payload scalars under \`facts.*\`;\n- \`src/narrative/resolver.ts\`: gates, eligibility, outcome conditions and modifiers share the causal root;\n- live and historical direct consumers are separate registries; historical IDs fail closed against the catalog;\n- projections/audits consume 0 RNG and do not mutate saves/history.\n\nImplement these ready tasks in order:\n\n${promptTasks}\n\nFor each task, read its full contract in \`analysis/CODEX/seeds/implementation-ready.json\`. Do not infer seed meaning from ID or \`HAS_SEED_*\`; inspect exact payload semantics in \`SEED_CONSUMER_MATRIX.json\`.\n\nHard prohibitions: no schema changes, no global RNG changes, no scheduler changes, no contentIdentity changes unless EVENTS truly change and the owner migration process explicitly authorizes it, no originEvent/history rewrite, no NPC omniscience, no CareerOffer changes, no fake consumers for green audits.\n\nTesting order: directed unit/integration tests first, then save/load/migration gates, then Repository Integrity. Do not substitute bulk simulations for unit tests. Same state + same RNG must produce the same result.\n\nOwnership: any future ready scene edits belong to their canonical owner; the five original 18–20 repairs are tracked as integrated when causal evidence is present; T5.2 owns only the shared causal infrastructure. Do not implement rows marked blocked in the matrix without owner evidence.\n`;
 
 fs.mkdirSync(outDir, { recursive: true });
 fs.writeFileSync(path.join(outDir, 'SEED_CONSUMER_MATRIX.json'), JSON.stringify(matrixDoc, null, 2) + '\n');
@@ -240,6 +254,7 @@ console.log(JSON.stringify({
   outputDir: path.relative(root, outDir),
   totalSeeds: matrix.length,
   codexReadyEvents: readyTasks.length,
+  integratedCausalEvents: integratedTasks.length,
   blockedDeclaredReadOnlyConsumers: blockedConsumerCount,
   liveConsumers: SIMULATION_SEED_CONSUMERS.length,
   historicalConsumers: HISTORICAL_SEED_CONSUMERS.length
