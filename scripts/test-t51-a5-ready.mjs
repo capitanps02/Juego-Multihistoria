@@ -1,0 +1,226 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+
+import { A5_READY_EVENTS_18_23 } from '../dist/content/events/20_23/a5-ready-staged.js';
+import { A5_READY_NPC_KNOWLEDGE_RULES } from '../dist/catalog/npc-knowledge-rules-a5-ready.js';
+import { createInitialState } from '../dist/content/initial-state.js';
+import { eventGatesPass } from '../dist/narrative/event-gates.js';
+import { eligibleChoices } from '../dist/narrative/choice-eligibility.js';
+import { resolveChoiceInPlace } from '../dist/narrative/resolver.js';
+import { narrativeCausalFacts } from '../dist/simulation/club-contract-intent.js';
+import { certifyActiveAgentInPlace } from '../dist/simulation/npc-authority.js';
+import { captureNpcKnowledgeTargetContext, resolveNpcKnowledgeTargets } from '../dist/narrative/npc-knowledge-targets.js';
+import { proposeCareerChange } from '../dist/simulation/offers.js';
+import { loadSave, serializeSave } from '../dist/save/save.js';
+
+const event = id => {
+  const found = A5_READY_EVENTS_18_23.find(row => row.id === id);
+  assert.ok(found, `missing staged event ${id}`);
+  return found;
+};
+
+function stateAt(seed, age, date) {
+  const state = createInitialState(seed);
+  state.age = age;
+  state.phase = age < 20 ? '18_20' : '20_23';
+  state.date = date;
+  state.season = date.slice(0, 4) + '-' + String((Number(date.slice(0,4)) + 1) % 100).padStart(2,'0');
+  if (age >= 20) state.professional.initializedAt20 = true;
+  return state;
+}
+
+function addLiveSeed(state, id, originEvent, payload) {
+  state.seeds.push({
+    id,
+    state: 'dormant',
+    intensity: 60,
+    originEvent,
+    originSeason: state.season,
+    npcRefs: [],
+    payload: structuredClone(payload),
+    lastTouchedDate: state.date
+  });
+  state.flags[`HAS_${id}`] = true;
+}
+
+function ruleFor(eventId, choiceId) {
+  return A5_READY_NPC_KNOWLEDGE_RULES.find(rule =>
+    rule.eventId === eventId && (rule.choiceIds ?? []).includes(choiceId)
+  );
+}
+
+test('A5 ready/1 exact finite batch and canonical choices are staged without activating a registry shortcut', () => {
+  assert.deepEqual(A5_READY_EVENTS_18_23.map(row => row.id), [
+    'CEVT_18_PLAYOFF_01',
+    'EVT_20_BRIDGE_001',
+    'EVT_20_CCH_001',
+    'EVT_21_SOC_001',
+    'EVT_21_PRS_002'
+  ]);
+  assert.deepEqual(event('EVT_20_BRIDGE_001').choices.map(choice => choice.id), [
+    'WRITTEN_PLAN', 'MONEY_FIRST', 'ASK_PRICE', 'LISTEN_AND_CHECK'
+  ]);
+  assert.deepEqual(event('EVT_20_CCH_001').choices.map(choice => choice.id), [
+    'COACH_NOW', 'WAIT_THREE_MATCHES', 'ASK_DIRECTOR', 'AGENT_SOUND'
+  ]);
+  assert.deepEqual(event('EVT_21_SOC_001').choices.map(choice => choice.id), [
+    'BACK_AGENT', 'APOLOGIZE_LIMIT', 'MEDIATE', 'LET_PASS'
+  ]);
+  assert.deepEqual(event('EVT_21_PRS_002').choices.map(choice => choice.id), [
+    'EXACT_DURATION', 'RANGE', 'PUBLICABLE_ONLY', 'PASS_TO_AGENT'
+  ]);
+});
+
+test('A5 ready/2 A1 identities are consumed read-only and no contact/relationship heuristic fabricates an agent', () => {
+  const state = stateAt(51002, 20, '2028-08-08');
+  state.flags.AGENT_ACTIVE = true;
+  state.flags.AGENT_CONTACT_HECTOR = true;
+  state.relationships.find(row => row.npcId === 'NPC_AGT_01').trust = 100;
+  const beforeRng = structuredClone(state.rngState);
+  const first = narrativeCausalFacts(state);
+  assert.equal(first.activeAgentNpcId, null);
+  assert.equal(first.currentClubInstitutionalNpcId, 'NPC_DIR_02');
+  assert.deepEqual(state.rngState, beforeRng);
+
+  certifyActiveAgentInPlace(state, 'NPC_AGT_01');
+  const snapshot = structuredClone(state);
+  const second = narrativeCausalFacts(state);
+  assert.equal(second.activeAgentNpcId, 'NPC_AGT_01');
+  assert.equal(second.currentClubInstitutionalNpcId, 'NPC_DIR_02');
+  assert.deepEqual(state, snapshot, 'facts must be read-only');
+
+  state.club = 'OTHER_CLUB';
+  state.professional.registrationClub = 'OTHER_CLUB';
+  assert.equal(narrativeCausalFacts(state).currentClubInstitutionalNpcId, null);
+});
+
+test('A5 ready/3 CCH director and agent choices fail closed independently', () => {
+  const scene = event('EVT_20_CCH_001');
+  const state = stateAt(51003, 20, '2028-08-20');
+  let ids = eligibleChoices(state, scene).map(choice => choice.id);
+  assert.ok(ids.includes('ASK_DIRECTOR'));
+  assert.ok(!ids.includes('AGENT_SOUND'));
+
+  certifyActiveAgentInPlace(state, 'NPC_AGT_01');
+  ids = eligibleChoices(state, scene).map(choice => choice.id);
+  assert.ok(ids.includes('ASK_DIRECTOR'));
+  assert.ok(ids.includes('AGENT_SOUND'));
+
+  state.club = 'TRANSFER_FC';
+  state.professional.registrationClub = 'TRANSFER_FC';
+  ids = eligibleChoices(state, scene).map(choice => choice.id);
+  assert.ok(!ids.includes('ASK_DIRECTOR'), 'UDV director must not leak after transfer');
+  assert.ok(ids.includes('AGENT_SOUND'), 'certified active agent remains independently resolvable');
+});
+
+test('A5 ready/4 Dani scene requires live causal memory plus a certified active agent', () => {
+  const scene = event('EVT_21_SOC_001');
+  const state = stateAt(51004, 21, '2029-10-12');
+  state.professional.agentControl = 60;
+  addLiveSeed(state, 'SEED_DANI_NORMALITY', 'EVT_18_SOC_001', { pattern: 'normality' });
+
+  state.flags.AGENT_ACTIVE = true;
+  state.flags.AGENT_CONTACT_HECTOR = true;
+  assert.equal(eventGatesPass(state, scene), false, 'contact flags cannot certify representation');
+
+  certifyActiveAgentInPlace(state, 'NPC_AGT_01');
+  const before = structuredClone(state.rngState);
+  assert.equal(eventGatesPass(state, scene), true);
+  assert.equal(narrativeCausalFacts(state).daniNormalityPattern, 'normality');
+  assert.deepEqual(state.rngState, before);
+});
+
+test('A5 ready/5 Clara channel is factual, agent route is optional, and the scene never creates a CareerOffer', () => {
+  const scene = event('EVT_21_PRS_002');
+  const state = stateAt(51005, 21, '2029-11-03');
+  addLiveSeed(state, 'SEED_CLARA_CHANNEL', 'EVT_18_PRS_002', { mode: 'context' });
+  assert.equal(eventGatesPass(state, scene), true);
+  assert.equal(narrativeCausalFacts(state).claraChannelMode, 'context');
+
+  let ids = eligibleChoices(state, scene).map(choice => choice.id);
+  assert.ok(!ids.includes('PASS_TO_AGENT'));
+  const marketBefore = structuredClone(state.market);
+  resolveChoiceInPlace(state, scene, 'PUBLICABLE_ONLY');
+  assert.deepEqual(state.market, marketBefore, 'journalistic information must not manufacture a formal offer');
+
+  const withAgent = stateAt(51006, 21, '2029-11-03');
+  addLiveSeed(withAgent, 'SEED_CLARA_CHANNEL', 'EVT_18_PRS_002', { mode: 'trade' });
+  certifyActiveAgentInPlace(withAgent, 'NPC_AGT_02');
+  ids = eligibleChoices(withAgent, scene).map(choice => choice.id);
+  assert.ok(ids.includes('PASS_TO_AGENT'));
+});
+
+test('A5 ready/6 bridge reads an existing formal offer but never creates, signs or replaces it', () => {
+  const scene = event('EVT_20_BRIDGE_001');
+  const state = stateAt(51007, 20, '2028-07-10');
+  proposeCareerChange(state, 'QA existing offer', draft => {
+    draft.contract.salaryMonthly = Number(draft.contract.salaryMonthly) + 700;
+  });
+  assert.ok(state.market?.pending);
+  const pendingBefore = structuredClone(state.market.pending);
+  const contractBefore = structuredClone(state.contract);
+  resolveChoiceInPlace(state, scene, 'ASK_PRICE');
+  assert.deepEqual(state.market.pending, pendingBefore);
+  assert.deepEqual(state.contract, contractBefore);
+
+  const allEffects = [
+    ...scene.choices.flatMap(choice => choice.immediateEffects ?? []),
+    ...scene.outcomes.flatMap(outcome => outcome.effects)
+  ];
+  assert.equal(allEffects.some(effect => effect.kind !== 'flag' && String(effect.path).startsWith('contract.')), false);
+  assert.equal(allEffects.some(effect => effect.kind === 'set' && ['club','tier'].includes(effect.path)), false);
+});
+
+test('A5 ready/7 playoff decision persists a real retention-vs-market payload through save/restore deterministically', () => {
+  const scene = event('CEVT_18_PLAYOFF_01');
+  const base = stateAt(51008, 18, '2027-05-15');
+  base.flags.UDV_PLAYOFF = true;
+  assert.equal(eventGatesPass(base, scene), true);
+
+  const beforeReadRng = structuredClone(base.rngState);
+  narrativeCausalFacts(base);
+  eligibleChoices(base, scene);
+  assert.deepEqual(base.rngState, beforeReadRng, 'eligibility/fact reads consume zero RNG');
+
+  const a = structuredClone(base);
+  const b = structuredClone(base);
+  resolveChoiceInPlace(a, scene, 'COMMIT');
+  resolveChoiceInPlace(b, scene, 'COMMIT');
+  assert.deepEqual(a, b, 'same state and RNG resolve identically');
+
+  const seed = a.seeds.find(row => row.id === 'SEED_EXIT_STYLE_UDV' && row.state !== 'resolved' && row.state !== 'expired');
+  assert.ok(seed);
+  assert.equal(seed.originEvent, 'CEVT_18_PLAYOFF_01');
+  assert.equal(seed.payload.playoff, 'commit');
+  assert.equal(narrativeCausalFacts(a).exitStylePlayoff, 'commit');
+
+  const restored = loadSave(serializeSave(a));
+  assert.equal(narrativeCausalFacts(restored).exitStylePlayoff, 'commit');
+  assert.deepEqual(restored.seeds, a.seeds);
+});
+
+test('A5 ready/8 staged NPC provenance uses only explicit participants and A1 dynamic authority slots', () => {
+  const state = stateAt(51009, 20, '2028-08-20');
+  const directorRule = ruleFor('EVT_20_CCH_001', 'ASK_DIRECTOR');
+  const agentRule = ruleFor('EVT_20_CCH_001', 'AGENT_SOUND');
+  assert.ok(directorRule);
+  assert.ok(agentRule);
+
+  let context = captureNpcKnowledgeTargetContext(state);
+  assert.deepEqual(resolveNpcKnowledgeTargets(directorRule, context), ['NPC_DIR_02']);
+  assert.deepEqual(resolveNpcKnowledgeTargets(agentRule, context), []);
+
+  certifyActiveAgentInPlace(state, 'NPC_AGT_01');
+  context = captureNpcKnowledgeTargetContext(state);
+  assert.deepEqual(resolveNpcKnowledgeTargets(agentRule, context), ['NPC_AGT_01']);
+
+  const socialRule = ruleFor('EVT_21_SOC_001', 'MEDIATE');
+  assert.ok(socialRule);
+  assert.deepEqual(new Set(resolveNpcKnowledgeTargets(socialRule, context)), new Set(['NPC_SOC_01', 'NPC_AGT_01']));
+  assert.equal(ruleFor('EVT_21_SOC_001', 'LET_PASS'), undefined, 'private inaction does not inform either party');
+
+  state.club = 'TRANSFER_FC';
+  state.professional.registrationClub = 'TRANSFER_FC';
+  context = captureNpcKnowledgeTargetContext(state);
+  assert.deepEqual(resolveNpcKnowledgeTargets(directorRule, context), []);
+});
