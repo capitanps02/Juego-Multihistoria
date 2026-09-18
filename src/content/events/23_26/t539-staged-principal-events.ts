@@ -14,10 +14,14 @@ const MATCH24=ambiguousEvent({
     {id:"C",label:"Preguntar al capitán o técnico desde el campo",intentTags:["penalty","authority","clarify"],primaryMessage:"Pides una decisión explícita a la autoridad deportiva disponible antes de lanzar.",secondaryMessage:"La consulta reduce ambigüedad, aunque puede hacer visible un conflicto que hasta ese momento era interno.",primaryEffects:[n("professional.careerControl",2),n("professional.institutionalTrust",2)],secondaryEffects:[n("professional.environmentStability",1)],primarySeedTransitions:[seedCreate("SEED_PENALTY_HIERARCHY",61,{decision24:"ask_authority"})],secondarySeedTransitions:[seedCreate("SEED_PENALTY_HIERARCHY",57,{decision24:"ask_authority"})]},
     {id:"D",label:"Proponer decidirlo con una regla rápida entre ambos",intentTags:["penalty","shared_rule","team"],primaryMessage:"Intentas convertir la disputa en una regla verificable entre los dos sin fabricar el resultado deportivo.",secondaryMessage:"El acuerdo puede proteger la convivencia o parecer una negociación impropia en pleno partido.",primaryEffects:[n("professional.lockerPower",2),n("professional.careerControl",2)],secondaryEffects:[n("professional.environmentStability",1),n("professional.publicPolarization",1)],primarySeedTransitions:[seedCreate("SEED_PENALTY_HIERARCHY",63,{decision24:"shared_rule"})],secondarySeedTransitions:[seedCreate("SEED_PENALTY_HIERARCHY",59,{decision24:"shared_rule"})]}
   ],
-  gates:[{path:"facts.penaltyHierarchyMoment",op:"eq",value:true}],
+  gates:[
+    {path:"facts.match.penaltyDecisionContext",op:"eq",value:true},
+    {path:"facts.match.designatedTakerMissedEarlier",op:"eq",value:true},
+    {path:"facts.match.highProfileMatch",op:"eq",value:true}
+  ],
   timeWindow:{months:[9,10,11,2,3]},weight:20,cooldown:99999,
   seedsWrite:["SEED_PENALTY_HIERARCHY"],
-  tags:["sport","penalty","a6_ready_external_blocker","needs_a4_fixture_appearance_designated_taker_prior_miss_score_minute_profile_and_penalty_resolver","t5_39"],
+  tags:["sport","penalty","a6_ready_external_blocker","consumes_a4_pr209_match24_setup","needs_a4_penalty_outcome_resolver_for_scored_missed","t5_39"],
   canonStatus:"verified"
 });
 
