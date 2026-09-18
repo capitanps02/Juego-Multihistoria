@@ -6,7 +6,7 @@ Owner: QA independiente
 
 QA intenta falsar invariantes. No reescribe canon ni corrige silenciosamente runtime de otros workstreams. Los defectos runtime se convierten en reproducciones, issues y handoffs acotados.
 
-## Estado verificado 2026-09-17
+## Estado verificado 2026-09-18
 
 **8 bugs: 4 open / 4 resolved / 0 P0.**
 
@@ -16,14 +16,21 @@ QA intenta falsar invariantes. No reescribe canon ni corrige silenciosamente run
 - T5-QA-023 — **RESOLVED** — PRS23 usa provenance y caída factual exactas; #109.
 - T5-QA-025 — **RESOLVED** — historical seed consumers cierran contra catálogo; #131.
 - T5-QA-027 — **OPEN / P2 / serialized owner** — #133. LOCK23 debe fallar cerrado sin capitán autoritativo.
-- T5-QA-028 — **OPEN / P1 / implementation-ready** — #130. Contract expiry zombie. PR #156 ya está integrado en `main@5f4d14b`, por lo que el blocker de layout desapareció y Pass A puede implementarse sobre `world-simulator-core.ts`.
+- T5-QA-028 — **OPEN / P1 / spec-ready, execution-blocked** — #130. Pass A está definido, pero la cadena coordinada vigente es `#207 -> #157 -> #130 -> #176`; no debe implementarse contra MarketState v1.
 - T5-QA-029 — **OPEN / P2 / implementation-ready** — #212. `sportMatchModel` v1 acepta autoridad persistida imposible; reproducción QA dedicada fuera del gate verde.
 
 ## T5-QA-028 evidence y contrato
 
 Reproducción histórica `loyal / seed 512000`: primera expiración `2029-06-01`; 6669 días observados a 0 meses; máximo continuo 5694; 0 cambios de empleo; 419 apariciones añadidas con el mismo club/owner/registration/salary.
 
-Pass A exige una autoridad `contracted | unattached`, transición 1→0 determinista/idempotente/0 RNG, provenance de último club separada de empleo vivo, football/renewal/institutional NPC fail-closed mientras unattached y reactivación únicamente mediante una CareerOffer formal. No sentinel club, `route=free_agent`, salary=0, transferencia forzada, contrato sintético ni retirada automática.
+Pass A exige una autoridad `contracted | unattached`, transición 1→0 determinista/idempotente/0 RNG, provenance de último club separada de empleo vivo, football/renewal/institutional NPC fail-closed mientras unattached y reactivación únicamente mediante una CareerOffer formal.
+
+La implementación queda temporalmente bloqueada por coordinación:
+1. #207 integra `CareerOffer.context`.
+2. #157 migra MarketState a una única colección autoritativa 0..N y preserva context/IDs/history.
+3. #130 consume esa autoridad final para reactivar empleo; no crea un segundo sistema de ofertas, `market.pending` paralelo ni migración intermedia.
+
+No sentinel club, `route=free_agent`, salary=0, transferencia forzada, contrato sintético ni retirada automática.
 
 ## T5-QA-029 evidence y contrato
 
@@ -33,7 +40,7 @@ Reproducción: `npm run build && node --test scripts/test-t5-match-model-known-b
 
 ## Codex-ready QA
 
-`analysis/CODEX/qa/implementation-ready.json` contiene **2 tareas ready**: T5-QA-029/#212 y T5-QA-028/#130. Orden recomendado: #212 primero por ser una corrección pequeña de integridad de saves, #130 después.
+`analysis/CODEX/qa/implementation-ready.json` contiene **1 tarea ready**: T5-QA-029/#212. T5-QA-028/#130 permanece machine-readable pero con `status=blocked` y `blockedBy=[207,157]`.
 
 ## Gates verdes
 
