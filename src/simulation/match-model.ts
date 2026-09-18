@@ -378,7 +378,10 @@ function fixtureIssue(value: unknown, index: number, maxDate?: string): MatchMod
   }
   if (player.started && !player.appeared) return { path: `${path}.player.started`, reason: "starter must appear" };
   if (player.appeared && !player.calledUp) return { path: `${path}.player.appeared`, reason: "appearance requires call-up" };
+  if (player.onBench && !player.calledUp) return { path: `${path}.player.onBench`, reason: "bench status requires call-up" };
   if (player.started && player.onBench) return { path: `${path}.player.onBench`, reason: "starter cannot also be bench" };
+  if (player.appeared && player.minutes === 0) return { path: `${path}.player.minutes`, reason: "appearance requires positive minutes" };
+  if (player.appeared && !player.started && !player.onBench) return { path: `${path}.player.onBench`, reason: "substitute appearance requires bench status" };
   if (!player.appeared && player.minutes !== 0) return { path: `${path}.player.minutes`, reason: "non-appearance must have zero minutes" };
   if (player.debut && !player.appeared) return { path: `${path}.player.debut`, reason: "debut requires appearance" };
   if (player.injuryUnavailable && player.calledUp) return { path: `${path}.player.injuryUnavailable`, reason: "injury-unavailable player cannot be called up" };
@@ -429,6 +432,30 @@ export function inspectSportMatchModelStore(value: unknown, maxDate?: string): M
   for (const [key, milestone] of Object.entries(value.milestones)) {
     if (!stringOrNull(milestone)) return { path: `${path}.milestones.${key}`, reason: "milestone must be fixture id or null" };
     if (milestone !== null && !ids.has(milestone)) return { path: `${path}.milestones.${key}`, reason: "milestone references unknown fixture" };
+  }
+
+  const fixtures = value.fixtures as Array<Record<string, unknown>>;
+  const firstMatchingFixtureId = (predicate: (player: Record<string, unknown>) => boolean): string | null => {
+    for (const fixture of fixtures) {
+      const player = fixture.player;
+      if (plainRecord(player) && predicate(player)) return fixture.id as string;
+    }
+    return null;
+  };
+  const expectedMilestones: Record<string, string | null> = {
+    firstMatchSquadCall: firstMatchingFixtureId(player => player.calledUp === true),
+    firstBench: firstMatchingFixtureId(player => player.onBench === true),
+    firstAppearance: firstMatchingFixtureId(player => player.appeared === true),
+    firstStart: firstMatchingFixtureId(player => player.started === true),
+    firstFullMatch: firstMatchingFixtureId(player => player.appeared === true && player.minutes === 90)
+  };
+  for (const [key, expected] of Object.entries(expectedMilestones)) {
+    if (value.milestones[key] !== expected) {
+      return { path: `${path}.milestones.${key}`, reason: "milestone must reference the first qualifying fixture" };
+    }
+  }
+  if (value.milestones.firstGoal !== null) {
+    return { path: `${path}.milestones.firstGoal`, reason: "firstGoal is unavailable in match-model v1" };
   }
 
   if (value.objective !== null) {
