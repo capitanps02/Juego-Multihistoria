@@ -7,6 +7,7 @@ import { EventIndex } from "./event-index.js";
 import { eligibleChoices, eventWithEligibleChoices } from "./choice-eligibility.js";
 import { eventGatesPass } from "./event-gates.js";
 import { mandatoryTransitionPriorityActive } from "./transition-priority.js";
+import { currentEmploymentClub } from "../simulation/offers.js";
 
 export interface SchedulerOptions { qa?: boolean; currentTick?: number; ignoreRhythmGate?: boolean; }
 type Period = { key: string; cap: number };
@@ -72,6 +73,17 @@ function inTimeWindow(state:GameState,event:EventDefinition,ctx:TickContext):boo
 function knowledgePass(state:GameState,event:EventDefinition):boolean {
   return knowledgeRequirementsFor(event.id).every(requirement=>npcKnows(state,requirement.npcId,requirement.factId));
 }
+function effectCanRestoreEmployment(effect: import("../core/types.js").Effect): boolean {
+  if (effect.path !== "contract.monthsRemaining") return false;
+  if (effect.kind === "set") return typeof effect.value === "number" && effect.value > 0;
+  if (effect.kind === "numeric") return effect.delta > 0;
+  return false;
+}
+function eventCanRestoreEmploymentDirectly(event: EventDefinition): boolean {
+  return event.choices.some(choice =>
+    [...(choice.immediateEffects ?? []), ...(choice.hiddenCosts ?? [])].some(effectCanRestoreEmployment)
+  ) || event.outcomes.some(outcome => outcome.effects.some(effectCanRestoreEmployment));
+}
 function rhythmPass(state:GameState,event:EventDefinition,options:SchedulerOptions,ctx:TickContext):boolean {
   if(options.ignoreRhythmGate||(event.tags??[]).includes("hard_deadline"))return true;
   if((event.tags??[]).includes("retirement_terminal")) return state.runtime.daysSinceNarrative>=1;
@@ -80,6 +92,7 @@ function rhythmPass(state:GameState,event:EventDefinition,options:SchedulerOptio
   const sameHeavy=ctx.recent3.filter(h=>h.snapshot.family===event.family).length; if((event.family==="medical"||event.family==="contract")&&sameHeavy>=2)return false; return true;
 }
 function isEligible(state:GameState,event:EventDefinition,options:SchedulerOptions,ctx:TickContext):boolean {
+  if (currentEmploymentClub(state) === null && eventCanRestoreEmploymentDirectly(event)) return false;
   const maxAge=event.ageWindow[1]??Infinity; if(state.age<event.ageWindow[0]||state.age>maxAge||state.phase!==event.phase)return false;
   const mandatoryTransition=mandatoryTransitionPriorityActive(state,event);
   if(!mandatoryTransition && state.phase==="34_plus" && event.family!=="conditional" && !(event.tags??[]).includes("retirement_terminal")){
