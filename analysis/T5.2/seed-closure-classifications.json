@@ -2214,6 +2214,105 @@
         "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
         "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
       ]
+    },
+    {
+      "seedId": "SEED_FAREWELL_ANNOUNCEMENT_TIMING",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 9 implementa SEED_FAREWELL_ANNOUNCEMENT_TIMING como memoria terminal create-only, sin payload, expiresAfter ni transición resolve/expire; su QA exige una única instancia viva con provenance canónica. El handoff T5.36 prohíbe mass-close de seeds y preserva el historial completo, por lo que esta memoria permanece abierta intencionalmente tras su creación.",
+      "evidenceRefs": [
+        "scripts/test-t536-terminal-seeds.mjs#SEED_FAREWELL_ANNOUNCEMENT_TIMING",
+        "src/content/events/34_plus/retirement-terminal-overrides.ts#terminal-seed-producers",
+        "analysis/T5.36-T5.37/cross-workstream-handoffs.json#T536-HO-SEED-TERMINAL-CLASSIFICATION"
+      ]
+    },
+    {
+      "seedId": "SEED_FINAL_FAMILY_CONVERSATION",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 9 implementa SEED_FINAL_FAMILY_CONVERSATION como memoria terminal create-only, sin payload, expiresAfter ni transición resolve/expire; su QA exige una única instancia viva con provenance canónica. El handoff T5.36 prohíbe mass-close de seeds y preserva el historial completo, por lo que esta memoria permanece abierta intencionalmente tras su creación.",
+      "evidenceRefs": [
+        "scripts/test-t536-terminal-seeds.mjs#SEED_FINAL_FAMILY_CONVERSATION",
+        "src/content/events/34_plus/retirement-terminal-overrides.ts#terminal-seed-producers",
+        "analysis/T5.36-T5.37/cross-workstream-handoffs.json#T536-HO-SEED-TERMINAL-CLASSIFICATION"
+      ]
+    },
+    {
+      "seedId": "SEED_LAST_REHAB_DECISION",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 9 implementa SEED_LAST_REHAB_DECISION como memoria terminal create-only, sin payload, expiresAfter ni transición resolve/expire; su QA exige una única instancia viva con provenance canónica. El handoff T5.36 prohíbe mass-close de seeds y preserva el historial completo, por lo que esta memoria permanece abierta intencionalmente tras su creación.",
+      "evidenceRefs": [
+        "scripts/test-t536-terminal-seeds.mjs#SEED_LAST_REHAB_DECISION",
+        "src/content/events/34_plus/retirement-terminal-overrides.ts#terminal-seed-producers",
+        "analysis/T5.36-T5.37/cross-workstream-handoffs.json#T536-HO-SEED-TERMINAL-CLASSIFICATION"
+      ]
+    },
+    {
+      "seedId": "SEED_RETIRE_ON_HIGH_CHOICE",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 9 implementa SEED_RETIRE_ON_HIGH_CHOICE como memoria terminal create-only, sin payload, expiresAfter ni transición resolve/expire; su QA exige una única instancia viva con provenance canónica. El handoff T5.36 prohíbe mass-close de seeds y preserva el historial completo, por lo que esta memoria permanece abierta intencionalmente tras su creación.",
+      "evidenceRefs": [
+        "scripts/test-t536-terminal-seeds.mjs#SEED_RETIRE_ON_HIGH_CHOICE",
+        "src/content/events/34_plus/retirement-terminal-overrides.ts#terminal-seed-producers",
+        "analysis/T5.36-T5.37/cross-workstream-handoffs.json#T536-HO-SEED-TERMINAL-CLASSIFICATION"
+      ]
+    },
+    {
+      "seedId": "SEED_RETIRE_AFTER_LOW",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 9 implementa SEED_RETIRE_AFTER_LOW como memoria terminal create-only, sin payload, expiresAfter ni transición resolve/expire; su QA exige una única instancia viva con provenance canónica. El handoff T5.36 prohíbe mass-close de seeds y preserva el historial completo, por lo que esta memoria permanece abierta intencionalmente tras su creación.",
+      "evidenceRefs": [
+        "scripts/test-t536-terminal-seeds.mjs#SEED_RETIRE_AFTER_LOW",
+        "src/content/events/34_plus/retirement-terminal-overrides.ts#terminal-seed-producers",
+        "analysis/T5.36-T5.37/cross-workstream-handoffs.json#T536-HO-SEED-TERMINAL-CLASSIFICATION"
+      ]
+    },
+    {
+      "seedId": "SEED_DISCARDED_REBIRTH_FINAL",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 9 implementa SEED_DISCARDED_REBIRTH_FINAL como memoria terminal create-only, sin payload, expiresAfter ni transición resolve/expire; su QA exige una única instancia viva con provenance canónica. El handoff T5.36 prohíbe mass-close de seeds y preserva el historial completo, por lo que esta memoria permanece abierta intencionalmente tras su creación.",
+      "evidenceRefs": [
+        "scripts/test-t536-terminal-seeds.mjs#SEED_DISCARDED_REBIRTH_FINAL",
+        "src/content/events/34_plus/retirement-terminal-overrides.ts#terminal-seed-producers",
+        "analysis/T5.36-T5.37/cross-workstream-handoffs.json#T536-HO-SEED-TERMINAL-CLASSIFICATION"
+      ]
+    },
+    {
+      "seedId": "SEED_RETIREMENT_ANNOUNCEMENT_PATH",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 9 implementa SEED_RETIREMENT_ANNOUNCEMENT_PATH como memoria terminal create-only, sin payload, expiresAfter ni transición resolve/expire; su QA exige una única instancia viva con provenance canónica. El handoff T5.36 prohíbe mass-close de seeds y preserva el historial completo, por lo que esta memoria permanece abierta intencionalmente tras su creación.",
+      "evidenceRefs": [
+        "scripts/test-t536-terminal-seeds.mjs#SEED_RETIREMENT_ANNOUNCEMENT_PATH",
+        "src/content/events/34_plus/retirement-terminal-overrides.ts#terminal-seed-producers",
+        "analysis/T5.36-T5.37/cross-workstream-handoffs.json#T536-HO-SEED-TERMINAL-CLASSIFICATION"
+      ]
+    },
+    {
+      "seedId": "SEED_LAST_MATCH_SHAPE",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 9 implementa SEED_LAST_MATCH_SHAPE como memoria terminal create-only, sin payload, expiresAfter ni transición resolve/expire; su QA exige una única instancia viva con provenance canónica. El handoff T5.36 prohíbe mass-close de seeds y preserva el historial completo, por lo que esta memoria permanece abierta intencionalmente tras su creación.",
+      "evidenceRefs": [
+        "scripts/test-t536-terminal-seeds.mjs#SEED_LAST_MATCH_SHAPE",
+        "src/content/events/34_plus/retirement-terminal-overrides.ts#terminal-seed-producers",
+        "analysis/T5.36-T5.37/cross-workstream-handoffs.json#T536-HO-SEED-TERMINAL-CLASSIFICATION"
+      ]
+    },
+    {
+      "seedId": "SEED_FAREWELL_CONTROL_FINAL",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 9 implementa SEED_FAREWELL_CONTROL_FINAL como memoria terminal create-only, sin payload, expiresAfter ni transición resolve/expire; su QA exige una única instancia viva con provenance canónica. El handoff T5.36 prohíbe mass-close de seeds y preserva el historial completo, por lo que esta memoria permanece abierta intencionalmente tras su creación.",
+      "evidenceRefs": [
+        "scripts/test-t536-terminal-seeds.mjs#SEED_FAREWELL_CONTROL_FINAL",
+        "src/content/events/34_plus/retirement-terminal-overrides.ts#terminal-seed-producers",
+        "analysis/T5.36-T5.37/cross-workstream-handoffs.json#T536-HO-SEED-TERMINAL-CLASSIFICATION"
+      ]
     }
   ]
 }
