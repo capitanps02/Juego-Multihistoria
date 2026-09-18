@@ -12,7 +12,8 @@
     "src/content/events/30_34/canonical-reimplementations.ts",
     "src/content/events/30_34/canonical-reimplementations-31b.ts",
     "src/content/events/30_34/canonical-reimplementations-32a.ts",
-    "src/content/events/30_34/canonical-reimplementations-33a.ts"
+    "src/content/events/30_34/canonical-reimplementations-33a.ts",
+    "src/content/events/30_34/canonical-missing-principals.ts"
   ],
   "policy": {
     "noArtificialClosures": true,
@@ -29,23 +30,16 @@
     "workflowRun": 35263497858,
     "owner": "t51/canon-30-34",
     "totalSeeds": 52,
-    "runtimeProduced": 48,
-    "withoutRuntimeProducer": 4,
+    "runtimeProduced": 49,
+    "withoutRuntimeProducer": 3,
     "withConsumers": 13,
     "withoutConsumers": 39,
-    "noProducerAndNoConsumer": 4,
+    "noProducerAndNoConsumer": 3,
     "terminalTransitionDefined": 0,
     "openEndedWithoutTerminalTransition": 52,
-    "interpretation": "Open-ended is not automatically a defect. The four no-producer/no-consumer rows are intentionally held for their canonical-missing writers. The shared audit's withConsumers count is structural runtime evidence and must not be conflated with owner-certified canonical consumption. Repository Integrity on main@5f4d14bc reached this audit successfully before the expected target-freeze sentinel."
+    "interpretation": "Open-ended is not automatically a defect. SEED_ROLE_COMMUNICATION now has its canonical runtime producer EVT_30_CCH_001. The remaining three no-producer/no-consumer owner seeds are intentionally held for their canonical-missing writers; structural consumers are not canonical consumption."
   },
   "orphanCanonicalMappings": [
-    {
-      "seed": "SEED_ROLE_COMMUNICATION",
-      "canonicalWriter": "EVT_30_CCH_001",
-      "canonicalTitle": "Te enteras por la pizarra",
-      "runtimeStatus": "canonical_missing",
-      "rule": "Create only from the canonical scene/outcome that establishes communication or absence of communication about role."
-    },
     {
       "seed": "SEED_FALSE_ULTIMATUM",
       "canonicalWriter": "EVT_30_PRS_001",
@@ -218,5 +212,14 @@
       "currentStatus": "Current Repository Integrity passes save/schema validation before stopping at the expected missing target-freeze sentinel; no frozen-save compatibility defect is currently attributed to this workstream."
     }
   },
-  "integrationStatus": "four_orphan_writers_identified_pending_coordinated_missing_scene_batch; one_additional_canonical_seed_reference_missing_runtime_definition; seven_declared_seed_reads_declassified_from_causal_chains; six_boundary_seeds_handed_off_without_invented_consumers; remaining_open_seeds_require_proven_downstream_classification"
+  "integrationStatus": "three_orphan_writers_pending_canonical_missing_scenes; SEED_ROLE_COMMUNICATION_writer_implemented; one_additional_canonical_seed_reference_missing_runtime_definition; seven_declared_seed_reads_declassified_from_causal_chains; six_boundary_seeds_handed_off_without_invented_consumers",
+  "resolvedCanonicalWriters": [
+    {
+      "seed": "SEED_ROLE_COMMUNICATION",
+      "canonicalWriter": "EVT_30_CCH_001",
+      "canonicalTitle": "Te enteras por la pizarra",
+      "runtimeStatus": "implemented_writer",
+      "rule": "Create only from the canonical scene/outcome that establishes communication or absence of communication about role."
+    }
+  ]
 }
