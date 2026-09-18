@@ -378,7 +378,10 @@ function fixtureIssue(value: unknown, index: number, maxDate?: string): MatchMod
   }
   if (player.started && !player.appeared) return { path: `${path}.player.started`, reason: "starter must appear" };
   if (player.appeared && !player.calledUp) return { path: `${path}.player.appeared`, reason: "appearance requires call-up" };
+  if (player.onBench && !player.calledUp) return { path: `${path}.player.onBench`, reason: "bench requires call-up" };
+  if (player.calledUp && !player.started && !player.onBench) return { path: `${path}.player.onBench`, reason: "called-up non-starter must be on bench" };
   if (player.started && player.onBench) return { path: `${path}.player.onBench`, reason: "starter cannot also be bench" };
+  if (player.appeared && player.minutes === 0) return { path: `${path}.player.minutes`, reason: "appearance requires positive minutes" };
   if (!player.appeared && player.minutes !== 0) return { path: `${path}.player.minutes`, reason: "non-appearance must have zero minutes" };
   if (player.debut && !player.appeared) return { path: `${path}.player.debut`, reason: "debut requires appearance" };
   if (player.injuryUnavailable && player.calledUp) return { path: `${path}.player.injuryUnavailable`, reason: "injury-unavailable player cannot be called up" };
@@ -413,6 +416,7 @@ export function inspectSportMatchModelStore(value: unknown, maxDate?: string): M
   if (!Array.isArray(value.fixtures) || value.fixtures.length > 5000) return { path: `${path}.fixtures`, reason: "invalid fixture list" };
   let previousDate = "";
   const ids = new Set<string>();
+  const expectedMilestones = emptyMilestones();
   for (let i = 0; i < value.fixtures.length; i += 1) {
     const issue = fixtureIssue(value.fixtures[i], i, maxDate);
     if (issue) return issue;
@@ -421,6 +425,13 @@ export function inspectSportMatchModelStore(value: unknown, maxDate?: string): M
     previousDate = row.date as string;
     if (ids.has(row.id as string)) return { path: `${path}.fixtures[${i}].id`, reason: "duplicate fixture id" };
     ids.add(row.id as string);
+    // Reconstruct only from validated, ordered persisted facts; never from proxies.
+    const fixture = value.fixtures[i] as OfficialMatchRecord;
+    setMilestone(expectedMilestones, "firstMatchSquadCall", fixture.id, fixture.player.calledUp);
+    setMilestone(expectedMilestones, "firstBench", fixture.id, fixture.player.onBench);
+    setMilestone(expectedMilestones, "firstAppearance", fixture.id, fixture.player.appeared);
+    setMilestone(expectedMilestones, "firstStart", fixture.id, fixture.player.started);
+    setMilestone(expectedMilestones, "firstFullMatch", fixture.id, fixture.player.appeared && fixture.player.minutes === 90);
   }
 
   if (!plainRecord(value.milestones) || !exactKeys(value.milestones, ["firstMatchSquadCall", "firstBench", "firstAppearance", "firstStart", "firstFullMatch", "firstGoal"])) {
@@ -429,6 +440,10 @@ export function inspectSportMatchModelStore(value: unknown, maxDate?: string): M
   for (const [key, milestone] of Object.entries(value.milestones)) {
     if (!stringOrNull(milestone)) return { path: `${path}.milestones.${key}`, reason: "milestone must be fixture id or null" };
     if (milestone !== null && !ids.has(milestone)) return { path: `${path}.milestones.${key}`, reason: "milestone references unknown fixture" };
+    if (milestone !== expectedMilestones[key as keyof MatchMilestones]) return {
+      path: `${path}.milestones.${key}`,
+      reason: key === "firstGoal" ? "goals are unavailable in match-model v1" : "milestone must identify the first qualifying recorded fixture"
+    };
   }
 
   if (value.objective !== null) {
