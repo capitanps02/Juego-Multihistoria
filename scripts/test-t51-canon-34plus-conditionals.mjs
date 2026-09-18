@@ -6,7 +6,7 @@ import { STAGED_ORDINARY_CANONICAL_CONDITIONALS,stagedCanonicalConditionalEligib
 test('A8 stages exactly 23 external-fact canonical Pasada-7 conditionals',()=>{
  assert.equal(STAGED_ORDINARY_CANONICAL_CONDITIONALS.length,23);
  const ids=STAGED_ORDINARY_CANONICAL_CONDITIONALS.map(x=>x.event.id);
- assert.equal(new Set(ids).size,28);
+ assert.equal(new Set(ids).size,23);
  for(const row of STAGED_ORDINARY_CANONICAL_CONDITIONALS){
    assert.equal(row.status,'AWAITING_EXTERNAL_FACT');
    assert.equal(row.event.family,'conditional');
