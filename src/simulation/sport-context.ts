@@ -1,5 +1,11 @@
 import type { GameState } from "../core/types.js";
 import {
+  getCurrentCompetitionContext,
+  latestCompetitionMoment,
+  type CompetitionContext,
+  type CompetitionMoment
+} from "./competition-context.js";
+import {
   careerGoalHistoryComplete,
   currentOfficialMatch,
   getSportMatchModelStore,
@@ -30,6 +36,8 @@ export interface SportContextAvailability {
   careerAppearances: SportFactAvailability;
   officialDebutRecorded: SportFactAvailability;
   currentCompetition: SportFactAvailability;
+  currentCompetitionStage: SportFactAvailability;
+  latestCompetitionMoment: SportFactAvailability;
   nextFixture: SportFactAvailability;
   previousFixture: SportFactAvailability;
   lastPlayerAppearance: SportFactAvailability;
@@ -61,6 +69,8 @@ export interface SportContext {
   /** Legacy coarse fact retained for compatibility; prefer match-model milestones for new content. */
   officialDebutRecorded: boolean;
   currentCompetition: MatchCompetition | null;
+  currentCompetitionStage: CompetitionContext;
+  latestCompetitionMoment: CompetitionMoment | null;
   nextFixture: ScheduledFixture | null;
   previousFixture: OfficialMatchRecord | null;
   /** Latest factual official row where the player actually appeared, across clubs. */
@@ -131,6 +141,8 @@ function squadStatus(record: OfficialMatchRecord | null): SquadStatus | null {
 export function getSportContext(state: GameState): SportContext {
   const store = getSportMatchModelStore(state);
   const current = currentOfficialMatch(state);
+  const competitionContext = getCurrentCompetitionContext(state);
+  const latestCompetition = latestCompetitionMoment(state);
   const next = nextScheduledFixture(state);
   const previous = previousOfficialMatch(state);
   const lastAppearance = lastPlayerAppearance(state);
@@ -149,6 +161,8 @@ export function getSportContext(state: GameState): SportContext {
     careerAppearances: finiteNumber(state.sport.appearances),
     officialDebutRecorded: state.flags.OFFICIAL_DEBUT === true,
     currentCompetition: current?.competition ?? next?.competition ?? null,
+    currentCompetitionStage: competitionContext,
+    latestCompetitionMoment: latestCompetition,
     nextFixture: next,
     previousFixture: previous,
     lastPlayerAppearance: lastAppearance,
@@ -175,6 +189,8 @@ export function getSportContext(state: GameState): SportContext {
       careerAppearances: known(),
       officialDebutRecorded: known(),
       currentCompetition: known(),
+      currentCompetitionStage: competitionContext.status === "authoritative" ? known() : unavailable(),
+      latestCompetitionMoment: latestCompetition ? known() : unavailable(),
       nextFixture: known(),
       previousFixture: milestonesKnown ? known() : unavailable(),
       lastPlayerAppearance: milestonesKnown ? known() : unavailable(),
