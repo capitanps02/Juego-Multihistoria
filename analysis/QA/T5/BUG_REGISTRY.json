@@ -9,10 +9,12 @@
       "area": "retirement",
       "reproduction": [
         "npm run qa:t5:known-bugs",
-        "subtests T5-QA-016a/b/c"
+        "subtests T5-QA-016a/b/c",
+        "npm run build && node --test scripts/test-t5-retirement-save-known-bug.mjs",
+        "subtests T5-QA-016d/e"
       ],
-      "expected": "Only decided may be reconsidered; private decisions do not auto-announce; no-market creates a decision context without choosing retirement.",
-      "actual": "Current main still contains the player-authority bypasses; owner PR #118 already implements the targeted retirement fix, so QA must verify/re-ground that owner candidate rather than ask Codex to duplicate runtime work.",
+      "expected": "Retirement authority respects playing -> decided -> announced -> closed; only decided may be reconsidered; no-market does not choose retirement; persisted status/date combinations are state-machine-valid and chronological.",
+      "actual": "Current main still contains runtime player-authority bypasses covered by a/b/c and save validation also accepts impossible retirement status/date combinations covered by d/e. Owner PR #118 remains the retirement candidate; QA will not duplicate runtime work.",
       "owner": "retirement-runtime",
       "issue": 61,
       "test": "scripts/test-t5-known-bugs.mjs",
