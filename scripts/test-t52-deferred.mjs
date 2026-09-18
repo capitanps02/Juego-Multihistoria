@@ -66,6 +66,57 @@ test('choice eligibility using HAS_SEED_* is counted as a runtime deferred consu
   assert.deepEqual(row.metadataOnlyReaders, []);
 });
 
+test('registered causal fact condition participates in deferred temporal graph', () => {
+  const seed = { id: 'SEED_SYNTHETIC_CAUSAL_FACT', ageWindow: [18, 26] };
+  const producer = {
+    id: 'EVT_SYNTH_CAUSAL_PRODUCER', phase: 'rise', family: 'medical', ageWindow: [18, 18], choices: [],
+    outcomes: [{ id: 'CREATE_OUT', seedTransitions: [{ action: 'create', seedId: seed.id }] }]
+  };
+  const consumer = {
+    id: 'EVT_SYNTH_CAUSAL_CONSUMER', phase: 'prime', family: 'medical', ageWindow: [19, 19],
+    choices: [], outcomes: [{
+      id: 'CAUSAL_OUT',
+      modifiers: [{
+        id: 'CAUSAL_MEMORY',
+        conditions: [{ path: 'facts.syntheticCausalMemory', op: 'eq', value: 'known' }],
+        multiply: 1.25,
+        reason: 'synthetic'
+      }]
+    }]
+  };
+
+  const report = buildDeferredConsequenceReport([producer, consumer], [seed], {
+    causalFactRegistry: { 'facts.syntheticCausalMemory': seed.id }
+  });
+  const row = report.rows[0];
+  assert.equal(row.runtimeEventConsumerCount, 1);
+  assert.equal(row.runtimeConsumers[0].kind, 'causal_fact');
+  assert.equal(row.runtimeConsumers[0].factPath, 'facts.syntheticCausalMemory');
+  assert.equal(row.feasiblePairCount, 1);
+  assert.equal(row.impossibleRuntimeChain, false);
+});
+
+test('causal fact condition that can match an absent null value is not promoted to a positive consumer', () => {
+  const seed = { id: 'SEED_SYNTHETIC_CAUSAL_ABSENCE', ageWindow: [18, 26] };
+  const producer = {
+    id: 'EVT_SYNTH_CAUSAL_ABSENCE_PRODUCER', phase: 'rise', family: 'medical', ageWindow: [18, 18], choices: [],
+    outcomes: [{ id: 'CREATE_OUT', seedTransitions: [{ action: 'create', seedId: seed.id }] }]
+  };
+  const consumer = {
+    id: 'EVT_SYNTH_CAUSAL_ABSENCE_CONSUMER', phase: 'prime', family: 'medical', ageWindow: [19, 19],
+    gates: [{ path: 'facts.syntheticCausalMemory', op: 'eq', value: null }],
+    choices: [], outcomes: []
+  };
+
+  const report = buildDeferredConsequenceReport([producer, consumer], [seed], {
+    causalFactRegistry: { 'facts.syntheticCausalMemory': seed.id }
+  });
+  const row = report.rows[0];
+  assert.equal(row.runtimeConsumerCount, 0);
+  assert.equal(row.negativeDependencyCount, 1);
+  assert.equal(row.impossibleRuntimeChain, false);
+});
+
 test('choice eligibility detects a producer→consumer chain that is only available after seed expiry', () => {
   const seed = { id: 'SEED_SYNTHETIC_EXPIRED_CHOICE', ageWindow: [18, 20] };
   const producer = {
@@ -257,6 +308,20 @@ test('current catalog deferred audit has no structurally impossible runtime chai
   assert.equal(report.summary.registeredSimulationConsumerEdges, 22);
   assert.equal(report.summary.runtimeSimulationConsumerSeeds, 15);
   assert.equal(report.impossibleRuntimeChains.length, 0);
+});
+
+test('current catalog exposes the verified injury/physio causal consumers to deferred readiness', () => {
+  const report = JSON.parse(fs.readFileSync('analysis/T5.2/deferred-consequences.json', 'utf8'));
+  for (const seedId of ['SEED_BODY_PRECEDENT', 'SEED_PHYSIO_CONFIDENCE']) {
+    const row = report.rows.find(item => item.id === seedId);
+    assert.ok(row, seedId);
+    assert.equal(
+      row.runtimeEventConsumers.some(item => item.eventId === 'CEVT_19_INJ_01' && item.kind === 'causal_fact'),
+      true,
+      seedId
+    );
+    assert.equal(row.feasiblePairCount > 0, true, seedId);
+  }
 });
 
 test('scope proof registry covers every deferred origin scope obligation exactly', async () => {
