@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 
 import { A5_READY_EVENTS_18_23 } from '../dist/content/events/20_23/a5-ready-staged.js';
 import { A5_EVT_18_END_002_OWNER_READY, EVT_18_END_002_EXTERNAL_REQUIREMENT } from '../dist/content/events/18_20/a5-end002-staged.js';
+import { A5_MARKET_EXTERNAL_REQUIREMENTS, A5_MARKET_OWNER_READY_PRINCIPALS } from '../dist/content/events/20_23/a5-market-external-staged.js';
 import { A5_READY_NPC_KNOWLEDGE_RULES } from '../dist/catalog/npc-knowledge-rules-a5-ready.js';
 import { createInitialState } from '../dist/content/initial-state.js';
 import { eventGatesPass } from '../dist/narrative/event-gates.js';
@@ -243,4 +244,57 @@ test('A5 canon blocker/1 EVT_18_END_002 is canon-resolved owner-side without coa
   assert.ok(EVT_18_END_002_EXTERNAL_REQUIREMENT.mustProve.includes('questioned=true'));
   assert.ok(EVT_18_END_002_EXTERNAL_REQUIREMENT.mustProve.includes('continuityDecided=false'));
   assert.ok(scene.tags.includes('a5_ready_external_blocker'));
+});
+
+
+test('A5 external market/1 six blocked principals are complete owner-side and remain authority-clean', () => {
+  assert.deepEqual(A5_MARKET_OWNER_READY_PRINCIPALS.map(row => row.id), [
+    'EVT_20_MKT_001',
+    'EVT_20_JAN_001',
+    'EVT_21_MKT_001',
+    'EVT_21_IMG_001',
+    'EVT_22_MKT_001',
+    'EVT_22_DDL_001'
+  ]);
+  for (const scene of A5_MARKET_OWNER_READY_PRINCIPALS) {
+    assert.equal(scene.choices.length, 4, scene.id);
+    assert.ok(scene.outcomes.length >= 8, scene.id);
+    assert.ok(scene.tags.includes('a5_ready_external_blocker'), scene.id);
+    const effects = [
+      ...scene.choices.flatMap(choice => [...(choice.immediateEffects ?? []), ...(choice.hiddenCosts ?? [])]),
+      ...scene.outcomes.flatMap(outcome => outcome.effects)
+    ];
+    const forbidden = effects.filter(effect => {
+      if (effect.kind === 'flag') return ['LOAN_ACTIVE','ABROAD_ROUTE','BIG_CLUB'].includes(effect.flag);
+      return [
+        'club','tier','contract.monthsRemaining','contract.salaryMonthly','contract.releaseClause',
+        'professional.ownerClub','professional.registrationClub','professional.leagueTier',
+        'professional.clubPrestigeTier','professional.clubPrestigeScore','professional.route'
+      ].includes(effect.path);
+    });
+    assert.deepEqual(forbidden, [], `${scene.id} must not mutate employment authority`);
+  }
+});
+
+test('A5 external market/2 signable scenes consume formal-offer facts and never marketHeat as an offer proxy', () => {
+  const byId = id => A5_MARKET_OWNER_READY_PRINCIPALS.find(row => row.id === id);
+  for (const id of ['EVT_20_MKT_001','EVT_21_MKT_001','EVT_22_MKT_001','EVT_22_DDL_001']) {
+    const scene = byId(id);
+    assert.ok(scene);
+    assert.ok(scene.gates.some(gate => String(gate.path).startsWith('facts.pendingCareerOffer')), id);
+    assert.equal(scene.gates.some(gate => gate.path === 'reputation.marketHeat'), false, id);
+  }
+  assert.equal(byId('EVT_20_JAN_001').gates.some(gate => gate.path === 'reputation.marketHeat'), false);
+  assert.equal(byId('EVT_21_IMG_001').gates.some(gate => gate.path === 'reputation.mediaHeat'), false);
+});
+
+test('A5 external market/3 exact external owner contracts stay explicit instead of fake REAL flags', () => {
+  assert.equal(A5_MARKET_EXTERNAL_REQUIREMENTS.EVT_20_MKT_001.owner, 'A3');
+  assert.ok(A5_MARKET_EXTERNAL_REQUIREMENTS.EVT_20_MKT_001.facts.includes('compatible CareerOffer'));
+  assert.ok(A5_MARKET_EXTERNAL_REQUIREMENTS.EVT_21_IMG_001.facts.includes('real sponsorship/image proposal'));
+  assert.ok(A5_MARKET_EXTERNAL_REQUIREMENTS.EVT_22_DDL_001.facts.includes('remaining decision time'));
+  const serialized = JSON.stringify(A5_MARKET_OWNER_READY_PRINCIPALS);
+  for (const fake of ['REAL_OFFER','HAS_OFFER','REAL_TRANSFER_AVAILABLE','REAL_LOAN_AVAILABLE']) {
+    assert.equal(serialized.includes(fake), false);
+  }
 });
