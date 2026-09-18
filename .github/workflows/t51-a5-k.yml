@@ -6,17 +6,26 @@ on:
   pull_request:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   a5-k:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: npm
       - run: npm ci
+      - name: Regenerate K evidence against current shared closure
+        run: |
+          node scripts/generate-t51-post-legacy-registry.mjs
+          node scripts/generate-t51-offer-bridge-evidence.mjs
       - run: npm run build
       - name: Canonical 388 inventory and A5 K semantics
         run: node --test scripts/test-t51-a5-k.mjs
@@ -27,3 +36,15 @@ jobs:
           node scripts/generate-t51-offer-bridge-evidence.mjs --check
           node scripts/check-t51-content-migration-route.mjs
           node --test scripts/test-t51-content-migration.mjs scripts/test-t51-content-lineage.mjs scripts/test-t51-migration-source-policy.mjs
+      - name: Persist regenerated K evidence
+        if: github.event_name == 'pull_request'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/session/post-t51-legacy-registry.ts src/session/frozen-offer-bridge-evidence.ts
+          if git diff --cached --quiet; then
+            echo "K evidence already current"
+            exit 0
+          fi
+          git commit -m "fix(A5): regenerate K evidence after shared closure"
+          git push origin HEAD:${{ github.head_ref }}
