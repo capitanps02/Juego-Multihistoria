@@ -54,7 +54,7 @@ function addLiveSeed(state, id, originEvent, payload) {
 
 function ruleFor(eventId, choiceId) {
   return A5_READY_NPC_KNOWLEDGE_RULES.find(rule =>
-    rule.eventId === eventId && (rule.choiceIds ?? []).includes(choiceId)
+    rule.eventId === eventId && (!rule.choiceIds || rule.choiceIds.includes(choiceId))
   );
 }
 
