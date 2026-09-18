@@ -16,7 +16,7 @@ export interface StagedExternalPrincipal {
  * Their gates are closed by stagedExternalPrincipalEligible() until the named facts are supplied
  * by the owning shared authority. No proxy can open them.
  */
-const SPECS = [
+const ALL_SPECS = [
   {
     "id": "EVT_34_BRIDGE_001",
     "age": 34,
@@ -1727,12 +1727,14 @@ const SPECS = [
     "externalStatus": "blocked_shared_authority"
   }
 ] as const;
+const PROMOTED_IDS=new Set(["EVT_34_BRIDGE_001","EVT_34_PAY_001","EVT_34_HOME_001","EVT_34_AGT_001","EVT_34_CON_001","EVT_34_MAR_001","EVT_35_MKT_001","EVT_35_CON_001"]);
+const SPECS=ALL_SPECS.filter(spec=>!PROMOTED_IDS.has(spec.id));
 
 function seedTransitions(seedIds: readonly string[], choiceId: string): SeedTransition[] {
   return seedIds.map(seedId=>({seedId,action:"create" as const,intensity:64,payload:{choice:choiceId,stagedExternal:true}}));
 }
 
-function toEvent(spec: typeof SPECS[number]): EventDefinition {
+function toEvent(spec: typeof ALL_SPECS[number]): EventDefinition {
   const choices=spec.choices.map(choice=>({
     id:choice.id,
     label:choice.label,
