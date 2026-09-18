@@ -22,6 +22,7 @@ import {
 
 export type SportFactAvailability = "known" | "unavailable";
 export type MatchContextStatus = "authoritative" | "no_current_match";
+export type LastPlayerAppearanceStatus = "authoritative" | "historical_match_store_not_initialized";
 
 export interface SportContextAvailability {
   currentSeason: SportFactAvailability;
@@ -88,19 +89,8 @@ export interface SportContext {
 }
 
 export interface LastPlayerAppearanceContext {
-  status: "authoritative" | "unavailable";
-  fixtureId: string | null;
-  date: string | null;
-  competition: MatchCompetition | null;
-  opponent: string | null;
-  homeAway: "home" | "away" | null;
-  started: boolean | null;
-  onBench: boolean | null;
-  minutes: number | null;
-  result: MatchResultFact | null;
-  goals: number | null;
-  assists: number | null;
-  cards: { yellow: number; red: number } | null;
+  status: LastPlayerAppearanceStatus;
+  match: OfficialMatchRecord | null;
 }
 
 export interface CurrentMatchContext {
@@ -197,7 +187,7 @@ export function getSportContext(state: GameState): SportContext {
       nextFixture: known(),
       previousFixture: milestonesKnown ? known() : unavailable(),
       lastPlayerAppearance: milestonesKnown ? known() : unavailable(),
-      lastPlayerAppearanceContext: lastAppearance ? known() : unavailable(),
+      lastPlayerAppearanceContext: milestonesKnown ? known() : unavailable(),
       hoursToNextFixture: known(),
       isMatchDay: known(),
       isTrainingWindow: known(),
@@ -280,43 +270,22 @@ export function getCurrentMatchContext(state: GameState): CurrentMatchContext {
 
 
 /**
- * Rich factual projection of the latest official fixture in which the player
- * actually appeared. This does not claim the fixture is the player's terminal
- * career match; retirement owns that interpretation.
+ * Public sport-owned read for the latest factual on-field appearance.
+ *
+ * Contract is intentionally the same as PR #202:
+ * - historical save without the persisted match store => explicitly unavailable;
+ * - initialized store with no appearance => authoritative match:null;
+ * - otherwise the latest persisted official row where player.appeared===true.
+ *
+ * The returned row may carry richer SPORT-2/3 result/stat facts when those authorities
+ * produced them; historical missing fields remain absent/unknown.
  */
 export function getLastPlayerAppearanceContext(state: GameState): LastPlayerAppearanceContext {
-  const match = lastPlayerAppearance(state);
-  if (!match) {
-    return {
-      status: "unavailable",
-      fixtureId: null,
-      date: null,
-      competition: null,
-      opponent: null,
-      homeAway: null,
-      started: null,
-      onBench: null,
-      minutes: null,
-      result: null,
-      goals: null,
-      assists: null,
-      cards: null
-    };
+  const store = getSportMatchModelStore(state);
+  if (!store) return { status: "historical_match_store_not_initialized", match: null };
+  for (let index = store.fixtures.length - 1; index >= 0; index -= 1) {
+    const row = store.fixtures[index]!;
+    if (row.player.appeared) return { status: "authoritative", match: row };
   }
-
-  return {
-    status: "authoritative",
-    fixtureId: match.id,
-    date: match.date,
-    competition: match.competition,
-    opponent: match.opponent,
-    homeAway: match.homeAway,
-    started: match.player.started,
-    onBench: match.player.onBench,
-    minutes: match.player.minutes,
-    result: match.result ?? null,
-    goals: match.stats?.goals ?? null,
-    assists: match.stats?.assists ?? null,
-    cards: match.stats ? { yellow: match.stats.yellowCards, red: match.stats.redCards } : null
-  };
+  return { status: "authoritative", match: null };
 }
