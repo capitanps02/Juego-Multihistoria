@@ -44,9 +44,16 @@ Now unblocked by #156. Own factual result/goals/assists/cards where produced plu
 **Owner:** #200.  
 Now unblocked by #156. Aggregate injury counts/risk do not prove an episode, long rehab or successful return. Persist factual chronology and link it to real post-return appearances; compose with #199 where richer performance is needed.
 
-## B10 — Club-world incidents
-**Owner:** #201.  
-Finance crisis, sponsor lifecycle, stadium/closed-door and staff-crisis/player-coach context need a justified factual producer or explicit unsupported/fail-closed decision. No random booleans or proxy scores.
+## B10 — Club-world incidents — coordination closed
+**Design gate:** #201 (**closed completed**).  
+No generic random incident engine is authorized. Canonical decisions are now explicit:
+- `CEVT_35_UDV_FINANCIAL_CRISIS`: the exact conditional occurrence may establish the financial-crisis fact;
+- `CEVT_35_SPONSOR_EXIT`: unsupported/fail-closed without a factual active sponsor deal;
+- `CEVT_35_SPONSOR_LATE_BOOM`: the exact conditional may establish the new campaign after a factual viral/new-market trigger;
+- `CEVT_37_EMPTY_STADIUM_FAREWELL`: unsupported/fail-closed without a factual external venue restriction bound to the fixture;
+- `CEVT_37_PLAYER_COACH_EMERGENCY`: unsupported/fail-closed without a factual staff crisis.
+
+Closing #201 resolves producer design only; it does not runtime-accredit these rows.
 
 ## B11 — Actor/identity routing — coordination closed
 **Historical guard:** #177 (**closed completed**); coach tenure #169 remains factual authority where consumed.  
