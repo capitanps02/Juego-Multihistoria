@@ -1,0 +1,26 @@
+name: QA A9 retirement certification v1
+
+on:
+  push:
+    branches:
+      - qa/cert-a9-118-v1
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  retirement-candidate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: A9 retirement suite
+        run: node --test scripts/test-t536-t537-retirement.mjs
+      - name: A10 persisted retirement regression
+        run: node --test scripts/test-t5-retirement-save-known-bug.mjs
