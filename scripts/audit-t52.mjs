@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { EVENTS } from '../dist/content/events/index.js';
 import { SEED_CATALOG } from '../dist/catalog/seeds.js';
 import { getSeedScopePolicy, SEED_SCOPE_OVERRIDES } from '../dist/catalog/seed-scope.js';
+import { T52_CAUSAL_SEED_FACTS } from './t52-causal-seed-facts.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const actions = ['create', 'activate', 'intensify', 'transform', 'resolve', 'expire'];
@@ -48,12 +49,23 @@ function seedFromPresencePath(value) {
     : null;
 }
 
+function seedFromCausalFactPath(value) {
+  return typeof value === 'string' ? (T52_CAUSAL_SEED_FACTS[value] ?? null) : null;
+}
+
 function inspectConditions(event, conditions, context, conditionSeeds) {
   for (const condition of conditions ?? []) {
-    const seedId = seedFromPresencePath(condition.path);
+    const presenceSeedId = seedFromPresencePath(condition.path);
+    const causalFactSeedId = seedFromCausalFactPath(condition.path);
+    const seedId = presenceSeedId ?? causalFactSeedId;
     if (!seedId) continue;
     conditionSeeds.add(seedId);
-    addRef(seedId, 'conditionRead', event.id, { context, op: condition.op });
+    addRef(seedId, 'conditionRead', event.id, {
+      context,
+      op: condition.op,
+      path: condition.path,
+      surface: presenceSeedId ? 'live_presence' : 'causal_fact'
+    });
   }
 }
 
