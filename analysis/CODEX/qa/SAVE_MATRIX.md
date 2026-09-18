@@ -14,8 +14,8 @@ This matrix distinguishes committed legacy fixtures from deterministic snapshots
 | mid career | deterministic age 23–26 snapshot | role provenance/market/contract | required |
 | veteran | deterministic age 31–33 snapshot | long history/contract/role | required |
 | 34+ playing | deterministic age 35+ snapshot | continuation without forced retirement | required |
-| retirement decided | deterministic snapshot | reconsideration only before announcement | required |
-| retirement announced | deterministic snapshot | non-reopenable, last-appearance provenance | required |
+| retirement decided | `scripts/test-t5-retirement-save-known-bug.mjs` + owner retirement suite | requires real decision/date; reconsideration only before announcement | **save-state negative regression prepared; owner #61/#118 open** |
+| retirement announced | `scripts/test-t5-retirement-save-known-bug.mjs` + owner retirement suite | requires prior decision; chronological announcement; non-reopenable | **save-state negative regression prepared; owner #61/#118 open** |
 | career closed | long-career QA result | terminal state + factual epilogue | existing generated |
 | loan | deterministic offer snapshot | owner/registration/return; international loan may use `route=abroad` | partial generated + regression |
 | pending transfer | `scripts/test-t51-offer-bridge.mjs`, `scripts/test-offers.mjs` | CareerOffer survives strict save/resume; accepted terms persist exactly once across reload/replay | covered generated |
