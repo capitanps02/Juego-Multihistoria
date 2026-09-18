@@ -176,17 +176,17 @@ Freeze que coordinación/integración deberá crear antes de registrar la ruta:
 
 ## Validación exacta
 
-Último HEAD de runtime/guards validado: `8df83a37b3057dca8cc2321f0f5b7da6f13a4714`.
+La evidencia más reciente de CI se mantiene en el cuerpo del PR #13 para evitar que esta cola quede obsoleta por commits documentales o re-ground de `main`.
 
-- T5.1 canon 30–34 run `35263497939` — **FAILURE de contrato documental C006 (corregido en la pasada actual)**;
-- T5 Market Contract Authority run `35263497903` — **SUCCESS**;
-- Repository Integrity run `35263497858` — **FAILURE únicamente en el sentinel esperado** `freeze-t51-active-source --check`.
+Contrato de validación exigido para este workstream:
 
-En `35263497858`, `npm test` completó correctamente build, T5.2, saves, T5.3, registries y offer bridges antes de fallar exclusivamente porque todavía no existe:
+- `T5.1 canon 30-34` debe terminar **SUCCESS**;
+- `T5 Market Contract Authority` debe terminar **SUCCESS**;
+- `Repository Integrity` solo puede quedar rojo por el sentinel de `freeze-t51-active-source --check` mientras coordinación/integración no haya creado `qa/fixtures/t5.1/post-t51-sources/9151d6620739f5f63face23f412abdeca9898cac8e510cc44d86c1468da8d0f4.json`;
+- cualquier fallo anterior a ese sentinel es regresión real y bloquea el handoff;
+- la rama debe permanecer `behind_by=0` respecto de `main` antes de declarar el handoff vigente.
 
-`qa/fixtures/t5.1/post-t51-sources/9151d6620739f5f63face23f412abdeca9898cac8e510cc44d86c1468da8d0f4.json`
-
-No existe otro fallo de manifests/runtime previo al sentinel en ese HEAD. `main` está en `5f4d14bc…` y la rama estaba `behind_by=0` al cerrar esta validación.
+El target activo continúa siendo `9151d662…8d0f4`; este workstream no crea su freeze ni registra la ruta.
 
 ## Invariantes
 
