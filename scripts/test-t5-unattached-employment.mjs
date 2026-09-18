@@ -166,3 +166,67 @@ test('legacy narrative contract effects cannot bypass formal signing while unatt
   assert.deepEqual(state, before, 'immutable resolver bypass attempt must not mutate source state');
   assert.equal(contractEmploymentStatus(state), 'unattached');
 });
+
+
+test('unattached weekly tick keeps market calendar and recovery alive without club-state drift', () => {
+  const state = unattached(8806);
+  state.date = '2028-11-30';
+  state.runtime.day = 6;
+  state.runtime.seasonDay = 152;
+  state.world.injuryWeeksRemaining = 1;
+  state.body.acuteInjury = true;
+  state.flags.RECOVERING_INJURY = true;
+
+  const clubState = {
+    roleScore: state.sport.roleScore,
+    roleSecurity: state.professional.roleSecurity,
+    lockerPower: state.professional.lockerPower,
+    institutionalTrust: state.professional.institutionalTrust,
+    moneyComfort: state.professional.moneyComfort,
+    prestige: state.reputation.prestige
+  };
+
+  advanceWorldDayInPlace(state);
+
+  assert.equal(state.date, '2028-12-01');
+  assert.equal(state.world.marketWindowOpen, true, 'calendar market window must still advance');
+  assert.equal(state.world.injuryWeeksRemaining, 0, 'time-based recovery must continue');
+  assert.equal(state.body.acuteInjury, false);
+  assert.equal(state.flags.RECOVERING_INJURY, false);
+  assert.deepEqual({
+    roleScore: state.sport.roleScore,
+    roleSecurity: state.professional.roleSecurity,
+    lockerPower: state.professional.lockerPower,
+    institutionalTrust: state.professional.institutionalTrust,
+    moneyComfort: state.professional.moneyComfort,
+    prestige: state.reputation.prestige
+  }, clubState, 'former-club sporting/institutional state must not drift');
+});
+
+test('world market can still materialize a formal external offer for an unattached player', () => {
+  let found = null;
+
+  for (let seed = 8900; seed < 9000 && !found; seed += 1) {
+    const state = unattached(seed);
+    state.date = '2028-07-01';
+    state.runtime.day = 0;
+    state.runtime.seasonDay = 0;
+    state.sport.roleScore = 82;
+    state.sport.form = 72;
+    state.reputation.marketHeat = 100;
+
+    for (let day = 0; day < 70 && !state.market?.pending; day += 1) {
+      advanceWorldDayInPlace(state);
+    }
+    if (state.market?.pending?.reason === 'Propuesta de mercado') found = state;
+  }
+
+  assert.ok(found, 'at least one deterministic seed should receive a formal summer market proposal');
+  assert.equal(contractEmploymentStatus(found), 'unattached');
+  assert.equal(currentEmploymentClub(found), null);
+  const offer = structuredClone(found.market.pending);
+  assert.ok(offer.terms.months > 0);
+  respondToOffer(found, offer.id, 'accept');
+  assert.equal(contractEmploymentStatus(found), 'active_contract');
+  assert.equal(currentEmploymentClub(found), found.club);
+});
