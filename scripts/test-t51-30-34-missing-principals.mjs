@@ -7,6 +7,7 @@ import { certifyPlayerClubLeadershipInPlace } from '../dist/simulation/player-le
 import { offerBridgeEligible, offerDispositionForChoice } from '../dist/narrative/offer-bridge.js';
 import { proposeCareerChange } from '../dist/simulation/offers.js';
 import { PREPARED_SHIFTED_CANON_30_34_A } from '../dist/content/events/30_34/canonical-shifted-prepared-a.js';
+import { PREPARED_SHIFTED_CANON_30_34_B } from '../dist/content/events/30_34/canonical-shifted-prepared-b.js';
 
 const event = EVENTS.find(row => row.id === 'EVT_30_CCH_001');
 
@@ -164,4 +165,37 @@ test('prepared shifted batch A is owner-complete but remains outside active EVEN
     assert.ok((prepared.seedsRead??[]).includes(read));
     assert.ok((prepared.tags??[]).includes('t51_shifted_prepared'));
   }
+});
+
+
+test('prepared shifted batch B is owner-complete and blocked only on exact external gates', () => {
+  const expected = new Map([
+    ['EVT_31_TEAM_001', ['SEED_FORMAL_MENTOR','SEED_MENTOR_ADVICE']],
+    ['EVT_31_SQUAD_001', ['SEED_SQUAD_YOUTH_WAVE',null]],
+    ['EVT_31_BIZ_001', ['SEED_BUSINESS_REPUTATION_SHOCK','SEED_WEALTH_STRUCTURE']],
+    ['EVT_32_RICH_001', ['SEED_LATE_RICH_OFFER','SEED_WEALTHY_PEAK_EXIT']],
+    ['EVT_32_ELITE_001', ['SEED_LATE_CONTENDER_BENCH','SEED_SPECIALIST_BIGCLUB']]
+  ]);
+  assert.equal(PREPARED_SHIFTED_CANON_30_34_B.length,5);
+  for(const prepared of PREPARED_SHIFTED_CANON_30_34_B){
+    assert.equal(expected.has(prepared.id),true,prepared.id);
+    assert.equal(EVENTS.some(event=>event.id===prepared.id),false,`${prepared.id}: must stay unscheduled before its authority gate`);
+    assert.deepEqual(prepared.choices.map(choice=>choice.id),['A','B','C','D']);
+    const [write,read]=expected.get(prepared.id);
+    assert.deepEqual(prepared.seedsWrite,[write]);
+    if(read) assert.ok((prepared.seedsRead??[]).includes(read));
+    assert.ok((prepared.tags??[]).includes('t51_shifted_prepared'));
+  }
+  const youth=PREPARED_SHIFTED_CANON_30_34_B.find(event=>event.id==='EVT_31_SQUAD_001');
+  assert.equal(JSON.stringify(youth).includes('SEED_SUCCESSION_DECISION'),true,'missing canonical seed is documented only as a tag, not a transition');
+  assert.equal(youth.outcomes.some(outcome=>(outcome.seedTransitions??[]).some(t=>t.seedId==='SEED_SUCCESSION_DECISION')),false);
+});
+
+test('prepared offer-based shifted scenes are already wired to shared offer dispositions', () => {
+  const family=PREPARED_SHIFTED_CANON_30_34_A.find(event=>event.id==='EVT_31_FAM_001');
+  const rich=PREPARED_SHIFTED_CANON_30_34_B.find(event=>event.id==='EVT_32_RICH_001');
+  const elite=PREPARED_SHIFTED_CANON_30_34_B.find(event=>event.id==='EVT_32_ELITE_001');
+  assert.deepEqual(['A','B','C','D'].map(id=>offerDispositionForChoice(family,id)),['reject','accept','accept','counter']);
+  assert.deepEqual(['A','B','C','D'].map(id=>offerDispositionForChoice(rich,id)),['accept','reject','counter','defer']);
+  assert.deepEqual(['A','B','C','D'].map(id=>offerDispositionForChoice(elite,id)),['accept','reject','counter','defer']);
 });
