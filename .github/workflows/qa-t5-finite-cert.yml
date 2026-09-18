@@ -3,7 +3,7 @@ name: QA T5 finite certification matrix
 on:
   push:
     branches:
-      - qa/t5-finite-cert
+      - qa/t5-finite-cert-v4
   pull_request:
     branches:
       - main
