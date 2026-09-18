@@ -3,7 +3,7 @@ name: T5 sport retirement read contract
 on:
   pull_request:
     branches:
-      - t5/authoritative-match-model
+      - main
     paths:
       - 'src/simulation/sport-context.ts'
       - 'scripts/test-t5-sport-context.mjs'
