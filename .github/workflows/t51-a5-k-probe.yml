@@ -1,0 +1,21 @@
+name: T51 A5 K identity probe
+
+on:
+  push:
+    branches: ['a0/a5-k-b4-after-293']
+  workflow_dispatch:
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Validate canonical inventory and print exact K identity
+        run: node scripts/print-t51-a5-k-identity.mjs
