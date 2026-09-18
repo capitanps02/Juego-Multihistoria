@@ -438,3 +438,24 @@ test('A3 narrative guard fail-closes direct re-employment choices before resolut
   };
   assert.deepEqual(eligibleChoices(state,event).map(choice=>choice.id),['SAFE']);
 });
+
+
+test('A3 narrative guard blocks direct loan-state mutation even while contracted',()=>{
+  const state=createInitialState(18881);
+  assert.equal(employmentStatus(state),'contracted');
+  assert.equal(state.flags.LOAN_ACTIVE,false);
+  const event={
+    id:'TEST_A3_DIRECT_LOAN_MUTATION',phase:'18_20',family:'contract',ageWindow:[18,null],weight:1,cooldown:0,
+    text:{title:'Loan guard',body:'Loan guard'},intel:{visible:[],uncertain:[]},gates:[],npcRefs:[],
+    choices:[
+      {id:'UNSAFE',label:'Activate loan directly',outcomeIds:['UNSAFE_OUT'],immediateEffects:[{kind:'flag',flag:'LOAN_ACTIVE',value:true}]},
+      {id:'SAFE',label:'Keep current employment',outcomeIds:['SAFE_OUT'],immediateEffects:[{kind:'flag',flag:'WAITING_MARKET',value:true}]}
+    ],
+    outcomes:[
+      {id:'UNSAFE_OUT',baseWeight:1,effects:[],messages:['unsafe']},
+      {id:'SAFE_OUT',baseWeight:1,effects:[],messages:['safe']}
+    ]
+  };
+  assert.deepEqual(eligibleChoices(state,event).map(choice=>choice.id),['SAFE']);
+  assert.equal(state.flags.LOAN_ACTIVE,false);
+});
