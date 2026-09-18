@@ -7,6 +7,7 @@ import { applyT51124SportContextRepairs } from "./18_20/t51-124-sport-context-re
 import { applyAge18MarketOfferBridges } from "./18_20/t51-age18-market-offer-bridges.js";
 import { applyT51SeedConsumerRepairs } from "./18_20/t51-seed-consumer-repairs.js";
 import { EVENTS_20_23 } from "./20_23/index.js";
+import { A5_READY_EVENTS_18_23 } from "./20_23/a5-ready-staged.js";
 import { EVENTS_23_26 } from "./23_26/index.js";
 import { EVENTS_26_30 } from "./26_30/index.js";
 import { EVENTS_30_34 } from "./30_34/index.js";
@@ -21,10 +22,14 @@ const REPAIRED_BASE_EVENTS_18_20 = applyAge18MarketOfferBridges(
 );
 const REPAIRED_CONDITIONAL_EVENTS_18_20 = applyT51SeedConsumerRepairs(CONDITIONAL_EVENTS_18_20);
 
+const A5_POST_J_18_20 = A5_READY_EVENTS_18_23.filter(event => event.phase === "18_20");
+const A5_POST_J_18_20_IDS = new Set(A5_POST_J_18_20.map(event => event.id));
+
 export const EVENTS_18_20 = [
-  ...REPAIRED_BASE_EVENTS_18_20,
-  ...PRINCIPAL_ADDITIONS_18_20,
-  ...REPAIRED_CONDITIONAL_EVENTS_18_20
+  ...REPAIRED_BASE_EVENTS_18_20.filter(event => !A5_POST_J_18_20_IDS.has(event.id)),
+  ...PRINCIPAL_ADDITIONS_18_20.filter(event => !A5_POST_J_18_20_IDS.has(event.id)),
+  ...REPAIRED_CONDITIONAL_EVENTS_18_20.filter(event => !A5_POST_J_18_20_IDS.has(event.id)),
+  ...A5_POST_J_18_20
 ];
 
 export { EVENTS_20_23, EVENTS_23_26, EVENTS_26_30, EVENTS_30_34, EVENTS_34_PLUS };
