@@ -96,7 +96,7 @@ function setClosed(state,{closure='no_last_match',reason='voluntary'}={}){
 
 test('T5.36/1 playing -> decided only through explicit retirement choice',()=>{
   const state=lateState();
-  resolveChoiceInPlace(state,event('EVT_RET_HOME_001'),'RETIRE_NOW');
+  resolveChoiceInPlace(state,event('EVT_RET_FAM_001'),'RETIRE_NOW');
   assert.equal(state.retirement.status,'decided');
   assert.equal(state.retirement.decidedDate,state.date);
   assert.equal(state.retirement.decisionAge,38);
@@ -104,7 +104,7 @@ test('T5.36/1 playing -> decided only through explicit retirement choice',()=>{
 
 test('T5.36/2 decided -> playing requires explicit pre-announcement reconsideration',()=>{
   const state=lateState();
-  resolveChoiceInPlace(state,event('EVT_RET_HOME_001'),'RETIRE_NOW');
+  resolveChoiceInPlace(state,event('EVT_RET_FAM_001'),'RETIRE_NOW');
   assert.equal(reverseRetirement(state),false,'a bare offer/RNG-free decision must not reverse without a narrative window');
   resolveChoiceInPlace(state,event('EVT_RET_ANNOUNCE_001'),'WAIT');
   assert.equal(state.retirement.status,'decided');
@@ -116,7 +116,7 @@ test('T5.36/2 decided -> playing requires explicit pre-announcement reconsiderat
 
 test('T5.36/3 decided -> announced is an explicit announcement scene',()=>{
   const state=lateState();
-  resolveChoiceInPlace(state,event('EVT_RET_HOME_001'),'RETIRE_NOW');
+  resolveChoiceInPlace(state,event('EVT_RET_FAM_001'),'RETIRE_NOW');
   resolveChoiceInPlace(state,event('EVT_RET_ANNOUNCE_001'),'DIRECT_VIDEO');
   assert.equal(state.retirement.status,'announced');
   assert.equal(state.flags.RETIREMENT_PUBLIC,true);
@@ -199,7 +199,7 @@ test('T5.36/10 last match is observed from a real appearance delta',()=>{
 });
 
 test('T5.36/11 retirement content never fabricates a last goal',()=>{
-  const terminalIds=['EVT_RET_LAST_001','CEVT_RET_STORYBOOK_LAST_GOAL'];
+  const terminalIds=['EVT_RET_LASTMATCH_001','CEVT_RET_STORYBOOK_LAST_GOAL'];
   for(const id of terminalIds){
     const definition=event(id);
     const effects=[

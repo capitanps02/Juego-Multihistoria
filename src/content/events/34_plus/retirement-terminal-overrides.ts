@@ -8,6 +8,20 @@ const c=(id:string,label:string,effects:any[]=[]):ChoiceDefinition=>({id,label,i
 const o=(id:string,effects:any[]=[],message="La decisión queda registrada para el cierre de tu carrera."):OutcomeDefinition=>({id:`${id}_OUT`,baseWeight:1,effects,messages:[message]});
 const outcomes=(choices:ChoiceDefinition[],message?:string)=>choices.map(choice=>o(choice.id,[],message));
 
+function addSeedCreates(event:EventDefinition,byChoice:Record<string,readonly string[]>):void{
+  const writes=new Set(event.seedsWrite??[]);
+  for(const [choiceId,seedIds] of Object.entries(byChoice)){
+    const outcome=event.outcomes.find(row=>row.id===`${choiceId}_OUT`);
+    if(!outcome)throw new Error(`Missing outcome ${event.id}/${choiceId}_OUT for terminal seed producer`);
+    outcome.seedTransitions=[
+      ...(outcome.seedTransitions??[]),
+      ...seedIds.map(seedId=>({seedId,action:"create" as const}))
+    ];
+    for(const seedId of seedIds)writes.add(seedId);
+  }
+  event.seedsWrite=[...writes];
+}
+
 function terminal(event:EventDefinition):void{
   event.tags=[...(event.tags??[]).filter(tag=>tag!=="t536_terminal"),"t536_terminal"];
 }
@@ -30,6 +44,12 @@ function verified(event:EventDefinition):void{
  * equality alone is not equivalence (especially CEVT_RET_RECONSIDER and the last-match IDs).
  */
 export function applyRetirementTerminalOverrides(principal:EventDefinition[],conditional:EventDefinition[]):void{
+  const farewellTiming=principal.find(event=>event.id==="EVT_37_ANNOUNCE_001");
+  if(farewellTiming){
+    addSeedCreates(farewellTiming,Object.fromEntries(farewellTiming.choices.map(choice=>[choice.id,["SEED_FAREWELL_ANNOUNCEMENT_TIMING"]])));
+    terminal(farewellTiming);
+  }
+
   const noMarket=principal.find(event=>event.id==="EVT_38_MKT_001");
   if(noMarket){
     noMarket.ageWindow=[34,null];
@@ -69,6 +89,7 @@ export function applyRetirementTerminalOverrides(principal:EventDefinition[],con
 
   const family=principal.find(event=>event.id==="EVT_RET_HOME_001");
   if(family){
+    family.id="EVT_RET_FAM_001";
     family.ageWindow=[34,null];
     family.family="family";
     family.gates=[{path:"retirement.status",op:"eq",value:"playing"},{path:"professional.retirementDistance",op:"gte",value:30}];
@@ -84,7 +105,8 @@ export function applyRetirementTerminalOverrides(principal:EventDefinition[],con
       c("WAIT_OFFERS","Esperar ofertas antes de decidir",[f("RETIREMENT_WAITS_FOR_OFFERS"),n("professional.careerControl",1)])
     ];
     family.outcomes=outcomes(family.choices);
-    alias(family,"EVT_RET_FAM_001");
+    addSeedCreates(family,Object.fromEntries(family.choices.map(choice=>[choice.id,["SEED_FINAL_FAMILY_CONVERSATION"]])));
+    verified(family);
   }
 
   const body=principal.find(event=>event.id==="EVT_RET_BODY_001");
@@ -104,6 +126,7 @@ export function applyRetirementTerminalOverrides(principal:EventDefinition[],con
       c("REHAB_HEALTH_ONLY","Rehabilitar para tu salud y dejar la competición",[s("retirement.status","decided"),s("retirement.reason","health"),f("HEALTH_FIRST_RETIREMENT")])
     ];
     body.outcomes=outcomes(body.choices);
+    addSeedCreates(body,Object.fromEntries(body.choices.map(choice=>[choice.id,["SEED_LAST_REHAB_DECISION"]])));
     verified(body);
   }
 
@@ -121,6 +144,7 @@ export function applyRetirementTerminalOverrides(principal:EventDefinition[],con
       c("SAME_CLUB_ONLY","Seguir solo si el mismo club te quiere",[f("RETIRE_HIGH_SAME_CLUB_ONLY"),n("professional.environmentStability",2)])
     ];
     high.outcomes=outcomes(high.choices);
+    addSeedCreates(high,{RETIRE:["SEED_RETIRE_ON_HIGH_CHOICE"]});
     verified(high);
   }
 
@@ -138,6 +162,12 @@ export function applyRetirementTerminalOverrides(principal:EventDefinition[],con
       c("WAIT_PRESEASON","Esperar a pretemporada",[f("LOW_END_WAIT_PRESEASON"),n("professional.careerControl",1)])
     ];
     low.outcomes=outcomes(low.choices);
+    addSeedCreates(low,{
+      RETIRE:["SEED_RETIRE_AFTER_LOW"],
+      OTHER_CLUB:["SEED_DISCARDED_REBIRTH_FINAL"],
+      LOWER_LEVEL:["SEED_DISCARDED_REBIRTH_FINAL"],
+      WAIT_PRESEASON:["SEED_DISCARDED_REBIRTH_FINAL"]
+    });
     verified(low);
   }
 
@@ -159,11 +189,19 @@ export function applyRetirementTerminalOverrides(principal:EventDefinition[],con
       c("WAIT","No anunciarlo todavía",[f("RETIREMENT_ANNOUNCEMENT_DEFERRED"),f("RECONSIDERATION_WINDOW")])
     ];
     announce.outcomes=outcomes(announce.choices);
+    addSeedCreates(announce,{
+      LOCKER_CLUB_FAMILY_PUBLIC:["SEED_RETIREMENT_ANNOUNCEMENT_PATH"],
+      FAMILY_CLUB_PUBLIC:["SEED_RETIREMENT_ANNOUNCEMENT_PATH"],
+      DIRECT_VIDEO:["SEED_RETIREMENT_ANNOUNCEMENT_PATH"],
+      TRUSTED_JOURNALIST:["SEED_RETIREMENT_ANNOUNCEMENT_PATH"],
+      CLUB_ORGANIZES:["SEED_RETIREMENT_ANNOUNCEMENT_PATH"]
+    });
     verified(announce);
   }
 
   const last=principal.find(event=>event.id==="EVT_RET_LAST_001");
   if(last){
+    last.id="EVT_RET_LASTMATCH_001";
     last.family="sport";
     last.gates=[{path:"retirement.status",op:"eq",value:"announced"},{path:"flags.LAST_MATCH_WINDOW",op:"eq",value:true}];
     last.timeWindow={months:[4,5,6]};
@@ -179,7 +217,8 @@ export function applyRetirementTerminalOverrides(principal:EventDefinition[],con
       c("PROTECT_BODY","No arriesgar lesión por ceremonia",[f("LAST_MATCH_BODY_FIRST")])
     ];
     last.outcomes=outcomes(last.choices,"La petición queda registrada; no fabrica aparición, minutos, gol ni resultado.");
-    alias(last,"EVT_RET_LASTMATCH_001");
+    addSeedCreates(last,Object.fromEntries(last.choices.map(choice=>[choice.id,["SEED_LAST_MATCH_SHAPE","SEED_FAREWELL_CONTROL_FINAL"]])));
+    verified(last);
   }
 
   const postAnnounceOffer=conditional.find(event=>event.id==="CEVT_38_OFFER_AFTER_RETIREMENT_ANNOUNCED");
