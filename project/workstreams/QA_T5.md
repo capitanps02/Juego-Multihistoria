@@ -9,7 +9,7 @@ QA intenta falsar invariantes. No reescribe canon ni corrige silenciosamente run
 
 ## Estado verificado 2026-09-18
 
-**10 bugs: 6 open / 4 resolved / 0 P0.**
+**11 bugs: 7 open / 4 resolved / 0 P0.**
 
 - T5-QA-016 — **OPEN / P1 / owner-fix PR #118** — #61.
 - T5-QA-021 — **RESOLVED** — #92.
@@ -21,6 +21,7 @@ QA intenta falsar invariantes. No reescribe canon ni corrige silenciosamente run
 - T5-QA-029 — **OPEN / P2 / owner-fix PR #214** — #212; re-grounded en `main@49f16b21...`, HEAD `78c0ca4e...`, 1 ahead / 0 behind; exact-head RI `35336619877` pendiente.
 - T5-QA-030 — **OPEN / P2 / canon owner** — #161. `EVT_33_CAP_001` en main sigue con gates vacíos; reproducción permanente exige fail-closed sin captain real.
 - T5-QA-031 — **OPEN / P2 / owner-fix PR #207** — #175. `CareerOffer.context` se valida en productor/read, pero no en save boundary; malformed persisted context se acepta.
+- T5-QA-032 — **OPEN / P2 / A1+save owner** — #241. `npc.knowledge` solo valida el contenedor; una fila corrupta puede entrar en save y luego desaparecer semánticamente al leerse.
 
 ## T5-QA-029 — owner candidate
 
@@ -69,7 +70,8 @@ Ejecución bloqueada hasta:
 - `scripts/test-t5-match-model-known-bug.mjs` — T5-QA-029.
 - `scripts/test-t5-captain-gap-known-bug.mjs` — T5-QA-030/#161.
 - `scripts/test-t5-offer-context-known-bug.mjs` — T5-QA-031/#175/#207.
-- `qa:t5:known-bugs` — T5-QA-016 + T5-QA-030 + T5-QA-031.
+- `scripts/test-t5-npc-knowledge-save-known-bug.mjs` — T5-QA-032/#241.
+- `qa:t5:known-bugs` — T5-QA-016 + T5-QA-030 + T5-QA-031 + T5-QA-032.
 
 QA no mergea su propio PR. Un bug solo pasa a `resolved` tras fix integrado y reproducción/regresión verde sobre el HEAD exacto.
 
