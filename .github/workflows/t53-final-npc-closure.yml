@@ -25,5 +25,7 @@ jobs:
         run: npm run test:t53
       - name: Final 20-NPC invariants
         run: node --test scripts/test-t53-final-closure.mjs
+      - name: NPC knowledge save boundary
+        run: node --test scripts/test-t5-npc-knowledge-save-known-bug.mjs
       - name: Shared authority regressions
         run: node --test scripts/test-t51-shared-contracts.mjs scripts/test-t51-locker-leadership.mjs
