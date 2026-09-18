@@ -124,6 +124,15 @@ test('match model/7 corrupt persisted match facts fail closed at load and runtim
     value => { value.world.sportMatchModel.fixtures[0].id = 'fixture:wrong'; },
     value => { value.world.sportMatchModel.fixtures[0].date = '2099-01-01'; },
     value => { value.world.sportMatchModel.fixtures[0].player.started = true; value.world.sportMatchModel.fixtures[0].player.appeared = false; },
+    value => {
+      const row = value.world.sportMatchModel.fixtures[0];
+      row.player.calledUp = false; row.player.onBench = true; row.player.started = false;
+      row.player.appeared = false; row.player.minutes = 0; row.player.debut = false; row.player.injuryUnavailable = false;
+      row.decisionContext = null;
+    },
+    value => { value.world.sportMatchModel.fixtures[0].player.minutes = 0; },
+    value => { value.world.sportMatchModel.milestones.firstGoal = value.world.sportMatchModel.fixtures[0].id; },
+    value => { value.world.sportMatchModel.milestones.firstBench = value.world.sportMatchModel.fixtures[0].id; value.world.sportMatchModel.fixtures[0].player.onBench = false; },
     value => { value.world.sportMatchModel.milestones.firstAppearance = 'fixture:unknown'; },
     value => { value.world.sportMatchModel.fixtures[0].extra = true; }
   ];
@@ -136,7 +145,22 @@ test('match model/7 corrupt persisted match facts fail closed at load and runtim
   }
 });
 
-test('match model/8 validator and projections consume zero RNG and mutate nothing', () => {
+test('match model/8 first* milestones cannot skip an earlier qualifying fixture', () => {
+  const state = matchDayState(8822);
+  recordOfficialMatchInPlace(state, { appeared: true, debutOccurred: false, injuryUnavailable: false });
+  state.date = '2026-08-12';
+  state.runtime.day += 7;
+  state.runtime.seasonDay += 7;
+  recordOfficialMatchInPlace(state, { appeared: true, debutOccurred: false, injuryUnavailable: false });
+  const store = getSportMatchModelStore(state);
+  assert.equal(store.fixtures.length, 2);
+  const bad = structuredClone(state);
+  bad.world.sportMatchModel.milestones.firstAppearance = bad.world.sportMatchModel.fixtures[1].id;
+  assert.throws(() => assertGameState(bad), invalidSave);
+  assert.throws(() => loadSave(JSON.stringify(bad)), invalidSave);
+});
+
+test('match model/9 validator and projections consume zero RNG and mutate nothing', () => {
   const state = validStoredState(8818);
   const before = structuredClone(state);
   assert.equal(inspectSportMatchModelStore(state.world.sportMatchModel, state.date), null);
@@ -146,7 +170,7 @@ test('match model/8 validator and projections consume zero RNG and mutate nothin
   assert.deepEqual(state, before);
 });
 
-test('match model/9 league objective closure is persisted, deterministic and save-valid', () => {
+test('match model/10 league objective closure is persisted, deterministic and save-valid', () => {
   const state = validStoredState(8819);
   const beforeRng = structuredClone(state.rngState);
   closeLeagueObjectiveInPlace(state, 'safe');
@@ -159,7 +183,7 @@ test('match model/9 league objective closure is persisted, deterministic and sav
   assert.deepEqual(restored.world.sportMatchModel, state.world.sportMatchModel);
 });
 
-test('match model/10 role/form/reputation proxies cannot change a concrete fixture fact', () => {
+test('match model/11 role/form/reputation proxies cannot change a concrete fixture fact', () => {
   const a = matchDayState(8820);
   const b = matchDayState(8820);
   a.sport.roleScore = 1;
@@ -175,7 +199,7 @@ test('match model/10 role/form/reputation proxies cannot change a concrete fixtu
   assert.deepEqual(a.rngState, b.rngState);
 });
 
-test('match model/11 coarse UDV resolution cannot close the authoritative objective while fixtures remain', () => {
+test('match model/12 coarse UDV resolution cannot close the authoritative objective while fixtures remain', () => {
   const state = createInitialState(8821);
   state.date = '2027-05-04';
   state.runtime.day = 307;
