@@ -43,4 +43,5 @@ export function assertGameState(value: unknown): asserts value is GameState {
   legacy.assertGameState(value);
   assertSportMatchModel(value);
   assertCompetitionMoments(value);
+  assertPenaltySetups(value);
 }
