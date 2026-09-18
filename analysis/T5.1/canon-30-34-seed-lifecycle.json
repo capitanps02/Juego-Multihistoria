@@ -61,6 +61,12 @@
       "canonicalReaderOrWriterContext": "EVT_30_CON_001",
       "status": "missing_unclassified_runtime_definition",
       "rule": "Do not create, rename or map this seed to an existing 30-34 seed by semantic similarity. T5.2/canonical ownership must define identity, payload, scope, producer and any real consumer before materialization."
+    },
+    {
+      "seed": "SEED_SUCCESSOR_PEAK",
+      "canonicalReaderOrWriterContext": "EVT_30_STATUS_001",
+      "status": "missing_unclassified_runtime_definition",
+      "rule": "Do not create, rename or map this canonical seed by semantic similarity. EVT_30_STATUS_001 writes only the catalogued SEED_DORSAL_SUCCESSION until T5.2/canonical ownership defines SEED_SUCCESSOR_PEAK."
     }
   ],
   "orphanMigrationRule": "PASADA_6_30_34 remains editorial catalog provenance and is not a runtime originEvent. New instances use the real canonical event that produced them. Existing historical SeedInstance.originEvent is preserved unless an independently approved rewriteExisting mapping exists.",
