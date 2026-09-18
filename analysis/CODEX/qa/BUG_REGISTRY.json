@@ -133,15 +133,15 @@
         "npm run build && node --test scripts/test-t5-match-model-known-bug.mjs"
       ],
       "expected": "Match-model v1 rejects producer-impossible player facts, unsupported firstGoal authority, and semantically wrong/non-first milestone pointers at load/runtime validation boundaries.",
-      "actual": "Owner PR #214 was re-grounded onto current main without changing the audited 3-file patch. Current head 78c0ca4ea24e5fb3d0f1051d3aa57ea0d450dcd3 is 1 ahead / 0 behind main@49f16b21; exact-head Repository Integrity run 35336619877 is pending. Duplicate PR #218 remains superseded.",
+      "actual": "Owner PR #214 is re-grounded onto current main with the previously audited 3-file patch byte-identical. Current head 6e22e4232939c1668ac9ab748d6ee6c22d47440e is 1 ahead / 0 behind main@49f16b21; exact-head Repository Integrity run 35337045305 is pending. Duplicate PR #218 remains superseded.",
       "owner": "match-model-save-validation",
       "issue": 212,
       "ownerPr": 214,
       "test": "scripts/test-t5-match-model-known-bug.mjs",
       "firstSeenCommit": "5f4d14bca4d696cfafadb58b64034c7cd40cc147",
       "lastVerifiedCommit": "5f4d14bca4d696cfafadb58b64034c7cd40cc147",
-      "ownerHead": "78c0ca4ea24e5fb3d0f1051d3aa57ea0d450dcd3",
-      "ownerCiRun": 35336619877
+      "ownerHead": "6e22e4232939c1668ac9ab748d6ee6c22d47440e",
+      "ownerCiRun": 35337045305
     },
     {
       "id": "T5-QA-030",
@@ -176,8 +176,8 @@
       "issue": 175,
       "ownerPr": 207,
       "test": "scripts/test-t5-offer-context-known-bug.mjs",
-      "firstSeenCommit": "49f16b21c8f68f1439901437dcf16e1384966de2",
-      "lastVerifiedCommit": "49f16b21c8f68f1439901437dcf16e1384966de2"
+      "firstSeenCommit": "2a9e97fc89669ef42811e75fa91d14fbbabfb5a0",
+      "lastVerifiedCommit": "2a9e97fc89669ef42811e75fa91d14fbbabfb5a0"
     }
   ]
 }
