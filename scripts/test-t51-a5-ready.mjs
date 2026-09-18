@@ -645,3 +645,23 @@ test('A5 external conditionals/6 seed memory can shape reactions but never prove
   assert.equal(nano.gates.some(g=>g.path==='flags.HAS_SEED_NANO_SHADOW'),false,'seed presence must not create Nano opportunity');
   assert.ok(A5_EXTERNAL_CONDITIONAL_REQUIREMENTS_20_23.CEVT_20_NANO_01.facts.includes('Nano real professional opportunity and current career state'));
 });
+
+
+test('A5 external conditionals/7 staged NPC provenance names only actual participants or certified dynamic targets', () => {
+  const state=stateAt(53007,22,'2030-08-12');
+  const nanoRule=ruleFor('CEVT_20_NANO_01','ASK_WHAT_HE_WANTS');
+  assert.ok(nanoRule);
+  let context=captureNpcKnowledgeTargetContext(state);
+  assert.deepEqual(resolveNpcKnowledgeTargets(nanoRule,context),['NPC_PLR_14']);
+
+  const agentRule=ruleFor('CEVT_21_AGENT_02','ASK_TIMELINE');
+  assert.ok(agentRule);
+  assert.deepEqual(resolveNpcKnowledgeTargets(agentRule,context),[]);
+  certifyActiveAgentInPlace(state,'NPC_AGT_02');
+  context=captureNpcKnowledgeTargetContext(state);
+  assert.deepEqual(resolveNpcKnowledgeTargets(agentRule,context),['NPC_AGT_02']);
+
+  const shockRule=ruleFor('CEVT_22_SHOCK_01','SOUND_MARKET');
+  assert.ok(shockRule);
+  assert.deepEqual(resolveNpcKnowledgeTargets(shockRule,context),['NPC_AGT_02']);
+});
