@@ -260,6 +260,9 @@ export function recordSportRecordEventInPlace(
   const def=store.records.find(row=>row.recordId===input.recordId);
   if(!def||!validString(input.eventId)||!validString(input.newHolderRef)||typeof input.value!=="number"||!Number.isFinite(input.value)||!validSource(input.source))return null;
   if(input.fixtureId!==null&&!getSportMatchModelStore(state)?.fixtures.some(row=>row.id===input.fixtureId&&row.date===state.date))return null;
+  const candidate:SportRecordEventFact={...input,date:state.date,runtimeDay:state.runtime.day,source:cloneSource(input.source)};
+  const existing=store.recordEvents.find(row=>row.eventId===input.eventId);
+  if(existing)return JSON.stringify(existing)===JSON.stringify(candidate)?existing:null;
   const previous=[...store.recordEvents].reverse().find(row=>row.recordId===input.recordId)??null;
   if(!previous){
     if(input.kind!=="set"||input.previousHolderRef!==null)return null;
@@ -267,9 +270,6 @@ export function recordSportRecordEventInPlace(
     if(input.kind!=="surpassed"||input.previousHolderRef!==previous.newHolderRef||input.newHolderRef===previous.newHolderRef)return null;
     if(def.direction==="higher"?input.value<=previous.value:input.value>=previous.value)return null;
   }
-  const candidate:SportRecordEventFact={...input,date:state.date,runtimeDay:state.runtime.day,source:cloneSource(input.source)};
-  const existing=store.recordEvents.find(row=>row.eventId===input.eventId);
-  if(existing)return JSON.stringify(existing)===JSON.stringify(candidate)?existing:null;
   store.recordEvents.push(candidate); return candidate;
 }
 
