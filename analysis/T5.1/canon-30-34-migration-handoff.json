@@ -4,11 +4,11 @@
   "generatedAt": "2026-09-17",
   "sourceMainSha": "49f16b21c8f68f1439901437dcf16e1384966de2",
   "sourceContentIdentity": "84871fae2bec92d74d1e607e0a48943e2e530a062d315a829cfe75eda9fe0886",
-  "observedTargetContentIdentity": "db72c94ee93ad928e08e86a59f5063060a963e17edfc7b5e25198e1da6fd1eb1",
+  "observedTargetContentIdentity": "d02b2f86559b9c280570999794e7c39bf860b2d083f20d69f20fb689973ec15f",
   "targetIdentityEvidence": {
-    "workflowRun": 35334344791,
-    "source": "Focused CI after activating canonical EVT_30_CCH_001 computed the active 30-34 contentIdentity as db72c94e...d1eb1; the remaining focal failure was the intentionally stale prior target plus a test-formatting defect corrected in the next commit.",
-    "rule": "Target identity follows the active catalog. A newly added canonical principal creates a new integration-owned target freeze/edge."
+    "workflowRun": 35358629840,
+    "source": "Focused CI after activating EVT_30_STATUS_001 and canonical EVT_31_TEAM_001 computed the exact active 30-34 contentIdentity as d02b2f86...ec15f. No target freeze or migration edge is registered by A7.",
+    "rule": "Observed target identity follows the exact active catalog. Freeze and adjacent route registration remain coordination/integration ownership."
   },
   "consumer": {
     "implementationOwner": "coordination/integration",
@@ -16,7 +16,7 @@
     "routeRegistry": "CONTENT_MIGRATION_ROUTES",
     "workstreamMayRegisterRoute": false,
     "targetFreezeRequiredBeforeRouteRegistration": true,
-    "targetFreezeFixture": "qa/fixtures/t5.1/post-t51-sources/db72c94ee93ad928e08e86a59f5063060a963e17edfc7b5e25198e1da6fd1eb1.json"
+    "targetFreezeFixture": "qa/fixtures/t5.1/post-t51-sources/d02b2f86559b9c280570999794e7c39bf860b2d083f20d69f20fb689973ec15f.json"
   },
   "invariants": {
     "approvedSameSceneMappings": [],
