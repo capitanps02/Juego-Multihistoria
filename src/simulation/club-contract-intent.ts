@@ -10,6 +10,7 @@ import {
   type CareerTerms
 } from "./offers.js";
 import { getCurrentMatchContext, getSportContext, type CurrentMatchContext, type SportContext } from "./sport-context.js";
+import { resolveCurrentRepresentation, type RepresentationAgreement } from "./representation-authority.js";
 
 export { FORMAL_RENEWAL_REASON };
 export const CLUB_WANTS_RENEWAL_FACT = "facts.clubWantsRenewal" as const;
@@ -130,6 +131,8 @@ export interface NarrativeCausalFacts extends EarlyCareerSeedFacts {
   pendingCareerOfferKind: CareerOfferKind | null;
   /** Exact detached formal-offer projection; null includes no offer and stale offers. */
   pendingCareerOffer: PendingCareerOfferFacts | null;
+  /** Exact detached representation agreement; identity-only/contact states remain null. */
+  representation: RepresentationAgreement | null;
   /** Authoritative/read-only sporting projection. Unavailable sporting facts are null. */
   sport: SportContext;
   /** Current match projection. Fails closed until a real match producer exists. */
@@ -146,6 +149,7 @@ export function narrativeCausalFacts(state: GameState): NarrativeCausalFacts {
     roleGuaranteeAt23: hasRoleGuaranteeAt23(state),
     pendingCareerOfferKind: eligibleCareerOfferKind(state),
     pendingCareerOffer: pendingCareerOfferFacts(state),
+    representation: resolveCurrentRepresentation(state),
     sport: getSportContext(state),
     match: getCurrentMatchContext(state)
   };
