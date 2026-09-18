@@ -279,6 +279,133 @@ const FORM_VS_PLAN = ambiguousEvent({
   canonStatus: "technical_adaptation"
 });
 
+
+const VETERAN_LABEL_BRIDGE = ambiguousEvent({
+  id: "EVT_30_BRIDGE_001",
+  ageWindow: [30, 30],
+  phase: "30_34",
+  family: "legacy",
+  title: "La palabra veterano",
+  body: "En la primera reunión del verano el entrenador utiliza por primera vez contigo la palabra «veterano». No habla de retirarte: quiere administrar mejor tus semanas y reservarte para partidos que deciden temporadas.",
+  visible: ["Ves un plan orientativo de minutos, calendario y el discurso del técnico."],
+  uncertain: ["No sabes si «administrar» significa protegerte, reducirte o preparar al sucesor."],
+  timeWindow: { months: [7, 8] },
+  seedsRead: ["SEED_AGE30_PRIORITY"],
+  seedsWrite: ["SEED_VETERAN_LABEL"],
+  choices: [
+    {
+      id: "A", label: "Aceptar la gestión si se revisa cada mes", intentTags: ["veteran_management", "monthly_review"],
+      primaryMessage: "Aceptas gestionar semanas con una revisión periódica que impida convertir el plan en una reducción silenciosa de rol.",
+      secondaryMessage: "La gestión protege carga, pero una sucesión deportiva puede avanzar mientras esperas cada revisión.",
+      primaryEffects: [n("professional.matchSelectivity", 4), n("professional.recoveryDebt", -3), n("professional.careerControl", 2)],
+      secondaryEffects: [n("professional.statusInertia", -1)],
+      primarySeedTransitions: seed("SEED_VETERAN_LABEL", "A", "managed_monthly_review"),
+      secondarySeedTransitions: seed("SEED_VETERAN_LABEL", "A", "managed_monthly_review")
+    },
+    {
+      id: "B", label: "Rechazar cualquier etiqueta y competir como uno más", intentTags: ["reject_label", "full_competition"],
+      primaryMessage: "Rechazas que la edad defina tu disponibilidad y exiges competir por cada partido.",
+      secondaryMessage: "La postura puede sostener estatus o convertir una buena racha en deuda de recuperación.",
+      primaryEffects: [n("professional.statusInertia", 3), n("professional.motivationReserve", 2)],
+      secondaryEffects: [n("professional.recoveryDebt", 4)],
+      primarySeedTransitions: seed("SEED_VETERAN_LABEL", "B", "reject_label"),
+      secondarySeedTransitions: seed("SEED_VETERAN_LABEL", "B", "reject_label")
+    },
+    {
+      id: "C", label: "Pedir qué partidos concretos considera prioritarios", intentTags: ["priority_clarity", "calendar"],
+      primaryMessage: "Obligas a convertir una etiqueta ambigua en un plan deportivo verificable.",
+      secondaryMessage: "La concreción ayuda a decidir, aunque calendario, lesiones y eliminatorias pueden invalidar el plan después.",
+      primaryEffects: [n("professional.careerControl", 4), n("professional.matchSelectivity", 2)],
+      secondaryEffects: [n("professional.institutionalTrust", -1)],
+      primarySeedTransitions: seed("SEED_VETERAN_LABEL", "C", "ask_priority_matches"),
+      secondarySeedTransitions: seed("SEED_VETERAN_LABEL", "C", "ask_priority_matches")
+    },
+    {
+      id: "D", label: "No discutir el término y observar la pretemporada", intentTags: ["observe", "preseason"],
+      primaryMessage: "No conviertes una palabra en conflicto antes de ver cómo se reparte realmente el trabajo.",
+      secondaryMessage: "Esperar evita una pelea semántica, pero deja al club fijar la primera versión práctica del nuevo rol.",
+      primaryEffects: [n("professional.environmentStability", 2)],
+      secondaryEffects: [n("professional.careerControl", -2)],
+      primarySeedTransitions: seed("SEED_VETERAN_LABEL", "D", "observe_preseason"),
+      secondarySeedTransitions: seed("SEED_VETERAN_LABEL", "D", "observe_preseason")
+    }
+  ],
+  tags: ["t51_shifted_canonical_addition", "t51_distinct_from_EVT_30_IDN_001"],
+  canonStatus: "technical_adaptation"
+});
+
+const AGE34_BRIDGE = ambiguousEvent({
+  id: "EVT_33_FIN_001",
+  ageWindow: [33, 33],
+  phase: "30_34",
+  family: "legacy",
+  title: "Cumples 34",
+  body: "El juego presenta una radiografía sin nota final: nivel actual, tendencia física por dimensiones, rol, club, selección, patrimonio, relaciones, legado y deseo de continuar. También muestra puertas, no probabilidades.",
+  visible: ["Ves toda la información visible acumulada de tu carrera y tu situación actual."],
+  uncertain: ["No sabes cuánto durará el cuerpo ni qué oferta o entrenador aparecerá a los 35–38."],
+  timeWindow: { months: [5, 6] },
+  gates: [{ path: "flags.EARLY_RETIRED_30_34", op: "eq", value: false }],
+  seedsWrite: ["SEED_AGE34_PRIORITY", "SEED_RETIREMENT_DISTANCE_PROFILE"],
+  choices: [
+    {
+      id: "A", label: "Quiero seguir en máximo nivel aunque juegue menos", intentTags: ["age34_priority", "elite_less_minutes"],
+      primaryMessage: "Priorizas seguir en el máximo nivel aceptando que el volumen de minutos pueda bajar.",
+      secondaryMessage: "La elección orienta recomendaciones futuras, pero no garantiza club, entrenador ni rol.",
+      primaryEffects: [n("professional.matchSelectivity", 3), n("professional.veteranLeverage", 2)],
+      secondaryEffects: [n("professional.statusInertia", -1)],
+      primarySeedTransitions: [seedCreate("SEED_AGE34_PRIORITY", 65, { choice: "A", priority: "elite_less_minutes" }), seedCreate("SEED_RETIREMENT_DISTANCE_PROFILE", 50, { choice: "A", stance: "continue" })],
+      secondarySeedTransitions: [seedCreate("SEED_AGE34_PRIORITY", 58, { choice: "A", priority: "elite_less_minutes" }), seedCreate("SEED_RETIREMENT_DISTANCE_PROFILE", 46, { choice: "A", stance: "continue" })]
+    },
+    {
+      id: "B", label: "Quiero jugar mucho, aunque baje de nivel", intentTags: ["age34_priority", "minutes"],
+      primaryMessage: "Priorizas competir con volumen por encima del prestigio del nivel.",
+      secondaryMessage: "Más minutos pueden sostener identidad deportiva o acelerar desgaste según el contexto.",
+      primaryEffects: [n("sport.roleScore", 2), n("professional.careerControl", 2)],
+      secondaryEffects: [n("professional.recoveryDebt", 2)],
+      primarySeedTransitions: [seedCreate("SEED_AGE34_PRIORITY", 65, { choice: "B", priority: "minutes" }), seedCreate("SEED_RETIREMENT_DISTANCE_PROFILE", 50, { choice: "B", stance: "continue" })],
+      secondarySeedTransitions: [seedCreate("SEED_AGE34_PRIORITY", 58, { choice: "B", priority: "minutes" }), seedCreate("SEED_RETIREMENT_DISTANCE_PROFILE", 46, { choice: "B", stance: "continue" })]
+    },
+    {
+      id: "C", label: "Quiero volver o quedarme en casa", intentTags: ["age34_priority", "home"],
+      primaryMessage: "Das más peso al arraigo y a la vida alrededor del fútbol.",
+      secondaryMessage: "La prioridad orienta decisiones futuras sin fabricar una oferta ni un regreso.",
+      primaryEffects: [n("professional.homePull", 5), n("professional.environmentStability", 3)],
+      secondaryEffects: [n("professional.veteranLeverage", -1)],
+      primarySeedTransitions: [seedCreate("SEED_AGE34_PRIORITY", 65, { choice: "C", priority: "home" }), seedCreate("SEED_RETIREMENT_DISTANCE_PROFILE", 50, { choice: "C", stance: "continue" })],
+      secondarySeedTransitions: [seedCreate("SEED_AGE34_PRIORITY", 58, { choice: "C", priority: "home" }), seedCreate("SEED_RETIREMENT_DISTANCE_PROFILE", 46, { choice: "C", stance: "continue" })]
+    },
+    {
+      id: "D", label: "Quiero maximizar seguridad y libertad", intentTags: ["age34_priority", "security_freedom"],
+      primaryMessage: "Priorizas una estructura contractual que preserve control y reduzca dependencia de promesas deportivas.",
+      secondaryMessage: "La preferencia no crea términos contractuales: solo orienta cómo evaluar propuestas futuras.",
+      primaryEffects: [n("professional.careerControl", 4), n("professional.contractPower", 2)],
+      secondaryEffects: [n("professional.veteranLeverage", 1)],
+      primarySeedTransitions: [seedCreate("SEED_AGE34_PRIORITY", 65, { choice: "D", priority: "security_freedom" }), seedCreate("SEED_RETIREMENT_DISTANCE_PROFILE", 50, { choice: "D", stance: "continue" })],
+      secondarySeedTransitions: [seedCreate("SEED_AGE34_PRIORITY", 58, { choice: "D", priority: "security_freedom" }), seedCreate("SEED_RETIREMENT_DISTANCE_PROFILE", 46, { choice: "D", stance: "continue" })]
+    },
+    {
+      id: "E", label: "Quiero ir año a año", intentTags: ["age34_priority", "year_to_year"],
+      primaryMessage: "Evitas fijar hoy una trayectoria de varios años y dejas que cuerpo, deseo y mercado se revisen por ciclos cortos.",
+      secondaryMessage: "La flexibilidad preserva opciones y también reduce certeza.",
+      primaryEffects: [n("professional.careerControl", 3), n("professional.matchSelectivity", 2)],
+      secondaryEffects: [n("professional.veteranLeverage", -1)],
+      primarySeedTransitions: [seedCreate("SEED_AGE34_PRIORITY", 65, { choice: "E", priority: "year_to_year" }), seedCreate("SEED_RETIREMENT_DISTANCE_PROFILE", 54, { choice: "E", stance: "open" })],
+      secondarySeedTransitions: [seedCreate("SEED_AGE34_PRIORITY", 58, { choice: "E", priority: "year_to_year" }), seedCreate("SEED_RETIREMENT_DISTANCE_PROFILE", 50, { choice: "E", stance: "open" })]
+    },
+    {
+      id: "F", label: "Empiezo a imaginar la retirada", intentTags: ["age34_priority", "retirement_reflection"],
+      primaryMessage: "Admites que el final existe como posibilidad sin convertir la reflexión en una retirada.",
+      secondaryMessage: "La idea puede ganar o perder peso más adelante; no cierra la carrera ni fija una fecha.",
+      primaryEffects: [n("professional.retirementDistance", 5), n("professional.careerControl", 2)],
+      secondaryEffects: [n("professional.motivationReserve", -1)],
+      primarySeedTransitions: [seedCreate("SEED_AGE34_PRIORITY", 65, { choice: "F", priority: "retirement_reflection" }), seedCreate("SEED_RETIREMENT_DISTANCE_PROFILE", 65, { choice: "F", stance: "reflect" })],
+      secondarySeedTransitions: [seedCreate("SEED_AGE34_PRIORITY", 58, { choice: "F", priority: "retirement_reflection" }), seedCreate("SEED_RETIREMENT_DISTANCE_PROFILE", 60, { choice: "F", stance: "reflect" })]
+    }
+  ],
+  tags: ["t51_shifted_canonical_addition", "t51_distinct_from_EVT_33_END_001", "t51_nonterminal_retirement_reflection"],
+  canonStatus: "technical_adaptation"
+});
+
 export const BLOCKED_CANONICAL_ADDITIONS_30_34: EventDefinition[] = [
   FALSE_ULTIMATUM,
   NATIONAL_ABSENCE,
@@ -287,5 +414,7 @@ export const BLOCKED_CANONICAL_ADDITIONS_30_34: EventDefinition[] = [
 ];
 
 export const CANONICAL_ADDITIONS_30_34: EventDefinition[] = [
-  ROLE_COMMUNICATION
+  VETERAN_LABEL_BRIDGE,
+  ROLE_COMMUNICATION,
+  AGE34_BRIDGE
 ];
