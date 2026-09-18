@@ -232,96 +232,6 @@
       ]
     },
     {
-      "seedId": "SEED_FORM_VS_PLAN",
-      "owner": "t51/canon-34plus",
-      "disposition": "intentional_persistent",
-      "rationale": "Agent 8 clasifica esta identidad como memoria canónica pre-34 cuya provenance histórica debe persistir; no se reorigina ni se recrea al entrar en 34+.",
-      "evidenceRefs": [
-        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#A-the-14-bridge-memory-entries",
-        "src/catalog/seed-34plus.ts#SEED_34_PLUS_BRIDGE_COMPATIBILITY"
-      ]
-    },
-    {
-      "seedId": "SEED_FAMILY_ANCHOR",
-      "owner": "t51/canon-30-34",
-      "disposition": "intentional_persistent",
-      "rationale": "A8 conserva esta memoria 30–34 como requisito causal de elegibilidad para EVT_35_FAM_001 mediante scopedMemory; debe sobrevivir al salto 30–34→34+ y no existe cierre terminal ni expiry canónico definido.",
-      "evidenceRefs": [
-        "PR#15:src/content/events/34_plus/staged-principal-wave-a.ts#isStagedWaveAEligible-EVT_35_FAM_001",
-        "PR#15:src/content/events/34_plus/staged-principal-wave-a.ts#EVT_35_FAM_001"
-      ]
-    },
-    {
-      "seedId": "SEED_RELOCATION_LIMIT",
-      "owner": "t51/canon-30-34",
-      "disposition": "intentional_persistent",
-      "rationale": "A8 exige esta memoria de límite de mudanza junto a SEED_FAMILY_ANCHOR para habilitar canónicamente EVT_35_FAM_001; el handoff conserva la decisión familiar sin inventar terminalidad ni TTL.",
-      "evidenceRefs": [
-        "PR#15:src/content/events/34_plus/staged-principal-wave-a.ts#isStagedWaveAEligible-EVT_35_FAM_001",
-        "PR#15:src/content/events/34_plus/staged-principal-wave-a.ts#EVT_35_FAM_001"
-      ]
-    },
-    {
-      "seedId": "SEED_MEDICAL_AUTHORITY",
-      "owner": "t51/canon-30-34",
-      "disposition": "intentional_persistent",
-      "rationale": "A8 usa scopedMemory(SEED_MEDICAL_AUTHORITY) como una vía causal explícita de elegibilidad para EVT_36_MED_001; la autoridad médica histórica debe cruzar a 34+ sin reoriginarse ni expirar por edad.",
-      "evidenceRefs": [
-        "PR#15:src/content/events/34_plus/staged-principal-wave-a.ts#isStagedWaveAEligible-EVT_36_MED_001",
-        "PR#15:src/content/events/34_plus/staged-principal-wave-a.ts#EVT_36_MED_001"
-      ]
-    },
-    {
-      "seedId": "SEED_PUBLIC_MYTH_FINAL",
-      "owner": "t51/canon-34plus",
-      "disposition": "intentional_persistent",
-      "rationale": "El handoff autoritativo A8→A9 asigna explícitamente esta memoria producida por EVT_35_FAREWELL_001 al owner terminal agent9; debe permanecer disponible hasta su consumo terminal y no tiene expiry previo definido.",
-      "evidenceRefs": [
-        "PR#15:analysis/CODEX/canon-34plus/T52_SEED_HANDOFF.json#SEED_PUBLIC_MYTH_FINAL",
-        "PR#15:analysis/CODEX/canon-34plus/RETIREMENT_HANDOFF.md"
-      ]
-    },
-    {
-      "seedId": "SEED_FINAL_RELOCATION_TRADEOFF",
-      "owner": "t51/canon-34plus",
-      "disposition": "intentional_persistent",
-      "rationale": "A8 proyecta esta memoria de forma nominativa en homeFamily del handoff read-only a A9; el flujo terminal debe recibir el tradeoff familiar histórico sin fabricar una nueva decisión ni reoriginar la seed.",
-      "evidenceRefs": [
-        "PR#15:src/content/events/34_plus/agent9-handoff.ts#homeFamily.relocationTradeoff",
-        "PR#15:analysis/CODEX/canon-34plus/RETIREMENT_HANDOFF.md#State-Agent-8-must-leave-factual"
-      ]
-    },
-    {
-      "seedId": "SEED_FINAL_HOME_WINDOW",
-      "owner": "t51/canon-34plus",
-      "disposition": "intentional_persistent",
-      "rationale": "A8 incluye explícitamente esta memoria en el handoff homeFamily hacia A9; conserva la ventana de regreso real como contexto terminal y no existe expiry canónico anterior a retirada.",
-      "evidenceRefs": [
-        "PR#15:src/content/events/34_plus/agent9-handoff.ts#homeFamily.finalHomeWindow",
-        "PR#15:analysis/CODEX/canon-34plus/RETIREMENT_HANDOFF.md#State-Agent-8-must-leave-factual"
-      ]
-    },
-    {
-      "seedId": "SEED_HOME_SUCCESS_WITHOUT_YOU",
-      "owner": "t51/canon-34plus",
-      "disposition": "intentional_persistent",
-      "rationale": "El contrato A8→A9 conserva esta memoria de forma explícita en homeFamily para que el cierre terminal pueda distinguir hechos históricos del club de una inferencia nueva; no se define terminalidad previa.",
-      "evidenceRefs": [
-        "PR#15:src/content/events/34_plus/agent9-handoff.ts#homeFamily.homeSuccessWithoutYou",
-        "PR#15:analysis/CODEX/canon-34plus/RETIREMENT_HANDOFF.md#Canonical-seed-handoff"
-      ]
-    },
-    {
-      "seedId": "SEED_TEN_MATCH_HOME_RETURN",
-      "owner": "t51/canon-34plus",
-      "disposition": "intentional_persistent",
-      "rationale": "A8 entrega explícitamente esta memoria a A9 mediante homeFamily.tenMatchHomeReturn; debe sobrevivir como contexto factual del tramo terminal sin convertirse por sí sola en orden de retirada.",
-      "evidenceRefs": [
-        "PR#15:src/content/events/34_plus/agent9-handoff.ts#homeFamily.tenMatchHomeReturn",
-        "PR#15:analysis/CODEX/canon-34plus/RETIREMENT_HANDOFF.md#Pre-terminal-material-Agent-8-prepares"
-      ]
-    },
-    {
       "seedId": "SEED_NATIONAL_CAPTAINCY",
       "owner": "t51/canon-23-30",
       "disposition": "intentional_persistent",
@@ -672,6 +582,1728 @@
         "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
         "src/catalog/seeds.ts#SEED_MENTOR_ADVICE",
         "analysis/T5.1/canon-23-30-migration-handoff.json#SEED_MENTOR_ADVICE"
+      ]
+    },
+    {
+      "seedId": "SEED_BODY_PRECEDENT",
+      "owner": "t51/canon-18-23",
+      "disposition": "canonical_chain",
+      "producerEventId": "EVT_19_BODY_001",
+      "consumerEventId": "CEVT_19_INJ_01",
+      "rationale": "A5 certifica la cadena de lesión: la decisión de regreso de EVT_19_BODY_001 crea memoria corporal y CEVT_19_INJ_01 la consume mediante facts.bodyPrecedentReturn19 para reponderar resultados sin añadir RNG.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-18-23/CONTINUITY_CHAINS.md#injury--physio",
+        "src/content/events/18_20/principal-additions.ts#EVT_19_BODY_001",
+        "src/content/events/18_20/t51-seed-consumer-repairs.ts#CEVT_19_INJ_01"
+      ]
+    },
+    {
+      "seedId": "SEED_PHYSIO_CONFIDENCE",
+      "owner": "t51/canon-18-23",
+      "disposition": "canonical_chain",
+      "producerEventId": "EVT_19_BODY_001",
+      "consumerEventId": "CEVT_19_INJ_01",
+      "rationale": "A5 certifica la cadena de lesión/fisio: EVT_19_BODY_001 persiste la forma de retorno y CEVT_19_INJ_01 consume facts.physioConfidenceReturn19/pattern para alterar probabilidades sin determinismo ni RNG adicional.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-18-23/CONTINUITY_CHAINS.md#injury--physio",
+        "src/content/events/18_20/principal-additions.ts#EVT_19_BODY_001",
+        "src/content/events/18_20/t51-seed-consumer-repairs.ts#CEVT_19_INJ_01"
+      ]
+    },
+    {
+      "seedId": "SEED_MENA_EARLY_READ",
+      "owner": "t51/canon-18-23",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_MENA_EARLY_READ en ageWindow [18,30] y el runtime T5.2 expira instancias vivas al superar 30, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_MENA_EARLY_READ",
+        "analysis/CODEX/canon-18-23/A5_FINAL_HANDOFF_V2.md#principios-de-integración",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_BRUNO_FAVOR",
+      "owner": "t51/canon-18-23",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_BRUNO_FAVOR en ageWindow [18,32] y el runtime T5.2 expira instancias vivas al superar 32, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_BRUNO_FAVOR",
+        "analysis/CODEX/canon-18-23/A5_FINAL_HANDOFF_V2.md#principios-de-integración",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_FIRST_AGENT",
+      "owner": "t51/canon-18-23",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_FIRST_AGENT en ageWindow [18,35] y el runtime T5.2 expira instancias vivas al superar 35, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_FIRST_AGENT",
+        "analysis/CODEX/canon-18-23/A5_FINAL_HANDOFF_V2.md#principios-de-integración",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_FIRST_LEAK",
+      "owner": "t51/canon-18-23",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_FIRST_LEAK en ageWindow [18,30] y el runtime T5.2 expira instancias vivas al superar 30, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_FIRST_LEAK",
+        "analysis/CODEX/canon-18-23/A5_FINAL_HANDOFF_V2.md#principios-de-integración",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_DANI_NORMALITY",
+      "owner": "t51/canon-18-23",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_DANI_NORMALITY en ageWindow [18,30] y el runtime T5.2 expira instancias vivas al superar 30, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_DANI_NORMALITY",
+        "analysis/CODEX/canon-18-23/A5_FINAL_HANDOFF_V2.md#principios-de-integración",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_COACH_PUBLIC",
+      "owner": "t51/canon-18-23",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_COACH_PUBLIC en ageWindow [18,32] y el runtime T5.2 expira instancias vivas al superar 32, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_COACH_PUBLIC",
+        "analysis/CODEX/canon-18-23/A5_FINAL_HANDOFF_V2.md#principios-de-integración",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_NANO_SHADOW",
+      "owner": "t51/canon-18-23",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_NANO_SHADOW en ageWindow [18,35] y el runtime T5.2 expira instancias vivas al superar 35, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_NANO_SHADOW",
+        "analysis/CODEX/canon-18-23/A5_FINAL_HANDOFF_V2.md#principios-de-integración",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_AGENT_OMISSION",
+      "owner": "t51/canon-18-23",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_AGENT_OMISSION en ageWindow [19,35] y el runtime T5.2 expira instancias vivas al superar 35, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_AGENT_OMISSION",
+        "analysis/CODEX/canon-18-23/A5_FINAL_HANDOFF_V2.md#principios-de-integración",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_AGENT_POWER",
+      "owner": "t51/canon-18-23",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_AGENT_POWER en ageWindow [20,35] y el runtime T5.2 expira instancias vivas al superar 35, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_AGENT_POWER",
+        "analysis/CODEX/canon-18-23/A5_FINAL_HANDOFF_V2.md#principios-de-integración",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_FOREIGN_ADAPT",
+      "owner": "t51/canon-18-23",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_FOREIGN_ADAPT en ageWindow [20,32] y el runtime T5.2 expira instancias vivas al superar 32, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_FOREIGN_ADAPT",
+        "analysis/CODEX/canon-18-23/A5_FINAL_HANDOFF_V2.md#principios-de-integración",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_MEDICAL_DISCLOSURE",
+      "owner": "t51/canon-18-23",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_MEDICAL_DISCLOSURE en ageWindow [20,35] y el runtime T5.2 expira instancias vivas al superar 35, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_MEDICAL_DISCLOSURE",
+        "analysis/CODEX/canon-18-23/A5_FINAL_HANDOFF_V2.md#principios-de-integración",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_TEAMMATE_COVER",
+      "owner": "t51/canon-18-23",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_TEAMMATE_COVER en ageWindow [20,34] y el runtime T5.2 expira instancias vivas al superar 34, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_TEAMMATE_COVER",
+        "analysis/CODEX/canon-18-23/A5_FINAL_HANDOFF_V2.md#principios-de-integración",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_FIRST_CAPTAIN_ROOM",
+      "owner": "t51/canon-18-23",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_FIRST_CAPTAIN_ROOM en ageWindow [21,36] y el runtime T5.2 expira instancias vivas al superar 36, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_FIRST_CAPTAIN_ROOM",
+        "analysis/CODEX/canon-18-23/A5_FINAL_HANDOFF_V2.md#principios-de-integración",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_PUBLIC_CONTRACT",
+      "owner": "t51/canon-18-23",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_PUBLIC_CONTRACT en ageWindow [21,32] y el runtime T5.2 expira instancias vivas al superar 32, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_PUBLIC_CONTRACT",
+        "analysis/CODEX/canon-18-23/A5_FINAL_HANDOFF_V2.md#principios-de-integración",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_SELECTION_SNUB",
+      "owner": "t51/canon-18-23",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_SELECTION_SNUB en ageWindow [21,30] y el runtime T5.2 expira instancias vivas al superar 30, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_SELECTION_SNUB",
+        "analysis/CODEX/canon-18-23/A5_FINAL_HANDOFF_V2.md#principios-de-integración",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_SPONSOR_IMAGE",
+      "owner": "t51/canon-18-23",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_SPONSOR_IMAGE en ageWindow [21,35] y el runtime T5.2 expira instancias vivas al superar 35, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_SPONSOR_IMAGE",
+        "analysis/CODEX/canon-18-23/A5_FINAL_HANDOFF_V2.md#principios-de-integración",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_TACTICAL_SACRIFICE",
+      "owner": "t51/canon-18-23",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_TACTICAL_SACRIFICE en ageWindow [21,34] y el runtime T5.2 expira instancias vivas al superar 34, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_TACTICAL_SACRIFICE",
+        "analysis/CODEX/canon-18-23/A5_FINAL_HANDOFF_V2.md#principios-de-integración",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_DEADLINE_DAY",
+      "owner": "t51/canon-18-23",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_DEADLINE_DAY en ageWindow [22,35] y el runtime T5.2 expira instancias vivas al superar 35, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_DEADLINE_DAY",
+        "analysis/CODEX/canon-18-23/A5_FINAL_HANDOFF_V2.md#principios-de-integración",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_LOCKER_VOTE",
+      "owner": "t51/canon-18-23",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_LOCKER_VOTE en ageWindow [22,36] y el runtime T5.2 expira instancias vivas al superar 36, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_LOCKER_VOTE",
+        "analysis/CODEX/canon-18-23/A5_FINAL_HANDOFF_V2.md#principios-de-integración",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_FIRST_FREE_AGENCY",
+      "owner": "t51/canon-18-23",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_FIRST_FREE_AGENCY en ageWindow [22,35] y el runtime T5.2 expira instancias vivas al superar 35, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_FIRST_FREE_AGENCY",
+        "analysis/CODEX/canon-18-23/A5_FINAL_HANDOFF_V2.md#principios-de-integración",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_CONTRACT_HARDLINE",
+      "owner": "t51/canon-18-23",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_CONTRACT_HARDLINE en ageWindow [18,30] y el runtime T5.2 expira instancias vivas al superar 30, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_CONTRACT_HARDLINE",
+        "analysis/CODEX/canon-18-23/A5_FINAL_HANDOFF_V2.md#principios-de-integración",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_ELITE_ROLE_BARGAIN",
+      "owner": "t51/canon-23-30",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_ELITE_ROLE_BARGAIN en ageWindow [23,30] y el runtime T5.2 expira instancias vivas al superar 30, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_ELITE_ROLE_BARGAIN",
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_CONTRACT_CEILING",
+      "owner": "t51/canon-23-30",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_CONTRACT_CEILING en ageWindow [23,32] y el runtime T5.2 expira instancias vivas al superar 32, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_CONTRACT_CEILING",
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_DIRECT_RECRUIT",
+      "owner": "t51/canon-23-30",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_DIRECT_RECRUIT en ageWindow [23,32] y el runtime T5.2 expira instancias vivas al superar 32, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_DIRECT_RECRUIT",
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_EURO_REGISTRATION",
+      "owner": "t51/canon-23-30",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_EURO_REGISTRATION en ageWindow [23,32] y el runtime T5.2 expira instancias vivas al superar 32, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_EURO_REGISTRATION",
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_CLUB_NATIONAL_CONFLICT",
+      "owner": "t51/canon-23-30",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_CLUB_NATIONAL_CONFLICT en ageWindow [23,32] y el runtime T5.2 expira instancias vivas al superar 32, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_CLUB_NATIONAL_CONFLICT",
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_STAR_COMPETITION",
+      "owner": "t51/canon-23-30",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_STAR_COMPETITION en ageWindow [24,32] y el runtime T5.2 expira instancias vivas al superar 32, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_STAR_COMPETITION",
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_PENALTY_HIERARCHY",
+      "owner": "t51/canon-23-30",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_PENALTY_HIERARCHY en ageWindow [24,34] y el runtime T5.2 expira instancias vivas al superar 34, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_PENALTY_HIERARCHY",
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_AGENT_PROOF",
+      "owner": "t51/canon-23-30",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_AGENT_PROOF en ageWindow [25,34] y el runtime T5.2 expira instancias vivas al superar 34, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_AGENT_PROOF",
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_PEAK_IDENTITY",
+      "owner": "t51/canon-23-30",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_PEAK_IDENTITY en ageWindow [26,34] y el runtime T5.2 expira instancias vivas al superar 34, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_PEAK_IDENTITY",
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_SHADOW_ESCAPE",
+      "owner": "t51/canon-23-30",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_SHADOW_ESCAPE en ageWindow [26,34] y el runtime T5.2 expira instancias vivas al superar 34, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_SHADOW_ESCAPE",
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_PROJECT_FACE",
+      "owner": "t51/canon-23-30",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_PROJECT_FACE en ageWindow [26,36] y el runtime T5.2 expira instancias vivas al superar 36, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_PROJECT_FACE",
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_PEAK_CONTRACT",
+      "owner": "t51/canon-23-30",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_PEAK_CONTRACT en ageWindow [26,36] y el runtime T5.2 expira instancias vivas al superar 36, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_PEAK_CONTRACT",
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_INTERNATIONAL_LOAD",
+      "owner": "t51/canon-23-30",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_INTERNATIONAL_LOAD en ageWindow [26,36] y el runtime T5.2 expira instancias vivas al superar 36, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_INTERNATIONAL_LOAD",
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_BIG_GAME_BENCH",
+      "owner": "t51/canon-23-30",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_BIG_GAME_BENCH en ageWindow [27,36] y el runtime T5.2 expira instancias vivas al superar 36, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_BIG_GAME_BENCH",
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_LOCKER_ENDORSEMENT",
+      "owner": "t51/canon-23-30",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_LOCKER_ENDORSEMENT en ageWindow [27,36] y el runtime T5.2 expira instancias vivas al superar 36, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_LOCKER_ENDORSEMENT",
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_AGENT_CONFLICT_PEAK",
+      "owner": "t51/canon-23-30",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_AGENT_CONFLICT_PEAK en ageWindow [27,36] y el runtime T5.2 expira instancias vivas al superar 36, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_AGENT_CONFLICT_PEAK",
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_NATIONAL_ROLE",
+      "owner": "t51/canon-23-30",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_NATIONAL_ROLE en ageWindow [27,36] y el runtime T5.2 expira instancias vivas al superar 36, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_NATIONAL_ROLE",
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_FINAL_BENCH",
+      "owner": "t51/canon-23-30",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_FINAL_BENCH en ageWindow [28,36] y el runtime T5.2 expira instancias vivas al superar 36, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_FINAL_BENCH",
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_MEGA_TRANSFER",
+      "owner": "t51/canon-23-30",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_MEGA_TRANSFER en ageWindow [28,36] y el runtime T5.2 expira instancias vivas al superar 36, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_MEGA_TRANSFER",
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_PUBLIC_EXIT_PRESSURE",
+      "owner": "t51/canon-23-30",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_PUBLIC_EXIT_PRESSURE en ageWindow [28,36] y el runtime T5.2 expira instancias vivas al superar 36, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_PUBLIC_EXIT_PRESSURE",
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_SECOND_STAR",
+      "owner": "t51/canon-23-30",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_SECOND_STAR en ageWindow [28,36] y el runtime T5.2 expira instancias vivas al superar 36, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_SECOND_STAR",
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_MANAGER_POWER",
+      "owner": "t51/canon-23-30",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_MANAGER_POWER en ageWindow [29,36] y el runtime T5.2 expira instancias vivas al superar 36, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_MANAGER_POWER",
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_ELITE_SACRIFICE",
+      "owner": "t51/canon-23-30",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_ELITE_SACRIFICE en ageWindow [29,36] y el runtime T5.2 expira instancias vivas al superar 36, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_ELITE_SACRIFICE",
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_VETERAN_LABEL",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_VETERAN_LABEL pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_VETERAN_LABEL",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_AGE30_CONTRACT",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_AGE30_CONTRACT pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_AGE30_CONTRACT",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_MATCH_SELECTIVITY",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_MATCH_SELECTIVITY pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_MATCH_SELECTIVITY",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_LAST_BIG_MOVE_WINDOW",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_LAST_BIG_MOVE_WINDOW pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_LAST_BIG_MOVE_WINDOW",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_AGENT_LAST_CONTRACT",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_AGENT_LAST_CONTRACT pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_AGENT_LAST_CONTRACT",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_NATIONAL_PHASEDOWN",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_NATIONAL_PHASEDOWN pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_NATIONAL_PHASEDOWN",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_DORSAL_SUCCESSION",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_DORSAL_SUCCESSION pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_DORSAL_SUCCESSION",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_FAMILY_ANCHOR",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "A8 conserva esta memoria 30–34 como requisito causal de elegibilidad para EVT_35_FAM_001 mediante scopedMemory; debe sobrevivir al salto 30–34→34+ y no existe cierre terminal ni expiry canónico definido.",
+      "evidenceRefs": [
+        "PR#15:src/content/events/34_plus/staged-principal-wave-a.ts#isStagedWaveAEligible-EVT_35_FAM_001",
+        "PR#15:src/content/events/34_plus/staged-principal-wave-a.ts#EVT_35_FAM_001"
+      ]
+    },
+    {
+      "seedId": "SEED_RELOCATION_LIMIT",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "A8 exige esta memoria de límite de mudanza junto a SEED_FAMILY_ANCHOR para habilitar canónicamente EVT_35_FAM_001; el handoff conserva la decisión familiar sin inventar terminalidad ni TTL.",
+      "evidenceRefs": [
+        "PR#15:src/content/events/34_plus/staged-principal-wave-a.ts#isStagedWaveAEligible-EVT_35_FAM_001",
+        "PR#15:src/content/events/34_plus/staged-principal-wave-a.ts#EVT_35_FAM_001"
+      ]
+    },
+    {
+      "seedId": "SEED_MEDICAL_AUTHORITY",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "A8 usa scopedMemory(SEED_MEDICAL_AUTHORITY) como una vía causal explícita de elegibilidad para EVT_36_MED_001; la autoridad médica histórica debe cruzar a 34+ sin reoriginarse ni expirar por edad.",
+      "evidenceRefs": [
+        "PR#15:src/content/events/34_plus/staged-principal-wave-a.ts#isStagedWaveAEligible-EVT_36_MED_001",
+        "PR#15:src/content/events/34_plus/staged-principal-wave-a.ts#EVT_36_MED_001"
+      ]
+    },
+    {
+      "seedId": "SEED_BIG_GAME_ROTATION_30",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_BIG_GAME_ROTATION_30 pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_BIG_GAME_ROTATION_30",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_FALSE_RESURGENCE",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_FALSE_RESURGENCE pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_FALSE_RESURGENCE",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_ROLE_COMMUNICATION",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_ROLE_COMMUNICATION pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_ROLE_COMMUNICATION",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_CAPTAIN_HANDOVER",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_CAPTAIN_HANDOVER pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_CAPTAIN_HANDOVER",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_MILESTONE_CHASE_500",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_MILESTONE_CHASE_500 pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_MILESTONE_CHASE_500",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_PAIN_WITHOUT_SCAN",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_PAIN_WITHOUT_SCAN pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_PAIN_WITHOUT_SCAN",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_OLD_NETWORK_FAVOR",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_OLD_NETWORK_FAVOR pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_OLD_NETWORK_FAVOR",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_FALSE_ULTIMATUM",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_FALSE_ULTIMATUM pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_FALSE_ULTIMATUM",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_NATIONAL_ABSENCE",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_NATIONAL_ABSENCE pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_NATIONAL_ABSENCE",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_SPECIALIST_BIGCLUB",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_SPECIALIST_BIGCLUB pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_SPECIALIST_BIGCLUB",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_SURGERY_31",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_SURGERY_31 pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_SURGERY_31",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_LAST_BIG_MOVE_31",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_LAST_BIG_MOVE_31 pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_LAST_BIG_MOVE_31",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_HOME_RETURN_31",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_HOME_RETURN_31 pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_HOME_RETURN_31",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_SELF_REPRESENTATION_PREP",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_SELF_REPRESENTATION_PREP pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_SELF_REPRESENTATION_PREP",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_FORMAL_MENTOR",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_FORMAL_MENTOR pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_FORMAL_MENTOR",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_LEGACY_ACADEMY",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_LEGACY_ACADEMY pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_LEGACY_ACADEMY",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_COMEBACK_PACING",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_COMEBACK_PACING pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_COMEBACK_PACING",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_ROLE_REINVENTION_32",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_ROLE_REINVENTION_32 pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_ROLE_REINVENTION_32",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_NEW_COACH_RESET",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_NEW_COACH_RESET pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_NEW_COACH_RESET",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_SQUAD_YOUTH_WAVE",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_SQUAD_YOUTH_WAVE pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_SQUAD_YOUTH_WAVE",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_CLUB_NT_LOAD_TENSION",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_CLUB_NT_LOAD_TENSION pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_CLUB_NT_LOAD_TENSION",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_MANAGED_FINAL_ROLE",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_MANAGED_FINAL_ROLE pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_MANAGED_FINAL_ROLE",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_BUSINESS_REPUTATION_SHOCK",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_BUSINESS_REPUTATION_SHOCK pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_BUSINESS_REPUTATION_SHOCK",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_ROLLING_CONTRACT",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_ROLLING_CONTRACT pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_ROLLING_CONTRACT",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_LATE_RICH_OFFER",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_LATE_RICH_OFFER pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_LATE_RICH_OFFER",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_LATE_CONTENDER_BENCH",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_LATE_CONTENDER_BENCH pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_LATE_CONTENDER_BENCH",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_HOME_CAPTAIN_OFFER",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_HOME_CAPTAIN_OFFER pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_HOME_CAPTAIN_OFFER",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_SELF_REPRESENTATION",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_SELF_REPRESENTATION pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_SELF_REPRESENTATION",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_LOW_STATS_HIGH_IMPACT",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_LOW_STATS_HIGH_IMPACT pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_LOW_STATS_HIGH_IMPACT",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_REPLACEMENT_BREAKOUT",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_REPLACEMENT_BREAKOUT pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_REPLACEMENT_BREAKOUT",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_FAN_LEGACY_BUFFER",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_FAN_LEGACY_BUFFER pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_FAN_LEGACY_BUFFER",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_TRAVEL_LOAD",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_TRAVEL_LOAD pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_TRAVEL_LOAD",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_FINAL_NT_SQUAD",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_FINAL_NT_SQUAD pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_FINAL_NT_SQUAD",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_BOSMAN_33",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_BOSMAN_33 pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_BOSMAN_33",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_72H_LIMIT",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_72H_LIMIT cruza explícitamente la frontera 30–34→34+ sin terminalidad artificial. El owner downstream debe añadir un consumer real, un terminal canónico o mantenerla abierta; mientras no exista esa evidencia, A7 prescribe conservar la memoria abierta y su provenance.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_72H_LIMIT",
+        "analysis/T5.1/canon-30-34-downstream-seed-handoff.json#handoffs",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_RECORD_VS_BODY",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_RECORD_VS_BODY pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_RECORD_VS_BODY",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_VETERAN_LEADERSHIP_FINAL",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_VETERAN_LEADERSHIP_FINAL cruza explícitamente la frontera 30–34→34+ sin terminalidad artificial. El owner downstream debe añadir un consumer real, un terminal canónico o mantenerla abierta; mientras no exista esa evidencia, A7 prescribe conservar la memoria abierta y su provenance.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_VETERAN_LEADERSHIP_FINAL",
+        "analysis/T5.1/canon-30-34-downstream-seed-handoff.json#handoffs",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_FINAL_FOUR_WAYS",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_FINAL_FOUR_WAYS cruza explícitamente la frontera 30–34→34+ sin terminalidad artificial. El owner downstream debe añadir un consumer real, un terminal canónico o mantenerla abierta; mientras no exista esa evidencia, A7 prescribe conservar la memoria abierta y su provenance.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_FINAL_FOUR_WAYS",
+        "analysis/T5.1/canon-30-34-downstream-seed-handoff.json#handoffs",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_AGE34_PRIORITY",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_AGE34_PRIORITY cruza explícitamente la frontera 30–34→34+ sin terminalidad artificial. El owner downstream debe añadir un consumer real, un terminal canónico o mantenerla abierta; mientras no exista esa evidencia, A7 prescribe conservar la memoria abierta y su provenance.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_AGE34_PRIORITY",
+        "analysis/T5.1/canon-30-34-downstream-seed-handoff.json#handoffs",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_RETIREMENT_PUBLIC_TONE",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_RETIREMENT_PUBLIC_TONE cruza explícitamente la frontera 30–34→34+ sin terminalidad artificial. El owner downstream debe añadir un consumer real, un terminal canónico o mantenerla abierta; mientras no exista esa evidencia, A7 prescribe conservar la memoria abierta y su provenance.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_RETIREMENT_PUBLIC_TONE",
+        "analysis/T5.1/canon-30-34-downstream-seed-handoff.json#handoffs",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_HOME_PULL_PUBLIC",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_HOME_PULL_PUBLIC cruza explícitamente la frontera 30–34→34+ sin terminalidad artificial. El owner downstream debe añadir un consumer real, un terminal canónico o mantenerla abierta; mientras no exista esa evidencia, A7 prescribe conservar la memoria abierta y su provenance.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_HOME_PULL_PUBLIC",
+        "analysis/T5.1/canon-30-34-downstream-seed-handoff.json#handoffs",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_RETIREMENT_DISTANCE_PROFILE",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_RETIREMENT_DISTANCE_PROFILE pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_RETIREMENT_DISTANCE_PROFILE",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_FORM_VS_PLAN",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica esta identidad como memoria canónica pre-34 cuya provenance histórica debe persistir; no se reorigina ni se recrea al entrar en 34+.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#A-the-14-bridge-memory-entries",
+        "src/catalog/seed-34plus.ts#SEED_34_PLUS_BRIDGE_COMPATIBILITY"
+      ]
+    },
+    {
+      "seedId": "SEED_AGE34_REALITY",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_AGE34_REALITY entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_AGE34_REALITY",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_VETERAN_PAYCUT",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_VETERAN_PAYCUT entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_VETERAN_PAYCUT",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_FINAL_NT_POSTURE",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_FINAL_NT_POSTURE entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_FINAL_NT_POSTURE",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_FINAL_HOME_WINDOW",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "A8 incluye explícitamente esta memoria en el handoff homeFamily hacia A9; conserva la ventana de regreso real como contexto terminal y no existe expiry canónico anterior a retirada.",
+      "evidenceRefs": [
+        "PR#15:src/content/events/34_plus/agent9-handoff.ts#homeFamily.finalHomeWindow",
+        "PR#15:analysis/CODEX/canon-34plus/RETIREMENT_HANDOFF.md#State-Agent-8-must-leave-factual"
+      ]
+    },
+    {
+      "seedId": "SEED_LAST_AGENT_GAMBLE",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_LAST_AGENT_GAMBLE entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_LAST_AGENT_GAMBLE",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_28_MATCH_PLAN",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_28_MATCH_PLAN entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_28_MATCH_PLAN",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_FINAL_DORSAL",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_FINAL_DORSAL entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_FINAL_DORSAL",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_DIGNIFIED_EXIT_CLAUSE",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_DIGNIFIED_EXIT_CLAUSE entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_DIGNIFIED_EXIT_CLAUSE",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_FINAL_ROLE_ACCEPTANCE",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_FINAL_ROLE_ACCEPTANCE entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_FINAL_ROLE_ACCEPTANCE",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_SUCCESSOR_ALLIANCE",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_SUCCESSOR_ALLIANCE entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_SUCCESSOR_ALLIANCE",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_POST_MATCH_PAIN",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_POST_MATCH_PAIN entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_POST_MATCH_PAIN",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_LAST_HERO_MOMENT",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_LAST_HERO_MOMENT entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_LAST_HERO_MOMENT",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_NT_FIRST_OMISSION_LATE",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_NT_FIRST_OMISSION_LATE entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_NT_FIRST_OMISSION_LATE",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_FAREWELL_CROWD_POWER",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_FAREWELL_CROWD_POWER entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_FAREWELL_CROWD_POWER",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_TEAM_WINS_WITHOUT_YOU",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_TEAM_WINS_WITHOUT_YOU entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_TEAM_WINS_WITHOUT_YOU",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_MARCH_SILENCE",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_MARCH_SILENCE entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_MARCH_SILENCE",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_THREE_VERSIONS_35",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_THREE_VERSIONS_35 entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_THREE_VERSIONS_35",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_AVAILABILITY_CONTRACT",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_AVAILABILITY_CONTRACT entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_AVAILABILITY_CONTRACT",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_FINAL_RELOCATION_TRADEOFF",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "A8 proyecta esta memoria de forma nominativa en homeFamily del handoff read-only a A9; el flujo terminal debe recibir el tradeoff familiar histórico sin fabricar una nueva decisión ni reoriginar la seed.",
+      "evidenceRefs": [
+        "PR#15:src/content/events/34_plus/agent9-handoff.ts#homeFamily.relocationTradeoff",
+        "PR#15:analysis/CODEX/canon-34plus/RETIREMENT_HANDOFF.md#State-Agent-8-must-leave-factual"
+      ]
+    },
+    {
+      "seedId": "SEED_FAREWELL_AS_LEVERAGE",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_FAREWELL_AS_LEVERAGE entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_FAREWELL_AS_LEVERAGE",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_PUBLIC_MYTH_FINAL",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "El handoff autoritativo A8→A9 asigna explícitamente esta memoria producida por EVT_35_FAREWELL_001 al owner terminal agent9; debe permanecer disponible hasta su consumo terminal y no tiene expiry previo definido.",
+      "evidenceRefs": [
+        "PR#15:analysis/CODEX/canon-34plus/T52_SEED_HANDOFF.json#SEED_PUBLIC_MYTH_FINAL",
+        "PR#15:analysis/CODEX/canon-34plus/RETIREMENT_HANDOFF.md"
+      ]
+    },
+    {
+      "seedId": "SEED_PLAYER_LIAISON_ROLE",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_PLAYER_LIAISON_ROLE entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_PLAYER_LIAISON_ROLE",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_SLOW_PRESEASON_35",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_SLOW_PRESEASON_35 entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_SLOW_PRESEASON_35",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_FINAL_AGENT_STRUCTURE",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_FINAL_AGENT_STRUCTURE entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_FINAL_AGENT_STRUCTURE",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_FINAL_REINVENTION",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_FINAL_REINVENTION entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_FINAL_REINVENTION",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_FIVE_MATCHES_UNUSED",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_FIVE_MATCHES_UNUSED entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_FIVE_MATCHES_UNUSED",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_RECORD_PASSED",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_RECORD_PASSED entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_RECORD_PASSED",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_EMERGENCY_NT_RETURN",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_EMERGENCY_NT_RETURN entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_EMERGENCY_NT_RETURN",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_LAST_JANUARY_MOVE",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_LAST_JANUARY_MOVE entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_LAST_JANUARY_MOVE",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_LAST_FINAL_BENCH",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_LAST_FINAL_BENCH entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_LAST_FINAL_BENCH",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_HOME_SUCCESS_WITHOUT_YOU",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "El contrato A8→A9 conserva esta memoria de forma explícita en homeFamily para que el cierre terminal pueda distinguir hechos históricos del club de una inferencia nueva; no se define terminalidad previa.",
+      "evidenceRefs": [
+        "PR#15:src/content/events/34_plus/agent9-handoff.ts#homeFamily.homeSuccessWithoutYou",
+        "PR#15:analysis/CODEX/canon-34plus/RETIREMENT_HANDOFF.md#Canonical-seed-handoff"
+      ]
+    },
+    {
+      "seedId": "SEED_RETIREMENT_MARKETING",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_RETIREMENT_MARKETING entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_RETIREMENT_MARKETING",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_AGE36_LONG_DEAL",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_AGE36_LONG_DEAL entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_AGE36_LONG_DEAL",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_COMPETITION_SELECTIVITY",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_COMPETITION_SELECTIVITY entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_COMPETITION_SELECTIVITY",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_YOUNGER_COACH",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_YOUNGER_COACH entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_YOUNGER_COACH",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_700_MATCH_CHOICE",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_700_MATCH_CHOICE entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_700_MATCH_CHOICE",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_PEER_RETIREMENT_MIRROR",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_PEER_RETIREMENT_MIRROR entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_PEER_RETIREMENT_MIRROR",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_DROP_LEVEL_TO_PLAY",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_DROP_LEVEL_TO_PLAY entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_DROP_LEVEL_TO_PLAY",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_POST_CAREER_BODY_RISK",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_POST_CAREER_BODY_RISK entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_POST_CAREER_BODY_RISK",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_THREE_MONTH_CONTRACT",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_THREE_MONTH_CONTRACT entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_THREE_MONTH_CONTRACT",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_TEN_MATCH_HOME_RETURN",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "A8 entrega explícitamente esta memoria a A9 mediante homeFamily.tenMatchHomeReturn; debe sobrevivir como contexto factual del tramo terminal sin convertirse por sí sola en orden de retirada.",
+      "evidenceRefs": [
+        "PR#15:src/content/events/34_plus/agent9-handoff.ts#homeFamily.tenMatchHomeReturn",
+        "PR#15:analysis/CODEX/canon-34plus/RETIREMENT_HANDOFF.md#Pre-terminal-material-Agent-8-prepares"
+      ]
+    },
+    {
+      "seedId": "SEED_FAREWELL_PENALTY",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_FAREWELL_PENALTY entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_FAREWELL_PENALTY",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_LAST_HUGE_OFFER",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_LAST_HUGE_OFFER entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_LAST_HUGE_OFFER",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_MARKET_SILENCE_END",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_MARKET_SILENCE_END entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_MARKET_SILENCE_END",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_MARKET_FLOOR_FINAL",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_MARKET_FLOOR_FINAL entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_MARKET_FLOOR_FINAL",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_FAREWELL_ANNOUNCEMENT_TIMING",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 9 implementa SEED_FAREWELL_ANNOUNCEMENT_TIMING como memoria terminal create-only, sin payload, expiresAfter ni transición resolve/expire; su QA exige una única instancia viva con provenance canónica. El handoff T5.36 prohíbe mass-close de seeds y preserva el historial completo, por lo que esta memoria permanece abierta intencionalmente tras su creación.",
+      "evidenceRefs": [
+        "scripts/test-t536-terminal-seeds.mjs#SEED_FAREWELL_ANNOUNCEMENT_TIMING",
+        "src/content/events/34_plus/retirement-terminal-overrides.ts#terminal-seed-producers",
+        "analysis/T5.36-T5.37/cross-workstream-handoffs.json#T536-HO-SEED-TERMINAL-CLASSIFICATION"
+      ]
+    },
+    {
+      "seedId": "SEED_FINAL_FAMILY_CONVERSATION",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 9 implementa SEED_FINAL_FAMILY_CONVERSATION como memoria terminal create-only, sin payload, expiresAfter ni transición resolve/expire; su QA exige una única instancia viva con provenance canónica. El handoff T5.36 prohíbe mass-close de seeds y preserva el historial completo, por lo que esta memoria permanece abierta intencionalmente tras su creación.",
+      "evidenceRefs": [
+        "scripts/test-t536-terminal-seeds.mjs#SEED_FINAL_FAMILY_CONVERSATION",
+        "src/content/events/34_plus/retirement-terminal-overrides.ts#terminal-seed-producers",
+        "analysis/T5.36-T5.37/cross-workstream-handoffs.json#T536-HO-SEED-TERMINAL-CLASSIFICATION"
+      ]
+    },
+    {
+      "seedId": "SEED_LAST_REHAB_DECISION",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 9 implementa SEED_LAST_REHAB_DECISION como memoria terminal create-only, sin payload, expiresAfter ni transición resolve/expire; su QA exige una única instancia viva con provenance canónica. El handoff T5.36 prohíbe mass-close de seeds y preserva el historial completo, por lo que esta memoria permanece abierta intencionalmente tras su creación.",
+      "evidenceRefs": [
+        "scripts/test-t536-terminal-seeds.mjs#SEED_LAST_REHAB_DECISION",
+        "src/content/events/34_plus/retirement-terminal-overrides.ts#terminal-seed-producers",
+        "analysis/T5.36-T5.37/cross-workstream-handoffs.json#T536-HO-SEED-TERMINAL-CLASSIFICATION"
+      ]
+    },
+    {
+      "seedId": "SEED_RETIRE_ON_HIGH_CHOICE",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 9 implementa SEED_RETIRE_ON_HIGH_CHOICE como memoria terminal create-only, sin payload, expiresAfter ni transición resolve/expire; su QA exige una única instancia viva con provenance canónica. El handoff T5.36 prohíbe mass-close de seeds y preserva el historial completo, por lo que esta memoria permanece abierta intencionalmente tras su creación.",
+      "evidenceRefs": [
+        "scripts/test-t536-terminal-seeds.mjs#SEED_RETIRE_ON_HIGH_CHOICE",
+        "src/content/events/34_plus/retirement-terminal-overrides.ts#terminal-seed-producers",
+        "analysis/T5.36-T5.37/cross-workstream-handoffs.json#T536-HO-SEED-TERMINAL-CLASSIFICATION"
+      ]
+    },
+    {
+      "seedId": "SEED_RETIRE_AFTER_LOW",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 9 implementa SEED_RETIRE_AFTER_LOW como memoria terminal create-only, sin payload, expiresAfter ni transición resolve/expire; su QA exige una única instancia viva con provenance canónica. El handoff T5.36 prohíbe mass-close de seeds y preserva el historial completo, por lo que esta memoria permanece abierta intencionalmente tras su creación.",
+      "evidenceRefs": [
+        "scripts/test-t536-terminal-seeds.mjs#SEED_RETIRE_AFTER_LOW",
+        "src/content/events/34_plus/retirement-terminal-overrides.ts#terminal-seed-producers",
+        "analysis/T5.36-T5.37/cross-workstream-handoffs.json#T536-HO-SEED-TERMINAL-CLASSIFICATION"
+      ]
+    },
+    {
+      "seedId": "SEED_DISCARDED_REBIRTH_FINAL",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 9 implementa SEED_DISCARDED_REBIRTH_FINAL como memoria terminal create-only, sin payload, expiresAfter ni transición resolve/expire; su QA exige una única instancia viva con provenance canónica. El handoff T5.36 prohíbe mass-close de seeds y preserva el historial completo, por lo que esta memoria permanece abierta intencionalmente tras su creación.",
+      "evidenceRefs": [
+        "scripts/test-t536-terminal-seeds.mjs#SEED_DISCARDED_REBIRTH_FINAL",
+        "src/content/events/34_plus/retirement-terminal-overrides.ts#terminal-seed-producers",
+        "analysis/T5.36-T5.37/cross-workstream-handoffs.json#T536-HO-SEED-TERMINAL-CLASSIFICATION"
+      ]
+    },
+    {
+      "seedId": "SEED_RETIREMENT_ANNOUNCEMENT_PATH",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 9 implementa SEED_RETIREMENT_ANNOUNCEMENT_PATH como memoria terminal create-only, sin payload, expiresAfter ni transición resolve/expire; su QA exige una única instancia viva con provenance canónica. El handoff T5.36 prohíbe mass-close de seeds y preserva el historial completo, por lo que esta memoria permanece abierta intencionalmente tras su creación.",
+      "evidenceRefs": [
+        "scripts/test-t536-terminal-seeds.mjs#SEED_RETIREMENT_ANNOUNCEMENT_PATH",
+        "src/content/events/34_plus/retirement-terminal-overrides.ts#terminal-seed-producers",
+        "analysis/T5.36-T5.37/cross-workstream-handoffs.json#T536-HO-SEED-TERMINAL-CLASSIFICATION"
+      ]
+    },
+    {
+      "seedId": "SEED_LAST_MATCH_SHAPE",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 9 implementa SEED_LAST_MATCH_SHAPE como memoria terminal create-only, sin payload, expiresAfter ni transición resolve/expire; su QA exige una única instancia viva con provenance canónica. El handoff T5.36 prohíbe mass-close de seeds y preserva el historial completo, por lo que esta memoria permanece abierta intencionalmente tras su creación.",
+      "evidenceRefs": [
+        "scripts/test-t536-terminal-seeds.mjs#SEED_LAST_MATCH_SHAPE",
+        "src/content/events/34_plus/retirement-terminal-overrides.ts#terminal-seed-producers",
+        "analysis/T5.36-T5.37/cross-workstream-handoffs.json#T536-HO-SEED-TERMINAL-CLASSIFICATION"
+      ]
+    },
+    {
+      "seedId": "SEED_FAREWELL_CONTROL_FINAL",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 9 implementa SEED_FAREWELL_CONTROL_FINAL como memoria terminal create-only, sin payload, expiresAfter ni transición resolve/expire; su QA exige una única instancia viva con provenance canónica. El handoff T5.36 prohíbe mass-close de seeds y preserva el historial completo, por lo que esta memoria permanece abierta intencionalmente tras su creación.",
+      "evidenceRefs": [
+        "scripts/test-t536-terminal-seeds.mjs#SEED_FAREWELL_CONTROL_FINAL",
+        "src/content/events/34_plus/retirement-terminal-overrides.ts#terminal-seed-producers",
+        "analysis/T5.36-T5.37/cross-workstream-handoffs.json#T536-HO-SEED-TERMINAL-CLASSIFICATION"
       ]
     }
   ]
