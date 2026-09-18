@@ -95,28 +95,6 @@ export const A5_READY_NPC_KNOWLEDGE_RULES: NpcEventKnowledgeRule[] = [
     npcIds:[],targetSlots:["activeAgent"],source:"informed",certainty:100,memory:"temporary",relationshipMemory:false
   },
   {
-    eventId: "EVT_21_NAT_001",
-    choiceIds: ["AGENT_PRIVATE"],
-    outcomeIds: ["AGENT_PRIVATE__PRIMARY", "AGENT_PRIVATE__SECONDARY"],
-    npcIds: [],
-    targetSlots: ["activeAgent"],
-    source: "informed",
-    certainty: 100,
-    memory: "temporary",
-    relationshipMemory: false
-  },
-  {
-    eventId: "EVT_22_TACT_001",
-    choiceIds: ["AGENT_CONTEXT"],
-    outcomeIds: ["AGENT_CONTEXT__PRIMARY", "AGENT_CONTEXT__SECONDARY"],
-    npcIds: [],
-    targetSlots: ["activeAgent"],
-    source: "informed",
-    certainty: 100,
-    memory: "temporary",
-    relationshipMemory: false
-  },
-  {
     eventId:"CEVT_19_SOCIAL_01",choiceIds:["TRUSTED_CHANNEL"],
     outcomeIds:["TRUSTED_CHANNEL__PRIMARY","TRUSTED_CHANNEL__SECONDARY"],
     npcIds:["NPC_PRS_01"],source:"informed",certainty:100,memory:"temporary",relationshipMemory:true
