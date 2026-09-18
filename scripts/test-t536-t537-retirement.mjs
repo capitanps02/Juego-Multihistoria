@@ -210,9 +210,11 @@ test('T5.36/11 retirement content never fabricates a last goal',()=>{
   }
 });
 
-test('T5.36/12 administrative closure works without a ceremonial last match',()=>{
+test('T5.36/12 authoritative season end closes without a ceremonial last match',()=>{
   const state=lateState();
   setAnnounced(state);
+  state.date='2046-06-01';
+  state.runtime.seasonDay=335;
   state.retirement.daysInStatus=121;
   state.sport.appearances=state.world.retirementObservedAppearances;
   lateCareerWeek(state);

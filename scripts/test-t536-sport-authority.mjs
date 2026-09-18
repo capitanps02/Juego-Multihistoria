@@ -44,19 +44,25 @@ function announcedState(){
   return state;
 }
 
-test('T5.36 sport authority exposes career appearances but not unsupported match facts',()=>{
+test('T5.36 sport authority exposes calendar facts while unsupported result facts stay unknown',()=>{
   const state=announcedState();
   const sport=getSportContext(state);
   assert.equal(sport.availability.careerAppearances,'known');
   assert.equal(sport.careerAppearances,100);
-  for(const field of ['currentCompetition','nextFixture','previousFixture','remainingOfficialMatches','currentSquadStatus']){
-    assert.equal(sport.availability[field],'unavailable',`${field} must remain unavailable`);
-    assert.equal(sport[field],null,`${field} must not be invented`);
+  assert.equal(sport.availability.currentCompetition,'known');
+  assert.equal(sport.currentCompetition,'league');
+  assert.equal(sport.availability.nextFixture,'known');
+  assert.ok(sport.nextFixture,'future official fixture must come from shared calendar authority');
+  assert.equal(sport.availability.remainingOfficialMatches,'known');
+  assert.ok(sport.remainingOfficialMatches>0,'April state must retain official fixtures before season end');
+  for(const field of ['previousFixture','currentSquadStatus']){
+    assert.equal(sport.availability[field],'unavailable',`${field} needs persisted match history`);
+    assert.equal(sport[field],null,`${field} must not be invented without persisted history`);
   }
   const match=getCurrentMatchContext(state);
-  assert.equal(match.status,'no_authoritative_match_model');
+  assert.equal(match.status,'no_current_match');
   for(const field of ['competition','opponent','result','playerCalledUp','playerOnBench','playerStarted','playerAppeared','minutes','goals','assists']){
-    assert.equal(match[field],null,`${field} must remain unknown`);
+    assert.equal(match[field],null,`${field} must remain unknown without a persisted current match`);
   }
 });
 
