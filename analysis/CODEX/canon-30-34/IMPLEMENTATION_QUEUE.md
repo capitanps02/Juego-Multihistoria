@@ -56,7 +56,7 @@ Siete enlaces principal→principal antes sobreclasificados quedaron como `decla
 
 Los siete `declaredReadMismatches` owner 30–34 sí son consumidores runtime positivos, pero siguen sin identidad canónica certificada. No se añade `seedsRead` todavía porque esa metadata cambia `contentIdentity`.
 
-El debt condicional quedó re-anclado al baseline `main@fa3c8bae…` y al target `9151d662…`; su guard exige que siga coincidiendo con readiness + migration handoff para impedir que una metadata pendiente quede asociada a un catálogo antiguo.
+El debt condicional quedó re-anclado al baseline `main@5f4d14bc…` y al target `9151d662…`; su guard exige que siga coincidiendo con readiness + migration handoff para impedir que una metadata pendiente quede asociada a un catálogo antiguo.
 
 Guard: `scripts/test-t51-30-34-conditional-seed-reads.mjs`.
 
