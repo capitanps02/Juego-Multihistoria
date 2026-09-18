@@ -1,3 +1,4 @@
+import './test-t5-career-sport-milestones.mjs';
 import './test-t5-match-model.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
