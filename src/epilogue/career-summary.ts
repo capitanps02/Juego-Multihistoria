@@ -1,23 +1,28 @@
 import type { GameState } from "../core/types.js";
+import { getLastPlayerAppearanceContext } from "../simulation/sport-context.js";
 
 const num = (value: unknown, fallback = 0): number => typeof value === "number" ? value : fallback;
 const text = (value: unknown): string | null => typeof value === "string" && value.length > 0 ? value : null;
 
 export interface LastProfessionalAppearanceFact {
-  /** True only when a post-announcement appearance delta was observed. */
   observed: boolean;
-  /** Current authority is aggregate sport.appearances; fixture-level authority is not yet available. */
-  authority: "sport.appearances_delta" | "none";
+  authority: "sport.match_history" | "sport.appearances_delta" | "none";
+  fixtureId: string | null;
+  /** Compatibility alias for older summary consumers. */
+  fixture: string | null;
   date: string | null;
+  competition: string | null;
+  opponent: string | null;
+  homeAway: "home" | "away" | null;
   club: string | null;
-  fixture: null;
-  opponent: null;
-  competition: null;
-  minutes: null;
-  starter: null;
+  started: boolean | null;
+  appeared: boolean | null;
+  minutes: number | null;
   result: null;
   goals: null;
   assists: null;
+  cards: null;
+  postAnnouncement: boolean | null;
 }
 
 export interface CareerSummary {
@@ -71,22 +76,89 @@ function lastRecordedClub(state: GameState): string | null {
   return text(state.professional.registrationClub) ?? text(state.club) ?? text(state.professional.ownerClub);
 }
 
-export function buildCareerSummary(state: GameState): CareerSummary {
+export function buildLastProfessionalAppearanceFact(state: GameState): LastProfessionalAppearanceFact {
+  const context = getLastPlayerAppearanceContext(state);
+  if (context.status === "authoritative") {
+    const match = context.match;
+    if (!match) {
+      return {
+        observed: false,
+        authority: "sport.match_history",
+        fixtureId: null,
+        fixture: null,
+        date: null,
+        competition: null,
+        opponent: null,
+        homeAway: null,
+        club: null,
+        started: null,
+        appeared: null,
+        minutes: null,
+        result: null,
+        goals: null,
+        assists: null,
+        cards: null,
+        postAnnouncement: null
+      };
+    }
+    const announced = state.retirement.announcedDate;
+    return {
+      observed: true,
+      authority: "sport.match_history",
+      fixtureId: match.id,
+      fixture: match.id,
+      date: match.date,
+      competition: match.competition,
+      opponent: match.opponent,
+      homeAway: match.homeAway,
+      club: match.club,
+      started: match.player.started,
+      appeared: match.player.appeared,
+      minutes: match.player.minutes,
+      result: null,
+      goals: null,
+      assists: null,
+      cards: null,
+      postAnnouncement: announced === null ? null : match.date >= announced
+    };
+  }
+
   const observed = state.flags.LAST_MATCH_PLAYED === true;
-  const lastAppearance: LastProfessionalAppearanceFact = {
+  return {
     observed,
     authority: observed ? "sport.appearances_delta" : "none",
-    date: observed ? text(state.world.retirementLastAppearanceDate) : null,
-    club: observed ? lastRecordedClub(state) : null,
+    fixtureId: null,
     fixture: null,
-    opponent: null,
+    date: observed ? text(state.world.retirementLastAppearanceDate) : null,
     competition: null,
+    opponent: null,
+    homeAway: null,
+    club: observed ? lastRecordedClub(state) : null,
+    started: null,
+    appeared: observed ? true : null,
     minutes: null,
-    starter: null,
     result: null,
     goals: null,
-    assists: null
+    assists: null,
+    cards: null,
+    postAnnouncement: observed ? true : null
   };
+}
+
+export function buildCareerSummary(state: GameState): CareerSummary {
+  const lastAppearance = buildLastProfessionalAppearanceFact(state);
+  const factualFixture = lastAppearance.authority === "sport.match_history" && lastAppearance.fixtureId !== null;
+  const missing = [
+    "match result",
+    "career goals",
+    "last-appearance goals/assists/cards",
+    "structured trophy history",
+    "structured captaincy history",
+    "most-important-club authority"
+  ];
+  if (!factualFixture) {
+    missing.unshift("fixture identity", "opponent", "competition", "appearance minutes", "starter/bench status");
+  }
 
   return {
     terminal: state.retirement.status === "closed",
@@ -110,18 +182,6 @@ export function buildCareerSummary(state: GameState): CareerSummary {
     nationalCaps: num(state.professional.nationalCaps),
     majorLongInjuries: num(state.world.maturityLongInjuryCount),
     lastProfessionalAppearance: lastAppearance,
-    missingAuthoritativeFacts: [
-      "fixture identity",
-      "opponent",
-      "competition",
-      "appearance minutes",
-      "starter/bench status",
-      "match result",
-      "career goals",
-      "last-appearance goals/assists",
-      "structured trophy history",
-      "structured captaincy history",
-      "most-important-club authority"
-    ]
+    missingAuthoritativeFacts: missing
   };
 }

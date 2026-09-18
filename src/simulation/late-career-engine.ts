@@ -2,7 +2,7 @@ import { DeterministicRng } from "../core/rng.js";
 import type { GameState } from "../core/types.js";
 import { generateEpilogue } from "../epilogue/generator.js";
 import { contractEmploymentStatus, getActiveCareerOffers } from "./offers.js";
-import { getSportContext } from "./sport-context.js";
+import { getLastPlayerAppearanceContext, getSportContext } from "./sport-context.js";
 
 const clamp=(x:number,min=0,max=100)=>Math.min(max,Math.max(min,x));
 const num=(x:unknown,f=0)=>typeof x==="number"?x:f;
@@ -264,15 +264,22 @@ export function lateCareerWeek(state:GameState):void{
   if(state.retirement.status==="decided")state.flags.ADMIN_ANNOUNCEMENT_FALLBACK=false;
 
   if(state.retirement.status==="announced"){
-    // SportContext owns the known career-appearance aggregate. Retirement only observes
-    // its delta and never upgrades unavailable match fields into invented facts.
     const sportContext=getSportContext(state);
     const appearances=sportContext.careerAppearances;
-    const observed=num(state.world.retirementObservedAppearances,num(state.world.retirementAppearancesAtAnnouncement,appearances));
-    if(appearances>observed){
+    const appearanceContext=getLastPlayerAppearanceContext(state);
+    const factualAppearance=appearanceContext.status==="authoritative"?appearanceContext.match:null;
+    if(factualAppearance&&announcedDate!==null&&factualAppearance.date>=announcedDate){
       state.flags.LAST_MATCH_PLAYED=true;
       state.world.retirementObservedAppearances=appearances;
-      state.world.retirementLastAppearanceDate=state.date;
+      state.world.retirementLastAppearanceDate=factualAppearance.date;
+    } else if(appearanceContext.status==="historical_match_store_not_initialized"){
+      // Historical saves without the persisted match store retain the old aggregate fallback.
+      const observed=num(state.world.retirementObservedAppearances,num(state.world.retirementAppearancesAtAnnouncement,appearances));
+      if(appearances>observed){
+        state.flags.LAST_MATCH_PLAYED=true;
+        state.world.retirementObservedAppearances=appearances;
+        state.world.retirementLastAppearanceDate=state.date;
+      }
     }
 
     const month=Number(state.date.slice(5,7));
