@@ -3,45 +3,19 @@ import { ambiguousEvent, n, seedCreate } from "../18_20/helpers.js";
 
 const intensify = (seedId: string, intensity: number): SeedTransition => ({ seedId, action: "intensify", intensity });
 
+/**
+ * Seven non-market/non-medical/non-agent principals that remain external-fact blocked.
+ * Agent/market/medical principals live in their dedicated staged modules so every
+ * canonical ID has exactly one owner-side definition in the A5 final branch.
+ */
 export const A5_SHARED_EXTERNAL_PRINCIPAL_REQUIREMENTS = Object.freeze({
-  EVT_20_MED_001: { owner:"medical/world", facts:["new medical service received-record knowledge","known diagnosed vs symptom history"], forbidden:["body.risk as diagnosis","assuming old club shared records"] },
-  EVT_20_AGT_001: { owner:"A1/A3", facts:["active agent","representation permissions","delegation/service terms"], forbidden:["agentControl as identity","contact flag as contract"] },
   EVT_20_MATCH_003: { owner:"A4", facts:["official match score","coach order","player on pitch at minute 65"], forbidden:["role/form as live-match fact","narrative RNG score"] },
-  EVT_20_BRUNO_001: { owner:"A1/A2/world", facts:["current Bruno market contact","contact provenance","active-agent channel"], forbidden:["SEED_BRUNO_FAVOR creating current opportunity"] },
   EVT_21_MONEY_001: { owner:"world/family", facts:["real family debt/request","amount/provenance"], forbidden:["cash threshold as family debt"] },
-  EVT_21_AGT_001: { owner:"A1/A3", facts:["active representation","commission terms","service scope","revisability"], forbidden:["agentControl as commission","relationship as contract"] },
   EVT_21_NAT_001: { owner:"A4/#174", facts:["official national-team list","protagonist omitted from that list"], forbidden:["nationalStanding as call-up","heat as list"] },
-  EVT_21_MED_001: { owner:"medical+A4", facts:["compatible diagnosed injury","treatment option","high-value official match context"], forbidden:["body.risk as diagnosis","invented match importance"] },
-  EVT_21_CCH_002: { owner:"A1/shared-coach", facts:["actual current-club coach transition","new current coach/role relation when certified"], forbidden:["COACH_FIRED history as current change","fixed Montalbán/Mena after club change"] },
+  EVT_21_CCH_002: { owner:"A1/shared-coach", facts:["actual current-club coach transition","new tactical-role assignment"], forbidden:["COACH_FIRED history as current change","fixed coach after club change"] },
   EVT_22_LOCK_001: { owner:"A1/world", facts:["specific teammate sale case","salary conflict","participants","knowledge provenance"], forbidden:["lockerPower as sale fact","invented teammate"] },
   EVT_22_HOME_001: { owner:"A4", facts:["official fixture against UDV/former home club","participation context"], forbidden:["calendar month as fixture","exit seed as match fact"] },
-  EVT_22_MED_001: { owner:"medical/world", facts:["real transfer medical examination","requested test","finding relevance context"], forbidden:["risk as MRI","invented buyer medical concern"] },
   EVT_22_TACT_001: { owner:"A4+A1/coach", facts:["official high-value match","concrete tactical role/order","current coach authority"], forbidden:["roleScore as order","invented tactical moment"] }
-});
-
-const EVT_20_MED_001=ambiguousEvent({
- id:"EVT_20_MED_001",ageWindow:[20,20],phase:"20_23",family:"medical",title:"El historial que viaja contigo",
- body:"Un nuevo servicio médico te pregunta por episodios previos. Tú distingues diagnósticos de molestias; lo que el nuevo club realmente ha recibido debe venir de la autoridad médica, no de una suposición.",
- visible:["Conoces qué episodios fueron diagnosticados y cuáles fueron solo molestias."],uncertain:["No sabes qué información recibió el nuevo servicio ni cuánto pesará una omisión menor."],weight:10,
- choices:[
-  {id:"FULL_DETAIL",label:"Contarlo todo con detalle",intentTags:["medical","transparent"],primaryMessage:"La transparencia facilita contexto clínico aunque puede abrir pruebas adicionales.",secondaryMessage:"Más información mejora confianza y también puede retrasar una operación mientras se contrasta.",primaryEffects:[n("control.career",2)],secondaryEffects:[n("professional.environmentStability",-1)],primarySeedTransitions:[seedCreate("SEED_MEDICAL_DISCLOSURE",62,{stance:"full_detail"})],secondarySeedTransitions:[seedCreate("SEED_MEDICAL_DISCLOSURE",66,{stance:"full_detail",extra_tests:true})]},
-  {id:"DIAGNOSED_ONLY",label:"Responder solo a lo que figure como diagnóstico",intentTags:["medical","privacy"],primaryMessage:"Usas una frontera verificable entre diagnóstico y sensación.",secondaryMessage:"La frontera protege privacidad pero puede parecer demasiado literal si el otro servicio conoce más contexto.",primaryEffects:[n("control.career",4)],secondaryEffects:[n("professional.environmentStability",-2)],primarySeedTransitions:[seedCreate("SEED_MEDICAL_DISCLOSURE",54,{stance:"diagnosed_only"})],secondarySeedTransitions:[seedCreate("SEED_MEDICAL_DISCLOSURE",58,{stance:"diagnosed_only",credibility_risk:true})]},
-  {id:"MINIMIZE",label:"Minimizar un episodio que consideras irrelevante",intentTags:["medical","conceal"],primaryMessage:"La omisión puede no cambiar nada si el episodio realmente carecía de relevancia clínica.",secondaryMessage:"Si aparece un informe compatible, el problema pasa de salud a credibilidad.",primaryEffects:[n("control.career",1)],secondaryEffects:[n("professional.environmentStability",-4)],primarySeedTransitions:[seedCreate("SEED_MEDICAL_DISCLOSURE",68,{stance:"minimize"})],secondarySeedTransitions:[seedCreate("SEED_MEDICAL_DISCLOSURE",74,{stance:"minimize",credibility_cost:true})]},
-  {id:"ASK_RECORDS",label:"Preguntar primero qué información médica han recibido",intentTags:["medical","information"],primaryMessage:"Pides saber el terreno factual antes de responder.",secondaryMessage:"La prudencia te da contexto aunque puede percibirse como una respuesta defensiva.",primaryEffects:[n("control.career",5)],secondaryEffects:[n("professional.environmentStability",-1)],primarySeedTransitions:[seedCreate("SEED_MEDICAL_DISCLOSURE",50,{stance:"ask_received_records"})],secondarySeedTransitions:[seedCreate("SEED_MEDICAL_DISCLOSURE",54,{stance:"ask_received_records",defensive_read:true})]}
- ],seedsRead:["SEED_BODY_PRECEDENT","SEED_PHYSIO_CONFIDENCE"],seedsWrite:["SEED_MEDICAL_DISCLOSURE"],tags:["medical","privacy","a5_ready_external_blocker"],canonStatus:"verified"
-});
-
-const EVT_20_AGT_001=ambiguousEvent({
- id:"EVT_20_AGT_001",ageWindow:[20,20],phase:"20_23",family:"agent",title:"El teléfono del agente",
- body:"Con representación activa, el problema ya no es quién te llamó primero sino qué puede responder tu agente sin pedirte permiso. Identidad, comisión y permisos deben provenir del contrato de representación real.",
- visible:["Si existe agente activo, sabes quién es.","Los permisos y servicios concretos no se deducen de agentControl."],uncertain:["No sabes qué oportunidades filtrará ni qué contactos considera poco serios."],
- gates:[{path:"facts.activeAgentNpcId",op:"exists"}],weight:11,
- choices:[
-  {id:"BROAD_CONTROL",label:"Darle control amplio",intentTags:["agent","delegate"],primaryMessage:"Centralizas la respuesta profesional cuando el contrato lo permite.",secondaryMessage:"La eficiencia aumenta y también el riesgo de que una oportunidad se descarte sin ti.",primaryEffects:[n("professional.agentControl",7),n("control.career",-3)],secondaryEffects:[n("professional.agentControl",8),n("control.career",-6)],primarySeedTransitions:[seedCreate("SEED_AGENT_POWER",65,{choice:"A"})],secondarySeedTransitions:[seedCreate("SEED_AGENT_POWER",72,{choice:"A",omission_risk:true})]},
-  {id:"REPORT_ALL",label:"Exigir que te informe de todo contacto serio antes de responder",intentTags:["agent","information"],primaryMessage:"Conservas autorización sobre contactos relevantes.",secondaryMessage:"El filtro protege autonomía y puede ralentizar una operación rápida.",primaryEffects:[n("control.career",6),n("professional.agentControl",2)],secondaryEffects:[n("control.career",4)],primarySeedTransitions:[seedCreate("SEED_AGENT_POWER",58,{choice:"B"})],secondarySeedTransitions:[seedCreate("SEED_AGENT_POWER",62,{choice:"B",timing_cost:true})]},
-  {id:"SPLIT_FUNCTIONS",label:"Mantener prensa e imagen en tus manos y mercado en las suyas",intentTags:["agent","split_scope"],primaryMessage:"Separar funciones crea un contrapeso claro cuando el contrato lo admite.",secondaryMessage:"La especialización mejora control y aumenta el número de canales que deben coordinarse.",primaryEffects:[n("control.career",5),n("professional.agentControl",1)],secondaryEffects:[n("professional.environmentStability",-2)],primarySeedTransitions:[seedCreate("SEED_AGENT_POWER",55,{choice:"C"})],secondarySeedTransitions:[seedCreate("SEED_AGENT_POWER",60,{choice:"C",coordination_cost:true})]},
-  {id:"NO_CENTRALIZE",label:"Negarte a centralizar",intentTags:["agent","autonomy"],primaryMessage:"Mantienes más decisiones directas contigo.",secondaryMessage:"La autonomía evita dependencia y puede fragmentar respuestas cuando el volumen de contactos crece.",primaryEffects:[n("control.career",7),n("professional.agentControl",-5)],secondaryEffects:[n("control.career",4),n("professional.environmentStability",-2)],primarySeedTransitions:[seedCreate("SEED_AGENT_POWER",52,{choice:"D"})],secondarySeedTransitions:[seedCreate("SEED_AGENT_POWER",58,{choice:"D",fragmentation:true})]}
- ],seedsRead:["SEED_AGENT_OMISSION","SEED_FIRST_AGENT"],seedsWrite:["SEED_AGENT_POWER"],tags:["agent","representation","a5_ready_external_blocker"],canonStatus:"verified"
 });
 
 const EVT_20_MATCH_003=ambiguousEvent({
@@ -53,19 +27,6 @@ const EVT_20_MATCH_003=ambiguousEvent({
   {id:"HYBRID",label:"Cumplir sin renunciar a atacar cuando el contexto lo permita",intentTags:["tactical","adapt"],primaryMessage:"Buscas una lectura híbrida entre obediencia y oportunidad.",secondaryMessage:"La interpretación puede resolver el partido o parecer una licencia que nadie concedió.",primaryEffects:[n("professional.roleSecurity",2),n("control.career",2)],secondaryEffects:[n("professional.environmentStability",-2)]},
   {id:"OWN_GAME",label:"Mantener tu juego y asumir el riesgo",intentTags:["identity","risk"],primaryMessage:"Proteges tu perfil ofensivo aunque te apartes de la orden.",secondaryMessage:"Una jugada decisiva puede justificarte o una sustitución inmediata dejar el conflicto abierto.",primaryEffects:[n("reputation.marketHeat",3)],secondaryEffects:[n("professional.roleSecurity",-6),n("reputation.mediaHeat",2)]}
  ],seedsRead:["SEED_MENA_EARLY_READ"],tags:["sport","live_match","tactical","a5_ready_external_blocker"],canonStatus:"verified"
-});
-
-const EVT_20_BRUNO_001=ambiguousEvent({
- id:"EVT_20_BRUNO_001",ageWindow:[20,20],phase:"20_23",family:"market",title:"La llamada de Bruno",
- body:"Bruno puede ofrecer presentar tu nombre, pero un favor pasado no crea por sí solo una oportunidad actual. El contacto de mercado y su procedencia deben existir primero.",
- visible:["Tu memoria causal conserva cómo trataste a Bruno antes.","Si tienes agente activo, sabes quién debe recibir cualquier canal profesional."],uncertain:["No sabes si el puesto es prioridad ni cuánto pesa realmente Bruno."],
- gates:[{path:"facts.brunoFavorStance",op:"exists"}],weight:9,
- choices:[
-  {id:"AUTHORIZE_NOTIFY",label:"Autorizarle y avisar a tu agente",intentTags:["bruno","agent","transparent"],eligibility:[{path:"facts.activeAgentNpcId",op:"exists"}],primaryMessage:"Mantienes el favor personal y el canal profesional alineados.",secondaryMessage:"La coordinación reduce conflicto pero puede ralentizar un contacto informal.",primaryEffects:[n("rel.NPC_PLR_12.trust",4),n("control.career",3)],secondaryEffects:[n("rel.NPC_PLR_12.trust",2)],primarySeedTransitions:[intensify("SEED_BRUNO_FAVOR",4),intensify("SEED_AGENT_POWER",3)],secondarySeedTransitions:[intensify("SEED_BRUNO_FAVOR",3),intensify("SEED_AGENT_POWER",4)]},
-  {id:"AUTHORIZE_PRIVATE",label:"Autorizarle sin avisar al agente todavía",intentTags:["bruno","private","risk"],primaryMessage:"El contacto puede avanzar rápido si era real.",secondaryMessage:"Si llega a tu representación por otra vía, el problema pasa a ser también de confianza.",primaryEffects:[n("rel.NPC_PLR_12.trust",5),n("control.career",2)],secondaryEffects:[n("professional.agentControl",-3)],primarySeedTransitions:[intensify("SEED_BRUNO_FAVOR",5)],secondarySeedTransitions:[intensify("SEED_BRUNO_FAVOR",6),intensify("SEED_AGENT_POWER",5)]},
-  {id:"ASK_PROOF",label:"Pedir más información antes de usar el favor",intentTags:["bruno","information"],primaryMessage:"Proteges a ambos de presentar tu nombre en una oportunidad poco concreta.",secondaryMessage:"La prudencia mejora la calidad del contacto y puede perder timing.",primaryEffects:[n("control.career",5),n("rel.NPC_PLR_12.respect",2)],secondaryEffects:[n("reputation.marketHeat",-1)],primarySeedTransitions:[intensify("SEED_BRUNO_FAVOR",2)],secondarySeedTransitions:[intensify("SEED_BRUNO_FAVOR",3)]},
-  {id:"DECLINE_HELP",label:"Decirle que no, pero ofrecer ayudarle en otra cosa",intentTags:["bruno","boundary"],primaryMessage:"No conviertes el favor en canal de mercado y preservas la relación personal.",secondaryMessage:"Bruno puede entender el límite o sentir que su gesto anterior ya no tiene valor.",primaryEffects:[n("rel.NPC_PLR_12.trust",3)],secondaryEffects:[n("rel.NPC_PLR_12.affinity",-2)],primarySeedTransitions:[intensify("SEED_BRUNO_FAVOR",2)],secondarySeedTransitions:[intensify("SEED_BRUNO_FAVOR",3)]}
- ],seedsRead:["SEED_BRUNO_FAVOR","SEED_AGENT_POWER"],seedsWrite:["SEED_BRUNO_FAVOR","SEED_AGENT_POWER"],npcRefs:["NPC_PLR_12"],tags:["bruno","market_contact","a5_ready_external_blocker"],canonStatus:"verified"
 });
 
 const EVT_21_MONEY_001=ambiguousEvent({
@@ -80,19 +41,6 @@ const EVT_21_MONEY_001=ambiguousEvent({
  ],seedsWrite:["SEED_FAMILY_MONEY"],npcRefs:["NPC_FAM_01","NPC_FAM_02"],tags:["family","money","a5_ready_external_blocker"],canonStatus:"verified"
 });
 
-const EVT_21_AGT_001=ambiguousEvent({
- id:"EVT_21_AGT_001",ageWindow:[21,21],phase:"20_23",family:"agent",title:"La agencia quiere otro porcentaje",
- body:"Tu agencia propone cambiar comisión y servicios. La comisión actual, la propuesta y su revisabilidad deben existir en autoridad de representación; no se deducen de agentControl.",
- visible:["Conoces tu representante activo cuando está certificado."],uncertain:["No sabes cuánto acceso real compra una comisión mayor ni si otra agencia sería mejor."],
- gates:[{path:"facts.activeAgentNpcId",op:"exists"}],weight:10,
- choices:[
-  {id:"ACCEPT_TARGETS",label:"Aceptar subida a cambio de objetivos concretos",intentTags:["agent","counter"],primaryMessage:"Vinculas más coste a compromisos verificables antes de aceptar términos.",secondaryMessage:"Los objetivos pueden alinear incentivos o convertirse en otra fuente de discusión.",primaryEffects:[n("professional.agentControl",3),n("control.career",2)],secondaryEffects:[n("professional.agentControl",4),n("professional.environmentStability",-1)],primarySeedTransitions:[intensify("SEED_AGENT_POWER",4)],secondarySeedTransitions:[intensify("SEED_AGENT_POWER",5)]},
-  {id:"KEEP_TERMS",label:"Negarte y mantener contrato",intentTags:["agent","reject"],primaryMessage:"No cambias la relación económica sin evidencia adicional.",secondaryMessage:"Mantener términos protege coste y puede reducir prioridad interna de la agencia.",primaryEffects:[n("control.career",4)],secondaryEffects:[n("professional.agentControl",-2)],primarySeedTransitions:[intensify("SEED_AGENT_POWER",2)],secondarySeedTransitions:[intensify("SEED_AGENT_POWER",3)]},
-  {id:"SOUND_OTHER",label:"Abrir conversaciones discretas con otra agencia",intentTags:["agent","market"],primaryMessage:"Buscas una comparación real antes de cambiar representación.",secondaryMessage:"El sondeo aporta referencia o se filtra y deteriora la relación actual.",primaryEffects:[n("control.career",5)],secondaryEffects:[n("professional.environmentStability",-3)],primarySeedTransitions:[intensify("SEED_AGENT_POWER",5)],secondarySeedTransitions:[intensify("SEED_AGENT_POWER",7)]},
-  {id:"SPLIT_IMAGE",label:"Separar representación deportiva e imagen",intentTags:["agent","scope"],primaryMessage:"Divides servicios para reducir concentración cuando los contratos lo permiten.",secondaryMessage:"La especialización mejora contrapesos y complica coordinación.",primaryEffects:[n("control.career",5),n("professional.agentControl",-1)],secondaryEffects:[n("professional.environmentStability",-2)],primarySeedTransitions:[intensify("SEED_AGENT_POWER",4)],secondarySeedTransitions:[intensify("SEED_AGENT_POWER",5)]}
- ],seedsRead:["SEED_FIRST_AGENT","SEED_AGENT_POWER"],seedsWrite:["SEED_AGENT_POWER"],tags:["agent","commission","a5_ready_external_blocker"],canonStatus:"verified"
-});
-
 const EVT_21_NAT_001=ambiguousEvent({
  id:"EVT_21_NAT_001",ageWindow:[21,21],phase:"20_23",family:"selection",title:"La ausencia",
  body:"La lista oficial sale sin tu nombre. Solo una lista concreta puede demostrar la ausencia; standing, heat y caps son contexto agregado.",
@@ -103,18 +51,6 @@ const EVT_21_NAT_001=ambiguousEvent({
   {id:"NO_SELECTION_TALK",label:"No hablar de selección",intentTags:["selection","silence"],primaryMessage:"Evitas construir una explicación sin datos.",secondaryMessage:"El silencio protege del error y deja a otros llenar el vacío.",primaryEffects:[n("professional.environmentStability",3)],secondaryEffects:[n("reputation.mediaHeat",2)],primarySeedTransitions:[seedCreate("SEED_SELECTION_SNUB",46,{stance:"silence"})],secondarySeedTransitions:[seedCreate("SEED_SELECTION_SNUB",50,{stance:"silence",others_speculate:true})]},
   {id:"PRIVATE_CHECK",label:"Llamar a tu agente para averiguar por vías privadas antes de responder",intentTags:["selection","agent","information"],eligibility:[{path:"facts.activeAgentNpcId",op:"exists"}],primaryMessage:"Buscas contexto sin presentarlo como verdad pública.",secondaryMessage:"La investigación puede aportar una pista o fabricar una certeza a partir de rumores.",primaryEffects:[n("control.career",4)],secondaryEffects:[n("professional.agentControl",2)],primarySeedTransitions:[seedCreate("SEED_SELECTION_SNUB",56,{stance:"private_check"})],secondarySeedTransitions:[seedCreate("SEED_SELECTION_SNUB",62,{stance:"private_check",uncertain_source:true})]}
  ],seedsWrite:["SEED_SELECTION_SNUB"],tags:["selection","official_list","a5_ready_external_blocker"],canonStatus:"verified"
-});
-
-const EVT_21_MED_001=ambiguousEvent({
- id:"EVT_21_MED_001",ageWindow:[21,21],phase:"20_23",family:"medical",title:"La inyección",
- body:"Un tratamiento permitiría intentar un partido de alto valor con una lesión compatible. Diagnóstico, dolor, recomendación y partido deben existir antes; el narrador no los sortea.",
- visible:["Conoces diagnóstico, dolor y recomendación solo desde autoridad médica.","El partido de alto valor debe ser un hecho A4."],uncertain:["No sabes cómo responderá tu cuerpo ni cuándo volverá una oportunidad igual."],weight:10,
- choices:[
-  {id:"PLAY_TREATMENT",label:"Jugar con el tratamiento",intentTags:["medical","risk"],primaryMessage:"Aceptas el riesgo conocido dentro de la recomendación real.",secondaryMessage:"El tratamiento permite competir o prolonga la recuperación; el resultado médico no se inventa aquí.",primaryEffects:[n("control.career",1)],secondaryEffects:[n("professional.recoveryDebt",3)],primarySeedTransitions:[intensify("SEED_MEDICAL_DISCLOSURE",4),intensify("SEED_BODY_PRECEDENT",4)],secondarySeedTransitions:[intensify("SEED_MEDICAL_DISCLOSURE",6),intensify("SEED_BODY_PRECEDENT",6)]},
-  {id:"UNAVAILABLE",label:"Declararte no disponible",intentTags:["medical","caution"],primaryMessage:"Proteges recuperación aunque pierdas una ventana deportiva.",secondaryMessage:"La ausencia evita exposición física y puede costar una oportunidad excepcional.",primaryEffects:[n("professional.recoveryDebt",-3),n("control.career",3)],secondaryEffects:[n("professional.roleSecurity",-2)]},
-  {id:"SECOND_OPINION",label:"Pedir una segunda opinión rápida",intentTags:["medical","information"],primaryMessage:"Buscas más evidencia antes de asumir riesgo.",secondaryMessage:"La segunda opinión puede aclarar o consumir el tiempo disponible para decidir.",primaryEffects:[n("control.career",5)],secondaryEffects:[n("professional.environmentStability",-1)]},
-  {id:"TRAIN_TEST",label:"Aceptar solo si entrenas sin empeorar en la víspera",intentTags:["medical","conditional"],primaryMessage:"Condicionas la disponibilidad a un dato funcional próximo al partido.",secondaryMessage:"La prueba puede reducir incertidumbre sin garantizar cómo responderás en competición.",primaryEffects:[n("control.career",4)],secondaryEffects:[n("professional.recoveryDebt",1)]}
- ],seedsRead:["SEED_MEDICAL_DISCLOSURE","SEED_BODY_PRECEDENT"],seedsWrite:["SEED_MEDICAL_DISCLOSURE","SEED_BODY_PRECEDENT"],tags:["medical","match_context","a5_ready_external_blocker"],canonStatus:"verified"
 });
 
 const EVT_21_CCH_002=ambiguousEvent({
@@ -154,18 +90,6 @@ const EVT_22_HOME_001=ambiguousEvent({
  ],seedsRead:["SEED_EXIT_STYLE_UDV"],seedsWrite:["SEED_HOME_DISTANCE"],tags:["home","former_club_fixture","a5_ready_external_blocker"],canonStatus:"verified"
 });
 
-const EVT_22_MED_001=ambiguousEvent({
- id:"EVT_22_MED_001",ageWindow:[22,22],phase:"20_23",family:"medical",title:"La resonancia antes de firmar",
- body:"Una operación avanzada depende de un reconocimiento. La prueba pedida y su resultado clínico deben venir del sistema médico; la escena no convierte risk en resonancia.",
- visible:["Conoces qué prueba se pide cuando existe un reconocimiento real."],uncertain:["No sabes si un hallazgo será relevante ni si el comprador mantendrá la operación."],weight:10,
- choices:[
-  {id:"ALL_TESTS",label:"Hacer todas las pruebas",intentTags:["medical","transparent"],primaryMessage:"Aceptas completar el proceso médico con toda la evidencia solicitada.",secondaryMessage:"Más información puede salvarte de un mal contrato o consumir tiempo de mercado.",primaryEffects:[n("control.career",2)],secondaryEffects:[n("professional.environmentStability",-2)],primarySeedTransitions:[seedCreate("SEED_MEDICAL_DISCLOSURE",62,{stance:"all_tests"})],secondarySeedTransitions:[seedCreate("SEED_MEDICAL_DISCLOSURE",66,{stance:"all_tests",timing_cost:true})]},
-  {id:"SECOND_OPINION",label:"Aportar segunda opinión propia en paralelo",intentTags:["medical","second_opinion"],primaryMessage:"Añades contexto médico sin sustituir el reconocimiento del comprador.",secondaryMessage:"La doble lectura puede aclarar o abrir una discrepancia difícil de cerrar a tiempo.",primaryEffects:[n("control.career",5)],secondaryEffects:[n("professional.environmentStability",-2)],primarySeedTransitions:[seedCreate("SEED_MEDICAL_DISCLOSURE",60,{stance:"second_opinion"})],secondarySeedTransitions:[seedCreate("SEED_MEDICAL_DISCLOSURE",65,{stance:"second_opinion",disagreement:true})]},
-  {id:"CONDITIONAL_SIGN",label:"Presionar para firmar condicionado a revisión posterior",intentTags:["medical","market","risk"],primaryMessage:"Intentas separar firma y certeza médica cuando las partes lo aceptan formalmente.",secondaryMessage:"La presión puede acelerar o hacer que el comprador abandone.",primaryEffects:[n("professional.contractPower",3),n("control.career",3)],secondaryEffects:[n("reputation.marketHeat",-2)],primarySeedTransitions:[seedCreate("SEED_MEDICAL_DISCLOSURE",68,{stance:"conditional_sign"})],secondarySeedTransitions:[seedCreate("SEED_MEDICAL_DISCLOSURE",72,{stance:"conditional_sign",deal_risk:true})]},
-  {id:"WITHDRAW",label:"Retirarte si sientes que dudan demasiado de ti",intentTags:["medical","boundary"],primaryMessage:"Conviertes la confianza médica en una condición para seguir negociando.",secondaryMessage:"La decisión protege dignidad y puede ser una mala lectura de prudencia clínica legítima.",primaryEffects:[n("control.career",6)],secondaryEffects:[n("reputation.marketHeat",-3)],primarySeedTransitions:[seedCreate("SEED_MEDICAL_DISCLOSURE",58,{stance:"withdraw"})],secondarySeedTransitions:[seedCreate("SEED_MEDICAL_DISCLOSURE",64,{stance:"withdraw",possible_misread:true})]}
- ],seedsRead:["SEED_MEDICAL_DISCLOSURE"],seedsWrite:["SEED_MEDICAL_DISCLOSURE"],tags:["medical","transfer_exam","a5_ready_external_blocker"],canonStatus:"verified"
-});
-
 const EVT_22_TACT_001=ambiguousEvent({
  id:"EVT_22_TACT_001",ageWindow:[22,22],phase:"20_23",family:"tactical",title:"Noventa minutos que no te favorecen",
  body:"En un partido grande, el plan te asigna un trabajo útil que probablemente reduzca tus estadísticas. El rol y el partido deben ser hechos A4/coach, no una deducción de roleScore.",
@@ -178,6 +102,6 @@ const EVT_22_TACT_001=ambiguousEvent({
  ],seedsWrite:["SEED_TACTICAL_SACRIFICE"],tags:["tactical","big_match","a5_ready_external_blocker"],canonStatus:"verified"
 });
 
-export const A5_SHARED_EXTERNAL_OWNER_READY_PRINCIPALS: EventDefinition[]=[
- EVT_20_MED_001,EVT_20_AGT_001,EVT_20_MATCH_003,EVT_20_BRUNO_001,EVT_21_MONEY_001,EVT_21_AGT_001,EVT_21_NAT_001,EVT_21_MED_001,EVT_21_CCH_002,EVT_22_LOCK_001,EVT_22_HOME_001,EVT_22_MED_001,EVT_22_TACT_001
+export const A5_SHARED_EXTERNAL_OWNER_READY_PRINCIPALS: EventDefinition[] = [
+  EVT_20_MATCH_003, EVT_21_MONEY_001, EVT_21_NAT_001, EVT_21_CCH_002, EVT_22_LOCK_001, EVT_22_HOME_001, EVT_22_TACT_001
 ];
