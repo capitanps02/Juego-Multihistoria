@@ -2,7 +2,7 @@ name: T51 A5 K certification
 
 on:
   push:
-    branches: ['a0/a5-k-corrected-after-293']
+    branches: ['a0/a5-k-owner-after-a3']
   pull_request:
   workflow_dispatch:
 
