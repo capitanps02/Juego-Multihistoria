@@ -81,6 +81,7 @@ export const T51_EUR_ELIGIBILITY_CONTENT_IDENTITY = "de9ef2f501c015705a28d54afd1
 export const T51_PRS_CAUSAL_CONTENT_IDENTITY = "303527efcc42c17e502257c3d7c613facafa10c8ed113810b64a1d7ebc6d0bb1";
 export const T51_AGENT5_18_23_CONTENT_IDENTITY = "84871fae2bec92d74d1e607e0a48943e2e530a062d315a829cfe75eda9fe0886";
 export const T51_AGE18_AUTHORITY_CONTENT_IDENTITY = "df1b8939f29c7bca65829dbfa2a0c4a2fcb5c8cc8f1ea08eb96592edc4dcd6fc";
+export const T51_A5_POST_J_CONTENT_IDENTITY = "4fcc0855296617a312a41fab9ac3ff8d97ef1901e4ae7a8a5cd0b315dd19dca4";
 
 /**
  * Explicit identity-bound edges. Successive canonical batches extend this as a
@@ -219,6 +220,15 @@ export const CONTENT_MIGRATION_ROUTES: readonly ContentMigrationRoute[] = [
       { kind: "same_scene", legacyEventId: "EVT_18_END_001", canonicalEventId: "EVT_18_END_001" },
       { kind: "same_scene", legacyEventId: "EVT_18_JAN_001", canonicalEventId: "EVT_18_JAN_001" },
       { kind: "same_scene", legacyEventId: "EVT_18_SUM_001", canonicalEventId: "EVT_18_SUM_001" }
+    ],
+    seedOriginMappings: []
+  },
+  {
+    sourceContentIdentity: T51_AGE18_AUTHORITY_CONTENT_IDENTITY,
+    targetContentIdentity: T51_A5_POST_J_CONTENT_IDENTITY,
+    schedulerMappings: [
+      { kind: "same_scene", legacyEventId: "CEVT_18_PLAYOFF_01", canonicalEventId: "CEVT_18_PLAYOFF_01" },
+      { kind: "distinct_scene", legacyEventId: "EVT_20_CCH_001", canonicalEventId: "EVT_20_CCH_001", clearCanonicalSeen: true, clearCanonicalCooldown: true }
     ],
     seedOriginMappings: []
   }
