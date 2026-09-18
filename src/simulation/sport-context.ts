@@ -2,6 +2,7 @@ import type { GameState } from "../core/types.js";
 import {
   currentOfficialMatch,
   getSportMatchModelStore,
+  hoursToNextScheduledFixture,
   isTrainingDay,
   nextScheduledFixture,
   nextScheduledTrainingDate,
@@ -13,10 +14,10 @@ import {
   type ScheduledFixture,
   type SquadStatus
 } from "./match-model.js";
+import { currentPenaltyDecisionSetup } from "./match-penalty-context.js";
 
 export type SportFactAvailability = "known" | "unavailable";
 export type MatchContextStatus = "authoritative" | "no_current_match";
-export type LastPlayerAppearanceStatus = "authoritative" | "historical_match_store_not_initialized";
 
 export interface SportContextAvailability {
   currentSeason: SportFactAvailability;
@@ -95,11 +96,13 @@ export interface CurrentMatchContext {
   decisionMinute: number | null;
   scoreAtDecision: { home: number; away: number } | null;
   debutDecisionContext: boolean;
-}
-
-export interface LastPlayerAppearanceContext {
-  status: LastPlayerAppearanceStatus;
-  match: OfficialMatchRecord | null;
+  highProfileMatch: boolean | null;
+  penaltyDecisionContext: boolean;
+  designatedPenaltyTakerRef: string | null;
+  designatedTakerMissedEarlier: boolean;
+  priorPenaltyMinute: number | null;
+  penaltyDecisionMinute: number | null;
+  penaltyScoreAtDecision: { home: number; away: number } | null;
 }
 
 const unavailable = (): SportFactAvailability => "unavailable";
@@ -117,13 +120,6 @@ function squadStatus(record: OfficialMatchRecord | null): SquadStatus | null {
   return "not_called";
 }
 
-function hoursUntilFixture(state: GameState, fixture: ScheduledFixture | null): number | null {
-  if (!fixture) return null;
-  const from = Date.parse(`${state.date}T00:00:00Z`);
-  const to = Date.parse(`${fixture.date}T00:00:00Z`);
-  return Math.round((to - from) / 3_600_000);
-}
-
 /**
  * Read-only sporting projection over the simulation-owned weekly fixture model.
  * Calendar facts are derived from the same seven-day cadence used by footballWeek;
@@ -135,7 +131,6 @@ export function getSportContext(state: GameState): SportContext {
   const current = currentOfficialMatch(state);
   const next = nextScheduledFixture(state);
   const previous = previousOfficialMatch(state);
-  const remaining = remainingLeagueFixtures(state);
   const objective = store?.objective && store.objective.season === state.season && store.objective.club === state.professional.registrationClub
     ? store.objective
     : null;
@@ -151,12 +146,12 @@ export function getSportContext(state: GameState): SportContext {
     currentCompetition: current?.competition ?? next?.competition ?? null,
     nextFixture: next,
     previousFixture: previous,
-    hoursToNextFixture: hoursUntilFixture(state, next),
+    hoursToNextFixture: hoursToNextScheduledFixture(state),
     isMatchDay: current !== null,
     isTrainingWindow: isTrainingDay(state),
     nextTrainingDate: nextScheduledTrainingDate(state),
-    remainingOfficialMatches: remaining,
-    remainingLeagueMatches: remaining,
+    remainingOfficialMatches: remainingLeagueFixtures(state),
+    remainingLeagueMatches: remainingLeagueFixtures(state),
     seasonObjectiveStatus: objective?.status ?? null,
     currentStanding: null,
     currentSquadStatus: squadStatus(current),
@@ -197,22 +192,7 @@ export function getSportContext(state: GameState): SportContext {
   };
 }
 
-/**
- * Read-only career-history projection for the latest factual on-field appearance.
- * A valid initialized store with no appearance is authoritative `match:null`; a historical
- * save without the store remains explicitly unavailable instead of being treated as zero games.
- */
-export function getLastPlayerAppearanceContext(state: GameState): LastPlayerAppearanceContext {
-  const store = getSportMatchModelStore(state);
-  if (!store) return { status: "historical_match_store_not_initialized", match: null };
-  for (let index = store.fixtures.length - 1; index >= 0; index -= 1) {
-    const row = store.fixtures[index]!;
-    if (row.player.appeared) return { status: "authoritative", match: row };
-  }
-  return { status: "authoritative", match: null };
-}
-
-/** Current-match projection over the persisted match row for today's football cycle. */
+/** Current-match projection over persisted sporting rows for today's football cycle. */
 export function getCurrentMatchContext(state: GameState): CurrentMatchContext {
   const match = currentOfficialMatch(state);
   if (!match) {
@@ -235,7 +215,14 @@ export function getCurrentMatchContext(state: GameState): CurrentMatchContext {
       injury: null,
       decisionMinute: null,
       scoreAtDecision: null,
-      debutDecisionContext: false
+      debutDecisionContext: false,
+      highProfileMatch: null,
+      penaltyDecisionContext: false,
+      designatedPenaltyTakerRef: null,
+      designatedTakerMissedEarlier: false,
+      priorPenaltyMinute: null,
+      penaltyDecisionMinute: null,
+      penaltyScoreAtDecision: null
     };
   }
   const canonicalDebutDecision = match.player.debut === true
@@ -244,6 +231,8 @@ export function getCurrentMatchContext(state: GameState): CurrentMatchContext {
     && match.decisionContext.minute === 78
     && match.decisionContext.scoreHome === 1
     && match.decisionContext.scoreAway === 1;
+  const penalty = currentPenaltyDecisionSetup(state);
+  const canonicalPenaltyDecision = match.player.appeared === true && penalty !== null;
   return {
     status: "authoritative",
     fixtureId: match.id,
@@ -263,6 +252,13 @@ export function getCurrentMatchContext(state: GameState): CurrentMatchContext {
     injury: match.player.injuryUnavailable,
     decisionMinute: match.decisionContext?.minute ?? null,
     scoreAtDecision: match.decisionContext ? { home: match.decisionContext.scoreHome, away: match.decisionContext.scoreAway } : null,
-    debutDecisionContext: canonicalDebutDecision
+    debutDecisionContext: canonicalDebutDecision,
+    highProfileMatch: penalty?.highProfile ?? null,
+    penaltyDecisionContext: canonicalPenaltyDecision,
+    designatedPenaltyTakerRef: penalty?.designatedTakerRef ?? null,
+    designatedTakerMissedEarlier: penalty !== null,
+    priorPenaltyMinute: penalty?.priorMissMinute ?? null,
+    penaltyDecisionMinute: penalty?.decisionMinute ?? null,
+    penaltyScoreAtDecision: penalty ? { home: penalty.scoreHome, away: penalty.scoreAway } : null
   };
 }
