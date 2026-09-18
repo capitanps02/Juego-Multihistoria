@@ -3,7 +3,7 @@
   "scope": "30_34",
   "generatedAt": "2026-09-17",
   "branch": "t51/canon-30-34",
-  "sourceMainSha": "fa3c8bae524fef62e4eb9802e895df88588998c4",
+  "sourceMainSha": "5f4d14bca4d696cfafadb58b64034c7cd40cc147",
   "sources": [
     "analysis/T5.1/canon-30-34.json",
     "analysis/T5.2/README.md",
@@ -26,7 +26,7 @@
   },
   "stableIdReimplementations": 27,
   "latestSharedAuditSnapshot": {
-    "workflowRun": 35258681318,
+    "workflowRun": 35263497858,
     "owner": "t51/canon-30-34",
     "totalSeeds": 52,
     "runtimeProduced": 48,
@@ -36,7 +36,7 @@
     "noProducerAndNoConsumer": 4,
     "terminalTransitionDefined": 0,
     "openEndedWithoutTerminalTransition": 52,
-    "interpretation": "Open-ended is not automatically a defect. The four no-producer/no-consumer rows are intentionally held for their canonical-missing writers. The shared audit's withConsumers count is structural runtime evidence and must not be conflated with owner-certified canonical consumption. Repository Integrity reached this audit successfully before the expected target-freeze sentinel."
+    "interpretation": "Open-ended is not automatically a defect. The four no-producer/no-consumer rows are intentionally held for their canonical-missing writers. The shared audit's withConsumers count is structural runtime evidence and must not be conflated with owner-certified canonical consumption. Repository Integrity on main@5f4d14bc reached this audit successfully before the expected target-freeze sentinel."
   },
   "orphanCanonicalMappings": [
     {
@@ -83,49 +83,64 @@
     {
       "seed": "SEED_AGE30_CONTRACT",
       "writer": "EVT_30_CON_001",
-      "readers": ["EVT_31_MKT_001", "EVT_32_CON_001"],
+      "readers": [
+        "EVT_31_MKT_001",
+        "EVT_32_CON_001"
+      ],
       "classification": "declared_memory_context_not_causal_consumption",
       "reason": "Both readers list the seed in seedsRead, but their current reachability is driven by contract/market facts rather than seed presence or payload."
     },
     {
       "seed": "SEED_MATCH_SELECTIVITY",
       "writer": "EVT_30_BODY_001",
-      "readers": ["EVT_33_BODY_001"],
+      "readers": [
+        "EVT_33_BODY_001"
+      ],
       "classification": "declared_memory_context_not_causal_consumption",
       "reason": "The reader lists the seed, but its current gates use recovery and authoritative fixture timing; no seed-dependent branch is implemented."
     },
     {
       "seed": "SEED_NATIONAL_PHASEDOWN",
       "writer": "EVT_30_NAT_001",
-      "readers": ["EVT_32_NAT_001"],
+      "readers": [
+        "EVT_32_NAT_001"
+      ],
       "classification": "declared_memory_context_not_causal_consumption",
       "reason": "The reader lists the seed, but current reachability uses nationalStanding and does not depend on seed presence or payload."
     },
     {
       "seed": "SEED_CAPTAIN_HANDOVER",
       "writer": "EVT_30_CAP_001",
-      "readers": ["EVT_33_CAP_001"],
+      "readers": [
+        "EVT_33_CAP_001"
+      ],
       "classification": "declared_memory_context_not_causal_consumption",
       "reason": "The reader lists the seed, but current reachability requires explicit current-club main-captain authority plus successionPressure; it does not require this seed or inspect its payload."
     },
     {
       "seed": "SEED_AGENT_LAST_CONTRACT",
       "writer": "EVT_30_MKT_001",
-      "readers": ["EVT_31_AGT_001"],
+      "readers": [
+        "EVT_31_AGT_001"
+      ],
       "classification": "declared_memory_context_not_causal_consumption",
       "reason": "The reader lists the seed, but current reachability uses contract horizon; no seed-dependent decision branch is implemented."
     },
     {
       "seed": "SEED_SURGERY_31",
       "writer": "EVT_31_MED_001",
-      "readers": ["EVT_31_RETURN_001"],
+      "readers": [
+        "EVT_31_RETURN_001"
+      ],
       "classification": "declared_memory_context_not_causal_consumption",
       "reason": "The comeback scene lists surgery memory but currently gates only on RECOVERING_INJURY; surgery choice payload does not alter reachability or outcomes."
     },
     {
       "seed": "SEED_HOME_RETURN_31",
       "writer": "EVT_31_HOME_001",
-      "readers": ["EVT_32_HOME_001"],
+      "readers": [
+        "EVT_32_HOME_001"
+      ],
       "classification": "declared_memory_context_not_causal_consumption",
       "reason": "The later home scene lists the earlier return memory but currently gates on homePull; no branch reads whether the prior answer was return, delay, objectives or support-without-signing."
     }
