@@ -8,7 +8,7 @@ export * from "./validation-legacy.js";
 function assertSportMatchModel(value: unknown): void {
   const state = legacy.record(value, "state");
   const world = legacy.record(state.world, "world");
-  const issue = inspectSportMatchModelStore(world.sportMatchModel, state.date as string);
+  const issue = inspectSportMatchModelStore(world.sportMatchModel, state.date as string, value as GameState);
   if (issue) legacy.ensure(false, issue.path, issue.reason);
 }
 
