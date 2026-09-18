@@ -19,6 +19,7 @@ This matrix distinguishes committed legacy fixtures from deterministic snapshots
 | career closed | long-career QA result | terminal state + factual epilogue | existing generated |
 | loan | deterministic offer snapshot | owner/registration/return; international loan may use `route=abroad` | partial generated + regression |
 | pending transfer | `scripts/test-t51-offer-bridge.mjs`, `scripts/test-offers.mjs` | CareerOffer survives strict save/resume; accepted terms persist exactly once across reload/replay | covered generated |
+| optional rich-offer context | `scripts/test-t5-offer-context-known-bug.mjs` | absent historical context valid; malformed present context must fail serialize/load | **open T5-QA-031 / #175 / PR #207** |
 | expired employment | `scripts/test-t5-contract-expiry-known-bug.mjs` | 1→0 unattached, save/load+RNG, no old-club play, formal re-employment, determinism | **4 directed regressions prepared; open #130, blocked by #207 -> #157** |
 | injured | deterministic sport snapshot | injury persistence + match absence | required |
 | captain context | `scripts/test-t5-player-leadership-authority.mjs`, T5.3 dynamic-target tests | explicit leadership survives save/load; off-club authority fails closed; no heuristic captain | partial: writer gap #161 remains |
