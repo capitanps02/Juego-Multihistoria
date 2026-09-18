@@ -1,5 +1,6 @@
 import type { EventDefinition, EventFamily, GameState } from "../../../core/types.js";
 import { ambiguousEvent, n, seedCreate } from "../18_20/helpers.js";
+import { getEligibleCareerOffers, getEligibleRenewalOffers } from "../../../simulation/offers.js";
 
 type Delta = readonly [string, number];
 type ChoiceSpec = { id:string; label:string; stance:string; primary:readonly Delta[]; secondary:readonly Delta[]; note:string };
@@ -155,5 +156,22 @@ export const STAGED_MARKET_BATCH_2:EventDefinition[]=specs.map(build);
 
 export function isStagedMarketBatch2Eligible(state:GameState,id:string,authoritativeFactsSatisfied:boolean):boolean{
  const event=STAGED_MARKET_BATCH_2.find(row=>row.id===id);
- return Boolean(event && authoritativeFactsSatisfied && state.retirement.status==="playing" && state.age>=event.ageWindow[0]);
+ if(!event || !authoritativeFactsSatisfied || state.retirement.status!=="playing" || state.age<event.ageWindow[0]) return false;
+ const offers=getEligibleCareerOffers(state);
+ switch(id){
+  case "EVT_35_FAREWELL_001":
+  case "EVT_36_CON_001":
+    return getEligibleRenewalOffers(state).length>0;
+  case "EVT_35_AGT_001":
+  case "EVT_35_JAN_001":
+  case "EVT_36_LOWER_001":
+  case "EVT_37_SHORT_001":
+  case "EVT_37_HOME_001":
+  case "EVT_38_RICH_001":
+    return offers.length>0;
+  case "EVT_38_MARKET_001":
+    return offers.length===0;
+  default:
+    return true;
+ }
 }
