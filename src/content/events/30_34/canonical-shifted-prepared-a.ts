@@ -178,6 +178,7 @@ const NANO_CALL = ambiguousEvent({
   body: "Nano, cuya carrera ha seguido su propio camino, te pide que llames a un director deportivo que conoces. Dice que no quiere que le consigas contrato, solo que consiga una reunión.",
   visible: ["Conoces su situación deportiva y el contacto concreto que te pide."],
   uncertain: ["No sabes si recomendarlo dañará tu credibilidad ni cuánto de su versión del mercado es completa."],
+  gates: [{ path: "flags.HAS_SEED_NANO_SHADOW", op: "eq", value: true }],
   seedsRead: ["SEED_NANO_SHADOW"],
   seedsWrite: ["SEED_OLD_NETWORK_FAVOR"],
   npcRefs: ["NPC_PLR_14"],
@@ -232,6 +233,7 @@ const RELOCATION_LIMIT = ambiguousEvent({
   body: "Una persona central de tu entorno te dice que apoyará cualquier decisión, pero que personalmente no quiere volver a cambiar de país. No es un ultimátum.",
   visible: ["Conoces una preferencia honesta del entorno y los términos de una propuesta exterior."],
   uncertain: ["No sabes si rechazar la oferta generará arrepentimiento tuyo o si mudarte generará resentimiento ajeno."],
+  gates: [{ path: "flags.HAS_SEED_FAMILY_ANCHOR", op: "eq", value: true }],
   seedsRead: ["SEED_FAMILY_ANCHOR"],
   seedsWrite: ["SEED_RELOCATION_LIMIT"],
   choices: [
