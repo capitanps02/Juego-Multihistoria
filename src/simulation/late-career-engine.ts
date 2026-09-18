@@ -32,6 +32,7 @@ export function syncRetirementState(state:GameState,previous:GameState["retireme
     state.retirement.announcedDate=state.date; state.flags.RETIREMENT_ANNOUNCED=true; state.flags.RETIREMENT_DECISION_CONTEXT=false;
   }
   if(current==="playing"){
+    state.retirement.decidedDate=null; state.retirement.announcedDate=null;
     state.flags.RETIREMENT_ANNOUNCED=false; state.flags.RETIREMENT_DECISION_CONTEXT=false;
   }
   if(current==="closed"){
@@ -50,6 +51,7 @@ export function closeCareer(state:GameState,reason:string,closureType:string){
 export function reverseRetirement(state:GameState){
   if(state.retirement.status!=="announced"&&state.retirement.status!=="decided")return;
   state.retirement.status="playing"; state.retirement.daysInStatus=0; state.retirement.reversals+=1;
+  state.retirement.decidedDate=null; state.retirement.announcedDate=null;
   state.flags.RETIREMENT_ANNOUNCED=false; state.flags.RETIREMENT_DECISION_CONTEXT=false; state.flags.RETIREMENT_RECONSIDERED=true;
   state.professional.careerControl=clamp(state.professional.careerControl-5);
   state.professional.statusInertia=clamp(state.professional.statusInertia-4);
