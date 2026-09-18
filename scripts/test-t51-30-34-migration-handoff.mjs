@@ -90,10 +90,17 @@ test('T5.1 30-34 documenta la doble colisión especial de EVT_31_TEAM_001', () =
   assert.ok(handoff.futureShiftedIdentityWork.pairs.some(row => row.canonicalId === 'EVT_31_SQUAD_001' && row.legacyCandidateId === 'EVT_31_TEAM_001'));
 });
 
-test('T5.1 30-34 los cinco missing empiezan sin herencia legacy', () => {
+test('T5.1 30-34 los cuatro missing restantes empiezan sin herencia legacy', () => {
   assert.deepEqual(sorted(handoff.futureCanonicalMissingWork.ids), missingIds);
-  assert.equal(handoff.futureCanonicalMissingWork.ids.length, 5);
+  assert.equal(handoff.futureCanonicalMissingWork.ids.length, 4);
   assert.match(handoff.futureCanonicalMissingWork.migrationRule, /starts unseen/);
+});
+
+test('T5.1 30-34 la nueva adición canónica empieza unseen y sin herencia legacy', () => {
+  assert.deepEqual(handoff.currentCanonicalAdditions.ids, ['EVT_30_CCH_001']);
+  assert.match(handoff.currentCanonicalAdditions.migrationRule, /starts unseen/i);
+  assert.match(handoff.currentCanonicalAdditions.migrationRule, /no inherited cooldown/i);
+  assert.match(handoff.currentCanonicalAdditions.migrationRule, /not rebound/i);
 });
 
 test('T5.1 30-34 engine-only no se retira anticipadamente en la ruta de este PR', () => {
