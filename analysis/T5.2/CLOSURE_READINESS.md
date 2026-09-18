@@ -26,10 +26,10 @@ Para cada seed informa:
   - `consumer_only`;
   - `unwired`;
 - productores runtime;
-- consumidores de evento y simulación;
+- consumidores de evento (incluidos `facts.*` registrados como derivados de seeds vivas) y simulación;
 - existencia de pareja productor→consumidor temporalmente viable;
 - productores con `canonStatus: verified`;
-- consumidores de evento con `canonStatus: verified`;
+- consumidores de evento con `canonStatus: verified`, incluidos consumidores causales vía `facts.*` cuando el registry T5.2 acredita la seed origen;
 - parejas viables cuyos dos endpoints de evento están verificados;
 - transición terminal explícita;
 - expiry por edad/fecha;
