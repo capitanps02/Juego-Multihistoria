@@ -37,9 +37,7 @@ test('staged external principal outcomes never mutate club, contract, sport or r
   }
 });
 
-test('terminal choices remain marked for Agent 9 rather than changing retirement state in A8',()=>{
+test('generic external placeholder bucket retains no terminal ownership after full principal promotion',()=>{
   const terminal=STAGED_EXTERNAL_PRINCIPALS.filter(r=>r.terminalChoiceIds.length>0);
-  assert.ok(terminal.some(r=>r.event.id==='EVT_36_LOWER_001'));
-  assert.ok(terminal.some(r=>r.event.id==='EVT_38_RICH_001'));
-  for(const row of terminal) assert.equal(row.event.outcomes.some(o=>o.effects.some(e=>'path' in e && e.path==='retirement.status')),false);
+  assert.deepEqual(terminal,[]);
 });
