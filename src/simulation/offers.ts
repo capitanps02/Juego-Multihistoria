@@ -112,10 +112,19 @@ function agreements(m:MarketState):FutureCareerAgreement[]{return m.futureAgreem
 
 export function careerTerms(s: GameState): CareerTerms {
   const p=s.professional;
-  return {club:s.club,tier:s.tier,months:Number(s.contract.monthsRemaining),salary:Number(s.contract.salaryMonthly),releaseClause:typeof s.contract.releaseClause==="number"?s.contract.releaseClause:null,
-    ownerClub:p.ownerClub,registrationClub:p.registrationClub,leagueTier:p.leagueTier,
+  const loan=!!s.flags.LOAN_ACTIVE;
+  const club=s.club;
+  // CareerTerms is the formal employment snapshot, not a raw mirror of legacy
+  // professional fields. Outside a loan, ownership/registration and league tier
+  // are necessarily the current club/tier even if an older simulation path left
+  // stale professional metadata behind.
+  const ownerClub=loan?p.ownerClub:club;
+  const registrationClub=loan?p.registrationClub:club;
+  const leagueTier=loan?p.leagueTier:s.tier;
+  return {club,tier:s.tier,months:Number(s.contract.monthsRemaining),salary:Number(s.contract.salaryMonthly),releaseClause:typeof s.contract.releaseClause==="number"?s.contract.releaseClause:null,
+    ownerClub,registrationClub,leagueTier,
     prestigeTier:p.clubPrestigeTier,prestigeScore:p.clubPrestigeScore,route:p.route,
-    abroad:!!s.flags.ABROAD_ROUTE,loan:!!s.flags.LOAN_ACTIVE,bigClub:!!s.flags.BIG_CLUB};
+    abroad:!!s.flags.ABROAD_ROUTE,loan,bigClub:!!s.flags.BIG_CLUB};
 }
 export function sameCareerTerms(a:CareerTerms,b:CareerTerms):boolean{return JSON.stringify(a)===JSON.stringify(b);}
 function boundedContextText(value:unknown):value is string{return typeof value==="string"&&value.length>0&&value.length<=500;}
