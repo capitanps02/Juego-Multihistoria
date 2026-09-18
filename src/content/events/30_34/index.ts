@@ -164,7 +164,9 @@ const enforceCareerAuthority=(event:EventDefinition):EventDefinition=>{
   };
 };
 
-const principal:EventDefinition[]=PRINCIPAL_EVENTS_30_34.map(original=>{
+const supersededLegacyIds=new Set(["EVT_30_IDN_001","EVT_33_END_001"]);
+
+const principal:EventDefinition[]=PRINCIPAL_EVENTS_30_34.filter(original=>!supersededLegacyIds.has(original.id)).map(original=>{
   const selected=overrides.get(original.id)??original;
   const triggered=applyCanonicalSharedTriggers(selected);
   const sportGated=applySportAuthority(triggered);
