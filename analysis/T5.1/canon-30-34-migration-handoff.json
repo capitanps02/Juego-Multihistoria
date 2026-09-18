@@ -330,71 +330,189 @@
       {
         "canonicalId": "EVT_30_NANO_001",
         "legacyCandidateId": "EVT_33_NET_001",
-        "sameSceneMigrationAllowed": false
+        "sameSceneMigrationAllowed": false,
+        "decision": "distinct_scene",
+        "decisionReason": "Legacy EVT_33_NET_001 is age 33 and uses generic maturity choices; canonical Nano call is age 30 with contact/recommendation-specific choices and seed semantics.",
+        "migrationSemantics": {
+          "inheritSeen": false,
+          "inheritCooldown": false,
+          "rebindPending": false,
+          "rewriteHistory": false,
+          "rewriteSeedOrigin": false
+        }
       },
       {
         "canonicalId": "EVT_31_FAM_001",
         "legacyCandidateId": "EVT_30_LIFE_001",
-        "sameSceneMigrationAllowed": false
+        "sameSceneMigrationAllowed": false,
+        "decision": "distinct_scene",
+        "decisionReason": "Legacy EVT_30_LIFE_001 is age 30 with generic maturity choices; canonical no-more-moves scene is age 31 and has family/relocation-specific choices.",
+        "migrationSemantics": {
+          "inheritSeen": false,
+          "inheritCooldown": false,
+          "rebindPending": false,
+          "rewriteHistory": false,
+          "rewriteSeedOrigin": false
+        }
       },
       {
         "canonicalId": "EVT_31_TEAM_001",
         "legacyCandidateId": "EVT_31_MENT_001",
         "sameSceneMigrationAllowed": false,
-        "specialCase": "The canonical target string EVT_31_TEAM_001 is already occupied in the legacy catalog by a different youth-wave identity; it remains distinct_scene."
+        "specialCase": "The canonical target string EVT_31_TEAM_001 is already occupied in the legacy catalog by a different youth-wave identity; it remains distinct_scene.",
+        "decision": "distinct_scene",
+        "decisionReason": "Legacy EVT_31_MENT_001 uses generic maturity choices; canonical official-mentor scene has explicit formalization choices and different consequences.",
+        "migrationSemantics": {
+          "inheritSeen": false,
+          "inheritCooldown": false,
+          "rebindPending": false,
+          "rewriteHistory": false,
+          "rewriteSeedOrigin": false
+        }
       },
       {
         "canonicalId": "EVT_31_SQUAD_001",
         "legacyCandidateId": "EVT_31_TEAM_001",
-        "sameSceneMigrationAllowed": false
+        "sameSceneMigrationAllowed": false,
+        "decision": "distinct_scene",
+        "decisionReason": "Legacy EVT_31_TEAM_001 uses generic maturity choices; canonical two-young-signings scene has succession-plan choices and distinct consequences.",
+        "migrationSemantics": {
+          "inheritSeen": false,
+          "inheritCooldown": false,
+          "rebindPending": false,
+          "rewriteHistory": false,
+          "rewriteSeedOrigin": false
+        }
       },
       {
         "canonicalId": "EVT_31_BIZ_001",
         "legacyCandidateId": "EVT_32_IMG_001",
-        "sameSceneMigrationAllowed": false
+        "sameSceneMigrationAllowed": false,
+        "decision": "distinct_scene",
+        "decisionReason": "Legacy EVT_32_IMG_001 is age 32 with generic maturity choices; canonical partner-crisis scene is age 31 with audit/communication-specific choices.",
+        "migrationSemantics": {
+          "inheritSeen": false,
+          "inheritCooldown": false,
+          "rebindPending": false,
+          "rewriteHistory": false,
+          "rewriteSeedOrigin": false
+        }
       },
       {
         "canonicalId": "EVT_32_RICH_001",
         "legacyCandidateId": "EVT_32_MKT_001",
-        "sameSceneMigrationAllowed": false
+        "sameSceneMigrationAllowed": false,
+        "decision": "distinct_scene",
+        "decisionReason": "Legacy EVT_32_MKT_001 uses generic maturity choices; canonical lifetime-money offer has explicit accept/reject/one-year/tournament timing choices.",
+        "migrationSemantics": {
+          "inheritSeen": false,
+          "inheritCooldown": false,
+          "rebindPending": false,
+          "rewriteHistory": false,
+          "rewriteSeedOrigin": false
+        }
       },
       {
         "canonicalId": "EVT_32_ELITE_001",
         "legacyCandidateId": "EVT_32_CLB_001",
-        "sameSceneMigrationAllowed": false
+        "sameSceneMigrationAllowed": false,
+        "decision": "distinct_scene",
+        "decisionReason": "Legacy EVT_32_CLB_001 uses generic maturity choices; canonical twelfth-man contender decision has explicit role/titularity alternatives.",
+        "migrationSemantics": {
+          "inheritSeen": false,
+          "inheritCooldown": false,
+          "rebindPending": false,
+          "rewriteHistory": false,
+          "rewriteSeedOrigin": false
+        }
       },
       {
         "canonicalId": "EVT_32_IMPACT_001",
         "legacyCandidateId": "EVT_32_TACT_001",
-        "sameSceneMigrationAllowed": false
+        "sameSceneMigrationAllowed": false,
+        "decision": "distinct_scene",
+        "decisionReason": "Legacy EVT_32_TACT_001 uses generic maturity choices; canonical lower-stats/better-team scene has role/messaging/finalization-specific choices.",
+        "migrationSemantics": {
+          "inheritSeen": false,
+          "inheritCooldown": false,
+          "rebindPending": false,
+          "rewriteHistory": false,
+          "rewriteSeedOrigin": false
+        }
       },
       {
         "canonicalId": "EVT_32_SUCCESSOR_001",
         "legacyCandidateId": "EVT_32_TEAM_001",
-        "sameSceneMigrationAllowed": false
+        "sameSceneMigrationAllowed": false,
+        "decision": "distinct_scene",
+        "decisionReason": "Legacy EVT_32_TEAM_001 uses generic maturity choices; canonical replacement-breakout scene has return/bench/coexistence/market-specific choices.",
+        "migrationSemantics": {
+          "inheritSeen": false,
+          "inheritCooldown": false,
+          "rebindPending": false,
+          "rewriteHistory": false,
+          "rewriteSeedOrigin": false
+        }
       },
       {
         "canonicalId": "EVT_32_LOAD_001",
         "legacyCandidateId": "EVT_32_BODY_001",
-        "sameSceneMigrationAllowed": false
+        "sameSceneMigrationAllowed": false,
+        "decision": "distinct_scene",
+        "decisionReason": "Legacy EVT_32_BODY_001 uses generic maturity choices; canonical no-travel scene has exact travel/titularity/captain-group choices.",
+        "migrationSemantics": {
+          "inheritSeen": false,
+          "inheritCooldown": false,
+          "rebindPending": false,
+          "rewriteHistory": false,
+          "rewriteSeedOrigin": false
+        }
       },
       {
         "canonicalId": "EVT_32_BOSMAN_001",
         "legacyCandidateId": "EVT_32_BOS_001",
-        "sameSceneMigrationAllowed": false
+        "sameSceneMigrationAllowed": false,
+        "decision": "distinct_scene",
+        "decisionReason": "Legacy EVT_32_BOS_001 has a coarse expiry gate but generic maturity choices; canonical Bosman scene has precontract/club-window/parallel-negotiation/season-end choices.",
+        "migrationSemantics": {
+          "inheritSeen": false,
+          "inheritCooldown": false,
+          "rebindPending": false,
+          "rewriteHistory": false,
+          "rewriteSeedOrigin": false
+        }
       },
       {
         "canonicalId": "EVT_33_RECORD_001",
         "legacyCandidateId": "EVT_33_REC_001",
-        "sameSceneMigrationAllowed": false
+        "sameSceneMigrationAllowed": false,
+        "decision": "distinct_scene",
+        "decisionReason": "Legacy EVT_33_REC_001 uses generic maturity choices; canonical six-games-to-record scene has record-specific appearance/minutes/public-tone choices.",
+        "migrationSemantics": {
+          "inheritSeen": false,
+          "inheritCooldown": false,
+          "rebindPending": false,
+          "rewriteHistory": false,
+          "rewriteSeedOrigin": false
+        }
       },
       {
         "canonicalId": "EVT_33_FIN_001",
         "legacyCandidateId": "EVT_33_END_001",
-        "sameSceneMigrationAllowed": false
+        "sameSceneMigrationAllowed": false,
+        "decision": "distinct_scene",
+        "decisionReason": "Legacy EVT_33_END_001 uses four generic maturity choices; canonical age-34 bridge has six explicit future-priority choices and different memory semantics.",
+        "migrationSemantics": {
+          "inheritSeen": false,
+          "inheritCooldown": false,
+          "rebindPending": false,
+          "rewriteHistory": false,
+          "rewriteSeedOrigin": false
+        }
       }
     ],
-    "resolvedDistinctSceneCount": 5
+    "resolvedDistinctSceneCount": 18,
+    "unresolvedCount": 0
   },
   "futureCanonicalMissingWork": {
     "ids": [
