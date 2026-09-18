@@ -28,8 +28,10 @@ function announced(seed=536700){
   return state;
 }
 function putOffer(state,id,date,salaryDelta=100){
+  const market=marketState(state);
   const before=careerTerms(state);
-  state.market.pending={
+  market.sequence+=1;
+  market.pending={
     id,date,reason:'Post-announcement exceptional offer',before,
     terms:{...before,months:Math.max(12,before.months),salary:before.salary+salaryDelta}
   };
