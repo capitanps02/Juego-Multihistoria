@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 
 import { A5_READY_EVENTS_18_23 } from '../dist/content/events/20_23/a5-ready-staged.js';
+import { A5_AGENT_READY_EXTERNAL_EVENTS, A5_AGENT_EXTERNAL_REQUIREMENTS } from '../dist/content/events/20_23/a5-agent-ready-external.js';
 import { A5_EVT_18_END_002_OWNER_READY, EVT_18_END_002_EXTERNAL_REQUIREMENT } from '../dist/content/events/18_20/a5-end002-staged.js';
 import { A5_MARKET_EXTERNAL_REQUIREMENTS, A5_MARKET_OWNER_READY_PRINCIPALS } from '../dist/content/events/20_23/a5-market-external-staged.js';
 import { A5_READY_NPC_KNOWLEDGE_RULES } from '../dist/catalog/npc-knowledge-rules-a5-ready.js';
@@ -16,7 +17,7 @@ import { proposeCareerChange } from '../dist/simulation/offers.js';
 import { loadSave, serializeSave } from '../dist/save/save.js';
 
 const event = id => {
-  const found = A5_READY_EVENTS_18_23.find(row => row.id === id);
+  const found = [...A5_READY_EVENTS_18_23, ...A5_AGENT_READY_EXTERNAL_EVENTS].find(row => row.id === id);
   assert.ok(found, `missing staged event ${id}`);
   return found;
 };
@@ -297,4 +298,96 @@ test('A5 external market/3 exact external owner contracts stay explicit instead 
   for (const fake of ['REAL_OFFER','HAS_OFFER','REAL_TRANSFER_AVAILABLE','REAL_LOAN_AVAILABLE']) {
     assert.equal(serialized.includes(fake), false);
   }
+});
+
+
+test('A5 external/1 agent batch is fully authored and awaits only explicit shared facts', () => {
+  assert.deepEqual(A5_AGENT_READY_EXTERNAL_EVENTS.map(row => row.id), [
+    'EVT_20_AGT_001', 'EVT_20_BRUNO_001', 'EVT_21_AGT_001'
+  ]);
+  assert.deepEqual(event('EVT_20_AGT_001').choices.map(choice => choice.id), [
+    'BROAD_CONTROL', 'INFORM_FIRST', 'SPLIT_IMAGE', 'NO_CENTRALIZE'
+  ]);
+  assert.deepEqual(event('EVT_20_BRUNO_001').choices.map(choice => choice.id), [
+    'AUTHORIZE_NOTIFY', 'AUTHORIZE_PRIVATE', 'ASK_MORE', 'DECLINE_HELP_OTHER'
+  ]);
+  assert.deepEqual(event('EVT_21_AGT_001').choices.map(choice => choice.id), [
+    'ACCEPT_TARGETS', 'KEEP_TERMS', 'SOUND_OTHER_AGENCY', 'SPLIT_RIGHTS'
+  ]);
+  assert.equal(A5_AGENT_EXTERNAL_REQUIREMENTS.EVT_20_AGT_001.owner, 'A1');
+  assert.equal(A5_AGENT_EXTERNAL_REQUIREMENTS.EVT_20_BRUNO_001.owner, 'A1/world');
+  assert.equal(A5_AGENT_EXTERNAL_REQUIREMENTS.EVT_21_AGT_001.owner, 'A1');
+});
+
+test('A5 external/2 active-agent gates fail closed against legacy heuristics', () => {
+  const state = stateAt(51010, 20, '2028-09-02');
+  state.flags.AGENT_ACTIVE = true;
+  state.flags.AGENT_CONTACT_HECTOR = true;
+  state.professional.agentControl = 90;
+  state.reputation.marketHeat = 60;
+  const agent20 = event('EVT_20_AGT_001');
+  assert.equal(eventGatesPass(state, agent20), false);
+
+  certifyActiveAgentInPlace(state, 'NPC_AGT_01');
+  assert.equal(eventGatesPass(state, agent20), true);
+
+  const state21 = stateAt(51011, 21, '2029-09-02');
+  state21.reputation.marketHeat = 60;
+  state21.flags.AGENT_ACTIVE = true;
+  assert.equal(eventGatesPass(state21, event('EVT_21_AGT_001')), false);
+  certifyActiveAgentInPlace(state21, 'NPC_AGT_02');
+  assert.equal(eventGatesPass(state21, event('EVT_21_AGT_001')), true);
+});
+
+test('A5 external/3 EVT_20_AGT_001 writes exact agent-power payload and never creates market authority', () => {
+  const state = stateAt(51012, 20, '2028-09-02');
+  state.reputation.marketHeat = 60;
+  certifyActiveAgentInPlace(state, 'NPC_AGT_01');
+  const scene = event('EVT_20_AGT_001');
+  const marketBefore = structuredClone(state.market);
+  resolveChoiceInPlace(state, scene, 'INFORM_FIRST');
+  const seed = state.seeds.find(row => row.id === 'SEED_AGENT_POWER' && row.state !== 'resolved' && row.state !== 'expired');
+  assert.ok(seed);
+  assert.equal(seed.originEvent, 'EVT_20_AGT_001');
+  assert.equal(seed.payload.choice, 'B');
+  assert.equal(seed.payload.control, 'inform_first');
+  assert.deepEqual(state.market, marketBefore);
+});
+
+test('A5 external/4 Bruno favor never proves current club need and notify route needs certified agent', () => {
+  const state = stateAt(51013, 20, '2028-11-03');
+  addLiveSeed(state, 'SEED_BRUNO_FAVOR', 'EVT_18_TEAM_001', { stance: 'helped' });
+  const scene = event('EVT_20_BRUNO_001');
+  assert.equal(eventGatesPass(state, scene), true, 'owner-side memory gate is ready');
+  let ids = eligibleChoices(state, scene).map(choice => choice.id);
+  assert.ok(!ids.includes('AUTHORIZE_NOTIFY'));
+  assert.ok(ids.includes('AUTHORIZE_PRIVATE'));
+  assert.ok(A5_AGENT_EXTERNAL_REQUIREMENTS.EVT_20_BRUNO_001.awaiting.includes('current Bruno opportunity/club-need fact'));
+
+  certifyActiveAgentInPlace(state, 'NPC_AGT_01');
+  ids = eligibleChoices(state, scene).map(choice => choice.id);
+  assert.ok(ids.includes('AUTHORIZE_NOTIFY'));
+  const marketBefore = structuredClone(state.market);
+  resolveChoiceInPlace(state, scene, 'ASK_MORE');
+  assert.deepEqual(state.market, marketBefore, 'Bruno contact does not manufacture CareerOffer');
+});
+
+test('A5 external/5 dynamic agent knowledge targets resolve only from A1 authority', () => {
+  const state = stateAt(51014, 21, '2029-09-02');
+  const rule = ruleFor('EVT_21_AGT_001', 'KEEP_TERMS');
+  assert.ok(rule);
+  let context = captureNpcKnowledgeTargetContext(state);
+  assert.deepEqual(resolveNpcKnowledgeTargets(rule, context), []);
+  certifyActiveAgentInPlace(state, 'NPC_AGT_02');
+  context = captureNpcKnowledgeTargetContext(state);
+  assert.deepEqual(resolveNpcKnowledgeTargets(rule, context), ['NPC_AGT_02']);
+
+  const notifyRule = ruleFor('EVT_20_BRUNO_001', 'AUTHORIZE_NOTIFY');
+  assert.ok(notifyRule);
+  assert.deepEqual(new Set(resolveNpcKnowledgeTargets(notifyRule, context)), new Set(['NPC_PLR_12']));
+  const allNotifyRules = A5_READY_NPC_KNOWLEDGE_RULES.filter(row =>
+    row.eventId === 'EVT_20_BRUNO_001' && (row.choiceIds ?? []).includes('AUTHORIZE_NOTIFY')
+  );
+  const recipients = new Set(allNotifyRules.flatMap(row => resolveNpcKnowledgeTargets(row, context)));
+  assert.deepEqual(recipients, new Set(['NPC_PLR_12', 'NPC_AGT_02']));
 });
