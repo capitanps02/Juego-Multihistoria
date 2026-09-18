@@ -95,6 +95,26 @@
         "Validation is read-only and consumes 0 RNG.",
         "Focused rich-offer, market, offer-bridge and exact-head Repository Integrity are green."
       ]
+    },
+    {
+      "bugId": "T5-QA-032",
+      "issue": 241,
+      "status": "owner_fix_needed",
+      "severity": "P2",
+      "area": "npc-knowledge-save-validation",
+      "reproduction": "npm run build && node --test scripts/test-t5-npc-knowledge-save-known-bug.mjs",
+      "failingTest": "scripts/test-t5-npc-knowledge-save-known-bug.mjs",
+      "expected": "Malformed persisted NPC knowledge fails closed while valid/absent knowledge remains compatible.",
+      "actual": "Save validator accepts arbitrary values inside npc.knowledge and runtime readers merely ignore malformed rows.",
+      "owner": "npc-knowledge-save-validation",
+      "codexAction": "Patch the NPC/save owner boundary only; validate each persisted knowledge value against the existing NpcKnowledgeRecord contract. Do not backfill or rewrite history.",
+      "acceptanceTests": [
+        "Scalar knowledge values rejected at serialize/load.",
+        "Mismatched factId and invalid source/memory/certainty/date/sourceNpcId rejected.",
+        "Valid records and absent facts round-trip unchanged.",
+        "T5.3 reconciliation/fingerprint tests remain green.",
+        "Validation consumes 0 RNG and mutates no input."
+      ]
     }
   ]
 }
