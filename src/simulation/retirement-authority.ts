@@ -76,8 +76,12 @@ export interface RetirementStorybookLastGoalFact {
   goals: number | null;
 }
 export function retirementStorybookLastGoalFact(state: GameState): RetirementStorybookLastGoalFact {
+  const sport = getSportContext(state);
+  const atTerminalBoundary = sport.availability.remainingOfficialMatches === "known"
+    && sport.remainingOfficialMatches === 0;
   const last = retirementLastAppearanceFact(state);
-  const eligible = last.status === "authoritative"
+  const eligible = atTerminalBoundary
+    && last.status === "authoritative"
     && last.postAnnouncement === true
     && last.goals !== null
     && last.goals > 0;
