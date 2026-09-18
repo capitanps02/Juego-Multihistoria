@@ -495,7 +495,11 @@ test('A5 external medical/1 three medical principals are canonical owner-ready w
     assert.equal(scene.outcomes.length, 8, scene.id);
     assert.ok(scene.tags.includes('a5_ready_external_blocker'), scene.id);
   }
-  assert.deepEqual(event('EVT_20_MED_001')?.id, undefined, 'medical staging is intentionally outside A5 active-ready list');
+  assert.equal(
+    [...A5_READY_EVENTS_18_23, ...A5_AGENT_READY_EXTERNAL_EVENTS].some(row => row.id === 'EVT_20_MED_001'),
+    false,
+    'medical staging remains outside the post-J activation batch'
+  );
 });
 
 test('A5 external medical/2 requirements reject diagnosis/match/transfer proxies and owner effects do not sign employment', () => {
