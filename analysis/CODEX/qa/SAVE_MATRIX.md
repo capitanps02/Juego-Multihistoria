@@ -10,7 +10,7 @@ This matrix distinguishes committed legacy fixtures from deterministic snapshots
 | early career | deterministic age 18–19 snapshot | seeds/NPC/pending | required |
 | content lineage | `scripts/test-t51-content-lineage.mjs` | unique A→B→C path; A→C and B→C migration; pending A decision to C; mixed provenance | covered through generation H; final generations pending |
 | migration integrity | `scripts/test-t51-content-migration.mjs` | history/seeds/NPC/market/receipts/RNG preserved; idempotent; unknown identity and tampered pending fail closed | covered through generation H |
-| NPC knowledge save/reconcile | `scripts/test-t53-reconciliation.mjs` | resume reconstruction, historical provenance, no RNG/history rewrite, fingerprint collision fail-closed | covered generated |
+| NPC knowledge save/reconcile | `scripts/test-t53-reconciliation.mjs`, `scripts/test-t5-npc-knowledge-save-known-bug.mjs` | resume reconstruction/provenance green; malformed persisted fact values must fail closed | **reconcile covered; save-boundary P2 #241 open** |
 | mid career | deterministic age 23–26 snapshot | role provenance/market/contract | required |
 | veteran | deterministic age 31–33 snapshot | long history/contract/role | required |
 | 34+ playing | deterministic age 35+ snapshot | continuation without forced retirement | required |
