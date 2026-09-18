@@ -1,3 +1,4 @@
+// A11 CI mirror: validate T5-QA-016d on current A9 runtime.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { EVENTS } from '../dist/content/events/index.js';
