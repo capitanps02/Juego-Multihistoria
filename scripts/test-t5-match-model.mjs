@@ -13,6 +13,7 @@ import { advanceWorldDayInPlace } from '../dist/simulation/world-simulator.js';
 import { advanceWorldDayInPlace as advanceCoreWorldDayInPlace } from '../dist/simulation/world-simulator-core.js';
 import { assertGameState } from '../dist/save/validation.js';
 import { loadSave, serializeSave } from '../dist/save/save.js';
+import { GameSession } from '../dist/session/game-session.js';
 
 const invalidSave = error => error?.code === 'INVALID_SAVE';
 
@@ -144,6 +145,110 @@ test('match model/8 validator and projections consume zero RNG and mutate nothin
   getSportContext(state);
   getCurrentMatchContext(state);
   assert.deepEqual(state, before);
+});
+
+test('match model/12 impossible squad and appearance facts fail closed without mutation', () => {
+  const state = matchDayState(8818);
+  recordOfficialMatchInPlace(state, { appeared: true, debutOccurred: false, injuryUnavailable: false });
+  const mutations = [
+    p => Object.assign(p, { calledUp: false, onBench: true, started: false, appeared: false, minutes: 0 }),
+    p => Object.assign(p, { calledUp: true, onBench: true, started: false, appeared: true, minutes: 0 }),
+    p => Object.assign(p, { calledUp: true, onBench: false, started: false, appeared: true, minutes: 12 }),
+    p => Object.assign(p, { calledUp: true, onBench: false, started: false, appeared: false, minutes: 0 })
+  ];
+  for (const mutate of mutations) {
+    const bad = structuredClone(state);
+    mutate(bad.world.sportMatchModel.fixtures[0].player);
+    const before = structuredClone(bad);
+    assert.throws(() => assertGameState(bad), invalidSave);
+    assert.throws(() => loadSave(JSON.stringify(bad)), invalidSave);
+    assert.deepEqual(bad, before);
+  }
+});
+
+test('match model/13 milestones prove the earliest recorded qualifying fixture, including across clubs', () => {
+  const state = matchDayState(8850);
+  // Build a history through the real producer with repeated qualifiers and absences.
+  for (let week = 0; week < 520; week++) {
+    state.date = new Date(Date.UTC(2026, 7, 5 + week * 7)).toISOString().slice(0, 10);
+    state.runtime.day = 35 + week * 7;
+    if (week === 40) state.professional.registrationClub = 'TEST_OTHER_CLUB';
+    recordOfficialMatchInPlace(state, { appeared: week % 3 !== 0, debutOccurred: false, injuryUnavailable: week % 3 === 0 });
+  }
+  const store = state.world.sportMatchModel;
+  assert.equal(inspectSportMatchModelStore(store, state.date), null);
+  assert.doesNotThrow(() => assertGameState(state));
+  assert.deepEqual(loadSave(serializeSave(state)).world.sportMatchModel, store);
+  const predicates = {
+    firstMatchSquadCall: row => row.player.calledUp,
+    firstBench: row => row.player.onBench,
+    firstAppearance: row => row.player.appeared,
+    firstStart: row => row.player.started,
+    firstFullMatch: row => row.player.appeared && row.player.minutes === 90
+  };
+  for (const [key, predicate] of Object.entries(predicates)) {
+    const qualifying = store.fixtures.filter(predicate);
+    const wrong = store.fixtures.find(row => !predicate(row));
+    assert.ok(qualifying.length >= 2 && wrong, key);
+    assert.equal(store.milestones[key], qualifying[0].id);
+    for (const reference of [wrong.id, qualifying[1].id, null]) {
+      const bad = structuredClone(state);
+      bad.world.sportMatchModel.milestones[key] = reference;
+      const before = structuredClone(bad);
+      assert.equal(inspectSportMatchModelStore(bad.world.sportMatchModel, bad.date)?.path, `world.sportMatchModel.milestones.${key}`);
+      assert.throws(() => assertGameState(bad), invalidSave);
+      assert.throws(() => loadSave(JSON.stringify(bad)), invalidSave);
+      assert.deepEqual(bad, before);
+    }
+  }
+});
+
+test('match model/14 first goal remains unavailable at every save boundary', () => {
+  const bad = validStoredState(8851);
+  bad.world.sportMatchModel.milestones.firstGoal = bad.world.sportMatchModel.fixtures[0].id;
+  assert.equal(inspectSportMatchModelStore(bad.world.sportMatchModel, bad.date)?.path, 'world.sportMatchModel.milestones.firstGoal');
+  assert.throws(() => assertGameState(bad), invalidSave);
+  assert.throws(() => loadSave(JSON.stringify(bad)), invalidSave);
+});
+
+test('match model/15 real bench, substitute and starter facts retain exact save and RNG round-trips', () => {
+  const covered = new Set();
+  for (let seed = 8800; seed < 9000 && covered.size < 3; seed++) {
+    for (const appeared of [false, true]) {
+      const state = matchDayState(seed);
+      const row = recordOfficialMatchInPlace(state, { appeared, debutOccurred: false, injuryUnavailable: false });
+      const kind = row.player.started ? 'starter' : row.player.appeared ? 'substitute' : row.player.onBench ? 'bench' : null;
+      if (!kind || covered.has(kind)) continue;
+      const before = structuredClone(state);
+      const loaded = loadSave(serializeSave(state));
+      assert.deepEqual(loaded.world.sportMatchModel, before.world.sportMatchModel);
+      assert.deepEqual(loaded.rngState, before.rngState);
+      assert.deepEqual(state, before);
+      covered.add(kind);
+    }
+  }
+  assert.deepEqual([...covered].sort(), ['bench', 'starter', 'substitute']);
+});
+
+test('match model/16 session restore rejects fabricated authority before committing', async () => {
+  const session = await GameSession.create(8852);
+  const snapshot = session.exportSnapshot();
+  snapshot.state = validStoredState(8852);
+  const valid = await GameSession.resume(structuredClone(snapshot));
+  assert.deepEqual(valid.exportSnapshot().state.rngState, snapshot.state.rngState);
+  for (const mutate of [
+    store => { store.milestones.firstGoal = store.fixtures[0].id; },
+    store => { store.milestones.firstAppearance = null; },
+    store => { store.fixtures[0].player.minutes = 0; }
+  ]) {
+    const bad = structuredClone(snapshot);
+    mutate(bad.state.world.sportMatchModel);
+    const before = structuredClone(bad);
+    let writes = 0;
+    await assert.rejects(GameSession.resume(bad, { commit: async () => { writes++; } }), invalidSave);
+    assert.equal(writes, 0);
+    assert.deepEqual(bad, before);
+  }
 });
 
 test('match model/9 league objective closure is persisted, deterministic and save-valid', () => {
