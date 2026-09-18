@@ -345,6 +345,60 @@ const VETERAN_LABEL_BRIDGE = ambiguousEvent({
   canonStatus: "technical_adaptation"
 });
 
+const LOW_STATS_HIGH_IMPACT = ambiguousEvent({
+  id: "EVT_32_IMPACT_001",
+  ageWindow: [32, 32],
+  phase: "30_34",
+  family: "tactical",
+  title: "Peores números, mejor equipo",
+  body: "Tus goles y asistencias bajan, pero el equipo produce más cuando juegas porque atraes marcas, pausas transiciones u organizas ataques. Analistas y prensa discrepan sobre si has empeorado.",
+  visible: ["Ves métricas básicas y algunas avanzadas de tu impacto colectivo."],
+  uncertain: ["No existe una medida única de impacto y los clubes valoran indicadores diferentes."],
+  gates: [{ path: "flags.ROLE_REINVENTED_30", op: "eq", value: true }],
+  seedsRead: ["SEED_ROLE_REINVENTION_32"],
+  seedsWrite: ["SEED_LOW_STATS_HIGH_IMPACT"],
+  choices: [
+    {
+      id: "A", label: "Defender públicamente el nuevo rol", intentTags: ["role_reinvention", "public_explanation"],
+      primaryMessage: "Explicas que tu trabajo ahora crea ventajas que no siempre aparecen en goles y asistencias.",
+      secondaryMessage: "La explicación protege contexto, aunque una parte del mercado la interpreta como defensa ante peores cifras.",
+      primaryEffects: [n("professional.publicMyth", 2), n("professional.roleAdaptability", 2)],
+      secondaryEffects: [n("reputation.marketHeat", -1)],
+      primarySeedTransitions: seed("SEED_LOW_STATS_HIGH_IMPACT", "A", "defend_new_role"),
+      secondarySeedTransitions: seed("SEED_LOW_STATS_HIGH_IMPACT", "A", "defend_new_role")
+    },
+    {
+      id: "B", label: "Buscar recuperar números", intentTags: ["individual_numbers", "market_signal"],
+      primaryMessage: "Vuelves a buscar más zonas de finalización para que el impacto también sea visible en la hoja estadística.",
+      secondaryMessage: "Los números pueden mejorar mientras el equilibrio colectivo pierde parte de lo que había ganado.",
+      primaryEffects: [n("reputation.marketHeat", 3), n("professional.statusInertia", 2)],
+      secondaryEffects: [n("professional.roleAdaptability", -2)],
+      primarySeedTransitions: seed("SEED_LOW_STATS_HIGH_IMPACT", "B", "recover_numbers"),
+      secondarySeedTransitions: seed("SEED_LOW_STATS_HIGH_IMPACT", "B", "recover_numbers")
+    },
+    {
+      id: "C", label: "No discutir métricas y seguir el plan", intentTags: ["team_plan", "ignore_metrics"],
+      primaryMessage: "Mantienes el rol que mejora al equipo y dejas que los resultados colectivos sostengan la decisión.",
+      secondaryMessage: "La coherencia táctica puede dar títulos y reducir cómo te valora un mercado que mira otras cifras.",
+      primaryEffects: [n("professional.institutionalTrust", 3), n("professional.roleAdaptability", 2)],
+      secondaryEffects: [n("reputation.marketHeat", -2)],
+      primarySeedTransitions: seed("SEED_LOW_STATS_HIGH_IMPACT", "C", "follow_plan"),
+      secondarySeedTransitions: seed("SEED_LOW_STATS_HIGH_IMPACT", "C", "follow_plan")
+    },
+    {
+      id: "D", label: "Pedir al entrenador más acciones de finalización en ciertos partidos", intentTags: ["hybrid_role", "selective_finalization"],
+      primaryMessage: "Intentas conservar la reinvención sin renunciar a ventanas concretas para producir cifras.",
+      secondaryMessage: "La solución híbrida puede equilibrar utilidad y mercado o volver menos claro tu rol.",
+      primaryEffects: [n("professional.careerControl", 3), n("professional.roleAdaptability", 2)],
+      secondaryEffects: [n("professional.institutionalTrust", -1)],
+      primarySeedTransitions: seed("SEED_LOW_STATS_HIGH_IMPACT", "D", "selective_finalization"),
+      secondarySeedTransitions: seed("SEED_LOW_STATS_HIGH_IMPACT", "D", "selective_finalization")
+    }
+  ],
+  tags: ["t51_shifted_canonical_addition", "t51_distinct_from_EVT_32_TACT_001", "t51_reinvention_route_authoritative", "t51_less_finalizer_route_pending_sport_authority"],
+  canonStatus: "technical_adaptation"
+});
+
 const AGE34_BRIDGE = ambiguousEvent({
   id: "EVT_33_FIN_001",
   ageWindow: [33, 33],
@@ -427,5 +481,6 @@ export const CANONICAL_ADDITIONS_30_34: EventDefinition[] = [
   VETERAN_LABEL_BRIDGE,
   ROLE_COMMUNICATION,
   SPECIALIST_BIGCLUB_ACTIVE,
+  LOW_STATS_HIGH_IMPACT,
   AGE34_BRIDGE
 ];
