@@ -20,6 +20,7 @@ test('BODY25 consumes load-management payload.plan rather than HAS_SEED alone',(
   const e=byId('CEVT_25_BODY_02');
   assert.ok(e.gates.some(g=>g.path==='flags.HAS_SEED_LOAD_MANAGEMENT'&&g.value===true));
   assert.ok(e.gates.some(g=>g.path==='facts.medicalRecurrenceAfterLoadPlan'&&g.value===true));
+  assert.ok(e.tags?.includes('consumes_a2_pr217_load_management_payload_plan_fact'));
   assert.deepEqual(e.gateAlternatives?.map(group=>group[0]?.value),['weekly_prevention','full_load_until_pain','post_full_match','external_review_first']);
   const modifierConditions=e.outcomes.flatMap(o=>o.modifiers??[]).flatMap(m=>m.conditions);
   assert.ok(modifierConditions.every(c=>c.path==='facts.loadManagementPlan'));
