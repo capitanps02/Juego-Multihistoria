@@ -8,7 +8,7 @@ QA intenta falsar invariantes. No reescribe canon ni corrige silenciosamente run
 
 ## Estado verificado 2026-09-18
 
-**8 bugs: 4 open / 4 resolved / 0 P0.**
+**9 bugs: 5 open / 4 resolved / 0 P0.**
 
 - T5-QA-016 — **OPEN / P1 / owner-fix PR #118** — #61.
 - T5-QA-021 — **RESOLVED** — #92.
@@ -17,7 +17,8 @@ QA intenta falsar invariantes. No reescribe canon ni corrige silenciosamente run
 - T5-QA-025 — **RESOLVED** — #131.
 - T5-QA-027 — **OPEN / P2 / serialized owner** — #133.
 - T5-QA-028 — **OPEN / P1 / spec-ready, execution-blocked** — #130; cadena `#207 -> #157 -> #130 -> #176`.
-- T5-QA-029 — **OPEN / P2 / owner-fix PR #214** — #212; duplicate PR #218 cerrado como superseded.
+- T5-QA-029 — **OPEN / P2 / owner-fix PR #214** — #212; exact-head Repository Integrity `35330315528` verde; pendiente solo integración + post-merge.
+- T5-QA-030 — **OPEN / P2 / canon owner** — #161. `EVT_33_CAP_001` en main sigue con gates vacíos; reproducción permanente exige fail-closed sin captain real.
 
 ## T5-QA-029 — owner candidate
 
@@ -32,7 +33,7 @@ QA comparó las dos implementaciones abiertas y seleccionó PR #214:
 
 PR #218 se cerró porque era solapada y menos estricta para un convocado no titular que no figurase en banquillo.
 
-Repository Integrity de #214: run `35330315528`, pendiente de conclusión en este snapshot. #212 seguirá OPEN hasta integración real y regresión post-merge.
+Repository Integrity de #214: run `35330315528` — **SUCCESS**. #212 seguirá OPEN hasta integración real y regresión post-merge.
 
 ## T5-QA-028 evidence y contrato
 
@@ -64,6 +65,20 @@ Ejecución bloqueada hasta:
 
 - `scripts/test-t5-contract-expiry-known-bug.mjs` — T5-QA-028.
 - `scripts/test-t5-match-model-known-bug.mjs` — T5-QA-029.
-- `qa:t5:known-bugs` — T5-QA-016.
+- `scripts/test-t5-captain-gap-known-bug.mjs` — T5-QA-030/#161.
+- `qa:t5:known-bugs` — T5-QA-016 + T5-QA-030.
 
 QA no mergea su propio PR. Un bug solo pasa a `resolved` tras fix integrado y reproducción/regresión verde sobre el HEAD exacto.
+
+
+## A10 finite certification score
+
+- Infraestructura QA: **50/50**
+- A10-1 P1/P2: **8/15**
+- A10-2 Saves/migrations: **2/10**
+- A10-3 Cross-system invariants: **3/10**
+- A10-4 Long-career/determinism: **5/10**
+- A10-5 Final certification: **0/5**
+- **TOTAL: 68/100**
+
+A10-5 permanece reservado al HEAD final integrado de T5. No ampliar fuzzing fuera de la matriz cerrada.
