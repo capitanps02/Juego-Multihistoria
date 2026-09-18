@@ -1,20 +1,27 @@
-name: T51 A5 K post-J generation
+name: T51 A5 K generation
 
 on:
-  pull_request:
+  push:
+    branches:
+      - 'a0/a5-k-after-281'
     paths:
-      - 'src/content/events/**'
+      - 'src/content/events/index.ts'
+      - 'src/content/events/20_23/a5-ready-staged.ts'
+      - 'src/catalog/npc-knowledge-rules-a5-k.ts'
+      - 'src/catalog/npc-knowledge-rules.ts'
+      - 'src/catalog/seeds.ts'
       - 'src/narrative/seed-memory.ts'
       - 'src/simulation/club-contract-intent.ts'
-      - 'src/catalog/seeds.ts'
-      - 'src/catalog/npc-knowledge-rules*.ts'
+      - 'scripts/t52-causal-seed-facts.mjs'
       - 'scripts/test-t51-a5-k.mjs'
-      - 'scripts/print-a5-k-identity.mjs'
+      - 'scripts/print-t51-a5-k-identity.mjs'
       - '.github/workflows/t51-a5-k.yml'
+  workflow_dispatch:
 
 jobs:
-  a5-k:
+  k-candidate:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -23,7 +30,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
-      - name: Focused A5 K regressions
+      - name: Five active post-J scenes
         run: node --test scripts/test-t51-a5-k.mjs
-      - name: Exact active content identity
-        run: node scripts/print-a5-k-identity.mjs
+      - name: Exact K identity
+        run: node scripts/print-t51-a5-k-identity.mjs
