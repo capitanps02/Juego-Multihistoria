@@ -1,4 +1,5 @@
 name: T51 A5 post-J activation
+# Exact-head verification after persisted K evidence.
 # Serialized immediately after generation J.
 
 on:
