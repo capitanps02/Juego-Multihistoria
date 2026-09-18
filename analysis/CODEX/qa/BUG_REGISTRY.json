@@ -93,17 +93,14 @@
       "status": "open",
       "area": "npc-target-choice",
       "reproduction": [
-        "future H-based EVT_23_LOCK_001 implementation",
-        "non-UDV age 23",
-        "live origin-club SEED_TEAMMATE_COVER",
-        "no authoritative captain",
-        "captain escalation must not remain selectable"
+        "npm run build && node --test scripts/test-t5-lock23-captain-choice-guard.mjs",
+        "future canonical EVT_23_LOCK_001: non-UDV / no captain -> D must be absent; A/B/C remain"
       ],
       "expected": "Captain escalation choice is unavailable when captain target resolves null.",
-      "actual": "Issue #133 remains open. Historical PR #122 is closed and non-integrable; the future serialized LOCK23 implementation must fail closed without guessing a captain.",
+      "actual": "Issue #133 remains open because current main still carries the technical LOCK23 placeholder. QA now has a permanent integration guard that accepts only the placeholder as technical_adaptation and, once the canonical 'Las cuatro de la mañana' scene lands, requires choice D to fail closed on authoritative captain existence while A/B/C remain available.",
       "owner": "lock23-content",
       "issue": 133,
-      "test": null,
+      "test": "scripts/test-t5-lock23-captain-choice-guard.mjs",
       "firstSeenCommit": "12c5ad1311abe1a80459837b4654fbcea17d8392",
       "lastVerifiedCommit": "5f4d14bca4d696cfafadb58b64034c7cd40cc147"
     },
