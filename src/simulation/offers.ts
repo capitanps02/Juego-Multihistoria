@@ -24,7 +24,7 @@ export interface LateRichOfferContext {
 export type CareerOfferContext = LateRichOfferContext;
 export interface CareerOffer { id: string; date: string; reason: string; before: CareerTerms; terms: CareerTerms; context?: CareerOfferContext; }
 export type CareerOfferKind = "renewal" | "transfer" | "loan" | "loan_return" | "loan_conversion";
-export type ContractEmploymentStatus = "active_contract" | "expiring" | "expired_pending_resolution" | "retired";
+export type ContractEmploymentStatus = "active_contract" | "expiring" | "unattached" | "retired";
 /** Direct player actions exposed by the ordinary offer screen and persisted in market.history.action. */
 export type OfferAction = "accept" | "reject" | "delegate";
 /** Narrative decisions may close an offer without changing the persisted action enum. */
@@ -127,18 +127,24 @@ export function getEligibleRenewalOffers(s: GameState): readonly CareerOffer[] {
 }
 
 /**
- * Employment status is deliberately conservative over the existing save schema.
- * The model has a `professional.route="free_agent"` token and classifiers that read it,
- * but current production code has no authoritative transition that also establishes
- * unattached club/owner/registration/salary/football semantics. Therefore months===0
- * remains pending resolution rather than being silently promoted to free agency.
+ * Read-only employment authority over the existing save schema.
+ *
+ * A zero-month contract means the player is no longer employed. Club/owner/registration
+ * strings remain untouched as historical provenance instead of being rewritten to a
+ * fake sentinel, so historical saves resolve immediately without a heuristic migration.
  */
 export function contractEmploymentStatus(s: GameState): ContractEmploymentStatus {
   if (s.retirement.status !== "playing") return "retired";
   const months = Number(s.contract.monthsRemaining);
-  if (months <= 0) return "expired_pending_resolution";
+  if (months <= 0) return "unattached";
   if (months <= 6) return "expiring";
   return "active_contract";
+}
+
+/** Current club authority; provenance strings do not authorize club behavior when unattached. */
+export function currentEmploymentClub(s: GameState): string | null {
+  const status = contractEmploymentStatus(s);
+  return status === "active_contract" || status === "expiring" ? s.club : null;
 }
 
 function renewalWasRejectedFromSameTerms(market: MarketState, reason: string, before: CareerTerms): boolean {
