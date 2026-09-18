@@ -27,22 +27,28 @@
     {
       "bugId": "T5-QA-028",
       "issue": 130,
-      "status": "ready",
+      "status": "blocked",
       "severity": "P1",
       "area": "contracts-employment",
       "reproduction": "npm run build && node --test scripts/test-t5-contract-expiry-known-bug.mjs",
       "failingTest": "scripts/test-t5-contract-expiry-known-bug.mjs",
       "expected": "Contract expiry produces deterministic unattached employment authority; ordinary club football, renewal and institutional-club authority fail closed until a formal CareerOffer reactivates employment.",
-      "actual": "The authoritative sport producer is integrated at main@5f4d14bc, but zero-month contracts can still remain expired_pending_resolution while preserving ordinary registration and play.",
+      "actual": "The Pass A contract is fully specified and #156 has landed, but coordinator sequencing now requires #207 CareerOffer.context then #157 MarketState v2 before the employment patch so reattachment uses one final formal-offer authority.",
       "owner": "shared-contract-employment",
-      "allowedFiles": ["src/core/types.ts", "src/simulation/world-simulator-core.ts", "src/simulation/offers.ts", "src/simulation/professional-adapter.ts", "src/save/validation.ts", "src/save/validation-legacy.ts", "scripts/test-t5-contract-expiry-known-bug.mjs"],
+      "blockedBy": [207, 157],
+      "unblockCriteria": [
+        "PR #207 is integrated/re-grounded on current main.",
+        "Issue #157 MarketState v2 is implemented and integrated with one authoritative openOffers collection and deterministic v1 migration.",
+        "The final #157 offer acceptance API is available for #130 reattachment without a parallel market authority."
+      ],
+      "allowedFilesAfterUnblock": ["src/core/types.ts", "src/simulation/world-simulator-core.ts", "src/simulation/offers.ts", "src/simulation/professional-adapter.ts", "src/save/validation.ts", "src/save/validation-legacy.ts", "scripts/test-t5-contract-expiry-known-bug.mjs"],
       "forbiddenFiles": ["src/content/events/**", "src/content/content-identity*"],
-      "acceptanceTests": [
+      "acceptanceTestsAfterUnblock": [
         "A 1->0 contract expiry transition is deterministic, idempotent and consumes zero RNG.",
         "At zero months current employment authority becomes unattached; historical club/owner/registration/salary strings remain provenance only.",
         "Ordinary club appearances, renewals and institutional club authority fail closed while unattached.",
         "Loading an ambiguous historical zero-month save does not fabricate a new free-agency decision.",
-        "Accepting a formal eligible CareerOffer is the only normal employment reactivation route.",
+        "Reactivation uses the final formal CareerOffer/MarketState v2 acceptance authority and no parallel pending-offer system.",
         "No route=free_agent shortcut, salary-zero hack, sentinel club, forced transfer, synthetic contract or forced retirement.",
         "The loyal/512000 reproduction turns green and market, save, long-career and Repository Integrity regressions remain green."
       ]
