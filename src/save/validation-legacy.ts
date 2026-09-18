@@ -86,12 +86,14 @@ function assertMarket(value: unknown, state: GameState): void {
   }
   if(m.negotiationSequence!==undefined)integer(m.negotiationSequence,"market.negotiationSequence");
   const negotiationIds=new Set<string>();
+  let maxNegotiationId=0;
   if(m.futureNegotiations!==undefined){
     list(m.futureNegotiations,"market.futureNegotiations").forEach((x,i)=>{
       const row=record(x,`market.futureNegotiations[${i}]`);
       exactKeys(row,`market.futureNegotiations[${i}]`,["id","date","reason","destination","before","terms","status","closedDate"]);
       string(row.id,`market.futureNegotiations[${i}].id`);
       ensure(/^negotiation:\d+$/.test(row.id as string),`market.futureNegotiations[${i}].id`,"identificador incorrecto");
+      const negotiationNumber=Number(String(row.id).slice(12));integer(negotiationNumber,`market.futureNegotiations[${i}].id`,1);maxNegotiationId=Math.max(maxNegotiationId,negotiationNumber);
       ensure(!negotiationIds.has(row.id as string),`market.futureNegotiations[${i}].id`,"identificador duplicado");
       negotiationIds.add(row.id as string);
       date(row.date,`market.futureNegotiations[${i}].date`);ensure((row.date as string)<=state.date,`market.futureNegotiations[${i}].date`,"fecha futura");
@@ -103,9 +105,10 @@ function assertMarket(value: unknown, state: GameState): void {
       if(row.status==="open")ensure(row.closedDate===null,`market.futureNegotiations[${i}].closedDate`,"negociación abierta cerrada");
       else ensure(row.closedDate!==null,`market.futureNegotiations[${i}].closedDate`,"negociación cerrada sin fecha");
     });
-    ensure((m.negotiationSequence??0)===negotiationIds.size,"market.negotiationSequence","secuencia de negociación incompleta");
+    ensure((m.negotiationSequence??0)===negotiationIds.size&&maxNegotiationId===(m.negotiationSequence??0),"market.negotiationSequence","secuencia de negociación incompleta");
   }
   if(m.futureAgreements!==undefined){
+    ensure(m.futureNegotiations!==undefined,"market.futureAgreements","precontrato sin negociaciones");
     let openFuture=0;
     const agreementNegotiations=new Set<string>();
     list(m.futureAgreements,"market.futureAgreements").forEach((x,i)=>{
@@ -117,7 +120,7 @@ function assertMarket(value: unknown, state: GameState): void {
       agreementNegotiations.add(row.negotiationId as string);
       const agreedTerms=terms(row.terms,`market.futureAgreements[${i}].terms`);
       const negotiation=(m.futureNegotiations as unknown[]).map((value,j)=>record(value,`market.futureNegotiations[${j}]`)).find(value=>value.id===row.negotiationId);
-      ensure(negotiation!==undefined&&JSON.stringify(agreedTerms)===JSON.stringify(negotiation.terms),`market.futureAgreements[${i}].terms`,"términos distintos de la negociación firmada");
+      ensure(negotiation!==undefined&&negotiation.status==="signed"&&JSON.stringify(agreedTerms)===JSON.stringify(negotiation.terms),`market.futureAgreements[${i}].terms`,"términos distintos de la negociación firmada");
       date(row.signedDate,`market.futureAgreements[${i}].signedDate`);date(row.effectiveDate,`market.futureAgreements[${i}].effectiveDate`);
       ensure((row.signedDate as string)<=state.date,`market.futureAgreements[${i}].signedDate`,"firma futura");
       ensure((row.effectiveDate as string)>(row.signedDate as string),`market.futureAgreements[${i}].effectiveDate`,"fecha efectiva no futura");
