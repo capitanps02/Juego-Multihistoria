@@ -1,5 +1,5 @@
 import type { EventDefinition, SeedTransition } from "../../../core/types.js";
-import { ambiguousEvent, n } from "../18_20/helpers.js";
+import { ambiguousEvent, n, seedCreate } from "../18_20/helpers.js";
 
 const intensify = (seedId: string, intensity: number): SeedTransition => ({
   seedId,
@@ -56,8 +56,8 @@ const EVT_20_AGT_001 = ambiguousEvent({
       secondaryMessage: "El sistema es más eficiente, pero una oportunidad menor puede quedar fuera de tu vista sin que sepas cuándo ocurrió.",
       primaryEffects: [n("professional.agentControl", 8), n("control.career", -3)],
       secondaryEffects: [n("professional.agentControl", 9), n("control.career", -5)],
-      primarySeedTransitions: [intensify("SEED_AGENT_POWER", 7)],
-      secondarySeedTransitions: [intensify("SEED_AGENT_POWER", 9), intensify("SEED_AGENT_OMISSION", 4)]
+      primarySeedTransitions: [seedCreate("SEED_AGENT_POWER", 62, { choice: "A", control: "broad" })],
+      secondarySeedTransitions: [seedCreate("SEED_AGENT_POWER", 68, { choice: "A", control: "broad", omissionRisk: true }), intensify("SEED_AGENT_OMISSION", 4)]
     },
     {
       id: "INFORM_FIRST",
@@ -67,8 +67,8 @@ const EVT_20_AGT_001 = ambiguousEvent({
       secondaryMessage: "La autonomía aumenta, aunque algunas operaciones pierden velocidad por necesitar una consulta adicional.",
       primaryEffects: [n("control.career", 7), n("professional.agentControl", 2)],
       secondaryEffects: [n("control.career", 5), n("professional.agentControl", 1)],
-      primarySeedTransitions: [intensify("SEED_AGENT_POWER", 5), intensify("SEED_AGENT_OMISSION", 2)],
-      secondarySeedTransitions: [intensify("SEED_AGENT_POWER", 4)]
+      primarySeedTransitions: [seedCreate("SEED_AGENT_POWER", 55, { choice: "B", control: "inform_first" }), intensify("SEED_AGENT_OMISSION", 2)],
+      secondarySeedTransitions: [seedCreate("SEED_AGENT_POWER", 52, { choice: "B", control: "inform_first", slower: true })]
     },
     {
       id: "SPLIT_IMAGE",
@@ -78,8 +78,8 @@ const EVT_20_AGT_001 = ambiguousEvent({
       secondaryMessage: "La especialización evita concentración, pero aumenta el riesgo de mensajes cruzados entre canales.",
       primaryEffects: [n("professional.agentControl", 3), n("control.career", 5)],
       secondaryEffects: [n("professional.agentControl", 2), n("professional.environmentStability", -2)],
-      primarySeedTransitions: [intensify("SEED_AGENT_POWER", 5)],
-      secondarySeedTransitions: [intensify("SEED_AGENT_POWER", 6)]
+      primarySeedTransitions: [seedCreate("SEED_AGENT_POWER", 56, { choice: "C", control: "split_image" })],
+      secondarySeedTransitions: [seedCreate("SEED_AGENT_POWER", 60, { choice: "C", control: "split_image", coordinationRisk: true })]
     },
     {
       id: "NO_CENTRALIZE",
@@ -89,8 +89,8 @@ const EVT_20_AGT_001 = ambiguousEvent({
       secondaryMessage: "Ganas visibilidad, pero varias conversaciones paralelas pueden debilitar coordinación y poder negociador.",
       primaryEffects: [n("control.career", 8), n("professional.agentControl", -5)],
       secondaryEffects: [n("control.career", 6), n("professional.environmentStability", -2)],
-      primarySeedTransitions: [intensify("SEED_AGENT_POWER", 6)],
-      secondarySeedTransitions: [intensify("SEED_AGENT_POWER", 7)]
+      primarySeedTransitions: [seedCreate("SEED_AGENT_POWER", 58, { choice: "D", control: "no_centralize" })],
+      secondarySeedTransitions: [seedCreate("SEED_AGENT_POWER", 62, { choice: "D", control: "no_centralize", coordinationRisk: true })]
     }
   ],
   seedsRead: ["SEED_AGENT_OMISSION", "SEED_FIRST_AGENT"],
