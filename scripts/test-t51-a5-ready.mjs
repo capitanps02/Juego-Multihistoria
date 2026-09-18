@@ -707,3 +707,25 @@ test('A5 external conditionals/7 staged NPC provenance names only actual partici
   assert.ok(shockRule);
   assert.deepEqual(resolveNpcKnowledgeTargets(shockRule,context),['NPC_AGT_02']);
 });
+
+
+test('A5 external conditionals/8 agent discrepancy needs live omission memory and a certified active representative', () => {
+  const scene=A5_EXTERNAL_CONDITIONALS_18_20.find(row=>row.id==='CEVT_19_AGENT_01');
+  assert.ok(scene);
+  const state=stateAt(53008,19,'2027-11-14');
+
+  state.flags.AGENT_ACTIVE=true;
+  state.flags.AGENT_CONTACT_HECTOR=true;
+  addLiveSeed(state,'SEED_AGENT_OMISSION','EVT_19_AGENT_001',{pattern:'first_omission'});
+
+  assert.equal(narrativeCausalFacts(state).agentOmissionLive,true);
+  assert.equal(eventGatesPass(state,scene),false,'legacy contact flags must not manufacture active-agent identity');
+
+  certifyActiveAgentInPlace(state,'NPC_AGT_01');
+  assert.equal(eventGatesPass(state,scene),true);
+
+  const rule=ruleFor('CEVT_19_AGENT_01','ASK_TIMELINE');
+  assert.ok(rule);
+  const context=captureNpcKnowledgeTargetContext(state);
+  assert.deepEqual(new Set(resolveNpcKnowledgeTargets(rule,context)),new Set(['NPC_PRS_01','NPC_AGT_01']));
+});
