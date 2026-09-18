@@ -7,6 +7,7 @@ import {
   careerOfferKind,
   careerTerms,
   contractEmploymentStatus,
+  currentEmploymentClub,
   eligibleCareerOfferKind,
   getActiveCareerOffers,
   getEligibleCareerOffers,
@@ -205,17 +206,20 @@ test('loan permanent conversion moves ownership only through accepted CareerOffe
   assert.equal(restored.flags.LOAN_ACTIVE, false);
 });
 
-test('zero-month contract is explicitly unresolved; dormant free_agent route alone is not a transition authority', () => {
+test('zero-month contract is authoritative unattached state without rewriting provenance', () => {
   const state = createInitialState(306);
   state.contract.monthsRemaining = 7;
   assert.equal(contractEmploymentStatus(state), 'active_contract');
+  assert.equal(currentEmploymentClub(state), 'UDV');
   state.contract.monthsRemaining = 6;
   assert.equal(contractEmploymentStatus(state), 'expiring');
   state.contract.monthsRemaining = 0;
-  assert.equal(contractEmploymentStatus(state), 'expired_pending_resolution');
+  assert.equal(contractEmploymentStatus(state), 'unattached');
+  assert.equal(currentEmploymentClub(state), null);
   assert.equal(state.club, 'UDV');
   assert.equal(state.professional.ownerClub, 'UDV');
+  assert.equal(state.professional.registrationClub, 'UDV');
   state.professional.route = 'free_agent';
-  assert.equal(contractEmploymentStatus(state), 'expired_pending_resolution');
-  assert.equal(state.club, 'UDV', 'route token alone must not silently detach the player from the current employer');
+  assert.equal(contractEmploymentStatus(state), 'unattached');
+  assert.equal(currentEmploymentClub(state), null, 'route token is not the authority; contract expiry is');
 });
