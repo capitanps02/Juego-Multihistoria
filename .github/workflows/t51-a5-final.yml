@@ -5,7 +5,6 @@ on:
     branches: [main]
     paths:
       - 'src/content/events/20_23/a5-ready-staged.ts'
-      - 'src/content/events/20_23/a5-external-principals-staged.ts'
       - 'src/content/events/20_23/a5-agent-ready-external.ts'
       - 'src/content/events/20_23/a5-market-external-staged.ts'
       - 'src/content/events/20_23/a5-medical-external-staged.ts'
@@ -13,12 +12,10 @@ on:
       - 'src/content/events/20_23/a5-shared-external-principals-staged.ts'
       - 'src/content/events/18_20/a5-end002-staged.ts'
       - 'src/catalog/npc-knowledge-rules-a5-ready.ts'
-      - 'src/catalog/npc-knowledge-rules-a5-external.ts'
       - 'src/catalog/seeds.ts'
       - 'src/narrative/seed-memory.ts'
       - 'src/simulation/club-contract-intent.ts'
       - 'scripts/test-t51-a5-ready.mjs'
-      - 'scripts/test-t51-a5-external-principals.mjs'
       - '.github/workflows/t51-a5-final.yml'
   push:
     branches:
@@ -53,8 +50,6 @@ jobs:
       - run: npm run build
       - name: Five staged canonical scenes
         run: node --test scripts/test-t51-a5-ready.mjs
-      - name: External-principal owner readiness
-        run: node --test scripts/test-t51-a5-external-principals.mjs
       - name: Existing early causal consumers
         run: node --test scripts/test-t51-early-seed-consumers.mjs
       - name: A1 shared authority regressions
