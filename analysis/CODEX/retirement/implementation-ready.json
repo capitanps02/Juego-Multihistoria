@@ -1,0 +1,291 @@
+{
+  "workstream": "retirement-epilogues",
+  "snapshot": {
+    "date": "2026-09-18",
+    "mainAtAudit": "5bcc892020f56d81a9b3963d82a9e56a17e3c07c",
+    "lastCertifiedRetirementHead": "46a305e6406c1116b05d09a70157910c5fc6706c",
+    "lastCertifiedRelationToMain": "83_ahead_0_behind",
+    "terminalWorkflowRun": 35330749211,
+    "terminalWorkflowResult": "success_45_of_45",
+    "repositoryIntegrityRun": 35330749282,
+    "repositoryIntegrityState": "expected_fail_closed_active_source_freeze_sentinel",
+    "provisionalTerminalContentIdentity": "06cebf93a642ff776670356449777255cb8afe009b424d9cb0a22b44e158dcb0",
+    "note": "A9 is ancestry-synchronized with main@5bcc892. PR #202's exact authoritative-vs-historical-none last-appearance contract is consumed on the A9 branch while preserving stacked SPORT-2/3 rich rows. Terminal freeze remains intentionally blocked until ordinary 34+ is final.",
+    "currentRetirementHead": "f913c632ceec04499f850db8106d67e0c2edc8aa",
+    "currentRelationToMain": "115_ahead_0_behind"
+  },
+  "rules": [
+    "Do not duplicate tasks marked implemented.",
+    "Do not consume an unmerged producer-private store shape.",
+    "Do not infer unsupported match result, goals, assists, cards, suspension or last appearance.",
+    "Do not treat exact conditional ID overlap or canonStatus metadata as proof of canonical semantic parity.",
+    "Do not weaken or pre-freeze the terminal contentIdentity sentinel.",
+    "Terminal lineage must be adjacent to the real frozen ordinary 34+ generation.",
+    "Current main already contains the multi-hop migration-path engine; #59 owns future serial edge/freeze registration.",
+    "Issue #195 is coordination-complete. Its former gaps are routed to #176/#199/#200/#201 and remain fail-closed until those facts exist.",
+    "Legacy CEVT_RET_RECONSIDER must never be renamed or reinterpreted as canonical CEVT_38_RETIREMENT_REVERSAL.",
+    "Closed retirement remains terminal; a future canonical comeback may only be a narrowly authorized announced->playing transaction before closure."
+  ],
+  "terminalConditionalAccreditation": {
+    "guard": "src/content/events/34_plus/retirement-terminal-canonical-guard.ts",
+    "test": "scripts/test-t536-canonical-accreditation.mjs",
+    "status": "fail_closed",
+    "rows": [
+      {
+        "id": "CEVT_38_OFFER_AFTER_RETIREMENT_ANNOUNCED",
+        "canonStatus": "technical_adaptation",
+        "reason": "Consumer uses real CareerOffer authority, but ordinary market cannot yet produce a new formal offer while retirement is announced. #176 owns the narrow producer."
+      },
+      {
+        "id": "CEVT_RET_RECONSIDER",
+        "canonStatus": "technical_adaptation",
+        "reason": "Legacy private pre-announcement decided->playing scene. It is not canonical CEVT_38_RETIREMENT_REVERSAL and must never be silently aliased."
+      },
+      {
+        "id": "CEVT_38_RETIREMENT_REVERSAL",
+        "canonStatus": "missing_blocked",
+        "reason": "Exact canonical ID needs a concrete later post-announcement CareerOffer/provenance and an ambiguity-safe exceptional announced->playing transaction. Contract is CANONICAL_REVERSAL_CONTRACT.md."
+      },
+      {
+        "id": "CEVT_RET_NO_LAST_MATCH",
+        "canonStatus": "technical_adaptation",
+        "reason": "Current timer/no-appearance compatibility closure does not prove canonical injury/suspension causation. #200 owns factual injury chronology; suspension remains unsupported unless a discipline authority lands."
+      },
+      {
+        "id": "CEVT_RET_STORYBOOK_LAST_GOAL",
+        "canonStatus": "technical_adaptation",
+        "reason": "Scene remains non-synthetic, but authoritative exact-last-fixture goal production belongs to #199 and is not integrated."
+      }
+    ]
+  },
+  "tasks": [
+    {
+      "id": "CODEX-RET-001",
+      "status": "implemented",
+      "task": "Retirement contemplation keeps status=playing until an explicit retirement choice.",
+      "evidence": [
+        "src/content/events/34_plus/retirement-terminal-overrides.ts",
+        "scripts/test-t536-t537-retirement.mjs"
+      ]
+    },
+    {
+      "id": "CODEX-RET-002",
+      "status": "implemented",
+      "task": "Pre-announcement reconsideration uses decided->playing and cannot reopen announced/closed retirement.",
+      "evidence": [
+        "src/simulation/late-career-engine.ts",
+        "scripts/test-t536-t537-retirement.mjs"
+      ]
+    },
+    {
+      "id": "CODEX-RET-003",
+      "status": "implemented",
+      "task": "Public announcement writes NPC knowledge only through authoritative live role targets; WAIT remains private.",
+      "evidence": [
+        "src/catalog/npc-knowledge-rules.ts",
+        "src/narrative/npc-knowledge-targets.ts",
+        "scripts/test-t536-npc-announcement.mjs",
+        "scripts/test-t53-dynamic-targets.mjs"
+      ]
+    },
+    {
+      "id": "CODEX-RET-004",
+      "status": "implemented",
+      "task": "Final-phase narrative consumes facts but never grants an appearance, goal, result or victory.",
+      "evidence": [
+        "src/content/events/34_plus/retirement-terminal-overrides.ts",
+        "scripts/test-t536-sport-authority.mjs"
+      ]
+    },
+    {
+      "id": "CODEX-RET-005",
+      "status": "blocked",
+      "readiness": "consumer_complete_waiting_external_integration",
+      "task": "Replace aggregate post-announcement appearance observation with a rich authoritative LastMatchFact and factual terminal no-last-match/last-goal evidence.",
+      "matchProducer": {
+        "pr": 156,
+        "historicalHead": "bbb491fac05fe4d981ae9e6c518c0a2c5aa57de7",
+        "integratedMainCommit": "5f4d14bca4d696cfafadb58b64034c7cd40cc147",
+        "repositoryIntegrityRun": 35259511375,
+        "repositoryIntegrityResult": "success",
+        "integrationState": "integrated_in_main",
+        "provides": [
+          "fixture identity/date",
+          "registration club/opponent/home-away/league competition",
+          "calledUp/onBench/started/appeared/minutes/injuryUnavailable",
+          "next/previous fixture",
+          "remaining official/league fixture counts",
+          "save validation and deterministic replay contract"
+        ]
+      },
+      "sharedLastAppearanceCandidate": {
+        "pr": 202,
+        "branch": "t5/sport-retirement-read-optimization",
+        "base": "main",
+        "head": "e9b68de453822e184854e9e7cce879f10e1834bb",
+        "relationToMainAtAudit": "2_ahead_0_behind",
+        "focusedRun": 35331003785,
+        "focusedResult": "success_18_of_18",
+        "api": "getLastPlayerAppearanceContext(state)",
+        "integrationState": "focused_and_repository_integrity_green_consumed_on_a9_branch_not_main",
+        "repositoryIntegrityRun": 35331003706,
+        "repositoryIntegrityResult": "success"
+      },
+      "richSportingHistory": {
+        "issue": 199,
+        "agent9ConsumerComment": 5719715820,
+        "requiredForRetirement": [
+          "final result when factually produced",
+          "goals/assists/cards linked to exact fixture",
+          "exact latest-appearance fixture goal for CEVT_RET_STORYBOOK_LAST_GOAL"
+        ],
+        "state": "SPORT-2_PR221_and_SPORT-3_PR223_exist_A9_match_model_matches_SPORT3_not_integrated_main"
+      },
+      "injuryChronology": {
+        "issue": 200,
+        "agent9ConsumerComment": 5719718516,
+        "requiredForRetirement": [
+          "active factual injury episode",
+          "unavailability interval",
+          "no later appearance + terminal sporting boundary composition"
+        ],
+        "state": "open_not_integrated"
+      },
+      "suspensionAuthority": {
+        "state": "unsupported",
+        "rule": "Card count is not a suspension. A future explicit persisted ban/suspension fact may satisfy the alternative canonical trigger."
+      },
+      "canonicalConditionalDebt": [
+        "CEVT_RET_NO_LAST_MATCH may become supported through the factual injury path before suspension exists; current timer compatibility path remains noncanonical.",
+        "CEVT_RET_STORYBOOK_LAST_GOAL requires a factual goal on the exact latest-player-appearance fixture from #199."
+      ],
+      "unblockContract": "Integrate the public last-appearance contract and SPORT-2/3 factual result/stat authority into main (or equivalent certified shared stack). A9 already projects LastMatchFact from that public row and fails missing historical rich fields closed. Injury no-last-match currently uses the exact persisted final-fixture injuryUnavailable fact; #200 episode chronology may strengthen provenance but suspension remains unsupported."
+    },
+    {
+      "id": "CODEX-RET-006",
+      "status": "implemented",
+      "task": "closeCareer is terminal, idempotent, consumes zero closure RNG and cannot reopen closed careers.",
+      "evidence": [
+        "src/simulation/late-career-engine.ts",
+        "scripts/test-t536-t537-retirement.mjs"
+      ]
+    },
+    {
+      "id": "CODEX-RET-007",
+      "status": "implemented",
+      "activation": "authoritative_match_calendar_integrated_in_main",
+      "task": "Make career closure fixture/season-end aware rather than relying on coarse time/contract proxies.",
+      "implementation": {
+        "commit": "38f6294aa262b16151bc0ad6a1df35ab7edf03c6",
+        "behavior": [
+          "known remainingOfficialMatches > 0 suppresses administrative closure",
+          "known remainingOfficialMatches == 0 permits sporting-boundary closure",
+          "unavailable/invalid authority preserves the legacy administrative fallback",
+          "reads shared SportContext only and consumes zero additional RNG"
+        ],
+        "evidence": [
+          "src/simulation/late-career-engine.ts",
+          "scripts/test-t536-sport-authority.mjs"
+        ]
+      }
+    },
+    {
+      "id": "CODEX-RET-008",
+      "status": "implemented",
+      "task": "buildCareerSummary() is a read-only factual projection and keeps unsupported facts null/omitted.",
+      "evidence": [
+        "src/epilogue/career-summary.ts",
+        "scripts/test-t536-career-summary.mjs"
+      ]
+    },
+    {
+      "id": "CODEX-RET-009",
+      "status": "implemented",
+      "task": "Epilogue prose is deterministic and evidence-gated across supported ending families.",
+      "evidence": [
+        "src/epilogue/generator.ts",
+        "scripts/test-t537-family-minimums.mjs",
+        "scripts/test-t537-epilogue-profiles.mjs"
+      ]
+    },
+    {
+      "id": "CODEX-RET-010",
+      "status": "implemented",
+      "task": "Active, decided, announced and closed saves retain retirement semantics without history/RNG rewriting.",
+      "evidence": [
+        "analysis/CODEX/retirement/SAVE_COMPATIBILITY.md",
+        "scripts/test-t536-t537-retirement.mjs"
+      ]
+    },
+    {
+      "id": "CODEX-RET-011",
+      "status": "blocked",
+      "task": "Freeze terminal contentIdentity and register the final adjacent migration edge.",
+      "migrationInfrastructure": {
+        "issue": 59,
+        "engineState": "multi_hop_path_resolution_already_integrated_in_main",
+        "remainingOwnership": "serial future generation edge/freeze registration in canonical order"
+      },
+      "seedCatalog": {
+        "issue": 180,
+        "pr": 191,
+        "head": "d8f724893cfcb40d2b81f995d8ed08179bbd6f52",
+        "focusedRun": 35246851382,
+        "repositoryIntegrityRun": 35246851472,
+        "state": "certified_not_integrated",
+        "contract": "54 canonical IDs = 45 ordinary + 9 terminal; 14 bridge concepts inherited/derived"
+      },
+      "ordinary34plus": {
+        "pr": 15,
+        "branch": "t51/canon-34plus",
+        "headAtAudit": "c99fce052918540a52c3992ccd8152282f26a34b",
+        "preparedCards": "43/43",
+        "runtimePrincipalImplemented": "0/43",
+        "canonicalConditionalsClassified": "32/32",
+        "runtimeConditionalAccredited": "0/32",
+        "unresolvedSharedAuthorityDomains": 0,
+        "sharedAuthorityGapIssue195": "closed_completed",
+        "routedOwners": [
+          176,
+          199,
+          200,
+          201
+        ],
+        "repositoryIntegrityRun": 35262171147,
+        "repositoryIntegrityResult": "success",
+        "contentState": "prepared_certified_but_not_runtime_active"
+      },
+      "unblockContract": "Integrate remaining predecessor generations in order; integrate #191 at the correct serial point; integrate required owner facts and activate/accredit supported #192/PR #15 34+ runtime; freeze that exact ordinary 34+ identity through #59; then re-ground retirement and register only the adjacent ordinary34plus->terminal edge."
+    },
+    {
+      "id": "CODEX-RET-012",
+      "status": "blocked",
+      "readiness": "consumer_and_transition_complete_waiting_market_producer",
+      "task": "Implement canonical CEVT_38_RETIREMENT_REVERSAL as an exceptional post-announcement comeback without weakening ordinary terminality.",
+      "canonicalId": "CEVT_38_RETIREMENT_REVERSAL",
+      "mustRemainDistinctFrom": "CEVT_RET_RECONSIDER",
+      "marketDependency": {
+        "issue": 176,
+        "agent9ConsumerComment": 5719664852,
+        "currentGap": "ordinary proposeCareerChange is playing-only, so no normal authoritative new CareerOffer is produced while retirement is announced"
+      },
+      "contractFile": "analysis/CODEX/retirement/CANONICAL_REVERSAL_CONTRACT.md",
+      "requiredSemantics": [
+        "closed remains terminal and generated epilogues are never erased",
+        "future exception is narrowly authorized announced->playing before closure",
+        "Stage A post-announcement contact and Stage B reversal offer are ambiguity-safe and cannot both match the same unsupported offer state",
+        "a deferred/rejected proposal is not silently reactivated; comeback requires a concrete compatible offer/provenance",
+        "accepted terms flow only through respondToOffer/offerBridge",
+        "rhythm/reputation/control costs apply once",
+        "fake flags, stale offers, marketHeat, age and RNG cannot authorize reversal",
+        "legacy history/provenance is not renamed to the canonical ID"
+      ],
+      "unblockContract": "#176/A3 supplies deterministic post-announcement CareerOffer production/provenance. A9 already has the exact canonical ID, mutually exclusive Stage A/B consumer, narrow announced->playing authorization, offer bridge, one-time costs and save/closed guards; canonical accreditation remains blocked until producer integration."
+    }
+  ],
+  "implementedCount": 9,
+  "readyCount": 0,
+  "blockedCount": 3,
+  "partiallyUnblockedCount": 0,
+  "codexNextAction": "Do not add more A9 architecture. Integrate external authorities in serial order: shared last-appearance + SPORT-2/3; A3 post-announcement CareerOffer producer; ordinary 34+ final frozen predecessor. Then A9 only flips factual accreditation, final adjacent lineage and exact-head QA."
+}

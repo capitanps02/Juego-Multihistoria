@@ -1,0 +1,42 @@
+{
+  "workstream": "T5.36-T5.37",
+  "handoffs": [
+    {
+      "id": "T536-HO-30-34-EARLY-RETIREMENT",
+      "targetOwner": "t51/canon-30-34 + coordinator",
+      "status": "integration_review_required",
+      "sourceEvent": "EVT_33_RET_001",
+      "currentFact": "Choice A is explicit player intent ('Cerrar la carrera al final de temporada') and writes EARLY_RETIRED_30_34. career-simulator then invokes the narrowly keyed early_retirement_30_34 bridge.",
+      "terminalRuntimeBehavior": "The T5.36 bridge traverses playing -> decided -> announced -> closed internally only when EARLY_RETIRED_30_34=true and reason=early_retirement_30_34.",
+      "risk": "The 30-34 scene compresses decision and announcement into one historical terminal fact instead of exposing the normal decided -> explicit announcement scene as separate gameplay.",
+      "requiredDecision": "Agent 4/coordinator must decide canonically whether EVT_33_RET_001 itself includes the announcement fact or should hand off as decided to the terminal announcement flow. Do not silently reinterpret it by ID.",
+      "ownerBoundary": "T5.36 does not edit 30-34 content. Until reconciled, the compatibility bridge remains narrow and regression-tested.",
+      "migrationRequirement": "If semantics change, preserve the frozen legacy definition/fingerprint and map by sourceContentIdentity; do not treat the same ID/flag as automatically equivalent."
+    },
+    {
+      "id": "T536-HO-NPC-PUBLIC-ANNOUNCEMENT",
+      "targetOwner": "T5.3 NPC/memory + coordinator",
+      "status": "ready_for_integration",
+      "sourceEvent": "EVT_RET_ANNOUNCE_001",
+      "currentFact": "Pre-announcement decided/WAIT states are private. Public announcement choices persist RETIREMENT_PUBLIC and RETIREMENT_WAS_ANNOUNCED.",
+      "requiredAction": "Bind public announcement outcomes to T5.3 public knowledge provenance. NPC refs must not imply knowledge before that public route exists.",
+      "forbidden": "Do not backfill private retirement intent to NPCs merely because the later announcement becomes public."
+    },
+    {
+      "id": "T536-HO-SEED-TERMINAL-CLASSIFICATION",
+      "targetOwner": "T5.2/T5.4 seeds + coordinator",
+      "status": "ready_for_integration",
+      "currentFact": "T5.36 never mass-closes seeds when retirement closes; the regression gate preserves the complete seed history unchanged.",
+      "requiredAction": "Classify relevant open chains individually as consumed, expired, terminally_irrelevant, resolved, or open_but_no_longer_actionable without rewriting their historical meaning."
+    },
+    {
+      "id": "T536-HO-AGENT13-CONTENT-IDENTITY",
+      "targetOwner": "t51/canon-34plus-career + migration coordinator",
+      "status": "blocking",
+      "observedSource": "t51/canon-34plus-career@3d726c3aa48bf03fd216240c7ec3682ebba57b3a",
+      "currentFact": "Observed delivery is only T5.29 veteran career entry and is not the complete active 34+ generation.",
+      "requiredAction": "Land/freeze the complete active 34+ generation, then apply this terminal layer, calculate the resulting identity, and register exactly one adjacent migration edge.",
+      "forbidden": "No PRE/30-34 -> retirement shortcut and no premature freeze of the terminal identity."
+    }
+  ]
+}

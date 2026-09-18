@@ -1,4 +1,5 @@
 import { knowledgeRulesFor, type NpcEventKnowledgeRule } from "../catalog/npc-knowledge-rules.js";
+import { isCompatibilityOnly34PlusSeed } from "../catalog/seed-34plus.js";
 import { SEED_CATALOG } from "../catalog/seeds.js";
 import { getSeedScopePolicy } from "../catalog/seed-scope.js";
 import { conditionsPass } from "../core/conditions.js";
@@ -60,6 +61,9 @@ function markSeedExpired(state: GameState, seed: SeedInstance, reason: string): 
 }
 
 function applySeedTransition(state: GameState, t: SeedTransition, event: EventDefinition): void {
+  if (t.action === "create" && isCompatibilityOnly34PlusSeed(t.seedId)) {
+  throw new Error(`Compatibility-only seed ${t.seedId} cannot be newly created in ${event.id}`);
+}
   if (t.action === "create" && !SEED_DEFINITIONS.has(t.seedId)) {
     throw new Error(`Unknown seed ${t.seedId} in ${event.id}`);
   }
@@ -268,7 +272,7 @@ function resolveChoiceCore(next: GameState, event: EventDefinition, choiceId: st
   next.familyLastSeen[event.family] = next.runtime.day;
   next.runtime.daysSinceNarrative = 0;
   next.runtime.eventsThisSeason += 1;
-  syncRetirementState(next, previousRetirementStatus);
+  syncRetirementState(next, previousRetirementStatus, { eventId: event.id, choiceId });
   next.history.push({
     eventId: event.id, date: next.date, season: next.season, choiceId,
     outcomeId: selected.id, club: next.club,

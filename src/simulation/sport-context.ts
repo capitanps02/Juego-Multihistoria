@@ -1,22 +1,28 @@
 import type { GameState } from "../core/types.js";
 import {
+  careerGoalHistoryComplete,
   currentOfficialMatch,
   getSportMatchModelStore,
   hoursToNextScheduledFixture,
   isTrainingDay,
+  lastPlayerAppearance,
   nextScheduledFixture,
   nextScheduledTrainingDate,
   previousOfficialMatch,
   remainingLeagueFixtures,
+  seasonPlayerStats,
   type LeagueObjectiveStatus,
   type MatchCompetition,
+  type MatchResultFact,
   type OfficialMatchRecord,
+  type SeasonPlayerStats,
   type ScheduledFixture,
   type SquadStatus
 } from "./match-model.js";
 
 export type SportFactAvailability = "known" | "unavailable";
 export type MatchContextStatus = "authoritative" | "no_current_match";
+export type LastPlayerAppearanceStatus = "authoritative" | "historical_match_store_not_initialized";
 
 export interface SportContextAvailability {
   currentSeason: SportFactAvailability;
@@ -27,6 +33,8 @@ export interface SportContextAvailability {
   currentCompetition: SportFactAvailability;
   nextFixture: SportFactAvailability;
   previousFixture: SportFactAvailability;
+  lastPlayerAppearance: SportFactAvailability;
+  lastPlayerAppearanceContext: SportFactAvailability;
   hoursToNextFixture: SportFactAvailability;
   isMatchDay: SportFactAvailability;
   isTrainingWindow: SportFactAvailability;
@@ -42,6 +50,7 @@ export interface SportContextAvailability {
   firstStart: SportFactAvailability;
   firstFullMatch: SportFactAvailability;
   firstGoal: SportFactAvailability;
+  currentSeasonPlayerStats: SportFactAvailability;
 }
 
 export interface SportContext {
@@ -56,6 +65,9 @@ export interface SportContext {
   currentCompetition: MatchCompetition | null;
   nextFixture: ScheduledFixture | null;
   previousFixture: OfficialMatchRecord | null;
+  /** Latest factual official row where the player actually appeared, across clubs. */
+  lastPlayerAppearance: OfficialMatchRecord | null;
+  lastPlayerAppearanceContext: LastPlayerAppearanceContext;
   hoursToNextFixture: number | null;
   isMatchDay: boolean;
   isTrainingWindow: boolean;
@@ -70,9 +82,15 @@ export interface SportContext {
   firstAppearance: string | null;
   firstStart: string | null;
   firstFullMatch: string | null;
-  firstGoal: null;
+  firstGoal: string | null;
+  currentSeasonPlayerStats: SeasonPlayerStats | null;
   availability: SportContextAvailability;
-  unavailableReason: "standing_and_goal_model_not_implemented" | "historical_match_store_not_initialized" | null;
+  unavailableReason: "standing_model_not_implemented" | "historical_match_store_not_initialized" | "historical_player_stats_incomplete" | null;
+}
+
+export interface LastPlayerAppearanceContext {
+  status: LastPlayerAppearanceStatus;
+  match: OfficialMatchRecord | null;
 }
 
 export interface CurrentMatchContext {
@@ -82,15 +100,15 @@ export interface CurrentMatchContext {
   opponent: string | null;
   homeAway: "home" | "away" | null;
   dateTime: null;
-  result: null;
+  result: MatchResultFact | null;
   playerCalledUp: boolean | null;
   playerOnBench: boolean | null;
   playerStarted: boolean | null;
   playerAppeared: boolean | null;
   minutes: number | null;
-  goals: null;
-  assists: null;
-  cards: null;
+  goals: number | null;
+  assists: number | null;
+  cards: { yellow: number; red: number } | null;
   injury: boolean | null;
   decisionMinute: number | null;
   scoreAtDecision: { home: number; away: number } | null;
@@ -123,10 +141,13 @@ export function getSportContext(state: GameState): SportContext {
   const current = currentOfficialMatch(state);
   const next = nextScheduledFixture(state);
   const previous = previousOfficialMatch(state);
+  const lastAppearance = lastPlayerAppearance(state);
   const objective = store?.objective && store.objective.season === state.season && store.objective.club === state.professional.registrationClub
     ? store.objective
     : null;
   const milestonesKnown = store !== null;
+  const goalHistoryKnown = careerGoalHistoryComplete(state);
+  const seasonStats = seasonPlayerStats(state);
 
   return {
     currentSeason: state.season,
@@ -138,6 +159,8 @@ export function getSportContext(state: GameState): SportContext {
     currentCompetition: current?.competition ?? next?.competition ?? null,
     nextFixture: next,
     previousFixture: previous,
+    lastPlayerAppearance: lastAppearance,
+    lastPlayerAppearanceContext: getLastPlayerAppearanceContext(state),
     hoursToNextFixture: hoursToNextScheduledFixture(state),
     isMatchDay: current !== null,
     isTrainingWindow: isTrainingDay(state),
@@ -152,7 +175,8 @@ export function getSportContext(state: GameState): SportContext {
     firstAppearance: store?.milestones.firstAppearance ?? null,
     firstStart: store?.milestones.firstStart ?? null,
     firstFullMatch: store?.milestones.firstFullMatch ?? null,
-    firstGoal: null,
+    firstGoal: goalHistoryKnown ? (store?.milestones.firstGoal ?? null) : null,
+    currentSeasonPlayerStats: seasonStats,
     availability: {
       currentSeason: known(),
       sportingClub: known(),
@@ -162,6 +186,8 @@ export function getSportContext(state: GameState): SportContext {
       currentCompetition: known(),
       nextFixture: known(),
       previousFixture: milestonesKnown ? known() : unavailable(),
+      lastPlayerAppearance: milestonesKnown ? known() : unavailable(),
+      lastPlayerAppearanceContext: milestonesKnown ? known() : unavailable(),
       hoursToNextFixture: known(),
       isMatchDay: known(),
       isTrainingWindow: known(),
@@ -176,11 +202,14 @@ export function getSportContext(state: GameState): SportContext {
       firstAppearance: milestonesKnown ? known() : unavailable(),
       firstStart: milestonesKnown ? known() : unavailable(),
       firstFullMatch: milestonesKnown ? known() : unavailable(),
-      firstGoal: unavailable()
+      firstGoal: goalHistoryKnown ? known() : unavailable(),
+      currentSeasonPlayerStats: seasonStats ? known() : unavailable()
     },
     unavailableReason: !milestonesKnown
       ? "historical_match_store_not_initialized"
-      : "standing_and_goal_model_not_implemented"
+      : !goalHistoryKnown
+        ? "historical_player_stats_incomplete"
+        : "standing_model_not_implemented"
   };
 }
 
@@ -223,18 +252,40 @@ export function getCurrentMatchContext(state: GameState): CurrentMatchContext {
     opponent: match.opponent,
     homeAway: match.homeAway,
     dateTime: null,
-    result: null,
+    result: match.result ?? null,
     playerCalledUp: match.player.calledUp,
     playerOnBench: match.player.onBench,
     playerStarted: match.player.started,
     playerAppeared: match.player.appeared,
     minutes: match.player.minutes,
-    goals: null,
-    assists: null,
-    cards: null,
+    goals: match.stats?.goals ?? null,
+    assists: match.stats?.assists ?? null,
+    cards: match.stats ? { yellow: match.stats.yellowCards, red: match.stats.redCards } : null,
     injury: match.player.injuryUnavailable,
     decisionMinute: match.decisionContext?.minute ?? null,
     scoreAtDecision: match.decisionContext ? { home: match.decisionContext.scoreHome, away: match.decisionContext.scoreAway } : null,
     debutDecisionContext: canonicalDebutDecision
   };
+}
+
+
+/**
+ * Public sport-owned read for the latest factual on-field appearance.
+ *
+ * Contract is intentionally the same as PR #202:
+ * - historical save without the persisted match store => explicitly unavailable;
+ * - initialized store with no appearance => authoritative match:null;
+ * - otherwise the latest persisted official row where player.appeared===true.
+ *
+ * The returned row may carry richer SPORT-2/3 result/stat facts when those authorities
+ * produced them; historical missing fields remain absent/unknown.
+ */
+export function getLastPlayerAppearanceContext(state: GameState): LastPlayerAppearanceContext {
+  const store = getSportMatchModelStore(state);
+  if (!store) return { status: "historical_match_store_not_initialized", match: null };
+  for (let index = store.fixtures.length - 1; index >= 0; index -= 1) {
+    const row = store.fixtures[index]!;
+    if (row.player.appeared) return { status: "authoritative", match: row };
+  }
+  return { status: "authoritative", match: null };
 }

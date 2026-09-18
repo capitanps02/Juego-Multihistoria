@@ -1,0 +1,18 @@
+[
+  {"fact":"careerLength","sources":["history.season","age"],"deterministic":true,"missingDataPolicy":"omit"},
+  {"fact":"careerClubs","sources":["history.club","club","professional.ownerClub","professional.registrationClub","market.history"],"deterministic":true,"missingDataPolicy":"omit"},
+  {"fact":"firstClub","sources":["history.club","professional.ownerClub","club"],"deterministic":true,"missingDataPolicy":"null"},
+  {"fact":"lastClub","sources":["professional.registrationClub","club","professional.ownerClub"],"deterministic":true,"missingDataPolicy":"null"},
+  {"fact":"careerAppearances","sources":["sport.appearances"],"deterministic":true,"missingDataPolicy":"zero_only_if_state_authority_says_zero"},
+  {"fact":"careerGoals","sources":[],"deterministic":true,"missingDataPolicy":"null","status":"unavailable"},
+  {"fact":"majorTrophies","sources":[],"deterministic":true,"missingDataPolicy":"null","status":"no_structured_trophy_history"},
+  {"fact":"nationalCaps","sources":["professional.nationalCaps"],"deterministic":true,"missingDataPolicy":"zero_only_if_state_authority_says_zero"},
+  {"fact":"injuryBurden","sources":["world.maturityLongInjuryCount","professional.recoveryDebt","professional.availability"],"deterministic":true,"missingDataPolicy":"omit"},
+  {"fact":"retirementPath","sources":["retirement.status","retirement.reason","retirement dates","history/provenance"],"deterministic":true,"missingDataPolicy":"generic_terminal_fact_only"},
+  {"fact":"lastAppearance","sources":["sport.appearances","world.retirementAppearancesAtAnnouncement","world.retirementLastAppearanceDate"],"deterministic":true,"missingDataPolicy":"null","status":"aggregate_only_until_sport_authority"},
+  {"fact":"relationshipOutcomes","sources":["relationships","npc knowledge/memories"],"deterministic":true,"missingDataPolicy":"omit","rule":"never invent reconciliation"},
+  {"fact":"familyOutcome","sources":["established family state only"],"deterministic":true,"missingDataPolicy":"omit","rule":"do not infer family"},
+  {"fact":"publicLegacy","sources":["professional.publicMyth","professional.publicPolarization","reputation","factual history"],"deterministic":true,"missingDataPolicy":"omit","rule":"do not collapse fame and affection"},
+  {"fact":"endingFamilies","sources":["closed GameState","ENDING_FAMILY_RULES"],"deterministic":true,"missingDataPolicy":"fallback_to_supported_general_family"},
+  {"fact":"epilogueText","sources":["closed GameState","selected evidence"],"deterministic":true,"missingDataPolicy":"omit unsupported lines"}
+]

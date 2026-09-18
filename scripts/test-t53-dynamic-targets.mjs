@@ -58,7 +58,10 @@ async function withDynamicRule(rule, fn) {
 }
 
 test('T5.3 dynamic targets/0 declarations fail closed and role targets are choice+outcome scoped', () => {
-  const allowedSlots = new Set(['captain', 'star']);
+  // Keep this runtime ratchet aligned with NpcKnowledgeTargetSlot and
+  // npc-knowledge-targets.ts. Adding a fifth slot must update both the typed
+  // authority resolver and this explicit allowlist before content may use it.
+  const allowedSlots = new Set(['captain', 'star', 'activeAgent', 'currentClubInstitutional']);
   for (const rule of NPC_EVENT_KNOWLEDGE_RULES) {
     const slots = rule.targetSlots ?? [];
     const staticTargets = rule.npcIds ?? [];
