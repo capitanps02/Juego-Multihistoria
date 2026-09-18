@@ -1,119 +1,82 @@
 # Codex prompt — retirement / last match / epilogues
 
-Work on repository `capitanps02/Juego-Multihistoria`.
+Work on `capitanps02/Juego-Multihistoria`.
 
-Owner branch: `t5/retirement-epilogues` (PR #118). Never work directly on `main`; never auto-merge. Always inspect the real latest `main` and the branch HEAD before changing code.
+Owner branch: `t5/retirement-epilogues` (PR #118). Never work directly on `main`; never auto-merge.
 
-## Mission and boundary
+## Boundary
 
-Own only the terminal retirement / last-match / epilogue layer. Ordinary active 34+ career belongs to PR #15 / `t51/canon-34plus` and must remain playable until explicit terminal intent exists.
+Own only retirement decision/announcement, final playing phase, career closure and epilogues. Ordinary active 34+ career belongs to PR #15.
 
-State machine:
+Normal state machine:
 
 `playing -> decided -> announced -> closed`
 
-Only explicit pre-announcement reconsideration may do `decided -> playing`. Ordinary `announced -> playing`, `closed -> playing`, `playing -> announced` and `playing -> closed` are forbidden.
+Only explicit private pre-announcement reconsideration may do `decided -> playing`. Do not reopen `closed`. Do not globally permit `announced -> playing`; the future canonical reversal is a narrowly authorized exception only.
 
-The narrow `EARLY_RETIRED_30_34` compatibility bridge is intentional: `EVT_33_RET_001` choice A semantically contains decision + announcement + end-of-season closure intent but currently persists that legacy flag plus `world.retirementReason="voluntary_30_34"`. Do not broaden the bridge. Remove it only after the 30–34 owner persists explicit terminal phases and supplies migration evidence.
-
-## Current Codex status
+## Current queue
 
 `analysis/CODEX/retirement/implementation-ready.json` is authoritative.
 
-Current count: **9 implemented / 0 ready / 2 blocked**.
+- **9 implemented**
+- **0 ready**
+- **3 blocked**
+- **1 partially unblocked**
 
-Implemented:
-- `CODEX-RET-001` contemplation without automatic retirement;
-- `CODEX-RET-002` explicit pre-announcement reconsideration;
-- `CODEX-RET-003` public-announcement NPC knowledge through live authority targets;
-- `CODEX-RET-004` final-phase narrative without fabricated sporting facts;
-- `CODEX-RET-006` idempotent `closeCareer` integration;
-- `CODEX-RET-007` fixture/season-aware closure gate with fail-closed compatibility fallback;
-- `CODEX-RET-008` factual `CareerSummary`;
-- `CODEX-RET-009` deterministic evidence-gated epilogue prose;
-- `CODEX-RET-010` legacy/save compatibility regressions.
+Implemented: RET-001/002/003/004/006/007/008/009/010.
 
-Blocked only:
-- `CODEX-RET-005` — complete persisted factual `LastMatchFact`;
-- `CODEX-RET-011` — final terminal `contentIdentity` freeze + adjacent migration edge.
+Blocked:
+- RET-005 — rich factual LastMatchFact / terminal sporting facts;
+- RET-011 — final terminal contentIdentity freeze + adjacent migration edge;
+- RET-012 — canonical exceptional post-announcement comeback.
 
 Do not duplicate implemented lots.
 
-## RET-007 authority contract
+## Shared sport authority
 
-RET-007 is already implemented in PR #118.
+The PR #156 match producer is already integrated in `main@5f4d14bca4d696cfafadb58b64034c7cd40cc147`.
 
-When `getSportContext(state).availability.remainingOfficialMatches === "known"`:
-- `remainingOfficialMatches > 0` blocks terminal closure;
-- `remainingOfficialMatches === 0` permits the announced career to close through the normal state machine.
+Use shared SportContext/match-model facts. Never infer opponent, minutes, result, goal, assist, cards or suspension from role/form/age/flags.
 
-When that authority is unavailable, the previous administrative timeout remains only as a compatibility fallback. Do not replace this with age/month/form proxies.
+PR #202 is the focused remaining read-layer candidate, currently `e9b68de453822e184854e9e7cce879f10e1834bb`, 2/0 over main, focused run `35331003785` **18/18 PASS**. Its public API `getLastPlayerAppearanceContext(state)` identifies the latest actual appearance rather than merely the latest fixture.
 
-## RET-005 blocker
+#199 owns result/goals/assists/cards; #200 owns injury chronology. Unsupported facts stay null/fail-closed.
 
-Retirement currently knows cumulative appearances through `getSportContext(state).careerAppearances`. A post-announcement increase proves only that at least one later appearance occurred. It does not identify the actual final fixture.
+## RET-007
 
-`world.retirementLastAppearanceDate` is currently the observation/week date, not an authoritative fixture timestamp.
+Already implemented. Known `remainingOfficialMatches > 0` blocks closure; known zero permits closure. Do not replace this with age/month/form proxies. The shared match calendar in main now activates this path.
 
-PR #156 / `t5/authoritative-match-model` is the upstream producer candidate. Its latest inspected Repository Integrity run was cancelled while the long determinism gate was still running, so it is **not yet a certified integration base**. Even when it lands, RET-005 still needs a public/factual query for the player's last actual appearance, not merely `previousOfficialMatch()` if that fixture was a non-appearance. Preserve null/omitted opponent, competition, minutes, result, goals and assists until authority exists.
+## Market authority / RET-012
 
-Never infer match facts from role, form, age, season day, narrative flags or football-moment receipts.
+Formal offer truth comes only from market authority. Zero offers do not retire the player.
 
-## Market authority
+Canonical `CEVT_38_RETIREMENT_REVERSAL` is distinct from legacy `CEVT_RET_RECONSIDER`. Read `CANONICAL_REVERSAL_CONTRACT.md`.
 
-Consume `src/simulation/offers.ts`:
-- `getActiveCareerOffers(state)`;
-- `careerOfferKind(offer)`;
-- `contractEmploymentStatus(state)`;
-- `respondToOffer(...)` / `offerBridge`.
+Do not code RET-012 until #176 provides deterministic, ambiguity-safe post-announcement CareerOffer production/provenance. `closed` remains terminal.
 
-No retirement code may fabricate an offer, destination, salary, duration or promised role. Zero offers may open reflection, never retire automatically. Contract expiry is not free agency unless the market authority says so.
+## RET-011 lineage
 
-## NPC knowledge authority
-
-Public retirement announcement is already integrated with T5.3 live targets in `src/narrative/npc-knowledge-targets.ts`:
-- `captain`;
-- `star`;
-- `activeAgent`;
-- `currentClubInstitutional`.
-
-Unresolved slots fail closed. `WAIT` remains private. Do not retrofit current knowledge into historical NPC memory.
-
-## RET-011 blocker: lineage
-
-The multi-hop migration engine already exists in `main`; RET-011 is not blocked by missing graph infrastructure.
-
-The blocker is generation ordering. Never freeze the current terminal identity or register a shortcut edge before the immediately preceding active 34+ generation is integrated and frozen.
-
-Required lineage:
+Multi-hop migration infrastructure already exists. Required order:
 
 `... -> 30–34 -> active ordinary 34+ -> retirement/epilogue`
 
-No `PRE -> retirement` shortcut.
-
-Read PR #15 / `t51/canon-34plus` before any lineage change. The seed catalog work in PR #191 is separately certified but does not substitute for completed ordinary 34+ content.
+No shortcut edge. Do not freeze provisional terminal identity `06cebf93a642ff776670356449777255cb8afe009b424d9cb0a22b44e158dcb0`.
 
 ## Mandatory invariants
 
-- age, injury, contract expiry and zero offers never auto-retire;
-- explicit terminal intent is required;
+- no auto-retirement from age, injury, expiry or zero offers;
 - announcement is distinct from closure;
-- announced players may still train/play/be injured/benched/not play;
-- retirement never creates fixtures, appearances, minutes, goals, assists, results or victories;
-- closure consumes 0 RNG and is idempotent;
-- epilogue selection/render is deterministic for the same save;
-- closed saves remain terminal after load;
-- active legacy saves must not become retired merely by migration;
-- pending legacy choices retain frozen definition/fingerprint semantics;
-- do not rewrite history or seed origin;
-- do not weaken freeze/lineage sentinels.
+- retirement never fabricates sporting facts;
+- closure is idempotent and 0 RNG;
+- epilogues are deterministic/evidence-gated;
+- saves do not rewrite history or seed origin;
+- closed saves remain terminal;
+- never weaken lineage/freeze sentinels.
 
-## Minimum validation
+## Validation
 
-Build and run the dedicated terminal suite:
+Minimum terminal suite is the T5.36/T5.37 workflow plus repository save/determinism/integrity gates.
 
-`node --test scripts/test-t536-t537-retirement.mjs scripts/test-t536-career-summary.mjs scripts/test-t536-market-authority.mjs scripts/test-t536-sport-authority.mjs scripts/test-t536-npc-announcement.mjs scripts/test-t537-family-minimums.mjs scripts/test-t536-status-writer-inventory.mjs scripts/test-t537-epilogue-profiles.mjs`
+Latest runtime-certified head before this documentation refresh: `46a305e6406c1116b05d09a70157910c5fc6706c`, dedicated run `35330749211` **45/45 PASS**; Repository Integrity `35330749282` stops only at the intentional active-source freeze sentinel.
 
-Also run the repository save/determinism/integrity gates available on the exact HEAD. A failure before the expected content freeze/lineage sentinel is a real regression. Do not call a HEAD green until its own runs finish.
-
-Before handoff report exact HEAD, main base, ahead/behind, changed runtime/shared-authority files, schema/RNG/contentIdentity/migration changes, exact tests, and the 9/0/2 implemented/ready/blocked count.
+Always certify the exact final HEAD you hand off.
