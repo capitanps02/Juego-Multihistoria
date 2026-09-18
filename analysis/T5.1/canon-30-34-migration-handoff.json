@@ -548,12 +548,14 @@
     "ids": [
       "EVT_30_BRIDGE_001",
       "EVT_33_FIN_001",
-      "EVT_32_IMPACT_001"
+      "EVT_32_IMPACT_001",
+      "EVT_30_STATUS_001"
     ],
     "supersededLegacyIds": [
       "EVT_30_IDN_001",
       "EVT_33_END_001",
-      "EVT_32_TACT_001"
+      "EVT_32_TACT_001",
+      "EVT_30_TEAM_001"
     ],
     "migrationRule": "Implemented shifted canon remains distinct-scene. Canonical definitions start unseen; legacy seen/cooldown/pending/history and seed origins are not rebound or rewritten."
   }
