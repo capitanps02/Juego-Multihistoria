@@ -192,6 +192,13 @@ test('competition context/7 ordinary official league fixture exposes league stag
 test('competition calendar/8 league-only horizon exposes factual weekly schedule without proxy influence', () => {
   const a = createInitialState(9620);
   const b = createInitialState(9620);
+  // July is preseason in the authoritative league calendar. Place both states
+  // inside the Aug-May league window while preserving the same runtime cadence.
+  for (const state of [a, b]) {
+    state.date = '2026-08-01';
+    state.runtime.day = 31;
+    state.runtime.seasonDay = 31;
+  }
   a.sport.form = 1;
   a.sport.roleScore = 1;
   a.reputation.prestige = 1;
