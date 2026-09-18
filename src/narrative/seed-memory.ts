@@ -202,6 +202,17 @@ export function getPhysioConfidenceMemory(state: GameState): PhysioConfidenceMem
   };
 }
 
+export interface LoadManagementMemory extends SeedMemoryProjection {
+  plan: string | null;
+}
+
+export function getLoadManagementMemory(state: GameState): LoadManagementMemory {
+  return {
+    ...projectSeedMemory(state, "SEED_LOAD_MANAGEMENT"),
+    plan: liveStringPayload(state, "SEED_LOAD_MANAGEMENT", "plan")
+  };
+}
+
 export interface EarlyCareerSeedFacts {
   brunoFavorStance: string | null;
   coachPublicStance: string | null;
@@ -217,6 +228,7 @@ export interface EarlyCareerSeedFacts {
   bodyPrecedentReturn19: string | null;
   physioConfidencePattern: string | null;
   physioConfidenceReturn19: string | null;
+  loadManagementPlan: string | null;
 }
 
 /**
@@ -231,6 +243,7 @@ export function earlyCareerSeedFacts(state: GameState): EarlyCareerSeedFacts {
   const exit = getExitStyleMemory(state);
   const body = getBodyPrecedent(state);
   const physio = getPhysioConfidenceMemory(state);
+  const load = getLoadManagementMemory(state);
   return {
     brunoFavorStance: bruno.stance,
     coachPublicStance: coach.stance,
@@ -245,6 +258,7 @@ export function earlyCareerSeedFacts(state: GameState): EarlyCareerSeedFacts {
     bodyPrecedentEarly: body.early,
     bodyPrecedentReturn19: body.return19,
     physioConfidencePattern: physio.pattern,
-    physioConfidenceReturn19: physio.return19
+    physioConfidenceReturn19: physio.return19,
+    loadManagementPlan: load.plan
   };
 }

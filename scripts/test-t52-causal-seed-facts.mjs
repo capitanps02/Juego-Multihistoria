@@ -37,3 +37,25 @@ test('T5.2 audit recognizes the five integrated 18-20 causal seed consumers', ()
     );
   }
 });
+
+
+test('load management plan projects exact live payload and never synthesizes a plan', () => {
+  const state = createInitialState(52072);
+  assert.equal(earlyCareerSeedFacts(state).loadManagementPlan, null);
+
+  state.seeds.push({
+    id: 'SEED_LOAD_MANAGEMENT',
+    state: 'dormant',
+    intensity: 64,
+    originEvent: 'EVT_23_BODY_001',
+    originSeason: state.season,
+    npcRefs: ['NPC_MED_01'],
+    payload: { plan: 'weekly_prevention' }
+  });
+
+  assert.equal(earlyCareerSeedFacts(state).loadManagementPlan, 'weekly_prevention');
+  state.seeds[0].payload.plan = 'external_review_first';
+  assert.equal(earlyCareerSeedFacts(state).loadManagementPlan, 'external_review_first');
+  state.seeds[0].state = 'resolved';
+  assert.equal(earlyCareerSeedFacts(state).loadManagementPlan, null);
+});
