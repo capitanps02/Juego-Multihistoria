@@ -26,7 +26,7 @@ const byPhase = Object.fromEntries(phases.map(phase => [phase, {
   conditional: conditional.filter(event => event.phase === phase).length
 }]));
 
-if (EVENTS.length !== 388 || principal.length !== 254 || conditional.length !== 134) {
+if (EVENTS.length !== 391 || principal.length !== 257 || conditional.length !== 134) {
   throw new Error(`Unexpected baseline counts: total=${EVENTS.length}, principal=${principal.length}, conditional=${conditional.length}`);
 }
 
