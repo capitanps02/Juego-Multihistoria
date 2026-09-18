@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "5f4d14bca4d696cfafadb58b64034c7cd40cc147",
+  "baseCommit": "49f16b21c8f68f1439901437dcf16e1384966de2",
   "bugs": [
     {
       "id": "T5-QA-016",
@@ -113,10 +113,11 @@
       "reproduction": [
         "workflow 35214465940 / job 105179515812",
         "profile loyal / seed 512000",
-        "npm run build && node --test scripts/test-t5-contract-expiry-known-bug.mjs"
+        "npm run build && node --test scripts/test-t5-contract-expiry-known-bug.mjs",
+        "subtests T5-QA-028a/b/c/d"
       ],
       "expected": "A zero-month unattached employment boundary cannot continue indefinitely as ordinary same-employer registered play; last-club strings are provenance, not live employment authority.",
-      "actual": "Pass A is fully specified and #156 is integrated, but execution is sequencing-blocked by the coordinated #207 -> #157 -> #130 chain so reattachment composes with CareerOffer.context and the final MarketState v2 authority instead of creating a parallel/intermediate offer model.",
+      "actual": "Pass A remains blocked by #207 -> #157 -> #130, but QA now carries four permanent directed regressions: long zombie, 1→0 unattached + save/load/RNG, no old-club appearances + formal-offer re-employment, and deterministic expiry. The test uses public offer selectors so it is prepared for MarketState v2.",
       "owner": "shared-contract-employment",
       "issue": 130,
       "test": "scripts/test-t5-contract-expiry-known-bug.mjs",
@@ -132,13 +133,15 @@
         "npm run build && node --test scripts/test-t5-match-model-known-bug.mjs"
       ],
       "expected": "Match-model v1 rejects producer-impossible player facts, unsupported firstGoal authority, and semantically wrong/non-first milestone pointers at load/runtime validation boundaries.",
-      "actual": "Owner PR #214 on codex/t5-match-save-invariants@b688017e996449f88822dc7c54162c3f3b3e3c2f implements the QA-directed fix and full onBench producer parity; duplicate PR #218 is closed as superseded. Await exact-head CI, integration, then post-merge regression before resolving.",
+      "actual": "Owner PR #214 was re-grounded onto current main without changing the audited 3-file patch. Current head 78c0ca4ea24e5fb3d0f1051d3aa57ea0d450dcd3 is 1 ahead / 0 behind main@49f16b21; exact-head Repository Integrity run 35336619877 is pending. Duplicate PR #218 remains superseded.",
       "owner": "match-model-save-validation",
       "issue": 212,
       "ownerPr": 214,
       "test": "scripts/test-t5-match-model-known-bug.mjs",
       "firstSeenCommit": "5f4d14bca4d696cfafadb58b64034c7cd40cc147",
-      "lastVerifiedCommit": "5f4d14bca4d696cfafadb58b64034c7cd40cc147"
+      "lastVerifiedCommit": "5f4d14bca4d696cfafadb58b64034c7cd40cc147",
+      "ownerHead": "78c0ca4ea24e5fb3d0f1051d3aa57ea0d450dcd3",
+      "ownerCiRun": 35336619877
     },
     {
       "id": "T5-QA-030",
