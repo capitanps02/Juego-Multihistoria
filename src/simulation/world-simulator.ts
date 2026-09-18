@@ -1,6 +1,7 @@
 import type { GameState } from "../core/types.js";
 import { advanceWorldDayInPlace as advanceCoreWorldDayInPlace } from "./world-simulator-core.js";
 import { closeLeagueObjectiveInPlace, recordOfficialMatchInPlace, remainingLeagueFixtures } from "./match-model.js";
+import { recordCoreFinalCompetitionMomentInPlace } from "./competition-context.js";
 
 const num = (value: unknown, fallback = 0): number =>
   typeof value === "number" && Number.isFinite(value) ? value : fallback;
@@ -15,9 +16,17 @@ export function advanceWorldDayInPlace(next: GameState): GameState {
   const beforeDate = next.date;
   const beforeAppearances = num(next.sport.appearances);
   const beforeDebut = next.flags.OFFICIAL_DEBUT === true;
+  const beforeFinalContext = next.flags.FINAL_CONTEXT === true;
 
   advanceCoreWorldDayInPlace(next);
   if (next.date === beforeDate) return next;
+
+  if (!beforeFinalContext && next.flags.FINAL_CONTEXT === true) {
+    // The core simulator already produced the final competition + outcome.
+    // Persist that sporting fact without another RNG draw and without inferring
+    // a final from month, reputation or narrative eligibility.
+    recordCoreFinalCompetitionMomentInPlace(next);
+  }
 
   if (next.runtime.day % 7 === 0) {
     const appeared = num(next.sport.appearances) > beforeAppearances;
