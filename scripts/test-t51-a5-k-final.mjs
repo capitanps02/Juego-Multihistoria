@@ -5,6 +5,7 @@ import { EVENTS } from '../dist/content/events/index.js';
 import { contentIdentity } from '../dist/session/content-identity.js';
 import { validateEvents } from '../dist/narrative/validate.js';
 import { validateBuild } from '../dist/validation/build-validation.js';
+import { CONTENT_MIGRATION_ROUTES, T51_AGE18_AUTHORITY_CONTENT_IDENTITY, T51_A5_CORRECTED_K_CONTENT_IDENTITY, findMigrationRoute } from '../dist/session/content-migration.js';
 
 const ACTIVE_IDS=[
   'CEVT_18_PLAYOFF_01',
@@ -46,8 +47,15 @@ test('A5 K preserves canonical/global counts and structural validation',()=>{
   assert.deepEqual(validateBuild(EVENTS).filter(issue=>issue.level==='error'),[]);
 });
 
-test('A5 K identity is reproducible',async()=>{
+test('A5 K identity and adjacent J→K lineage are reproducible',async()=>{
   const identity=await contentIdentity(EVENTS);
-  assert.match(identity,/^[0-9a-f]{64}$/);
+  assert.equal(identity,T51_A5_CORRECTED_K_CONTENT_IDENTITY);
+  assert.equal(identity,'a8fb037f6adb2ea52c862af86cae59c82b23853d7a9940166d732167b3e636a4');
+  const route=findMigrationRoute(T51_AGE18_AUTHORITY_CONTENT_IDENTITY,T51_A5_CORRECTED_K_CONTENT_IDENTITY,CONTENT_MIGRATION_ROUTES);
+  assert.ok(route,'missing adjacent J→K route');
+  assert.deepEqual(route.schedulerMappings,[
+    {kind:'same_scene',legacyEventId:'CEVT_18_PLAYOFF_01',canonicalEventId:'CEVT_18_PLAYOFF_01'},
+    {kind:'distinct_scene',legacyEventId:'EVT_20_CCH_001',canonicalEventId:'EVT_20_CCH_001',clearCanonicalSeen:true,clearCanonicalCooldown:true}
+  ]);
   console.log(`A5_K_CONTENT_IDENTITY=${identity}`);
 });
