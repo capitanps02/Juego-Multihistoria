@@ -168,14 +168,21 @@
     {
       "domain": "club_world_incidents",
       "ownerIssue": 201,
-      "state": "open_design_gate",
+      "state": "closed_completed_design_gate",
       "owns": [
         "club_financial_state",
         "commercial_sponsor_state",
         "stadium_closed_door_context",
         "staff_crisis_player_coach_context"
       ],
-      "rule": "implement only a justified factual producer; otherwise leave consumer fail-closed"
+      "rule": "No generic random world-incident engine is authorized. Prefer exact canonical event history when the event itself is the occurrence; otherwise fail closed.",
+      "decisions": {
+        "CEVT_35_UDV_FINANCIAL_CRISIS": "event_establishes_incident",
+        "CEVT_35_SPONSOR_EXIT": "unsupported_current_release_without_active_sponsor_fact",
+        "CEVT_35_SPONSOR_LATE_BOOM": "event_establishes_incident_after_factual_viral_or_new_market_trigger",
+        "CEVT_37_EMPTY_STADIUM_FAREWELL": "unsupported_current_release_without_external_venue_incident",
+        "CEVT_37_PLAYER_COACH_EMERGENCY": "unsupported_current_release_without_staff_crisis"
+      }
     },
     {
       "domain": "canonical_conditional_content",
@@ -250,6 +257,11 @@
       "issue": 177,
       "state": "closed_completed",
       "scope": "late-career identity routing"
+    },
+    {
+      "issue": 201,
+      "state": "closed_completed",
+      "scope": "club-world incident producer design"
     }
   ]
 }
