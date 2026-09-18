@@ -6,7 +6,12 @@ import { inspectFootballMomentStore } from "../simulation/football-moments.js";
 
 function assertMarket(value: unknown, state: GameState): void {
   const m=record(value,"market");
+  const exactKeys=(row:Record<string,unknown>,path:string,allowed:readonly string[],required:readonly string[]=allowed)=>{
+    ensure(Object.keys(row).every(key=>allowed.includes(key)),path,"campos desconocidos");
+    ensure(required.every(key=>Object.prototype.hasOwnProperty.call(row,key)),path,"faltan campos obligatorios");
+  };
   ensure(m.version===1,"market.version","versión no compatible");
+  exactKeys(m,"market",["version","sequence","pending","history","systemClosures","negotiationSequence","futureNegotiations","futureAgreements"],["version","sequence","pending","history"]);
   integer(m.sequence,"market.sequence");
   const terms=(value:unknown,path:string)=>{
     const t=record(value,path);
@@ -33,14 +38,28 @@ function assertMarket(value: unknown, state: GameState): void {
     const before=terms(o.before,path+".before"),after=terms(o.terms,path+".terms");
     ensure(JSON.stringify(before)!==JSON.stringify(after),path,"oferta sin cambios");
     if(o.context!==undefined)ensure(isCareerOfferContext(o.context),path+".context","contexto formal inválido");
-    if(o.validThrough!==undefined)date(o.validThrough,path+".validThrough");
+    if(o.validThrough!==undefined){
+      date(o.validThrough,path+".validThrough");
+      ensure((o.validThrough as string)>=(o.date as string),path+".validThrough","deadline anterior a la oferta");
+    }
     return {o,before,after};
+  };
+  const narrativeSource=(value:unknown,path:string)=>{
+    const source=record(value,path);
+    exactKeys(source,path,["kind","historyIndex","eventId","choiceId","disposition"]);
+    ensure(source.kind==="narrative_choice",path+".kind","provenance desconocida");
+    integer(source.historyIndex,path+".historyIndex",0);
+    string(source.eventId,path+".eventId");string(source.choiceId,path+".choiceId");
+    oneOf(source.disposition,["accept","reject","delegate","counter","defer"],path+".disposition");
+    return source;
   };
   const history=list(m.history,"market.history");
   history.forEach((x,i)=>{
     const h=record(x,`market.history[${i}]`),{before,after}=offer(h.offer,`market.history[${i}].offer`);
+    exactKeys(h,`market.history[${i}]`,["offer","action","accepted","explanation","source"],["offer","action","accepted","explanation"]);
     oneOf(h.action,["accept","reject","delegate"],`market.history[${i}].action`);
     boolean(h.accepted,`market.history[${i}].accepted`);string(h.explanation,`market.history[${i}].explanation`);
+    if(h.source!==undefined)narrativeSource(h.source,`market.history[${i}].source`);
     const accepted=h.action==="accept"||(h.action==="delegate"&&Number(after.salary)>=Number(before.salary)&&Number(after.months)>=12&&Number(after.leagueTier)<=Number(before.leagueTier));
     ensure(h.accepted===accepted,`market.history[${i}].accepted`,"firma incompatible con autorización");
   });
@@ -53,9 +72,15 @@ function assertMarket(value: unknown, state: GameState): void {
   if(m.systemClosures!==undefined){
     list(m.systemClosures,"market.systemClosures").forEach((x,i)=>{
       const row=record(x,`market.systemClosures[${i}]`);
-      offer(row.offer,`market.systemClosures[${i}].offer`);
+      exactKeys(row,`market.systemClosures[${i}]`,["offer","reason","date","source"]);
+      const closed=offer(row.offer,`market.systemClosures[${i}].offer`);
       oneOf(row.reason,["expired","withdrawn","superseded"],`market.systemClosures[${i}].reason`);
       date(row.date,`market.systemClosures[${i}].date`);ensure((row.date as string)<=state.date,`market.systemClosures[${i}].date`,"fecha futura");
+      ensure((row.date as string)>=(closed.o.date as string),`market.systemClosures[${i}].date`,"cierre anterior a la oferta");
+      if(row.reason==="expired"){
+        ensure(closed.o.validThrough!==undefined,`market.systemClosures[${i}].offer.validThrough`,"expiración sin deadline");
+        ensure((row.date as string)>(closed.o.validThrough as string),`market.systemClosures[${i}].date`,"expiración antes del deadline");
+      }
       oneOf(row.source,["calendar","producer","system"],`market.systemClosures[${i}].source`);
     });
   }
@@ -64,14 +89,17 @@ function assertMarket(value: unknown, state: GameState): void {
   if(m.futureNegotiations!==undefined){
     list(m.futureNegotiations,"market.futureNegotiations").forEach((x,i)=>{
       const row=record(x,`market.futureNegotiations[${i}]`);
+      exactKeys(row,`market.futureNegotiations[${i}]`,["id","date","reason","destination","before","terms","status","closedDate"]);
       string(row.id,`market.futureNegotiations[${i}].id`);
       ensure(/^negotiation:\d+$/.test(row.id as string),`market.futureNegotiations[${i}].id`,"identificador incorrecto");
       ensure(!negotiationIds.has(row.id as string),`market.futureNegotiations[${i}].id`,"identificador duplicado");
       negotiationIds.add(row.id as string);
-      date(row.date,`market.futureNegotiations[${i}].date`);string(row.reason,`market.futureNegotiations[${i}].reason`);string(row.destination,`market.futureNegotiations[${i}].destination`);
-      terms(row.before,`market.futureNegotiations[${i}].before`);terms(row.terms,`market.futureNegotiations[${i}].terms`);
+      date(row.date,`market.futureNegotiations[${i}].date`);ensure((row.date as string)<=state.date,`market.futureNegotiations[${i}].date`,"fecha futura");
+      string(row.reason,`market.futureNegotiations[${i}].reason`);string(row.destination,`market.futureNegotiations[${i}].destination`);
+      terms(row.before,`market.futureNegotiations[${i}].before`);const negotiatedTerms=terms(row.terms,`market.futureNegotiations[${i}].terms`);
+      ensure(negotiatedTerms.club===row.destination&&negotiatedTerms.ownerClub===row.destination&&negotiatedTerms.registrationClub===row.destination,`market.futureNegotiations[${i}].terms`,"destino futuro incoherente");
       oneOf(row.status,["open","rejected","withdrawn","superseded","signed"],`market.futureNegotiations[${i}].status`);
-      if(row.closedDate!==null)date(row.closedDate,`market.futureNegotiations[${i}].closedDate`);
+      if(row.closedDate!==null){date(row.closedDate,`market.futureNegotiations[${i}].closedDate`);ensure((row.closedDate as string)>=(row.date as string)&&(row.closedDate as string)<=state.date,`market.futureNegotiations[${i}].closedDate`,"fecha de cierre incoherente");}
       if(row.status==="open")ensure(row.closedDate===null,`market.futureNegotiations[${i}].closedDate`,"negociación abierta cerrada");
       else ensure(row.closedDate!==null,`market.futureNegotiations[${i}].closedDate`,"negociación cerrada sin fecha");
     });
@@ -79,14 +107,23 @@ function assertMarket(value: unknown, state: GameState): void {
   }
   if(m.futureAgreements!==undefined){
     let openFuture=0;
+    const agreementNegotiations=new Set<string>();
     list(m.futureAgreements,"market.futureAgreements").forEach((x,i)=>{
       const row=record(x,`market.futureAgreements[${i}]`);
+      exactKeys(row,`market.futureAgreements[${i}]`,["negotiationId","terms","signedDate","effectiveDate","status","activatedDate","source"],["negotiationId","terms","signedDate","effectiveDate","status","activatedDate"]);
       string(row.negotiationId,`market.futureAgreements[${i}].negotiationId`);
       ensure(negotiationIds.has(row.negotiationId as string),`market.futureAgreements[${i}].negotiationId`,"negociación inexistente");
-      terms(row.terms,`market.futureAgreements[${i}].terms`);
+      ensure(!agreementNegotiations.has(row.negotiationId as string),`market.futureAgreements[${i}].negotiationId`,"precontrato duplicado");
+      agreementNegotiations.add(row.negotiationId as string);
+      const agreedTerms=terms(row.terms,`market.futureAgreements[${i}].terms`);
+      const negotiation=(m.futureNegotiations as unknown[]).map((value,j)=>record(value,`market.futureNegotiations[${j}]`)).find(value=>value.id===row.negotiationId);
+      ensure(negotiation!==undefined&&JSON.stringify(agreedTerms)===JSON.stringify(negotiation.terms),`market.futureAgreements[${i}].terms`,"términos distintos de la negociación firmada");
       date(row.signedDate,`market.futureAgreements[${i}].signedDate`);date(row.effectiveDate,`market.futureAgreements[${i}].effectiveDate`);
+      ensure((row.signedDate as string)<=state.date,`market.futureAgreements[${i}].signedDate`,"firma futura");
+      ensure((row.effectiveDate as string)>(row.signedDate as string),`market.futureAgreements[${i}].effectiveDate`,"fecha efectiva no futura");
       oneOf(row.status,["signed_future","activated"],`market.futureAgreements[${i}].status`);
-      if(row.activatedDate!==null)date(row.activatedDate,`market.futureAgreements[${i}].activatedDate`);
+      if(row.source!==undefined){const source=narrativeSource(row.source,`market.futureAgreements[${i}].source`);ensure(source.disposition==="accept",`market.futureAgreements[${i}].source.disposition`,"firma futura sin aceptación");}
+      if(row.activatedDate!==null){date(row.activatedDate,`market.futureAgreements[${i}].activatedDate`);ensure((row.activatedDate as string)>=(row.effectiveDate as string)&&(row.activatedDate as string)<=state.date,`market.futureAgreements[${i}].activatedDate`,"activación incoherente");}
       if(row.status==="signed_future"){openFuture++;ensure(row.activatedDate===null,`market.futureAgreements[${i}].activatedDate`,"precontrato no activado con fecha");}
       else ensure(row.activatedDate!==null,`market.futureAgreements[${i}].activatedDate`,"precontrato activado sin fecha");
     });
