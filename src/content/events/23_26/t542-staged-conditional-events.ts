@@ -78,7 +78,7 @@ const BODY25=ambiguousEvent({
     [{path:"facts.loadManagementPlan",op:"eq",value:"external_review_first"}]
   ],
   weight:14,cooldown:99999,seedsRead:["SEED_LOAD_MANAGEMENT"],
-  tags:["conditional","medical","a6_ready_external_blocker","needs_a2_load_management_payload_plan_fact_and_medical_recurrence","t5_42"],canonStatus:"verified"
+  tags:["conditional","medical","a6_ready_external_blocker","consumes_a2_pr217_load_management_payload_plan_fact","needs_medical_recurrence_authority","t5_42"],canonStatus:"verified"
 });
 
 const SHOCK25=ambiguousEvent({
