@@ -2,13 +2,159 @@
   "schemaVersion": 1,
   "baseCommit": "5f4d14bca4d696cfafadb58b64034c7cd40cc147",
   "bugs": [
-    {"id":"T5-QA-016","severity":"P1","status":"open","area":"retirement","reproduction":["npm run qa:t5:known-bugs","subtests T5-QA-016a/b/c"],"expected":"Only decided may be reconsidered; private decisions do not auto-announce; no-market creates a decision context without choosing retirement.","actual":"Current main still contains the player-authority bypasses; owner PR #118 already implements the targeted retirement fix, so QA must verify/re-ground that owner candidate rather than ask Codex to duplicate runtime work.","owner":"retirement-runtime","issue":61,"test":"scripts/test-t5-known-bugs.mjs","firstSeenCommit":"99b1cd56f199bda657fb9fb1c757b003265892b6","lastVerifiedCommit":"5f4d14bca4d696cfafadb58b64034c7cd40cc147"},
-    {"id":"T5-QA-021","severity":"P1","status":"resolved","area":"npc-knowledge","reproduction":["historical replay with a live-only knowledge rule"],"expected":"Historical backfill uses an immutable/versioned rule baseline.","actual":"Resolved by frozen NPC_KNOWLEDGE_BACKFILL_RULES_V1 integrated in main.","owner":"npc-knowledge","issue":92,"test":"scripts/test-t53-backfill-baseline.mjs","firstSeenCommit":"99b1cd56f199bda657fb9fb1c757b003265892b6","lastVerifiedCommit":"5f4d14bca4d696cfafadb58b64034c7cd40cc147"},
-    {"id":"T5-QA-022","severity":"P1","status":"resolved","area":"saves-football","reproduction":["persist a registered football moment","corrupt outcome/probability/inputSignature","loadSave must reject before gameplay"],"expected":"Malformed persisted football facts fail at the save boundary.","actual":"Resolved in main: persisted footballMomentResults are validated at loadSave; QA integration probe uses registered moment id EVT_24_MATCH_001:qa-save-boundary:penalty.","owner":"football-moment-persistence","issue":100,"test":"scripts/test-t5-integration-probes.mjs","firstSeenCommit":"25bf7c6aad6eb6907e73947b530f6ddd66f592a9","lastVerifiedCommit":"5f4d14bca4d696cfafadb58b64034c7cd40cc147"},
-    {"id":"T5-QA-023","severity":"P2","status":"resolved","area":"content-causality","reproduction":["PRS23 with security_over_role / wait_market / agent_listens must remain ineligible"],"expected":"PRS23 requires exact role-guarantee provenance plus a material factual role drop.","actual":"Resolved in main generation G and retained through H: gates use facts.roleGuaranteeAt23 + facts.roleDropSince23>=15 + roleSecurity<=55; negative B/C/D, wrong-origin, generic-flag and missing-snapshot regressions are integrated.","owner":"23-26-content-role-expectation","issue":109,"test":"scripts/test-t51-prs-23-26.mjs","firstSeenCommit":"662f3335faf4474f7b4f36e4df9464e61af43dc1","lastVerifiedCommit":"5f4d14bca4d696cfafadb58b64034c7cd40cc147"},
-    {"id":"T5-QA-025","severity":"P2","status":"resolved","area":"seed-audit-tooling","reproduction":["unknown historical seed id with matching source literal must fail"],"expected":"Historical consumer seedId must exist in SEED_CATALOG.","actual":"Resolved in main: audit receives known seed ids and reports unknownHistoricalSeedIds; regression retained.","owner":"seed-audit-tooling","issue":131,"test":"scripts/test-t52-simulation-seed-direct-reads.mjs","firstSeenCommit":"d295cb544276f4770b9ba3a1dd8610a9345e5f74","lastVerifiedCommit":"5f4d14bca4d696cfafadb58b64034c7cd40cc147"},
-    {"id":"T5-QA-027","severity":"P2","status":"open","area":"npc-target-choice","reproduction":["future H-based EVT_23_LOCK_001 implementation","non-UDV age 23","live origin-club SEED_TEAMMATE_COVER","no authoritative captain","captain escalation must not remain selectable"],"expected":"Captain escalation choice is unavailable when captain target resolves null.","actual":"Issue #133 remains open. Historical PR #122 is closed and non-integrable; the future serialized LOCK23 implementation must fail closed without guessing a captain.","owner":"lock23-content","issue":133,"test":null,"firstSeenCommit":"12c5ad1311abe1a80459837b4654fbcea17d8392","lastVerifiedCommit":"5f4d14bca4d696cfafadb58b64034c7cd40cc147"},
-    {"id":"T5-QA-028","severity":"P1","status":"open","area":"contracts-employment","reproduction":["workflow 35214465940 / job 105179515812","profile loyal / seed 512000","npm run build && node --test scripts/test-t5-contract-expiry-known-bug.mjs"],"expected":"A zero-month unattached employment boundary cannot continue indefinitely as ordinary same-employer registered play; last-club strings are provenance, not live employment authority.","actual":"Pass A is fully specified and #156 is integrated, but execution is sequencing-blocked by the coordinated #207 -> #157 -> #130 chain so reattachment composes with CareerOffer.context and the final MarketState v2 authority instead of creating a parallel/intermediate offer model.","owner":"shared-contract-employment","issue":130,"test":"scripts/test-t5-contract-expiry-known-bug.mjs","firstSeenCommit":"99b1cd56f199bda657fb9fb1c757b003265892b6","lastVerifiedCommit":"5f4d14bca4d696cfafadb58b64034c7cd40cc147"},
-    {"id":"T5-QA-029","severity":"P2","status":"open","area":"saves-sport-authority","reproduction":["npm run build && node --test scripts/test-t5-match-model-known-bug.mjs"],"expected":"Match-model v1 rejects producer-impossible player facts, unsupported firstGoal authority, and semantically wrong/non-first milestone pointers at load/runtime validation boundaries.","actual":"Owner PR #214 on codex/t5-match-save-invariants@b688017e996449f88822dc7c54162c3f3b3e3c2f implements the QA-directed fix and full onBench producer parity; duplicate PR #218 is closed as superseded. Await exact-head CI, integration, then post-merge regression before resolving.","owner":"match-model-save-validation","issue":212,"ownerPr":214,"test":"scripts/test-t5-match-model-known-bug.mjs","firstSeenCommit":"5f4d14bca4d696cfafadb58b64034c7cd40cc147","lastVerifiedCommit":"5f4d14bca4d696cfafadb58b64034c7cd40cc147"}
+    {
+      "id": "T5-QA-016",
+      "severity": "P1",
+      "status": "open",
+      "area": "retirement",
+      "reproduction": [
+        "npm run qa:t5:known-bugs",
+        "subtests T5-QA-016a/b/c"
+      ],
+      "expected": "Only decided may be reconsidered; private decisions do not auto-announce; no-market creates a decision context without choosing retirement.",
+      "actual": "Current main still contains the player-authority bypasses; owner PR #118 already implements the targeted retirement fix, so QA must verify/re-ground that owner candidate rather than ask Codex to duplicate runtime work.",
+      "owner": "retirement-runtime",
+      "issue": 61,
+      "test": "scripts/test-t5-known-bugs.mjs",
+      "firstSeenCommit": "99b1cd56f199bda657fb9fb1c757b003265892b6",
+      "lastVerifiedCommit": "5f4d14bca4d696cfafadb58b64034c7cd40cc147"
+    },
+    {
+      "id": "T5-QA-021",
+      "severity": "P1",
+      "status": "resolved",
+      "area": "npc-knowledge",
+      "reproduction": [
+        "historical replay with a live-only knowledge rule"
+      ],
+      "expected": "Historical backfill uses an immutable/versioned rule baseline.",
+      "actual": "Resolved by frozen NPC_KNOWLEDGE_BACKFILL_RULES_V1 integrated in main.",
+      "owner": "npc-knowledge",
+      "issue": 92,
+      "test": "scripts/test-t53-backfill-baseline.mjs",
+      "firstSeenCommit": "99b1cd56f199bda657fb9fb1c757b003265892b6",
+      "lastVerifiedCommit": "5f4d14bca4d696cfafadb58b64034c7cd40cc147"
+    },
+    {
+      "id": "T5-QA-022",
+      "severity": "P1",
+      "status": "resolved",
+      "area": "saves-football",
+      "reproduction": [
+        "persist a registered football moment",
+        "corrupt outcome/probability/inputSignature",
+        "loadSave must reject before gameplay"
+      ],
+      "expected": "Malformed persisted football facts fail at the save boundary.",
+      "actual": "Resolved in main: persisted footballMomentResults are validated at loadSave; QA integration probe uses registered moment id EVT_24_MATCH_001:qa-save-boundary:penalty.",
+      "owner": "football-moment-persistence",
+      "issue": 100,
+      "test": "scripts/test-t5-integration-probes.mjs",
+      "firstSeenCommit": "25bf7c6aad6eb6907e73947b530f6ddd66f592a9",
+      "lastVerifiedCommit": "5f4d14bca4d696cfafadb58b64034c7cd40cc147"
+    },
+    {
+      "id": "T5-QA-023",
+      "severity": "P2",
+      "status": "resolved",
+      "area": "content-causality",
+      "reproduction": [
+        "PRS23 with security_over_role / wait_market / agent_listens must remain ineligible"
+      ],
+      "expected": "PRS23 requires exact role-guarantee provenance plus a material factual role drop.",
+      "actual": "Resolved in main generation G and retained through H: gates use facts.roleGuaranteeAt23 + facts.roleDropSince23>=15 + roleSecurity<=55; negative B/C/D, wrong-origin, generic-flag and missing-snapshot regressions are integrated.",
+      "owner": "23-26-content-role-expectation",
+      "issue": 109,
+      "test": "scripts/test-t51-prs-23-26.mjs",
+      "firstSeenCommit": "662f3335faf4474f7b4f36e4df9464e61af43dc1",
+      "lastVerifiedCommit": "5f4d14bca4d696cfafadb58b64034c7cd40cc147"
+    },
+    {
+      "id": "T5-QA-025",
+      "severity": "P2",
+      "status": "resolved",
+      "area": "seed-audit-tooling",
+      "reproduction": [
+        "unknown historical seed id with matching source literal must fail"
+      ],
+      "expected": "Historical consumer seedId must exist in SEED_CATALOG.",
+      "actual": "Resolved in main: audit receives known seed ids and reports unknownHistoricalSeedIds; regression retained.",
+      "owner": "seed-audit-tooling",
+      "issue": 131,
+      "test": "scripts/test-t52-simulation-seed-direct-reads.mjs",
+      "firstSeenCommit": "d295cb544276f4770b9ba3a1dd8610a9345e5f74",
+      "lastVerifiedCommit": "5f4d14bca4d696cfafadb58b64034c7cd40cc147"
+    },
+    {
+      "id": "T5-QA-027",
+      "severity": "P2",
+      "status": "open",
+      "area": "npc-target-choice",
+      "reproduction": [
+        "future H-based EVT_23_LOCK_001 implementation",
+        "non-UDV age 23",
+        "live origin-club SEED_TEAMMATE_COVER",
+        "no authoritative captain",
+        "captain escalation must not remain selectable"
+      ],
+      "expected": "Captain escalation choice is unavailable when captain target resolves null.",
+      "actual": "Issue #133 remains open. Historical PR #122 is closed and non-integrable; the future serialized LOCK23 implementation must fail closed without guessing a captain.",
+      "owner": "lock23-content",
+      "issue": 133,
+      "test": null,
+      "firstSeenCommit": "12c5ad1311abe1a80459837b4654fbcea17d8392",
+      "lastVerifiedCommit": "5f4d14bca4d696cfafadb58b64034c7cd40cc147"
+    },
+    {
+      "id": "T5-QA-028",
+      "severity": "P1",
+      "status": "open",
+      "area": "contracts-employment",
+      "reproduction": [
+        "workflow 35214465940 / job 105179515812",
+        "profile loyal / seed 512000",
+        "npm run build && node --test scripts/test-t5-contract-expiry-known-bug.mjs"
+      ],
+      "expected": "A zero-month unattached employment boundary cannot continue indefinitely as ordinary same-employer registered play; last-club strings are provenance, not live employment authority.",
+      "actual": "Pass A is fully specified and #156 is integrated, but execution is sequencing-blocked by the coordinated #207 -> #157 -> #130 chain so reattachment composes with CareerOffer.context and the final MarketState v2 authority instead of creating a parallel/intermediate offer model.",
+      "owner": "shared-contract-employment",
+      "issue": 130,
+      "test": "scripts/test-t5-contract-expiry-known-bug.mjs",
+      "firstSeenCommit": "99b1cd56f199bda657fb9fb1c757b003265892b6",
+      "lastVerifiedCommit": "5f4d14bca4d696cfafadb58b64034c7cd40cc147"
+    },
+    {
+      "id": "T5-QA-029",
+      "severity": "P2",
+      "status": "open",
+      "area": "saves-sport-authority",
+      "reproduction": [
+        "npm run build && node --test scripts/test-t5-match-model-known-bug.mjs"
+      ],
+      "expected": "Match-model v1 rejects producer-impossible player facts, unsupported firstGoal authority, and semantically wrong/non-first milestone pointers at load/runtime validation boundaries.",
+      "actual": "Owner PR #214 on codex/t5-match-save-invariants@b688017e996449f88822dc7c54162c3f3b3e3c2f implements the QA-directed fix and full onBench producer parity; duplicate PR #218 is closed as superseded. Await exact-head CI, integration, then post-merge regression before resolving.",
+      "owner": "match-model-save-validation",
+      "issue": 212,
+      "ownerPr": 214,
+      "test": "scripts/test-t5-match-model-known-bug.mjs",
+      "firstSeenCommit": "5f4d14bca4d696cfafadb58b64034c7cd40cc147",
+      "lastVerifiedCommit": "5f4d14bca4d696cfafadb58b64034c7cd40cc147"
+    },
+    {
+      "id": "T5-QA-030",
+      "severity": "P2",
+      "status": "open",
+      "area": "captaincy-content-authority",
+      "reproduction": [
+        "npm run build && node --test scripts/test-t5-captain-gap-known-bug.mjs"
+      ],
+      "expected": "EVT_33_CAP_001 fails closed unless the protagonist has an explicit current-club main-captain certification; captain_group, secondary_captain, reputation, lockerPower and seeds do not qualify.",
+      "actual": "main@5f4d14b keeps EVT_33_CAP_001 as a technical_adaptation row with empty gates, so the scene can schedule without any real main-club captain authority.",
+      "owner": "30-34-canon",
+      "issue": 161,
+      "test": "scripts/test-t5-captain-gap-known-bug.mjs",
+      "firstSeenCommit": "5f4d14bca4d696cfafadb58b64034c7cd40cc147",
+      "lastVerifiedCommit": "5f4d14bca4d696cfafadb58b64034c7cd40cc147"
+    }
   ]
 }
