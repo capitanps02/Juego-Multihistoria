@@ -18,7 +18,7 @@ QA intenta falsar invariantes. No reescribe canon ni corrige silenciosamente run
 - T5-QA-025 — **RESOLVED** — #131.
 - T5-QA-027 — **OPEN / P2 / serialized owner** — #133.
 - T5-QA-028 — **OPEN / P1 / spec-ready, execution-blocked** — #130; cadena `#207 -> #157 -> #130 -> #176`.
-- T5-QA-029 — **OPEN / P2 / owner-fix PR #214** — #212; exact-head Repository Integrity `35330315528` verde; pendiente solo integración + post-merge.
+- T5-QA-029 — **OPEN / P2 / owner-fix PR #214** — #212; re-grounded en `main@49f16b21...`, HEAD `78c0ca4e...`, 1 ahead / 0 behind; exact-head RI `35336619877` pendiente.
 - T5-QA-030 — **OPEN / P2 / canon owner** — #161. `EVT_33_CAP_001` en main sigue con gates vacíos; reproducción permanente exige fail-closed sin captain real.
 
 ## T5-QA-029 — owner candidate
@@ -34,13 +34,13 @@ QA comparó las dos implementaciones abiertas y seleccionó PR #214:
 
 PR #218 se cerró porque era solapada y menos estricta para un convocado no titular que no figurase en banquillo.
 
-Repository Integrity de #214: run `35330315528` — **SUCCESS sobre el base anterior**. `main` avanzó a `49f16b21...`; #214 está 1 behind y necesita re-ground + nuevo exact-head RI antes de integración. #212 sigue OPEN.
+El parche re-grounded de #214 conserva exactamente los mismos blobs auditados en `match-model.ts` y sus dos tests. Nuevo Repository Integrity exact-head: run `35336619877`, pendiente. #212 sigue OPEN hasta integración + post-merge.
 
 ## T5-QA-028 evidence y contrato
 
 Reproducción histórica `loyal / seed 512000`: primera expiración `2029-06-01`; 6669 días observados a 0 meses; máximo continuo 5694; 0 cambios de empleo; 419 apariciones añadidas.
 
-Pass A exige `contracted | unattached`, transición 1→0 determinista/idempotente/0 RNG, provenance de último club separada de empleo vivo y football/renewal/institutional NPC fail-closed mientras unattached.
+Pass A exige `contracted | unattached`, transición 1→0 determinista/idempotente/0 RNG, provenance de último club separada de empleo vivo y football/renewal/institutional NPC fail-closed mientras unattached. QA ya prepara cuatro regresiones dirigidas: zombie largo, save/load+RNG en 1→0, no old-club play + re-empleo formal, y determinismo.
 
 Ejecución bloqueada hasta:
 1. #207 `CareerOffer.context`;
@@ -75,11 +75,11 @@ QA no mergea su propio PR. Un bug solo pasa a `resolved` tras fix integrado y re
 ## A10 finite certification score
 
 - Infraestructura QA: **50/50**
-- A10-1 P1/P2: **8/15**
+- A10-1 P1/P2: **11/15**
 - A10-2 Saves/migrations: **2/10**
 - A10-3 Cross-system invariants: **3/10**
 - A10-4 Long-career/determinism: **5/10**
 - A10-5 Final certification: **0/5**
-- **TOTAL: 68/100**
+- **TOTAL: 71/100**
 
 A10-5 permanece reservado al HEAD final integrado de T5. No ampliar fuzzing fuera de la matriz cerrada.
