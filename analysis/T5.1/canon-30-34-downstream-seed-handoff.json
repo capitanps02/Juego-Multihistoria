@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "scope": "30_34 boundary seed handoff to downstream veteran/retirement owners",
-  "sourceMainSha": "5f4d14bca4d696cfafadb58b64034c7cd40cc147",
+  "sourceMainSha": "49f16b21c8f68f1439901437dcf16e1384966de2",
   "consumerMatrixEvidence": {
     "path": "analysis/CODEX/seeds/SEED_CONSUMER_MATRIX.json",
     "snapshotBaseCommit": "cda24da1a688cc245695cd007c50d458c4e1e7d7",
@@ -20,12 +20,12 @@
       "seedId": "SEED_AGE34_PRIORITY",
       "currentProducerEvidence": [
         "EVT_33_CON_001",
-        "EVT_33_END_001",
+        "EVT_33_FIN_001",
         "EVT_33_MKT_001"
       ],
       "currentStatus": "review_required_no_demonstrated_live_consumer",
       "reviewTarget": "34+ contract, market and age-transition content",
-      "requiredDecision": "Register a semantically real downstream reader, define a canonically supported terminal disposition, or explicitly keep the seed open. Its three current writers represent converging late-career priority decisions and must not be collapsed to one provenance source."
+      "requiredDecision": "Register a semantically real downstream reader, define a canonically supported terminal disposition, or explicitly keep the seed open. The canonical age-34 bridge EVT_33_FIN_001 now replaces legacy EVT_33_END_001 as runtime provenance; historical legacy origin is not rewritten."
     },
     {
       "seedId": "SEED_RETIREMENT_PUBLIC_TONE",
