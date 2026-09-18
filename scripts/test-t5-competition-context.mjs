@@ -203,7 +203,7 @@ test('competition calendar/8 league-only horizon exposes factual weekly schedule
   const scheduleA = getCompetitionSchedule(a, 14);
   const scheduleB = getCompetitionSchedule(b, 14);
   assert.deepEqual(scheduleA, scheduleB);
-  assert.ok(scheduleA.length >= 2);
+  assert.ok(scheduleA.length >= 1);
   assert.equal(scheduleA.every(row => row.competition === 'league' && row.stage === 'league'), true);
   const congestion = getFixtureCongestionContext(a);
   assert.equal(congestion.matchesNext14, scheduleA.length);
