@@ -1,202 +1,56 @@
 # Codex implementation queue — Canon 30–34
 
-Baseline vigente: `main@5f4d14bca4d696cfafadb58b64034c7cd40cc147`.
-
-Lineage de integración actual:
-
-- fuente upstream congelada: `84871fae2bec92d74d1e607e0a48943e2e530a062d315a829cfe75eda9fe0886`;
-- target 30–34: `db72c94ee93ad928e08e86a59f5063060a963e17edfc7b5e25198e1da6fd1eb1`;
-- este workstream **no** crea el freeze target ni registra `CONTENT_MIGRATION_ROUTES`.
-
-El Documento Maestro es autoridad. Un dato compartido `null`/`unavailable` implica fail-closed; no autoriza proxies.
-
-## Cerrado en esta rama
-
-### C30-34-CODEX-001 — career authority guard
-
-El catálogo 30–34 no puede mutar desde efectos narrativos el estado propiedad de CareerOffer/contrato/registro de club.
-
-### C30-34-CODEX-002 — ofertas formales y provenance
-
-Bridges reales para:
-
-- `EVT_31_HOME_001`;
-- `EVT_32_HOME_001`;
-- `EVT_32_CON_001`.
-
-`accept/counter/defer/reject`, provenance y save/restore están cubiertos por tests. `EVT_31_MKT_001` permanece fuera porque el canon exige dos ofertas simultáneas y el runtime persiste una sola.
-
-### C30-34-CODEX-003 / 004 — sport authority: guards parciales tras el match model
-
-El nuevo calendario semanal de `main@5f4d14bc…` ya expone `currentCompetition`, `nextFixture` y `hoursToNextFixture`. Eso invalida la antigua clasificación “protected fail-closed”:
-
-- `EVT_31_FINAL_001`: una fixture ordinaria de liga + `FINAL_CONTEXT` puede satisfacer los gates actuales sin probar que sea una final;
-- `EVT_33_BODY_001`: una separación de 144/168 h puede satisfacer gates de mera existencia sin probar dos titularidades dentro de 72 h.
-
-La deuda queda explícita en `canon-30-34-authority-debt.json`; no se añaden gates de contenido antes del freeze/edge actual.
-
-### C30-34-CODEX-008 — cuatro writers huérfanos
-
-- `SEED_ROLE_COMMUNICATION` → `EVT_30_CCH_001`;
-- `SEED_FALSE_ULTIMATUM` → `EVT_30_PRS_001`;
-- `SEED_NATIONAL_ABSENCE` → `EVT_30_NAT_002`;
-- `SEED_SPECIALIST_BIGCLUB` → `EVT_30_JAN_001`.
-
-No se permiten productores legacy/genéricos.
-
-### C30-34-CODEX-010 — handoff frontera 34+/retirada
-
-`canon-30-34-downstream-seed-handoff.json` fija provenance real sin inventar consumidores ni terminalidad. En particular `SEED_AGE34_PRIORITY` conserva tres writers reales y `SEED_HOME_PULL_PUBLIC` dos.
-
-### C30-34-CODEX-011 — `seedsRead` no certifica causalidad
-
-Siete enlaces principal→principal antes sobreclasificados quedaron como `declaredReadLinks`. Un reader declarado sin gate/eligibility/outcome/simulation causal no se cuenta como consecuencia confirmada.
-
-### C30-34-CODEX-012 — siete callbacks `HAS_SEED_*`
-
-Los siete `declaredReadMismatches` owner 30–34 sí son consumidores runtime positivos, pero siguen sin identidad canónica certificada. No se añade `seedsRead` todavía porque esa metadata cambia `contentIdentity`.
-
-El debt condicional quedó re-anclado al baseline `main@5f4d14bc…` y al target `9151d662…`; su guard exige que siga coincidiendo con readiness + migration handoff para impedir que una metadata pendiente quede asociada a un catálogo antiguo.
-
-Guard: `scripts/test-t51-30-34-conditional-seed-reads.mjs`.
-
-### C30-34-CODEX-015 — convergencia raw-source con Career Authority
-
-Se eliminaron 17 escrituras directas a club/contrato de las definiciones raw 30–34 que el guard de autoridad ya descartaba en runtime. La limpieza no eleva deuda compartida ni cambia semántica activa.
-
-Se preservó explícitamente el orden estable de tags del offer bridge. Una comparación determinista del catálogo antes/después terminó con `DIFFERING_EVENTS=0`, por lo que el target permanece exactamente en `db72c94e…d1eb1`.
-
-### Autoridad de liderazgo — `EVT_33_CAP_001` / `EVT_30_CAP_001`
-
-`EVT_33_CAP_001` consume la autoridad explícita de liderazgo del jugador en su club actual y falla cerrado ante proxies: influencia, seeds, `captain_group`, `secondary_captain` o autoridad obsoleta de un club anterior no bastan.
-
-`EVT_30_CAP_001` permanece con paridad parcial. `LOCKER_LEADERSHIP_ASSIGNMENTS` no contiene ninguna asignación `30_34`, por lo que los hechos de afinidad de capitán/estrella fallan cerrado. El canon exige un `LOCKER_WEIGHT` alto y no existe un mapeo autoritativo que permita sustituirlo por `professional.lockerPower` o una relación NPC arbitraria.
-
-Guard: `scripts/test-t51-30-34-authority-gaps.mjs`.
-
-### C30-34-CODEX-016 — lineage de paridad y seed canónica ausente
-
-`canon-30-34-parity-evidence.json` ya está reconciliado con el handoff vigente `84871fae… → 9151d662…`.
-
-El Documento Maestro de `EVT_30_CON_001` referencia además `SEED_LAST_PEAK_CONTRACT`, pero ese ID no existe actualmente en `src/catalog/seeds.ts`. No se crea, renombra ni mapea a `SEED_AGE30_CONTRACT`, `SEED_LAST_BIG_MOVE_WINDOW` u otra seed por semejanza semántica.
-
-Los guards exigen simultáneamente:
-
-- que source/target de la evidencia de paridad coincidan con el migration handoff;
-- que `SEED_LAST_PEAK_CONTRACT` siga ausente mientras no exista una definición runtime aprobada;
-- que esta deuda no permita promover `EVT_30_CON_001` a identidad canónica verificada.
-
-## Implementable / bloqueado para Codex
-
-### C30-34-CODEX-005 — sport authority scene-by-scene
-
-Pendientes que requieren hechos exactos, no proxies:
-
-- `EVT_30_FORM_001`: historial real de seis partidos/cinco goles;
-- `EVT_31_RETURN_001`: alta/readiness + convocatoria real;
-- `EVT_31_ROLE_001`: tres goles recientes + banquillo real;
-- `EVT_32_FAN_001`: aparición/rendimiento real + reacción de grada;
-- `EVT_32_NAT_001`: prelista/torneo real.
-
-Ratchet validado en `scripts/test-t51-30-34-authority-gaps.mjs`: los cinco blockers deben permanecer explícitos, los cuatro eventos ya existentes siguen `technical_adaptation`, `EVT_31_ROLE_001` permanece ausente y maximizar forma/roleScore/nationalStanding/roleSecurity o flags no puede materializar hechos de competición, fixture, convocatoria, banquillo, titularidad, aparición, minutos, resultado o goles. La proyección se mantiene read-only.
-
-No añadir gates nuevos a estos eventos antes del freeze/edge del target actual: hacerlo movería `contentIdentity` y pertenece al siguiente batch coordinado.
-
-### C30-34-CODEX-006 — autoridad multi-oferta
-
-`EVT_31_MKT_001` necesita dos ofertas simultáneas; `EVT_33_MKT_001`, cuatro rutas/propuestas. `getEligibleCareerOffers()` ya existe, pero deriva del único `MarketState.pending`, por lo que hoy devuelve como máximo una oferta. El nombre plural no cierra este blocker.
-
-Requiere diseño compartido persistible multi-oferta con identidad/provenance por oferta.
-
-### C30-34-CODEX-007 — renovación automática por minutos
-
-`CareerTerms` aún no representa la cláusula canónica de renovación automática por minutos de `EVT_32_CON_001`.
-
-### C30-34-CODEX-009 — batch de cinco principales missing
-
-Pendientes:
-
-`EVT_30_CCH_001`, `EVT_30_PRS_001`, `EVT_30_NAT_002`, `EVT_30_JAN_001`, `EVT_31_ROLE_001`.
-
-Deben entrar como batch coordinado posterior al freeze/edge actual; su alta produce una nueva identidad.
-
-### C30-34-CODEX-013 — metadata condicional
-
-Precondiciones:
-
-1. integración congela y registra el target actual `db72c94e…d1eb1`;
-2. existe decisión autoritativa sobre la identidad de los condicionales implicados.
-
-Solo entonces añadir `seedsRead` exacto donde proceda y generar un nuevo freeze/edge explícito.
-
-### C30-34-CODEX-014 — identidades desplazadas
-
-18 parejas siguen `sameSceneMigrationAllowed:false`. No resolver por similitud de nombres ni string matching; requieren revisión/migración explícita.
-
-### C30-34-CODEX-017 — definición canónica de `SEED_LAST_PEAK_CONTRACT`
-
-Bloqueado en T5.2/canon. Antes de materializar esa seed deben quedar definidos al menos:
-
-- identidad exacta del seed ID;
-- scope y edad/expiración si procede;
-- payload semántico;
-- productor(es) canónicos;
-- si `EVT_30_CON_001` la crea siempre o solo en outcomes concretos;
-- consumidores/terminalidad solo si existe evidencia real.
-
-Hasta entonces, Codex debe preservar la ausencia runtime y no sustituirla por otra seed existente.
-
-## Estado de seeds owner 30–34
-
-- 52 asignadas en el catálogo runtime actual;
-- 48 con productor runtime;
-- 4 sin productor;
-- 13 con algún consumidor estructural;
-- 39 sin consumidor;
-- 0 terminales explícitos;
-- 52 open-ended;
-- 7 `declaredReadMismatches` clasificados como consumo runtime real + metadata pendiente;
-- `SEED_LAST_PEAK_CONTRACT` es una referencia canónica adicional ausente del catálogo runtime y por tanto no se suma artificialmente a esas 52.
-
-`withAnyConsumer = 13` no equivale a 13 consecuencias canónicas certificadas.
-
-## Integración
-
-Fuente congelada vigente del handoff:
-
-`84871fae2bec92d74d1e607e0a48943e2e530a062d315a829cfe75eda9fe0886`
-
-Target:
-
-`db72c94ee93ad928e08e86a59f5063060a963e17edfc7b5e25198e1da6fd1eb1`
-
-Freeze que coordinación/integración deberá crear antes de registrar la ruta:
-
-`qa/fixtures/t5.1/post-t51-sources/db72c94ee93ad928e08e86a59f5063060a963e17edfc7b5e25198e1da6fd1eb1.json`
-
-## Validación exacta
-
-La evidencia más reciente de CI se mantiene en el cuerpo del PR #13 para evitar que esta cola quede obsoleta por commits documentales o re-ground de `main`.
-
-Contrato de validación exigido para este workstream:
-
-- `T5.1 canon 30-34` debe terminar **SUCCESS**;
-- `T5 Market Contract Authority` debe terminar **SUCCESS**;
-- `Repository Integrity` solo puede quedar rojo por el sentinel de `freeze-t51-active-source --check` mientras coordinación/integración no haya creado `qa/fixtures/t5.1/post-t51-sources/db72c94ee93ad928e08e86a59f5063060a963e17edfc7b5e25198e1da6fd1eb1.json`;
-- cualquier fallo anterior a ese sentinel es regresión real y bloquea el handoff;
-- la rama debe permanecer `behind_by=0` respecto de `main` antes de declarar el handoff vigente.
-
-El target activo continúa siendo `db72c94e…d1eb1`; este workstream no crea su freeze ni registra la ruta.
-
-## Invariantes
-
-- edad no fuerza retirada;
-- retirada internacional != retirada de club;
-- no aliases silenciosos ni renombrados destructivos;
-- no proxies deportivos ni ofertas inventadas;
-- no terminalidad artificial de seeds;
-- `seedsRead` no certifica causalidad;
-- consumo runtime no certifica identidad canónica;
-- una referencia canónica ausente no autoriza crear/mutuar una seed por similitud;
-- historia legacy no se reescribe como canon nuevo;
-- este workstream no crea el freeze target ni registra la migration route.
+Baseline A7: `main@49f16b21c8f68f1439901437dcf16e1384966de2`.
+Branch: `t51/canon-30-34`. PR: #13.
+
+A7 no registra el freeze/edge de contentIdentity. El target final debe tomarse del próximo `T5.1 canon 30-34` completado después de la última wave activa; no congelar el hash documental anterior.
+
+## Cerrado A7
+
+- 50/50 principales tienen contenido owner-side completo: 33 activas + 17 preparadas fail-closed por authority externa.
+- 18/18 shifted tienen decisión `distinct_scene`, sin alias ni herencia de seen/cooldown/pending/history.
+- 4 shifted están activas bajo ID canónico; 14 tienen EventDefinition canónica completa y quedan fuera de `EVENTS` hasta recibir su gate externo.
+- 26/26 conditionals engine-side genéricas: `REMOVE/SUPERSEDE`. Se conservan solo como evidencia legacy; 0 callbacks activos.
+- Writers owner-side preparados para las 52 seeds 30–34. Los dos writers todavía no activos son `SEED_FALSE_ULTIMATUM` y `SEED_NATIONAL_ABSENCE`, ligados exclusivamente a sus escenas canónicas preparadas.
+- `SEED_LAST_PEAK_CONTRACT`, `SEED_SUCCESSOR_PEAK`, `SEED_SUCCESSION_DECISION` y `SEED_PARALLEL_NEGOTIATION` no existen en catálogo runtime y no se sintetizan.
+- CareerOffer, leadership, seed prerequisites y sport facts disponibles se consumen por APIs compartidas; no hay mutaciones locales de club/contrato ni proxies de match/NPC.
+
+## Blockers externos exactos
+
+| Escena | Fact requerido | Owner | API esperada | Test pendiente |
+| --- | --- | --- | --- | --- |
+| EVT_30_PRS_001 | threshold canónico de PUBLIC_HEAT 30–34 + hecho real de rol discutido | canon/A1 | fact de role discussion + threshold aprobado | escena no activa solo por mediaHeat/rumor |
+| EVT_30_NAT_002 | ausencia internacional concreta + buen resultado alternativo + rival joven | A4 | national match/call-up authority concreta | no inferir desde standing/caps/gateOpen |
+| EVT_31_ROLE_001 | 3 goles en 2 partidos + decisión real de banquillo | A4 | recent player match stats + lineup decision | tres goles/bench reproducibles tras save/load |
+| EVT_30_EUR_001 | semifinal continental real + competencia por puesto | A4 | competition stage/current fixture authority | una fixture de liga no habilita la escena |
+| EVT_30_RECORD_001 | siguiente aparición = hito 500 + recomendación real de carga | A4 | career appearance milestone + load plan | 499→500 y descanso autoritativos |
+| EVT_30_PAIN_001 | dolor persistente + pruebas no concluyentes/scan limpio | shared medical | medical pain/imaging authority | body.risk solo no habilita |
+| EVT_30_NANO_001 | NETWORK_POWER alto además de NANO_SHADOW | A1/canon | network/contact authority + threshold aprobado | HAS_SEED_NANO_SHADOW solo no habilita |
+| EVT_31_FAM_001 | FAMILY_ANCHOR medio/alto + oferta exterior elegible | A3/canon | CareerOffer exterior + threshold family anchor | oferta stale/doméstica no habilita |
+| EVT_31_TEAM_001 | LEGACY_CAPITAL alto | canon | threshold canónico | legacyCapital arbitrario sin threshold no habilita |
+| EVT_31_SQUAD_001 | SUCCESSION_PRESSURE alto | canon/A2 | threshold + identidad SEED_SUCCESSION_DECISION | no materializar seed ausente |
+| EVT_31_BIZ_001 | WEALTH_STRUCTURE/PERSONAL_BRAND altos | canon | thresholds canónicos | riqueza genérica no habilita |
+| EVT_32_RICH_001 | oferta formal excepcionalmente rica vs mercado | A3 | offer benchmark / rich-offer fact | marketHeat no sustituye oferta |
+| EVT_32_ELITE_001 | oferta de candidato máximo con rol de rotación explícito + TROPHY_HUNGER | A3/canon | offer role/minutes + threshold hunger | bigClub solo no habilita |
+| EVT_32_SUCCESSOR_001 | ausencia + sustituto excelente + equipo invicto | A4 | replacement recent performance/results | RECOVERING_INJURY solo no habilita |
+| EVT_32_LOAD_001 | calendario denso + viaje/carga real | A4 | congestion/travel-load authority | weekly 144/168 h no simula congestión |
+| EVT_32_BOSMAN_001 | Bosman real + precontrato/negociaciones paralelas | A3/A2 | multi-offer/precontract authority + seed identity | singleton pending no habilita paralelo |
+| EVT_33_RECORD_001 | récord a 6 apariciones + plan gestionado 4–5 titularidades | A4 | record-distance + role-plan authority | appearances agregado solo no habilita |
+
+## Stable-ID gaps aún externos
+
+- A4: `EVT_30_FORM_001`, `EVT_31_RETURN_001`, `EVT_31_FINAL_001`, `EVT_32_FAN_001`, `EVT_32_NAT_001`, `EVT_33_BODY_001`.
+- A3: `EVT_31_MKT_001` (dos ofertas), `EVT_32_CON_001` (renewal-by-minutes), `EVT_33_MKT_001` (cuatro rutas/propuestas).
+- Canon: `EVT_30_CAP_001` requiere threshold autoritativo de LOCKER_WEIGHT; no usar lockerPower como sustituto.
+
+## Integración A0 pendiente
+
+Cuando el focused CI del HEAD final termine:
+
+1. tomar el `contentIdentity(EVENTS)` exacto;
+2. congelar ese target;
+3. registrar un único edge desde la fuente upstream congelada;
+4. ejecutar save/load + migration + Repository Integrity;
+5. no reescribir historia legacy ni origen histórico de seeds.
+
+Cualquier fallo anterior al sentinel de freeze/route es regresión real A7 y debe corregirse. El PR permanece draft y no se auto-mergea.
