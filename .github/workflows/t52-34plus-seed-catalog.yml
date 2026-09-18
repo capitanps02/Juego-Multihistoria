@@ -1,0 +1,34 @@
+name: T5.2 34+ seed catalog
+
+on:
+  pull_request:
+    paths:
+      - 'src/catalog/seed-34plus.ts'
+      - 'src/catalog/seeds.ts'
+      - 'src/narrative/resolver.ts'
+      - 'analysis/T5.2/seed-closure-classifications.json'
+      - 'scripts/test-t52-34plus-canonical-catalog.mjs'
+      - '.github/workflows/t52-34plus-seed-catalog.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'src/catalog/seed-34plus.ts'
+      - 'src/catalog/seeds.ts'
+      - 'src/narrative/resolver.ts'
+      - 'analysis/T5.2/seed-closure-classifications.json'
+      - 'scripts/test-t52-34plus-canonical-catalog.mjs'
+      - '.github/workflows/t52-34plus-seed-catalog.yml'
+
+jobs:
+  canonical-34plus-seeds:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: node --test scripts/test-t52-34plus-canonical-catalog.mjs
+      - run: npm run test:t52
