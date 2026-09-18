@@ -6,91 +6,673 @@
       "owner": "t51/canon-34plus",
       "disposition": "retired_compatible",
       "rationale": "Agent 8 certifica que este concepto es una proyección derivada y no una nueva fuente persistida de verdad; T5.2 conserva compatibilidad histórica sin permitir nueva creación.",
-      "evidenceRefs": ["src/catalog/seed-34plus.ts#SEED_34_PLUS_BRIDGE_COMPATIBILITY", "scripts/test-t52-34plus-canonical-catalog.mjs#compatibility-only"]
+      "evidenceRefs": [
+        "src/catalog/seed-34plus.ts#SEED_34_PLUS_BRIDGE_COMPATIBILITY",
+        "scripts/test-t52-34plus-canonical-catalog.mjs#compatibility-only"
+      ]
     },
     {
       "seedId": "SEED_PEAK_ROLE_LEGACY",
       "owner": "t51/canon-34plus",
       "disposition": "retired_compatible",
       "rationale": "Agent 8 certifica que este concepto es una proyección derivada y no una nueva fuente persistida de verdad; T5.2 conserva compatibilidad histórica sin permitir nueva creación.",
-      "evidenceRefs": ["src/catalog/seed-34plus.ts#SEED_34_PLUS_BRIDGE_COMPATIBILITY", "scripts/test-t52-34plus-canonical-catalog.mjs#compatibility-only"]
+      "evidenceRefs": [
+        "src/catalog/seed-34plus.ts#SEED_34_PLUS_BRIDGE_COMPATIBILITY",
+        "scripts/test-t52-34plus-canonical-catalog.mjs#compatibility-only"
+      ]
     },
     {
       "seedId": "SEED_CONTRACT_REPUTATION",
       "owner": "t51/canon-34plus",
       "disposition": "retired_compatible",
       "rationale": "Agent 8 certifica que este concepto es una proyección derivada y no una nueva fuente persistida de verdad; T5.2 conserva compatibilidad histórica sin permitir nueva creación.",
-      "evidenceRefs": ["src/catalog/seed-34plus.ts#SEED_34_PLUS_BRIDGE_COMPATIBILITY", "scripts/test-t52-34plus-canonical-catalog.mjs#compatibility-only"]
+      "evidenceRefs": [
+        "src/catalog/seed-34plus.ts#SEED_34_PLUS_BRIDGE_COMPATIBILITY",
+        "scripts/test-t52-34plus-canonical-catalog.mjs#compatibility-only"
+      ]
     },
     {
       "seedId": "SEED_PUBLIC_POLARIZATION",
       "owner": "t51/canon-34plus",
       "disposition": "retired_compatible",
       "rationale": "Agent 8 certifica que este concepto es una proyección derivada y no una nueva fuente persistida de verdad; T5.2 conserva compatibilidad histórica sin permitir nueva creación.",
-      "evidenceRefs": ["src/catalog/seed-34plus.ts#SEED_34_PLUS_BRIDGE_COMPATIBILITY", "scripts/test-t52-34plus-canonical-catalog.mjs#compatibility-only"]
+      "evidenceRefs": [
+        "src/catalog/seed-34plus.ts#SEED_34_PLUS_BRIDGE_COMPATIBILITY",
+        "scripts/test-t52-34plus-canonical-catalog.mjs#compatibility-only"
+      ]
     },
     {
       "seedId": "SEED_CLUB_POWER_MEMORY",
       "owner": "t51/canon-34plus",
       "disposition": "retired_compatible",
       "rationale": "Agent 8 certifica que este concepto es una proyección derivada y no una nueva fuente persistida de verdad; T5.2 conserva compatibilidad histórica sin permitir nueva creación.",
-      "evidenceRefs": ["src/catalog/seed-34plus.ts#SEED_34_PLUS_BRIDGE_COMPATIBILITY", "scripts/test-t52-34plus-canonical-catalog.mjs#compatibility-only"]
+      "evidenceRefs": [
+        "src/catalog/seed-34plus.ts#SEED_34_PLUS_BRIDGE_COMPATIBILITY",
+        "scripts/test-t52-34plus-canonical-catalog.mjs#compatibility-only"
+      ]
     },
     {
       "seedId": "SEED_FINALS_MEMORY",
       "owner": "t51/canon-34plus",
       "disposition": "retired_compatible",
       "rationale": "Agent 8 certifica que este concepto es una proyección derivada y no una nueva fuente persistida de verdad; T5.2 conserva compatibilidad histórica sin permitir nueva creación.",
-      "evidenceRefs": ["src/catalog/seed-34plus.ts#SEED_34_PLUS_BRIDGE_COMPATIBILITY", "scripts/test-t52-34plus-canonical-catalog.mjs#compatibility-only"]
+      "evidenceRefs": [
+        "src/catalog/seed-34plus.ts#SEED_34_PLUS_BRIDGE_COMPATIBILITY",
+        "scripts/test-t52-34plus-canonical-catalog.mjs#compatibility-only"
+      ]
     },
     {
       "seedId": "SEED_NATIONAL_LEGACY",
       "owner": "t51/canon-34plus",
       "disposition": "retired_compatible",
       "rationale": "Agent 8 certifica que este concepto es una proyección derivada y no una nueva fuente persistida de verdad; T5.2 conserva compatibilidad histórica sin permitir nueva creación.",
-      "evidenceRefs": ["src/catalog/seed-34plus.ts#SEED_34_PLUS_BRIDGE_COMPATIBILITY", "scripts/test-t52-34plus-canonical-catalog.mjs#compatibility-only"]
+      "evidenceRefs": [
+        "src/catalog/seed-34plus.ts#SEED_34_PLUS_BRIDGE_COMPATIBILITY",
+        "scripts/test-t52-34plus-canonical-catalog.mjs#compatibility-only"
+      ]
     },
     {
       "seedId": "SEED_WEALTH_LEGACY",
       "owner": "t51/canon-34plus",
       "disposition": "retired_compatible",
       "rationale": "Agent 8 certifica que este concepto es una proyección derivada y no una nueva fuente persistida de verdad; T5.2 conserva compatibilidad histórica sin permitir nueva creación.",
-      "evidenceRefs": ["src/catalog/seed-34plus.ts#SEED_34_PLUS_BRIDGE_COMPATIBILITY", "scripts/test-t52-34plus-canonical-catalog.mjs#compatibility-only"]
+      "evidenceRefs": [
+        "src/catalog/seed-34plus.ts#SEED_34_PLUS_BRIDGE_COMPATIBILITY",
+        "scripts/test-t52-34plus-canonical-catalog.mjs#compatibility-only"
+      ]
     },
     {
       "seedId": "SEED_AGENT_ENDGAME",
       "owner": "t51/canon-34plus",
       "disposition": "retired_compatible",
       "rationale": "Agent 8 certifica que este concepto es una proyección derivada y no una nueva fuente persistida de verdad; T5.2 conserva compatibilidad histórica sin permitir nueva creación.",
-      "evidenceRefs": ["src/catalog/seed-34plus.ts#SEED_34_PLUS_BRIDGE_COMPATIBILITY", "scripts/test-t52-34plus-canonical-catalog.mjs#compatibility-only"]
+      "evidenceRefs": [
+        "src/catalog/seed-34plus.ts#SEED_34_PLUS_BRIDGE_COMPATIBILITY",
+        "scripts/test-t52-34plus-canonical-catalog.mjs#compatibility-only"
+      ]
     },
     {
       "seedId": "SEED_FAMILY_RELOCATION",
       "owner": "t51/canon-34plus",
       "disposition": "retired_compatible",
       "rationale": "Agent 8 certifica que este concepto es una proyección derivada y no una nueva fuente persistida de verdad; T5.2 conserva compatibilidad histórica sin permitir nueva creación.",
-      "evidenceRefs": ["src/catalog/seed-34plus.ts#SEED_34_PLUS_BRIDGE_COMPATIBILITY", "scripts/test-t52-34plus-canonical-catalog.mjs#compatibility-only"]
+      "evidenceRefs": [
+        "src/catalog/seed-34plus.ts#SEED_34_PLUS_BRIDGE_COMPATIBILITY",
+        "scripts/test-t52-34plus-canonical-catalog.mjs#compatibility-only"
+      ]
     },
     {
       "seedId": "SEED_VETERAN_MARKET_SIGNAL",
       "owner": "t51/canon-34plus",
       "disposition": "retired_compatible",
       "rationale": "Agent 8 certifica que este concepto es una proyección derivada y no una nueva fuente persistida de verdad; T5.2 conserva compatibilidad histórica sin permitir nueva creación.",
-      "evidenceRefs": ["src/catalog/seed-34plus.ts#SEED_34_PLUS_BRIDGE_COMPATIBILITY", "scripts/test-t52-34plus-canonical-catalog.mjs#compatibility-only"]
+      "evidenceRefs": [
+        "src/catalog/seed-34plus.ts#SEED_34_PLUS_BRIDGE_COMPATIBILITY",
+        "scripts/test-t52-34plus-canonical-catalog.mjs#compatibility-only"
+      ]
     },
     {
       "seedId": "SEED_MEDICAL_LONG_MEMORY",
       "owner": "t51/canon-34plus",
       "disposition": "retired_compatible",
       "rationale": "Agent 8 certifica que este concepto es una proyección derivada y no una nueva fuente persistida de verdad; T5.2 conserva compatibilidad histórica sin permitir nueva creación.",
-      "evidenceRefs": ["src/catalog/seed-34plus.ts#SEED_34_PLUS_BRIDGE_COMPATIBILITY", "scripts/test-t52-34plus-canonical-catalog.mjs#compatibility-only"]
+      "evidenceRefs": [
+        "src/catalog/seed-34plus.ts#SEED_34_PLUS_BRIDGE_COMPATIBILITY",
+        "scripts/test-t52-34plus-canonical-catalog.mjs#compatibility-only"
+      ]
     },
     {
       "seedId": "SEED_HOME_RETURN_SIGNAL",
       "owner": "t51/canon-34plus",
       "disposition": "retired_compatible",
       "rationale": "Agent 8 certifica que este concepto es una proyección derivada y no una nueva fuente persistida de verdad; T5.2 conserva compatibilidad histórica sin permitir nueva creación.",
-      "evidenceRefs": ["src/catalog/seed-34plus.ts#SEED_34_PLUS_BRIDGE_COMPATIBILITY", "scripts/test-t52-34plus-canonical-catalog.mjs#compatibility-only"]
+      "evidenceRefs": [
+        "src/catalog/seed-34plus.ts#SEED_34_PLUS_BRIDGE_COMPATIBILITY",
+        "scripts/test-t52-34plus-canonical-catalog.mjs#compatibility-only"
+      ]
+    },
+    {
+      "seedId": "SEED_POSITIONAL_REINVENTION",
+      "owner": "t51/canon-23-30",
+      "disposition": "intentional_persistent",
+      "rationale": "El owner 23–30 exige que la memoria de reinvención posicional sobreviva al handoff hacia 30–34 como memoria causal abierta; no define transición terminal ni expiry canónico.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/CODEX/canon-23-30/CONTINUITY_CHAINS.md#reinvention"
+      ]
+    },
+    {
+      "seedId": "SEED_AGE30_PRIORITY",
+      "owner": "t51/canon-23-30",
+      "disposition": "intentional_persistent",
+      "rationale": "El owner 23–30 define la prioridad de edad 30 como guía persistida para 30–34 y prohíbe convertirla en route lock; la memoria permanece deliberadamente abierta sin cierre terminal.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#age-30-priority-contract",
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts"
+      ]
+    },
+    {
+      "seedId": "SEED_VELA_STANCE",
+      "owner": "t51/canon-18-23",
+      "disposition": "intentional_persistent",
+      "rationale": "El owner 18–23 conserva explícitamente la postura ante Vela como continuidad futura y la reutiliza como eco canónico posterior; no define cierre terminal ni expiry.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-18-20-cards.json#EVT_18_CAP_001",
+        "analysis/T5.1/canon-20-23-b2-handoff.json#EVT_22_LOCK_001"
+      ]
+    },
+    {
+      "seedId": "SEED_CLARA_CHANNEL",
+      "owner": "t51/canon-18-23",
+      "disposition": "intentional_persistent",
+      "rationale": "El owner 18–23 mantiene el canal con Clara como memoria reutilizable en escenas posteriores de prensa/mercado y marca future continuity sin transición terminal.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-18-20-cards.json#EVT_18_PRS_001",
+        "analysis/T5.1/canon-20-23-b2-handoff.json#CEVT_21_MEDIA_01"
+      ]
+    },
+    {
+      "seedId": "SEED_EXIT_STYLE_UDV",
+      "owner": "t51/canon-18-23",
+      "disposition": "intentional_persistent",
+      "rationale": "El owner 18–23 exige reactivar el estilo de salida de UDV en encuentros y decisiones posteriores; la salida histórica debe seguir disponible como memoria causal.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-20-23-b2-handoff.json#EVT_20_MKT_001",
+        "analysis/T5.1/canon-20-23-b2-handoff.json#EVT_22_HOME_001"
+      ]
+    },
+    {
+      "seedId": "SEED_FIRST_BIG_MONEY",
+      "owner": "t51/canon-18-23",
+      "disposition": "intentional_persistent",
+      "rationale": "El owner 18–23 conserva el primer gran salto económico como antecedente familiar/patrimonial reutilizable; la memoria no tiene cierre terminal canónico.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-20-23-b2-handoff.json#EVT_20_LIFE_001",
+        "analysis/T5.1/canon-20-23-b2-handoff.json#EVT_21_MONEY_001"
+      ]
+    },
+    {
+      "seedId": "SEED_FAMILY_MONEY",
+      "owner": "t51/canon-18-23",
+      "disposition": "intentional_persistent",
+      "rationale": "El owner 18–23 define explícitamente deuda, expectativas y límites familiares como memoria causal futura, no como estado que deba expirar tras una única escena.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-20-23-b2-handoff.json#EVT_20_LIFE_001",
+        "analysis/T5.1/canon-20-23-b2-handoff.json#EVT_21_MONEY_001"
+      ]
+    },
+    {
+      "seedId": "SEED_HOME_DISTANCE",
+      "owner": "t51/canon-18-23",
+      "disposition": "intentional_persistent",
+      "rationale": "El owner 18–23 reutiliza la distancia con el origen como memoria causal en campañas y regresos posteriores; no prescribe resolve ni expiry terminal.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-20-23-b2-handoff.json#EVT_21_IMG_001",
+        "analysis/T5.1/canon-20-23-b2-handoff.json#EVT_22_HOME_001"
+      ]
+    },
+    {
+      "seedId": "SEED_LOAD_MANAGEMENT",
+      "owner": "t51/canon-23-30",
+      "disposition": "intentional_persistent",
+      "rationale": "El owner 23–30 exige conservar el plan exacto de gestión de carga para callbacks posteriores; la memoria queda abierta y no posee transición terminal ni expiry canónico.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-23-30/CONDITIONAL_STATUS.md#CEVT_25_BODY_02",
+        "src/content/events/23_26/t510-principal-events.ts#EVT_23_BODY_001"
+      ]
+    },
+    {
+      "seedId": "SEED_RIVAS_TRUST",
+      "owner": "t51/canon-18-23",
+      "disposition": "intentional_persistent",
+      "rationale": "El owner 18–23 conserva la confianza/historia con Rivas como memoria requerida por callbacks canónicos posteriores; no existe cierre terminal ni expiry canónico definido.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-20-23-b3-missing-handoff.json#CEVT_20_RIVAS_01",
+        "src/catalog/seeds.ts#SEED_RIVAS_TRUST"
+      ]
+    },
+    {
+      "seedId": "SEED_FORM_VS_PLAN",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica esta identidad como memoria canónica pre-34 cuya provenance histórica debe persistir; no se reorigina ni se recrea al entrar en 34+.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#A-the-14-bridge-memory-entries",
+        "src/catalog/seed-34plus.ts#SEED_34_PLUS_BRIDGE_COMPATIBILITY"
+      ]
+    },
+    {
+      "seedId": "SEED_FAMILY_ANCHOR",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "A8 conserva esta memoria 30–34 como requisito causal de elegibilidad para EVT_35_FAM_001 mediante scopedMemory; debe sobrevivir al salto 30–34→34+ y no existe cierre terminal ni expiry canónico definido.",
+      "evidenceRefs": [
+        "PR#15:src/content/events/34_plus/staged-principal-wave-a.ts#isStagedWaveAEligible-EVT_35_FAM_001",
+        "PR#15:src/content/events/34_plus/staged-principal-wave-a.ts#EVT_35_FAM_001"
+      ]
+    },
+    {
+      "seedId": "SEED_RELOCATION_LIMIT",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "A8 exige esta memoria de límite de mudanza junto a SEED_FAMILY_ANCHOR para habilitar canónicamente EVT_35_FAM_001; el handoff conserva la decisión familiar sin inventar terminalidad ni TTL.",
+      "evidenceRefs": [
+        "PR#15:src/content/events/34_plus/staged-principal-wave-a.ts#isStagedWaveAEligible-EVT_35_FAM_001",
+        "PR#15:src/content/events/34_plus/staged-principal-wave-a.ts#EVT_35_FAM_001"
+      ]
+    },
+    {
+      "seedId": "SEED_MEDICAL_AUTHORITY",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "A8 usa scopedMemory(SEED_MEDICAL_AUTHORITY) como una vía causal explícita de elegibilidad para EVT_36_MED_001; la autoridad médica histórica debe cruzar a 34+ sin reoriginarse ni expirar por edad.",
+      "evidenceRefs": [
+        "PR#15:src/content/events/34_plus/staged-principal-wave-a.ts#isStagedWaveAEligible-EVT_36_MED_001",
+        "PR#15:src/content/events/34_plus/staged-principal-wave-a.ts#EVT_36_MED_001"
+      ]
+    },
+    {
+      "seedId": "SEED_PUBLIC_MYTH_FINAL",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "El handoff autoritativo A8→A9 asigna explícitamente esta memoria producida por EVT_35_FAREWELL_001 al owner terminal agent9; debe permanecer disponible hasta su consumo terminal y no tiene expiry previo definido.",
+      "evidenceRefs": [
+        "PR#15:analysis/CODEX/canon-34plus/T52_SEED_HANDOFF.json#SEED_PUBLIC_MYTH_FINAL",
+        "PR#15:analysis/CODEX/canon-34plus/RETIREMENT_HANDOFF.md"
+      ]
+    },
+    {
+      "seedId": "SEED_FINAL_RELOCATION_TRADEOFF",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "A8 proyecta esta memoria de forma nominativa en homeFamily del handoff read-only a A9; el flujo terminal debe recibir el tradeoff familiar histórico sin fabricar una nueva decisión ni reoriginar la seed.",
+      "evidenceRefs": [
+        "PR#15:src/content/events/34_plus/agent9-handoff.ts#homeFamily.relocationTradeoff",
+        "PR#15:analysis/CODEX/canon-34plus/RETIREMENT_HANDOFF.md#State-Agent-8-must-leave-factual"
+      ]
+    },
+    {
+      "seedId": "SEED_FINAL_HOME_WINDOW",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "A8 incluye explícitamente esta memoria en el handoff homeFamily hacia A9; conserva la ventana de regreso real como contexto terminal y no existe expiry canónico anterior a retirada.",
+      "evidenceRefs": [
+        "PR#15:src/content/events/34_plus/agent9-handoff.ts#homeFamily.finalHomeWindow",
+        "PR#15:analysis/CODEX/canon-34plus/RETIREMENT_HANDOFF.md#State-Agent-8-must-leave-factual"
+      ]
+    },
+    {
+      "seedId": "SEED_HOME_SUCCESS_WITHOUT_YOU",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "El contrato A8→A9 conserva esta memoria de forma explícita en homeFamily para que el cierre terminal pueda distinguir hechos históricos del club de una inferencia nueva; no se define terminalidad previa.",
+      "evidenceRefs": [
+        "PR#15:src/content/events/34_plus/agent9-handoff.ts#homeFamily.homeSuccessWithoutYou",
+        "PR#15:analysis/CODEX/canon-34plus/RETIREMENT_HANDOFF.md#Canonical-seed-handoff"
+      ]
+    },
+    {
+      "seedId": "SEED_TEN_MATCH_HOME_RETURN",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "A8 entrega explícitamente esta memoria a A9 mediante homeFamily.tenMatchHomeReturn; debe sobrevivir como contexto factual del tramo terminal sin convertirse por sí sola en orden de retirada.",
+      "evidenceRefs": [
+        "PR#15:src/content/events/34_plus/agent9-handoff.ts#homeFamily.tenMatchHomeReturn",
+        "PR#15:analysis/CODEX/canon-34plus/RETIREMENT_HANDOFF.md#Pre-terminal-material-Agent-8-prepares"
+      ]
+    },
+    {
+      "seedId": "SEED_NATIONAL_CAPTAINCY",
+      "owner": "t51/canon-23-30",
+      "disposition": "intentional_persistent",
+      "rationale": "A9 usa HAS_SEED_NATIONAL_CAPTAINCY como evidencia explícita para habilitar y explicar el epílogo END_NATIONAL_CAPTAIN; la memoria de capitanía debe persistir desde 23–30 hasta cierre de carrera.",
+      "evidenceRefs": [
+        "PR#118:src/epilogue/generator.ts#END_NATIONAL_CAPTAIN",
+        "PR#118:src/epilogue/generator.ts#endingFamilyEvidence"
+      ]
+    },
+    {
+      "seedId": "SEED_PRIVATE_CHAT",
+      "owner": "t51/canon-23-30",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "club",
+      "rationale": "La memoria pertenece al vestuario del club de origen: la prueba runtime integrada demuestra que, tras una transferencia, expireDueSeedsInPlace la termina por club_scope, apaga HAS_SEED_PRIVATE_CHAT y deshabilita CEVT_24_CHAT_01.",
+      "evidenceRefs": [
+        "analysis/T5.2/SCOPE_PROOFS.md#SEED_PRIVATE_CHAT",
+        "scripts/t52-seed-scope-proofs.mjs#SEED_PRIVATE_CHAT"
+      ]
+    },
+    {
+      "seedId": "SEED_CHRONIC_BODY",
+      "owner": "t51/canon-23-30",
+      "disposition": "intentional_persistent",
+      "rationale": "La memoria describe un patrón corporal recurrente y el runtime la consume de forma continuada desde madurez: riesgo semanal de lesión y clasificaciones 26/30/34. No existe transición terminal ni expiry canónico; mantenerla viva es parte del modelo físico longitudinal.",
+      "evidenceRefs": [
+        "analysis/CODEX/seeds/SEED_CONSUMER_MATRIX.json#SEED_CHRONIC_BODY",
+        "src/simulation/world-simulator.ts#mature-weekly-injury-risk",
+        "src/simulation/state34-classifier.ts#SEED_CHRONIC_BODY"
+      ]
+    },
+    {
+      "seedId": "SEED_YOUNG_SUCCESSOR",
+      "owner": "t51/canon-23-30",
+      "disposition": "intentional_persistent",
+      "rationale": "El simulador usa esta memoria desde el tramo peak sin límite superior para mantener presión sucesoria semanal; es una relación estructural de carrera, no un callback de una sola temporada, y no tiene cierre terminal canónico.",
+      "evidenceRefs": [
+        "analysis/CODEX/seeds/SEED_CONSUMER_MATRIX.json#SEED_YOUNG_SUCCESSOR",
+        "src/simulation/world-simulator-core.ts#peak-weekly-succession-pressure"
+      ]
+    },
+    {
+      "seedId": "SEED_HOME_SYMBOL",
+      "owner": "t51/canon-23-30",
+      "disposition": "intentional_persistent",
+      "rationale": "El owner 23–30 exige trasladar al handoff 30–34 el estado de hogar y las seeds live; esta memoria permanece open-ended y alimenta callbacks de hogar posteriores sin cierre terminal.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/CODEX/seeds/SEED_CONSUMER_MATRIX.json#SEED_HOME_SYMBOL"
+      ]
+    },
+    {
+      "seedId": "SEED_FIRST_ABSOLUTE_CALL",
+      "owner": "t51/canon-23-30",
+      "disposition": "intentional_persistent",
+      "rationale": "La primera convocatoria absoluta forma parte de la historia de selección que el owner exige preservar hacia 30–34; la seed es open-ended y no existe regla canónica de resolve/expiry.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/CODEX/seeds/SEED_CONSUMER_MATRIX.json#SEED_FIRST_ABSOLUTE_CALL"
+      ]
+    },
+    {
+      "seedId": "SEED_MAJOR_TOURNAMENT",
+      "owner": "t51/canon-23-30",
+      "disposition": "intentional_persistent",
+      "rationale": "La memoria de gran torneo pertenece al historial de selección que el handoff 23–30 conserva explícitamente; permanece open-ended y no tiene cierre terminal canónico.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/CODEX/seeds/SEED_CONSUMER_MATRIX.json#SEED_MAJOR_TOURNAMENT"
+      ]
+    },
+    {
+      "seedId": "SEED_SELF_OPTIMIZATION",
+      "owner": "t51/canon-23-30",
+      "disposition": "intentional_persistent",
+      "rationale": "El plan de auto-optimización es memoria corporal open-ended que el handoff conserva con injury/recovery state y que el runtime reutiliza durante la madurez; no hay expiry canónico.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/CODEX/seeds/SEED_CONSUMER_MATRIX.json#SEED_SELF_OPTIMIZATION"
+      ]
+    },
+    {
+      "seedId": "SEED_HOME_INSTITUTION",
+      "owner": "t51/canon-23-30",
+      "disposition": "intentional_persistent",
+      "rationale": "El vínculo institucional con el hogar se conserva en el handoff de home/family state y sigue condicionando retornos posteriores; la memoria es open-ended y no posee expiry canónico.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/CODEX/canon-23-30/CONTINUITY_CHAINS.md",
+        "analysis/CODEX/seeds/SEED_CONSUMER_MATRIX.json#SEED_HOME_INSTITUTION"
+      ]
+    },
+    {
+      "seedId": "SEED_RECORD_CHASE",
+      "owner": "t51/canon-23-30",
+      "disposition": "intentional_persistent",
+      "rationale": "El owner documenta la cadena de récord como continuidad hacia consecuencias posteriores; la memoria queda abierta para ecos en 29–33 y carece de resolve/expiry canónico.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-23-30/CONTINUITY_CHAINS.md",
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/CODEX/seeds/SEED_CONSUMER_MATRIX.json#SEED_RECORD_CHASE"
+      ]
+    },
+    {
+      "seedId": "SEED_PEAK_LOAD",
+      "owner": "t51/canon-23-30",
+      "disposition": "intentional_persistent",
+      "rationale": "La gestión de carga en el pico forma parte del injury/recovery state que debe llegar a 30–34 y el runtime la reutiliza en madurez; no existe cierre terminal canónico.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/CODEX/seeds/SEED_CONSUMER_MATRIX.json#SEED_PEAK_LOAD"
+      ]
+    },
+    {
+      "seedId": "SEED_DOCUMENTARY_ACCESS",
+      "owner": "t51/canon-23-30",
+      "disposition": "intentional_persistent",
+      "rationale": "El owner define documental → acceso → fallout como cadena de continuidad y exige conservar media/public history; la memoria permanece open-ended hasta sus consecuencias posteriores.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-23-30/CONTINUITY_CHAINS.md",
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/CODEX/seeds/SEED_CONSUMER_MATRIX.json#SEED_DOCUMENTARY_ACCESS"
+      ]
+    },
+    {
+      "seedId": "SEED_PUBLIC_RIVALRY",
+      "owner": "t51/canon-23-30",
+      "disposition": "intentional_persistent",
+      "rationale": "La rivalidad pública pertenece a la reputation/media history preservada en el handoff y vuelve a leerse en edades posteriores; no tiene transición terminal ni expiry canónico.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/CODEX/seeds/SEED_CONSUMER_MATRIX.json#SEED_PUBLIC_RIVALRY"
+      ]
+    },
+    {
+      "seedId": "SEED_WEALTH_STRUCTURE",
+      "owner": "t51/canon-23-30",
+      "disposition": "intentional_persistent",
+      "rationale": "La estructura patrimonial forma parte del wealth state que A6 exige transferir a 30–34; permanece open-ended y alimenta consecuencias posteriores sin regla de cierre.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/CODEX/seeds/SEED_CONSUMER_MATRIX.json#SEED_WEALTH_STRUCTURE"
+      ]
+    },
+    {
+      "seedId": "SEED_SURGERY_TIMING",
+      "owner": "t51/canon-23-30",
+      "disposition": "intentional_persistent",
+      "rationale": "La decisión sobre cirugía integra injury history/recovery state que el owner conserva hacia 30–34 y sigue afectando la clasificación corporal posterior; no posee expiry canónico.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/CODEX/seeds/SEED_CONSUMER_MATRIX.json#SEED_SURGERY_TIMING"
+      ]
+    },
+    {
+      "seedId": "SEED_WEALTHY_PEAK_EXIT",
+      "owner": "t51/canon-23-30",
+      "disposition": "intentional_persistent",
+      "rationale": "La salida económica en el pico forma parte del wealth/contract history que cruza el handoff y conserva consecuencias en State30; la seed es open-ended y no tiene cierre terminal.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/CODEX/seeds/SEED_CONSUMER_MATRIX.json#SEED_WEALTHY_PEAK_EXIT"
+      ]
+    },
+    {
+      "seedId": "SEED_EARLY_HOME_RETURN",
+      "owner": "t51/canon-23-30",
+      "disposition": "intentional_persistent",
+      "rationale": "El regreso temprano al hogar es memoria explícita del home/family state que debe sobrevivir al corte de edad 30; el runtime la reutiliza y no existe expiry canónico.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/CODEX/seeds/SEED_CONSUMER_MATRIX.json#SEED_EARLY_HOME_RETURN"
+      ]
+    },
+    {
+      "seedId": "SEED_FIRST_PEAK_DIP",
+      "owner": "t51/canon-23-30",
+      "disposition": "intentional_persistent",
+      "rationale": "El primer bajón del pico forma parte del form/body history que el handoff lleva a 30–34 y afecta la clasificación de declive posterior; la memoria permanece open-ended.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/CODEX/seeds/SEED_CONSUMER_MATRIX.json#SEED_FIRST_PEAK_DIP"
+      ]
+    },
+    {
+      "seedId": "SEED_ADRIAN_MIRROR",
+      "owner": "t51/canon-18-23",
+      "disposition": "canonical_chain",
+      "producerEventId": "EVT_19_RIV_001",
+      "consumerEventId": "EVT_21_RIV_001",
+      "rationale": "El productor canónico verificado establece la memoria de comparación con Adrián y el consumidor verificado exige esa memoria en gate y la modifica causalmente; la ventana 19→21 es temporalmente viable.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-18-23/CONTINUITY_CHAINS.md#adrian-comparison",
+        "src/content/events/18_20/principal-additions.ts#EVT_19_RIV_001",
+        "src/content/events/20_23/canonical-t55-a.ts#EVT_21_RIV_001"
+      ]
+    },
+    {
+      "seedId": "SEED_FAMILY_BUSINESS",
+      "owner": "t51/canon-23-30",
+      "disposition": "intentional_persistent",
+      "rationale": "A6 exige entregar a 30–34 el estado familiar, de hogar y patrimonio; esta memoria open-ended registra una decisión económica familiar y debe conservarse como contexto histórico sin expiry inventado.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/CODEX/seeds/SEED_CONSUMER_MATRIX.json#SEED_FAMILY_BUSINESS"
+      ]
+    },
+    {
+      "seedId": "SEED_IMAGE_RIGHTS",
+      "owner": "t51/canon-23-30",
+      "disposition": "intentional_persistent",
+      "rationale": "A6 exige conservar contrato, patrimonio y reputación pública/media en el handoff; la decisión sobre derechos de imagen permanece como memoria open-ended y no tiene cierre terminal canónico.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/CODEX/seeds/SEED_CONSUMER_MATRIX.json#SEED_IMAGE_RIGHTS"
+      ]
+    },
+    {
+      "seedId": "SEED_BIG_MATCH_BODY",
+      "owner": "t51/canon-23-30",
+      "disposition": "intentional_persistent",
+      "rationale": "A6 exige trasladar injury history y recovery state a 30–34; esta memoria corporal de partido grande es open-ended y debe sobrevivir como antecedente físico sin convertir su ageWindow en expiry.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/CODEX/seeds/SEED_CONSUMER_MATRIX.json#SEED_BIG_MATCH_BODY"
+      ]
+    },
+    {
+      "seedId": "SEED_WEALTHY_EXIT",
+      "owner": "t51/canon-23-30",
+      "disposition": "intentional_persistent",
+      "rationale": "A6 exige conservar family/home/wealth state y contrato en el corte 30–34; esta decisión económica de salida es memoria open-ended sin resolución terminal definida.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/CODEX/seeds/SEED_CONSUMER_MATRIX.json#SEED_WEALTHY_EXIT"
+      ]
+    },
+    {
+      "seedId": "SEED_GLOBAL_IMAGE",
+      "owner": "t51/canon-23-30",
+      "disposition": "intentional_persistent",
+      "rationale": "A6 exige entregar reputación pública/media y polarización a 30–34; esta memoria de imagen global permanece open-ended y no existe regla canónica de cierre previo.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/CODEX/seeds/SEED_CONSUMER_MATRIX.json#SEED_GLOBAL_IMAGE"
+      ]
+    },
+    {
+      "seedId": "SEED_HOME_OWNERSHIP",
+      "owner": "t51/canon-23-30",
+      "disposition": "intentional_persistent",
+      "rationale": "A6 exige preservar family/home/wealth state; la relación patrimonial con el hogar es memoria open-ended y debe cruzar el handoff sin ser expirada por ausencia de consumer inmediato.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/CODEX/seeds/SEED_CONSUMER_MATRIX.json#SEED_HOME_OWNERSHIP"
+      ]
+    },
+    {
+      "seedId": "SEED_PERSONAL_BRAND_INDEPENDENCE",
+      "owner": "t51/canon-23-30",
+      "disposition": "intentional_persistent",
+      "rationale": "A6 exige conservar reputación pública/media y patrimonio; la independencia de marca personal queda como memoria open-ended de control comercial sin terminalidad canónica.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/CODEX/seeds/SEED_CONSUMER_MATRIX.json#SEED_PERSONAL_BRAND_INDEPENDENCE"
+      ]
+    },
+    {
+      "seedId": "SEED_GLOBAL_AWARD_BEHAVIOR",
+      "owner": "t51/canon-23-30",
+      "disposition": "intentional_persistent",
+      "rationale": "A6 exige trasladar public/media reputation y polarization; el comportamiento ante reconocimiento global permanece como memoria open-ended y no tiene cierre canónico definido.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/CODEX/seeds/SEED_CONSUMER_MATRIX.json#SEED_GLOBAL_AWARD_BEHAVIOR"
+      ]
+    },
+    {
+      "seedId": "SEED_FAN_FRACTURE",
+      "owner": "t51/canon-23-30",
+      "disposition": "intentional_persistent",
+      "rationale": "A6 exige conservar reputación pública/media y polarización; la fractura con la afición es un antecedente open-ended que debe seguir disponible en 30–34 sin expiry inventado.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/CODEX/seeds/SEED_CONSUMER_MATRIX.json#SEED_FAN_FRACTURE"
+      ]
+    },
+    {
+      "seedId": "SEED_RECORD_PUBLIC_TONE",
+      "owner": "t51/canon-23-30",
+      "disposition": "intentional_persistent",
+      "rationale": "A6 exige preservar reputación pública/media; el tono adoptado ante récords queda como memoria open-ended de legado público y no existe una transición terminal que autorice cerrarla.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/CODEX/seeds/SEED_CONSUMER_MATRIX.json#SEED_RECORD_PUBLIC_TONE"
+      ]
+    },
+    {
+      "seedId": "SEED_PERSONAL_STAFF",
+      "owner": "t51/canon-23-30",
+      "disposition": "intentional_persistent",
+      "rationale": "A6 exige transportar las seeds vivas con provenance intacta y el estado personal/familiar hacia 30–34; esta memoria define quién gestiona la vida profesional y no tiene cierre terminal canónico.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "src/catalog/seeds.ts#SEED_PERSONAL_STAFF",
+        "src/content/events/23_26/principal-events.ts#EVT_24_LIFE_001"
+      ]
+    },
+    {
+      "seedId": "SEED_YOUNG_MENTOR",
+      "owner": "t51/canon-23-30",
+      "disposition": "intentional_persistent",
+      "rationale": "La memoria de mentoría/competencia juvenil es open-ended, ya altera causalmente roleAdaptability en el tramo peak y A6 exige preservar las seeds vivas hacia 30–34; no existe expiry canónico posterior.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "src/catalog/seeds.ts#SEED_YOUNG_MENTOR",
+        "src/simulation/peak-adapter.ts#SEED_YOUNG_MENTOR"
+      ]
+    },
+    {
+      "seedId": "SEED_CAPTAINCY_STYLE",
+      "owner": "t51/canon-23-30",
+      "disposition": "intentional_persistent",
+      "rationale": "A6 exige conservar las seeds vivas y separar el captain slot autoritativo de la memoria de liderazgo. Esta seed persiste solo como historial de estilo, no como prueba de capitanía actual.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "src/catalog/seeds.ts#SEED_CAPTAINCY_STYLE",
+        "analysis/CODEX/player-leadership-authority/ARCHITECTURE_CONTRACT.md#SEED_CAPTAINCY_STYLE"
+      ]
+    },
+    {
+      "seedId": "SEED_AGE26_PRIORITY",
+      "owner": "t51/canon-23-30",
+      "disposition": "intentional_persistent",
+      "rationale": "La prioridad declarada al cerrar el ciclo de 26 es una memoria abierta de techo, rol, cuerpo/estabilidad o libertad; A6 ordena preservar seeds vivas y provenance al cruzar a 30–34, sin route lock ni expiry inventado.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "src/catalog/seeds.ts#SEED_AGE26_PRIORITY",
+        "src/content/events/23_26/principal-events.ts#EVT_25_END_001"
+      ]
+    },
+    {
+      "seedId": "SEED_MENTOR_ADVICE",
+      "owner": "t51/canon-23-30",
+      "disposition": "intentional_persistent",
+      "rationale": "El consejo dado a un joven es memoria de legado open-ended y A6 exige trasladar las seeds vivas con su origen histórico; no existe transición terminal que autorice borrar ese antecedente al cumplir 30.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "src/catalog/seeds.ts#SEED_MENTOR_ADVICE",
+        "analysis/T5.1/canon-23-30-migration-handoff.json#SEED_MENTOR_ADVICE"
+      ]
     }
   ]
 }
