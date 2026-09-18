@@ -1,8 +1,5 @@
 name: T5.2 34+ seed catalog
 
-permissions:
-  contents: write
-
 on:
   pull_request:
     paths:
@@ -27,29 +24,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
       - run: npm ci
       - run: npm run build
-      - name: A5 K exact identity probe
-        run: node scripts/print-t51-a5-k-identity.mjs
       - run: node --test scripts/test-t52-34plus-canonical-catalog.mjs
       - run: npm run test:t52
-
-      - name: Commit exact K freeze artifacts
-        if: github.event_name == 'pull_request' && github.event.pull_request.number == 300
-        run: |
-          node scripts/freeze-t51-active-source.mjs
-          node scripts/generate-t51-post-legacy-registry.mjs
-          node scripts/generate-t51-offer-bridge-evidence.mjs
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add qa/fixtures/t5.1/post-t51-sources/586055d1636c16c88e18ea4367325e377242a6fdbda53997d83f04e4f75e47b9.json src/session/post-t51-legacy-registry.ts src/session/frozen-offer-bridge-evidence.ts
-          if ! git diff --cached --quiet; then
-            git commit -m "A5 K: freeze exact 586055d active catalog"
-            git push origin HEAD:a0/a5-k-corrected-after-293
-          fi
