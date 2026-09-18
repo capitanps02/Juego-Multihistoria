@@ -47,6 +47,18 @@ export interface MatchResultFact {
   outcome: MatchOutcome;
 }
 
+export interface MatchPlayerStats {
+  goals: number;
+  assists: number;
+  yellowCards: number;
+  redCards: number;
+}
+
+export interface SeasonPlayerStats extends MatchPlayerStats {
+  season: string;
+  appearances: number;
+}
+
 export interface OfficialMatchRecord extends ScheduledFixture {
   player: MatchPlayerFact;
   decisionContext: MatchDecisionContext | null;
@@ -55,6 +67,8 @@ export interface OfficialMatchRecord extends ScheduledFixture {
    * Historical rows are never backfilled from present-day state.
    */
   result?: MatchResultFact;
+  /** Absent on historical/result-only rows created before player-stat authority. */
+  stats?: MatchPlayerStats;
 }
 
 export interface MatchMilestones {
@@ -195,6 +209,39 @@ function deterministicMatchResult(state: GameState, fixture: ScheduledFixture): 
   return { homeGoals, awayGoals, halfTimeHomeGoals, halfTimeAwayGoals, outcome };
 }
 
+function clubGoalsFromResult(fixture: ScheduledFixture, result: MatchResultFact): number {
+  return fixture.homeAway === "home" ? result.homeGoals : result.awayGoals;
+}
+
+function deterministicPlayerStats(
+  state: GameState,
+  fixture: ScheduledFixture,
+  player: MatchPlayerFact,
+  result: MatchResultFact
+): MatchPlayerStats {
+  if (!player.appeared) return { goals: 0, assists: 0, yellowCards: 0, redCards: 0 };
+
+  const clubGoals = clubGoalsFromResult(fixture, result);
+  const goalRoll = footballProducerRoll(state, fixture, "player-goals") % 1000;
+  let goals = 0;
+  if (clubGoals > 0) {
+    if (goalRoll < 90) goals = Math.min(2, clubGoals);
+    else if (goalRoll < 360) goals = 1;
+  }
+
+  const remainingGoals = Math.max(0, clubGoals - goals);
+  const assistRoll = footballProducerRoll(state, fixture, "player-assists") % 1000;
+  let assists = 0;
+  if (remainingGoals > 0) {
+    if (assistRoll < 55) assists = Math.min(2, remainingGoals);
+    else if (assistRoll < 330) assists = 1;
+  }
+
+  const yellowCards = (footballProducerRoll(state, fixture, "player-yellow") % 1000) < 180 ? 1 : 0;
+  const redCards = (footballProducerRoll(state, fixture, "player-red") % 1000) < 25 ? 1 : 0;
+  return { goals, assists, yellowCards, redCards };
+}
+
 function deterministicDebutContext(state: GameState, fixture: ScheduledFixture): MatchDecisionContext {
   // Repeated common values intentionally make the canonical 78' / 1-1 situation plausible,
   // but its occurrence is decided by fixture identity rather than by narrative eligibility.
@@ -288,19 +335,24 @@ export function recordOfficialMatchInPlace(state: GameState, input: RecordOffici
     if (input.debutOccurred) decisionContext = substitution;
   }
 
+  const player: MatchPlayerFact = {
+    calledUp,
+    onBench,
+    started,
+    appeared,
+    minutes,
+    debut: input.debutOccurred,
+    injuryUnavailable
+  };
+  const result = deterministicMatchResult(state, fixture);
+  const firstGoalKnowable = store.fixtures.every(row => !row.player.appeared || row.stats !== undefined);
+  const stats = deterministicPlayerStats(state, fixture, player, result);
   const record: OfficialMatchRecord = {
     ...fixture,
-    player: {
-      calledUp,
-      onBench,
-      started,
-      appeared,
-      minutes,
-      debut: input.debutOccurred,
-      injuryUnavailable
-    },
+    player,
     decisionContext,
-    result: deterministicMatchResult(state, fixture)
+    result,
+    stats
   };
 
   store.fixtures.push(record);
@@ -310,6 +362,7 @@ export function recordOfficialMatchInPlace(state: GameState, input: RecordOffici
   setMilestone(store.milestones, "firstAppearance", record.id, appeared);
   setMilestone(store.milestones, "firstStart", record.id, started);
   setMilestone(store.milestones, "firstFullMatch", record.id, appeared && minutes === 90);
+  setMilestone(store.milestones, "firstGoal", record.id, firstGoalKnowable && stats.goals > 0);
   return record;
 }
 
@@ -340,6 +393,38 @@ export function lastPlayerAppearance(state: GameState): OfficialMatchRecord | nu
     if (row.player.appeared) return row;
   }
   return null;
+}
+
+export function careerGoalHistoryComplete(state: GameState): boolean {
+  const store = getSportMatchModelStore(state);
+  if (!store) return false;
+  return store.fixtures.every(row => !row.player.appeared || row.stats !== undefined);
+}
+
+export function seasonPlayerStats(state: GameState, season = state.season): SeasonPlayerStats | null {
+  const store = getSportMatchModelStore(state);
+  if (!store) return null;
+  const rows = store.fixtures.filter(row => row.season === season);
+  if (rows.some(row => row.player.appeared && row.stats === undefined)) return null;
+
+  const aggregate: SeasonPlayerStats = {
+    season,
+    appearances: 0,
+    goals: 0,
+    assists: 0,
+    yellowCards: 0,
+    redCards: 0
+  };
+  for (const row of rows) {
+    if (row.player.appeared) aggregate.appearances += 1;
+    const stats = row.stats;
+    if (!stats) continue;
+    aggregate.goals += stats.goals;
+    aggregate.assists += stats.assists;
+    aggregate.yellowCards += stats.yellowCards;
+    aggregate.redCards += stats.redCards;
+  }
+  return aggregate;
 }
 
 export function previousOfficialMatch(state: GameState): OfficialMatchRecord | null {
@@ -405,9 +490,12 @@ function fixtureIssue(value: unknown, index: number, maxDate?: string, state?: G
   const path = `world.${STORE_KEY}.fixtures[${index}]`;
   if (!plainRecord(value)) return { path, reason: "fixture must be an object" };
   const legacyKeys = ["id", "date", "season", "competition", "club", "opponent", "homeAway", "official", "player", "decisionContext"];
-  const resultKeys = [...legacyKeys, "result"];
-  if (!exactKeys(value, legacyKeys) && !exactKeys(value, resultKeys)) {
-    return { path, reason: "fixture fields do not match match-model v1" };
+  const allowedKeys = [...legacyKeys];
+  if (Object.prototype.hasOwnProperty.call(value, "result")) allowedKeys.push("result");
+  if (Object.prototype.hasOwnProperty.call(value, "stats")) allowedKeys.push("stats");
+  if (!exactKeys(value, allowedKeys)) return { path, reason: "fixture fields do not match match-model v1" };
+  if (Object.prototype.hasOwnProperty.call(value, "stats") && !Object.prototype.hasOwnProperty.call(value, "result")) {
+    return { path: `${path}.stats`, reason: "player stats require an authoritative match result" };
   }
   for (const key of ["id", "season", "club", "opponent"]) {
     if (typeof value[key] !== "string" || (value[key] as string).length === 0) return { path: `${path}.${key}`, reason: "invalid text" };
@@ -486,6 +574,45 @@ function fixtureIssue(value: unknown, index: number, maxDate?: string, state?: G
         return { path: `${path}.result`, reason: "result contradicts authoritative football producer" };
       }
     }
+
+    if (Object.prototype.hasOwnProperty.call(value, "stats")) {
+      const stats = value.stats;
+      if (!plainRecord(stats) || !exactKeys(stats, ["goals", "assists", "yellowCards", "redCards"])) {
+        return { path: `${path}.stats`, reason: "invalid player match stat fields" };
+      }
+      for (const key of ["goals", "assists", "yellowCards", "redCards"]) {
+        if (typeof stats[key] !== "number" || !Number.isInteger(stats[key]) || stats[key] < 0) {
+          return { path: `${path}.stats.${key}`, reason: "invalid player match stat" };
+        }
+      }
+      if ((stats.goals as number) > 9 || (stats.assists as number) > 9
+        || (stats.yellowCards as number) > 2 || (stats.redCards as number) > 1) {
+        return { path: `${path}.stats`, reason: "player match stats exceed supported bounds" };
+      }
+      if (!player.appeared && ((stats.goals as number) !== 0 || (stats.assists as number) !== 0
+        || (stats.yellowCards as number) !== 0 || (stats.redCards as number) !== 0)) {
+        return { path: `${path}.stats`, reason: "non-appearance cannot have player match stats" };
+      }
+      const clubGoals = value.homeAway === "home" ? result.homeGoals as number : result.awayGoals as number;
+      if ((stats.goals as number) > clubGoals) return { path: `${path}.stats.goals`, reason: "player goals exceed team goals" };
+      if ((stats.assists as number) > Math.max(0, clubGoals - (stats.goals as number))) {
+        return { path: `${path}.stats.assists`, reason: "player assists exceed assistable team goals" };
+      }
+      if (state) {
+        const expectedStats = deterministicPlayerStats(
+          state,
+          value as unknown as ScheduledFixture,
+          player as unknown as MatchPlayerFact,
+          result as unknown as MatchResultFact
+        );
+        if (stats.goals !== expectedStats.goals
+          || stats.assists !== expectedStats.assists
+          || stats.yellowCards !== expectedStats.yellowCards
+          || stats.redCards !== expectedStats.redCards) {
+          return { path: `${path}.stats`, reason: "player stats contradict authoritative football producer" };
+        }
+      }
+    }
   }
   return null;
 }
@@ -500,6 +627,7 @@ export function inspectSportMatchModelStore(value: unknown, maxDate?: string, st
   let previousDate = "";
   const ids = new Set<string>();
   const expectedMilestones = emptyMilestones();
+  let firstGoalKnowable = true;
   for (let i = 0; i < value.fixtures.length; i += 1) {
     const issue = fixtureIssue(value.fixtures[i], i, maxDate, state);
     if (issue) return issue;
@@ -515,6 +643,10 @@ export function inspectSportMatchModelStore(value: unknown, maxDate?: string, st
     setMilestone(expectedMilestones, "firstAppearance", fixture.id, fixture.player.appeared);
     setMilestone(expectedMilestones, "firstStart", fixture.id, fixture.player.started);
     setMilestone(expectedMilestones, "firstFullMatch", fixture.id, fixture.player.appeared && fixture.player.minutes === 90);
+    if (expectedMilestones.firstGoal === null) {
+      if (fixture.player.appeared && fixture.stats === undefined) firstGoalKnowable = false;
+      setMilestone(expectedMilestones, "firstGoal", fixture.id, firstGoalKnowable && (fixture.stats?.goals ?? 0) > 0);
+    }
   }
 
   if (!plainRecord(value.milestones) || !exactKeys(value.milestones, ["firstMatchSquadCall", "firstBench", "firstAppearance", "firstStart", "firstFullMatch", "firstGoal"])) {
@@ -525,7 +657,9 @@ export function inspectSportMatchModelStore(value: unknown, maxDate?: string, st
     if (milestone !== null && !ids.has(milestone)) return { path: `${path}.milestones.${key}`, reason: "milestone references unknown fixture" };
     if (milestone !== expectedMilestones[key as keyof MatchMilestones]) return {
       path: `${path}.milestones.${key}`,
-      reason: key === "firstGoal" ? "goals are unavailable in match-model v1" : "milestone must identify the first qualifying recorded fixture"
+      reason: key === "firstGoal"
+        ? "firstGoal must identify the first provable scoring fixture, or stay null when earlier goal history is unknown"
+        : "milestone must identify the first qualifying recorded fixture"
     };
   }
 
