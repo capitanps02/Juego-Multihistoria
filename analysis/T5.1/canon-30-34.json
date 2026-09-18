@@ -661,9 +661,14 @@
       "EVT_31_SQUAD_001",
       "EVT_31_BIZ_001",
       "EVT_32_RICH_001",
-      "EVT_32_ELITE_001"
+      "EVT_32_ELITE_001",
+      "EVT_32_SUCCESSOR_001",
+      "EVT_32_LOAD_001",
+      "EVT_32_BOSMAN_001",
+      "EVT_33_RECORD_001"
     ],
-    "shiftedCanonicalPreparedCount": 10
+    "shiftedCanonicalPreparedCount": 14,
+    "shiftedOwnerContentCompleteCount": 18
   },
   "implementationDisposition": {
     "safeNow": [
