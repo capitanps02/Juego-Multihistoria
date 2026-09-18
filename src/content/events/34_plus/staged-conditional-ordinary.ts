@@ -1,4 +1,5 @@
 import type { EventDefinition, GameState } from "../../../core/types.js";
+import { conditionalSeedReads, localConditionalEffects } from "./staged-conditional-effects.js";
 
 export interface StagedCanonicalConditional {
   event: EventDefinition;
@@ -692,7 +693,7 @@ function toConditional(spec:typeof ALL_SPECS[number]):EventDefinition{
   const outcomes=spec.choices.map(([id,label])=>({
     id:`${spec.id}__${id}__PRIMARY`,
     baseWeight:1,
-    effects:[],
+    effects:localConditionalEffects(spec.id,id),
     messages:[`${label}. La consecuencia se registra solo cuando el trigger factual canónico está acreditado.`],
     historyTags:["canonical_34plus_conditional",`choice_${id}`]
   }));
@@ -707,6 +708,7 @@ function toConditional(spec:typeof ALL_SPECS[number]):EventDefinition{
     text:{title:spec.id,body:spec.premise},
     intel:{visible:[spec.canonicalTrigger],uncertain:[spec.meaning]},
     choices,outcomes,
+    seedsRead:[...conditionalSeedReads(spec.id)],
     tags:["canonical_34plus","conditional","staged_not_registered","awaiting_external_fact","no_generic_shell"],
     canonStatus:"verified"
   };
