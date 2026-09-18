@@ -656,9 +656,14 @@
       "EVT_30_RECORD_001",
       "EVT_30_PAIN_001",
       "EVT_30_NANO_001",
-      "EVT_31_FAM_001"
+      "EVT_31_FAM_001",
+      "EVT_31_TEAM_001",
+      "EVT_31_SQUAD_001",
+      "EVT_31_BIZ_001",
+      "EVT_32_RICH_001",
+      "EVT_32_ELITE_001"
     ],
-    "shiftedCanonicalPreparedCount": 5
+    "shiftedCanonicalPreparedCount": 10
   },
   "implementationDisposition": {
     "safeNow": [
