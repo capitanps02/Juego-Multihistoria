@@ -15,8 +15,21 @@ async function pending(options={}){
  for(let i=0;i<5 && !s.getView().offer;i++)await s.dispatch(command(s,'continue',{maxDays:366}));
  assert.equal(s.getView().screen,'offer');return s;
 }
+async function pendingAtAge20(options={}){
+ const s=await GameSession.create(123,{events:[],...options});
+ for(let i=0;i<20;i++){
+  const view=s.getView();
+  if(view.offer){
+   if(view.age>=20)return s;
+   await s.dispatch(command(s,'offer',{offerId:view.offer.id,action:'reject'}));
+   continue;
+  }
+  await s.dispatch(command(s,'continue',{maxDays:366}));
+ }
+ throw new Error('No age-20 CareerOffer materialized');
+}
 test('20th birthday proposal does not silently re-employ an expired player',async()=>{
- const s=await pending(),v=s.getView(),snap=s.exportSnapshot();
+ const s=await pendingAtAge20(),v=s.getView(),snap=s.exportSnapshot();
  assert.equal(v.age,20);assert.equal(v.salaryMonthly,0);assert.equal(v.contractMonths,0);
  assert.equal(snap.state.employment?.status,'unattached');
  assert.ok(v.offer.terms.salary>0);assert.equal(v.club,v.offer.before.club);
