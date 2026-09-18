@@ -3,7 +3,7 @@ import type { GameState } from "../core/types.js";
 import { generateEpilogue } from "../epilogue/generator.js";
 import { contractEmploymentStatus, getActiveCareerOffers } from "./offers.js";
 import { getSportContext } from "./sport-context.js";
-import { canonicalRetirementReversalTransitionAuthorized } from "./retirement-authority.js";
+import { canonicalRetirementReversalTransitionAuthorized, retirementNoLastMatchFact, retirementStorybookLastGoalFact } from "./retirement-authority.js";
 
 const clamp=(x:number,min=0,max=100)=>Math.min(max,Math.max(min,x));
 const num=(x:unknown,f=0)=>typeof x==="number"?x:f;
@@ -294,7 +294,10 @@ export function lateCareerWeek(state:GameState):void{
     // Shared fixture authority outranks the legacy administrative timeout. Until that
     // authority is integrated/available, the exact previous fallback remains in force.
     const administrativeClose=state.retirement.daysInStatus>=120||(num(state.contract.monthsRemaining)<=0&&state.retirement.daysInStatus>=90);
-    if(shouldCloseAnnouncedCareer(sportContext,administrativeClose)){
+    const canonicalTerminalSportScenePending=
+      retirementStorybookLastGoalFact(state).eligible ||
+      retirementNoLastMatchFact(state).eligible;
+    if(shouldCloseAnnouncedCareer(sportContext,administrativeClose)&&!canonicalTerminalSportScenePending){
       const closure=state.flags.LAST_MATCH_PLAYED?"last_match_played":"no_last_match";
       closeCareer(state,state.retirement.reason??"administrative_close",closure);
     }
