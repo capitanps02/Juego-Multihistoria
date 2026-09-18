@@ -65,6 +65,7 @@ export function lateCareerPreseason(state:GameState):void{
   state.world.veteranMarketDemand=Math.round(demand*10)/10;
   state.flags.VETERAN_OFFER_AVAILABLE=false;
   state.flags.INFORMAL_RENEWAL_PROMISE=false;
+  state.flags.NO_MARKET_END_CONTEXT=false;
   delete state.world.veteranOfferRole;
   delete state.world.veteranOfferMonths;
   delete state.world.veteranOfferSalary;
