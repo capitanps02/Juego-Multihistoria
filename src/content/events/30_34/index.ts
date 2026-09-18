@@ -16,11 +16,15 @@ const reimplementedIds=new Set([
   "EVT_32_CON_001","EVT_32_HOME_001","EVT_32_AGT_001","EVT_32_FAN_001","EVT_32_NAT_001",
   "EVT_33_BODY_001","EVT_33_CAP_001","EVT_33_MKT_001","EVT_33_PRS_001"
 ]);
+const formalMentorShift=PREPARED_SHIFTED_CANON_30_34_B.find(event=>event.id==="EVT_31_TEAM_001");
+if(!formalMentorShift) throw new Error("Missing prepared EVT_31_TEAM_001 formal mentor definition");
+
 const overrides=new Map([
   ...CANONICAL_REIMPLEMENTATIONS_30_34,
   ...CANONICAL_REIMPLEMENTATIONS_31B,
   ...CANONICAL_REIMPLEMENTATIONS_32A,
-  ...CANONICAL_REIMPLEMENTATIONS_33A
+  ...CANONICAL_REIMPLEMENTATIONS_33A,
+  formalMentorShift
 ].map(event=>[event.id,event]));
 
 const canonicalRenewalAlternatives:Condition[][]=[
