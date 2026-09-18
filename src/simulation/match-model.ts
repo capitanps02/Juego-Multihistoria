@@ -1,4 +1,5 @@
 import type { DataValue, GameState } from "../core/types.js";
+import { currentEmploymentClub } from "./offers.js";
 
 const STORE_KEY = "sportMatchModel";
 const OFFICIAL_MONTHS = new Set([8, 9, 10, 11, 12, 1, 2, 3, 4, 5]);
@@ -172,11 +173,13 @@ function deterministicDebutContext(state: GameState, fixture: ScheduledFixture):
  * No extra RNG is consumed and no narrative state is consulted.
  */
 export function isOfficialMatchDay(state: GameState, offsetDays = 0): boolean {
+  if (currentEmploymentClub(state) === null) return false;
   const date = addDays(state.date, offsetDays);
   return OFFICIAL_MONTHS.has(monthOf(date)) && (state.runtime.day + offsetDays) % 7 === 0;
 }
 
 export function isTrainingDay(state: GameState, offsetDays = 0): boolean {
+  if (currentEmploymentClub(state) === null) return false;
   const date = addDays(state.date, offsetDays);
   return TRAINING_MONTHS.has(monthOf(date)) && !isOfficialMatchDay(state, offsetDays);
 }
@@ -274,6 +277,7 @@ export function recordOfficialMatchInPlace(state: GameState, input: RecordOffici
 }
 
 export function closeLeagueObjectiveInPlace(state: GameState, outcome: string): void {
+  if (currentEmploymentClub(state) === null) return;
   const store = ensureStoreInPlace(state);
   ensureObjectiveInPlace(state, store);
   if (!store.objective || store.objective.status === "closed") return;
@@ -283,26 +287,31 @@ export function closeLeagueObjectiveInPlace(state: GameState, outcome: string): 
 }
 
 export function currentOfficialMatch(state: GameState): OfficialMatchRecord | null {
+  const club = currentEmploymentClub(state);
+  if (club === null) return null;
   const store = getSportMatchModelStore(state);
   if (!store) return null;
   for (let i = store.fixtures.length - 1; i >= 0; i -= 1) {
     const row = store.fixtures[i]!;
-    if (row.date === state.date && row.club === state.professional.registrationClub) return row;
+    if (row.date === state.date && row.club === state.professional.registrationClub && state.club === club) return row;
   }
   return null;
 }
 
 export function previousOfficialMatch(state: GameState): OfficialMatchRecord | null {
+  const club = currentEmploymentClub(state);
+  if (club === null) return null;
   const store = getSportMatchModelStore(state);
   if (!store) return null;
   for (let i = store.fixtures.length - 1; i >= 0; i -= 1) {
     const row = store.fixtures[i]!;
-    if (row.date < state.date && row.club === state.professional.registrationClub) return row;
+    if (row.date < state.date && row.club === state.professional.registrationClub && state.club === club) return row;
   }
   return null;
 }
 
 export function nextScheduledFixture(state: GameState): ScheduledFixture | null {
+  if (currentEmploymentClub(state) === null) return null;
   const hasCurrent = currentOfficialMatch(state) !== null;
   for (let offset = hasCurrent ? 1 : 0; offset <= 370; offset += 1) {
     if (!isOfficialMatchDay(state, offset)) continue;
@@ -324,6 +333,7 @@ export function hoursToNextScheduledFixture(state: GameState): number | null {
 }
 
 export function nextScheduledTrainingDate(state: GameState): string | null {
+  if (currentEmploymentClub(state) === null) return null;
   for (let offset = 1; offset <= 14; offset += 1) {
     if (isTrainingDay(state, offset)) return addDays(state.date, offset);
   }
@@ -331,6 +341,7 @@ export function nextScheduledTrainingDate(state: GameState): string | null {
 }
 
 export function remainingLeagueFixtures(state: GameState): number {
+  if (currentEmploymentClub(state) === null) return 0;
   const startYear = Number(state.season.slice(0, 4));
   const seasonEnd = `${startYear + 1}-05-31`;
   const hasCurrent = currentOfficialMatch(state) !== null;
