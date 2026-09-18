@@ -3,12 +3,14 @@ import {
   currentOfficialMatch,
   getSportMatchModelStore,
   isTrainingDay,
+  lastPlayerAppearance,
   nextScheduledFixture,
   nextScheduledTrainingDate,
   previousOfficialMatch,
   remainingLeagueFixtures,
   type LeagueObjectiveStatus,
   type MatchCompetition,
+  type MatchResultFact,
   type OfficialMatchRecord,
   type ScheduledFixture,
   type SquadStatus
@@ -28,6 +30,7 @@ export interface SportContextAvailability {
   currentCompetition: SportFactAvailability;
   nextFixture: SportFactAvailability;
   previousFixture: SportFactAvailability;
+  lastPlayerAppearance: SportFactAvailability;
   hoursToNextFixture: SportFactAvailability;
   isMatchDay: SportFactAvailability;
   isTrainingWindow: SportFactAvailability;
@@ -57,6 +60,8 @@ export interface SportContext {
   currentCompetition: MatchCompetition | null;
   nextFixture: ScheduledFixture | null;
   previousFixture: OfficialMatchRecord | null;
+  /** Latest factual official row where the player actually appeared, across clubs. */
+  lastPlayerAppearance: OfficialMatchRecord | null;
   hoursToNextFixture: number | null;
   isMatchDay: boolean;
   isTrainingWindow: boolean;
@@ -83,7 +88,7 @@ export interface CurrentMatchContext {
   opponent: string | null;
   homeAway: "home" | "away" | null;
   dateTime: null;
-  result: null;
+  result: MatchResultFact | null;
   playerCalledUp: boolean | null;
   playerOnBench: boolean | null;
   playerStarted: boolean | null;
@@ -143,6 +148,7 @@ export function getSportContext(state: GameState): SportContext {
   const current = currentOfficialMatch(state);
   const next = nextScheduledFixture(state);
   const previous = previousOfficialMatch(state);
+  const lastAppearance = lastPlayerAppearance(state);
   const remaining = remainingLeagueFixtures(state);
   const objective = store?.objective && store.objective.season === state.season && store.objective.club === state.professional.registrationClub
     ? store.objective
@@ -159,6 +165,7 @@ export function getSportContext(state: GameState): SportContext {
     currentCompetition: current?.competition ?? next?.competition ?? null,
     nextFixture: next,
     previousFixture: previous,
+    lastPlayerAppearance: lastAppearance,
     hoursToNextFixture: hoursUntilFixture(state, next),
     isMatchDay: current !== null,
     isTrainingWindow: isTrainingDay(state),
@@ -183,6 +190,7 @@ export function getSportContext(state: GameState): SportContext {
       currentCompetition: known(),
       nextFixture: known(),
       previousFixture: milestonesKnown ? known() : unavailable(),
+      lastPlayerAppearance: milestonesKnown ? known() : unavailable(),
       hoursToNextFixture: known(),
       isMatchDay: known(),
       isTrainingWindow: known(),
@@ -268,7 +276,7 @@ export function getCurrentMatchContext(state: GameState): CurrentMatchContext {
     opponent: match.opponent,
     homeAway: match.homeAway,
     dateTime: null,
-    result: null,
+    result: match.result ?? null,
     playerCalledUp: match.player.calledUp,
     playerOnBench: match.player.onBench,
     playerStarted: match.player.started,
