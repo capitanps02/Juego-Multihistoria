@@ -3,7 +3,7 @@
   "scope": "30_34",
   "generatedAt": "2026-09-17",
   "branch": "t51/canon-30-34",
-  "sourceMainSha": "5f4d14bca4d696cfafadb58b64034c7cd40cc147",
+  "sourceMainSha": "49f16b21c8f68f1439901437dcf16e1384966de2",
   "sources": [
     "analysis/T5.1/canon-30-34.json",
     "analysis/T5.2/README.md",
@@ -37,7 +37,7 @@
     "noProducerAndNoConsumer": 3,
     "terminalTransitionDefined": 0,
     "openEndedWithoutTerminalTransition": 52,
-    "interpretation": "Open-ended is not automatically a defect. SEED_ROLE_COMMUNICATION now has its canonical runtime producer EVT_30_CCH_001. The remaining three no-producer/no-consumer owner seeds are intentionally held for their canonical-missing writers; structural consumers are not canonical consumption."
+    "interpretation": "A7 is re-grounded on main@49f16b21, which adds T5.2 causal-fact audit tooling without changing EVENTS/contentIdentity/schema/RNG. A7 conditional generic callbacks are now superseded from active canon; seed closure remains evidence-driven."
   },
   "orphanCanonicalMappings": [
     {
