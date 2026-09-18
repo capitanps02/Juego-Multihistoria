@@ -155,9 +155,23 @@ test('T5.1 30-34 readiness no convierte deuda en canon verificado ni alias aprob
   const allowed = new Set([
     'stable_semantics_implemented_shared_parity_gap',
     'shifted_identity_requires_migration',
-    'canonical_missing_requires_coordinated_addition'
+    'canonical_missing_requires_coordinated_addition',
+    'canonical_addition_implemented_shared_parity_gap'
   ]);
   assert.equal(readiness.events.every(event => allowed.has(event.status)), true);
   assert.equal(readiness.events.some(event => event.status === 'verified_same_identity'), false);
   assert.equal(readiness.events.some(event => event.status === 'approved_alias'), false);
+});
+
+
+test('T5.1 30-34 shifted canonical activations keep migration explicit while using canonical runtime IDs', () => {
+  for (const [canonicalId, legacyId] of [['EVT_30_BRIDGE_001','EVT_30_IDN_001'],['EVT_33_FIN_001','EVT_33_END_001']]) {
+    const row=readiness.events.find(event=>event.canonicalId===canonicalId);
+    assert.ok(row);
+    assert.equal(row.status,'shifted_identity_requires_migration');
+    assert.equal(row.engineId,canonicalId);
+    assert.equal(row.legacyCandidateId,legacyId);
+    assert.equal(row.implementationStatus,'canonical_scene_active');
+    assert.ok(row.dependencies.includes('CONTENT_IDENTITY_MIGRATION'));
+  }
 });
