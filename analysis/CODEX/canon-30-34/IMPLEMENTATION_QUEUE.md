@@ -1,6 +1,6 @@
 # Codex implementation queue — Canon 30–34
 
-Baseline vigente: `main@fa3c8bae524fef62e4eb9802e895df88588998c4`.
+Baseline vigente: `main@5f4d14bca4d696cfafadb58b64034c7cd40cc147`.
 
 Lineage de integración actual:
 
@@ -26,14 +26,14 @@ Bridges reales para:
 
 `accept/counter/defer/reject`, provenance y save/restore están cubiertos por tests. `EVT_31_MKT_001` permanece fuera porque el canon exige dos ofertas simultáneas y el runtime persiste una sola.
 
-### C30-34-CODEX-003 / 004 — sport authority fail-closed
+### C30-34-CODEX-003 / 004 — sport authority: guards parciales tras el match model
 
-Certificado para:
+El nuevo calendario semanal de `main@5f4d14bc…` ya expone `currentCompetition`, `nextFixture` y `hoursToNextFixture`. Eso invalida la antigua clasificación “protected fail-closed”:
 
-- `EVT_31_FINAL_001`: competición + próximo fixture;
-- `EVT_33_BODY_001`: próximo fixture + horas al fixture.
+- `EVT_31_FINAL_001`: una fixture ordinaria de liga + `FINAL_CONTEXT` puede satisfacer los gates actuales sin probar que sea una final;
+- `EVT_33_BODY_001`: una separación de 144/168 h puede satisfacer gates de mera existencia sin probar dos titularidades dentro de 72 h.
 
-Los tests demuestran que forma, rol, edad, mes o flags no desbloquean esos eventos cuando la autoridad deportiva concreta falta.
+La deuda queda explícita en `canon-30-34-authority-debt.json`; no se añaden gates de contenido antes del freeze/edge actual.
 
 ### C30-34-CODEX-008 — cuatro writers huérfanos
 
@@ -176,17 +176,17 @@ Freeze que coordinación/integración deberá crear antes de registrar la ruta:
 
 ## Validación exacta
 
-Último HEAD de runtime/guards validado: `af830cbf371fb7c81d32149b255b7101ae0c769b`.
+Último HEAD de runtime/guards validado: `8df83a37b3057dca8cc2321f0f5b7da6f13a4714`.
 
-- T5.1 canon 30–34 run `35261630245` — **SUCCESS**;
-- T5 Market Contract Authority run `35261630355` — **SUCCESS**;
-- Repository Integrity run `35261630238` — **FAILURE únicamente en el sentinel esperado** `freeze-t51-active-source --check`.
+- T5.1 canon 30–34 run `35263497939` — **FAILURE de contrato documental C006 (corregido en la pasada actual)**;
+- T5 Market Contract Authority run `35263497903` — **SUCCESS**;
+- Repository Integrity run `35263497858` — **FAILURE únicamente en el sentinel esperado** `freeze-t51-active-source --check`.
 
-En `35261630238`, `npm test` completó correctamente build, T5.2, saves, T5.3, registries y offer bridges antes de fallar exclusivamente porque todavía no existe:
+En `35263497858`, `npm test` completó correctamente build, T5.2, saves, T5.3, registries y offer bridges antes de fallar exclusivamente porque todavía no existe:
 
 `qa/fixtures/t5.1/post-t51-sources/9151d6620739f5f63face23f412abdeca9898cac8e510cc44d86c1468da8d0f4.json`
 
-No existe otro fallo de manifests/runtime previo al sentinel en ese HEAD. `main` seguía en `fa3c8bae…` y la rama estaba `behind_by=0` al cerrar esta validación.
+No existe otro fallo de manifests/runtime previo al sentinel en ese HEAD. `main` está en `5f4d14bc…` y la rama estaba `behind_by=0` al cerrar esta validación.
 
 ## Invariantes
 
