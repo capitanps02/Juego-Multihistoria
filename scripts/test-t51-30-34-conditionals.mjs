@@ -33,5 +33,5 @@ test('removing non-canonical callbacks does not invent replacement seed consumer
   assert.equal(debt.summary.activeCallbacksRemaining,0);
   assert.equal(debt.summary.removeSupersede,26);
   assert.equal(debt.resolution.removedEventIds.length,26);
-  assert.match(debt.resolution.rule,/no replacement consumer is invented/i);
+  assert.match(debt.resolution.rule,/no alias, replacement consumer, fake gate or invented canonical scene is created/i);
 });
