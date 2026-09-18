@@ -60,8 +60,8 @@ async function advanceSessionToDecision(session) {
 test('T5.2 inventario: las 210 seeds quedan trazadas sin referencias desconocidas', () => {
   assert.equal(report.summary.catalogSeeds, 210);
   assert.equal(report.summary.uniqueCatalogSeeds, 210);
-  assert.equal(report.summary.eventCount, 388);
-  assert.equal(report.summary.principalEvents, 254);
+  assert.equal(report.summary.eventCount, 391);
+  assert.equal(report.summary.principalEvents, 257);
   assert.equal(report.summary.conditionalEvents, 134);
   assert.equal(report.summary.unknownReferences.length, 0);
   assert.equal(report.summary.unknownScopeOverrides.length, 0);
