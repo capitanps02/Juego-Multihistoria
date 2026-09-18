@@ -3,6 +3,7 @@ import test from 'node:test';
 import { EVENTS } from '../dist/content/events/index.js';
 import { contentIdentity } from '../dist/session/content-identity.js';
 import { validateEvents } from '../dist/narrative/validate.js';
+import { validateBuild } from '../dist/validation/build-validation.js';
 import { CONTENT_MIGRATION_ROUTES, T51_AGE18_AUTHORITY_CONTENT_IDENTITY, T51_A5_POST_J_CONTENT_IDENTITY, findMigrationRoute } from '../dist/session/content-migration.js';
 
 const IDS = [
@@ -27,8 +28,10 @@ test('A5 post-J keeps the five-scene batch finite', () => {
 });
 
 test('A5 post-J leaves the active catalog structurally valid', () => {
-  const errors = validateEvents(EVENTS).filter(issue => issue.level === 'error');
-  assert.deepEqual(errors, []);
+  const narrativeErrors = validateEvents(EVENTS).filter(issue => issue.level === 'error');
+  assert.deepEqual(narrativeErrors, []);
+  const buildErrors = validateBuild(EVENTS).filter(issue => issue.level === 'error');
+  assert.deepEqual(buildErrors, []);
 });
 
 const identity = await contentIdentity(EVENTS);
