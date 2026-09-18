@@ -6,7 +6,7 @@ Objetivo: entregar defectos reproducibles y con ownership claro. Codex no debe r
 
 ## Flujo
 
-1. Elegir una fila `status=ready` de `implementation-ready.json`.
+1. Elegir solo una fila `status=ready` de `implementation-ready.json`.
 2. Reproducir primero el test indicado sobre el base exacto o re-groundar si `main` avanzó.
 3. Cambiar solo la superficie autorizada.
 4. Hacer verde la reproducción sin relajar el test.
@@ -18,19 +18,25 @@ Objetivo: entregar defectos reproducibles y con ownership claro. Codex no debe r
 - **8 bugs registrados: 4 open / 4 resolved / 0 P0.**
 - T5-QA-016 / #61 — OPEN P1. El fix de retirada ya existe en PR #118; no duplicar desde Codex.
 - T5-QA-027 / #133 — OPEN P2. Pertenece al próximo owner serializado de LOCK23; no inventar capitán.
-- T5-QA-028 / #130 — OPEN P1 / **READY**. PR #156 ya está integrado en `main@5f4d14b`; el layout final `world-simulator-core.ts` existe y Pass A de empleo unattached ya no está sequencing-blocked.
+- T5-QA-028 / #130 — OPEN P1 / **SPEC-READY, EXECUTION-BLOCKED**. Pass A está definido, pero coordinación fija `#207 -> #157 -> #130 -> #176`. No implementar #130 antes de que CareerOffer.context y MarketState v2 estén integrados.
 - T5-QA-029 / #212 — OPEN P2 / **READY**. El match-model v1 integrado acepta autoridad persistida imposible. Reproducción: `scripts/test-t5-match-model-known-bug.mjs`.
 
 ## Orden recomendado para Codex
 
-1. **T5-QA-029 / #212**: fix pequeño y localizado de validación/save; cerrar primero para restaurar fail-closed del store deportivo.
-2. **T5-QA-028 / #130**: implementar Pass A sobre la frontera final del simulador ya integrada.
+1. **T5-QA-029 / #212**: único bug QA runtime actualmente `status=ready`.
+2. **No iniciar T5-QA-028 / #130 todavía**. Esperar integración/re-ground de #207 y después #157 MarketState v2; entonces revalidar Pass A sobre la API final de ofertas.
 
 ## T5-QA-028 — límites de Pass A
 
-`monthsRemaining=0` debe derivar a empleo no activo/unattached; los strings de último club/owner/registration/salary son provenance, no autoridad laboral viva. Football, renovación ordinaria e institutional-club authority fallan cerrado. Los reads consumen 0 RNG. Solo aceptar una `CareerOffer` formal puede reactivar empleo normal.
+`monthsRemaining=0` debe derivar a empleo no activo/unattached; los strings de último club/owner/registration/salary son provenance, no autoridad laboral viva. Football, renovación ordinaria e institutional-club authority fallan cerrado. Los reads consumen 0 RNG. Solo aceptar una CareerOffer formal a través de la autoridad final de MarketState puede reactivar empleo normal.
 
-No improvisar `route=free_agent`, salario 0, club sentinel, transferencia forzada, contrato sintético ni retirada automática.
+No improvisar `route=free_agent`, salario 0, club sentinel, transferencia forzada, contrato sintético ni retirada automática. Tampoco conservar `market.pending` y `openOffers` como dos verdades vivas.
+
+## Dependencia #207 → #157 → #130
+
+- **#207 / #175** añade `CareerOffer.context` validado y debe integrarse primero.
+- **#157** migra la autoridad singular a una colección formal 0..N, preservando IDs/context/history y añadiendo provenance de cierre sistémico.
+- **#130** debe componer la reactivación de empleo con esa API final, no crear una segunda autoridad de ofertas o una migración intermedia.
 
 ## T5-QA-029 — invariantes mínimas
 
