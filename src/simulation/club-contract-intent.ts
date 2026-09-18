@@ -12,6 +12,8 @@ import {
   type CareerTerms
 } from "./offers.js";
 import { getCurrentMatchContext, getSportContext, type CurrentMatchContext, type SportContext } from "./sport-context.js";
+import { getSportMatchModelStore } from "./match-model.js";
+import { resolveActiveAgent, resolveCurrentClubInstitutionalNpc } from "./npc-authority.js";
 
 export { FORMAL_RENEWAL_REASON };
 export const CLUB_WANTS_RENEWAL_FACT = "facts.clubWantsRenewal" as const;
@@ -124,16 +126,72 @@ export function pendingCareerOfferFacts(state: GameState): PendingCareerOfferFac
   };
 }
 
+export interface CoachPromiseWaitFacts {
+  choiceDate: string;
+  club: string;
+  officialMatchesElapsed: number;
+  complete: boolean;
+}
+
+/**
+ * Canon B511: WAIT_THREE_MATCHES really means three subsequent official fixtures.
+ *
+ * The choice is remembered by persisted narrative history; elapsed jornadas are counted
+ * only from A4's persisted official match store. No role/form/month proxy and no RNG.
+ * A club change does not silently count fixtures from the new club toward the old promise.
+ */
+export function coachPromiseWaitFacts(state: GameState): CoachPromiseWaitFacts | null {
+  let choice = null as GameState["history"][number] | null;
+  for (let i = state.history.length - 1; i >= 0; i -= 1) {
+    const row = state.history[i]!;
+    if (row.eventId === "EVT_20_CCH_001" && row.choiceId === "WAIT_THREE_MATCHES") {
+      choice = row;
+      break;
+    }
+  }
+  if (!choice) return null;
+
+  const store = getSportMatchModelStore(state);
+  if (!store) {
+    return {
+      choiceDate: choice.date,
+      club: choice.club,
+      officialMatchesElapsed: 0,
+      complete: false
+    };
+  }
+
+  const elapsed = store.fixtures.filter(row =>
+    row.official === true
+    && row.date > choice!.date
+    && row.date <= state.date
+    && row.club === choice!.club
+  ).length;
+
+  return {
+    choiceDate: choice.date,
+    club: choice.club,
+    officialMatchesElapsed: elapsed,
+    complete: elapsed >= 3
+  };
+}
+
 export interface NarrativeCausalFacts extends EarlyCareerSeedFacts {
   clubWantsRenewal: boolean;
   lockerCaptainAffinity: number | null;
   lockerStarAffinity: number | null;
   roleDropSince23: number;
   roleGuaranteeAt23: boolean;
+  /** Explicitly certified current representative; null means no authoritative active agent. */
+  activeAgentNpcId: string | null;
+  /** Named current-club institutional recipient only when the shared resolver certifies one. */
+  currentClubInstitutionalNpcId: string | null;
   /** Compatible formal offer kind for deterministic event/choice gating; null includes stale offers. */
   pendingCareerOfferKind: CareerOfferKind | null;
   /** Exact detached formal-offer projection; null includes no offer and stale offers. */
   pendingCareerOffer: PendingCareerOfferFacts | null;
+  /** Exact progress for canonical WAIT_THREE_MATCHES; null until that choice exists in history. */
+  coachPromiseWait: CoachPromiseWaitFacts | null;
   /** Authoritative/read-only sporting projection. Unavailable sporting facts are null. */
   sport: SportContext;
   /** Current match projection. Fails closed until a real match producer exists. */
@@ -148,8 +206,11 @@ export function narrativeCausalFacts(state: GameState): NarrativeCausalFacts {
     lockerStarAffinity: lockerSlotAffinity(state, "star"),
     roleDropSince23: roleDropSince23(state),
     roleGuaranteeAt23: hasRoleGuaranteeAt23(state),
+    activeAgentNpcId: resolveActiveAgent(state),
+    currentClubInstitutionalNpcId: resolveCurrentClubInstitutionalNpc(state),
     pendingCareerOfferKind: eligibleCareerOfferKind(state),
     pendingCareerOffer: pendingCareerOfferFacts(state),
+    coachPromiseWait: coachPromiseWaitFacts(state),
     sport: getSportContext(state),
     match: getCurrentMatchContext(state)
   };
