@@ -33,7 +33,8 @@
     "verifiedSameIdentity": 0,
     "engineOnlyNoncanonical": 5,
     "engineConditionals": 26,
-    "conditionalsRequiresManualReview": 26
+    "conditionalsRequiresManualReview": 0,
+    "conditionalsResolvedRemoveOrSupersede": 26
   },
   "principals": [
     {
@@ -393,112 +394,112 @@
     }
   ],
   "conditionals": {
-    "status": "requires_manual_review",
-    "reason": "The current T5.1 source set has no canonical conditional-ID inventory. Count/title/theme matches cannot establish identity.",
+    "status": "resolved_remove_or_supersede",
+    "reason": "No authoritative canonical conditional-ID inventory or exact conditional titles exist in the canonical source. Engine-side generic callbacks are technical artifacts and are removed from the active catalog rather than promoted by theme/name similarity.",
     "events": [
       {
         "engineId": "CEVT_30_BODY_01",
-        "status": "requires_manual_review"
+        "status": "remove_no_authoritative_canonical_identity"
       },
       {
         "engineId": "CEVT_30_PROJECT_01",
-        "status": "requires_manual_review"
+        "status": "remove_no_authoritative_canonical_identity"
       },
       {
         "engineId": "CEVT_30_HOME_01",
-        "status": "requires_manual_review"
+        "status": "remove_no_authoritative_canonical_identity"
       },
       {
         "engineId": "CEVT_30_NAT_01",
-        "status": "requires_manual_review"
+        "status": "superseded_by_canonical_principal_EVT_30_NAT_002"
       },
       {
         "engineId": "CEVT_30_AGENT_01",
-        "status": "requires_manual_review"
+        "status": "remove_no_authoritative_canonical_identity"
       },
       {
         "engineId": "CEVT_30_RIVAL_01",
-        "status": "requires_manual_review"
+        "status": "remove_no_authoritative_canonical_identity"
       },
       {
         "engineId": "CEVT_30_FAN_01",
-        "status": "requires_manual_review"
+        "status": "remove_no_authoritative_canonical_identity"
       },
       {
         "engineId": "CEVT_31_SURGERY_01",
-        "status": "requires_manual_review"
+        "status": "remove_no_authoritative_canonical_identity"
       },
       {
         "engineId": "CEVT_31_SUCCESSOR_01",
-        "status": "requires_manual_review"
+        "status": "remove_no_authoritative_canonical_identity"
       },
       {
         "engineId": "CEVT_31_COACH_01",
-        "status": "requires_manual_review"
+        "status": "remove_no_authoritative_canonical_identity"
       },
       {
         "engineId": "CEVT_31_NTLOAD_01",
-        "status": "requires_manual_review"
+        "status": "remove_no_authoritative_canonical_identity"
       },
       {
         "engineId": "CEVT_31_FINAL_01",
-        "status": "requires_manual_review"
+        "status": "remove_no_authoritative_canonical_identity"
       },
       {
         "engineId": "CEVT_31_BUSINESS_01",
-        "status": "requires_manual_review"
+        "status": "remove_no_authoritative_canonical_identity"
       },
       {
         "engineId": "CEVT_31_RIVAS_01",
-        "status": "requires_manual_review"
+        "status": "remove_no_authoritative_canonical_identity"
       },
       {
         "engineId": "CEVT_32_RICH_01",
-        "status": "requires_manual_review"
+        "status": "remove_no_authoritative_canonical_identity"
       },
       {
         "engineId": "CEVT_32_REPLACE_01",
-        "status": "requires_manual_review"
+        "status": "remove_no_authoritative_canonical_identity"
       },
       {
         "engineId": "CEVT_32_HOME_01",
-        "status": "requires_manual_review"
+        "status": "remove_no_authoritative_canonical_identity"
       },
       {
         "engineId": "CEVT_32_BOSMAN_01",
-        "status": "requires_manual_review"
+        "status": "remove_no_authoritative_canonical_identity"
       },
       {
         "engineId": "CEVT_32_NT_01",
-        "status": "requires_manual_review"
+        "status": "remove_no_authoritative_canonical_identity"
       },
       {
         "engineId": "CEVT_32_FAN_01",
-        "status": "requires_manual_review"
+        "status": "remove_no_authoritative_canonical_identity"
       },
       {
         "engineId": "CEVT_33_RECOVERY_01",
-        "status": "requires_manual_review"
+        "status": "remove_no_authoritative_canonical_identity"
       },
       {
         "engineId": "CEVT_33_RECORD_01",
-        "status": "requires_manual_review"
+        "status": "remove_no_authoritative_canonical_identity"
       },
       {
         "engineId": "CEVT_33_RET_01",
-        "status": "requires_manual_review"
+        "status": "remove_no_authoritative_canonical_identity"
       },
       {
         "engineId": "CEVT_33_HOME_01",
-        "status": "requires_manual_review"
+        "status": "remove_no_authoritative_canonical_identity"
       },
       {
         "engineId": "CEVT_33_CONTRACT_01",
-        "status": "requires_manual_review"
+        "status": "remove_no_authoritative_canonical_identity"
       },
       {
         "engineId": "CEVT_33_MARKET_01",
-        "status": "requires_manual_review"
+        "status": "remove_no_authoritative_canonical_identity"
       }
     ],
     "crossTypeWarnings": [
@@ -508,7 +509,15 @@
         "title": "La selección gana sin ti",
         "decision": "Do not alias across principal/conditional event types."
       }
-    ]
+    ],
+    "activeRuntimeCountAfterResolution": 0,
+    "migrationSemantics": {
+      "aliasesCreated": false,
+      "rewriteHistory": false,
+      "rebindPending": false,
+      "legacyHistoryPreserved": true,
+      "rule": "Removed technical conditional IDs are not aliases for canonical principals. Historical IDs remain historical; integration must not rewrite or rebind them to new canonical scenes."
+    }
   },
   "globalDependencies": [
     {
