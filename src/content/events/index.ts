@@ -29,7 +29,7 @@ function replaceById(base: readonly import("../../core/types.js").EventDefinitio
 
 const A5_READY_18_20 = A5_READY_EVENTS_18_23.filter(event => event.phase === "18_20");
 const A5_READY_20_23 = A5_READY_EVENTS_18_23.filter(event => event.phase === "20_23");
-const RETIRED_TECHNICAL_20_23 = new Set(["EVT_21_ABR_001", "EVT_21_CCH_001", "EVT_22_LIFE_001"]);
+const RETIRED_TECHNICAL_20_23 = new Set(["EVT_20_MATCH_001", "EVT_21_CCH_001", "EVT_22_LIFE_001"]);
 
 export const EVENTS_18_20 = replaceById([
   ...REPAIRED_BASE_EVENTS_18_20,
