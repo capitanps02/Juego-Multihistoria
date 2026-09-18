@@ -96,6 +96,11 @@ function parseStore(value: unknown): RepresentationAuthorityStore | null {
   return value as RepresentationAuthorityStore;
 }
 
+function assertAgentAvailable(state: GameState, agentNpcId: ActiveAgentNpcId): void {
+  const npc = state.npcs.find(candidate => candidate.id === agentNpcId);
+  if (!npc || npc.careerState !== "active") throw new Error(`Cannot establish representation with inactive or missing agent: ${agentNpcId}`);
+}
+
 function canonicalTerms(terms: RepresentationTerms): RepresentationTerms {
   if (typeof terms.commissionPct !== "number" || !Number.isFinite(terms.commissionPct) || terms.commissionPct < 0 || terms.commissionPct > 40) {
     throw new Error("Representation commissionPct must be within 0..40");
@@ -163,11 +168,11 @@ export function certifyRepresentationInPlace(
 ): void {
   if (!validSource(source)) throw new Error("Representation source must be a non-empty provenance string");
   const normalized = canonicalTerms(terms);
-
-  // Validate the agent before touching representation history.
-  certifyActiveAgentInPlace(state, agentNpcId);
-
+  assertAgentAvailable(state, agentNpcId);
   const store = mutableStore(state);
+
+  // All inputs/store are validated before the existing active-agent authority is mutated.
+  certifyActiveAgentInPlace(state, agentNpcId);
   closeCurrentInPlace(store, state.date, source);
   store.sequence += 1;
   store.current = {
