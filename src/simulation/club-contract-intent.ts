@@ -10,7 +10,7 @@ import {
   type CareerTerms
 } from "./offers.js";
 import { getCurrentMatchContext, getSportContext, type CurrentMatchContext, type SportContext } from "./sport-context.js";
-import { retirementNoLastMatchFact, type RetirementNoLastMatchFact } from "./retirement-authority.js";
+import { retirementNoLastMatchFact, retirementPostAnnouncementOfferFact, retirementStorybookLastGoalFact, type RetirementNoLastMatchFact, type RetirementPostAnnouncementOfferFact, type RetirementStorybookLastGoalFact } from "./retirement-authority.js";
 
 export { FORMAL_RENEWAL_REASON };
 export const CLUB_WANTS_RENEWAL_FACT = "facts.clubWantsRenewal" as const;
@@ -137,6 +137,8 @@ export interface NarrativeCausalFacts extends EarlyCareerSeedFacts {
   match: CurrentMatchContext;
   /** Factual terminal no-last-match route; currently supports only the injury-unavailable path. */
   retirementNoLastMatch: RetirementNoLastMatchFact;
+  retirementStorybookLastGoal: RetirementStorybookLastGoalFact;
+  retirementPostAnnouncementOffer: RetirementPostAnnouncementOfferFact;
 }
 
 export function narrativeCausalFacts(state: GameState): NarrativeCausalFacts {
@@ -151,7 +153,9 @@ export function narrativeCausalFacts(state: GameState): NarrativeCausalFacts {
     pendingCareerOffer: pendingCareerOfferFacts(state),
     sport: getSportContext(state),
     match: getCurrentMatchContext(state),
-    retirementNoLastMatch: retirementNoLastMatchFact(state)
+    retirementNoLastMatch: retirementNoLastMatchFact(state),
+    retirementStorybookLastGoal: retirementStorybookLastGoalFact(state),
+    retirementPostAnnouncementOffer: retirementPostAnnouncementOfferFact(state)
   };
 }
 

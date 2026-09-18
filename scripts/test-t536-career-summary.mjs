@@ -62,10 +62,10 @@ test('T5.36 LastMatchFact uses exact latest factual appearance and ignores newer
   assert.equal(fact.appeared, true);
   assert.equal(fact.minutes, appeared.player.minutes);
   assert.equal(fact.postAnnouncement, true);
-  assert.equal(fact.result, null);
-  assert.equal(fact.goals, null);
-  assert.equal(fact.assists, null);
-  assert.equal(fact.cards, null);
+  assert.deepEqual(fact.result, appeared.result);
+  assert.equal(fact.goals, appeared.stats.goals);
+  assert.equal(fact.assists, appeared.stats.assists);
+  assert.deepEqual(fact.cards, { yellow: appeared.stats.yellowCards, red: appeared.stats.redCards });
 });
 
 test('T5.36 final save/load preserves factual LastMatchFact exactly', () => {
@@ -118,13 +118,14 @@ test('T5.36 final save/load preserves factual LastMatchFact exactly', () => {
   assert.equal(summary.lastProfessionalAppearance.authority, 'sport.match_history');
   assert.equal(summary.lastProfessionalAppearance.fixtureId, appeared.id);
   assert.equal(summary.lastProfessionalAppearance.date, '2041-05-01');
-  assert.equal(summary.lastProfessionalAppearance.result, null);
-  assert.equal(summary.lastProfessionalAppearance.goals, null);
+  assert.deepEqual(summary.lastProfessionalAppearance.result, appeared.result);
+  assert.equal(summary.lastProfessionalAppearance.goals, appeared.stats.goals);
   assert.equal(summary.careerAppearances, 317);
   assert.equal(summary.nationalCaps, 41);
   assert.equal(summary.majorLongInjuries, 2);
   assert.ok(!summary.missingAuthoritativeFacts.includes('fixture identity'));
-  assert.ok(summary.missingAuthoritativeFacts.includes('match result'));
+  assert.ok(!summary.missingAuthoritativeFacts.includes('match result'));
+  assert.ok(!summary.missingAuthoritativeFacts.includes('last-appearance goals/assists/cards'));
   assert.deepEqual(restoredSummary, summary);
 });
 

@@ -272,7 +272,7 @@ function resolveChoiceCore(next: GameState, event: EventDefinition, choiceId: st
   next.familyLastSeen[event.family] = next.runtime.day;
   next.runtime.daysSinceNarrative = 0;
   next.runtime.eventsThisSeason += 1;
-  syncRetirementState(next, previousRetirementStatus);
+  syncRetirementState(next, previousRetirementStatus, { eventId: event.id, choiceId });
   next.history.push({
     eventId: event.id, date: next.date, season: next.season, choiceId,
     outcomeId: selected.id, club: next.club,

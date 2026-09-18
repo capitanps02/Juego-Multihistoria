@@ -24,6 +24,7 @@ const expected=new Map([
   ['EVT_RET_LOW_001',['decided']],
   ['EVT_RET_ANNOUNCE_001',['announced']],
   ['CEVT_RET_RECONSIDER',['playing']],
+  ['CEVT_38_RETIREMENT_REVERSAL',['playing']],
   ['CEVT_RET_NO_LAST_MATCH',['closed']],
   ['CEVT_RET_STORYBOOK_LAST_GOAL',['closed']]
 ]);

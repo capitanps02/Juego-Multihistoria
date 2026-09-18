@@ -2,11 +2,14 @@ import { DeterministicRng } from "../core/rng.js";
 import type { GameState } from "../core/types.js";
 import { generateEpilogue } from "../epilogue/generator.js";
 import { contractEmploymentStatus, getActiveCareerOffers } from "./offers.js";
-import { getLastPlayerAppearanceContext, getSportContext } from "./sport-context.js";
+import { getSportContext } from "./sport-context.js";
+import { canonicalRetirementReversalTransitionAuthorized } from "./retirement-authority.js";
 
 const clamp=(x:number,min=0,max=100)=>Math.min(max,Math.max(min,x));
 const num=(x:unknown,f=0)=>typeof x==="number"?x:f;
 type RetirementStatus=GameState["retirement"]["status"];
+interface RetirementTransitionSource{eventId?:string;choiceId?:string;}
+const CANONICAL_REVERSAL_COST=5;
 
 export type RetirementSportingBoundary="unavailable"|"matches_remaining"|"season_complete";
 
@@ -64,13 +67,16 @@ function hasValidReconsiderationReason(state:GameState):boolean{
   );
 }
 
-function canTransition(state:GameState,previous:RetirementStatus,current:RetirementStatus):boolean{
+function canTransition(state:GameState,previous:RetirementStatus,current:RetirementStatus,source?:RetirementTransitionSource):boolean{
+  if(previous==="announced"&&current==="playing"){
+    return canonicalRetirementReversalTransitionAuthorized(state,source?.eventId,source?.choiceId);
+  }
   if(!isRetirementTransitionAllowed(previous,current))return false;
   if(previous==="decided"&&current==="playing")return hasValidReconsiderationReason(state);
   return true;
 }
 
-function applyStatusSideEffects(state:GameState,previous:RetirementStatus,status:RetirementStatus,reason?:string,closureType?:string):void{
+function applyStatusSideEffects(state:GameState,previous:RetirementStatus,status:RetirementStatus,reason?:string,closureType?:string,source?:RetirementTransitionSource):void{
   state.retirement.daysInStatus=0;
   if(status==="decided"){
     state.retirement.decidedDate=state.date;
@@ -98,6 +104,13 @@ function applyStatusSideEffects(state:GameState,previous:RetirementStatus,status
       state.retirement.reversals+=1;
       state.flags.RETIREMENT_RECONSIDERED=true;
       state.world.retirementLastReconsideredDate=state.date;
+    } else if(previous==="announced"&&source?.eventId==="CEVT_38_RETIREMENT_REVERSAL"&&source.choiceId==="ACCEPT"){
+      state.retirement.reversals+=1;
+      state.flags.RETIREMENT_RECONSIDERED=true;
+      state.world.retirementLastReconsideredDate=state.date;
+      state.sport.form=clamp(num(state.sport.form)-CANONICAL_REVERSAL_COST);
+      state.reputation.prestige=clamp(num(state.reputation.prestige)-CANONICAL_REVERSAL_COST);
+      state.professional.careerControl=clamp(state.professional.careerControl-CANONICAL_REVERSAL_COST);
     }
   } else if(status==="closed"){
     state.retirement.closedDate=state.date;
@@ -122,10 +135,10 @@ function setStatus(state:GameState,status:RetirementStatus,reason?:string,closur
   return true;
 }
 
-export function syncRetirementState(state:GameState,previous:RetirementStatus):void{
+export function syncRetirementState(state:GameState,previous:RetirementStatus,source?:RetirementTransitionSource):void{
   const current=state.retirement.status;
   if(current===previous)return;
-  if(!canTransition(state,previous,current)){
+  if(!canTransition(state,previous,current,source)){
     state.retirement.status=previous;
     state.retirement.daysInStatus=0;
     state.flags.RETIREMENT_INVALID_TRANSITION_BLOCKED=true;
@@ -146,7 +159,7 @@ export function syncRetirementState(state:GameState,previous:RetirementStatus):v
     }
     return;
   }
-  applyStatusSideEffects(state,previous,current);
+  applyStatusSideEffects(state,previous,current,undefined,undefined,source);
   if(current==="closed")generateEpilogue(state);
 }
 
@@ -251,14 +264,7 @@ export function lateCareerWeek(state:GameState):void{
   if(state.flags.MAJOR_COMEBACK_CONTEXT)state.flags.LATE_MAJOR_COMEBACK=true;
   state.flags.NO_MEDICAL_CLEARANCE_CONTEXT=p.recoveryDebt>=70&&p.availability<=40&&state.age>=36;
 
-  // A post-announcement offer is a formal CareerOffer fact, never a marketHeat roll. The
-  // current market authority does not normally materialise offers after announcement, so
-  // this remains false until that owner explicitly supports such an offer.
   const announcedDate=state.retirement.announcedDate;
-  const postAnnounceOffer=state.retirement.status==="announced"&&announcedDate!==null
-    ? getActiveCareerOffers(state).some(offer=>offer.date>=announcedDate)
-    : false;
-  state.flags.POST_ANNOUNCE_OFFER=postAnnounceOffer;
 
   // A private decision remains private until an explicit announcement event is resolved.
   if(state.retirement.status==="decided")state.flags.ADMIN_ANNOUNCEMENT_FALLBACK=false;
@@ -266,14 +272,14 @@ export function lateCareerWeek(state:GameState):void{
   if(state.retirement.status==="announced"){
     const sportContext=getSportContext(state);
     const appearances=sportContext.careerAppearances;
-    const appearanceContext=getLastPlayerAppearanceContext(state);
-    const factualAppearance=appearanceContext.status==="authoritative"?appearanceContext.match:null;
+    const factualAppearance=sportContext.lastPlayerAppearanceContext.status==="authoritative"
+      ? sportContext.lastPlayerAppearance
+      : null;
     if(factualAppearance&&announcedDate!==null&&factualAppearance.date>=announcedDate){
       state.flags.LAST_MATCH_PLAYED=true;
       state.world.retirementObservedAppearances=appearances;
       state.world.retirementLastAppearanceDate=factualAppearance.date;
-    } else if(appearanceContext.status==="historical_match_store_not_initialized"){
-      // Historical saves without the persisted match store retain the old aggregate fallback.
+    } else if(sportContext.availability.lastPlayerAppearance==="unavailable"){
       const observed=num(state.world.retirementObservedAppearances,num(state.world.retirementAppearancesAtAnnouncement,appearances));
       if(appearances>observed){
         state.flags.LAST_MATCH_PLAYED=true;

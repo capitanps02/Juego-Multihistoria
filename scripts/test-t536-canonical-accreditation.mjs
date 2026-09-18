@@ -8,19 +8,22 @@ const event=id=>{
   return found;
 };
 
-test('terminal conditional exact-ID overlap cannot self-accredit without canonical factual authority',()=>{
+test('terminal factual conditionals accredit only exact shared-authority facts',()=>{
   const postOffer=event('CEVT_38_OFFER_AFTER_RETIREMENT_ANNOUNCED');
+  const reversal=event('CEVT_38_RETIREMENT_REVERSAL');
   const noLastMatch=event('CEVT_RET_NO_LAST_MATCH');
   const storybook=event('CEVT_RET_STORYBOOK_LAST_GOAL');
 
   assert.equal(postOffer.canonStatus,'technical_adaptation');
+  assert.equal(reversal.canonStatus,'technical_adaptation');
   assert.equal(noLastMatch.canonStatus,'verified');
-  assert.equal(storybook.canonStatus,'technical_adaptation');
+  assert.equal(storybook.canonStatus,'verified');
 
-  assert.ok(postOffer.tags?.includes('t536_canonical_pending_terminal_reversal_contract'));
+  assert.match(JSON.stringify(postOffer.gates),/facts\.retirementPostAnnouncementOffer\.stage/);
+  assert.match(JSON.stringify(reversal.gates),/facts\.retirementPostAnnouncementOffer\.stage/);
+  assert.ok(reversal.tags?.includes('t536_canonical_consumer_waiting_post_announcement_offer_producer'));
   assert.ok(noLastMatch.tags?.includes('t536_canonical_injury_unavailability_fact'));
-  assert.ok(noLastMatch.tags?.includes('t536_suspension_route_fail_closed'));
-  assert.ok(storybook.tags?.includes('t536_canonical_pending_last_goal_fact'));
+  assert.ok(storybook.tags?.includes('t536_canonical_factual_last_goal'));
 });
 
 test('legacy pre-announcement reconsideration keeps distinct noncanonical identity',()=>{
@@ -30,10 +33,14 @@ test('legacy pre-announcement reconsideration keeps distinct noncanonical identi
   assert.notEqual(reconsider.id,'CEVT_38_RETIREMENT_REVERSAL');
 });
 
-test('no-last-match compatibility closure does not claim factual injury/suspension trigger',()=>{
+test('no-last-match and storybook gates contain no timer, role or synthetic-goal proxy',()=>{
   const noLastMatch=event('CEVT_RET_NO_LAST_MATCH');
-  const serialized=JSON.stringify(noLastMatch.gates??[]);
-  assert.match(serialized,/retirement\.daysInStatus/);
-  assert.doesNotMatch(serialized,/injur|suspend/i);
-  assert.equal(noLastMatch.canonStatus,'technical_adaptation');
+  const storybook=event('CEVT_RET_STORYBOOK_LAST_GOAL');
+  const noLastSerialized=JSON.stringify(noLastMatch.gates??[]);
+  const storySerialized=JSON.stringify(storybook.gates??[]);
+  assert.match(noLastSerialized,/facts\.retirementNoLastMatch\.eligible/);
+  assert.match(noLastSerialized,/injury/);
+  assert.doesNotMatch(noLastSerialized,/retirement\.daysInStatus|LAST_MATCH_PLAYED/);
+  assert.match(storySerialized,/facts\.retirementStorybookLastGoal\.eligible/);
+  assert.doesNotMatch(storySerialized,/roleScore|LAST_MATCH_GOAL_FACT|STORYBOOK_LAST_GOAL/);
 });

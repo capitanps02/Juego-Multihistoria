@@ -33,7 +33,13 @@ export function enforceRetirementTerminalCanonicalAccreditation(conditional:Even
 
   const storybook=conditional.find(event=>event.id==="CEVT_RET_STORYBOOK_LAST_GOAL");
   if(storybook){
-    storybook.canonStatus="technical_adaptation";
-    tag(storybook,"t536_canonical_pending_last_goal_fact");
+    storybook.canonStatus="verified";
+    tag(storybook,"t536_canonical_factual_last_goal");
+  }
+
+  const reversal=conditional.find(event=>event.id==="CEVT_38_RETIREMENT_REVERSAL");
+  if(reversal){
+    reversal.canonStatus="technical_adaptation";
+    tag(reversal,"t536_canonical_consumer_waiting_post_announcement_offer_producer");
   }
 }

@@ -223,18 +223,45 @@ export function applyRetirementTerminalOverrides(principal:EventDefinition[],con
 
   const postAnnounceOffer=conditional.find(event=>event.id==="CEVT_38_OFFER_AFTER_RETIREMENT_ANNOUNCED");
   if(postAnnounceOffer){
-    postAnnounceOffer.gates=[{path:"retirement.status",op:"eq",value:"announced"},{path:"flags.POST_ANNOUNCE_OFFER",op:"eq",value:true}];
-    postAnnounceOffer.text={title:"Una oferta después del anuncio",body:"Existe una propuesta formal materializada después de que la retirada se hiciera pública. Puedes aplazarla o rechazarla, pero el anuncio no se deshace."};
-    postAnnounceOffer.intel={visible:["CareerOffer formal pendiente","retirada ya anunciada"],uncertain:["cómo se interpretará haberla escuchado"]};
-    postAnnounceOffer.choices=[
-      c("ACKNOWLEDGE","Escucharla sin reabrir la retirada",[f("POST_ANNOUNCE_OFFER",false),f("RECONSIDERATION_WINDOW",false)]),
-      c("DECLINE","Rechazarla y mantener el anuncio",[f("POST_ANNOUNCE_OFFER",false),f("RECONSIDERATION_WINDOW",false)])
+    postAnnounceOffer.gates=[
+      {path:"retirement.status",op:"eq",value:"announced"},
+      {path:"facts.retirementPostAnnouncementOffer.stage",op:"eq",value:"initial"}
     ];
-    postAnnounceOffer.outcomes=outcomes(postAnnounceOffer.choices,"El estado permanece announced y la oferta se cierra mediante la autoridad CareerOffer.");
+    postAnnounceOffer.text={title:"Una oferta después del anuncio",body:"Existe una CareerOffer compatible materializada después de que la retirada se hiciera pública. Escucharla no borra el anuncio."};
+    postAnnounceOffer.intel={visible:["CareerOffer formal pendiente","retirada ya anunciada"],uncertain:["si el mercado volverá con otra propuesta concreta"]};
+    postAnnounceOffer.choices=[
+      c("ACKNOWLEDGE","Escucharla y dejar abierta una reconsideración",[]),
+      c("DECLINE","Rechazarla y mantener la retirada",[])
+    ];
+    postAnnounceOffer.outcomes=outcomes(postAnnounceOffer.choices,"El estado permanece announced y la oferta se cierra mediante respondToOffer().");
     (postAnnounceOffer as EventWithOfferBridge).offerBridge={choiceActions:{ACKNOWLEDGE:"defer",DECLINE:"reject"}};
     terminal(postAnnounceOffer);
     postAnnounceOffer.canonStatus="technical_adaptation";
   }
+
+  let reversal=conditional.find(event=>event.id==="CEVT_38_RETIREMENT_REVERSAL");
+  if(!reversal){
+    reversal={
+      id:"CEVT_38_RETIREMENT_REVERSAL",ageWindow:[34,null],phase:"34_plus",family:"conditional",
+      gates:[],cooldown:99999,repeatable:false,weight:9,
+      text:{title:"Volver después del anuncio",body:"Una nueva CareerOffer concreta llega después de que ya escucharas una propuesta post-anuncio. Volver exige aceptar ese contrato y asumir el coste público y deportivo de la reversión."},
+      intel:{visible:["CareerOffer formal pendiente","anuncio público previo","interés post-anuncio ya registrado"],uncertain:["ritmo tras volver","reacción pública"]},
+      choices:[],outcomes:[],tags:["t536_terminal"],canonStatus:"technical_adaptation"
+    };
+    conditional.push(reversal);
+  }
+  reversal.gates=[
+    {path:"retirement.status",op:"eq",value:"announced"},
+    {path:"facts.retirementPostAnnouncementOffer.stage",op:"eq",value:"reversal"}
+  ];
+  reversal.choices=[
+    c("ACCEPT","Aceptar la oferta y volver a jugar",[s("retirement.status","playing")]),
+    c("DECLINE","Rechazarla y mantener la retirada",[])
+  ];
+  reversal.outcomes=outcomes(reversal.choices,"La oferta concreta se resuelve por respondToOffer(); el estado closed nunca puede reabrirse.");
+  (reversal as EventWithOfferBridge).offerBridge={choiceActions:{ACCEPT:"accept",DECLINE:"reject"}};
+  terminal(reversal);
+  reversal.canonStatus="technical_adaptation";
 
   const reconsider=conditional.find(event=>event.id==="CEVT_RET_RECONSIDER");
   if(reconsider){
@@ -275,17 +302,16 @@ export function applyRetirementTerminalOverrides(principal:EventDefinition[],con
   if(storybook){
     storybook.gates=[
       {path:"retirement.status",op:"eq",value:"announced"},
-      {path:"flags.LAST_MATCH_PLAYED",op:"eq",value:true},
-      {path:"flags.LAST_MATCH_GOAL_FACT",op:"eq",value:true}
+      {path:"facts.retirementStorybookLastGoal.eligible",op:"eq",value:true}
     ];
-    storybook.text={title:"El último gol ocurrió de verdad",body:"El sistema de partido ha registrado un gol en una aparición posterior al anuncio. Esta escena solo reconoce ese hecho; nunca lo crea."};
-    storybook.intel={visible:["aparición registrada","gol registrado por el sistema de partido"],uncertain:["cómo se recordará el cierre"]};
+    storybook.text={title:"El último gol ocurrió de verdad",body:"La última aparición factual posterior al anuncio contiene un gol del protagonista. Esta escena reconoce ese registro exacto; nunca lo crea."};
+    storybook.intel={visible:["fixture exacta","aparición factual","gol factual"],uncertain:["cómo se recordará el cierre"]};
     storybook.choices=[
       c("ACKNOWLEDGE","Cerrar la carrera con ese hecho registrado",[s("retirement.status","closed"),s("retirement.closureType","last_match_goal_factual")]),
       c("TEAM","Cerrar sin convertir el gol en ceremonia",[s("retirement.status","closed"),s("retirement.closureType","last_match_goal_factual"),f("FAREWELL_TEAM_FIRST")])
     ];
-    storybook.outcomes=outcomes(storybook.choices,"El cierre conserva un gol que ya existía como hecho de simulación.");
+    storybook.outcomes=outcomes(storybook.choices,"El cierre conserva el gol y resultado que ya pertenecen a Sport.");
     terminal(storybook);
-    storybook.canonStatus="technical_adaptation";
+    storybook.canonStatus="verified";
   }
 }

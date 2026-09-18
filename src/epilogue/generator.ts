@@ -1,4 +1,5 @@
 import type { EndingFamily, GameState, HistoryEntry } from "../core/types.js";
+import { retirementLastAppearanceFact, retirementStorybookLastGoalFact } from "../simulation/retirement-authority.js";
 
 const num=(x:unknown,f=0)=>typeof x==="number"?x:f;
 const has=(state:GameState,flag:string)=>state.flags[flag]===true;
@@ -48,7 +49,7 @@ export const ENDING_FAMILY_RULES:Record<EndingFamily,EndingFamilyAuditRule>={
   END_POLARIZING_WINNER:{positive:["victoria/título","trophyCapital y polarización suficientes"],negative:["polarización sin éxito deportivo"],conflicts:conflictsFor("END_POLARIZING_WINNER"),priority:74},
   END_WEALTH_OVER_GLORY:{positive:["ruta económica explícita"],negative:["salario alto aislado"],conflicts:conflictsFor("END_WEALTH_OVER_GLORY"),priority:68},
   END_UNFINISHED_FEELING:{positive:["retire-low, cierre sin partido o ausencia factual de otra familia especializada"],negative:["final factual de alto/storybook incompatible"],conflicts:conflictsFor("END_UNFINISHED_FEELING"),priority:20},
-  END_STORYBOOK_FAREWELL:{positive:["LAST_MATCH_PLAYED","LAST_MATCH_GOAL_FACT","cierre factual de último gol"],negative:["STORYBOOK_LAST_GOAL legacy sin hecho real"],conflicts:conflictsFor("END_STORYBOOK_FAREWELL"),priority:98},
+  END_STORYBOOK_FAREWELL:{positive:["última aparición factual posterior al anuncio","gol factual en esa fixture","cierre factual de último gol"],negative:["flags legacy sin fila deportiva rica"],conflicts:conflictsFor("END_STORYBOOK_FAREWELL"),priority:98},
   END_NATIONAL_CAPTAIN:{positive:["capitanía de selección confirmada"],negative:["internacionalidades sin capitanía"],conflicts:conflictsFor("END_NATIONAL_CAPTAIN"),priority:80},
   END_CONTRACT_KING:{positive:["tag canónico o contractPower/careerControl altos"],negative:["contrato rico aislado"],conflicts:conflictsFor("END_CONTRACT_KING"),priority:65}
 };
@@ -104,7 +105,7 @@ function specializedFamilySupported(state:GameState):boolean{
     has(state,"LATE_MAJOR_COMEBACK")||has(state,"RETIREMENT_RECONSIDERED")||state.retirement.reversals>0||
     (won&&p.trophyCapital>=30&&p.publicPolarization>=25)||
     has(state,"WEALTHY_EXIT_ACCEPTED")||
-    (closure==="last_match_goal_factual"&&has(state,"LAST_MATCH_PLAYED")&&has(state,"LAST_MATCH_GOAL_FACT"))||
+    (closure==="last_match_goal_factual"&&retirementStorybookLastGoalFact(state).eligible)||
     has(state,"HAS_SEED_NATIONAL_CAPTAINCY")||has(state,"NATIONAL_CAPTAINCY_CONFIRMED")||
     tags.has("STATE30_CONTRACT_KINGMAKER")||(p.contractPower>=75&&p.careerControl>=70)
   );
@@ -137,7 +138,7 @@ export function endingFamilySupported(state:GameState,id:EndingFamily):boolean{
     case "END_POLARIZING_WINNER":return won&&p.trophyCapital>=30&&p.publicPolarization>=25;
     case "END_WEALTH_OVER_GLORY":return has(state,"WEALTHY_EXIT_ACCEPTED")||has(state,"RICH_LEAGUE_ROUTE");
     case "END_UNFINISHED_FEELING":return reason==="retire_on_low"||has(state,"RETIRE_ON_LOW")||closure==="no_last_match"||(!specializedFamilySupported(state)&&closure!=="last_match_goal_factual");
-    case "END_STORYBOOK_FAREWELL":return closure==="last_match_goal_factual"&&has(state,"LAST_MATCH_PLAYED")&&has(state,"LAST_MATCH_GOAL_FACT");
+    case "END_STORYBOOK_FAREWELL":return closure==="last_match_goal_factual"&&retirementStorybookLastGoalFact(state).eligible;
     case "END_NATIONAL_CAPTAIN":return has(state,"HAS_SEED_NATIONAL_CAPTAINCY")||has(state,"NATIONAL_CAPTAINCY_CONFIRMED");
     case "END_CONTRACT_KING":return tags.has("STATE30_CONTRACT_KINGMAKER")||(p.contractPower>=75&&p.careerControl>=70);
     default:return false;
@@ -165,7 +166,7 @@ export function endingFamilyEvidence(state:GameState,id:EndingFamily):string[]{
     case "END_POLARIZING_WINNER":return ["title_evidence",`publicPolarization=${p.publicPolarization}`,`trophyCapital=${p.trophyCapital}`];
     case "END_WEALTH_OVER_GLORY":return [has(state,"WEALTHY_EXIT_ACCEPTED")?"WEALTHY_EXIT_ACCEPTED":"RICH_LEAGUE_ROUTE"];
     case "END_UNFINISHED_FEELING":return [`reason=${reason||"none"}`,`closure=${closure||"none"}`,specializedFamilySupported(state)?"explicit_low_or_no_last_match":"no_specialized_family_supported"];
-    case "END_STORYBOOK_FAREWELL":return ["LAST_MATCH_PLAYED","LAST_MATCH_GOAL_FACT",`closure=${closure}`];
+    case "END_STORYBOOK_FAREWELL":{const goal=retirementStorybookLastGoalFact(state);return [`fixture=${goal.fixtureId}`,`goals=${goal.goals}`,`closure=${closure}`];}
     case "END_NATIONAL_CAPTAIN":return [has(state,"NATIONAL_CAPTAINCY_CONFIRMED")?"NATIONAL_CAPTAINCY_CONFIRMED":"HAS_SEED_NATIONAL_CAPTAINCY"];
     case "END_CONTRACT_KING":return [`contractPower=${p.contractPower}`,`careerControl=${p.careerControl}`];
     default:return [];
@@ -242,12 +243,15 @@ export function buildEpilogueText(state:GameState):string[]{
   else if(state.retirement.reason==="retire_on_low"&&has(state,"RETIRE_ON_LOW"))lines.push("La decisión de retirarse llegó después de un tramo de menor peso deportivo registrado.");
   else if(state.retirement.reason==="voluntary")lines.push("La retirada fue una decisión voluntaria registrada antes del anuncio público.");
 
-  if(has(state,"LAST_MATCH_PLAYED")){
-    const lastDate=typeof state.world.retirementLastAppearanceDate==="string"?state.world.retirementLastAppearanceDate:null;
-    lines.push(lastDate?`Después del anuncio, la simulación registró una nueva aparición el ${lastDate}; fue la última aparición observada antes del cierre.`:"Después del anuncio, la simulación registró una nueva aparición antes del cierre.");
-    if(has(state,"LAST_MATCH_GOAL_FACT"))lines.push("El sistema de partido también dejó registrado un gol en esa fase final; el epílogo conserva ese hecho sin añadir otro resultado.");
+  const lastAppearance=retirementLastAppearanceFact(state);
+  if(lastAppearance.status==="authoritative"&&lastAppearance.postAnnouncement===true){
+    lines.push(`Después del anuncio, Sport registró la última aparición factual el ${lastAppearance.date} ante ${lastAppearance.opponent}.`);
+    const goal=retirementStorybookLastGoalFact(state);
+    if(goal.eligible)lines.push(`La misma fixture registra ${goal.goals} gol${goal.goals===1?"":"es"} del protagonista; el epílogo conserva ese hecho sin inventarlo.`);
+  }else if(lastAppearance.status==="authoritative_none"){
+    lines.push("La autoridad deportiva no registra ninguna aparición profesional en la store disponible.");
   }else{
-    lines.push("La carrera se cerró sin que la simulación registrara una aparición posterior al anuncio de retirada.");
+    lines.push("La autoridad deportiva rica no permite afirmar una última aparición; el epílogo no la inventa.");
   }
   return lines;
 }

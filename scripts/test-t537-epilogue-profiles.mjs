@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createInitialState } from '../dist/content/initial-state.js';
+import { recordOfficialMatchInPlace } from '../dist/simulation/match-model.js';
 import {
   ENDING_FAMILIES,
   ENDING_FAMILY_RULES,
@@ -141,9 +142,23 @@ function profileFixtures(){
   richLeague.flags.WEALTHY_EXIT_ACCEPTED=true;
   richLeague.flags.LAST_MATCH_PLAYED=true;
 
-  const factualGoal=closed(537116,{seasons:15,closure:'last_match_goal_factual'});
-  factualGoal.flags.LAST_MATCH_PLAYED=true;
-  factualGoal.flags.LAST_MATCH_GOAL_FACT=true;
+  let factualGoal;
+  for(let seed=537116;seed<537216;seed++){
+    const candidate=closed(seed,{seasons:15,closure:'last_match_goal_factual'});
+    candidate.retirement.announcedDate='2046-03-01';
+    candidate.date='2046-05-06';
+    candidate.runtime.day=7000;
+    candidate.runtime.seasonDay=310;
+    const row=recordOfficialMatchInPlace(candidate,{appeared:true,debutOccurred:false,injuryUnavailable:false});
+    if(row?.stats?.goals>0){
+      candidate.date='2046-06-30';
+      candidate.runtime.day=7055;
+      candidate.retirement.closedDate=candidate.date;
+      factualGoal=candidate;
+      break;
+    }
+  }
+  assert.ok(factualGoal,'test fixture needs a deterministic factual scoring appearance');
 
   return new Map([
     ['superstar',{state:superstar,expected:'END_WORLD_LEGEND'}],
@@ -201,8 +216,8 @@ test('T5.37 terminal profile matrix is factual, conflict-free and non-convergent
     assert.equal(state.epilogue.generated,true,`${name}: epilogue not generated`);
     assert.deepEqual(state.epilogue.families,selected,`${name}: persisted families differ from selection`);
     assert.ok(state.epilogue.finalText.length>0,`${name}: empty factual text`);
-    if(!state.flags.LAST_MATCH_GOAL_FACT){
-      assert.ok(state.epilogue.finalText.every(line=>!line.toLowerCase().includes('gol')),`${name}: invented goal in text`);
+    if(name!=='factual-last-goal'){
+      assert.ok(state.epilogue.finalText.every(line=>!line.toLowerCase().includes(' gol')&&!line.toLowerCase().includes('goles')),`${name}: invented goal in text`);
     }
 
     primaryFamilies.push(selected[0]);
