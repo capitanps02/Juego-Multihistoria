@@ -17,6 +17,8 @@ import {
 import { getCurrentMatchContext, getSportContext } from '../dist/simulation/sport-context.js';
 import { resolveCurrentClubInstitutionalNpc } from '../dist/simulation/npc-authority.js';
 import { advanceWorldDayInPlace } from '../dist/simulation/world-simulator.js';
+import { scheduleEvent } from '../dist/narrative/scheduler.js';
+import { resolveChoice } from '../dist/narrative/resolver.js';
 
 function unattached(seed = 8801) {
   const state = createInitialState(seed);
@@ -120,4 +122,47 @@ test('only accepting a formal CareerOffer restores current employment authority'
   assert.equal(state.club, 'Destino FC');
   assert.equal(state.professional.ownerClub, 'Destino FC');
   assert.equal(state.professional.registrationClub, 'Destino FC');
+});
+
+
+test('legacy narrative contract effects cannot bypass formal signing while unattached', () => {
+  const state = unattached(8805);
+  state.runtime.daysSinceNarrative = 99;
+  const directSigningEvent = {
+    id: 'EVT_QA_DIRECT_SIGN',
+    ageWindow: [21, 21],
+    phase: '20_23',
+    family: 'contract',
+    gates: [],
+    cooldown: 99999,
+    weight: 100,
+    text: { title: 'QA direct signing', body: 'Legacy direct contract mutation.' },
+    intel: { visible: [], uncertain: [] },
+    choices: [{
+      id: 'SIGN',
+      label: 'Firmar directamente',
+      intentTags: ['sign'],
+      immediateEffects: [{ kind: 'set', path: 'contract.monthsRemaining', value: 24 }],
+      outcomeIds: ['SIGNED']
+    }],
+    outcomes: [{
+      id: 'SIGNED',
+      baseWeight: 1,
+      effects: [],
+      messages: ['signed']
+    }]
+  };
+
+  const before = structuredClone(state);
+  const beforeRng = structuredClone(state.rngState);
+  assert.equal(scheduleEvent(state, [directSigningEvent], { ignoreRhythmGate: true }), null);
+  assert.deepEqual(state, before, 'scheduler filter must be read-only');
+  assert.deepEqual(state.rngState, beforeRng, 'rejected direct-signing scene must consume no RNG');
+
+  assert.throws(
+    () => resolveChoice(state, directSigningEvent, 'SIGN'),
+    /cannot restore employment without a formal CareerOffer/
+  );
+  assert.deepEqual(state, before, 'immutable resolver bypass attempt must not mutate source state');
+  assert.equal(contractEmploymentStatus(state), 'unattached');
 });
