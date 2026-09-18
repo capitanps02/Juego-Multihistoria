@@ -1,0 +1,39 @@
+import assert from 'node:assert/strict';
+import test from 'node:test';
+import { createInitialState } from '../dist/content/initial-state.js';
+import { STAGED_ORDINARY_CANONICAL_CONDITIONALS,stagedCanonicalConditionalEligible } from '../dist/content/events/34_plus/staged-conditional-ordinary.js';
+
+test('A8 stages exactly 28 non-terminal canonical Pasada-7 conditionals',()=>{
+ assert.equal(STAGED_ORDINARY_CANONICAL_CONDITIONALS.length,28);
+ const ids=STAGED_ORDINARY_CANONICAL_CONDITIONALS.map(x=>x.event.id);
+ assert.equal(new Set(ids).size,28);
+ for(const row of STAGED_ORDINARY_CANONICAL_CONDITIONALS){
+   assert.equal(row.status,'AWAITING_EXTERNAL_FACT');
+   assert.equal(row.event.family,'conditional');
+   assert.equal(row.event.canonStatus,'verified');
+   assert.ok(row.event.tags.includes('no_generic_shell'));
+   assert.ok(row.canonicalTrigger.length>3);
+   assert.ok(row.canonicalMeaning.length>3);
+   assert.equal(row.event.choices.length,4);
+ }
+});
+test('canonical conditional choices are scene-specific rather than the technical A-D shell',()=>{
+ for(const row of STAGED_ORDINARY_CANONICAL_CONDITIONALS){
+   assert.notDeepEqual(row.event.choices.map(c=>c.id),['A','B','C','D'],row.event.id);
+   assert.equal(new Set(row.event.choices.map(c=>c.label)).size,4,row.event.id);
+ }
+});
+test('all staged ordinary conditionals fail closed without factual owner trigger',()=>{
+ const s=createInitialState(14001);s.age=40;s.phase='34_plus';s.retirement.status='playing';
+ for(const row of STAGED_ORDINARY_CANONICAL_CONDITIONALS){
+   assert.equal(stagedCanonicalConditionalEligible(s,row.event.id,false),false,row.event.id);
+   assert.equal(stagedCanonicalConditionalEligible(s,row.event.id,true),true,row.event.id);
+ }
+});
+test('ordinary conditional staging never owns terminal retirement state mutation',()=>{
+ for(const row of STAGED_ORDINARY_CANONICAL_CONDITIONALS){
+   for(const out of row.event.outcomes){
+     assert.equal(out.effects.some(e=>'path' in e && e.path==='retirement.status'),false,row.event.id);
+   }
+ }
+});
