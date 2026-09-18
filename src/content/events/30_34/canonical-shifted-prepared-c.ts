@@ -66,6 +66,7 @@ const TRAVEL_LOAD = ambiguousEvent({
   body: "El entrenador propone que no viajes a un partido de liga menor para evitar avión, hotel y 48 horas de recuperación, aunque podrías entrar desde el banquillo.",
   visible: ["Conoces la carga prevista y el rival."],
   uncertain: ["No sabes si el partido se complicará ni si quedarte en casa será leído por compañeros como privilegio."],
+  gates: [{ path: "flags.HAS_SEED_MATCH_SELECTIVITY", op: "eq", value: true }],
   seedsRead: ["SEED_MATCH_SELECTIVITY"],
   seedsWrite: ["SEED_TRAVEL_LOAD"],
   choices: [
