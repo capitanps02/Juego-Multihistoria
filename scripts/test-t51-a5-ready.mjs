@@ -6,6 +6,7 @@ import { A5_AGENT_READY_EXTERNAL_EVENTS, A5_AGENT_EXTERNAL_REQUIREMENTS } from '
 import { A5_EVT_18_END_002_OWNER_READY, EVT_18_END_002_EXTERNAL_REQUIREMENT } from '../dist/content/events/18_20/a5-end002-staged.js';
 import { A5_MARKET_EXTERNAL_REQUIREMENTS, A5_MARKET_OWNER_READY_PRINCIPALS } from '../dist/content/events/20_23/a5-market-external-staged.js';
 import { A5_MEDICAL_EXTERNAL_REQUIREMENTS, A5_MEDICAL_OWNER_READY_PRINCIPALS } from '../dist/content/events/20_23/a5-medical-external-staged.js';
+import { A5_SPORT_EXTERNAL_REQUIREMENTS, A5_SPORT_OWNER_READY_PRINCIPALS } from '../dist/content/events/20_23/a5-sport-external-staged.js';
 import { A5_SHARED_EXTERNAL_PRINCIPAL_REQUIREMENTS, A5_SHARED_EXTERNAL_OWNER_READY_PRINCIPALS } from '../dist/content/events/20_23/a5-shared-external-principals-staged.js';
 import { A5_READY_NPC_KNOWLEDGE_RULES } from '../dist/catalog/npc-knowledge-rules-a5-ready.js';
 import { createInitialState } from '../dist/content/initial-state.js';
@@ -520,5 +521,64 @@ test('A5 external medical/2 requirements reject diagnosis/match/transfer proxies
       'club','tier','contract.monthsRemaining','contract.salaryMonthly',
       'professional.ownerClub','professional.registrationClub','professional.route'
     ].includes(effect.path)), false, scene.id);
+  }
+});
+
+
+test('A5 external sport/1 four sport/national principals are owner-ready with no fabricated authority', () => {
+  assert.deepEqual(A5_SPORT_OWNER_READY_PRINCIPALS.map(row => row.id), [
+    'EVT_20_MATCH_003', 'EVT_21_NAT_001', 'EVT_22_HOME_001', 'EVT_22_TACT_001'
+  ]);
+  assert.deepEqual(A5_SPORT_OWNER_READY_PRINCIPALS[0].choices.map(choice => choice.id), ['STRICT','HYBRID','OWN_GAME']);
+  assert.equal(A5_SPORT_EXTERNAL_REQUIREMENTS.EVT_21_NAT_001.owner, 'A4/shared-selection');
+  assert.ok(A5_SPORT_EXTERNAL_REQUIREMENTS.EVT_22_HOME_001.awaiting.includes('real fixture against UDV/former home context'));
+  assert.ok(A5_SPORT_EXTERNAL_REQUIREMENTS.EVT_20_MATCH_003.awaiting.includes('live match score/state'));
+});
+
+test('A5 external sport/2 aggregate/proxy paths do not masquerade as match or selection facts', () => {
+  const byId = id => A5_SPORT_OWNER_READY_PRINCIPALS.find(row => row.id === id);
+  const nat = byId('EVT_21_NAT_001');
+  assert.ok(nat);
+  assert.equal(nat.gates.some(g => ['professional.nationalStanding','facts.sport.caps','sport.roleScore'].includes(g.path)), false);
+  const home = byId('EVT_22_HOME_001');
+  assert.ok(home);
+  assert.equal(home.gates.some(g => g.path === 'flags.HOME_MATCH' || g.path === 'flags.UDV_FIXTURE'), false);
+  const match = byId('EVT_20_MATCH_003');
+  assert.ok(match);
+  assert.deepEqual(match.gates, []);
+  const tact = byId('EVT_22_TACT_001');
+  assert.ok(tact);
+  assert.deepEqual(tact.gates, []);
+});
+
+test('A5 external sport/3 agent-only optional routes fail closed and target only certified active agent', () => {
+  const state = stateAt(51020, 21, '2029-10-02');
+  state.professional.nationalHeat = 60;
+  const nat = A5_SPORT_OWNER_READY_PRINCIPALS.find(row => row.id === 'EVT_21_NAT_001');
+  assert.ok(nat);
+  let ids = eligibleChoices(state, nat).map(choice => choice.id);
+  assert.ok(!ids.includes('AGENT_PRIVATE'));
+  certifyActiveAgentInPlace(state, 'NPC_AGT_01');
+  ids = eligibleChoices(state, nat).map(choice => choice.id);
+  assert.ok(ids.includes('AGENT_PRIVATE'));
+
+  const rule = ruleFor('EVT_21_NAT_001', 'AGENT_PRIVATE');
+  assert.ok(rule);
+  const context = captureNpcKnowledgeTargetContext(state);
+  assert.deepEqual(resolveNpcKnowledgeTargets(rule, context), ['NPC_AGT_01']);
+});
+
+test('A5 external sport/4 owner effects never write score/result/fixture or employment authority', () => {
+  for (const scene of A5_SPORT_OWNER_READY_PRINCIPALS) {
+    const effects = [
+      ...scene.choices.flatMap(choice => [...(choice.immediateEffects ?? []), ...(choice.hiddenCosts ?? [])]),
+      ...scene.outcomes.flatMap(outcome => outcome.effects)
+    ];
+    const forbidden = effects.filter(effect => effect.kind !== 'flag' && (
+      String(effect.path).startsWith('match.') ||
+      String(effect.path).startsWith('world.currentFixture') ||
+      ['club','tier','contract.monthsRemaining','professional.ownerClub','professional.registrationClub'].includes(effect.path)
+    ));
+    assert.deepEqual(forbidden, [], scene.id);
   }
 });
