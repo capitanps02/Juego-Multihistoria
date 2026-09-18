@@ -4,7 +4,7 @@
 |---|---|---|---|---|
 | seeds | lifecycle único + referencias/catálogos cerrados | `qa:t5:content`, T5.2 direct-read audit | covered; #131 resolved | T5.2/tooling |
 | NPC | world fact != NPC knowledge; provenance histórica estable | `test:t53`, `qa:t5:integration` | covered; #92 resolved | T5.3 |
-| market | offer IDs únicos; action/accept coherent | `qa:t5:fast` + market authority tests | covered; exact eligible CareerOffer facts integrated | market |
+| market | offer IDs únicos; action/accept coherent; persisted optional offer context exact-valid | `qa:t5:fast` + market authority + `test-t5-offer-context-known-bug.mjs` | **P2 T5-QA-031: malformed persisted context accepted; owner PR #207** | market/save |
 | contracts | meses/salario no negativos; expiry no zombie; unattached save/load; no old-club play; formal re-employment; deterministic boundary | `scripts/test-t5-contract-expiry-known-bug.mjs` | **4 directed regressions prepared; open T5-QA-028 / #130; blocked by #207 -> #157** | shared contracts/employment |
 | loans | `LOAN_ACTIVE` exige owner distinto de registration; `route=abroad` válido en cesión internacional | state-validator + stratified sim | covered | market/QA |
 | sport producer | fixture/squad/calendar authority persistida, 0 RNG | `scripts/test-t5-match-model.mjs`, sport-context tests | producer integrated at `main@5f4d14b` | sport |
