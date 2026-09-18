@@ -47,32 +47,21 @@ function expectedClubPoints(rows, club) {
   return { points, gf, ga, wins, draws, losses };
 }
 
-test('league table/1 current club row is built from persisted authoritative results', () => {
+test('league table/1 current club points are built from persisted authoritative results without inventing peer standings', () => {
   const state = matchDayState(9801);
   playWeeks(state, 6);
   const before = structuredClone(state);
   const standing = getLeagueStandingContext(state);
 
   assert.equal(standing.status, 'authoritative');
-  assert.ok(standing.table);
-  assert.ok(standing.teamCount >= 20);
-  assert.equal(standing.matchesPlayed, 6);
-  assert.ok(standing.currentPosition >= 1 && standing.currentPosition <= standing.teamCount);
+  assert.equal(standing.table, null);
+  assert.equal(standing.teamCount, null);
+  assert.equal(standing.currentPosition, null);
+  assert.equal(standing.race, null);
 
-  const current = standing.table.find(row => row.club === state.professional.registrationClub);
   const expected = expectedClubPoints(state.world.sportMatchModel.fixtures, state.professional.registrationClub);
-  assert.ok(current);
-  assert.equal(current.points, expected.points);
-  assert.equal(current.goalsFor, expected.gf);
-  assert.equal(current.goalsAgainst, expected.ga);
-  assert.equal(current.wins, expected.wins);
-  assert.equal(current.draws, expected.draws);
-  assert.equal(current.losses, expected.losses);
-  assert.equal(current.played, 6);
   assert.equal(standing.points, expected.points);
-  assert.equal(standing.race.gapToLeader >= 0, true);
-  assert.equal(standing.race.gapToEurope >= 0, true);
-  assert.equal(standing.race.gapToSafety >= 0, true);
+  assert.equal(standing.matchesPlayed, 6);
 
   const sport = getSportContext(state);
   assert.deepEqual(sport.currentStanding, standing);
