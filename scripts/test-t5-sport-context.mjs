@@ -1,4 +1,5 @@
 import './test-t5-match-model.mjs';
+import './test-t5-competition-context.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createInitialState } from '../dist/content/initial-state.js';
