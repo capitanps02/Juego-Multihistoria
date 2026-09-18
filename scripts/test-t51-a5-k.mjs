@@ -12,7 +12,7 @@ import { loadSave, serializeSave } from '../dist/save/save.js';
 import { validateBuild } from '../dist/validation/build-validation.js';
 
 const IDS=['CEVT_18_PLAYOFF_01','EVT_20_BRIDGE_001','EVT_20_CCH_001','EVT_21_SOC_001','EVT_21_PRS_002'];
-const RETIRED=['EVT_21_ABR_001','EVT_21_CCH_001','EVT_22_LIFE_001'];
+const RETIRED=['EVT_20_MATCH_001','EVT_21_CCH_001','EVT_22_LIFE_001'];
 const byId=id=>EVENTS.find(event=>event.id===id);
 
 function stateAt(seed,age,date){
