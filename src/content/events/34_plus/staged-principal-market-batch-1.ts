@@ -1,13 +1,27 @@
 import type { EventDefinition, GameState } from "../../../core/types.js";
 import { ambiguousEvent, n, seedCreate } from "../18_20/helpers.js";
+import { getEligibleCareerOffers, getEligibleRenewalOffers } from "../../../simulation/offers.js";
+import { resolveActiveAgent } from "../../../simulation/npc-authority.js";
 
 export type StagedMarketBatch1Id =
  | "EVT_34_BRIDGE_001" | "EVT_34_PAY_001" | "EVT_34_HOME_001" | "EVT_34_AGT_001"
  | "EVT_34_CON_001" | "EVT_34_MAR_001" | "EVT_35_MKT_001" | "EVT_35_CON_001";
 
 export function isStagedMarketBatch1Eligible(state:GameState,id:StagedMarketBatch1Id,authoritativeFactsSatisfied:boolean):boolean{
- if(!authoritativeFactsSatisfied || state.retirement.status!=="playing") return false;
- return state.age>=Number(id.split("_")[1]);
+ if(!authoritativeFactsSatisfied || state.retirement.status!=="playing" || state.age<Number(id.split("_")[1])) return false;
+ switch(id){
+  case "EVT_34_BRIDGE_001":
+  case "EVT_34_PAY_001":
+    return getEligibleRenewalOffers(state).length>0;
+  case "EVT_34_AGT_001":
+    return resolveActiveAgent(state)!==null && getEligibleCareerOffers(state).length>0;
+  case "EVT_34_CON_001":
+    return getEligibleCareerOffers(state).some(offer=>offer.terms.months>=24);
+  case "EVT_35_CON_001":
+    return getEligibleCareerOffers(state).length>0;
+  default:
+    return true;
+ }
 }
 
 const E:EventDefinition[]=[
