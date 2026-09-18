@@ -4,7 +4,8 @@ import { CONDITIONAL_EVENTS_30_34 } from "./conditional-events.js";
 import { CANONICAL_REIMPLEMENTATIONS_30_34 } from "./canonical-reimplementations.js";
 import { CANONICAL_REIMPLEMENTATIONS_31B } from "./canonical-reimplementations-31b.js";
 import { CANONICAL_REIMPLEMENTATIONS_32A } from "./canonical-reimplementations-32a.js";
-import { CANONICAL_REIMPLEMENTATIONS_33A } from "./canonical-reimplementations-33a.js";\nimport { CANONICAL_ADDITIONS_30_34 } from "./canonical-missing-principals.js";
+import { CANONICAL_REIMPLEMENTATIONS_33A } from "./canonical-reimplementations-33a.js";
+import { CANONICAL_ADDITIONS_30_34 } from "./canonical-missing-principals.js";
 
 const reimplementedIds=new Set([
   "EVT_30_CON_001","EVT_30_BODY_001","EVT_30_MKT_001","EVT_30_NAT_001",
