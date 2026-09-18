@@ -10,6 +10,7 @@ import { STAGED_SHARED_BATCH_4 } from "./staged-principal-shared-batch-4.js";
 import { STAGED_ORDINARY_CANONICAL_CONDITIONALS } from "./staged-conditional-ordinary.js";
 import { STAGED_MEMORY_CONDITIONALS } from "./staged-conditional-memory.js";
 import { CEVT_35_UDV_FINANCIAL_CRISIS } from "./staged-conditional-udv-crisis.js";
+import { CEVT_35_SPONSOR_LATE_BOOM } from "./staged-conditional-sponsor-boom.js";
 import { TERMINAL_CONDITIONAL_HANDOFFS } from "./terminal-conditional-handoff.js";
 
 export const A8_STAGED_PRINCIPALS: readonly EventDefinition[] = [
@@ -26,6 +27,7 @@ export const A8_STAGED_PRINCIPALS: readonly EventDefinition[] = [
 export const A8_STAGED_ORDINARY_CONDITIONALS: readonly EventDefinition[] = [
   ...STAGED_MEMORY_CONDITIONALS,
   CEVT_35_UDV_FINANCIAL_CRISIS,
+  CEVT_35_SPONSOR_LATE_BOOM,
   ...STAGED_ORDINARY_CANONICAL_CONDITIONALS.map(row=>row.event)
 ];
 
