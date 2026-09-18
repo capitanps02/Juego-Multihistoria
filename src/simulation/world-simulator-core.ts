@@ -91,7 +91,10 @@ function updateContextFlags(state: GameState, rng: DeterministicRng): void {
     if (draw < relegationP) {
       state.flags.UDV_RELEGATED = true;
       state.world.udvTier = 4;
-      if (state.club === "UDV") state.tier = 4;
+      if (state.club === "UDV") {
+        state.tier = 4;
+        state.professional.leagueTier = 4;
+      }
     } else if (draw < relegationP + playoffP) {
       state.flags.UDV_PLAYOFF = true;
     }
