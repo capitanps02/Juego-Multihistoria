@@ -48,3 +48,29 @@ test('EVT_30_CCH_001 writes SEED_ROLE_COMMUNICATION for every canonical response
     }
   }
 });
+
+
+test('shifted canonical bridge scenes replace their legacy shells in the active catalog', () => {
+  const bridge=EVENTS.find(row=>row.id==='EVT_30_BRIDGE_001');
+  const finish=EVENTS.find(row=>row.id==='EVT_33_FIN_001');
+  assert.ok(bridge);
+  assert.ok(finish);
+  assert.equal(EVENTS.some(row=>row.id==='EVT_30_IDN_001'),false);
+  assert.equal(EVENTS.some(row=>row.id==='EVT_33_END_001'),false);
+  assert.deepEqual(bridge.choices.map(choice=>choice.id),['A','B','C','D']);
+  assert.deepEqual(bridge.seedsRead,['SEED_AGE30_PRIORITY']);
+  assert.deepEqual(bridge.seedsWrite,['SEED_VETERAN_LABEL']);
+  assert.deepEqual(finish.choices.map(choice=>choice.id),['A','B','C','D','E','F']);
+  assert.deepEqual(finish.seedsWrite,['SEED_AGE34_PRIORITY','SEED_RETIREMENT_DISTANCE_PROFILE']);
+});
+
+test('EVT_33_FIN_001 retirement reflection stays non-terminal', () => {
+  const finish=EVENTS.find(row=>row.id==='EVT_33_FIN_001');
+  const choice=finish.choices.find(row=>row.id==='F');
+  const outcomes=finish.outcomes.filter(outcome=>choice.outcomeIds.includes(outcome.id));
+  assert.equal(outcomes.length,2);
+  for(const outcome of outcomes){
+    assert.equal(JSON.stringify(outcome.effects ?? []).includes('EARLY_RETIRED_30_34'),false);
+    assert.equal((outcome.seedTransitions ?? []).some(row=>row.seedId==='SEED_RETIREMENT_DISTANCE_PROFILE'),true);
+  }
+});
