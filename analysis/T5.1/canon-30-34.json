@@ -41,7 +41,8 @@
       "canonicalId": "EVT_30_BRIDGE_001",
       "engineId": "EVT_30_IDN_001",
       "status": "needs_reimplementation",
-      "title": "La palabra veterano"
+      "title": "La palabra veterano",
+      "implementation": "canonical scene active under canonical ID; legacy EVT_30_IDN_001 superseded from active catalog; distinct-scene migration semantics preserve no seen/cooldown/pending/history."
     },
     {
       "canonicalId": "EVT_30_CON_001",
@@ -363,7 +364,8 @@
       "canonicalId": "EVT_33_FIN_001",
       "engineId": "EVT_33_END_001",
       "status": "needs_reimplementation",
-      "title": "Cumples 34"
+      "title": "Cumples 34",
+      "implementation": "canonical six-choice age-34 bridge active under canonical ID; retirement reflection is non-terminal; legacy EVT_33_END_001 superseded from active catalog."
     }
   ],
   "engineOnly": [
@@ -635,7 +637,12 @@
     "canonicalAdditionsImplemented": [
       "EVT_30_CCH_001"
     ],
-    "canonicalAdditionsCount": 1
+    "canonicalAdditionsCount": 1,
+    "shiftedCanonicalImplemented": [
+      "EVT_30_BRIDGE_001",
+      "EVT_33_FIN_001"
+    ],
+    "shiftedCanonicalImplementedCount": 2
   },
   "implementationDisposition": {
     "safeNow": [
