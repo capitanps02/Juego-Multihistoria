@@ -269,6 +269,17 @@ export function validateGameSave(value: unknown, version: number): void {
     for (const k of ["reversals","noMarketWindows","daysInStatus"]) integer(r[k],`retirement.${k}`);
     if (r.decisionAge!==null) integer(r.decisionAge,"retirement.decisionAge",18,s.age);
     for (const k of ["reason","closureType"]) if (r[k]!==null) string(r[k],`retirement.${k}`);
+    if (r.status==="playing") {
+      ensure(r.decidedDate===null,"retirement.decidedDate","carrera activa con decisión de retirada vigente");
+      ensure(r.announcedDate===null,"retirement.announcedDate","carrera activa con anuncio de retirada vigente");
+    }
+    if (r.status==="announced") {
+      ensure(r.decidedDate!==null,"retirement.decidedDate","anuncio sin decisión previa");
+      ensure(r.announcedDate!==null,"retirement.announcedDate","estado anunciado sin fecha de anuncio");
+      if (r.decidedDate!==null && r.announcedDate!==null) {
+        ensure((r.decidedDate as string)<=(r.announcedDate as string),"retirement.announcedDate","anuncio anterior a la decisión");
+      }
+    }
     if (r.status==="closed") ensure(r.closedDate!==null && r.closureType!==null,"retirement","cierre sin fecha o tipo");
     else ensure(r.closedDate===null,"retirement.closedDate","carrera abierta con fecha de cierre");
   }
