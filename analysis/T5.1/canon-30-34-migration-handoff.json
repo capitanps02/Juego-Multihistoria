@@ -4,11 +4,11 @@
   "generatedAt": "2026-09-17",
   "sourceMainSha": "5f4d14bca4d696cfafadb58b64034c7cd40cc147",
   "sourceContentIdentity": "84871fae2bec92d74d1e607e0a48943e2e530a062d315a829cfe75eda9fe0886",
-  "observedTargetContentIdentity": "9151d6620739f5f63face23f412abdeca9898cac8e510cc44d86c1468da8d0f4",
+  "observedTargetContentIdentity": "db72c94ee93ad928e08e86a59f5063060a963e17edfc7b5e25198e1da6fd1eb1",
   "targetIdentityEvidence": {
-    "workflowRun": 35263497858,
-    "source": "Repository Integrity on the re-grounded PR state reaches freeze-t51-active-source with active post-T5.1 contentIdentity 9151d662...8d0f4. Upstream weekly sport infrastructure changes do not alter the active 30-34 catalog identity.",
-    "rule": "Target identity follows the active merged catalog and must be refreshed whenever upstream canonical event metadata or workstream event definitions change."
+    "workflowRun": 35334344791,
+    "source": "Focused CI after activating canonical EVT_30_CCH_001 computed the active 30-34 contentIdentity as db72c94e...d1eb1; the remaining focal failure was the intentionally stale prior target plus a test-formatting defect corrected in the next commit.",
+    "rule": "Target identity follows the active catalog. A newly added canonical principal creates a new integration-owned target freeze/edge."
   },
   "consumer": {
     "implementationOwner": "coordination/integration",
@@ -16,7 +16,7 @@
     "routeRegistry": "CONTENT_MIGRATION_ROUTES",
     "workstreamMayRegisterRoute": false,
     "targetFreezeRequiredBeforeRouteRegistration": true,
-    "targetFreezeFixture": "qa/fixtures/t5.1/post-t51-sources/9151d6620739f5f63face23f412abdeca9898cac8e510cc44d86c1468da8d0f4.json"
+    "targetFreezeFixture": "qa/fixtures/t5.1/post-t51-sources/db72c94ee93ad928e08e86a59f5063060a963e17edfc7b5e25198e1da6fd1eb1.json"
   },
   "invariants": {
     "approvedSameSceneMappings": [],
