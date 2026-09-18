@@ -673,6 +673,32 @@
         "src/catalog/seeds.ts#SEED_MENTOR_ADVICE",
         "analysis/T5.1/canon-23-30-migration-handoff.json#SEED_MENTOR_ADVICE"
       ]
+    },
+    {
+      "seedId": "SEED_BODY_PRECEDENT",
+      "owner": "t51/canon-18-23",
+      "disposition": "canonical_chain",
+      "producerEventId": "EVT_19_BODY_001",
+      "consumerEventId": "CEVT_19_INJ_01",
+      "rationale": "A5 certifica la cadena de lesión: la decisión de regreso de EVT_19_BODY_001 crea memoria corporal y CEVT_19_INJ_01 la consume mediante facts.bodyPrecedentReturn19 para reponderar resultados sin añadir RNG.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-18-23/CONTINUITY_CHAINS.md#injury--physio",
+        "src/content/events/18_20/principal-additions.ts#EVT_19_BODY_001",
+        "src/content/events/18_20/t51-seed-consumer-repairs.ts#CEVT_19_INJ_01"
+      ]
+    },
+    {
+      "seedId": "SEED_PHYSIO_CONFIDENCE",
+      "owner": "t51/canon-18-23",
+      "disposition": "canonical_chain",
+      "producerEventId": "EVT_19_BODY_001",
+      "consumerEventId": "CEVT_19_INJ_01",
+      "rationale": "A5 certifica la cadena de lesión/fisio: EVT_19_BODY_001 persiste la forma de retorno y CEVT_19_INJ_01 consume facts.physioConfidenceReturn19/pattern para alterar probabilidades sin determinismo ni RNG adicional.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-18-23/CONTINUITY_CHAINS.md#injury--physio",
+        "src/content/events/18_20/principal-additions.ts#EVT_19_BODY_001",
+        "src/content/events/18_20/t51-seed-consumer-repairs.ts#CEVT_19_INJ_01"
+      ]
     }
   ]
 }
