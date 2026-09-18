@@ -19,7 +19,7 @@ export const SEED_CATALOG_18_20: SeedDefinition[] = [
   { id: "SEED_BODY_PRECEDENT", originEvents: ["EVT_18_PRE_002", "EVT_18_MED_001", "EVT_19_BODY_001"], npcRefs: ["NPC_MED_01"], ageWindow: [18, 35], description: "Patrón de ocultar, comunicar o sobreproteger molestias; modifica riesgos futuros." },
   { id: "SEED_FIRST_BIG_MONEY", originEvents: ["EVT_20_LIFE_001", "EVT_21_MONEY_001"], npcRefs: ["NPC_FAM_01", "NPC_FAM_02"], ageWindow: [20, null], description: "Primer salto salarial y patrón de gasto, ahorro o apoyo familiar." },
   { id: "SEED_AGENT_POWER", originEvents: ["EVT_20_AGT_001", "EVT_21_AGT_002"], npcRefs: ["NPC_AGT_01", "NPC_AGT_02"], ageWindow: [20, 35], description: "Cuánto control cedió el jugador sobre llamadas, filtraciones y negociación." },
-  { id: "SEED_FOREIGN_ADAPT", originEvents: ["EVT_20_ABR_001"], npcRefs: [], ageWindow: [20, 32], description: "Idioma, red social, adaptación y forma de pedir ayuda fuera." },
+  { id: "SEED_FOREIGN_ADAPT", originEvents: ["EVT_20_ABR_001", "EVT_21_ABR_001"], npcRefs: [], ageWindow: [20, 32], description: "Idioma, red social, adaptación y forma de pedir ayuda fuera." },
   { id: "SEED_MEDICAL_DISCLOSURE", originEvents: ["EVT_20_MED_001", "EVT_22_MED_001"], npcRefs: ["NPC_MED_01"], ageWindow: [20, 35], description: "Patrón de transparencia médica en fichajes y disponibilidad." },
   { id: "SEED_TEAMMATE_COVER", originEvents: ["EVT_20_LOCK_002"], npcRefs: [], ageWindow: [20, 34], description: "Mentir, callar o desmarcarse para proteger a un compañero." },
   { id: "SEED_FIRST_CAPTAIN_ROOM", originEvents: ["EVT_21_CAP_001"], npcRefs: ["NPC_PLR_11"], ageWindow: [21, 36], description: "Primera entrada real en una decisión de jerarquía adulta." },
