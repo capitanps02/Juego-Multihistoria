@@ -155,5 +155,10 @@ export const A5_READY_NPC_KNOWLEDGE_RULES: NpcEventKnowledgeRule[] = [
     outcomeIds:["SOUND_MARKET__PRIMARY","SOUND_MARKET__SECONDARY"],
     npcIds:[],targetSlots:["activeAgent"],source:"informed",certainty:100,memory:"temporary",relationshipMemory:false
   },
+,
+  {
+    eventId:"CEVT_19_AGENT_01",
+    npcIds:["NPC_PRS_01"],targetSlots:["activeAgent"],source:"informed",certainty:100,memory:"strong",relationshipMemory:true
+  },
 
 ];
