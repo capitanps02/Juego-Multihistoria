@@ -7,7 +7,7 @@ import { STAGED_SHARED_BATCH_3,isStagedSharedBatch3Eligible } from '../dist/cont
 const expected=['EVT_34_NT_001','EVT_34_MATCH_001','EVT_34_NT_002','EVT_34_TRAVEL_001','EVT_35_TACT_001','EVT_35_NT_001','EVT_35_FINAL_001','EVT_36_BODY_001'];
 const ntIds=['EVT_34_NT_001','EVT_34_NT_002','EVT_35_NT_001'];
 const sportIds=expected.filter(id=>!ntIds.includes(id));
-function stateAt(){const s=createInitialState(20001);s.age=40;s.phase='34_plus';s.retirement.status='playing';return s;}
+function stateAt(){const s=createInitialState(20001);s.age=40;s.phase='34_plus';s.retirement.status='playing';s.date='2048-09-01';s.runtime.day=0;return s;}
 function addOfficialRow(s){while(s.runtime.day%7!==0)s.runtime.day++;recordOfficialMatchInPlace(s,{appeared:true,debutOccurred:false,injuryUnavailable:false});}
 
 test('shared batch 3 fully stages eight exact principals',()=>{assert.deepEqual(STAGED_SHARED_BATCH_3.map(e=>e.id),expected);for(const e of STAGED_SHARED_BATCH_3){assert.equal(e.canonStatus,'verified');assert.equal(e.choices.length,4);assert.ok(e.tags.includes('awaiting_external_fact'));}});
