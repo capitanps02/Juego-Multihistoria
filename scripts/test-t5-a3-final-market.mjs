@@ -340,3 +340,31 @@ test('A3-4 home return requires factual prior-club context and medical approach 
   assert.equal(getVeteranMarketApproaches(s)[0].club,'Medical FC');
   assert.equal(loadSave(serializeSave(s)).world.veteranMarketApproaches[0].medicalEvaluation.result,'failed');
 });
+
+
+test('A3-1 malformed persisted offer context fails closed at save boundaries while absent context remains compatible',()=>{
+  const malformed=createInitialState(17590);
+  proposeCareerChange(malformed,'Oferta rica corrupta',d=>{
+    d.club='Broken Rich FC';d.professional.ownerClub='Broken Rich FC';d.professional.registrationClub='Broken Rich FC';
+    d.contract.monthsRemaining=24;d.contract.salaryMonthly=25000;
+  });
+  malformed.market.pending.context={
+    kind:'late_rich_offer',
+    housing:'',
+    calendar:'Calendario concentrado',
+    commercialRole:'Embajador'
+  };
+  assert.throws(()=>serializeSave(malformed),/contexto formal inválido/);
+  assert.throws(()=>loadSave(JSON.stringify(malformed)),/contexto formal inválido/);
+
+  const unknown=createInitialState(17591);
+  proposeCareerChange(unknown,'Oferta con autoridad desconocida',d=>{d.contract.salaryMonthly+=1000;});
+  unknown.market.pending.context={kind:'unknown_authority',housing:'Casa',calendar:'Calendario',commercialRole:'Rol'};
+  assert.throws(()=>loadSave(JSON.stringify(unknown)),/contexto formal inválido/);
+
+  const historical=createInitialState(17592);
+  proposeCareerChange(historical,'Oferta histórica sin contexto',d=>{d.contract.salaryMonthly+=1000;});
+  delete historical.market.pending.context;
+  const restored=loadSave(serializeSave(historical));
+  assert.equal(restored.market.pending.context,undefined);
+});
