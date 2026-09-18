@@ -91,6 +91,83 @@
       "disposition": "retired_compatible",
       "rationale": "Agent 8 certifica que este concepto es una proyección derivada y no una nueva fuente persistida de verdad; T5.2 conserva compatibilidad histórica sin permitir nueva creación.",
       "evidenceRefs": ["src/catalog/seed-34plus.ts#SEED_34_PLUS_BRIDGE_COMPATIBILITY", "scripts/test-t52-34plus-canonical-catalog.mjs#compatibility-only"]
+    },
+    {
+      "seedId": "SEED_POSITIONAL_REINVENTION",
+      "owner": "t51/canon-23-30",
+      "disposition": "intentional_persistent",
+      "rationale": "El owner 23–30 exige que la memoria de reinvención posicional sobreviva al handoff hacia 30–34 como memoria causal abierta; no define transición terminal ni expiry canónico.",
+      "evidenceRefs": ["analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts","analysis/CODEX/canon-23-30/CONTINUITY_CHAINS.md#reinvention"]
+    },
+    {
+      "seedId": "SEED_AGE30_PRIORITY",
+      "owner": "t51/canon-23-30",
+      "disposition": "intentional_persistent",
+      "rationale": "El owner 23–30 define la prioridad de edad 30 como guía persistida para 30–34 y prohíbe convertirla en route lock; la memoria permanece deliberadamente abierta sin cierre terminal.",
+      "evidenceRefs": ["analysis/CODEX/canon-23-30/HANDOFF_30_34.md#age-30-priority-contract","analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts"]
+    },
+    {
+      "seedId": "SEED_VELA_STANCE",
+      "owner": "t51/canon-18-23",
+      "disposition": "intentional_persistent",
+      "rationale": "El owner 18–23 conserva explícitamente la postura ante Vela como continuidad futura y la reutiliza como eco canónico posterior; no define cierre terminal ni expiry.",
+      "evidenceRefs": ["analysis/T5.1/canon-18-20-cards.json#EVT_18_CAP_001","analysis/T5.1/canon-20-23-b2-handoff.json#EVT_22_LOCK_001"]
+    },
+    {
+      "seedId": "SEED_CLARA_CHANNEL",
+      "owner": "t51/canon-18-23",
+      "disposition": "intentional_persistent",
+      "rationale": "El owner 18–23 mantiene el canal con Clara como memoria reutilizable en escenas posteriores de prensa/mercado y marca future continuity sin transición terminal.",
+      "evidenceRefs": ["analysis/T5.1/canon-18-20-cards.json#EVT_18_PRS_001","analysis/T5.1/canon-20-23-b2-handoff.json#CEVT_21_MEDIA_01"]
+    },
+    {
+      "seedId": "SEED_EXIT_STYLE_UDV",
+      "owner": "t51/canon-18-23",
+      "disposition": "intentional_persistent",
+      "rationale": "El owner 18–23 exige reactivar el estilo de salida de UDV en encuentros y decisiones posteriores; la salida histórica debe seguir disponible como memoria causal.",
+      "evidenceRefs": ["analysis/T5.1/canon-20-23-b2-handoff.json#EVT_20_MKT_001","analysis/T5.1/canon-20-23-b2-handoff.json#EVT_22_HOME_001"]
+    },
+    {
+      "seedId": "SEED_FIRST_BIG_MONEY",
+      "owner": "t51/canon-18-23",
+      "disposition": "intentional_persistent",
+      "rationale": "El owner 18–23 conserva el primer gran salto económico como antecedente familiar/patrimonial reutilizable; la memoria no tiene cierre terminal canónico.",
+      "evidenceRefs": ["analysis/T5.1/canon-20-23-b2-handoff.json#EVT_20_LIFE_001","analysis/T5.1/canon-20-23-b2-handoff.json#EVT_21_MONEY_001"]
+    },
+    {
+      "seedId": "SEED_FAMILY_MONEY",
+      "owner": "t51/canon-18-23",
+      "disposition": "intentional_persistent",
+      "rationale": "El owner 18–23 define explícitamente deuda, expectativas y límites familiares como memoria causal futura, no como estado que deba expirar tras una única escena.",
+      "evidenceRefs": ["analysis/T5.1/canon-20-23-b2-handoff.json#EVT_20_LIFE_001","analysis/T5.1/canon-20-23-b2-handoff.json#EVT_21_MONEY_001"]
+    },
+    {
+      "seedId": "SEED_HOME_DISTANCE",
+      "owner": "t51/canon-18-23",
+      "disposition": "intentional_persistent",
+      "rationale": "El owner 18–23 reutiliza la distancia con el origen como memoria causal en campañas y regresos posteriores; no prescribe resolve ni expiry terminal.",
+      "evidenceRefs": ["analysis/T5.1/canon-20-23-b2-handoff.json#EVT_21_IMG_001","analysis/T5.1/canon-20-23-b2-handoff.json#EVT_22_HOME_001"]
+    },
+    {
+      "seedId": "SEED_LOAD_MANAGEMENT",
+      "owner": "t51/canon-23-30",
+      "disposition": "intentional_persistent",
+      "rationale": "El owner 23–30 exige conservar el plan exacto de gestión de carga para callbacks posteriores; la memoria queda abierta y no posee transición terminal ni expiry canónico.",
+      "evidenceRefs": ["analysis/CODEX/canon-23-30/CONDITIONAL_STATUS.md#CEVT_25_BODY_02","src/content/events/23_26/t510-principal-events.ts#EVT_23_BODY_001"]
+    },
+    {
+      "seedId": "SEED_RIVAS_TRUST",
+      "owner": "t51/canon-18-23",
+      "disposition": "intentional_persistent",
+      "rationale": "El owner 18–23 conserva la confianza/historia con Rivas como memoria requerida por callbacks canónicos posteriores; no existe cierre terminal ni expiry canónico definido.",
+      "evidenceRefs": ["analysis/T5.1/canon-20-23-b3-missing-handoff.json#CEVT_20_RIVAS_01","src/catalog/seeds.ts#SEED_RIVAS_TRUST"]
+    },
+    {
+      "seedId": "SEED_FORM_VS_PLAN",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica esta identidad como memoria canónica pre-34 cuya provenance histórica debe persistir; no se reorigina ni se recrea al entrar en 34+.",
+      "evidenceRefs": ["analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#A-the-14-bridge-memory-entries", "src/catalog/seed-34plus.ts#SEED_34_PLUS_BRIDGE_COMPATIBILITY"]
     }
   ]
 }
