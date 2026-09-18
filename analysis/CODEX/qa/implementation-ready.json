@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "5f4d14bca4d696cfafadb58b64034c7cd40cc147",
+  "baseCommit": "49f16b21c8f68f1439901437dcf16e1384966de2",
   "tasks": [
     {
       "bugId": "T5-QA-029",
@@ -11,14 +11,14 @@
       "ownerPr": 214,
       "ownerBranch": "codex/t5-match-save-invariants",
       "ownerHead": "b688017e996449f88822dc7c54162c3f3b3e3c2f",
-      "ownerCompare": "3 ahead / 0 behind main@5f4d14bca4d696cfafadb58b64034c7cd40cc147",
+      "ownerCompare": "3 ahead / 1 behind current main@49f16b21c8f68f1439901437dcf16e1384966de2",
       "ownerCiRun": 35330315528,
       "reproduction": "npm run build && node --test scripts/test-t5-match-model-known-bug.mjs",
       "failingTest": "scripts/test-t5-match-model-known-bug.mjs",
       "expected": "Match-model v1 save validation rejects producer-impossible player facts, unsupported firstGoal authority, and semantically wrong/non-first milestone pointers.",
       "actual": "Owner PR #214 implements the directed fix on the exact current main with the QA known-bug reproduction and full producer parity; duplicate PR #218 was closed as superseded.",
       "owner": "match-model-save-validation",
-      "codexAction": "Do not implement a duplicate runtime fix. Re-check PR #214 exact-head CI and post-merge regression only.",
+      "codexAction": "Do not implement a duplicate runtime fix. Owner PR #214 must re-ground on current main, rerun exact-head CI, then QA verifies post-merge.",
       "acceptanceTests": [
         "Known-bug reproduction turns green without weakening assertions.",
         "loadSave() and assertGameState() reject bench without call-up, called-up non-starter without bench, zero-minute appearance, non-null firstGoal, wrong-predicate milestones and non-first milestone pointers.",
@@ -27,7 +27,8 @@
         "node --test scripts/test-t5-match-model.mjs scripts/test-t5-sport-context.mjs",
         "Repository Integrity succeeds on the exact PR #214 HEAD.",
         "After integration into main, QA reruns the original reproduction before marking resolved."
-      ]
+      ],
+      "ownerCiStatus": "success_on_previous_base_needs_reground"
     },
     {
       "bugId": "T5-QA-028",
@@ -40,14 +41,28 @@
       "expected": "Contract expiry produces deterministic unattached employment authority; ordinary club football, renewal and institutional-club authority fail closed until a formal CareerOffer reactivates employment.",
       "actual": "The Pass A contract is fully specified and #156 has landed, but coordinator sequencing requires #207 CareerOffer.context then #157 MarketState v2 before the employment patch so reattachment uses one final formal-offer authority.",
       "owner": "shared-contract-employment",
-      "blockedBy": [207, 157],
+      "blockedBy": [
+        207,
+        157
+      ],
       "unblockCriteria": [
         "PR #207 is integrated/re-grounded on current main.",
         "Issue #157 MarketState v2 is implemented and integrated with one authoritative openOffers collection and deterministic v1 migration.",
         "The final #157 offer acceptance API is available for #130 reattachment without a parallel market authority."
       ],
-      "allowedFilesAfterUnblock": ["src/core/types.ts", "src/simulation/world-simulator-core.ts", "src/simulation/offers.ts", "src/simulation/professional-adapter.ts", "src/save/validation.ts", "src/save/validation-legacy.ts", "scripts/test-t5-contract-expiry-known-bug.mjs"],
-      "forbiddenFiles": ["src/content/events/**", "src/content/content-identity*"],
+      "allowedFilesAfterUnblock": [
+        "src/core/types.ts",
+        "src/simulation/world-simulator-core.ts",
+        "src/simulation/offers.ts",
+        "src/simulation/professional-adapter.ts",
+        "src/save/validation.ts",
+        "src/save/validation-legacy.ts",
+        "scripts/test-t5-contract-expiry-known-bug.mjs"
+      ],
+      "forbiddenFiles": [
+        "src/content/events/**",
+        "src/content/content-identity*"
+      ],
       "acceptanceTestsAfterUnblock": [
         "A 1->0 contract expiry transition is deterministic, idempotent and consumes zero RNG.",
         "At zero months current employment authority becomes unattached; historical club/owner/registration/salary strings remain provenance only.",
