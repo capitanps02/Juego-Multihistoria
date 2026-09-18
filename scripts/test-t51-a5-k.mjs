@@ -9,8 +9,10 @@ import { narrativeCausalFacts } from '../dist/simulation/club-contract-intent.js
 import { certifyActiveAgentInPlace } from '../dist/simulation/npc-authority.js';
 import { recordOfficialMatchInPlace } from '../dist/simulation/match-model.js';
 import { loadSave, serializeSave } from '../dist/save/save.js';
+import { validateBuild } from '../dist/validation/build-validation.js';
 
 const IDS=['CEVT_18_PLAYOFF_01','EVT_20_BRIDGE_001','EVT_20_CCH_001','EVT_21_SOC_001','EVT_21_PRS_002'];
+const RETIRED=['EVT_21_ABR_001','EVT_21_CCH_001','EVT_22_LIFE_001'];
 const byId=id=>EVENTS.find(event=>event.id===id);
 
 function stateAt(seed,age,date){
@@ -25,6 +27,15 @@ function addSeed(state,id,originEvent,payload){
   state.seeds.push({id,state:'dormant',intensity:60,originEvent,originSeason:state.season,npcRefs:[],payload:structuredClone(payload),lastTouchedDate:state.date});
   state.flags['HAS_'+id]=true;
 }
+
+test('A5 K/0 preserves the canonical 388-event inventory while retiring technical rows',()=>{
+  assert.equal(EVENTS.length,388);
+  const phase20=EVENTS.filter(event=>event.phase==='20_23');
+  assert.equal(phase20.filter(event=>event.family!=='conditional').length,33);
+  assert.equal(phase20.filter(event=>event.family==='conditional').length,18);
+  for(const id of RETIRED) assert.equal(EVENTS.some(event=>event.id===id),false,id);
+  assert.deepEqual(validateBuild(EVENTS).filter(issue=>issue.level==='error'),[]);
+});
 
 test('A5 K/1 active registry contains exactly one copy of each serialized post-J scene',()=>{
   for(const id of IDS){
