@@ -1,25 +1,27 @@
 # Codex QA bugfix prompt
 
-Use exactly one task with `status=ready` from `analysis/CODEX/qa/implementation-ready.json`.
+Use only tasks with `status=ready` from `analysis/CODEX/qa/implementation-ready.json`.
 
 Repository: `capitanps02/Juego-Multihistoria`  
-Recorded base: `main@5f4d14bca4d696cfafadb58b64034c7cd40cc147`. Fetch the real current `main` immediately before work and re-ground safely if it moved.  
+Recorded base: `main@5f4d14bca4d696cfafadb58b64034c7cd40cc147`. Fetch real current `main` before any work.  
 Do not merge automatically.
 
-## Procedure
+## Current queue
 
-1. Copy the selected task fields: bugId, reproduction, failingTest, expected, actual, owner, allowedFiles, forbiddenFiles, acceptanceTests.
-2. Reproduce the failing test before modifying runtime. If it no longer fails, stop and report the exact commit that already fixed it.
-3. Edit only the smallest owner-approved surface. Do not weaken validation, delete assertions, update snapshots blindly, or change canonical probabilities to make QA green.
-4. Add/retain the regression permanently.
-5. Run focused test, neighboring owner tests, save/RNG regressions when relevant, then full Repository Integrity on exact HEAD.
-6. Report base SHA, head SHA, files changed, original reproduction result, final tests, CI run IDs and remaining blockers.
+There are **no free QA runtime implementation tasks** in this snapshot.
 
-## Current task selection
+- **T5-QA-029 / #212:** owner fix exists in **PR #214**, branch `codex/t5-match-save-invariants`, audited HEAD `b688017e996449f88822dc7c54162c3f3b3e3c2f`. Do not implement a duplicate. QA should certify exact-head CI and rerun post-merge regression.
+- **T5-QA-028 / #130:** blocked by `#207 -> #157`. Do not implement against MarketState v1.
+- **T5-QA-016 / #61:** owner PR #118 already carries the fix.
+- **T5-QA-027 / #133:** belongs to the next serialized LOCK23 content owner.
 
-- **READY now: T5-QA-029 / #212** — isolated fail-closed match-model/save validator hardening.
-- **BLOCKED: T5-QA-028 / #130** — do not implement yet. Coordination requires `#207 -> #157 -> #130`; reattachment must consume the final MarketState v2 formal-offer authority.
-- Do **not** create a second fix for T5-QA-016/#61; owner PR #118 already carries that runtime fix.
-- Do **not** implement T5-QA-027/#133 from QA; it belongs to the next serialized LOCK23 content owner.
+## Certification procedure for an owner fix
 
-For contentIdentity-changing fixes, never create shortcut migrations or rewrite historical freezes. #212 is a non-content fix and must not touch EVENTS/contentIdentity.
+1. Fetch current `main` and compare the owner branch.
+2. Reproduce the original QA test unchanged.
+3. Verify the owner diff stays inside its write-set and does not weaken validation.
+4. Run focused owner tests plus Repository Integrity on exact HEAD.
+5. Require 0 behind immediately before integration recommendation.
+6. After actual integration into `main`, rerun the original reproduction on main before changing bug status to resolved.
+
+Never create shortcut content migrations, rewrite historical freezes, or create a second implementation merely because a QA defect is open.
