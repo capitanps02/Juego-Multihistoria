@@ -34,7 +34,8 @@
     "engineOnlyNoncanonical": 5,
     "engineConditionals": 26,
     "conditionalsRequiresManualReview": 0,
-    "conditionalsResolvedRemoveOrSupersede": 26
+    "conditionalsResolvedRemoveOrSupersede": 26,
+    "conditionalsResolvedRemoveSupersede": 26
   },
   "principals": [
     {
@@ -574,7 +575,7 @@
     }
   ],
   "integrationStatus": {
-    "syncedBaselineMain": "5f4d14bca4d696cfafadb58b64034c7cd40cc147",
+    "syncedBaselineMain": "49f16b21c8f68f1439901437dcf16e1384966de2",
     "sharedChoiceEligibility": "available_in_main",
     "sharedOrGateContract": "available_in_main",
     "contentMigrationArchitecture": "available_in_main",
@@ -598,7 +599,8 @@
     "sharedT510Test": "resolved_in_main_lineage_aware",
     "renewalIntentFact": "available_in_main_and_consumed",
     "officialIntegrityRun": 35263497858,
-    "officialIntegrityResult": "blocked_only_at_missing_target_freeze_sentinel_after_build_saves_t52_t53_pass"
+    "officialIntegrityResult": "blocked_only_at_missing_target_freeze_sentinel_after_build_saves_t52_t53_pass",
+    "conditionals": "26/26 REMOVE_SUPERSEDE; zero active canonical conditionals from legacy generic generator"
   },
   "implementationProgress": {
     "stableIdReimplemented": [
