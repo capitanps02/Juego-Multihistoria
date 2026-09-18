@@ -427,6 +427,40 @@ export function seasonPlayerStats(state: GameState, season = state.season): Seas
   return aggregate;
 }
 
+export interface CareerSportMilestones {
+  /** Authoritative only when every career appearance is represented in the persisted ledger. */
+  historyComplete: boolean;
+  appearances: number | null;
+  goals: number | null;
+  assists: number | null;
+  yellowCards: number | null;
+  redCards: number | null;
+  appearance500: boolean | null;
+}
+
+export function careerSportMilestones(state: GameState): CareerSportMilestones {
+  const store = getSportMatchModelStore(state);
+  if (!store) return { historyComplete: false, appearances: null, goals: null, assists: null, yellowCards: null, redCards: null, appearance500: null };
+  const appeared = store.fixtures.filter(row => row.player.appeared);
+  const historyComplete = appeared.length === finiteCareerAppearances(state)
+    && appeared.every(row => row.stats !== undefined);
+  if (!historyComplete) return { historyComplete: false, appearances: null, goals: null, assists: null, yellowCards: null, redCards: null, appearance500: null };
+  const totals = appeared.reduce((acc, row) => {
+    acc.goals += row.stats!.goals;
+    acc.assists += row.stats!.assists;
+    acc.yellowCards += row.stats!.yellowCards;
+    acc.redCards += row.stats!.redCards;
+    return acc;
+  }, { goals: 0, assists: 0, yellowCards: 0, redCards: 0 });
+  return { historyComplete: true, appearances: appeared.length, ...totals, appearance500: appeared.length >= 500 };
+}
+
+function finiteCareerAppearances(state: GameState): number {
+  return typeof state.sport.appearances === "number" && Number.isInteger(state.sport.appearances) && state.sport.appearances >= 0
+    ? state.sport.appearances
+    : -1;
+}
+
 export function previousOfficialMatch(state: GameState): OfficialMatchRecord | null {
   const store = getSportMatchModelStore(state);
   if (!store) return null;
