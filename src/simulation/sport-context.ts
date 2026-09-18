@@ -1,6 +1,7 @@
 import type { GameState } from "../core/types.js";
 import {
   careerGoalHistoryComplete,
+  careerSportMilestones,
   currentOfficialMatch,
   getSportMatchModelStore,
   hoursToNextScheduledFixture,
@@ -49,6 +50,7 @@ export interface SportContextAvailability {
   firstFullMatch: SportFactAvailability;
   firstGoal: SportFactAvailability;
   currentSeasonPlayerStats: SportFactAvailability;
+  careerMilestones: SportFactAvailability;
 }
 
 export interface SportContext {
@@ -81,6 +83,7 @@ export interface SportContext {
   firstFullMatch: string | null;
   firstGoal: string | null;
   currentSeasonPlayerStats: SeasonPlayerStats | null;
+  careerMilestones: ReturnType<typeof careerSportMilestones> | null;
   availability: SportContextAvailability;
   unavailableReason: "standing_model_not_implemented" | "historical_match_store_not_initialized" | "historical_player_stats_incomplete" | null;
 }
@@ -140,6 +143,7 @@ export function getSportContext(state: GameState): SportContext {
   const milestonesKnown = store !== null;
   const goalHistoryKnown = careerGoalHistoryComplete(state);
   const seasonStats = seasonPlayerStats(state);
+  const careerMilestones = careerSportMilestones(state);
 
   return {
     currentSeason: state.season,
@@ -168,6 +172,7 @@ export function getSportContext(state: GameState): SportContext {
     firstFullMatch: store?.milestones.firstFullMatch ?? null,
     firstGoal: goalHistoryKnown ? (store?.milestones.firstGoal ?? null) : null,
     currentSeasonPlayerStats: seasonStats,
+    careerMilestones: careerMilestones.historyComplete ? careerMilestones : null,
     availability: {
       currentSeason: known(),
       sportingClub: known(),
@@ -193,7 +198,8 @@ export function getSportContext(state: GameState): SportContext {
       firstStart: milestonesKnown ? known() : unavailable(),
       firstFullMatch: milestonesKnown ? known() : unavailable(),
       firstGoal: goalHistoryKnown ? known() : unavailable(),
-      currentSeasonPlayerStats: seasonStats ? known() : unavailable()
+      currentSeasonPlayerStats: seasonStats ? known() : unavailable(),
+      careerMilestones: careerMilestones.historyComplete ? known() : unavailable()
     },
     unavailableReason: !milestonesKnown
       ? "historical_match_store_not_initialized"
