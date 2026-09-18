@@ -10,6 +10,7 @@ import {
   type CareerTerms
 } from "./offers.js";
 import { getCurrentMatchContext, getSportContext, type CurrentMatchContext, type SportContext } from "./sport-context.js";
+import { resolveActiveAgent, resolveCurrentClubInstitutionalNpc } from "./npc-authority.js";
 
 export { FORMAL_RENEWAL_REASON };
 export const CLUB_WANTS_RENEWAL_FACT = "facts.clubWantsRenewal" as const;
@@ -126,6 +127,10 @@ export interface NarrativeCausalFacts extends EarlyCareerSeedFacts {
   lockerStarAffinity: number | null;
   roleDropSince23: number;
   roleGuaranteeAt23: boolean;
+  /** Explicitly certified current representative; null means no authoritative active agent. */
+  activeAgentNpcId: string | null;
+  /** Named current-club institutional recipient only when the shared resolver certifies one. */
+  currentClubInstitutionalNpcId: string | null;
   /** Compatible formal offer kind for deterministic event/choice gating; null includes stale offers. */
   pendingCareerOfferKind: CareerOfferKind | null;
   /** Exact detached formal-offer projection; null includes no offer and stale offers. */
@@ -144,6 +149,8 @@ export function narrativeCausalFacts(state: GameState): NarrativeCausalFacts {
     lockerStarAffinity: lockerSlotAffinity(state, "star"),
     roleDropSince23: roleDropSince23(state),
     roleGuaranteeAt23: hasRoleGuaranteeAt23(state),
+    activeAgentNpcId: resolveActiveAgent(state),
+    currentClubInstitutionalNpcId: resolveCurrentClubInstitutionalNpc(state),
     pendingCareerOfferKind: eligibleCareerOfferKind(state),
     pendingCareerOffer: pendingCareerOfferFacts(state),
     sport: getSportContext(state),
