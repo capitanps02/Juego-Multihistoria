@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 2,
+  "workstream": "T5.1 Agent 5 canon 18-23 final",
+  "branch": "t51/canon-18-23-a5-final-v2",
+  "integrationPolicy": {
+    "activeEventsModified": false,
+    "contentIdentityChanged": false,
+    "autoMerge": false,
+    "prerequisite": "PR #196 / generation J must be integrated before activating the five post-J scenes",
+    "nextGeneration": "Do not precompute K. Re-ground on then-current main, calculate actual identity, freeze it, and add exactly one adjacent lineage edge."
+  },
+  "coverage": {
+    "canonicalTotal": 95,
+    "alreadyFunctional": 45,
+    "generationJPending": 6,
+    "postJReady": 5,
+    "externalOwnerComplete": 39,
+    "ownerSidePreparedTotal": 95,
+    "ownerSidePreparedPercent": 100
+  },
+  "generationJOwnedElsewhere": [
+    "EVT_18_MATCH_001",
+    "EVT_18_PRS_001",
+    "EVT_18_SOC_001",
+    "EVT_18_END_001",
+    "EVT_18_JAN_001",
+    "EVT_18_SUM_001"
+  ],
+  "postJReady": [
+    "CEVT_18_PLAYOFF_01",
+    "EVT_20_BRIDGE_001",
+    "EVT_20_CCH_001",
+    "EVT_21_SOC_001",
+    "EVT_21_PRS_002"
+  ],
+  "canonResolvedExternal": [
+    {
+      "eventId": "EVT_18_END_002",
+      "awaiting": "current-club coach is questioned AND continuity is not yet decided",
+      "forbidden": [
+        "coachSecurity threshold",
+        "historical COACH_FIRED as current status"
+      ]
+    }
+  ],
+  "externalPrincipals": [
+    "EVT_20_MKT_001",
+    "EVT_20_MED_001",
+    "EVT_20_AGT_001",
+    "EVT_20_MATCH_003",
+    "EVT_20_JAN_001",
+    "EVT_20_BRUNO_001",
+    "EVT_21_MONEY_001",
+    "EVT_21_AGT_001",
+    "EVT_21_MKT_001",
+    "EVT_21_NAT_001",
+    "EVT_21_IMG_001",
+    "EVT_21_MED_001",
+    "EVT_21_CCH_002",
+    "EVT_22_LOCK_001",
+    "EVT_22_HOME_001",
+    "EVT_22_MKT_001",
+    "EVT_22_MED_001",
+    "EVT_22_TACT_001",
+    "EVT_22_DDL_001"
+  ],
+  "externalConditionals": [
+    "CEVT_18_EARLY_01",
+    "CEVT_19_AGENT_01",
+    "CEVT_19_SOCIAL_01",
+    "CEVT_20_RIVAS_01",
+    "CEVT_20_VELA_01",
+    "CEVT_20_PAULA_01",
+    "CEVT_20_NANO_01",
+    "CEVT_20_MONT_01",
+    "CEVT_20_ADR_01",
+    "CEVT_21_BIGCLUB_01",
+    "CEVT_21_LOAN_01",
+    "CEVT_21_AGENT_02",
+    "CEVT_21_INJ_01",
+    "CEVT_22_UDV_01",
+    "CEVT_22_BRUNO_02",
+    "CEVT_22_ADR_02",
+    "CEVT_22_FREE_01",
+    "CEVT_22_SOC_02",
+    "CEVT_22_SHOCK_01"
+  ],
+  "exactSemantics": {
+    "waitThreeMatches": {
+      "eventId": "EVT_20_CCH_001",
+      "choiceId": "WAIT_THREE_MATCHES",
+      "source": "persisted narrative history + authoritative official match store",
+      "completesAfter": 3,
+      "sameClubOnly": true,
+      "rngDrawsForRead": 0,
+      "survivesSaveLoad": true
+    },
+    "agentDiscrepancy": {
+      "eventId": "CEVT_19_AGENT_01",
+      "requires": [
+        "live SEED_AGENT_OMISSION memory",
+        "certified active agent",
+        "external second discrepancy/source-quality fact"
+      ],
+      "forbids": [
+        "legacy contact flags as identity",
+        "seed presence as source quality",
+        "retrospective truth chosen by player response"
+      ]
+    }
+  },
+  "activationRules": [
+    "Never import external-blocked definitions into EVENTS until their exact shared fact exists.",
+    "Unavailable/null authority fails closed.",
+    "marketHeat is never a CareerOffer.",
+    "Seeds shape memory but do not manufacture external world facts.",
+    "No direct contract, club, injury, match-result, selection-list or ownership mutation from staged owner content.",
+    "Only certified dynamic NPC slots may receive agent/current-club institutional knowledge."
+  ],
+  "qa": {
+    "focusedWorkflow": "T51 A5 final 18-23",
+    "repositoryIntegrity": "required on exact HEAD",
+    "marketAuthority": "required on exact HEAD",
+    "currentStatus": "pending GitHub Actions at time of handoff update"
+  }
+}
