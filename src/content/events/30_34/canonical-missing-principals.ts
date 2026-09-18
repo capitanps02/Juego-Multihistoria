@@ -399,6 +399,60 @@ const LOW_STATS_HIGH_IMPACT = ambiguousEvent({
   canonStatus: "technical_adaptation"
 });
 
+const DORSAL_SUCCESSION = ambiguousEvent({
+  id: "EVT_30_STATUS_001",
+  ageWindow: [30, 30],
+  phase: "30_34",
+  family: "team",
+  title: "El dorsal",
+  body: "El sucesor joven te pregunta en privado si le cederías un dorsal de fuerte carga simbólica que tú has llevado años. No existe obligación; el club preferiría evitar debate público.",
+  visible: ["Conoces la petición directa del joven y la postura prudente del club."],
+  uncertain: ["No sabes si el dorsal importa realmente al joven o si su agencia quiere una señal pública de sucesión."],
+  gates: [{ path: "flags.HAS_SEED_YOUNG_SUCCESSOR", op: "eq", value: true }],
+  seedsRead: ["SEED_YOUNG_SUCCESSOR"],
+  seedsWrite: ["SEED_DORSAL_SUCCESSION"],
+  choices: [
+    {
+      id: "A", label: "Cederlo", intentTags: ["dorsal", "cede"],
+      primaryMessage: "Cedes el símbolo sin ceder automáticamente tu sitio deportivo.",
+      secondaryMessage: "El gesto puede crear alianza o ser leído como confirmación pública de relevo.",
+      primaryEffects: [n("professional.legacyCapital", 3), n("professional.lockerPower", 2)],
+      secondaryEffects: [n("professional.successionPressure", 3), n("professional.statusInertia", -2)],
+      primarySeedTransitions: seed("SEED_DORSAL_SUCCESSION", "A", "cede"),
+      secondarySeedTransitions: seed("SEED_DORSAL_SUCCESSION", "A", "cede")
+    },
+    {
+      id: "B", label: "Mantenerlo", intentTags: ["dorsal", "keep"],
+      primaryMessage: "Mantienes el dorsal y separas el símbolo de cualquier plan sucesorio del club.",
+      secondaryMessage: "La decisión puede afirmar jerarquía o parecer una defensa insegura de estatus.",
+      primaryEffects: [n("professional.statusInertia", 2), n("professional.lockerPower", 1)],
+      secondaryEffects: [n("professional.publicPolarization", 2), n("professional.successionPressure", 2)],
+      primarySeedTransitions: seed("SEED_DORSAL_SUCCESSION", "B", "keep"),
+      secondarySeedTransitions: seed("SEED_DORSAL_SUCCESSION", "B", "keep")
+    },
+    {
+      id: "C", label: "Cederlo solo al final de temporada", intentTags: ["dorsal", "defer"],
+      primaryMessage: "Aplazas el gesto para que no se mezcle con la competencia deportiva inmediata.",
+      secondaryMessage: "Ganas tiempo, aunque la demora mantiene viva la narrativa de sucesión.",
+      primaryEffects: [n("professional.careerControl", 2), n("professional.environmentStability", 2)],
+      secondaryEffects: [n("professional.successionPressure", 1)],
+      primarySeedTransitions: seed("SEED_DORSAL_SUCCESSION", "C", "end_of_season"),
+      secondarySeedTransitions: seed("SEED_DORSAL_SUCCESSION", "C", "end_of_season")
+    },
+    {
+      id: "D", label: "Proponer que el club decida públicamente", intentTags: ["dorsal", "club_decides"],
+      primaryMessage: "Trasladas al club la responsabilidad institucional de explicar el símbolo.",
+      secondaryMessage: "La transparencia puede ordenar el debate o convertir una conversación privada en una señal pública de jerarquía.",
+      primaryEffects: [n("professional.careerControl", 2), n("professional.institutionalTrust", 1)],
+      secondaryEffects: [n("professional.publicPolarization", 3)],
+      primarySeedTransitions: seed("SEED_DORSAL_SUCCESSION", "D", "club_public_decision"),
+      secondarySeedTransitions: seed("SEED_DORSAL_SUCCESSION", "D", "club_public_decision")
+    }
+  ],
+  tags: ["t51_shifted_canonical_addition", "t51_distinct_from_EVT_30_TEAM_001", "t51_seed_successor_gate"],
+  canonStatus: "technical_adaptation"
+});
+
 const AGE34_BRIDGE = ambiguousEvent({
   id: "EVT_33_FIN_001",
   ageWindow: [33, 33],
