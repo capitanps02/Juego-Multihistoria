@@ -1,6 +1,7 @@
 import type { GameState } from "../core/types.js";
 import { getEligibleCareerOffers } from "./offers.js";
-import { getSportContext, type LastPlayerAppearanceContext } from "./sport-context.js";
+import { getLastPlayerAppearanceContext, getSportContext } from "./sport-context.js";
+import type { MatchResultFact } from "./match-model.js";
 
 export interface RetirementLastAppearanceFact {
   status: "authoritative" | "authoritative_none" | "unavailable";
@@ -13,7 +14,7 @@ export interface RetirementLastAppearanceFact {
   started: boolean | null;
   appeared: boolean | null;
   minutes: number | null;
-  result: LastPlayerAppearanceContext["result"];
+  result: MatchResultFact | null;
   goals: number | null;
   assists: number | null;
   cards: LastPlayerAppearanceContext["cards"];
@@ -39,34 +40,31 @@ const unavailableLastAppearance = (): RetirementLastAppearanceFact => ({
 });
 
 export function retirementLastAppearanceFact(state: GameState): RetirementLastAppearanceFact {
-  const sport = getSportContext(state);
-  const context = sport.lastPlayerAppearanceContext;
-  if (context.status === "authoritative") {
-    const row = sport.lastPlayerAppearance;
-    if (!row || row.id !== context.fixtureId || !context.date) return unavailableLastAppearance();
-    const announced = state.retirement.announcedDate;
-    return {
-      status: "authoritative",
-      fixtureId: context.fixtureId,
-      date: context.date,
-      competition: context.competition,
-      opponent: context.opponent,
-      homeAway: context.homeAway,
-      club: row.club,
-      started: context.started,
-      appeared: true,
-      minutes: context.minutes,
-      result: context.result,
-      goals: context.goals,
-      assists: context.assists,
-      cards: context.cards,
-      postAnnouncement: announced === null ? null : context.date >= announced
-    };
-  }
-  if (sport.availability.lastPlayerAppearance === "known") {
-    return { ...unavailableLastAppearance(), status: "authoritative_none" };
-  }
-  return unavailableLastAppearance();
+  const context = getLastPlayerAppearanceContext(state);
+  if (context.status === "historical_match_store_not_initialized") return unavailableLastAppearance();
+
+  const row = context.match;
+  if (!row) return { ...unavailableLastAppearance(), status: "authoritative_none" };
+  if (row.player.appeared !== true) return unavailableLastAppearance();
+
+  const announced = state.retirement.announcedDate;
+  return {
+    status: "authoritative",
+    fixtureId: row.id,
+    date: row.date,
+    competition: row.competition,
+    opponent: row.opponent,
+    homeAway: row.homeAway,
+    club: row.club,
+    started: row.player.started,
+    appeared: true,
+    minutes: row.player.minutes,
+    result: row.result ?? null,
+    goals: row.stats?.goals ?? null,
+    assists: row.stats?.assists ?? null,
+    cards: row.stats ? { yellow: row.stats.yellowCards, red: row.stats.redCards } : null,
+    postAnnouncement: announced === null ? null : row.date >= announced
+  };
 }
 
 export interface RetirementStorybookLastGoalFact {
