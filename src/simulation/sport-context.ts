@@ -33,6 +33,7 @@ export interface SportContextAvailability {
   nextFixture: SportFactAvailability;
   previousFixture: SportFactAvailability;
   lastPlayerAppearance: SportFactAvailability;
+  lastPlayerAppearanceContext: SportFactAvailability;
   hoursToNextFixture: SportFactAvailability;
   isMatchDay: SportFactAvailability;
   isTrainingWindow: SportFactAvailability;
@@ -65,6 +66,7 @@ export interface SportContext {
   previousFixture: OfficialMatchRecord | null;
   /** Latest factual official row where the player actually appeared, across clubs. */
   lastPlayerAppearance: OfficialMatchRecord | null;
+  lastPlayerAppearanceContext: LastPlayerAppearanceContext;
   hoursToNextFixture: number | null;
   isMatchDay: boolean;
   isTrainingWindow: boolean;
@@ -83,6 +85,22 @@ export interface SportContext {
   currentSeasonPlayerStats: SeasonPlayerStats | null;
   availability: SportContextAvailability;
   unavailableReason: "standing_model_not_implemented" | "historical_match_store_not_initialized" | "historical_player_stats_incomplete" | null;
+}
+
+export interface LastPlayerAppearanceContext {
+  status: "authoritative" | "unavailable";
+  fixtureId: string | null;
+  date: string | null;
+  competition: MatchCompetition | null;
+  opponent: string | null;
+  homeAway: "home" | "away" | null;
+  started: boolean | null;
+  onBench: boolean | null;
+  minutes: number | null;
+  result: MatchResultFact | null;
+  goals: number | null;
+  assists: number | null;
+  cards: { yellow: number; red: number } | null;
 }
 
 export interface CurrentMatchContext {
@@ -152,6 +170,7 @@ export function getSportContext(state: GameState): SportContext {
     nextFixture: next,
     previousFixture: previous,
     lastPlayerAppearance: lastAppearance,
+    lastPlayerAppearanceContext: getLastPlayerAppearanceContext(state),
     hoursToNextFixture: hoursToNextScheduledFixture(state),
     isMatchDay: current !== null,
     isTrainingWindow: isTrainingDay(state),
@@ -178,6 +197,7 @@ export function getSportContext(state: GameState): SportContext {
       nextFixture: known(),
       previousFixture: milestonesKnown ? known() : unavailable(),
       lastPlayerAppearance: milestonesKnown ? known() : unavailable(),
+      lastPlayerAppearanceContext: lastAppearance ? known() : unavailable(),
       hoursToNextFixture: known(),
       isMatchDay: known(),
       isTrainingWindow: known(),
@@ -255,5 +275,48 @@ export function getCurrentMatchContext(state: GameState): CurrentMatchContext {
     decisionMinute: match.decisionContext?.minute ?? null,
     scoreAtDecision: match.decisionContext ? { home: match.decisionContext.scoreHome, away: match.decisionContext.scoreAway } : null,
     debutDecisionContext: canonicalDebutDecision
+  };
+}
+
+
+/**
+ * Rich factual projection of the latest official fixture in which the player
+ * actually appeared. This does not claim the fixture is the player's terminal
+ * career match; retirement owns that interpretation.
+ */
+export function getLastPlayerAppearanceContext(state: GameState): LastPlayerAppearanceContext {
+  const match = lastPlayerAppearance(state);
+  if (!match) {
+    return {
+      status: "unavailable",
+      fixtureId: null,
+      date: null,
+      competition: null,
+      opponent: null,
+      homeAway: null,
+      started: null,
+      onBench: null,
+      minutes: null,
+      result: null,
+      goals: null,
+      assists: null,
+      cards: null
+    };
+  }
+
+  return {
+    status: "authoritative",
+    fixtureId: match.id,
+    date: match.date,
+    competition: match.competition,
+    opponent: match.opponent,
+    homeAway: match.homeAway,
+    started: match.player.started,
+    onBench: match.player.onBench,
+    minutes: match.player.minutes,
+    result: match.result ?? null,
+    goals: match.stats?.goals ?? null,
+    assists: match.stats?.assists ?? null,
+    cards: match.stats ? { yellow: match.stats.yellowCards, red: match.stats.redCards } : null
   };
 }
