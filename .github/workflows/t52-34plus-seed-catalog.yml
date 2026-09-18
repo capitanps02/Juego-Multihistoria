@@ -30,5 +30,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
+      - name: A5 K exact identity probe
+        run: node scripts/print-t51-a5-k-identity.mjs
       - run: node --test scripts/test-t52-34plus-canonical-catalog.mjs
       - run: npm run test:t52
