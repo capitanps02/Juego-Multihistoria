@@ -10,6 +10,8 @@ import { certifyActiveAgentInPlace } from '../dist/simulation/npc-authority.js';
 import { recordOfficialMatchInPlace } from '../dist/simulation/match-model.js';
 import { loadSave, serializeSave } from '../dist/save/save.js';
 import { validateBuild } from '../dist/validation/build-validation.js';
+import { contentIdentity } from '../dist/session/content-identity.js';
+import { CONTENT_MIGRATION_ROUTES, T51_AGE18_AUTHORITY_CONTENT_IDENTITY, T51_A5_POST_J_K_CONTENT_IDENTITY, findMigrationRoute } from '../dist/session/content-migration.js';
 
 const IDS=['CEVT_18_PLAYOFF_01','EVT_20_BRIDGE_001','EVT_20_CCH_001','EVT_21_SOC_001','EVT_21_PRS_002'];
 const RETIRED=['EVT_20_MATCH_001','EVT_21_CCH_001','EVT_22_LIFE_001'];
@@ -35,6 +37,17 @@ test('A5 K/0 preserves the canonical 388-event inventory while retiring technica
   assert.equal(phase20.filter(event=>event.family==='conditional').length,18);
   for(const id of RETIRED) assert.equal(EVENTS.some(event=>event.id===id),false,id);
   assert.deepEqual(validateBuild(EVENTS).filter(issue=>issue.level==='error'),[]);
+});
+
+test('A5 K/0b exact active identity and J-to-K migration are adjacent',async()=>{
+  assert.equal(await contentIdentity(EVENTS),T51_A5_POST_J_K_CONTENT_IDENTITY);
+  const route=findMigrationRoute(T51_AGE18_AUTHORITY_CONTENT_IDENTITY,T51_A5_POST_J_K_CONTENT_IDENTITY,CONTENT_MIGRATION_ROUTES);
+  assert.ok(route,'missing exact J->K route');
+  assert.deepEqual(route.schedulerMappings,[
+    {kind:'same_scene',legacyEventId:'CEVT_18_PLAYOFF_01',canonicalEventId:'CEVT_18_PLAYOFF_01'},
+    {kind:'distinct_scene',legacyEventId:'EVT_20_CCH_001',canonicalEventId:'EVT_20_CCH_001',clearCanonicalSeen:true,clearCanonicalCooldown:true}
+  ]);
+  for(const id of RETIRED) assert.equal(route.schedulerMappings.some(row=>row.legacyEventId===id),false,'retired technical id must not be aliased: '+id);
 });
 
 test('A5 K/1 active registry contains exactly one copy of each serialized post-J scene',()=>{
