@@ -4,6 +4,7 @@ import { CONDITIONAL_EVENTS_20_23 } from "./conditional-events.js";
 import { T55A_PRINCIPALS, T55A_CONDITIONALS } from "./canonical-t55-a.js";
 import { T55B_PRINCIPALS } from "./canonical-t55-b.js";
 import { T56A_PRINCIPALS } from "./canonical-t56-a.js";
+import { A5_READY_EVENTS_18_23 } from "./a5-ready-staged.js";
 
 function replaceById(base: readonly EventDefinition[], replacements: readonly EventDefinition[]): EventDefinition[] {
   const ids = new Set(replacements.map(event => event.id));
@@ -17,10 +18,11 @@ function routeSafeT55BNpcRefs(event: EventDefinition): EventDefinition {
 }
 
 const ACTIVE_T55B_PRINCIPALS = T55B_PRINCIPALS.map(routeSafeT55BNpcRefs);
+const A5_POST_J_PRINCIPALS = A5_READY_EVENTS_18_23.filter(event => event.phase === "20_23");
 
 export const ACTIVE_PRINCIPAL_EVENTS_20_23 = replaceById(
   PRINCIPAL_EVENTS_20_23,
-  [...T55A_PRINCIPALS, ...ACTIVE_T55B_PRINCIPALS, ...T56A_PRINCIPALS]
+  [...T55A_PRINCIPALS, ...ACTIVE_T55B_PRINCIPALS, ...T56A_PRINCIPALS, ...A5_POST_J_PRINCIPALS]
 );
 export const ACTIVE_CONDITIONAL_EVENTS_20_23 = replaceById(CONDITIONAL_EVENTS_20_23, T55A_CONDITIONALS);
 export const EVENTS_20_23 = [...ACTIVE_PRINCIPAL_EVENTS_20_23, ...ACTIVE_CONDITIONAL_EVENTS_20_23];
