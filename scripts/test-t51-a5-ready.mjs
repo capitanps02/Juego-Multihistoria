@@ -5,6 +5,7 @@ import { A5_READY_EVENTS_18_23 } from '../dist/content/events/20_23/a5-ready-sta
 import { A5_AGENT_READY_EXTERNAL_EVENTS, A5_AGENT_EXTERNAL_REQUIREMENTS } from '../dist/content/events/20_23/a5-agent-ready-external.js';
 import { A5_EVT_18_END_002_OWNER_READY, EVT_18_END_002_EXTERNAL_REQUIREMENT } from '../dist/content/events/18_20/a5-end002-staged.js';
 import { A5_MARKET_EXTERNAL_REQUIREMENTS, A5_MARKET_OWNER_READY_PRINCIPALS } from '../dist/content/events/20_23/a5-market-external-staged.js';
+import { A5_MEDICAL_EXTERNAL_REQUIREMENTS, A5_MEDICAL_OWNER_READY_PRINCIPALS } from '../dist/content/events/20_23/a5-medical-external-staged.js';
 import { A5_SHARED_EXTERNAL_PRINCIPAL_REQUIREMENTS, A5_SHARED_EXTERNAL_OWNER_READY_PRINCIPALS } from '../dist/content/events/20_23/a5-shared-external-principals-staged.js';
 import { A5_READY_NPC_KNOWLEDGE_RULES } from '../dist/catalog/npc-knowledge-rules-a5-ready.js';
 import { createInitialState } from '../dist/content/initial-state.js';
@@ -482,4 +483,38 @@ test('A5 external principals/6 staged dynamic NPC rules inform only certified pa
   assert.deepEqual(resolveNpcKnowledgeTargets(agtRule,context),['NPC_AGT_02']);
   assert.deepEqual(new Set(resolveNpcKnowledgeTargets(brunoNotify,context)),new Set(['NPC_PLR_12','NPC_AGT_02']));
   assert.deepEqual(resolveNpcKnowledgeTargets(brunoPrivate,context),['NPC_PLR_12']);
+});
+
+
+test('A5 external medical/1 three medical principals are canonical owner-ready with exact four choices', () => {
+  assert.deepEqual(A5_MEDICAL_OWNER_READY_PRINCIPALS.map(row => row.id), [
+    'EVT_20_MED_001', 'EVT_21_MED_001', 'EVT_22_MED_001'
+  ]);
+  for (const scene of A5_MEDICAL_OWNER_READY_PRINCIPALS) {
+    assert.equal(scene.choices.length, 4, scene.id);
+    assert.equal(scene.outcomes.length, 8, scene.id);
+    assert.ok(scene.tags.includes('a5_ready_external_blocker'), scene.id);
+  }
+  assert.deepEqual(event('EVT_20_MED_001')?.id, undefined, 'medical staging is intentionally outside A5 active-ready list');
+});
+
+test('A5 external medical/2 requirements reject diagnosis/match/transfer proxies and owner effects do not sign employment', () => {
+  assert.ok(A5_MEDICAL_EXTERNAL_REQUIREMENTS.EVT_20_MED_001.forbidden.includes('body.risk as diagnosis'));
+  assert.ok(A5_MEDICAL_EXTERNAL_REQUIREMENTS.EVT_21_MED_001.awaiting.includes('real high-value fixture'));
+  assert.ok(A5_MEDICAL_EXTERNAL_REQUIREMENTS.EVT_22_MED_001.awaiting.includes('advanced real transfer'));
+
+  const serialized = JSON.stringify(A5_MEDICAL_OWNER_READY_PRINCIPALS);
+  for (const fake of ['HAS_DIAGNOSIS','REAL_INJURY','HIGH_VALUE_MATCH','REAL_TRANSFER']) {
+    assert.equal(serialized.includes(fake), false);
+  }
+  for (const scene of A5_MEDICAL_OWNER_READY_PRINCIPALS) {
+    const effects = [
+      ...scene.choices.flatMap(choice => [...(choice.immediateEffects ?? []), ...(choice.hiddenCosts ?? [])]),
+      ...scene.outcomes.flatMap(outcome => outcome.effects)
+    ];
+    assert.equal(effects.some(effect => effect.kind !== 'flag' && [
+      'club','tier','contract.monthsRemaining','contract.salaryMonthly',
+      'professional.ownerClub','professional.registrationClub','professional.route'
+    ].includes(effect.path)), false, scene.id);
+  }
 });
