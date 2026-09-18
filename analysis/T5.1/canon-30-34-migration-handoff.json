@@ -543,5 +543,16 @@
       "EVT_30_CCH_001"
     ],
     "migrationRule": "The newly added canonical principal did not exist in the frozen upstream source. It starts unseen with no inherited cooldown, pending state or synthesized history; historical events are not rebound to it."
+  },
+  "currentShiftedImplementations": {
+    "ids": [
+      "EVT_30_BRIDGE_001",
+      "EVT_33_FIN_001"
+    ],
+    "supersededLegacyIds": [
+      "EVT_30_IDN_001",
+      "EVT_33_END_001"
+    ],
+    "migrationRule": "Both are distinct scenes. Canonical definitions start unseen; legacy seen/cooldown/pending/history and seed origins are not rebound or rewritten."
   }
 }
