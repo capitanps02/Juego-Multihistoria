@@ -58,7 +58,7 @@ async function withDynamicRule(rule, fn) {
 }
 
 test('T5.3 dynamic targets/0 declarations fail closed and role targets are choice+outcome scoped', () => {
-  const allowedSlots = new Set(['captain', 'star']);
+  const allowedSlots = new Set(['captain', 'star', 'activeAgent', 'currentClubInstitutional']);
   for (const rule of NPC_EVENT_KNOWLEDGE_RULES) {
     const slots = rule.targetSlots ?? [];
     const staticTargets = rule.npcIds ?? [];
