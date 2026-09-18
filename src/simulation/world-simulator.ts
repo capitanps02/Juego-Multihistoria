@@ -1,6 +1,7 @@
 import type { GameState } from "../core/types.js";
 import { advanceWorldDayInPlace as advanceCoreWorldDayInPlace } from "./world-simulator-core.js";
 import { closeLeagueObjectiveInPlace, recordOfficialMatchInPlace, remainingLeagueFixtures } from "./match-model.js";
+import { currentEmploymentClub } from "./offers.js";
 
 const num = (value: unknown, fallback = 0): number =>
   typeof value === "number" && Number.isFinite(value) ? value : fallback;
@@ -19,7 +20,7 @@ export function advanceWorldDayInPlace(next: GameState): GameState {
   advanceCoreWorldDayInPlace(next);
   if (next.date === beforeDate) return next;
 
-  if (next.runtime.day % 7 === 0) {
+  if (next.runtime.day % 7 === 0 && currentEmploymentClub(next) !== null) {
     const appeared = num(next.sport.appearances) > beforeAppearances;
     const match = recordOfficialMatchInPlace(next, {
       appeared,
