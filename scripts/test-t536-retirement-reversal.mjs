@@ -70,6 +70,8 @@ test('T5.36 canonical reversal is the only announced->playing path and charges c
   const offered=structuredClone(state.market.pending.terms);
   resolveChoiceInPlace(state,reversal,'ACCEPT');
   assert.equal(state.retirement.status,'playing');
+  assert.equal(state.retirement.decidedDate,null);
+  assert.equal(state.retirement.announcedDate,null);
   assert.equal(state.retirement.reversals,before.reversals+1);
   assert.equal(state.sport.form,Math.max(0,before.form-5));
   assert.equal(state.reputation.prestige,Math.max(0,before.prestige-5));
