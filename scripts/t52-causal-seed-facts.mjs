@@ -17,5 +17,6 @@ export const T52_CAUSAL_SEED_FACTS = Object.freeze({
   'facts.bodyPrecedentEarly': 'SEED_BODY_PRECEDENT',
   'facts.bodyPrecedentReturn19': 'SEED_BODY_PRECEDENT',
   'facts.physioConfidencePattern': 'SEED_PHYSIO_CONFIDENCE',
-  'facts.physioConfidenceReturn19': 'SEED_PHYSIO_CONFIDENCE'
+  'facts.physioConfidenceReturn19': 'SEED_PHYSIO_CONFIDENCE',
+  'facts.loadManagementPlan': 'SEED_LOAD_MANAGEMENT'
 });
