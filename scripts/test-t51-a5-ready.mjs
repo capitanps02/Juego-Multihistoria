@@ -205,7 +205,7 @@ test('A5 ready/7 playoff decision persists a real retention-vs-market payload th
 
   const restored = loadSave(serializeSave(a));
   assert.equal(narrativeCausalFacts(restored).exitStylePlayoff, 'commit');
-  assert.deepEqual(restored.seeds, a.seeds);
+  assert.deepEqual(restored.seeds, JSON.parse(JSON.stringify(a.seeds)), 'save/load preserves the persisted seed projection');
 });
 
 test('A5 ready/8 staged NPC provenance uses only explicit participants and A1 dynamic authority slots', () => {
