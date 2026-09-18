@@ -4,7 +4,7 @@ import { EVENTS } from '../dist/content/events/index.js';
 import { createInitialState } from '../dist/content/initial-state.js';
 import { getNpcKnowledgeRecord, npcKnows } from '../dist/core/npc-knowledge.js';
 import { resolveChoiceInPlace } from '../dist/narrative/resolver.js';
-import { loadSave, serializeSave } from '../dist/save/save.js';
+import { serializeSave } from '../dist/save/save.js';
 
 const byId = id => {
   const event = EVENTS.find(candidate => candidate.id === id);
@@ -69,7 +69,7 @@ test('T5.3 una memoria de transferencia conserva el club donde se aprendió el h
   assert.equal(record.club, 'UDV');
 });
 
-test('T5.3 persisted malformed knowledge nunca satisface npcKnows', () => {
+test('T5.3 malformed knowledge is reader-safe and fails closed at the save boundary', () => {
   const malformedCases = [
     { source: 'telepathy' },
     { memory: 'eternal' },
@@ -101,12 +101,16 @@ test('T5.3 persisted malformed knowledge nunca satisface npcKnows', () => {
       ...override
     };
 
-    const restored = loadSave(serializeSave(state));
     assert.equal(
-      npcKnows(restored, 'NPC_CCH_01', 'T53_MALFORMED'),
+      npcKnows(state, 'NPC_CCH_01', 'T53_MALFORMED'),
       false,
-      `payload malformado #${index} fue aceptado como conocimiento`
+      `payload malformado #${index} fue aceptado como conocimiento por el reader`
     );
-    assert.equal(getNpcKnowledgeRecord(restored, 'NPC_CCH_01', 'T53_MALFORMED'), undefined);
+    assert.equal(getNpcKnowledgeRecord(state, 'NPC_CCH_01', 'T53_MALFORMED'), undefined);
+    assert.throws(
+      () => serializeSave(state),
+      error => error?.code === 'INVALID_SAVE',
+      `payload malformado #${index} atravesó el boundary de persistencia`
+    );
   }
 });
