@@ -15,7 +15,7 @@ import { migrationSourceCoverage } from './t51-migration-source-policy.mjs';
 
 const currentIdentity = await contentIdentity(EVENTS);
 
-const A0_K_IDENTITY = "9daf27e0566cf0a98f10d13f84160f9ab45d1c915407b5a7d5e06ddc3551c51d";
+const A0_K_IDENTITY = "586055d1636c16c88e18ea4367325e377242a6fdbda53997d83f04e4f75e47b9";
 if (currentIdentity === A0_K_IDENTITY && !legacyContentSource(currentIdentity)) {
   execFileSync(process.execPath, ["scripts/freeze-t51-active-source.mjs"], { stdio: "inherit" });
   execFileSync(process.execPath, ["scripts/generate-t51-post-legacy-registry.mjs"], { stdio: "inherit" });
