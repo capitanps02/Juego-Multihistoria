@@ -171,10 +171,10 @@ const EVT_20_CCH_001 = ambiguousEvent({
       id: "WAIT_THREE_MATCHES",
       label: "Esperar tres jornadas antes de reaccionar",
       intentTags: ["wait", "evidence", "patience"],
-      primaryMessage: "Esperar te da evidencia deportiva antes de discutir el plan.",
-      secondaryMessage: "La paciencia evita una confrontación prematura, pero el mercado y la jerarquía siguen moviéndose mientras observas.",
-      primaryEffects: [n("control.career", 4), n("professional.environmentStability", 2)],
-      secondaryEffects: [n("control.career", 1), n("professional.roleSecurity", -2)]
+      primaryMessage: "Aplazas la conversación. Desde ahora solo cuentan los partidos oficiales posteriores de este club; todavía no hay una conclusión sobre la promesa.",
+      secondaryMessage: "Te comprometes a observar tres jornadas reales antes de reaccionar. El coste deportivo no se inventa ahora: lo decidirán esos partidos y el contexto que exista entonces.",
+      primaryEffects: [n("control.career", 1)],
+      secondaryEffects: [n("professional.environmentStability", -1)]
     },
     {
       id: "ASK_DIRECTOR",
