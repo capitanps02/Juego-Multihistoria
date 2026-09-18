@@ -1,7 +1,8 @@
 # QA T5 — regresión y auditoría independiente
 
 Rama: `qa/t5-regression`  
-Re-ground actual: `main@5f4d14bca4d696cfafadb58b64034c7cd40cc147`  
+Último main verificado: `49f16b21c8f68f1439901437dcf16e1384966de2`  
+QA branch pendiente de re-ground sobre ese commit  
 Owner: QA independiente
 
 QA intenta falsar invariantes. No reescribe canon ni corrige silenciosamente runtime de otros workstreams. Los defectos runtime se convierten en reproducciones, issues y handoffs acotados.
@@ -33,7 +34,7 @@ QA comparó las dos implementaciones abiertas y seleccionó PR #214:
 
 PR #218 se cerró porque era solapada y menos estricta para un convocado no titular que no figurase en banquillo.
 
-Repository Integrity de #214: run `35330315528` — **SUCCESS**. #212 seguirá OPEN hasta integración real y regresión post-merge.
+Repository Integrity de #214: run `35330315528` — **SUCCESS sobre el base anterior**. `main` avanzó a `49f16b21...`; #214 está 1 behind y necesita re-ground + nuevo exact-head RI antes de integración. #212 sigue OPEN.
 
 ## T5-QA-028 evidence y contrato
 
