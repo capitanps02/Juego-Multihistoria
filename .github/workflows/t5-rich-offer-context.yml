@@ -1,0 +1,32 @@
+name: T5 Rich Offer Context
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  rich-offer-context:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Rich offer authority regressions
+        run: node --test scripts/test-t5-rich-offer-context.mjs
+
+      - name: Existing market authority regressions
+        run: node --test scripts/test-t5-market-contract-authority.mjs
