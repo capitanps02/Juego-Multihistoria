@@ -1,3 +1,4 @@
+import './test-t5-offer-context-known-bug.mjs';
 import './test-t5-captain-gap-known-bug.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
