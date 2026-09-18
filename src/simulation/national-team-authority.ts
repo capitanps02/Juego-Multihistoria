@@ -121,3 +121,53 @@ export function latestConcreteNationalTeamCallup(state: GameState): ConcreteNati
   );
   return valid.length ? valid[valid.length - 1]! : null;
 }
+
+
+export interface NationalTournamentSelection {
+  schemaVersion: 1;
+  selectionId: string;
+  date: string;
+  runtimeDay: number;
+  phase: "preselection" | "final_squad";
+  squadSize: 30 | 26;
+}
+
+/**
+ * Explicit tournament selection writer. Callers must provide the actual phase;
+ * a tournament-cycle flag alone can never create squad membership.
+ */
+export function recordNationalTournamentSelectionInPlace(
+  state: GameState,
+  phase: "preselection" | "final_squad"
+): NationalTournamentSelection | null {
+  if (state.flags.NATIONAL_RETIRED === true || state.flags.NATIONAL_TOURNAMENT_CYCLE !== true) return null;
+  const callup = latestConcreteNationalTeamCallup(state);
+  if (!callup) return null;
+  const world = state.world as Record<string, unknown>;
+  const rows = Array.isArray(world.nationalTournamentSelections)
+    ? world.nationalTournamentSelections as NationalTournamentSelection[]
+    : [];
+  const squadSize = phase === "preselection" ? 30 : 26;
+  const selectionId = `NT_SELECTION:${phase}:${state.runtime.day}:${state.date}`;
+  const existing = rows.find(row => row.selectionId === selectionId);
+  if (existing) return existing;
+  if (phase === "final_squad" && !rows.some(row => row.phase === "preselection")) return null;
+  const row: NationalTournamentSelection = {
+    schemaVersion: 1, selectionId, date: state.date, runtimeDay: state.runtime.day, phase, squadSize
+  };
+  world.nationalTournamentSelections = [...rows, row];
+  return row;
+}
+
+export function latestNationalTournamentSelection(state: GameState): NationalTournamentSelection | null {
+  const rows = (state.world as Record<string, unknown>).nationalTournamentSelections;
+  if (!Array.isArray(rows)) return null;
+  const valid = rows.filter((row): row is NationalTournamentSelection =>
+    !!row && typeof row === "object" &&
+    (row as NationalTournamentSelection).schemaVersion === 1 &&
+    ((row as NationalTournamentSelection).phase === "preselection" || (row as NationalTournamentSelection).phase === "final_squad") &&
+    (((row as NationalTournamentSelection).phase === "preselection" && (row as NationalTournamentSelection).squadSize === 30) ||
+     ((row as NationalTournamentSelection).phase === "final_squad" && (row as NationalTournamentSelection).squadSize === 26))
+  );
+  return valid.length ? valid[valid.length - 1]! : null;
+}
