@@ -9,6 +9,8 @@ import { proposeCareerChange } from '../dist/simulation/offers.js';
 import { PREPARED_SHIFTED_CANON_30_34_A } from '../dist/content/events/30_34/canonical-shifted-prepared-a.js';
 import { PREPARED_SHIFTED_CANON_30_34_B } from '../dist/content/events/30_34/canonical-shifted-prepared-b.js';
 import { PREPARED_SHIFTED_CANON_30_34_C } from '../dist/content/events/30_34/canonical-shifted-prepared-c.js';
+import { BLOCKED_CANONICAL_ADDITIONS_30_34 } from '../dist/content/events/30_34/canonical-missing-principals.js';
+import { SEED_CATALOG_30_34 } from '../dist/catalog/seeds.js';
 
 const event = EVENTS.find(row => row.id === 'EVT_30_CCH_001');
 
@@ -221,4 +223,39 @@ test('prepared shifted batch C completes owner-side content for the remaining fo
   const bosman=PREPARED_SHIFTED_CANON_30_34_C.find(event=>event.id==='EVT_32_BOSMAN_001');
   assert.equal(successor.outcomes.some(outcome=>(outcome.seedTransitions??[]).some(t=>t.seedId==='SEED_SUCCESSION_DECISION')),false);
   assert.equal(bosman.outcomes.some(outcome=>(outcome.seedTransitions??[]).some(t=>t.seedId==='SEED_PARALLEL_NEGOTIATION')),false);
+});
+
+
+test('all 52 owner seeds have a concrete writer in active or owner-complete prepared 30-34 content', () => {
+  const sources=[
+    ...EVENTS.filter(event=>event.phase==='30_34'),
+    ...BLOCKED_CANONICAL_ADDITIONS_30_34,
+    ...PREPARED_SHIFTED_CANON_30_34_A,
+    ...PREPARED_SHIFTED_CANON_30_34_B,
+    ...PREPARED_SHIFTED_CANON_30_34_C
+  ];
+  const producing=new Set(['create','activate','intensify','transform']);
+  const writers=new Map(SEED_CATALOG_30_34.map(seed=>[seed.id,new Set()]));
+  for(const event of sources){
+    for(const outcome of event.outcomes??[]){
+      for(const transition of outcome.seedTransitions??[]){
+        if(producing.has(transition.action) && writers.has(transition.seedId)){
+          writers.get(transition.seedId).add(event.id);
+        }
+      }
+    }
+  }
+  assert.equal(SEED_CATALOG_30_34.length,52);
+  const missing=[...writers.entries()].filter(([,eventIds])=>eventIds.size===0).map(([seedId])=>seedId);
+  assert.deepEqual(missing,[]);
+});
+
+test('prepared seed-trigger prerequisites are explicit and do not widen their scenes', () => {
+  const nano=PREPARED_SHIFTED_CANON_30_34_A.find(event=>event.id==='EVT_30_NANO_001');
+  const family=PREPARED_SHIFTED_CANON_30_34_A.find(event=>event.id==='EVT_31_FAM_001');
+  const load=PREPARED_SHIFTED_CANON_30_34_C.find(event=>event.id==='EVT_32_LOAD_001');
+  assert.deepEqual(nano.gates,[{path:'flags.HAS_SEED_NANO_SHADOW',op:'eq',value:true}]);
+  assert.deepEqual(family.gates,[{path:'flags.HAS_SEED_FAMILY_ANCHOR',op:'eq',value:true}]);
+  assert.deepEqual(load.gates,[{path:'flags.HAS_SEED_MATCH_SELECTIVITY',op:'eq',value:true}]);
+  assert.equal(EVENTS.some(event=>['EVT_30_NANO_001','EVT_31_FAM_001','EVT_32_LOAD_001'].includes(event.id)),false);
 });
