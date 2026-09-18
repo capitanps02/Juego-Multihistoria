@@ -1,4 +1,5 @@
 import type { NpcKnowledgeSource, NpcMemoryClass } from "../core/npc-knowledge.js";
+import { A5_POST_J_NPC_KNOWLEDGE_RULES } from "./npc-knowledge-rules-a5-post-j.js";
 import { NPC_EVENT_KNOWLEDGE_RULES_18_23 } from "./npc-knowledge-rules-18-23.js";
 
 export type NpcKnowledgeTargetSlot = "captain" | "star" | "activeAgent" | "currentClubInstitutional";
@@ -207,6 +208,7 @@ export const NPC_EVENT_KNOWLEDGE_RULES: NpcEventKnowledgeRule[] = [
     memory: "strong",
     relationshipMemory: true
   },
+  ...A5_POST_J_NPC_KNOWLEDGE_RULES,
   ...NPC_EVENT_KNOWLEDGE_RULES_18_23
 ];
 
