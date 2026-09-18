@@ -1,4 +1,4 @@
-name: QA T5 finite blocker matrix
+name: QA T5 finite certification matrix
 
 on:
   push:
@@ -33,3 +33,42 @@ jobs:
       - run: npm run build
       - name: Directed T5 regression
         run: node --test "${{ matrix.test }}"
+
+  saves-migrations:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Save + migration finite gate
+        run: npm run qa:t5:saves
+
+  cross-system:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Cross-system invariant probes
+        run: npm run qa:t5:integration
+
+  determinism-long-career:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Determinism and RNG isolation
+        run: node --test --test-name-pattern="T5 determinism" scripts/test-t5-regression.mjs
+      - name: Stratified finite long-career matrix
+        run: node scripts/qa-t5-sim.mjs
