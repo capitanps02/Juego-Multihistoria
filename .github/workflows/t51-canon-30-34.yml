@@ -45,5 +45,6 @@ jobs:
           scripts/test-t51-30-34-downstream-seed-handoff.mjs
           scripts/test-t51-30-34-seed-consumption.mjs
           scripts/test-t51-30-34-conditional-seed-reads.mjs
+          scripts/test-t51-30-34-conditionals.mjs
           scripts/test-t51-30-34-readiness.mjs
           scripts/test-t51-30-34-migration-handoff.mjs
