@@ -4,7 +4,7 @@ import { CONDITIONAL_EVENTS_30_34 } from "./conditional-events.js";
 import { CANONICAL_REIMPLEMENTATIONS_30_34 } from "./canonical-reimplementations.js";
 import { CANONICAL_REIMPLEMENTATIONS_31B } from "./canonical-reimplementations-31b.js";
 import { CANONICAL_REIMPLEMENTATIONS_32A } from "./canonical-reimplementations-32a.js";
-import { CANONICAL_REIMPLEMENTATIONS_33A } from "./canonical-reimplementations-33a.js";
+import { CANONICAL_REIMPLEMENTATIONS_33A } from "./canonical-reimplementations-33a.js";\nimport { CANONICAL_ADDITIONS_30_34 } from "./canonical-missing-principals.js";
 
 const reimplementedIds=new Set([
   "EVT_30_CON_001","EVT_30_BODY_001","EVT_30_MKT_001","EVT_30_NAT_001",
@@ -176,4 +176,4 @@ const principal:EventDefinition[]=PRINCIPAL_EVENTS_30_34.map(original=>{
   return {...event,canonStatus:"technical_adaptation",tags:[...new Set(tags)]};
 });
 
-export const EVENTS_30_34=[...principal,...CONDITIONAL_EVENTS_30_34];
+export const EVENTS_30_34=[...principal,...CANONICAL_ADDITIONS_30_34,...CONDITIONAL_EVENTS_30_34];
