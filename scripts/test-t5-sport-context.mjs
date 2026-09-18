@@ -1,10 +1,12 @@
 import './test-t5-match-model.mjs';
 import './test-t5-competition-context.mjs';
+import './test-t5-penalty-context.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createInitialState } from '../dist/content/initial-state.js';
 import { narrativeConditionRoot } from '../dist/simulation/club-contract-intent.js';
-import { getCurrentMatchContext, getSportContext } from '../dist/simulation/sport-context.js';
+import { recordOfficialMatchInPlace } from '../dist/simulation/match-model.js';
+import { getCurrentMatchContext, getLastPlayerAppearanceContext, getSportContext } from '../dist/simulation/sport-context.js';
 
 function rng(state) { return structuredClone(state.rngState); }
 
@@ -44,6 +46,7 @@ test('sport context/2 aggregate proxies cannot fabricate persisted match or squa
   assert.equal(context.availability.firstMatchSquadCall, 'unavailable');
   assert.equal(match.status, 'no_current_match');
   assert.equal(match.playerAppeared, null);
+  assert.equal(match.penaltyDecisionContext, false);
 });
 
 test('sport context/3 registration club is the sporting club and fixture authority for transfers and loans', () => {
@@ -70,6 +73,7 @@ test('sport context/4 legacy debut flag alone never fabricates a current match o
   assert.equal(match.status, 'no_current_match');
   assert.equal(match.playerAppeared, null);
   assert.equal(match.result, null);
+  assert.equal(match.penaltyDecisionContext, false);
 });
 
 test('sport context/5 narrative condition root exposes calendar/match facts without persistence or RNG', () => {
@@ -80,6 +84,25 @@ test('sport context/5 narrative condition root exposes calendar/match facts with
   assert.ok(root.facts.sport.nextFixture);
   assert.equal(root.facts.match.status, 'no_current_match');
   assert.equal(root.facts.match.playerStarted, null);
+  assert.equal(root.facts.match.penaltyDecisionContext, false);
   assert.equal(Object.prototype.hasOwnProperty.call(state, 'facts'), false);
   assert.deepEqual(state, before);
+});
+
+
+test('sport context/6 last-player-appearance tri-state survives cumulative A4 authority', () => {
+  const appearedState = createInitialState(8790);
+  appearedState.date = '2026-08-05';
+  appearedState.runtime.day = 35;
+  appearedState.runtime.seasonDay = 35;
+  const row = recordOfficialMatchInPlace(appearedState, { appeared: true, debutOccurred: false, injuryUnavailable: false });
+  assert.ok(row);
+  assert.equal(getLastPlayerAppearanceContext(appearedState).status, 'authoritative');
+  assert.equal(getLastPlayerAppearanceContext(appearedState).match?.id, row.id);
+
+  const historical = createInitialState(8791);
+  delete historical.world.sportMatchModel;
+  const unavailable = getLastPlayerAppearanceContext(historical);
+  assert.equal(unavailable.status, 'historical_match_store_not_initialized');
+  assert.equal(unavailable.match, null);
 });
