@@ -7,7 +7,7 @@ export interface StagedCanonicalConditional {
   canonicalMeaning: string;
 }
 
-const SPECS=[
+const ALL_SPECS=[
   {
     "id": "CEVT_34_LATE_BALLON_WIN",
     "trigger": "Pico tardío + premio plausible",
@@ -681,8 +681,10 @@ const SPECS=[
     ]
   }
 ] as const;
+const MEMORY_COMPLETED_IDS=new Set(["CEVT_34_FAMILY_CLUB_BUYIN","CEVT_34_CLARA_EXCLUSIVE","CEVT_35_PUBLIC_FEUD_RETURNS"]);
+const SPECS=ALL_SPECS.filter(spec=>!MEMORY_COMPLETED_IDS.has(spec.id));
 
-function toConditional(spec:typeof SPECS[number]):EventDefinition{
+function toConditional(spec:typeof ALL_SPECS[number]):EventDefinition{
   const choices=spec.choices.map(([id,label])=>({
     id,label,intentTags:["conditional","canonical_34plus"],
     outcomeIds:[`${spec.id}__${id}__PRIMARY`]
