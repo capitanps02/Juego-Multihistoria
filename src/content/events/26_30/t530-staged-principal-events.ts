@@ -42,7 +42,7 @@ const MED26=ambiguousEvent({
 });
 
 const RIV26=ambiguousEvent({
- id:"EVT_26_RIV_001",ageWindow:[26,26],phase:"26_30",family:"rivalry",title:"Adrián en el otro vestuario",
+ id:"EVT_26_RIV_001",ageWindow:[26,26],phase:"26_30",family:"sport",title:"Adrián en el otro vestuario",
  body:"Adrián Costa llega al mismo escenario de élite o a un rival directo. La prensa vende el reencuentro como «la comparación que empezó en Valdoria» aunque vuestras carreras ya sean distintas.",
  visible:["Conoces su club, forma y declaraciones públicas."],uncertain:["No sabes cuánto le importa realmente la comparación ni qué dijo en privado."],
  choices:[
