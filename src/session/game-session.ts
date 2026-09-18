@@ -462,6 +462,7 @@ export class GameSession {
 
   #advance(next: SessionSnapshot, maxDays: number): void {
     let days = 0;
+    const pendingOfferAtEntry = next.state.market?.pending?.id ?? null;
     if (next.needsWorldAdvance) {
       this.#worldDay(next);
       next.needsWorldAdvance = false;
@@ -475,7 +476,13 @@ export class GameSession {
           this.#presentEvent(next, bridge.id);
           return;
         }
-        if (!next.state.market.pending.validThrough || days >= maxDays) return;
+        // A deadline offer that was already on-screen when the player explicitly
+        // continued may advance toward expiry. A new offer produced during this
+        // advance must yield immediately so interactive and headless policies see
+        // the same formal proposal before another world day is simulated.
+        if (!next.state.market.pending.validThrough
+          || next.state.market.pending.id !== pendingOfferAtEntry
+          || days >= maxDays) return;
         this.#worldDay(next);
         days++;
         continue;
