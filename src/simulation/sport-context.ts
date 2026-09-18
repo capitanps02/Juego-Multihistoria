@@ -1,4 +1,5 @@
 import type { GameState } from "../core/types.js";
+import { hasActiveClubEmployment } from "./employment.js";
 import {
   currentOfficialMatch,
   getSportMatchModelStore,
@@ -47,9 +48,9 @@ export interface SportContextAvailability {
 export interface SportContext {
   currentSeason: string;
   /** Registration club is the sporting authority during transfers and loans. */
-  sportingClub: string;
-  ownerClub: string;
-  leagueTier: number;
+  sportingClub: string | null;
+  ownerClub: string | null;
+  leagueTier: number | null;
   careerAppearances: number;
   /** Legacy coarse fact retained for compatibility; prefer match-model milestones for new content. */
   officialDebutRecorded: boolean;
@@ -131,11 +132,12 @@ function hoursUntilFixture(state: GameState, fixture: ScheduledFixture | null): 
  * No RNG is consumed and narrative flags/roleScore are never used here to fabricate facts.
  */
 export function getSportContext(state: GameState): SportContext {
-  const store = getSportMatchModelStore(state);
-  const current = currentOfficialMatch(state);
-  const next = nextScheduledFixture(state);
-  const previous = previousOfficialMatch(state);
-  const remaining = remainingLeagueFixtures(state);
+  const employed = hasActiveClubEmployment(state);
+  const store = employed ? getSportMatchModelStore(state) : null;
+  const current = employed ? currentOfficialMatch(state) : null;
+  const next = employed ? nextScheduledFixture(state) : null;
+  const previous = employed ? previousOfficialMatch(state) : null;
+  const remaining = employed ? remainingLeagueFixtures(state) : 0;
   const objective = store?.objective && store.objective.season === state.season && store.objective.club === state.professional.registrationClub
     ? store.objective
     : null;
@@ -143,9 +145,9 @@ export function getSportContext(state: GameState): SportContext {
 
   return {
     currentSeason: state.season,
-    sportingClub: state.professional.registrationClub,
-    ownerClub: state.professional.ownerClub,
-    leagueTier: finiteNumber(state.professional.leagueTier, state.tier),
+    sportingClub: employed ? state.professional.registrationClub : null,
+    ownerClub: employed ? state.professional.ownerClub : null,
+    leagueTier: employed ? finiteNumber(state.professional.leagueTier, state.tier) : null,
     careerAppearances: finiteNumber(state.sport.appearances),
     officialDebutRecorded: state.flags.OFFICIAL_DEBUT === true,
     currentCompetition: current?.competition ?? next?.competition ?? null,
@@ -153,8 +155,8 @@ export function getSportContext(state: GameState): SportContext {
     previousFixture: previous,
     hoursToNextFixture: hoursUntilFixture(state, next),
     isMatchDay: current !== null,
-    isTrainingWindow: isTrainingDay(state),
-    nextTrainingDate: nextScheduledTrainingDate(state),
+    isTrainingWindow: employed ? isTrainingDay(state) : false,
+    nextTrainingDate: employed ? nextScheduledTrainingDate(state) : null,
     remainingOfficialMatches: remaining,
     remainingLeagueMatches: remaining,
     seasonObjectiveStatus: objective?.status ?? null,
@@ -168,8 +170,8 @@ export function getSportContext(state: GameState): SportContext {
     firstGoal: null,
     availability: {
       currentSeason: known(),
-      sportingClub: known(),
-      ownerClub: known(),
+      sportingClub: employed ? known() : unavailable(),
+      ownerClub: employed ? known() : unavailable(),
       careerAppearances: known(),
       officialDebutRecorded: known(),
       currentCompetition: known(),
@@ -214,7 +216,7 @@ export function getLastPlayerAppearanceContext(state: GameState): LastPlayerAppe
 
 /** Current-match projection over the persisted match row for today's football cycle. */
 export function getCurrentMatchContext(state: GameState): CurrentMatchContext {
-  const match = currentOfficialMatch(state);
+  const match = hasActiveClubEmployment(state) ? currentOfficialMatch(state) : null;
   if (!match) {
     return {
       status: "no_current_match",

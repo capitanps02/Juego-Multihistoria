@@ -395,6 +395,8 @@ export interface GameState {
   ageMilestones?: import("../simulation/age-milestones.js").AgeMilestone[];
   /** Absent in historical schema-8 saves; initialized without signing anything. */
   market?: import("../simulation/offers.js").MarketState;
+  /** Explicit employment truth; historical schema-8 saves may omit it. */
+  employment?: import("../simulation/employment.js").EmploymentState;
   schemaVersion: number;
   date: string;
   age: number;

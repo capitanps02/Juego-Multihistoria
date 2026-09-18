@@ -6,8 +6,13 @@ on:
     paths:
       - 'src/simulation/offers.ts'
       - 'src/simulation/club-contract-intent.ts'
+      - 'src/simulation/employment.ts'
+      - 'src/simulation/veteran-market.ts'
+      - 'src/simulation/late-career-engine.ts'
       - 'scripts/test-offers.mjs'
       - 'scripts/test-t5-market-contract-authority.mjs'
+      - 'scripts/test-t5-contract-expiry-authority.mjs'
+      - 'scripts/test-t5-a3-final-market.mjs'
       - 'scripts/audit-market-direct-mutations.mjs'
       - 'analysis/CODEX/market-contracts/**'
       - '.github/workflows/t5-market-contract-authority.yml'
@@ -32,5 +37,7 @@ jobs:
         run: node scripts/audit-market-direct-mutations.mjs
       - name: Focused market and loan invariants
         run: node --test scripts/test-offers.mjs scripts/test-t5-market-contract-authority.mjs
+      - name: Final A3 employment lifecycle veteran and Bosman authority
+        run: node --test scripts/test-t5-contract-expiry-authority.mjs scripts/test-t5-a3-final-market.mjs
       - name: Offer bridge and save regressions
         run: node --test scripts/test-t51-offer-bridge.mjs scripts/test-t51-offer-bridge-provenance.mjs scripts/test-saves.mjs
