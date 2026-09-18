@@ -1727,7 +1727,7 @@ const ALL_SPECS = [
     "externalStatus": "blocked_shared_authority"
   }
 ] as const;
-const PROMOTED_IDS=new Set(["EVT_34_BRIDGE_001","EVT_34_PAY_001","EVT_34_HOME_001","EVT_34_AGT_001","EVT_34_CON_001","EVT_34_MAR_001","EVT_35_MKT_001","EVT_35_CON_001"]);
+const PROMOTED_IDS=new Set(["EVT_34_BRIDGE_001","EVT_34_PAY_001","EVT_34_HOME_001","EVT_34_AGT_001","EVT_34_CON_001","EVT_34_MAR_001","EVT_35_MKT_001","EVT_35_CON_001","EVT_35_FAREWELL_001","EVT_35_AGT_001","EVT_35_JAN_001","EVT_35_HOME_001","EVT_36_CON_001","EVT_36_LOWER_001","EVT_37_SHORT_001","EVT_37_HOME_001","EVT_38_RICH_001","EVT_38_MARKET_001"]);
 const SPECS=ALL_SPECS.filter(spec=>!PROMOTED_IDS.has(spec.id));
 
 function seedTransitions(seedIds: readonly string[], choiceId: string): SeedTransition[] {
