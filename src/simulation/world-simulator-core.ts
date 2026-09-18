@@ -115,7 +115,22 @@ function updateContextFlags(state: GameState, rng: DeterministicRng): void {
   else state.world.marketWindowOpen = false;
 }
 function footballWeek(state: GameState): void {
-  if (currentEmploymentClub(state) === null) return;
+  if (currentEmploymentClub(state) === null) {
+    const month = Number(state.date.slice(5, 7));
+    state.world.marketWindowOpen = [12, 1].includes(month);
+    const injuryWeeks = num(state.world.injuryWeeksRemaining, 0);
+    if (injuryWeeks > 0) {
+      const remaining = injuryWeeks - 1;
+      state.world.injuryWeeksRemaining = remaining;
+      state.flags.RECOVERING_INJURY = remaining > 0;
+      if (remaining <= 0) {
+        state.flags.LONG_INJURY = false;
+        state.body.acuteInjury = false;
+        state.body.risk = Math.max(12, num(state.body.risk) - 12);
+      }
+    }
+    return;
+  }
   const rng = new DeterministicRng(state.rngState.football);
   const form = clamp(num(state.sport.form, 50) * 0.82 + 50 * 0.18 + (rng.next() - 0.5) * 11);
   const trust = state.relationships.find(r => r.npcId === "NPC_CCH_01")?.trust ?? 45;
@@ -213,19 +228,23 @@ function professionalWeek(state: GameState, rng: DeterministicRng): void {
   const month = Number(state.date.slice(5, 7));
   const employed = currentEmploymentClub(state) !== null;
 
-  const roleTarget=clamp(role + (form-50)*0.22 + (p.environmentStability-50)*0.08);
-  p.roleSecurity = clamp(p.roleSecurity*0.93 + roleTarget*0.07 + (rng.next()-0.5)*2.1);
-  const lockerTarget=clamp(12 + role*0.58 + num(state.reputation.prestige,0)*0.15);
-  p.lockerPower = clamp(p.lockerPower*0.975 + lockerTarget*0.025 + (rng.next()-0.5)*1.2);
+  if (employed) {
+    const roleTarget=clamp(role + (form-50)*0.22 + (p.environmentStability-50)*0.08);
+    p.roleSecurity = clamp(p.roleSecurity*0.93 + roleTarget*0.07 + (rng.next()-0.5)*2.1);
+    const lockerTarget=clamp(12 + role*0.58 + num(state.reputation.prestige,0)*0.15);
+    p.lockerPower = clamp(p.lockerPower*0.975 + lockerTarget*0.025 + (rng.next()-0.5)*1.2);
+  }
   const monthsNow=num(state.contract.monthsRemaining,0);
   const contractTarget=clamp(18 + market*0.62 + (monthsNow<=18?12:0) + (state.flags.CONTRACT_DISPUTE?8:0));
   p.contractPower = clamp(p.contractPower*0.96 + contractTarget*0.04 + (rng.next()-0.5)*1.2);
-  p.moneyComfort = clamp(p.moneyComfort + Math.max(0, num(state.contract.salaryMonthly, 0) - 2500) / 85000);
+  if (employed) p.moneyComfort = clamp(p.moneyComfort + Math.max(0, num(state.contract.salaryMonthly, 0) - 2500) / 85000);
   p.nationalHeat = clamp(p.nationalHeat * 0.965 + media * 0.0175 + market * 0.0175 + (rng.next() - 0.5) * 1.5);
-  const trustTarget=clamp(34+p.roleSecurity*0.42+p.environmentStability*0.16-(state.flags.CONTRACT_DISPUTE?15:0));
-  p.institutionalTrust = clamp(p.institutionalTrust*0.96 + trustTarget*0.04 + (rng.next()-0.5)*1.0);
+  if (employed) {
+    const trustTarget=clamp(34+p.roleSecurity*0.42+p.environmentStability*0.16-(state.flags.CONTRACT_DISPUTE?15:0));
+    p.institutionalTrust = clamp(p.institutionalTrust*0.96 + trustTarget*0.04 + (rng.next()-0.5)*1.0);
+  }
 
-  if (p.route === "abroad") {
+  if (employed && p.route === "abroad") {
     p.foreignAdaptation = clamp(p.foreignAdaptation + 1.4 + (rng.next() - 0.5) * 3);
     p.environmentStability = clamp(p.environmentStability + (p.foreignAdaptation - 45) / 70 + (rng.next() - 0.5) * 2);
     if (p.foreignAdaptation >= 55) state.flags.FOREIGN_STABLE = true;
@@ -321,17 +340,19 @@ function professionalWeek(state: GameState, rng: DeterministicRng): void {
   }
 
   });
-  if (p.clubPrestigeTier >= 5) state.reputation.prestige = clamp(Math.max(num(state.reputation.prestige), 72 + p.clubPrestigeScore / 5));
-  else state.reputation.prestige = clamp(num(state.reputation.prestige) * 0.985 + p.clubPrestigeScore * 0.015);
+  if (employed) {
+    if (p.clubPrestigeTier >= 5) state.reputation.prestige = clamp(Math.max(num(state.reputation.prestige), 72 + p.clubPrestigeScore / 5));
+    else state.reputation.prestige = clamp(num(state.reputation.prestige) * 0.985 + p.clubPrestigeScore * 0.015);
+  }
   if (media >= 64 && media > market + 8) state.flags.MEDIA_PROFILE = true;
-  if (p.nationalHeat >= 45 || (p.leagueTier === 1 && role >= 62)) state.flags.NATIONAL_RADAR = true;
+  if (p.nationalHeat >= 45 || (employed && p.leagueTier === 1 && role >= 62)) state.flags.NATIONAL_RADAR = true;
 
   if (state.age >= 23 && p.initializedAt23) {
     p.bodyLoad = clamp(p.bodyLoad * 0.94 + num(state.body.fatigue,15) * 0.035 + num(state.body.risk,18) * 0.025 + (rng.next()-0.52)*2.2);
     p.commercialPower = clamp(p.commercialPower * 0.97 + media * 0.018 + num(state.reputation.prestige,0) * 0.012 + (rng.next()-0.5)*1.3);
     p.publicPolarization = clamp(p.publicPolarization * 0.96 + Math.max(0,media-market*0.55)*0.025 + (rng.next()-0.5)*1.5);
     const nationalRetired = state.flags.NATIONAL_RETIRED === true;
-    const nationalGate = !nationalRetired && p.nationalHeat >= 38 && (p.leagueTier === 1 || role >= 67) && form >= 48;
+    const nationalGate = !nationalRetired && employed && p.nationalHeat >= 38 && (p.leagueTier === 1 || role >= 67) && form >= 48;
     state.flags.NATIONAL_GATE_OPEN = nationalGate;
     if (!nationalRetired && !state.flags.NATIONAL_CALLED && nationalGate && rng.next() < 0.028) {
       state.flags.NATIONAL_CALLED=true;
