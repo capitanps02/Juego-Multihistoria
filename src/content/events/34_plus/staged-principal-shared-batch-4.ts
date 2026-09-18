@@ -1,5 +1,6 @@
 import type { EventDefinition, EventFamily, GameState } from "../../../core/types.js";
 import { ambiguousEvent, n, seedCreate } from "../18_20/helpers.js";
+import { getEligibleCareerOffers } from "../../../simulation/offers.js";
 
 type Delta=readonly [string,number];
 type C={id:string;label:string;stance:string;note:string;p:readonly Delta[];s:readonly Delta[]};
@@ -74,5 +75,7 @@ const specs:S[]=[
 export const STAGED_SHARED_BATCH_4:EventDefinition[]=specs.map(build);
 export function isStagedSharedBatch4Eligible(state:GameState,id:string,facts:boolean):boolean{
  const e=STAGED_SHARED_BATCH_4.find(x=>x.id===id);
- return Boolean(e&&facts&&state.retirement.status==="playing"&&state.age>=e.ageWindow[0]);
+ if(!e||!facts||state.retirement.status!=="playing"||state.age<e.ageWindow[0]) return false;
+ if(id==="EVT_35_DUAL_001") return getEligibleCareerOffers(state).length>0;
+ return true;
 }
