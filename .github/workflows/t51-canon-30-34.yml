@@ -35,6 +35,7 @@ jobs:
         run: >-
           node --test
           scripts/test-t51-30-34-trigger.mjs
+          scripts/test-t51-30-34-missing-principals.mjs
           scripts/test-t51-30-34-career-authority.mjs
           scripts/test-t51-30-34-authority-gaps.mjs
           scripts/test-t51-30-34-sport-authority.mjs
