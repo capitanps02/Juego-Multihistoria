@@ -609,6 +609,534 @@
         "src/content/events/18_20/principal-additions.ts#EVT_19_BODY_001",
         "src/content/events/18_20/t51-seed-consumer-repairs.ts#CEVT_19_INJ_01"
       ]
+    },
+    {
+      "seedId": "SEED_MENA_EARLY_READ",
+      "owner": "t51/canon-18-23",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_MENA_EARLY_READ en ageWindow [18,30] y el runtime T5.2 expira instancias vivas al superar 30, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_MENA_EARLY_READ",
+        "analysis/CODEX/canon-18-23/A5_FINAL_HANDOFF_V2.md#principios-de-integración",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_BRUNO_FAVOR",
+      "owner": "t51/canon-18-23",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_BRUNO_FAVOR en ageWindow [18,32] y el runtime T5.2 expira instancias vivas al superar 32, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_BRUNO_FAVOR",
+        "analysis/CODEX/canon-18-23/A5_FINAL_HANDOFF_V2.md#principios-de-integración",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_FIRST_AGENT",
+      "owner": "t51/canon-18-23",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_FIRST_AGENT en ageWindow [18,35] y el runtime T5.2 expira instancias vivas al superar 35, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_FIRST_AGENT",
+        "analysis/CODEX/canon-18-23/A5_FINAL_HANDOFF_V2.md#principios-de-integración",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_FIRST_LEAK",
+      "owner": "t51/canon-18-23",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_FIRST_LEAK en ageWindow [18,30] y el runtime T5.2 expira instancias vivas al superar 30, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_FIRST_LEAK",
+        "analysis/CODEX/canon-18-23/A5_FINAL_HANDOFF_V2.md#principios-de-integración",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_DANI_NORMALITY",
+      "owner": "t51/canon-18-23",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_DANI_NORMALITY en ageWindow [18,30] y el runtime T5.2 expira instancias vivas al superar 30, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_DANI_NORMALITY",
+        "analysis/CODEX/canon-18-23/A5_FINAL_HANDOFF_V2.md#principios-de-integración",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_COACH_PUBLIC",
+      "owner": "t51/canon-18-23",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_COACH_PUBLIC en ageWindow [18,32] y el runtime T5.2 expira instancias vivas al superar 32, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_COACH_PUBLIC",
+        "analysis/CODEX/canon-18-23/A5_FINAL_HANDOFF_V2.md#principios-de-integración",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_NANO_SHADOW",
+      "owner": "t51/canon-18-23",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_NANO_SHADOW en ageWindow [18,35] y el runtime T5.2 expira instancias vivas al superar 35, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_NANO_SHADOW",
+        "analysis/CODEX/canon-18-23/A5_FINAL_HANDOFF_V2.md#principios-de-integración",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_AGENT_OMISSION",
+      "owner": "t51/canon-18-23",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_AGENT_OMISSION en ageWindow [19,35] y el runtime T5.2 expira instancias vivas al superar 35, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_AGENT_OMISSION",
+        "analysis/CODEX/canon-18-23/A5_FINAL_HANDOFF_V2.md#principios-de-integración",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_AGENT_POWER",
+      "owner": "t51/canon-18-23",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_AGENT_POWER en ageWindow [20,35] y el runtime T5.2 expira instancias vivas al superar 35, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_AGENT_POWER",
+        "analysis/CODEX/canon-18-23/A5_FINAL_HANDOFF_V2.md#principios-de-integración",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_FOREIGN_ADAPT",
+      "owner": "t51/canon-18-23",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_FOREIGN_ADAPT en ageWindow [20,32] y el runtime T5.2 expira instancias vivas al superar 32, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_FOREIGN_ADAPT",
+        "analysis/CODEX/canon-18-23/A5_FINAL_HANDOFF_V2.md#principios-de-integración",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_MEDICAL_DISCLOSURE",
+      "owner": "t51/canon-18-23",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_MEDICAL_DISCLOSURE en ageWindow [20,35] y el runtime T5.2 expira instancias vivas al superar 35, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_MEDICAL_DISCLOSURE",
+        "analysis/CODEX/canon-18-23/A5_FINAL_HANDOFF_V2.md#principios-de-integración",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_TEAMMATE_COVER",
+      "owner": "t51/canon-18-23",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_TEAMMATE_COVER en ageWindow [20,34] y el runtime T5.2 expira instancias vivas al superar 34, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_TEAMMATE_COVER",
+        "analysis/CODEX/canon-18-23/A5_FINAL_HANDOFF_V2.md#principios-de-integración",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_FIRST_CAPTAIN_ROOM",
+      "owner": "t51/canon-18-23",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_FIRST_CAPTAIN_ROOM en ageWindow [21,36] y el runtime T5.2 expira instancias vivas al superar 36, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_FIRST_CAPTAIN_ROOM",
+        "analysis/CODEX/canon-18-23/A5_FINAL_HANDOFF_V2.md#principios-de-integración",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_PUBLIC_CONTRACT",
+      "owner": "t51/canon-18-23",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_PUBLIC_CONTRACT en ageWindow [21,32] y el runtime T5.2 expira instancias vivas al superar 32, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_PUBLIC_CONTRACT",
+        "analysis/CODEX/canon-18-23/A5_FINAL_HANDOFF_V2.md#principios-de-integración",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_SELECTION_SNUB",
+      "owner": "t51/canon-18-23",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_SELECTION_SNUB en ageWindow [21,30] y el runtime T5.2 expira instancias vivas al superar 30, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_SELECTION_SNUB",
+        "analysis/CODEX/canon-18-23/A5_FINAL_HANDOFF_V2.md#principios-de-integración",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_SPONSOR_IMAGE",
+      "owner": "t51/canon-18-23",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_SPONSOR_IMAGE en ageWindow [21,35] y el runtime T5.2 expira instancias vivas al superar 35, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_SPONSOR_IMAGE",
+        "analysis/CODEX/canon-18-23/A5_FINAL_HANDOFF_V2.md#principios-de-integración",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_TACTICAL_SACRIFICE",
+      "owner": "t51/canon-18-23",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_TACTICAL_SACRIFICE en ageWindow [21,34] y el runtime T5.2 expira instancias vivas al superar 34, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_TACTICAL_SACRIFICE",
+        "analysis/CODEX/canon-18-23/A5_FINAL_HANDOFF_V2.md#principios-de-integración",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_DEADLINE_DAY",
+      "owner": "t51/canon-18-23",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_DEADLINE_DAY en ageWindow [22,35] y el runtime T5.2 expira instancias vivas al superar 35, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_DEADLINE_DAY",
+        "analysis/CODEX/canon-18-23/A5_FINAL_HANDOFF_V2.md#principios-de-integración",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_LOCKER_VOTE",
+      "owner": "t51/canon-18-23",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_LOCKER_VOTE en ageWindow [22,36] y el runtime T5.2 expira instancias vivas al superar 36, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_LOCKER_VOTE",
+        "analysis/CODEX/canon-18-23/A5_FINAL_HANDOFF_V2.md#principios-de-integración",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_FIRST_FREE_AGENCY",
+      "owner": "t51/canon-18-23",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_FIRST_FREE_AGENCY en ageWindow [22,35] y el runtime T5.2 expira instancias vivas al superar 35, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_FIRST_FREE_AGENCY",
+        "analysis/CODEX/canon-18-23/A5_FINAL_HANDOFF_V2.md#principios-de-integración",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_CONTRACT_HARDLINE",
+      "owner": "t51/canon-18-23",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_CONTRACT_HARDLINE en ageWindow [18,30] y el runtime T5.2 expira instancias vivas al superar 30, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_CONTRACT_HARDLINE",
+        "analysis/CODEX/canon-18-23/A5_FINAL_HANDOFF_V2.md#principios-de-integración",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_ELITE_ROLE_BARGAIN",
+      "owner": "t51/canon-23-30",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_ELITE_ROLE_BARGAIN en ageWindow [23,30] y el runtime T5.2 expira instancias vivas al superar 30, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_ELITE_ROLE_BARGAIN",
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_CONTRACT_CEILING",
+      "owner": "t51/canon-23-30",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_CONTRACT_CEILING en ageWindow [23,32] y el runtime T5.2 expira instancias vivas al superar 32, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_CONTRACT_CEILING",
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_DIRECT_RECRUIT",
+      "owner": "t51/canon-23-30",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_DIRECT_RECRUIT en ageWindow [23,32] y el runtime T5.2 expira instancias vivas al superar 32, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_DIRECT_RECRUIT",
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_EURO_REGISTRATION",
+      "owner": "t51/canon-23-30",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_EURO_REGISTRATION en ageWindow [23,32] y el runtime T5.2 expira instancias vivas al superar 32, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_EURO_REGISTRATION",
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_CLUB_NATIONAL_CONFLICT",
+      "owner": "t51/canon-23-30",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_CLUB_NATIONAL_CONFLICT en ageWindow [23,32] y el runtime T5.2 expira instancias vivas al superar 32, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_CLUB_NATIONAL_CONFLICT",
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_STAR_COMPETITION",
+      "owner": "t51/canon-23-30",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_STAR_COMPETITION en ageWindow [24,32] y el runtime T5.2 expira instancias vivas al superar 32, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_STAR_COMPETITION",
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_PENALTY_HIERARCHY",
+      "owner": "t51/canon-23-30",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_PENALTY_HIERARCHY en ageWindow [24,34] y el runtime T5.2 expira instancias vivas al superar 34, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_PENALTY_HIERARCHY",
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_AGENT_PROOF",
+      "owner": "t51/canon-23-30",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_AGENT_PROOF en ageWindow [25,34] y el runtime T5.2 expira instancias vivas al superar 34, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_AGENT_PROOF",
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_PEAK_IDENTITY",
+      "owner": "t51/canon-23-30",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_PEAK_IDENTITY en ageWindow [26,34] y el runtime T5.2 expira instancias vivas al superar 34, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_PEAK_IDENTITY",
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_SHADOW_ESCAPE",
+      "owner": "t51/canon-23-30",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_SHADOW_ESCAPE en ageWindow [26,34] y el runtime T5.2 expira instancias vivas al superar 34, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_SHADOW_ESCAPE",
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_PROJECT_FACE",
+      "owner": "t51/canon-23-30",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_PROJECT_FACE en ageWindow [26,36] y el runtime T5.2 expira instancias vivas al superar 36, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_PROJECT_FACE",
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_PEAK_CONTRACT",
+      "owner": "t51/canon-23-30",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_PEAK_CONTRACT en ageWindow [26,36] y el runtime T5.2 expira instancias vivas al superar 36, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_PEAK_CONTRACT",
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_INTERNATIONAL_LOAD",
+      "owner": "t51/canon-23-30",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_INTERNATIONAL_LOAD en ageWindow [26,36] y el runtime T5.2 expira instancias vivas al superar 36, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_INTERNATIONAL_LOAD",
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_BIG_GAME_BENCH",
+      "owner": "t51/canon-23-30",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_BIG_GAME_BENCH en ageWindow [27,36] y el runtime T5.2 expira instancias vivas al superar 36, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_BIG_GAME_BENCH",
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_LOCKER_ENDORSEMENT",
+      "owner": "t51/canon-23-30",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_LOCKER_ENDORSEMENT en ageWindow [27,36] y el runtime T5.2 expira instancias vivas al superar 36, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_LOCKER_ENDORSEMENT",
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_AGENT_CONFLICT_PEAK",
+      "owner": "t51/canon-23-30",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_AGENT_CONFLICT_PEAK en ageWindow [27,36] y el runtime T5.2 expira instancias vivas al superar 36, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_AGENT_CONFLICT_PEAK",
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_NATIONAL_ROLE",
+      "owner": "t51/canon-23-30",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_NATIONAL_ROLE en ageWindow [27,36] y el runtime T5.2 expira instancias vivas al superar 36, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_NATIONAL_ROLE",
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_FINAL_BENCH",
+      "owner": "t51/canon-23-30",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_FINAL_BENCH en ageWindow [28,36] y el runtime T5.2 expira instancias vivas al superar 36, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_FINAL_BENCH",
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_MEGA_TRANSFER",
+      "owner": "t51/canon-23-30",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_MEGA_TRANSFER en ageWindow [28,36] y el runtime T5.2 expira instancias vivas al superar 36, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_MEGA_TRANSFER",
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_PUBLIC_EXIT_PRESSURE",
+      "owner": "t51/canon-23-30",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_PUBLIC_EXIT_PRESSURE en ageWindow [28,36] y el runtime T5.2 expira instancias vivas al superar 36, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_PUBLIC_EXIT_PRESSURE",
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_SECOND_STAR",
+      "owner": "t51/canon-23-30",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_SECOND_STAR en ageWindow [28,36] y el runtime T5.2 expira instancias vivas al superar 36, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_SECOND_STAR",
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_MANAGER_POWER",
+      "owner": "t51/canon-23-30",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_MANAGER_POWER en ageWindow [29,36] y el runtime T5.2 expira instancias vivas al superar 36, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_MANAGER_POWER",
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
+    },
+    {
+      "seedId": "SEED_ELITE_SACRIFICE",
+      "owner": "t51/canon-23-30",
+      "disposition": "canonical_expiry",
+      "expiryBasis": "age",
+      "rationale": "El catálogo canónico fija SEED_ELITE_SACRIFICE en ageWindow [29,36] y el runtime T5.2 expira instancias vivas al superar 36, conservando su history/provenance. El handoff final del owner no redefine ese límite, por lo que la caducidad por edad es la disposición canónica de cierre.",
+      "evidenceRefs": [
+        "src/catalog/seeds.ts#SEED_ELITE_SACRIFICE",
+        "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
+        "analysis/T5.2/README.md#lifecycle"
+      ]
     }
   ]
 }
