@@ -6,6 +6,7 @@ import { eventGatesPass } from '../dist/narrative/event-gates.js';
 import { certifyPlayerClubLeadershipInPlace } from '../dist/simulation/player-leadership-authority.js';
 import { offerBridgeEligible, offerDispositionForChoice } from '../dist/narrative/offer-bridge.js';
 import { proposeCareerChange } from '../dist/simulation/offers.js';
+import { PREPARED_SHIFTED_CANON_30_34_A } from '../dist/content/events/30_34/canonical-shifted-prepared-a.js';
 
 const event = EVENTS.find(row => row.id === 'EVT_30_CCH_001');
 
@@ -141,5 +142,26 @@ test('EVT_30_STATUS_001 uses exact young-successor memory and replaces the legac
     assert.equal(outcomes.length,2);
     assert.equal(outcomes.every(outcome=>(outcome.seedTransitions??[]).some(t=>t.seedId==='SEED_DORSAL_SUCCESSION'&&t.action==='create')),true);
     assert.equal(outcomes.some(outcome=>(outcome.seedTransitions??[]).some(t=>t.seedId==='SEED_SUCCESSOR_PEAK')),false);
+  }
+});
+
+
+test('prepared shifted batch A is owner-complete but remains outside active EVENTS until external gates exist', () => {
+  const expected = new Map([
+    ['EVT_30_EUR_001', ['SEED_BIG_GAME_ROTATION_30','SEED_BIG_GAME_BENCH']],
+    ['EVT_30_RECORD_001', ['SEED_MILESTONE_CHASE_500','SEED_RECORD_CHASE']],
+    ['EVT_30_PAIN_001', ['SEED_PAIN_WITHOUT_SCAN','SEED_MEDICAL_AUTHORITY']],
+    ['EVT_30_NANO_001', ['SEED_OLD_NETWORK_FAVOR','SEED_NANO_SHADOW']],
+    ['EVT_31_FAM_001', ['SEED_RELOCATION_LIMIT','SEED_FAMILY_ANCHOR']]
+  ]);
+  assert.equal(PREPARED_SHIFTED_CANON_30_34_A.length,5);
+  for(const prepared of PREPARED_SHIFTED_CANON_30_34_A){
+    assert.equal(expected.has(prepared.id),true,prepared.id);
+    assert.equal(EVENTS.some(event=>event.id===prepared.id),false,`${prepared.id}: external gate is not integrated yet`);
+    assert.deepEqual(prepared.choices.map(choice=>choice.id),['A','B','C','D']);
+    const [write,read]=expected.get(prepared.id);
+    assert.deepEqual(prepared.seedsWrite,[write]);
+    assert.ok((prepared.seedsRead??[]).includes(read));
+    assert.ok((prepared.tags??[]).includes('t51_shifted_prepared'));
   }
 });
