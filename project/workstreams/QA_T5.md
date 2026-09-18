@@ -11,7 +11,7 @@ QA intenta falsar invariantes. No reescribe canon ni corrige silenciosamente run
 
 **11 bugs: 7 open / 4 resolved / 0 P0.**
 
-- T5-QA-016 — **OPEN / P1 / owner-fix PR #118** — #61.
+- T5-QA-016 — **OPEN / P1 / owner-fix PR #118** — #61. Runtime a/b/c + persisted state-machine d/e regressions prepared.
 - T5-QA-021 — **RESOLVED** — #92.
 - T5-QA-022 — **RESOLVED** — #100.
 - T5-QA-023 — **RESOLVED** — #109.
@@ -67,6 +67,7 @@ Ejecución bloqueada hasta:
 ## Known-bug reproductions fuera del gate verde
 
 - `scripts/test-t5-contract-expiry-known-bug.mjs` — T5-QA-028.
+- `scripts/test-t5-retirement-save-known-bug.mjs` — T5-QA-016d/e.
 - `scripts/test-t5-match-model-known-bug.mjs` — T5-QA-029.
 - `scripts/test-t5-captain-gap-known-bug.mjs` — T5-QA-030/#161.
 - `scripts/test-t5-offer-context-known-bug.mjs` — T5-QA-031/#175/#207.
