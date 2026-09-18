@@ -7,6 +7,7 @@ export function createInitialState(saveSeed = 20260910): GameState {
     schemaVersion: 8,
     ageMilestones: [],
     market: {version:1,sequence:0,pending:null,history:[]},
+    employment: { version: 1, status: "contracted", since: "2026-07-01", previous: null },
     date: "2026-07-01",
     age: 18,
     season: "2026-27",

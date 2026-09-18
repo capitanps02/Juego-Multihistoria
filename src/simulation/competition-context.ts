@@ -5,6 +5,7 @@ import {
   scheduledLeagueFixtures,
   type MatchOutcome
 } from "./match-model.js";
+import { hasActiveClubEmployment } from "./employment.js";
 
 const STORE_KEY = "sportCompetitionMoments";
 
@@ -56,7 +57,7 @@ export interface CompetitionScheduleFixture {
 }
 
 export interface FixtureCongestionContext {
-  status: "authoritative";
+  status: "authoritative" | "unavailable";
   nextFixture: CompetitionScheduleFixture | null;
   matchesNext7: number;
   matchesNext14: number;
@@ -177,6 +178,18 @@ export function activeCompetitionMoment(state: GameState): CompetitionMoment | n
 }
 
 export function getCurrentCompetitionContext(state: GameState): CompetitionContext {
+  if (!hasActiveClubEmployment(state)) {
+    return {
+      status: "no_current_competition",
+      competition: null,
+      stage: null,
+      date: null,
+      club: null,
+      outcome: null,
+      highProfile: false,
+      source: null
+    };
+  }
   const special = activeCompetitionMoment(state);
   if (special) {
     return {
@@ -268,6 +281,7 @@ export function competitionMomentFixtureDate(moment: CompetitionMoment): string 
 }
 
 export function getCompetitionSchedule(state: GameState, horizonDays = 14): CompetitionScheduleFixture[] {
+  if (!hasActiveClubEmployment(state)) return [];
   if (!Number.isInteger(horizonDays) || horizonDays < 0 || horizonDays > 30) return [];
   const horizonEnd = addDays(state.date, horizonDays);
   const schedule: CompetitionScheduleFixture[] = scheduledLeagueFixtures(state, horizonDays).map(fixture => ({
@@ -308,6 +322,19 @@ export function getCompetitionSchedule(state: GameState, horizonDays = 14): Comp
 }
 
 export function getFixtureCongestionContext(state: GameState): FixtureCongestionContext {
+  if (!hasActiveClubEmployment(state)) {
+    return {
+      status: "unavailable",
+      nextFixture: null,
+      matchesNext7: 0,
+      matchesNext14: 0,
+      competitionMixNext14: [],
+      multipleCompetitionsNext14: false,
+      hoursToNextFixture: null,
+      hoursSincePreviousFixture: null,
+      minimumRestHoursNext14: null
+    };
+  }
   const schedule = getCompetitionSchedule(state, 14);
   const next7End = addDays(state.date, 7);
   const matchesNext7 = schedule.filter(row => row.date <= next7End).length;

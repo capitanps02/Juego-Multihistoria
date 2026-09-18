@@ -50,13 +50,15 @@ export interface CareerSimulationResult {
 }
 
 function selectChoice(state: GameState, event: EventDefinition, strategy: ChoiceStrategy): string {
-  if (strategy === "first") return event.choices[0]!.id;
+  const choices = eligibleChoices(state, event);
+  if (choices.length === 0) throw new Error(`Scheduled event ${event.id} has no eligible choices`);
+  if (strategy === "first") return choices[0]!.id;
   if (strategy === "balanced") {
-    const center = Math.floor((event.choices.length - 1) / 2);
-    return event.choices[center]!.id;
+    const center = Math.floor((choices.length - 1) / 2);
+    return choices[center]!.id;
   }
   const rng = new DeterministicRng(state.rngState.qa);
-  return event.choices[Math.floor(rng.next() * event.choices.length)]!.id;
+  return choices[Math.floor(rng.next() * choices.length)]!.id;
 }
 
 function selectBridgeChoice(state: GameState, event: EventDefinition, strategy: ChoiceStrategy): string {

@@ -9,6 +9,7 @@ import { DeterministicRng } from "../core/rng.js";
 import type { ChoiceDefinition, Effect, EventDefinition, GameState, OutcomeDefinition, ResolutionResult, SeedInstance, SeedTransition } from "../core/types.js";
 import { narrativeConditionRoot } from "../simulation/club-contract-intent.js";
 import { syncRetirementState } from "../simulation/late-career-engine.js";
+import { currentEmploymentClub } from "../simulation/employment.js";
 import {
   captureNpcKnowledgeTargetContext,
   resolveNpcKnowledgeTargets,
@@ -27,8 +28,35 @@ function isLiveSeed(state: GameState, seedId: string): boolean {
   return state.seeds.some(seed => seed.id === seedId && !TERMINAL_SEED_STATES.has(seed.state));
 }
 
+const EMPLOYMENT_TERM_PATHS = new Set([
+  "club",
+  "professional.ownerClub",
+  "professional.registrationClub",
+  "world.ownerClub",
+  "professional.route",
+  "contract.monthsRemaining",
+  "contract.salaryMonthly",
+  "contract.releaseClause"
+]);
+
 function applyEffect(state: GameState, effect: Effect): void {
-  if (effect.kind === "flag") { state.flags[effect.flag] = effect.value; return; }
+  if (effect.kind === "flag") {
+    if (currentEmploymentClub(state) === null && ["LOAN_ACTIVE","ABROAD_ROUTE","BIG_CLUB"].includes(effect.flag) && effect.value === true) {
+      throw new Error("Narrative effect cannot create club-employment flags while unattached.");
+    }
+    state.flags[effect.flag] = effect.value; return;
+  }
+  if (currentEmploymentClub(state) === null && EMPLOYMENT_TERM_PATHS.has(effect.path)) {
+    const current = getPath(state, effect.path);
+    const next = effect.kind === "set"
+      ? effect.value
+      : typeof current === "number"
+        ? current + effect.delta
+        : current;
+    if (!Object.is(next, current)) {
+      throw new Error("Narrative effect cannot mutate unattached employment without formal market authority.");
+    }
+  }
   if (effect.kind === "set") { setPath(state, effect.path, effect.value); return; }
   const current = getPath(state, effect.path);
   if (typeof current !== "number") throw new Error(`Numeric effect targets non-number: ${effect.path}`);
