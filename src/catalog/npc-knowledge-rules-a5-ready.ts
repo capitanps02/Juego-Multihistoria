@@ -75,8 +75,8 @@ export const A5_READY_NPC_KNOWLEDGE_RULES: NpcEventKnowledgeRule[] = [
     npcIds:[],targetSlots:["activeAgent"],source:"informed",certainty:100,memory:"strong",relationshipMemory:true
   },
   {
-    eventId:"EVT_21_NAT_001",choiceIds:["PRIVATE_CHECK"],
-    outcomeIds:["PRIVATE_CHECK__PRIMARY","PRIVATE_CHECK__SECONDARY"],
+    eventId:"EVT_21_NAT_001",choiceIds:["AGENT_PRIVATE"],
+    outcomeIds:["AGENT_PRIVATE__PRIMARY","AGENT_PRIVATE__SECONDARY"],
     npcIds:[],targetSlots:["activeAgent"],source:"informed",certainty:100,memory:"temporary",relationshipMemory:false
   },
   {
@@ -90,8 +90,8 @@ export const A5_READY_NPC_KNOWLEDGE_RULES: NpcEventKnowledgeRule[] = [
     npcIds:[],targetSlots:["currentClubInstitutional"],source:"informed",certainty:100,memory:"strong",relationshipMemory:true
   },
   {
-    eventId:"EVT_22_TACT_001",choiceIds:["SCOUT_CONTEXT"],
-    outcomeIds:["SCOUT_CONTEXT__PRIMARY","SCOUT_CONTEXT__SECONDARY"],
+    eventId:"EVT_22_TACT_001",choiceIds:["AGENT_CONTEXT"],
+    outcomeIds:["AGENT_CONTEXT__PRIMARY","AGENT_CONTEXT__SECONDARY"],
     npcIds:[],targetSlots:["activeAgent"],source:"informed",certainty:100,memory:"temporary",relationshipMemory:false
   },
   {
