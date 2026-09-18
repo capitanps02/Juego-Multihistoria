@@ -1,42 +1,89 @@
 {
   "canonicalCounts": {
-    "23_26": {"principal": 40, "conditional": 20},
-    "26_30": {"principal": 51, "conditional": 24}
+    "2326": {
+      "principal": 40,
+      "conditional": 20
+    },
+    "2630": {
+      "principal": 51,
+      "conditional": 24
+    }
   },
-  "identityAudit26_30": {
-    "canonicalPrincipal": 51,
-    "enginePrincipalHistoricalCount": 51,
-    "exactIdsNeedingSemanticReimplementationHistorical": 25,
-    "canonicalFreshOrMissingHistorical": 26,
-    "warning": "Count equality is not identity parity. Re-audit against current main before changing these historical figures."
+  "ownerSideDisposition": {
+    "principals": {
+      "resolved": 91,
+      "total": 91
+    },
+    "conditionals": {
+      "resolved": 44,
+      "total": 44
+    },
+    "definition": "active runtime, staged executable EventDefinition, or A6_READY_EXTERNAL_BLOCKER with all owner-side semantics complete"
   },
-  "implementedActiveMain": [
-    "EVT_23_EUR_001",
-    "EVT_23_HOME_001",
-    "EVT_23_MONEY_001",
-    "EVT_23_PRS_001"
+  "contentActivation": {
+    "owner": "A0",
+    "status": "not_an_A6_blocker",
+    "note": "A6 does not own contentIdentity predecessor/freeze/migration activation."
+  },
+  "externalAuthorityCap": {
+    "active": true,
+    "maxA6Percent": 90,
+    "reason": "shared-owner facts remain unmerged into main for affected scenes"
+  },
+  "consumedMain": {
+    "sha": "5dd72ad14e97a16bbae7391db3d2c15746943591",
+    "facts": [
+      "single pending CareerOffer + late_rich_offer context",
+      "read-only last actual player appearance"
+    ],
+    "limitations": [
+      "no multi-offer authority",
+      "no role/coach/budget promise inference",
+      "last appearance does not fabricate record/result/third-party sporting facts"
+    ]
+  },
+  "openSharedOwnerPRs": {
+    "sportPenalty": "#209",
+    "seedFacts": "#217",
+    "competitionStage": "#227",
+    "fixtureCongestion": "#238",
+    "marketEmployment": "#226",
+    "representationTerms": "#247",
+    "npcCoachChronology": "#250"
+  },
+  "highPriorityExternalExamples": [
+    {
+      "id": "EVT_24_MATCH_001",
+      "needs": "A4 authoritative penalty context/resolver"
+    },
+    {
+      "id": "EVT_25_AGT_001",
+      "needs": "A1 certified active-agent identity and omission evidence"
+    },
+    {
+      "id": "EVT_25_NAT_001",
+      "needs": "concrete current national squad role"
+    },
+    {
+      "id": "EVT_26_MED_001",
+      "needs": "A4 authoritative congestion/rest proposal"
+    },
+    {
+      "id": "EVT_27_AWARD_001",
+      "needs": "award nomination authority"
+    },
+    {
+      "id": "EVT_27_HOME_001",
+      "needs": "factual home-investment offer and wealth capacity"
+    }
   ],
-  "implementedStagedAgent6": [
-    {"id":"EVT_23_LOCK_001","status":"blocked_lineage"},
-    {"id":"EVT_23_MKT_001","status":"blocked_lineage"},
-    {"id":"EVT_23_CON_001","status":"blocked_lineage"},
-    {"id":"EVT_25_CON_001","status":"blocked_lineage"},
-    {"id":"EVT_25_MKT_001","status":"blocked_lineage"},
-    {"id":"EVT_26_BRIDGE_001","status":"blocked_lineage"},
-    {"id":"EVT_26_DOC_001","status":"blocked_lineage"},
-    {"id":"EVT_27_IMG_001","status":"blocked_lineage"},
-    {"id":"EVT_27_BODY_001","status":"blocked_lineage"},
-    {"id":"EVT_27_CON_001","status":"blocked_lineage"},
-    {"id":"EVT_28_MEDIA_001","status":"blocked_lineage"},
-    {"id":"EVT_29_FIN_001","status":"blocked_lineage"}
+  "retiredNoncanonical": [
+    "EVT_28_IMG_001",
+    "EVT_29_FORM_001"
   ],
-  "highPriorityBlocked": [
-    {"id":"EVT_24_MATCH_001","status":"blocked_shared_authority","needs":"authoritative fixture/match/squad producer"},
-    {"id":"EVT_25_AGT_001","status":"blocked_shared_authority","needs":"certified active-agent identity for relevant careers"},
-    {"id":"EVT_25_NAT_001","status":"blocked_shared_authority","needs":"authoritative national-team call/role history"},
-    {"id":"EVT_26_MED_001","status":"blocked_shared_authority","needs":"authoritative calendar density in addition to recovery state"},
-    {"id":"EVT_26_RIV_001","status":"blocked_shared_authority","needs":"persisted competitive level/context for Adrian"},
-    {"id":"EVT_27_MED_001","status":"blocked_shared_authority","needs":"surgery-compatible diagnosis authority"},
-    {"id":"EVT_27_AWARD_001","status":"blocked_shared_authority","needs":"authoritative award nomination/vote authority"}
-  ]
+  "qa": {
+    "workflow": "Agent 6 canon 23-30",
+    "latestHead": "f9bf9db8f3230f63f06f18938d3ea0814768d42c",
+    "status": "queued_at_last_check"
+  }
 }
