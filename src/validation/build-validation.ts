@@ -62,11 +62,12 @@ export function validateBuild(events: EventDefinition[] = EVENTS): BuildIssue[] 
   const principal34 = phase34.filter(e => e.family !== "conditional");
   const conditional34 = phase34.filter(e => e.family === "conditional");
   if (principal34.length !== 50) issues.push({ level:"error",code:"canonPrincipalCount34Plus",subject:"34_plus",message:`Se esperaban 50 eventos principales; hay ${principal34.length}.`});
-  if (conditional34.length !== 32) issues.push({ level:"error",code:"canonConditionalCount34Plus",subject:"34_plus",message:`Se esperaban 32 condicionales; hay ${conditional34.length}.`});
+  // 32 canonical 34+ conditionals + retained legacy CEVT_RET_RECONSIDER compatibility identity.
+  if (conditional34.length !== 33) issues.push({ level:"error",code:"canonConditionalCount34Plus",subject:"34_plus",message:`Se esperaban 33 condicionales activos (32 canónicos + 1 legacy compatible); hay ${conditional34.length}.`});
   if (MICROFEEDS_34_PLUS.length < 50) issues.push({ level:"error",code:"canonMicrofeedCount34Plus",subject:"34_plus",message:`Se esperaban al menos 50 microfeeds; hay ${MICROFEEDS_34_PLUS.length}.`});
   for (const id of duplicateIds([...MICROFEEDS_26_30,...MICROFEEDS_30_34,...MICROFEEDS_34_PLUS].map(f=>f.id))) issues.push({ level:"error",code:"uniqueMicrofeedIds",subject:id,message:"ID de microfeed duplicado."});
   if(events.filter(e=>e.family!=="conditional").length!==254) issues.push({level:"error",code:"globalPrincipalCount",subject:"global",message:`Se esperaban 254 principales; hay ${events.filter(e=>e.family!=="conditional").length}.`});
-  if(events.filter(e=>e.family==="conditional").length!==134) issues.push({level:"error",code:"globalConditionalCount",subject:"global",message:`Se esperaban 134 condicionales; hay ${events.filter(e=>e.family==="conditional").length}.`});
+  if(events.filter(e=>e.family==="conditional").length!==135) issues.push({level:"error",code:"globalConditionalCount",subject:"global",message:`Se esperaban 135 condicionales activos; hay ${events.filter(e=>e.family==="conditional").length}.`});
 
   const allPrincipal = events.filter(e=>e.family!=="conditional");
   const allConditional = events.filter(e=>e.family==="conditional");
