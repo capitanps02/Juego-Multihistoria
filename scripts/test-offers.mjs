@@ -12,8 +12,18 @@ import { assertGameState } from '../dist/save/validation.js';
 const command=(s,type,extra={})=>({type,commandId:crypto.randomUUID(),expectedRevision:s.getView().revision,...extra});
 async function pending(options={}){
  const s=await GameSession.create(123,{events:[],...options});
- for(let i=0;i<5 && !s.getView().offer;i++)await s.dispatch(command(s,'continue',{maxDays:366}));
- assert.equal(s.getView().screen,'offer');return s;
+ // The product now has real age-18 CareerOffers. These generic offer tests target the
+ // established age-20 proposal, so reject any earlier formal proposal through the
+ // public session API instead of assuming that no valid offer can exist before 20.
+ for(let i=0;i<10;i++){
+  const view=s.getView();
+  if(view.offer){
+   if(view.age>=20)return s;
+   await s.dispatch(command(s,'offer',{offerId:view.offer.id,action:'reject'}));
+  }
+  await s.dispatch(command(s,'continue',{maxDays:366}));
+ }
+ assert.equal(s.getView().screen,'offer');assert.equal(s.getView().age,20);return s;
 }
 test('20th birthday proposes terms without changing club or silently renewing',async()=>{
  const s=await pending(),v=s.getView(),snap=s.exportSnapshot();
@@ -36,10 +46,10 @@ test('reject retains terms and RNG, records response and unlocks time',async()=>
  await restored.dispatch(command(restored,'continue',{maxDays:1}));assert.notEqual(restored.getView().date,before.state.date);
 });
 test('acceptance persists once across double click, reload and replay',async()=>{
- const s=await pending(),o=s.exportSnapshot().state.market.pending,c=command(s,'offer',{offerId:o.id,action:'accept'});
+ const s=await pending(),historyBefore=s.getView().offerHistory.length,o=s.exportSnapshot().state.market.pending,c=command(s,'offer',{offerId:o.id,action:'accept'});
  const [a,b]=await Promise.all([s.dispatch(c),s.dispatch(c)]);assert.equal(a.replayed,false);assert.equal(b.replayed,true);
  assert.deepEqual(careerTerms(s.exportSnapshot().state),o.terms);
- assert.equal(s.getView().offerHistory.length,1);
+ assert.equal(s.getView().offerHistory.length,historyBefore+1);
  const restored=await GameSession.resume(s.exportSnapshot(),{events:[]});assert.equal((await restored.dispatch(c)).replayed,true);
  await assert.rejects(restored.dispatch({...c,action:'reject'}),{code:'COMMAND_ID_REUSED'});
  await assert.rejects(restored.dispatch(command(restored,'offer',{offerId:o.id,action:'accept'})),{code:'STALE_OFFER'});

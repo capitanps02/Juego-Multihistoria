@@ -6,6 +6,8 @@ import { EVENTS } from '../dist/content/events/index.js';
 import { createInitialState } from '../dist/content/initial-state.js';
 import { scheduleEvent } from '../dist/narrative/scheduler.js';
 import { resolveChoiceInPlace } from '../dist/narrative/resolver.js';
+import { eligibleChoices } from '../dist/narrative/choice-eligibility.js';
+import { offerDispositionForChoice, selectOfferBridgeEvent } from '../dist/narrative/offer-bridge.js';
 import { advanceWorldDayInPlace } from '../dist/simulation/world-simulator.js';
 import { respondToOffer } from '../dist/simulation/offers.js';
 import { simulateCareer } from '../dist/simulation/career-simulator.js';
@@ -195,8 +197,18 @@ test('first 20 player choices match direct motor state and RNG at each decision 
   for (let i = 0; i < 20; i++) {
     if (i) advanceWorldDayInPlace(reference);
     let selected;
+    let bridgeChoiceId = null;
     for (let day = 0; day < 1000; day++) {
-      if(reference.market?.pending)respondToOffer(reference,reference.market.pending.id,'accept');
+      if (reference.market?.pending) {
+        const bridge = selectOfferBridgeEvent(reference, EVENTS);
+        if (bridge) {
+          selected = { event: bridge };
+          bridgeChoiceId = eligibleChoices(reference, bridge)[0]?.id ?? null;
+          assert.ok(bridgeChoiceId);
+          break;
+        }
+        respondToOffer(reference, reference.market.pending.id, 'accept');
+      }
       selected = scheduleEvent(reference, EVENTS);
       if (selected) break;
       advanceWorldDayInPlace(reference);
@@ -204,7 +216,20 @@ test('first 20 player choices match direct motor state and RNG at each decision 
     assert.ok(selected);
     const p = await pending(s);
     assert.equal(s.exportSnapshot().pendingDecision.event.id, selected.event.id);
-    resolveChoiceInPlace(reference, selected.event, selected.event.choices[0].id);
+    if (bridgeChoiceId) {
+      const disposition = offerDispositionForChoice(selected.event, bridgeChoiceId);
+      assert.ok(disposition);
+      resolveChoiceInPlace(reference, selected.event, bridgeChoiceId);
+      const historyIndex = reference.history.length - 1;
+      respondToOffer(reference, reference.market.pending.id, disposition, {
+        kind: 'narrative_choice',
+        historyIndex,
+        eventId: selected.event.id,
+        choiceId: bridgeChoiceId
+      });
+    } else {
+      resolveChoiceInPlace(reference, selected.event, selected.event.choices[0].id);
+    }
     await s.dispatch(choiceCommand(s, p));
     assert.deepEqual(s.exportSnapshot().state, reference);
   }

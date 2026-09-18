@@ -1,4 +1,5 @@
 import type { GameState } from "../core/types.js";
+import { materializeAge18MarketOfferInPlace } from "./early-career-market.js";
 import { advanceWorldDayInPlace as advanceCoreWorldDayInPlace } from "./world-simulator-core.js";
 import { closeLeagueObjectiveInPlace, recordOfficialMatchInPlace, remainingLeagueFixtures } from "./match-model.js";
 
@@ -8,7 +9,7 @@ const num = (value: unknown, fallback = 0): number =>
 /**
  * Public world-simulation boundary.
  * The established simulator stays single-sourced in world-simulator-core.ts;
- * this wrapper materializes authoritative sporting facts after that exact tick
+ * this wrapper materializes authoritative offer/sporting facts after that exact tick
  * and consumes zero additional RNG draws.
  */
 export function advanceWorldDayInPlace(next: GameState): GameState {
@@ -18,6 +19,10 @@ export function advanceWorldDayInPlace(next: GameState): GameState {
 
   advanceCoreWorldDayInPlace(next);
   if (next.date === beforeDate) return next;
+
+  // Age-18 JAN/SUM offers are formal CareerOffer rows produced at the world boundary.
+  // The paired active content overlay consumes them through the existing offer bridge.
+  materializeAge18MarketOfferInPlace(next);
 
   if (next.runtime.day % 7 === 0) {
     const appeared = num(next.sport.appearances) > beforeAppearances;
