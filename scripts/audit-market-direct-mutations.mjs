@@ -76,6 +76,7 @@ function classify(file, node) {
   const p = rel(file);
   const fn = enclosingFunctionName(node);
   if (p === 'src/simulation/offers.ts') return 'valid_authority';
+  if (p === 'src/simulation/employment.ts') return 'valid_authority';
   if (p === 'src/content/initial-state.ts') return 'initialization';
   if (p.includes('migration') || p.includes('/migrations/')) return 'migration';
   if (withinProposalStaging(node)) return 'proposal_staging';

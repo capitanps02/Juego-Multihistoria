@@ -365,7 +365,7 @@ export class GameSession {
     requireThat(command.expectedRevision === this.#snapshot.revision, "STALE_REVISION", "La partida ha cambiado; vuelve a cargar la pantalla.");
     const next = structuredClone(this.#snapshot);
     if (command.type === "continue") {
-      requireThat(!next.pendingDecision && !next.pendingResult && !next.state.market?.pending, "PENDING_SCREEN", "Resuelve la escena o continúa después del resultado.");
+      requireThat(!next.pendingDecision && !next.pendingResult && (!next.state.market?.pending || Boolean(next.state.market.pending.validThrough)), "PENDING_SCREEN", "Resuelve la escena o continúa después del resultado.");
       requireThat(next.state.retirement.status !== "closed", "CAREER_CLOSED", "La carrera ya ha terminado.");
       this.#advance(next, command.maxDays ?? 90);
     } else if (command.type === "offer") {
@@ -451,8 +451,14 @@ export class GameSession {
     while (next.state.retirement.status !== "closed") {
       if (next.state.market?.pending) {
         const bridge = selectOfferBridgeEvent(next.state, this.#index.events);
-        if (bridge) this.#presentEvent(next, bridge.id);
-        return;
+        if (bridge) {
+          this.#presentEvent(next, bridge.id);
+          return;
+        }
+        if (!next.state.market.pending.validThrough || days >= maxDays) return;
+        this.#worldDay(next);
+        days++;
+        continue;
       }
       const scheduled = scheduleEvent(next.state, this.#index);
       if (scheduled) {
