@@ -29,6 +29,7 @@ function replaceById(base: readonly import("../../core/types.js").EventDefinitio
 
 const A5_READY_18_20 = A5_READY_EVENTS_18_23.filter(event => event.phase === "18_20");
 const A5_READY_20_23 = A5_READY_EVENTS_18_23.filter(event => event.phase === "20_23");
+const RETIRED_TECHNICAL_20_23 = new Set(["EVT_21_ABR_001", "EVT_21_CCH_001", "EVT_22_LIFE_001"]);
 
 export const EVENTS_18_20 = replaceById([
   ...REPAIRED_BASE_EVENTS_18_20,
@@ -36,7 +37,10 @@ export const EVENTS_18_20 = replaceById([
   ...REPAIRED_CONDITIONAL_EVENTS_18_20
 ], A5_READY_18_20);
 
-export const EVENTS_20_23 = replaceById(BASE_EVENTS_20_23, A5_READY_20_23);
+export const EVENTS_20_23 = replaceById(
+  BASE_EVENTS_20_23.filter(event => !RETIRED_TECHNICAL_20_23.has(event.id)),
+  A5_READY_20_23
+);
 
 export { EVENTS_23_26, EVENTS_26_30, EVENTS_30_34, EVENTS_34_PLUS };
 export const EVENTS = [...EVENTS_18_20, ...EVENTS_20_23, ...EVENTS_23_26, ...EVENTS_26_30, ...EVENTS_30_34, ...EVENTS_34_PLUS];
