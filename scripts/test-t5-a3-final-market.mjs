@@ -127,6 +127,8 @@ test('A3-3 lifecycle records expiry/withdrawal/supersession without mutating Car
   const rng=structuredClone(s.rngState);
   proposeCareerChange(s,'Oferta con deadline',d=>{d.club='Deadline FC';d.contract.salaryMonthly=5000;},{validThrough:'2026-07-02'});
   const first=structuredClone(s.market.pending);
+  assert.throws(()=>closePendingOfferBySystem(s,'expired','calendar'),/todavía no ha alcanzado/);
+  assert.equal(s.market.pending.id,first.id);
   s.date='2026-07-03';
   const expired=closePendingOfferBySystem(s,'expired','calendar');
   assert.equal(expired.offer.id,first.id);
