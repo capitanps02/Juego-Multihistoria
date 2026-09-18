@@ -76,10 +76,12 @@ QA no mergea su propio PR. Un bug solo pasa a `resolved` tras fix integrado y re
 
 - Infraestructura QA: **50/50**
 - A10-1 P1/P2: **11/15**
-- A10-2 Saves/migrations: **2/10**
+- A10-2 Saves/migrations: **4/10**
 - A10-3 Cross-system invariants: **3/10**
 - A10-4 Long-career/determinism: **5/10**
 - A10-5 Final certification: **0/5**
-- **TOTAL: 71/100**
+- **TOTAL: 73/100**
+
+A10-2 ya acredita en la suite existente: lineage A→B→C, pending frozen-definition, tamper fail-closed, conservación de history/seeds/NPC/market/receipts/RNG, offer save/resume y player-leadership save/load. Faltan generaciones finales y estados terminales integrados.
 
 A10-5 permanece reservado al HEAD final integrado de T5. No ampliar fuzzing fuera de la matriz cerrada.
