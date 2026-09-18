@@ -10,15 +10,15 @@
       "area": "saves-sport-authority",
       "ownerPr": 214,
       "ownerBranch": "codex/t5-match-save-invariants",
-      "ownerHead": "b688017e996449f88822dc7c54162c3f3b3e3c2f",
-      "ownerCompare": "3 ahead / 1 behind current main@49f16b21c8f68f1439901437dcf16e1384966de2",
-      "ownerCiRun": 35330315528,
+      "ownerHead": "78c0ca4ea24e5fb3d0f1051d3aa57ea0d450dcd3",
+      "ownerCompare": "1 ahead / 0 behind current main@49f16b21c8f68f1439901437dcf16e1384966de2",
+      "ownerCiRun": 35336619877,
       "reproduction": "npm run build && node --test scripts/test-t5-match-model-known-bug.mjs",
       "failingTest": "scripts/test-t5-match-model-known-bug.mjs",
       "expected": "Match-model v1 save validation rejects producer-impossible player facts, unsupported firstGoal authority, and semantically wrong/non-first milestone pointers.",
       "actual": "Owner PR #214 implements the directed fix on the exact current main with the QA known-bug reproduction and full producer parity; duplicate PR #218 was closed as superseded.",
       "owner": "match-model-save-validation",
-      "codexAction": "Do not implement a duplicate runtime fix. Owner PR #214 must re-ground on current main, rerun exact-head CI, then QA verifies post-merge.",
+      "codexAction": "Do not implement a duplicate runtime fix. Owner PR #214 is re-grounded on current main; wait for exact-head RI, then QA verifies integration and post-merge regression.",
       "acceptanceTests": [
         "Known-bug reproduction turns green without weakening assertions.",
         "loadSave() and assertGameState() reject bench without call-up, called-up non-starter without bench, zero-minute appearance, non-null firstGoal, wrong-predicate milestones and non-first milestone pointers.",
@@ -28,7 +28,7 @@
         "Repository Integrity succeeds on the exact PR #214 HEAD.",
         "After integration into main, QA reruns the original reproduction before marking resolved."
       ],
-      "ownerCiStatus": "success_on_previous_base_needs_reground"
+      "ownerCiStatus": "pending_exact_head"
     },
     {
       "bugId": "T5-QA-028",
@@ -71,6 +71,29 @@
         "Reactivation uses the final formal CareerOffer/MarketState v2 acceptance authority and no parallel pending-offer system.",
         "No route=free_agent shortcut, salary-zero hack, sentinel club, forced transfer, synthetic contract or forced retirement.",
         "The loyal/512000 reproduction turns green and market, save, long-career and Repository Integrity regressions remain green."
+      ]
+    },
+    {
+      "bugId": "T5-QA-031",
+      "issue": 175,
+      "status": "owner_fix_open",
+      "severity": "P2",
+      "area": "market-save-validation",
+      "ownerPr": 207,
+      "ownerBranch": "t5/rich-offer-context",
+      "reproduction": "npm run build && node --test scripts/test-t5-offer-context-known-bug.mjs",
+      "failingTest": "scripts/test-t5-offer-context-known-bug.mjs",
+      "expected": "Malformed optional CareerOffer.context is rejected by serialize/load validation; historical offers without context remain valid.",
+      "actual": "PR #207 validates context at producer/read surfaces but assertMarket() does not validate persisted offer.context and permits extra offer fields.",
+      "owner": "market-save-authority",
+      "codexAction": "Do not create a parallel fix. Patch PR #207/owner save validation so optional context is exact-validated when present and absent context remains backward-compatible.",
+      "acceptanceTests": [
+        "Empty required rich-context text fails serializeSave/loadSave.",
+        "Unknown context kind fails closed.",
+        "Extra context authority field fails closed.",
+        "Historical ordinary CareerOffer with no context still round-trips.",
+        "Validation is read-only and consumes 0 RNG.",
+        "Focused rich-offer, market, offer-bridge and exact-head Repository Integrity are green."
       ]
     }
   ]
