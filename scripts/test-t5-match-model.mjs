@@ -337,6 +337,7 @@ test('match model/18 historical v1 rows without result remain valid and read as 
   const state = validStoredState(8861);
   const row = state.world.sportMatchModel.fixtures[0];
   delete row.result;
+  delete row.stats;
   const before = structuredClone(state);
   assert.equal(inspectSportMatchModelStore(state.world.sportMatchModel, state.date, state), null);
   assert.doesNotThrow(() => assertGameState(state));
@@ -382,4 +383,88 @@ test('match model/20 lastPlayerAppearance skips later non-appearance fixtures an
   const restored = loadSave(serializeSave(state));
   assert.equal(lastPlayerAppearance(restored)?.id, first.id);
   assert.deepEqual(lastPlayerAppearance(restored)?.result, first.result);
+});
+
+
+test('match model/21 player stats are football-owned, bounded by appearance/team goals and consume zero RNG', () => {
+  let scoring = null;
+  for (let seed = 8870; seed < 9400; seed += 1) {
+    const state = matchDayState(seed);
+    const beforeRng = structuredClone(state.rngState);
+    const row = recordOfficialMatchInPlace(state, { appeared: true, debutOccurred: false, injuryUnavailable: false });
+    assert.ok(row?.stats);
+    assert.deepEqual(state.rngState, beforeRng);
+    const clubGoals = row.homeAway === 'home' ? row.result.homeGoals : row.result.awayGoals;
+    assert.ok(row.stats.goals <= clubGoals);
+    assert.ok(row.stats.assists <= Math.max(0, clubGoals - row.stats.goals));
+    if (row.stats.goals > 0) { scoring = { state, row }; break; }
+  }
+  assert.ok(scoring, 'directed seed range should contain a factual player goal');
+  assert.equal(scoring.state.world.sportMatchModel.milestones.firstGoal, scoring.row.id);
+  const context = getCurrentMatchContext(scoring.state);
+  assert.equal(context.goals, scoring.row.stats.goals);
+  assert.equal(context.assists, scoring.row.stats.assists);
+  assert.deepEqual(context.cards, { yellow: scoring.row.stats.yellowCards, red: scoring.row.stats.redCards });
+});
+
+test('match model/22 non-appearance has known zero stats and cannot be corrupted into goals/cards', () => {
+  const state = matchDayState(8871);
+  const row = recordOfficialMatchInPlace(state, { appeared: false, debutOccurred: false, injuryUnavailable: false });
+  assert.deepEqual(row.stats, { goals: 0, assists: 0, yellowCards: 0, redCards: 0 });
+  for (const key of ['goals', 'assists', 'yellowCards', 'redCards']) {
+    const bad = structuredClone(state);
+    bad.world.sportMatchModel.fixtures[0].stats[key] = 1;
+    assert.throws(() => assertGameState(bad), invalidSave);
+  }
+});
+
+test('match model/23 historical appeared row without stats makes firstGoal and season aggregate fail closed', () => {
+  const state = validStoredState(8872);
+  const first = state.world.sportMatchModel.fixtures[0];
+  delete first.stats;
+  state.world.sportMatchModel.milestones.firstGoal = null;
+
+  state.date = '2026-08-12';
+  state.runtime.day += 7;
+  state.runtime.seasonDay += 7;
+  for (let i = 0; i < 40 && state.world.sportMatchModel.milestones.firstGoal === null; i += 1) {
+    recordOfficialMatchInPlace(state, { appeared: true, debutOccurred: false, injuryUnavailable: false });
+    if (state.world.sportMatchModel.fixtures.at(-1)?.stats?.goals > 0) break;
+    state.date = new Date(Date.parse(state.date + 'T00:00:00Z') + 7 * 86400000).toISOString().slice(0, 10);
+    state.runtime.day += 7;
+    state.runtime.seasonDay += 7;
+  }
+  assert.equal(state.world.sportMatchModel.milestones.firstGoal, null, 'unknown earlier scoring history must block a claimed career first goal');
+  const context = getSportContext(state);
+  assert.equal(context.firstGoal, null);
+  assert.equal(context.availability.firstGoal, 'unavailable');
+  assert.equal(context.currentSeasonPlayerStats, null);
+  assert.equal(context.availability.currentSeasonPlayerStats, 'unavailable');
+  assert.doesNotThrow(() => assertGameState(state));
+});
+
+test('match model/24 complete current-season stats aggregate only persisted match stats and survive save/load', () => {
+  const state = matchDayState(8873);
+  for (let week = 0; week < 4; week += 1) {
+    if (week > 0) {
+      state.date = new Date(Date.parse(state.date + 'T00:00:00Z') + 7 * 86400000).toISOString().slice(0, 10);
+      state.runtime.day += 7;
+      state.runtime.seasonDay += 7;
+    }
+    recordOfficialMatchInPlace(state, { appeared: week !== 2, debutOccurred: false, injuryUnavailable: false });
+  }
+  const context = getSportContext(state);
+  const rows = state.world.sportMatchModel.fixtures;
+  const expected = rows.reduce((acc, row) => {
+    if (row.player.appeared) acc.appearances += 1;
+    acc.goals += row.stats.goals;
+    acc.assists += row.stats.assists;
+    acc.yellowCards += row.stats.yellowCards;
+    acc.redCards += row.stats.redCards;
+    return acc;
+  }, { appearances: 0, goals: 0, assists: 0, yellowCards: 0, redCards: 0 });
+  assert.deepEqual(context.currentSeasonPlayerStats, { season: state.season, ...expected });
+  assert.equal(context.availability.currentSeasonPlayerStats, 'known');
+  const restored = loadSave(serializeSave(state));
+  assert.deepEqual(getSportContext(restored).currentSeasonPlayerStats, context.currentSeasonPlayerStats);
 });
