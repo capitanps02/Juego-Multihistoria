@@ -171,7 +171,7 @@ test('T5.1 30-34 readiness no convierte deuda en canon verificado ni alias aprob
 
 
 test('T5.1 30-34 shifted canonical activations keep migration explicit while using canonical runtime IDs', () => {
-  for (const [canonicalId, legacyId] of [['EVT_30_BRIDGE_001','EVT_30_IDN_001'],['EVT_33_FIN_001','EVT_33_END_001']]) {
+  for (const [canonicalId, legacyId] of [['EVT_30_BRIDGE_001','EVT_30_IDN_001'],['EVT_32_IMPACT_001','EVT_32_TACT_001'],['EVT_33_FIN_001','EVT_33_END_001']]) {
     const row=readiness.events.find(event=>event.canonicalId===canonicalId);
     assert.ok(row);
     assert.equal(row.status,'shifted_identity_requires_migration');
