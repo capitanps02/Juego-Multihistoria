@@ -376,9 +376,15 @@ export class GameSession {
       const pending = next.pendingDecision;
       requireThat(pending && pending.instanceId === command.pendingInstanceId, "STALE_DECISION", "Esta escena ya no está pendiente.");
       const choice = pending.event.choices.find(c => c.id === command.choiceId);
+      const bridgeDisposition = choice ? offerDispositionForChoice(pending.event, choice.id) : null;
       const availableChoice = choice && eligibleChoices(next.state, pending.event).some(candidate => candidate.id === choice.id);
+      if (choice && bridgeDisposition && !availableChoice) {
+        throw new SessionError(
+          "INVALID_OFFER_BRIDGE",
+          "Una escena de oferta no puede modificar autoridad contractual o de empleo mediante efectos narrativos."
+        );
+      }
       requireThat(choice && availableChoice, "INVALID_CHOICE", "La elección no pertenece a esta escena o no está disponible.");
-      const bridgeDisposition = offerDispositionForChoice(pending.event, choice.id);
       const beforeOfferTerms = bridgeDisposition ? careerTerms(next.state) : null;
       if (bridgeDisposition) requireThat(next.state.market?.pending, "STALE_OFFER", "La oferta asociada a esta escena ya no está pendiente.");
       let result;
