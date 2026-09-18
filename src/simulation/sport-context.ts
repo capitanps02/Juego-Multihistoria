@@ -1,6 +1,7 @@
 import type { GameState } from "../core/types.js";
 import { hasActiveClubEmployment } from "./employment.js";
 import {
+  careerGoalHistoryComplete,
   currentOfficialMatch,
   getSportMatchModelStore,
   isTrainingDay,
@@ -9,10 +10,12 @@ import {
   nextScheduledTrainingDate,
   previousOfficialMatch,
   remainingLeagueFixtures,
+  seasonPlayerStats,
   type LeagueObjectiveStatus,
   type MatchCompetition,
   type MatchResultFact,
   type OfficialMatchRecord,
+  type SeasonPlayerStats,
   type ScheduledFixture,
   type SquadStatus
 } from "./match-model.js";
@@ -47,6 +50,7 @@ export interface SportContextAvailability {
   firstStart: SportFactAvailability;
   firstFullMatch: SportFactAvailability;
   firstGoal: SportFactAvailability;
+  currentSeasonPlayerStats: SportFactAvailability;
 }
 
 export interface SportContext {
@@ -77,9 +81,10 @@ export interface SportContext {
   firstAppearance: string | null;
   firstStart: string | null;
   firstFullMatch: string | null;
-  firstGoal: null;
+  firstGoal: string | null;
+  currentSeasonPlayerStats: SeasonPlayerStats | null;
   availability: SportContextAvailability;
-  unavailableReason: "standing_and_goal_model_not_implemented" | "historical_match_store_not_initialized" | null;
+  unavailableReason: "standing_model_not_implemented" | "historical_match_store_not_initialized" | "historical_player_stats_incomplete" | null;
 }
 
 export interface CurrentMatchContext {
@@ -95,9 +100,9 @@ export interface CurrentMatchContext {
   playerStarted: boolean | null;
   playerAppeared: boolean | null;
   minutes: number | null;
-  goals: null;
-  assists: null;
-  cards: null;
+  goals: number | null;
+  assists: number | null;
+  cards: { yellow: number; red: number } | null;
   injury: boolean | null;
   decisionMinute: number | null;
   scoreAtDecision: { home: number; away: number } | null;
@@ -146,7 +151,8 @@ function hoursUntilFixture(state: GameState, fixture: ScheduledFixture | null): 
  */
 export function getSportContext(state: GameState): SportContext {
   const employed = hasActiveClubEmployment(state);
-  const store = employed ? getSportMatchModelStore(state) : null;
+  const historicalStore = getSportMatchModelStore(state);
+  const store = employed ? historicalStore : null;
   const current = employed ? currentOfficialMatch(state) : null;
   const next = employed ? nextScheduledFixture(state) : null;
   const previous = employed ? previousOfficialMatch(state) : null;
@@ -157,6 +163,8 @@ export function getSportContext(state: GameState): SportContext {
     ? store.objective
     : null;
   const milestonesKnown = store !== null;
+  const goalHistoryKnown = careerGoalHistoryComplete(state);
+  const seasonStats = seasonPlayerStats(state);
 
   return {
     currentSeason: state.season,
@@ -183,7 +191,8 @@ export function getSportContext(state: GameState): SportContext {
     firstAppearance: store?.milestones.firstAppearance ?? null,
     firstStart: store?.milestones.firstStart ?? null,
     firstFullMatch: store?.milestones.firstFullMatch ?? null,
-    firstGoal: null,
+    firstGoal: goalHistoryKnown ? (historicalStore?.milestones.firstGoal ?? null) : null,
+    currentSeasonPlayerStats: seasonStats,
     availability: {
       currentSeason: known(),
       sportingClub: employed ? known() : unavailable(),
@@ -208,11 +217,14 @@ export function getSportContext(state: GameState): SportContext {
       firstAppearance: milestonesKnown ? known() : unavailable(),
       firstStart: milestonesKnown ? known() : unavailable(),
       firstFullMatch: milestonesKnown ? known() : unavailable(),
-      firstGoal: unavailable()
+      firstGoal: goalHistoryKnown ? known() : unavailable(),
+      currentSeasonPlayerStats: seasonStats ? known() : unavailable()
     },
-    unavailableReason: !milestonesKnown
+    unavailableReason: !historicalMatchStoreKnown
       ? "historical_match_store_not_initialized"
-      : "standing_and_goal_model_not_implemented"
+      : !goalHistoryKnown
+        ? "historical_player_stats_incomplete"
+        : "standing_model_not_implemented"
   };
 }
 
@@ -285,9 +297,9 @@ export function getCurrentMatchContext(state: GameState): CurrentMatchContext {
     playerStarted: match.player.started,
     playerAppeared: match.player.appeared,
     minutes: match.player.minutes,
-    goals: null,
-    assists: null,
-    cards: null,
+    goals: match.stats?.goals ?? null,
+    assists: match.stats?.assists ?? null,
+    cards: match.stats ? { yellow: match.stats.yellowCards, red: match.stats.redCards } : null,
     injury: match.player.injuryUnavailable,
     decisionMinute: match.decisionContext?.minute ?? null,
     scoreAtDecision: match.decisionContext ? { home: match.decisionContext.scoreHome, away: match.decisionContext.scoreAway } : null,
