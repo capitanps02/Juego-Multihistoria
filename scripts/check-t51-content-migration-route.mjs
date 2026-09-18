@@ -1,6 +1,4 @@
 import assert from 'node:assert/strict';
-import fs from 'node:fs';
-import { execFileSync } from 'node:child_process';
 import { EVENTS } from '../dist/content/events/index.js';
 import { contentIdentity } from '../dist/session/content-identity.js';
 import {
@@ -14,23 +12,6 @@ import { PRE_T51_CONTENT_IDENTITY } from '../dist/session/pre-t51-legacy-registr
 import { migrationSourceCoverage } from './t51-migration-source-policy.mjs';
 
 const currentIdentity = await contentIdentity(EVENTS);
-
-const A0_K_IDENTITY = "586055d1636c16c88e18ea4367325e377242a6fdbda53997d83f04e4f75e47b9";
-if (currentIdentity === A0_K_IDENTITY && !legacyContentSource(currentIdentity)) {
-  execFileSync(process.execPath, ["scripts/freeze-t51-active-source.mjs"], { stdio: "inherit" });
-  execFileSync(process.execPath, ["scripts/generate-t51-post-legacy-registry.mjs"], { stdio: "inherit" });
-  execFileSync(process.execPath, ["scripts/generate-t51-offer-bridge-evidence.mjs"], { stdio: "inherit" });
-  for (const [label, filename] of [
-    ["fixture", `qa/fixtures/t5.1/post-t51-sources/${A0_K_IDENTITY}.json`],
-    ["registry", "src/session/post-t51-legacy-registry.ts"],
-    ["offer", "src/session/frozen-offer-bridge-evidence.ts"]
-  ]) {
-    console.log(`A0_EXPORT_BEGIN ${label}`);
-    process.stdout.write(fs.readFileSync(filename, "utf8"));
-    if (!fs.readFileSync(filename, "utf8").endsWith("\n")) process.stdout.write("\n");
-    console.log(`A0_EXPORT_END ${label}`);
-  }
-}
 const activeEvidence = await buildActiveEventEvidence(EVENTS, currentIdentity);
 const sourceIdentities = Object.keys(LEGACY_CONTENT_SOURCES);
 
