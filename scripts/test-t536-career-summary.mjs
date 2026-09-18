@@ -79,6 +79,20 @@ test('T5.36 final save/load preserves factual LastMatchFact exactly', () => {
   state.professional.nationalCaps = 41;
   state.sport.appearances = 317;
   state.world.maturityLongInjuryCount = 2;
+  state.history = Array.from({ length: 8 }, (_, index) => {
+    const startYear = 2033 + index;
+    return {
+      eventId: `TEST_CAREER_${index + 1}`,
+      date: `${startYear}-07-01`,
+      season: `${startYear}-${String((startYear + 1) % 100).padStart(2, '0')}`,
+      choiceId: 'CONTINUE',
+      outcomeId: 'RECORDED',
+      club: 'UDV',
+      snapshot: {},
+      salience: 10,
+      visibility: 'private'
+    };
+  });
   state.retirement.status = 'announced';
   state.retirement.decidedDate = '2041-03-10';
   state.retirement.announcedDate = '2041-03-17';
