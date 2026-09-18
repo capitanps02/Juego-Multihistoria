@@ -1,0 +1,24 @@
+name: T5.1 Agent 8 Canon 34+
+
+on:
+  push:
+    branches: [t51/canon-34plus]
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/content/events/34_plus/**'
+      - 'scripts/test-t51-canon-34plus-*.mjs'
+      - 'package.json'
+      - '.github/workflows/t51-canon-34plus.yml'
+
+jobs:
+  staged-runtime:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run test:t51:34plus
