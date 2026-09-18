@@ -1,6 +1,7 @@
 import { DeterministicRng } from "../core/rng.js";
 import type { GameState } from "../core/types.js";
 import { generateEpilogue } from "../epilogue/generator.js";
+import { materializeVeteranRenewalInPlace, veteranMarketDemand } from "./veteran-market.js";
 
 const clamp=(x:number,min=0,max=100)=>Math.min(max,Math.max(min,x));
 const num=(x:unknown,f=0)=>typeof x==="number"?x:f;
@@ -58,31 +59,35 @@ export function reverseRetirement(state:GameState){
 export function lateCareerPreseason(state:GameState):void{
   if(state.age<34||state.retirement.status==="closed")return;
   const p=state.professional, rng=new DeterministicRng(state.rngState.football);
-  const role=num(state.sport.roleScore), market=num(state.reputation.marketHeat), motivation=p.motivationReserve;
+  const motivation=p.motivationReserve;
   const months=num(state.contract.monthsRemaining);
-  const agePenalty=Math.max(0,state.age-34)*2.2;
-  const demand=clamp(market*.36+role*.24+p.veteranLeverage*.18+p.legacyCapital*.12+p.availability*.10-agePenalty);
+  const demand=veteranMarketDemand(state);
   state.world.veteranMarketDemand=Math.round(demand*10)/10;
   state.flags.VETERAN_OFFER_AVAILABLE=false;
   state.flags.INFORMAL_RENEWAL_PROMISE=false;
+  state.flags.NO_MARKET_END_CONTEXT=false;
+  delete state.world.veteranOfferRole;
+  delete state.world.veteranOfferMonths;
+  delete state.world.veteranOfferSalary;
 
-  if(months<=2 && state.retirement.status==="playing"){
-    const offerP=clamp(0.12+demand/155-agePenalty/150,0.05,0.72);
-    if(rng.next()<offerP){
-      state.flags.VETERAN_OFFER_AVAILABLE=true;
+  if(state.retirement.status==="playing"&&months<=6){
+    const offer=materializeVeteranRenewalInPlace(state);
+    if(offer){
       state.retirement.noMarketWindows=0;
-      state.world.veteranOfferRole=Math.round(clamp(role-6+rng.next()*20));
-      state.world.veteranOfferMonths=6+Math.floor(rng.next()*19);
-      state.world.veteranOfferSalary=Math.max(900,Math.round(num(state.contract.salaryMonthly,900)*(0.55+rng.next()*.8)));
-    } else {
+      state.world.veteranMarketStatus="formal_offer_materialized";
+    }else if(!state.market?.pending){
       state.retirement.noMarketWindows+=1;
-      if(demand>=38&&rng.next()<0.32)state.flags.INFORMAL_RENEWAL_PROMISE=true;
+      state.world.veteranMarketStatus="market_dry";
+    }else{
+      state.world.veteranMarketStatus="formal_offer_pending";
     }
+  }else{
+    state.world.veteranMarketStatus="idle";
   }
 
-  // A veteran can choose to continue but eventually run out of compatible market.
-  if(state.retirement.status==="playing"&&months<=0&&!state.flags.VETERAN_OFFER_AVAILABLE&&((state.retirement.noMarketWindows>=2&&demand<20)||(state.retirement.noMarketWindows>=3&&demand<35))){
-    setStatus(state,"decided","no_market");
+  // Market absence is factual context only. Retirement ownership remains outside market.
+  if(state.retirement.status==="playing"&&months<=0&&!state.market?.pending){
+    state.world.veteranMarketStatus="market_dry";
     state.flags.NO_MARKET_END_CONTEXT=true;
   }
 
@@ -92,7 +97,6 @@ export function lateCareerPreseason(state:GameState):void{
     state.flags.HEALTH_RETIREMENT_CONTEXT=true;
   }
 }
-
 export function lateCareerWeek(state:GameState):void{
   if(state.age<34||state.retirement.status==="closed")return;
   const p=state.professional, rng=new DeterministicRng(state.rngState.football);
@@ -121,10 +125,14 @@ export function lateCareerWeek(state:GameState):void{
   state.flags.MAJOR_COMEBACK_CONTEXT=state.flags.LONG_INJURY===false&&num(state.world.maturityLongInjuryCount)>=1&&form>=58&&role>=38; if(state.flags.MAJOR_COMEBACK_CONTEXT) state.flags.LATE_MAJOR_COMEBACK=true;
   state.flags.NO_MEDICAL_CLEARANCE_CONTEXT=p.recoveryDebt>=70&&p.availability<=40&&state.age>=36;
 
-  // Post-announcement offer can open one rare reversal; it never auto-reverses.
-  if(state.retirement.status==="announced"&&state.age>=36&&state.retirement.reversals<2&&market>=30&&!state.flags.POST_ANNOUNCE_OFFER&&!state.flags.RECONSIDERATION_WINDOW&&rng.next()<.10){
-    state.flags.POST_ANNOUNCE_OFFER=true;
+  // Market may observe a post-announcement emergency context, but only the dedicated
+  // market producer may materialize a formal CareerOffer. No synthetic offer flag.
+  if(state.retirement.status==="announced"&&state.age>=36&&market>=30){
+    state.world.postAnnouncementMarketEmergency=true;
+  } else {
+    state.world.postAnnouncementMarketEmergency=false;
   }
+  state.flags.POST_ANNOUNCE_OFFER=false;
 
   // Deadlock guard: after a firm decision, communication becomes administrative.
   if(state.retirement.status==="decided"&&state.retirement.daysInStatus>=45){

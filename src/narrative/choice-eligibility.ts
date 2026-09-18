@@ -1,5 +1,6 @@
 import { conditionsPass } from "../core/conditions.js";
-import type { ChoiceDefinition, Condition, EventDefinition, GameState } from "../core/types.js";
+import { getPath } from "../core/path.js";
+import type { ChoiceDefinition, Condition, Effect, EventDefinition, GameState } from "../core/types.js";
 import { narrativeConditionRoot } from "../simulation/club-contract-intent.js";
 
 /**
@@ -19,8 +20,51 @@ export function isChoiceEligible(state: GameState, choice: ChoiceDefinition): bo
   return conditionsPass(narrativeConditionRoot(state), choiceEligibility(choice));
 }
 
+const EMPLOYMENT_TERM_PATHS = new Set([
+  "club",
+  "professional.ownerClub",
+  "professional.registrationClub",
+  "world.ownerClub",
+  "professional.route",
+  "contract.monthsRemaining",
+  "contract.salaryMonthly",
+  "contract.releaseClause"
+]);
+
+const EMPLOYMENT_FLAGS = new Set(["LOAN_ACTIVE", "ABROAD_ROUTE", "BIG_CLUB"]);
+
+function effectRequiresFormalEmploymentAuthority(state: GameState, effect: Effect): boolean {
+  if (effect.kind === "flag") {
+    if (!EMPLOYMENT_FLAGS.has(effect.flag)) return false;
+    return !Object.is(Boolean(state.flags[effect.flag]), effect.value);
+  }
+  if (!EMPLOYMENT_TERM_PATHS.has(effect.path)) return false;
+  const current = getPath(state, effect.path);
+  if (effect.kind === "set") return !Object.is(current, effect.value);
+  if (typeof current !== "number") return true;
+  const next = Math.min(effect.max ?? Infinity, Math.max(effect.min ?? -Infinity, current + effect.delta));
+  return !Object.is(current, next);
+}
+
+function choiceRequiresFormalEmploymentAuthority(
+  state: GameState,
+  event: EventDefinition,
+  choice: ChoiceDefinition
+): boolean {
+  const outcomes = event.outcomes.filter(outcome => choice.outcomeIds.includes(outcome.id));
+  const effects = [
+    ...(choice.immediateEffects ?? []),
+    ...(choice.hiddenCosts ?? []),
+    ...outcomes.flatMap(outcome => outcome.effects)
+  ];
+  return effects.some(effect => effectRequiresFormalEmploymentAuthority(state, effect));
+}
+
 export function eligibleChoices(state: GameState, event: EventDefinition): ChoiceDefinition[] {
-  return event.choices.filter(choice => isChoiceEligible(state, choice));
+  return event.choices.filter(choice =>
+    isChoiceEligible(state, choice)
+    && !choiceRequiresFormalEmploymentAuthority(state, event, choice)
+  );
 }
 
 /**

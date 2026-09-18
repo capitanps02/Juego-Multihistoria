@@ -1,39 +1,140 @@
 import type { GameState } from "../core/types.js";
 import { NPC_CATALOG } from "../catalog/npcs.js";
-import { careerTerms } from "../simulation/offers.js";
+import { careerTerms, isCareerOfferContext } from "../simulation/offers.js";
 import { AGE_MILESTONES } from "../simulation/age-milestones.js";
 import { inspectFootballMomentStore } from "../simulation/football-moments.js";
 
 function assertMarket(value: unknown, state: GameState): void {
   const m=record(value,"market");
-  ensure(m.version===1,"market.version","versión no compatible");integer(m.sequence,"market.sequence");
-  const history=list(m.history,"market.history");
-  const terms=(value: unknown,path: string)=>{
+  const exactKeys=(row:Record<string,unknown>,path:string,allowed:readonly string[],required:readonly string[]=allowed)=>{
+    ensure(Object.keys(row).every(key=>allowed.includes(key)),path,"campos desconocidos");
+    ensure(required.every(key=>Object.prototype.hasOwnProperty.call(row,key)),path,"faltan campos obligatorios");
+  };
+  ensure(m.version===1,"market.version","versión no compatible");
+  exactKeys(m,"market",["version","sequence","pending","history","systemClosures","negotiationSequence","futureNegotiations","futureAgreements"],["version","sequence","pending","history"]);
+  integer(m.sequence,"market.sequence");
+  const terms=(value:unknown,path:string)=>{
     const t=record(value,path);
-    ensure(Object.keys(t).sort().join() === "abroad,bigClub,club,leagueTier,loan,months,ownerClub,prestigeScore,prestigeTier,registrationClub,releaseClause,route,salary,tier",path,"campos de condiciones incorrectos");
+    ensure(Object.keys(t).sort().join()==="abroad,bigClub,club,leagueTier,loan,months,ownerClub,prestigeScore,prestigeTier,registrationClub,releaseClause,route,salary,tier",path,"campos de condiciones incorrectos");
     for(const k of ["club","ownerClub","registrationClub"])string(t[k],path+"."+k);
     for(const k of ["tier","leagueTier","prestigeTier"])integer(t[k],path+"."+k,1,5);
     integer(t.months,path+".months",0,120);number(t.salary,path+".salary",0);number(t.prestigeScore,path+".prestigeScore",0,100);
     if(t.releaseClause!==null)number(t.releaseClause,path+".releaseClause",0);
     for(const k of ["abroad","loan","bigClub"])boolean(t[k],path+"."+k);
-    oneOf(t.route,["home","domestic","loan","abroad","free_agent"],path+".route");return t;
+    oneOf(t.route,["home","domestic","loan","abroad","free_agent"],path+".route");
+    return t;
   };
-  let previousDate="";
-  const offer=(value: unknown,i: number)=>{
-    const o=record(value,"market.offer");ensure(o.id===`offer:${i+1}`,"market.offer.id","secuencia incorrecta");
-    date(o.date,"market.offer.date");ensure(o.date>=previousDate && o.date<=state.date,"market.offer.date","fecha incoherente");previousDate=o.date;
-    string(o.reason,"market.offer.reason");const before=terms(o.before,"market.offer.before"),after=terms(o.terms,"market.offer.terms");
-    ensure(JSON.stringify(before)!==JSON.stringify(after),"market.offer","oferta sin cambios");return {o,before,after};
+  const ids=new Set<string>();
+  let maxOfferId=0;
+  const offer=(value:unknown,path:string)=>{
+    const o=record(value,path);
+    const allowed=["before","context","date","id","reason","terms","validThrough"];
+    ensure(Object.keys(o).every(k=>allowed.includes(k)),path,"campos de oferta desconocidos");
+    string(o.id,path+".id");ensure(/^offer:\d+$/.test(o.id as string),path+".id","identificador incorrecto");
+    const n=Number(String(o.id).slice(6));integer(n,path+".id",1);maxOfferId=Math.max(maxOfferId,n);
+    ensure(!ids.has(o.id as string),path+".id","oferta duplicada");ids.add(o.id as string);
+    date(o.date,path+".date");ensure((o.date as string)<=state.date,path+".date","fecha incoherente");
+    string(o.reason,path+".reason");
+    const before=terms(o.before,path+".before"),after=terms(o.terms,path+".terms");
+    ensure(JSON.stringify(before)!==JSON.stringify(after),path,"oferta sin cambios");
+    if(o.context!==undefined)ensure(isCareerOfferContext(o.context),path+".context","contexto formal inválido");
+    if(o.validThrough!==undefined){
+      date(o.validThrough,path+".validThrough");
+      ensure((o.validThrough as string)>=(o.date as string),path+".validThrough","deadline anterior a la oferta");
+    }
+    return {o,before,after};
   };
+  const narrativeSource=(value:unknown,path:string)=>{
+    const source=record(value,path);
+    exactKeys(source,path,["kind","historyIndex","eventId","choiceId","disposition"]);
+    ensure(source.kind==="narrative_choice",path+".kind","provenance desconocida");
+    integer(source.historyIndex,path+".historyIndex",0);
+    string(source.eventId,path+".eventId");string(source.choiceId,path+".choiceId");
+    oneOf(source.disposition,["accept","reject","delegate","counter","defer"],path+".disposition");
+    return source;
+  };
+  const history=list(m.history,"market.history");
   history.forEach((x,i)=>{
-    const h=record(x,"market.history"),{before,after}=offer(h.offer,i);
-    oneOf(h.action,["accept","reject","delegate"],"market.history.action");boolean(h.accepted,"market.history.accepted");string(h.explanation,"market.history.explanation");
-    const accepted=h.action==="accept" || (h.action==="delegate" && Number(after.salary)>=Number(before.salary) && Number(after.months)>=12 && Number(after.leagueTier)<=Number(before.leagueTier));
-    ensure(h.accepted===accepted,"market.history.accepted","firma incompatible con autorización");
+    const h=record(x,`market.history[${i}]`),{before,after}=offer(h.offer,`market.history[${i}].offer`);
+    exactKeys(h,`market.history[${i}]`,["offer","action","accepted","explanation","source"],["offer","action","accepted","explanation"]);
+    oneOf(h.action,["accept","reject","delegate"],`market.history[${i}].action`);
+    boolean(h.accepted,`market.history[${i}].accepted`);string(h.explanation,`market.history[${i}].explanation`);
+    if(h.source!==undefined)narrativeSource(h.source,`market.history[${i}].source`);
+    const accepted=h.action==="accept"||(h.action==="delegate"&&Number(after.salary)>=Number(before.salary)&&Number(after.months)>=12&&Number(after.leagueTier)<=Number(before.leagueTier));
+    ensure(h.accepted===accepted,`market.history[${i}].accepted`,"firma incompatible con autorización");
   });
   ensure(m.pending!==undefined,"market.pending","falta oferta pendiente");
-  if(m.pending!==null){const {before}=offer(m.pending,history.length);ensure(JSON.stringify(before)===JSON.stringify(careerTerms(state)),"market.pending.before","condiciones obsoletas");}
-  ensure(m.sequence===history.length+(m.pending===null?0:1),"market.sequence","historial incompleto");
+  if(m.pending!==null){
+    const {o,before}=offer(m.pending,"market.pending");
+    ensure(JSON.stringify(before)===JSON.stringify(careerTerms(state)),"market.pending.before","condiciones obsoletas");
+    if(o.validThrough!==undefined)ensure((o.validThrough as string)>=state.date,"market.pending.validThrough","oferta ya expirada");
+  }
+  if(m.systemClosures!==undefined){
+    list(m.systemClosures,"market.systemClosures").forEach((x,i)=>{
+      const row=record(x,`market.systemClosures[${i}]`);
+      exactKeys(row,`market.systemClosures[${i}]`,["offer","reason","date","source"]);
+      const closed=offer(row.offer,`market.systemClosures[${i}].offer`);
+      oneOf(row.reason,["expired","withdrawn","superseded"],`market.systemClosures[${i}].reason`);
+      date(row.date,`market.systemClosures[${i}].date`);ensure((row.date as string)<=state.date,`market.systemClosures[${i}].date`,"fecha futura");
+      ensure((row.date as string)>=(closed.o.date as string),`market.systemClosures[${i}].date`,"cierre anterior a la oferta");
+      if(row.reason==="expired"){
+        ensure(closed.o.validThrough!==undefined,`market.systemClosures[${i}].offer.validThrough`,"expiración sin deadline");
+        ensure((row.date as string)>(closed.o.validThrough as string),`market.systemClosures[${i}].date`,"expiración antes del deadline");
+      }
+      oneOf(row.source,["calendar","producer","system"],`market.systemClosures[${i}].source`);
+    });
+  }
+  if(m.negotiationSequence!==undefined)integer(m.negotiationSequence,"market.negotiationSequence");
+  const negotiationIds=new Set<string>();
+  let maxNegotiationId=0;
+  if(m.futureNegotiations!==undefined){
+    list(m.futureNegotiations,"market.futureNegotiations").forEach((x,i)=>{
+      const row=record(x,`market.futureNegotiations[${i}]`);
+      exactKeys(row,`market.futureNegotiations[${i}]`,["id","date","reason","destination","before","terms","status","closedDate"]);
+      string(row.id,`market.futureNegotiations[${i}].id`);
+      ensure(/^negotiation:\d+$/.test(row.id as string),`market.futureNegotiations[${i}].id`,"identificador incorrecto");
+      const negotiationNumber=Number(String(row.id).slice(12));integer(negotiationNumber,`market.futureNegotiations[${i}].id`,1);maxNegotiationId=Math.max(maxNegotiationId,negotiationNumber);
+      ensure(!negotiationIds.has(row.id as string),`market.futureNegotiations[${i}].id`,"identificador duplicado");
+      negotiationIds.add(row.id as string);
+      date(row.date,`market.futureNegotiations[${i}].date`);ensure((row.date as string)<=state.date,`market.futureNegotiations[${i}].date`,"fecha futura");
+      string(row.reason,`market.futureNegotiations[${i}].reason`);string(row.destination,`market.futureNegotiations[${i}].destination`);
+      terms(row.before,`market.futureNegotiations[${i}].before`);const negotiatedTerms=terms(row.terms,`market.futureNegotiations[${i}].terms`);
+      ensure(negotiatedTerms.club===row.destination&&negotiatedTerms.ownerClub===row.destination&&negotiatedTerms.registrationClub===row.destination,`market.futureNegotiations[${i}].terms`,"destino futuro incoherente");
+      oneOf(row.status,["open","rejected","withdrawn","superseded","signed"],`market.futureNegotiations[${i}].status`);
+      if(row.closedDate!==null){date(row.closedDate,`market.futureNegotiations[${i}].closedDate`);ensure((row.closedDate as string)>=(row.date as string)&&(row.closedDate as string)<=state.date,`market.futureNegotiations[${i}].closedDate`,"fecha de cierre incoherente");}
+      if(row.status==="open")ensure(row.closedDate===null,`market.futureNegotiations[${i}].closedDate`,"negociación abierta cerrada");
+      else ensure(row.closedDate!==null,`market.futureNegotiations[${i}].closedDate`,"negociación cerrada sin fecha");
+    });
+    ensure((m.negotiationSequence??0)===negotiationIds.size&&maxNegotiationId===(m.negotiationSequence??0),"market.negotiationSequence","secuencia de negociación incompleta");
+  }
+  if(m.futureAgreements!==undefined){
+    let openFuture=0;
+    const agreementNegotiations=new Set<string>();
+    const futureAgreementRows=list(m.futureAgreements,"market.futureAgreements");
+    if(futureAgreementRows.length>0)ensure(m.futureNegotiations!==undefined,"market.futureAgreements","precontrato sin negociaciones");
+    futureAgreementRows.forEach((x,i)=>{
+      const row=record(x,`market.futureAgreements[${i}]`);
+      exactKeys(row,`market.futureAgreements[${i}]`,["negotiationId","terms","signedDate","effectiveDate","status","activatedDate","source"],["negotiationId","terms","signedDate","effectiveDate","status","activatedDate"]);
+      string(row.negotiationId,`market.futureAgreements[${i}].negotiationId`);
+      ensure(negotiationIds.has(row.negotiationId as string),`market.futureAgreements[${i}].negotiationId`,"negociación inexistente");
+      ensure(!agreementNegotiations.has(row.negotiationId as string),`market.futureAgreements[${i}].negotiationId`,"precontrato duplicado");
+      agreementNegotiations.add(row.negotiationId as string);
+      const agreedTerms=terms(row.terms,`market.futureAgreements[${i}].terms`);
+      const negotiation=(m.futureNegotiations as unknown[]).map((value,j)=>record(value,`market.futureNegotiations[${j}]`)).find(value=>value.id===row.negotiationId);
+      ensure(negotiation!==undefined&&negotiation.status==="signed"&&JSON.stringify(agreedTerms)===JSON.stringify(negotiation.terms),`market.futureAgreements[${i}].terms`,"términos distintos de la negociación firmada");
+      date(row.signedDate,`market.futureAgreements[${i}].signedDate`);date(row.effectiveDate,`market.futureAgreements[${i}].effectiveDate`);
+      ensure((row.signedDate as string)<=state.date,`market.futureAgreements[${i}].signedDate`,"firma futura");
+      ensure((row.effectiveDate as string)>(row.signedDate as string),`market.futureAgreements[${i}].effectiveDate`,"fecha efectiva no futura");
+      oneOf(row.status,["signed_future","activated"],`market.futureAgreements[${i}].status`);
+      if(row.source!==undefined){const source=narrativeSource(row.source,`market.futureAgreements[${i}].source`);ensure(source.disposition==="accept",`market.futureAgreements[${i}].source.disposition`,"firma futura sin aceptación");}
+      if(row.activatedDate!==null){date(row.activatedDate,`market.futureAgreements[${i}].activatedDate`);ensure((row.activatedDate as string)>=(row.effectiveDate as string)&&(row.activatedDate as string)<=state.date,`market.futureAgreements[${i}].activatedDate`,"activación incoherente");}
+      if(row.status==="signed_future"){openFuture++;ensure(row.activatedDate===null,`market.futureAgreements[${i}].activatedDate`,"precontrato no activado con fecha");}
+      else ensure(row.activatedDate!==null,`market.futureAgreements[${i}].activatedDate`,"precontrato activado sin fecha");
+    });
+    ensure(openFuture<=1,"market.futureAgreements","más de un empleo futuro firmado");
+  }
+  ensure(maxOfferId===(m.sequence as number),"market.sequence","secuencia de ofertas incompleta");
+  ensure(ids.size===(m.sequence as number),"market.sequence","faltan identidades de oferta");
 }
 
 export const MAX_SAVE_BYTES = 8 * 1024 * 1024;
@@ -139,6 +240,32 @@ function uniqueIds(rows: unknown[], key: string,path: string): Set<string> {
 }
 function season(value: unknown,path: string): void { string(value,path); ensure(/^\d{4}-\d{2}$/.test(value),path,"temporada incorrecta"); }
 
+function validateNpcKnowledge(value: unknown, path: string, targetNpcId: string, npcIds: Set<string>, currentDate: string): void {
+  const knowledge=record(value,path);
+  for (const [factId,raw] of Object.entries(knowledge)) {
+    string(factId,path+".factId");
+    const rowPath=path+"."+factId,row=record(raw,rowPath);
+    for (const k of ["factId","eventId","choiceId","outcomeId","club"]) string(row[k],rowPath+"."+k);
+    ensure(row.factId===factId,rowPath+".factId","no coincide con la clave de conocimiento");
+    date(row.learnedAt,rowPath+".learnedAt");
+    ensure((row.learnedAt as string)<=currentDate,rowPath+".learnedAt","fecha futura");
+    oneOf(row.source,["witnessed","informed","public","reported"],rowPath+".source");
+    number(row.certainty,rowPath+".certainty",0,100);
+    oneOf(row.memory,["strong","temporary","practical"],rowPath+".memory");
+    if (row.expiresAfter!==undefined) {
+      date(row.expiresAfter,rowPath+".expiresAfter");
+      ensure((row.expiresAfter as string)>(row.learnedAt as string),rowPath+".expiresAfter","debe ser posterior a learnedAt");
+      ensure(row.memory!=="strong",rowPath+".expiresAfter","memoria strong no expira");
+    }
+    if (row.sourceNpcId!==undefined) {
+      string(row.sourceNpcId,rowPath+".sourceNpcId");
+      ensure(npcIds.has(row.sourceNpcId as string),rowPath+".sourceNpcId","NPC fuente desconocido");
+      ensure(row.sourceNpcId!==targetNpcId,rowPath+".sourceNpcId","un NPC no puede ser su propia fuente");
+      ensure(row.source!=="witnessed" && row.source!=="public",rowPath+".sourceNpcId","fuente NPC incompatible con source");
+    }
+  }
+}
+
 /** Validate the input schema BEFORE migration can supply defaults or coerce values. */
 export function validateGameSave(value: unknown, version: number): void {
   validateData(value);
@@ -212,7 +339,7 @@ export function validateGameSave(value: unknown, version: number): void {
     const r=record(x,`npcs[${i}]`),path=`npcs[${i}]`;
     string(r.role,path+".role"); string(r.careerState,path+".careerState");
     if (r.club!==null) string(r.club,path+".club");
-    numericMap(r.trustAxes,path+".trustAxes"); record(r.knowledge,path+".knowledge");
+    numericMap(r.trustAxes,path+".trustAxes"); validateNpcKnowledge(r.knowledge,path+".knowledge",r.id as string,npcIds,s.date as string);
     strings(r.agenda,path+".agenda"); strings(r.memories,path+".memories");
     number(r.reliability,path+".reliability",0,100); number(r.access,path+".access",0,100);
   });
