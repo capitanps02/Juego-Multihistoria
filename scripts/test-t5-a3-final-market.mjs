@@ -344,6 +344,7 @@ test('A3-4 home return requires factual prior-club context and medical approach 
     eventId:'TEST_PRIOR_CLUB',date:'2030-01-01',season:'2029-30',choiceId:'A',outcomeId:'A',
     club:'Old Club',snapshot:{},salience:1,visibility:'private'
   });
+  recordVeteranMarketApproachInPlace(s,{id:'home-with-history',club:'Old Club',context:'Contacto factual de regreso con historial previo'});
   const home=materializeVeteranCareerOfferFromOpportunity(s,{
     id:'home-with-history',reason:'Regreso',opportunity:'home_return',club:'Old Club',leagueTier:2,months:12,salary:5000,route:'domestic',abroad:false
   });
