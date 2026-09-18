@@ -27,7 +27,7 @@ function accumulatedBodyEvidence(state: GameState): boolean {
 function qualifyingImageContext(state: GameState): boolean {
   return state.professional.commercialPower >= 48
     || state.professional.publicMyth >= 50
-    || state.reputation.mediaHeat >= 45;
+    || Number(state.reputation.mediaHeat ?? 0) >= 45;
 }
 
 export function isStagedWaveAEligible(state: GameState, eventId: StagedWaveAEventId): boolean {
