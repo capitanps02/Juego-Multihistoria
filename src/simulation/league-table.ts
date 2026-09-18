@@ -1,5 +1,5 @@
 import type { GameState } from "../core/types.js";
-import { getSportMatchModelStore, remainingLeagueFixtures } from "./match-model.js";
+import { getSportMatchModelStore } from "./match-model.js";
 
 export interface LeagueTableRow {
   club: string;
@@ -38,11 +38,10 @@ export interface LeagueStandingContext {
 /**
  * Deterministic league-table authority.
  *
- * The registered club uses its persisted authoritative match results. Synthetic
- * league peers are produced only from football.seed + season + peer + round.
+ * The registered club uses only its persisted authoritative match results.
  * Aggregate form, roleScore, reputation, month and narrative flags never enter
- * the calculation. Historical gaps in the registered club result ledger fail
- * the whole table closed rather than backfilling invented results.
+ * the calculation. Peer-club table/position/race fields stay unknown until a
+ * peer-result producer exists. Historical gaps fail closed; no backfill.
  */
 export function getLeagueStandingContext(state: GameState): LeagueStandingContext {
   const club = state.professional.registrationClub;
