@@ -4,6 +4,7 @@ import { advanceWorldDayInPlace as advanceCoreWorldDayInPlace } from "./world-si
 import { closeLeagueObjectiveInPlace, recordOfficialMatchInPlace, remainingLeagueFixtures } from "./match-model.js";
 import { recordCoreFinalCompetitionMomentInPlace } from "./competition-context.js";
 import { recordPenaltyDecisionSetupInPlace } from "./match-penalty-context.js";
+import { hasActiveClubEmployment } from "./employment.js";
 
 const num = (value: unknown, fallback = 0): number =>
   typeof value === "number" && Number.isFinite(value) ? value : fallback;
@@ -27,11 +28,11 @@ export function advanceWorldDayInPlace(next: GameState): GameState {
   // The paired active content overlay consumes them through the existing offer bridge.
   materializeAge18MarketOfferInPlace(next);
 
-  if (!beforeFinalContext && next.flags.FINAL_CONTEXT === true) {
+  if (hasActiveClubEmployment(next) && !beforeFinalContext && next.flags.FINAL_CONTEXT === true) {
     recordCoreFinalCompetitionMomentInPlace(next);
   }
 
-  if (next.runtime.day % 7 === 0) {
+  if (next.runtime.day % 7 === 0 && hasActiveClubEmployment(next)) {
     const appeared = num(next.sport.appearances) > beforeAppearances;
     const match = recordOfficialMatchInPlace(next, {
       appeared,
