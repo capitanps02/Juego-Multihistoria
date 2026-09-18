@@ -1,9 +1,13 @@
 import type { GameState } from "../core/types.js";
 import {
+  getCompetitionSchedule,
   getCurrentCompetitionContext,
+  getFixtureCongestionContext,
   latestCompetitionMoment,
   type CompetitionContext,
-  type CompetitionMoment
+  type CompetitionMoment,
+  type CompetitionScheduleFixture,
+  type FixtureCongestionContext
 } from "./competition-context.js";
 import {
   careerGoalHistoryComplete,
@@ -38,6 +42,9 @@ export interface SportContextAvailability {
   currentCompetition: SportFactAvailability;
   currentCompetitionStage: SportFactAvailability;
   latestCompetitionMoment: SportFactAvailability;
+  nextCompetitionFixture: SportFactAvailability;
+  competitionSchedule14: SportFactAvailability;
+  fixtureCongestion: SportFactAvailability;
   nextFixture: SportFactAvailability;
   previousFixture: SportFactAvailability;
   lastPlayerAppearance: SportFactAvailability;
@@ -71,6 +78,9 @@ export interface SportContext {
   currentCompetition: MatchCompetition | null;
   currentCompetitionStage: CompetitionContext;
   latestCompetitionMoment: CompetitionMoment | null;
+  nextCompetitionFixture: CompetitionScheduleFixture | null;
+  competitionSchedule14: CompetitionScheduleFixture[];
+  fixtureCongestion: FixtureCongestionContext;
   nextFixture: ScheduledFixture | null;
   previousFixture: OfficialMatchRecord | null;
   /** Latest factual official row where the player actually appeared, across clubs. */
@@ -143,6 +153,8 @@ export function getSportContext(state: GameState): SportContext {
   const current = currentOfficialMatch(state);
   const competitionContext = getCurrentCompetitionContext(state);
   const latestCompetition = latestCompetitionMoment(state);
+  const combinedSchedule = getCompetitionSchedule(state, 14);
+  const congestion = getFixtureCongestionContext(state);
   const next = nextScheduledFixture(state);
   const previous = previousOfficialMatch(state);
   const lastAppearance = lastPlayerAppearance(state);
@@ -163,6 +175,9 @@ export function getSportContext(state: GameState): SportContext {
     currentCompetition: current?.competition ?? next?.competition ?? null,
     currentCompetitionStage: competitionContext,
     latestCompetitionMoment: latestCompetition,
+    nextCompetitionFixture: combinedSchedule[0] ?? null,
+    competitionSchedule14: combinedSchedule,
+    fixtureCongestion: congestion,
     nextFixture: next,
     previousFixture: previous,
     lastPlayerAppearance: lastAppearance,
@@ -191,6 +206,9 @@ export function getSportContext(state: GameState): SportContext {
       currentCompetition: known(),
       currentCompetitionStage: competitionContext.status === "authoritative" ? known() : unavailable(),
       latestCompetitionMoment: latestCompetition ? known() : unavailable(),
+      nextCompetitionFixture: known(),
+      competitionSchedule14: known(),
+      fixtureCongestion: known(),
       nextFixture: known(),
       previousFixture: milestonesKnown ? known() : unavailable(),
       lastPlayerAppearance: milestonesKnown ? known() : unavailable(),
