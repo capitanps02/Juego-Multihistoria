@@ -3,17 +3,19 @@
 Use only tasks with `status=ready` from `analysis/CODEX/qa/implementation-ready.json`.
 
 Repository: `capitanps02/Juego-Multihistoria`  
-Recorded base: `main@5f4d14bca4d696cfafadb58b64034c7cd40cc147`. Fetch real current `main` before any work.  
+Recorded base: `main@49f16b21c8f68f1439901437dcf16e1384966de2`. Fetch real current `main` before any work.  
 Do not merge automatically.
 
 ## Current queue
 
 There are **no free QA runtime implementation tasks** in this snapshot.
 
-- **T5-QA-029 / #212:** owner fix exists in **PR #214**, branch `codex/t5-match-save-invariants`, audited HEAD `b688017e996449f88822dc7c54162c3f3b3e3c2f`. Do not implement a duplicate. QA should certify exact-head CI and rerun post-merge regression.
+- **T5-QA-029 / #212:** owner fix exists in **PR #214**, current HEAD `6e22e4232939c1668ac9ab748d6ee6c22d47440e`, 1 ahead / 0 behind current main. Do not duplicate; exact-head RI then post-merge regression.
 - **T5-QA-028 / #130:** blocked by `#207 -> #157`. Do not implement against MarketState v1.
 - **T5-QA-016 / #61:** owner PR #118 already carries the fix.
-- **T5-QA-027 / #133:** belongs to the next serialized LOCK23 content owner.
+- **T5-QA-027 / #133:** belongs to the next serialized LOCK23 content owner; permanent QA guard exists.
+- **T5-QA-031 / #175 / PR #207:** owner must add fail-closed save validation for optional `CareerOffer.context`; RI is green but QA blocks integration until this passes.
+- **T5-QA-032 / #241:** A1/save owner must validate persisted `npc.knowledge` values against the existing record contract.
 
 ## Certification procedure for an owner fix
 
