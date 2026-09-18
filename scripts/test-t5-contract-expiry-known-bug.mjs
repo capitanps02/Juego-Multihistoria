@@ -164,3 +164,33 @@ test('T5-QA-028d: loyal/512000 expiry boundary is deterministic', () => {
   assert.deepEqual(a.rngState, b.rngState);
   assert.equal(contractEmploymentStatus(a), contractEmploymentStatus(b));
 });
+
+
+test('T5-QA-028e: persisted employment authority cannot claim active club employment at zero months', () => {
+  for (const status of ['contracted', 'loaned']) {
+    const state = createInitialState(status === 'contracted' ? 512101 : 512102);
+    state.contract.monthsRemaining = 0;
+    state.contract.salaryMonthly = 4200;
+    state.professional.route = status === 'loaned' ? 'loan' : 'home';
+    state.flags.LOAN_ACTIVE = status === 'loaned';
+    state.employment = {
+      version: 1,
+      status,
+      since: state.date,
+      previous: null
+    };
+    const before = structuredClone(state);
+
+    assert.throws(
+      () => serializeSave(state),
+      error => error?.code === 'INVALID_SAVE',
+      `${status} with zero contract months must fail closed before persistence`
+    );
+    assert.throws(
+      () => loadSave(JSON.stringify(state)),
+      error => error?.code === 'INVALID_SAVE',
+      `${status} with zero contract months must fail closed before gameplay`
+    );
+    assert.deepEqual(state, before, 'employment validation must be read-only');
+  }
+});
