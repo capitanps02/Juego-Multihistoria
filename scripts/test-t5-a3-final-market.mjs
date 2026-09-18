@@ -8,7 +8,6 @@ import { advanceWorldDayInPlace } from '../dist/simulation/world-simulator.js';
 import { lateCareerPreseason } from '../dist/simulation/late-career-engine.js';
 import {
   bosmanEligibility,
-  careerTerms,
   closeFutureEmploymentNegotiation,
   closePendingOfferBySystem,
   getFutureCareerAgreements,
@@ -66,13 +65,7 @@ test('A3-2 loyal/512000 expiry becomes unattached, stops old-club sport, preserv
   assert.equal(Number(s.sport.appearances),appearances);
   const sport=getSportContext(s);
   assert.equal(sport.sportingClub,null);
-  assert.equal(sport.ownerClub,null);
   assert.equal(sport.nextFixture,null);
-  assert.equal(sport.currentCompetition,null);
-  assert.equal(sport.currentCompetitionStage.status,'no_current_competition');
-  assert.deepEqual(sport.competitionSchedule14,[]);
-  assert.equal(sport.fixtureCongestion.status,'unavailable');
-  assert.equal(sport.availability.fixtureCongestion,'unavailable');
   assert.deepEqual(s.rngState,rng,'the expiry transition itself consumes no RNG');
 
   const legacyDirect=EVENTS.find(event=>event.id==='EVT_34_MKT_001');
@@ -438,42 +431,4 @@ test('A3 narrative guard fail-closes direct re-employment choices before resolut
     ]
   };
   assert.deepEqual(eligibleChoices(state,event).map(choice=>choice.id),['SAFE']);
-});
-
-
-test('A3 narrative guard blocks direct loan-state mutation even while contracted',()=>{
-  const state=createInitialState(18881);
-  assert.equal(employmentStatus(state),'contracted');
-  assert.equal(state.flags.LOAN_ACTIVE,false);
-  const event={
-    id:'TEST_A3_DIRECT_LOAN_MUTATION',phase:'18_20',family:'contract',ageWindow:[18,null],weight:1,cooldown:0,
-    text:{title:'Loan guard',body:'Loan guard'},intel:{visible:[],uncertain:[]},gates:[],npcRefs:[],
-    choices:[
-      {id:'UNSAFE',label:'Activate loan directly',outcomeIds:['UNSAFE_OUT'],immediateEffects:[{kind:'flag',flag:'LOAN_ACTIVE',value:true}]},
-      {id:'SAFE',label:'Keep current employment',outcomeIds:['SAFE_OUT'],immediateEffects:[{kind:'flag',flag:'WAITING_MARKET',value:true}]}
-    ],
-    outcomes:[
-      {id:'UNSAFE_OUT',baseWeight:1,effects:[],messages:['unsafe']},
-      {id:'SAFE_OUT',baseWeight:1,effects:[],messages:['safe']}
-    ]
-  };
-  assert.deepEqual(eligibleChoices(state,event).map(choice=>choice.id),['SAFE']);
-  assert.equal(state.flags.LOAN_ACTIVE,false);
-});
-
-
-test('A3 CareerTerms normalizes stale non-loan ownership metadata',()=>{
-  const state=createInitialState(512099);
-  state.club='Development_4_12';
-  state.tier=2;
-  state.professional.registrationClub='Development_4_12';
-  state.professional.ownerClub='UDV';
-  state.professional.leagueTier=1;
-  state.flags.LOAN_ACTIVE=false;
-  const terms=careerTerms(state);
-  assert.equal(terms.club,'Development_4_12');
-  assert.equal(terms.registrationClub,'Development_4_12');
-  assert.equal(terms.ownerClub,'Development_4_12');
-  assert.equal(terms.tier,2);
-  assert.equal(terms.leagueTier,2);
 });

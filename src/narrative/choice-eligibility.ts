@@ -2,6 +2,7 @@ import { conditionsPass } from "../core/conditions.js";
 import { getPath } from "../core/path.js";
 import type { ChoiceDefinition, Condition, Effect, EventDefinition, GameState } from "../core/types.js";
 import { narrativeConditionRoot } from "../simulation/club-contract-intent.js";
+import { currentEmploymentClub } from "../simulation/employment.js";
 
 /**
  * Additive compatibility contract for canonical choices whose availability depends on state.
@@ -34,10 +35,8 @@ const EMPLOYMENT_TERM_PATHS = new Set([
 const EMPLOYMENT_FLAGS = new Set(["LOAN_ACTIVE", "ABROAD_ROUTE", "BIG_CLUB"]);
 
 function effectRequiresFormalEmploymentAuthority(state: GameState, effect: Effect): boolean {
-  if (effect.kind === "flag") {
-    if (!EMPLOYMENT_FLAGS.has(effect.flag)) return false;
-    return !Object.is(Boolean(state.flags[effect.flag]), effect.value);
-  }
+  if (currentEmploymentClub(state) !== null) return false;
+  if (effect.kind === "flag") return effect.value === true && EMPLOYMENT_FLAGS.has(effect.flag);
   if (!EMPLOYMENT_TERM_PATHS.has(effect.path)) return false;
   const current = getPath(state, effect.path);
   if (effect.kind === "set") return !Object.is(current, effect.value);
@@ -51,6 +50,7 @@ function choiceRequiresFormalEmploymentAuthority(
   event: EventDefinition,
   choice: ChoiceDefinition
 ): boolean {
+  if (currentEmploymentClub(state) !== null) return false;
   const outcomes = event.outcomes.filter(outcome => choice.outcomeIds.includes(outcome.id));
   const effects = [
     ...(choice.immediateEffects ?? []),

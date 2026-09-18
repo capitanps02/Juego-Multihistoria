@@ -240,32 +240,6 @@ function uniqueIds(rows: unknown[], key: string,path: string): Set<string> {
 }
 function season(value: unknown,path: string): void { string(value,path); ensure(/^\d{4}-\d{2}$/.test(value),path,"temporada incorrecta"); }
 
-function validateNpcKnowledge(value: unknown, path: string, targetNpcId: string, npcIds: Set<string>, currentDate: string): void {
-  const knowledge=record(value,path);
-  for (const [factId,raw] of Object.entries(knowledge)) {
-    string(factId,path+".factId");
-    const rowPath=path+"."+factId,row=record(raw,rowPath);
-    for (const k of ["factId","eventId","choiceId","outcomeId","club"]) string(row[k],rowPath+"."+k);
-    ensure(row.factId===factId,rowPath+".factId","no coincide con la clave de conocimiento");
-    date(row.learnedAt,rowPath+".learnedAt");
-    ensure((row.learnedAt as string)<=currentDate,rowPath+".learnedAt","fecha futura");
-    oneOf(row.source,["witnessed","informed","public","reported"],rowPath+".source");
-    number(row.certainty,rowPath+".certainty",0,100);
-    oneOf(row.memory,["strong","temporary","practical"],rowPath+".memory");
-    if (row.expiresAfter!==undefined) {
-      date(row.expiresAfter,rowPath+".expiresAfter");
-      ensure((row.expiresAfter as string)>(row.learnedAt as string),rowPath+".expiresAfter","debe ser posterior a learnedAt");
-      ensure(row.memory!=="strong",rowPath+".expiresAfter","memoria strong no expira");
-    }
-    if (row.sourceNpcId!==undefined) {
-      string(row.sourceNpcId,rowPath+".sourceNpcId");
-      ensure(npcIds.has(row.sourceNpcId as string),rowPath+".sourceNpcId","NPC fuente desconocido");
-      ensure(row.sourceNpcId!==targetNpcId,rowPath+".sourceNpcId","un NPC no puede ser su propia fuente");
-      ensure(row.source!=="witnessed" && row.source!=="public",rowPath+".sourceNpcId","fuente NPC incompatible con source");
-    }
-  }
-}
-
 /** Validate the input schema BEFORE migration can supply defaults or coerce values. */
 export function validateGameSave(value: unknown, version: number): void {
   validateData(value);
@@ -339,7 +313,7 @@ export function validateGameSave(value: unknown, version: number): void {
     const r=record(x,`npcs[${i}]`),path=`npcs[${i}]`;
     string(r.role,path+".role"); string(r.careerState,path+".careerState");
     if (r.club!==null) string(r.club,path+".club");
-    numericMap(r.trustAxes,path+".trustAxes"); validateNpcKnowledge(r.knowledge,path+".knowledge",r.id as string,npcIds,s.date as string);
+    numericMap(r.trustAxes,path+".trustAxes"); record(r.knowledge,path+".knowledge");
     strings(r.agenda,path+".agenda"); strings(r.memories,path+".memories");
     number(r.reliability,path+".reliability",0,100); number(r.access,path+".access",0,100);
   });
