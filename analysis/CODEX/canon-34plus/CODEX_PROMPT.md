@@ -2,7 +2,7 @@
 
 Repo: `capitanps02/Juego-Multihistoria`  
 Branch: `t51/canon-34plus`  
-Audited base: `main@5f4d14bca4d696cfafadb58b64034c7cd40cc147`.  
+Audited base: `main@5f4d14bca4d696cfafadb58b64034c7cd40cc147`. Updated 2026-09-18.  
 No auto-merge. Never register 34+ runtime until #59 authorizes the serialized generation.
 
 ## Ownership
@@ -68,13 +68,13 @@ Do not pretend current terms guarantee minutes, bonuses, bilateral termination, 
 **#201** owns justified finance/sponsor/stadium/staff-crisis club-world incidents or an explicit fail-closed decision.
 
 ## Actor routing
-Use `AUTHORITY_MATRIX.json`:
+Issue **#177 is closed completed** after the 43/43 authority-matrix refresh. Do not create or reopen a generic late-career NPC subsystem merely because one scene lacks evidence. Use `AUTHORITY_MATRIX.json`:
 - `EVT_35_AGT_001`: existing `resolveActiveAgent()` or null; no #177 implementation dependency.
 - `EVT_35_DUAL_001`: generic club voice allowed unless canon requires named continuity; factual offer/context authority comes from #207/#157/#176.
 - `EVT_36_CCH_001`: coach tenure/profile -> #169; persistent coach NPC not required.
 - `EVT_34_DORSAL_001` / `EVT_34_MENTOR_001`: generic non-persistent young actor allowed only if no named continuity/T5.3 mutation is required.
 - `EVT_35_RECORD_001`: record truth -> #199; persistent identity only when explicitly required/certified.
-- `EVT_36_PEER_001`: fail closed until exact peer + causal peer-retirement history exists.
+- `EVT_36_PEER_001`: fail closed until exact peer + causal peer-retirement history exists. This is a scene-local factual prerequisite; it does not make #177 an active blocker again.
 
 ## Conditional canon
 Documento Maestro 25.13 defines exactly 32 IDs. Current engine also has 32 rows, but only 5 exact IDs overlap; 27 canonical IDs are absent, 27 technical IDs are non-canonical and 0/32 are accredited.
@@ -94,3 +94,6 @@ No direct club/contract mutation from narrative choices; no synthetic offer/free
 
 ## QA
 For any future authorized runtime batch: focused factual gates + negative tests, save/load and pending provenance, seed scope/producer audit, migration coverage, build/tests and Repository Integrity on the exact candidate HEAD. Prior-head green runs are historical only after any branch change.
+
+## Current QA evidence
+Repository Integrity run `35263846340` succeeded on prior exact HEAD `aed49c362e6dda02bc981e0ea8d83d152604f840`. Because this handoff refresh changes documentation, certify the new exact HEAD before treating the refreshed snapshot as exact-head green.
