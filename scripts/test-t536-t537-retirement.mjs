@@ -110,6 +110,8 @@ test('T5.36/2 decided -> playing requires explicit pre-announcement reconsiderat
   assert.equal(state.retirement.status,'decided');
   resolveChoiceInPlace(state,event('CEVT_RET_RECONSIDER'),'RETURN');
   assert.equal(state.retirement.status,'playing');
+  assert.equal(state.retirement.decidedDate,null);
+  assert.equal(state.retirement.announcedDate,null);
   assert.equal(state.retirement.reversals,1);
   assert.equal(state.flags.RETIREMENT_RECONSIDERED,true);
 });
@@ -247,6 +249,37 @@ test('T5.36/14 save/restore is inert in playing, decided, announced and closed',
     assert.deepEqual(loaded.retirement,retirement,`${status}: load changed retirement`);
     assert.deepEqual(loaded.history,history,`${status}: load rewrote history`);
   }
+});
+
+test('T5.36/14b persisted retirement authority rejects impossible status/date combinations',()=>{
+  const invalidSave=error=>error?.code==='INVALID_SAVE';
+  const reject=state=>{
+    const before=structuredClone(state);
+    assert.throws(()=>serializeSave(state),invalidSave);
+    assert.throws(()=>loadSave(JSON.stringify(state)),invalidSave);
+    assert.deepEqual(state,before);
+  };
+
+  const playing=createInitialState(536141);
+  playing.retirement.decidedDate='2026-06-01';
+  playing.retirement.announcedDate='2026-06-15';
+  playing.retirement.decisionAge=18;
+  playing.retirement.reason='voluntary';
+  reject(playing);
+
+  const announcedWithoutDecision=createInitialState(536142);
+  announcedWithoutDecision.retirement.status='announced';
+  announcedWithoutDecision.retirement.announcedDate='2026-06-15';
+  announcedWithoutDecision.retirement.reason='voluntary';
+  reject(announcedWithoutDecision);
+
+  const reversedChronology=createInitialState(536143);
+  reversedChronology.retirement.status='announced';
+  reversedChronology.retirement.decidedDate='2026-06-20';
+  reversedChronology.retirement.announcedDate='2026-06-10';
+  reversedChronology.retirement.decisionAge=18;
+  reversedChronology.retirement.reason='voluntary';
+  reject(reversedChronology);
 });
 
 test('T5.36/15 schema-7 legacy migration cannot announce or close retirement',()=>{
