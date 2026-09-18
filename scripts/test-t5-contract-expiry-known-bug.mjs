@@ -8,6 +8,8 @@ import { loadSave, serializeSave } from '../dist/save/save.js';
 import { advanceWorldDayInPlace } from '../dist/simulation/world-simulator.js';
 import {
   contractEmploymentStatus,
+  getActiveCareerOffers,
+  getEligibleCareerOffers,
   proposeCareerChange,
   respondToOffer
 } from '../dist/simulation/offers.js';
@@ -44,9 +46,13 @@ function sameEmployer(a, b) {
     && a.salary === b.salary;
 }
 
+function rejectAllActiveOffers(state) {
+  for (const offer of getActiveCareerOffers(state)) respondToOffer(state, offer.id, 'reject');
+}
+
 function advanceLoyalUntilExpiry(state, maxDays = 3000) {
   for (let day = 0; day < maxDays; day += 1) {
-    if (state.market?.pending) respondToOffer(state, state.market.pending.id, 'reject');
+    rejectAllActiveOffers(state);
     const scheduled = scheduleEvent(state, EVENTS, { qa: true });
     if (scheduled) resolveChoiceInPlace(state, scheduled.event, loyalChoice(scheduled.event), true);
     advanceWorldDayInPlace(state);
@@ -63,7 +69,7 @@ test('T5-QA-028a: expired contract must not remain an ordinary registered playin
   let zeroDays = 0;
 
   while (zeroDays < 365) {
-    if (state.market?.pending) respondToOffer(state, state.market.pending.id, 'reject');
+    rejectAllActiveOffers(state);
     advanceWorldDayInPlace(state);
 
     if (
@@ -115,7 +121,7 @@ test('T5-QA-028c: unattached player cannot accumulate ordinary old-club appearan
 
   const oldEmployment = employment(state);
   for (let day = 0; day < 120; day += 1) {
-    if (state.market?.pending) respondToOffer(state, state.market.pending.id, 'reject');
+    rejectAllActiveOffers(state);
     advanceWorldDayInPlace(state);
   }
 
@@ -125,7 +131,7 @@ test('T5-QA-028c: unattached player cannot accumulate ordinary old-club appearan
     'unattached player must not keep adding official appearances for the former club'
   );
 
-  if (state.market?.pending) respondToOffer(state, state.market.pending.id, 'reject');
+  rejectAllActiveOffers(state);
   const rngBeforeOffer = structuredClone(state.rngState);
   proposeCareerChange(state, 'QA formal re-employment', draft => {
     draft.club = 'QA_REEMPLOY_FC';
@@ -135,9 +141,9 @@ test('T5-QA-028c: unattached player cannot accumulate ordinary old-club appearan
     draft.contract.salaryMonthly = Math.max(1000, oldEmployment.salary + 1000);
   });
 
-  assert.ok(state.market?.pending, 'formal CareerOffer authority must be able to represent re-employment');
-  const offerId = state.market.pending.id;
-  respondToOffer(state, offerId, 'accept');
+  const reemploymentOffer = getEligibleCareerOffers(state).find(offer => offer.reason === 'QA formal re-employment');
+  assert.ok(reemploymentOffer, 'formal CareerOffer authority must be able to represent re-employment');
+  respondToOffer(state, reemploymentOffer.id, 'accept');
 
   assert.notEqual(contractEmploymentStatus(state), 'unattached');
   assert.equal(state.club, 'QA_REEMPLOY_FC');
