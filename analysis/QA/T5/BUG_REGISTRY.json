@@ -178,6 +178,22 @@
       "test": "scripts/test-t5-offer-context-known-bug.mjs",
       "firstSeenCommit": "2a9e97fc89669ef42811e75fa91d14fbbabfb5a0",
       "lastVerifiedCommit": "2a9e97fc89669ef42811e75fa91d14fbbabfb5a0"
+    },
+    {
+      "id": "T5-QA-032",
+      "severity": "P2",
+      "status": "open",
+      "area": "npc-knowledge-save-validation",
+      "reproduction": [
+        "npm run build && node --test scripts/test-t5-npc-knowledge-save-known-bug.mjs"
+      ],
+      "expected": "Persisted npc.knowledge entries must be valid NpcKnowledgeRecord values; malformed rows fail closed at serialize/load without RNG or mutation.",
+      "actual": "Current save validation checks only that npc.knowledge is an object. Individual fact values are not schema-validated, so malformed persisted epistemic authority is accepted and later silently parsed as unknown.",
+      "owner": "npc-knowledge-save-validation",
+      "issue": 241,
+      "test": "scripts/test-t5-npc-knowledge-save-known-bug.mjs",
+      "firstSeenCommit": "49f16b21c8f68f1439901437dcf16e1384966de2",
+      "lastVerifiedCommit": "49f16b21c8f68f1439901437dcf16e1384966de2"
     }
   ]
 }
