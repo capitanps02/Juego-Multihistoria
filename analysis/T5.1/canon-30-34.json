@@ -519,7 +519,7 @@
     {
       "id": "DEP_T51_EVENT_ID_MIGRATION",
       "kind": "save_continuity",
-      "description": "Latest frozen upstream lineage node is 84871fae2bec92d74d1e607e0a48943e2e530a062d315a829cfe75eda9fe0886. Integration must freeze the active 30-34 target 9151d6620739f5f63face23f412abdeca9898cac8e510cc44d86c1468da8d0f4 as post-T5.1 source evidence, then review/register the approved latest-upstream -> target edge for the 27 stable exact-ID semantic changes. Shifted IDs remain deferred and sameSceneMigrationAllowed stays false."
+      "description": "Latest frozen upstream lineage node is 84871fae2bec92d74d1e607e0a48943e2e530a062d315a829cfe75eda9fe0886. Integration must freeze the active 30-34 target db72c94ee93ad928e08e86a59f5063060a963e17edfc7b5e25198e1da6fd1eb1 as post-T5.1 source evidence, then review/register the approved latest-upstream -> target edge for the 27 stable exact-ID semantic changes plus the new canonical EVT_30_CCH_001 addition. Shifted IDs remain deferred and sameSceneMigrationAllowed stays false."
     },
     {
       "id": "DEP_T51_BRIDGE_PRIORITY",
@@ -574,13 +574,13 @@
     "temporaryValidationWorkflowRemoved": true,
     "mergeReady": false,
     "contentMigrationLineage": "frozen_upstream_84871fae2bec92d74d1e607e0a48943e2e530a062d315a829cfe75eda9fe0886_available_in_main",
-    "targetContentIdentity": "9151d6620739f5f63face23f412abdeca9898cac8e510cc44d86c1468da8d0f4",
+    "targetContentIdentity": "db72c94ee93ad928e08e86a59f5063060a963e17edfc7b5e25198e1da6fd1eb1",
     "sharedB1aTest": "resolved_in_main_lineage_aware",
     "offerSessionBridge": "available_in_main",
     "eligibleOfferRead": "available_in_main_singleton_pending_only",
     "playerClubLeadershipAuthority": "available_in_main_and_consumed_by_EVT_33_CAP_001",
     "veteranLockerAssignment30_34": "missing_fail_closed",
-    "contentMigrationTargetFreeze": "pending:9151d6620739f5f63face23f412abdeca9898cac8e510cc44d86c1468da8d0f4.json",
+    "contentMigrationTargetFreeze": "pending:db72c94ee93ad928e08e86a59f5063060a963e17edfc7b5e25198e1da6fd1eb1.json",
     "offerSessionBridgeValidation": "pass",
     "contentMigrationChecker": "expected_missing_target_freeze_before_route_registration",
     "contentMigrationSourceIdentity": "84871fae2bec92d74d1e607e0a48943e2e530a062d315a829cfe75eda9fe0886",
