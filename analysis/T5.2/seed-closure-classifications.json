@@ -1709,6 +1709,511 @@
         "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
         "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
       ]
+    },
+    {
+      "seedId": "SEED_FORM_VS_PLAN",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_FORM_VS_PLAN como memoria canónica pre-34 cuya provenance debe preservarse y prohíbe reoriginarla al entrar en 34+. Su lifecycle queda abierto intencionalmente como memoria histórica.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#A-the-14-bridge-memory-entries",
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#C-t52-handoff-contract"
+      ]
+    },
+    {
+      "seedId": "SEED_AGE34_REALITY",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_AGE34_REALITY entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_AGE34_REALITY",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_VETERAN_PAYCUT",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_VETERAN_PAYCUT entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_VETERAN_PAYCUT",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_FINAL_NT_POSTURE",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_FINAL_NT_POSTURE entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_FINAL_NT_POSTURE",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_FINAL_HOME_WINDOW",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_FINAL_HOME_WINDOW entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_FINAL_HOME_WINDOW",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_LAST_AGENT_GAMBLE",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_LAST_AGENT_GAMBLE entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_LAST_AGENT_GAMBLE",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_28_MATCH_PLAN",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_28_MATCH_PLAN entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_28_MATCH_PLAN",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_FINAL_DORSAL",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_FINAL_DORSAL entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_FINAL_DORSAL",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_DIGNIFIED_EXIT_CLAUSE",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_DIGNIFIED_EXIT_CLAUSE entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_DIGNIFIED_EXIT_CLAUSE",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_FINAL_ROLE_ACCEPTANCE",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_FINAL_ROLE_ACCEPTANCE entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_FINAL_ROLE_ACCEPTANCE",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_SUCCESSOR_ALLIANCE",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_SUCCESSOR_ALLIANCE entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_SUCCESSOR_ALLIANCE",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_POST_MATCH_PAIN",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_POST_MATCH_PAIN entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_POST_MATCH_PAIN",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_LAST_HERO_MOMENT",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_LAST_HERO_MOMENT entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_LAST_HERO_MOMENT",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_NT_FIRST_OMISSION_LATE",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_NT_FIRST_OMISSION_LATE entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_NT_FIRST_OMISSION_LATE",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_FAREWELL_CROWD_POWER",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_FAREWELL_CROWD_POWER entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_FAREWELL_CROWD_POWER",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_TEAM_WINS_WITHOUT_YOU",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_TEAM_WINS_WITHOUT_YOU entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_TEAM_WINS_WITHOUT_YOU",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_MARCH_SILENCE",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_MARCH_SILENCE entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_MARCH_SILENCE",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_THREE_VERSIONS_35",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_THREE_VERSIONS_35 entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_THREE_VERSIONS_35",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_AVAILABILITY_CONTRACT",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_AVAILABILITY_CONTRACT entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_AVAILABILITY_CONTRACT",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_FINAL_RELOCATION_TRADEOFF",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_FINAL_RELOCATION_TRADEOFF entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_FINAL_RELOCATION_TRADEOFF",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_FAREWELL_AS_LEVERAGE",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_FAREWELL_AS_LEVERAGE entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_FAREWELL_AS_LEVERAGE",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_PUBLIC_MYTH_FINAL",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_PUBLIC_MYTH_FINAL entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_PUBLIC_MYTH_FINAL",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_PLAYER_LIAISON_ROLE",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_PLAYER_LIAISON_ROLE entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_PLAYER_LIAISON_ROLE",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_SLOW_PRESEASON_35",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_SLOW_PRESEASON_35 entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_SLOW_PRESEASON_35",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_FINAL_AGENT_STRUCTURE",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_FINAL_AGENT_STRUCTURE entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_FINAL_AGENT_STRUCTURE",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_FINAL_REINVENTION",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_FINAL_REINVENTION entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_FINAL_REINVENTION",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_FIVE_MATCHES_UNUSED",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_FIVE_MATCHES_UNUSED entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_FIVE_MATCHES_UNUSED",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_RECORD_PASSED",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_RECORD_PASSED entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_RECORD_PASSED",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_EMERGENCY_NT_RETURN",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_EMERGENCY_NT_RETURN entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_EMERGENCY_NT_RETURN",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_LAST_JANUARY_MOVE",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_LAST_JANUARY_MOVE entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_LAST_JANUARY_MOVE",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_LAST_FINAL_BENCH",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_LAST_FINAL_BENCH entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_LAST_FINAL_BENCH",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_HOME_SUCCESS_WITHOUT_YOU",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_HOME_SUCCESS_WITHOUT_YOU entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_HOME_SUCCESS_WITHOUT_YOU",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_RETIREMENT_MARKETING",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_RETIREMENT_MARKETING entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_RETIREMENT_MARKETING",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_AGE36_LONG_DEAL",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_AGE36_LONG_DEAL entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_AGE36_LONG_DEAL",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_COMPETITION_SELECTIVITY",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_COMPETITION_SELECTIVITY entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_COMPETITION_SELECTIVITY",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_YOUNGER_COACH",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_YOUNGER_COACH entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_YOUNGER_COACH",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_700_MATCH_CHOICE",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_700_MATCH_CHOICE entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_700_MATCH_CHOICE",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_PEER_RETIREMENT_MIRROR",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_PEER_RETIREMENT_MIRROR entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_PEER_RETIREMENT_MIRROR",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_DROP_LEVEL_TO_PLAY",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_DROP_LEVEL_TO_PLAY entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_DROP_LEVEL_TO_PLAY",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_POST_CAREER_BODY_RISK",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_POST_CAREER_BODY_RISK entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_POST_CAREER_BODY_RISK",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_THREE_MONTH_CONTRACT",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_THREE_MONTH_CONTRACT entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_THREE_MONTH_CONTRACT",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_TEN_MATCH_HOME_RETURN",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_TEN_MATCH_HOME_RETURN entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_TEN_MATCH_HOME_RETURN",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_FAREWELL_PENALTY",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_FAREWELL_PENALTY entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_FAREWELL_PENALTY",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_LAST_HUGE_OFFER",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_LAST_HUGE_OFFER entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_LAST_HUGE_OFFER",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_MARKET_SILENCE_END",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_MARKET_SILENCE_END entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_MARKET_SILENCE_END",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
+    },
+    {
+      "seedId": "SEED_MARKET_FLOOR_FINAL",
+      "owner": "t51/canon-34plus",
+      "disposition": "intentional_persistent",
+      "rationale": "Agent 8 clasifica SEED_MARKET_FLOOR_FINAL entre las 45 memories ordinarias de Pasada 7 y el handoff A8→A9 proyecta todas las A8_ORDINARY_SEED_WRITERS como ordinaryLateCareerMemories. Debe sobrevivir como memoria histórica hacia retirada/epílogo sin TTL ni terminal artificial.",
+      "evidenceRefs": [
+        "analysis/CODEX/canon-34plus/SEED_OWNERSHIP.md#SEED_MARKET_FLOOR_FINAL",
+        "src/content/events/34_plus/agent9-handoff.ts#ordinaryLateCareerMemories",
+        "src/content/events/34_plus/staged-runtime.ts#A8_ORDINARY_SEED_WRITERS"
+      ]
     }
   ]
 }
