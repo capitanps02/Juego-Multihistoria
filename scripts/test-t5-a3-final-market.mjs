@@ -8,6 +8,7 @@ import { advanceWorldDayInPlace } from '../dist/simulation/world-simulator.js';
 import { lateCareerPreseason } from '../dist/simulation/late-career-engine.js';
 import {
   bosmanEligibility,
+  careerTerms,
   closeFutureEmploymentNegotiation,
   closePendingOfferBySystem,
   getFutureCareerAgreements,
@@ -458,4 +459,21 @@ test('A3 narrative guard blocks direct loan-state mutation even while contracted
   };
   assert.deepEqual(eligibleChoices(state,event).map(choice=>choice.id),['SAFE']);
   assert.equal(state.flags.LOAN_ACTIVE,false);
+});
+
+
+test('A3 CareerTerms normalizes stale non-loan ownership metadata',()=>{
+  const state=createInitialState(512099);
+  state.club='Development_4_12';
+  state.tier=2;
+  state.professional.registrationClub='Development_4_12';
+  state.professional.ownerClub='UDV';
+  state.professional.leagueTier=1;
+  state.flags.LOAN_ACTIVE=false;
+  const terms=careerTerms(state);
+  assert.equal(terms.club,'Development_4_12');
+  assert.equal(terms.registrationClub,'Development_4_12');
+  assert.equal(terms.ownerClub,'Development_4_12');
+  assert.equal(terms.tier,2);
+  assert.equal(terms.leagueTier,2);
 });
