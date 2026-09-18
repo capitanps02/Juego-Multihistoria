@@ -1,4 +1,4 @@
-import { proposeCareerChange } from "./offers.js";
+import { currentEmploymentClub, proposeCareerChange } from "./offers.js";
 import { DeterministicRng } from "../core/rng.js";
 import type { GameState, NarrativePhase } from "../core/types.js";
 import { classifyState20 } from "./state20-classifier.js";
@@ -115,6 +115,7 @@ function updateContextFlags(state: GameState, rng: DeterministicRng): void {
   else state.world.marketWindowOpen = false;
 }
 function footballWeek(state: GameState): void {
+  if (currentEmploymentClub(state) === null) return;
   const rng = new DeterministicRng(state.rngState.football);
   const form = clamp(num(state.sport.form, 50) * 0.82 + 50 * 0.18 + (rng.next() - 0.5) * 11);
   const trust = state.relationships.find(r => r.npcId === "NPC_CCH_01")?.trust ?? 45;
@@ -210,6 +211,7 @@ function professionalWeek(state: GameState, rng: DeterministicRng): void {
   const market = num(state.reputation.marketHeat, 25);
   const media = num(state.reputation.mediaHeat, 8);
   const month = Number(state.date.slice(5, 7));
+  const employed = currentEmploymentClub(state) !== null;
 
   const roleTarget=clamp(role + (form-50)*0.22 + (p.environmentStability-50)*0.08);
   p.roleSecurity = clamp(p.roleSecurity*0.93 + roleTarget*0.07 + (rng.next()-0.5)*2.1);
@@ -240,7 +242,7 @@ function professionalWeek(state: GameState, rng: DeterministicRng): void {
     const p=state.professional;
   // Renovaciones: la agencia libre es una posibilidad, no el destino por defecto.
   const months = num(state.contract.monthsRemaining, 0);
-  if (state.age < 34 && months <= 5 && !state.flags.CONTRACT_DISPUTE) {
+  if (employed && state.age < 34 && months <= 5 && !state.flags.CONTRACT_DISPUTE) {
     const renewalP = clamp(0.20 + p.institutionalTrust / 220 + p.roleSecurity / 280 - Math.max(0, p.contractPower - 65) / 230, 0.16, 0.68);
     if (rng.next() < renewalP) {
       state.contract.monthsRemaining = 24 + Math.floor(rng.next() * 25);
@@ -257,7 +259,7 @@ function professionalWeek(state: GameState, rng: DeterministicRng): void {
   proposeCareerChange(state, "Continuidad de la cesión", state => {
     const p=state.professional;
   // Cierre o continuidad de cesiones al final de temporada.
-  if (p.ownerClub !== p.registrationClub && [5, 6].includes(month) && rng.next() < 0.12) {
+  if (employed && p.ownerClub !== p.registrationClub && [5, 6].includes(month) && rng.next() < 0.12) {
     const buyP = clamp(0.12 + role / 180 + p.environmentStability / 300, 0.12, 0.62);
     if (rng.next() < buyP) {
       p.ownerClub = p.registrationClub;
@@ -347,19 +349,19 @@ function professionalWeek(state: GameState, rng: DeterministicRng): void {
     }
     state.flags.NATIONAL_TOURNAMENT_CYCLE = !nationalRetired && [3,4,5,6].includes(month) && [24,28,32].includes(state.age) && p.nationalStanding>=38;
 
-    const continentalBase = p.leagueTier===1 && p.clubPrestigeTier>=3;
+    const continentalBase = employed && p.leagueTier===1 && p.clubPrestigeTier>=3;
     state.flags.CONTINENTAL_CONTEXT = continentalBase && ([8,9,10,11,2,3,4,5].includes(month));
     if (continentalBase && !state.flags.CONTINENTAL_REGISTERED && rng.next()<0.06) state.flags.CONTINENTAL_REGISTERED=true;
     if (state.flags.CONTINENTAL_REGISTERED && state.flags.CONTINENTAL_CONTEXT) p.continentalCred=clamp(p.continentalCred+(form-50)/45+(role-50)/90+(rng.next()-0.52)*2);
-    state.flags.HIGH_PROFILE_MATCH = state.flags.CONTINENTAL_CONTEXT || (p.leagueTier===1 && p.clubPrestigeTier>=4 && rng.next()<0.08);
-    state.flags.CAPTAINCY_WINDOW = p.lockerPower>=54 && role>=55;
-    if(p.clubPrestigeTier>=4 && role<62 && !state.flags.STAR_COMPETITION && rng.next()<0.015) state.flags.STAR_COMPETITION=true;
+    state.flags.HIGH_PROFILE_MATCH = employed && (state.flags.CONTINENTAL_CONTEXT || (p.leagueTier===1 && p.clubPrestigeTier>=4 && rng.next()<0.08));
+    state.flags.CAPTAINCY_WINDOW = employed && p.lockerPower>=54 && role>=55;
+    if(employed && p.clubPrestigeTier>=4 && role<62 && !state.flags.STAR_COMPETITION && rng.next()<0.015) state.flags.STAR_COMPETITION=true;
     if(market>=68 && !state.flags.SUPER_AGENT && rng.next()<0.016) state.flags.SUPER_AGENT=true;
-    if(p.clubPrestigeTier>=3 && !state.flags.CLUB_OWNER_CHANGE && rng.next()<0.0025) state.flags.CLUB_OWNER_CHANGE=true;
+    if(employed && p.clubPrestigeTier>=3 && !state.flags.CLUB_OWNER_CHANGE && rng.next()<0.0025) state.flags.CLUB_OWNER_CHANGE=true;
     // Una final es un hecho del mundo, no un privilegio del scheduler.
     // Se genera con una puerta competitiva real y vive unos pocos días.
     const finalExpires=num(state.world.finalContextExpiresDay,-1);
-    if (![4,5].includes(month)) {
+    if (!employed || ![4,5].includes(month)) {
       state.flags.FINAL_CONTEXT=false; state.world.finalContextExpiresDay=-1;
     } else if (finalExpires>=state.runtime.day) {
       state.flags.FINAL_CONTEXT=true;
