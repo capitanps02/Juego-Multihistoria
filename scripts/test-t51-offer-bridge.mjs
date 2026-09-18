@@ -43,12 +43,23 @@ function bridgeEvent(id = 'EVT_T51_OFFER_BRIDGE', overrides = {}) {
   };
 }
 
-async function advanceUntil(session, screen, limit = 6) {
+async function rejectPre20OfferIfPresent(session) {
+  const view = session.getView();
+  if (view.screen !== 'offer' || !view.offer || view.age >= 20) return false;
+  await session.dispatch(command(session, 'offer', { offerId: view.offer.id, action: 'reject' }));
+  return true;
+}
+
+async function advanceUntil(session, screen, limit = 10) {
   for (let i = 0; i < limit; i++) {
-    if (session.getView().screen === screen) return session;
+    const view = session.getView();
+    if (view.screen === screen && view.age >= 20) return session;
+    if (await rejectPre20OfferIfPresent(session)) continue;
     await session.dispatch(command(session, 'continue', { maxDays: 366 }));
   }
-  assert.equal(session.getView().screen, screen, `No apareció la pantalla ${screen}`);
+  const view = session.getView();
+  assert.equal(view.screen, screen, `No apareció la pantalla ${screen}`);
+  assert.ok(view.age >= 20, `La pantalla ${screen} apareció antes del fixture age-20`);
   return session;
 }
 
@@ -87,7 +98,10 @@ test('pending offer bridge survives strict save/resume with the same decision an
 test('accept inside narrative choice signs exactly once and replays idempotently', async () => {
   const event = bridgeEvent();
   const session = await bridgedSession(event);
-  const offer = structuredClone(session.exportSnapshot().state.market.pending);
+  const before = session.exportSnapshot();
+  const historyBefore = before.state.market.history.length;
+  const narrativeHistoryBefore = before.state.history.length;
+  const offer = structuredClone(before.state.market.pending);
   const decision = session.getView().decision;
   const choose = command(session, 'choose', { pendingInstanceId: decision.instanceId, choiceId: 'ACCEPT' });
   const [first, second] = await Promise.all([session.dispatch(choose), session.dispatch(choose)]);
@@ -96,12 +110,12 @@ test('accept inside narrative choice signs exactly once and replays idempotently
   const after = session.exportSnapshot();
   assert.equal(after.state.market.pending, null);
   assert.deepEqual(careerTerms(after.state), offer.terms);
-  assert.equal(after.state.market.history.length, 1);
-  const history = after.state.market.history[0];
+  assert.equal(after.state.market.history.length, historyBefore + 1);
+  const history = after.state.market.history.at(-1);
   assert.equal(history.action, 'accept');
   assert.equal(history.accepted, true);
   assert.deepEqual(history.source, {
-    kind: 'narrative_choice', historyIndex: 0, eventId: event.id, choiceId: 'ACCEPT', disposition: 'accept'
+    kind: 'narrative_choice', historyIndex: narrativeHistoryBefore, eventId: event.id, choiceId: 'ACCEPT', disposition: 'accept'
   });
   assert.equal(after.pendingResult.messages.at(-1), history.explanation);
   const restored = await GameSession.resume(after, { events: [event] });
@@ -154,7 +168,7 @@ test('tampered narrative offer provenance is rejected on resume', async () => {
   const decision = session.getView().decision;
   await session.dispatch(command(session, 'choose', { pendingInstanceId: decision.instanceId, choiceId: 'ACCEPT' }));
   const bad = session.exportSnapshot();
-  bad.state.market.history[0].source.choiceId = 'REJECT';
+  bad.state.market.history.at(-1).source.choiceId = 'REJECT';
   await assert.rejects(GameSession.resume(bad, { events: [event] }), { code: 'INVALID_SAVE' });
 });
 
@@ -162,7 +176,8 @@ test('ambiguous eligible offer bridges fail the command and leave the session un
   const first = bridgeEvent('EVT_T51_OFFER_BRIDGE_A');
   const second = bridgeEvent('EVT_T51_OFFER_BRIDGE_B');
   const session = await GameSession.create(123, { events: [first, second] });
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < 10; i++) {
+    if (await rejectPre20OfferIfPresent(session)) continue;
     const before = session.exportSnapshot();
     try {
       await session.dispatch(command(session, 'continue', { maxDays: 366 }));
