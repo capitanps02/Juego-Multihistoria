@@ -650,7 +650,15 @@
       "EVT_32_IMPACT_001",
       "EVT_30_STATUS_001"
     ],
-    "shiftedCanonicalImplementedCount": 4
+    "shiftedCanonicalImplementedCount": 4,
+    "shiftedCanonicalPrepared": [
+      "EVT_30_EUR_001",
+      "EVT_30_RECORD_001",
+      "EVT_30_PAIN_001",
+      "EVT_30_NANO_001",
+      "EVT_31_FAM_001"
+    ],
+    "shiftedCanonicalPreparedCount": 5
   },
   "implementationDisposition": {
     "safeNow": [
