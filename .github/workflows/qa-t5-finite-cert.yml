@@ -22,6 +22,7 @@ jobs:
           - scripts/test-t5-offer-context-known-bug.mjs
           - scripts/test-t5-npc-knowledge-save-known-bug.mjs
           - scripts/test-t5-retirement-save-known-bug.mjs
+          - scripts/test-t5-retirement-authority-known-bug.mjs
           - scripts/test-t5-lock23-captain-choice-guard.mjs
     steps:
       - uses: actions/checkout@v4
