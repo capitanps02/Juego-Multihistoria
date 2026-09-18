@@ -1,0 +1,26 @@
+name: QA A3 candidate certification v3
+
+on:
+  push:
+    branches:
+      - qa/cert-a3-226-v3
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  a3-candidate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: A3 owner suites
+        run: node --test scripts/test-t5-a3-final-market.mjs scripts/test-t5-contract-expiry-authority.mjs
+      - name: A10 #130/#175 regressions
+        run: node --test scripts/test-t5-contract-expiry-known-bug.mjs scripts/test-t5-offer-context-known-bug.mjs
