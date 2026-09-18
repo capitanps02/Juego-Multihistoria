@@ -356,9 +356,11 @@ test('A3-4 home return requires factual prior-club context and medical approach 
   assert.equal(s.market.pending,null,'an approach is not a CareerOffer');
   recordVeteranMedicalEvaluationInPlace(s,'medical-1','failed');
   const facts=getVeteranMarketApproaches(s);
-  assert.equal(facts[0].medicalEvaluation.result,'failed');
-  facts[0].club='mutated';
-  assert.equal(getVeteranMarketApproaches(s)[0].club,'Medical FC');
+  const medical=facts.find(row=>row.id==='medical-1');
+  assert.ok(medical);
+  assert.equal(medical.medicalEvaluation.result,'failed');
+  medical.club='mutated';
+  assert.equal(getVeteranMarketApproaches(s).find(row=>row.id==='medical-1')?.club,'Medical FC');
   assert.equal(loadSave(serializeSave(s)).world.veteranMarketApproaches[0].medicalEvaluation.result,'failed');
 });
 
