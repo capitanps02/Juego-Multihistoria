@@ -1,0 +1,38 @@
+name: T51 A5 K final candidate
+
+on:
+  push:
+    branches:
+      - 'a0/a5-k-final-after-a3'
+    paths:
+      - 'src/content/events/index.ts'
+      - 'src/content/events/20_23/index.ts'
+      - 'src/content/events/20_23/a5-ready-staged.ts'
+      - 'src/catalog/npc-knowledge-rules-a5-post-j.ts'
+      - 'src/catalog/npc-knowledge-rules.ts'
+      - 'src/catalog/seeds.ts'
+      - 'src/narrative/seed-memory.ts'
+      - 'src/simulation/club-contract-intent.ts'
+      - 'scripts/t52-causal-seed-facts.mjs'
+      - 'scripts/test-t51-a5-k-final.mjs'
+      - '.github/workflows/t51-a5-k-final.yml'
+  workflow_dispatch:
+
+jobs:
+  candidate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Corrected K catalog/counts/identity
+        run: node --test scripts/test-t51-a5-k-final.mjs
+      - name: Causal seed fact provenance
+        run: node --test scripts/test-t52-causal-seed-facts.mjs
+      - name: Shared NPC and choice contracts
+        run: node --test scripts/test-t51-shared-contracts.mjs scripts/test-t53-dynamic-targets.mjs
