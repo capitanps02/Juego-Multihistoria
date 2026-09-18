@@ -1,4 +1,5 @@
 import type { GameState } from "../core/types.js";
+import { hasActiveClubEmployment } from "./employment.js";
 import {
   getCompetitionSchedule,
   getCurrentCompetitionContext,
@@ -163,27 +164,28 @@ function squadStatus(record: OfficialMatchRecord | null): SquadStatus | null {
  * No RNG is consumed and narrative flags/roleScore are never used here to fabricate facts.
  */
 export function getSportContext(state: GameState): SportContext {
-  const store = getSportMatchModelStore(state);
-  const current = currentOfficialMatch(state);
+  const employed = hasActiveClubEmployment(state);
+  const store = employed ? getSportMatchModelStore(state) : null;
+  const current = employed ? currentOfficialMatch(state) : null;
   const competitionContext = getCurrentCompetitionContext(state);
-  const latestCompetition = latestCompetitionMoment(state);
-  const combinedSchedule = getCompetitionSchedule(state, 14);
+  const latestCompetition = employed ? latestCompetitionMoment(state) : null;
+  const combinedSchedule = employed ? getCompetitionSchedule(state, 14) : [];
   const congestion = getFixtureCongestionContext(state);
-  const next = nextScheduledFixture(state);
-  const previous = previousOfficialMatch(state);
-  const lastAppearance = lastPlayerAppearance(state);
+  const next = employed ? nextScheduledFixture(state) : null;
+  const previous = employed ? previousOfficialMatch(state) : null;
+  const lastAppearance = employed ? lastPlayerAppearance(state) : null;
   const objective = store?.objective && store.objective.season === state.season && store.objective.club === state.professional.registrationClub
     ? store.objective
     : null;
   const milestonesKnown = store !== null;
-  const goalHistoryKnown = careerGoalHistoryComplete(state);
-  const seasonStats = seasonPlayerStats(state);
+  const goalHistoryKnown = employed && careerGoalHistoryComplete(state);
+  const seasonStats = employed ? seasonPlayerStats(state) : null;
 
   return {
     currentSeason: state.season,
-    sportingClub: state.professional.registrationClub,
-    ownerClub: state.professional.ownerClub,
-    leagueTier: finiteNumber(state.professional.leagueTier, state.tier),
+    sportingClub: employed ? state.professional.registrationClub : null,
+    ownerClub: employed ? state.professional.ownerClub : null,
+    leagueTier: employed ? finiteNumber(state.professional.leagueTier, state.tier) : null,
     careerAppearances: finiteNumber(state.sport.appearances),
     officialDebutRecorded: state.flags.OFFICIAL_DEBUT === true,
     currentCompetition: current?.competition ?? next?.competition ?? null,
@@ -195,12 +197,12 @@ export function getSportContext(state: GameState): SportContext {
     nextFixture: next,
     previousFixture: previous,
     lastPlayerAppearance: lastAppearance,
-    hoursToNextFixture: hoursToNextScheduledFixture(state),
+    hoursToNextFixture: employed ? hoursToNextScheduledFixture(state) : null,
     isMatchDay: current !== null,
-    isTrainingWindow: isTrainingDay(state),
-    nextTrainingDate: nextScheduledTrainingDate(state),
-    remainingOfficialMatches: remainingLeagueFixtures(state),
-    remainingLeagueMatches: remainingLeagueFixtures(state),
+    isTrainingWindow: employed ? isTrainingDay(state) : false,
+    nextTrainingDate: employed ? nextScheduledTrainingDate(state) : null,
+    remainingOfficialMatches: employed ? remainingLeagueFixtures(state) : 0,
+    remainingLeagueMatches: employed ? remainingLeagueFixtures(state) : 0,
     seasonObjectiveStatus: objective?.status ?? null,
     currentStanding: null,
     currentSquadStatus: squadStatus(current),
@@ -213,25 +215,25 @@ export function getSportContext(state: GameState): SportContext {
     currentSeasonPlayerStats: seasonStats,
     availability: {
       currentSeason: known(),
-      sportingClub: known(),
-      ownerClub: known(),
+      sportingClub: employed ? known() : unavailable(),
+      ownerClub: employed ? known() : unavailable(),
       careerAppearances: known(),
       officialDebutRecorded: known(),
-      currentCompetition: known(),
+      currentCompetition: employed ? known() : unavailable(),
       currentCompetitionStage: competitionContext.status === "authoritative" ? known() : unavailable(),
       latestCompetitionMoment: latestCompetition ? known() : unavailable(),
-      nextCompetitionFixture: known(),
-      competitionSchedule14: known(),
-      fixtureCongestion: known(),
-      nextFixture: known(),
+      nextCompetitionFixture: employed ? known() : unavailable(),
+      competitionSchedule14: employed ? known() : unavailable(),
+      fixtureCongestion: congestion.status === "authoritative" ? known() : unavailable(),
+      nextFixture: employed ? known() : unavailable(),
       previousFixture: milestonesKnown ? known() : unavailable(),
       lastPlayerAppearance: milestonesKnown ? known() : unavailable(),
-      hoursToNextFixture: known(),
-      isMatchDay: known(),
-      isTrainingWindow: known(),
-      nextTrainingDate: known(),
-      remainingOfficialMatches: known(),
-      remainingLeagueMatches: known(),
+      hoursToNextFixture: employed ? known() : unavailable(),
+      isMatchDay: employed ? known() : unavailable(),
+      isTrainingWindow: employed ? known() : unavailable(),
+      nextTrainingDate: employed ? known() : unavailable(),
+      remainingOfficialMatches: employed ? known() : unavailable(),
+      remainingLeagueMatches: employed ? known() : unavailable(),
       seasonObjectiveStatus: objective ? known() : unavailable(),
       currentStanding: unavailable(),
       currentSquadStatus: milestonesKnown ? known() : unavailable(),
@@ -263,7 +265,7 @@ export function getLastPlayerAppearanceContext(state: GameState): LastPlayerAppe
 
 /** Current-match projection over persisted sporting rows for today's football cycle. */
 export function getCurrentMatchContext(state: GameState): CurrentMatchContext {
-  const match = currentOfficialMatch(state);
+  const match = hasActiveClubEmployment(state) ? currentOfficialMatch(state) : null;
   if (!match) {
     return {
       status: "no_current_match",
