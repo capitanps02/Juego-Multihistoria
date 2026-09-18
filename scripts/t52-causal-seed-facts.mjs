@@ -12,11 +12,17 @@ export const T52_CAUSAL_SEED_FACTS = Object.freeze({
   'facts.exitStyleEnd': 'SEED_EXIT_STYLE_UDV',
   'facts.exitStyleSummer': 'SEED_EXIT_STYLE_UDV',
   'facts.exitStyleMarket18': 'SEED_EXIT_STYLE_UDV',
+  'facts.exitStylePlayoff': 'SEED_EXIT_STYLE_UDV',
   'facts.exitStyleYear19': 'SEED_EXIT_STYLE_UDV',
   'facts.bodyPrecedentPattern': 'SEED_BODY_PRECEDENT',
   'facts.bodyPrecedentEarly': 'SEED_BODY_PRECEDENT',
   'facts.bodyPrecedentReturn19': 'SEED_BODY_PRECEDENT',
   'facts.physioConfidencePattern': 'SEED_PHYSIO_CONFIDENCE',
   'facts.physioConfidenceReturn19': 'SEED_PHYSIO_CONFIDENCE',
-  'facts.loadManagementPlan': 'SEED_LOAD_MANAGEMENT'
+  'facts.loadManagementPlan': 'SEED_LOAD_MANAGEMENT',
+  'facts.agentOmissionLive': 'SEED_AGENT_OMISSION',
+  'facts.agentPowerChoice': 'SEED_AGENT_POWER',
+  'facts.claraChannelMode': 'SEED_CLARA_CHANNEL',
+  'facts.daniNormalityPattern': 'SEED_DANI_NORMALITY',
+  'facts.publicContractChoice': 'SEED_PUBLIC_CONTRACT'
 });
