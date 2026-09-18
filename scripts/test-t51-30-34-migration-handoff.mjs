@@ -81,6 +81,29 @@ test('T5.1 30-34 los 18 shifted quedan fuera de la ruta actual y sin alias same-
   assert.equal(pairs.some(pair => mappedLegacy.has(pair.legacyCandidateId) && pair.canonicalId !== pair.legacyCandidateId), false);
 });
 
+test('T5.1 30-34 first shifted decision batch is explicit distinct_scene', () => {
+  const expected = [
+    'EVT_30_BRIDGE_001',
+    'EVT_30_STATUS_001',
+    'EVT_30_EUR_001',
+    'EVT_30_RECORD_001',
+    'EVT_30_PAIN_001'
+  ];
+  for (const canonicalId of expected) {
+    const pair = handoff.futureShiftedIdentityWork.pairs.find(row => row.canonicalId === canonicalId);
+    assert.ok(pair, `${canonicalId}: missing shifted pair`);
+    assert.equal(pair.decision, 'distinct_scene');
+    assert.equal(pair.sameSceneMigrationAllowed, false);
+    assert.equal(pair.migrationSemantics.inheritSeen, false);
+    assert.equal(pair.migrationSemantics.inheritCooldown, false);
+    assert.equal(pair.migrationSemantics.rebindPending, false);
+    assert.equal(pair.migrationSemantics.rewriteHistory, false);
+    assert.equal(pair.migrationSemantics.rewriteSeedOrigin, false);
+    assert.match(pair.decisionReason, /generic|different|distinct|age/i);
+  }
+  assert.equal(handoff.futureShiftedIdentityWork.resolvedDistinctSceneCount >= 5, true);
+});
+
 test('T5.1 30-34 documenta la doble colisión especial de EVT_31_TEAM_001', () => {
   const pair = handoff.futureShiftedIdentityWork.pairs.find(row => row.canonicalId === 'EVT_31_TEAM_001');
   assert.ok(pair);
