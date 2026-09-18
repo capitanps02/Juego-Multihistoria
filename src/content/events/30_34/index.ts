@@ -5,6 +5,7 @@ import { CANONICAL_REIMPLEMENTATIONS_31B } from "./canonical-reimplementations-3
 import { CANONICAL_REIMPLEMENTATIONS_32A } from "./canonical-reimplementations-32a.js";
 import { CANONICAL_REIMPLEMENTATIONS_33A } from "./canonical-reimplementations-33a.js";
 import { CANONICAL_ADDITIONS_30_34 } from "./canonical-missing-principals.js";
+import { PREPARED_SHIFTED_CANON_30_34_B } from "./canonical-shifted-prepared-b.js";
 
 const reimplementedIds=new Set([
   "EVT_30_CON_001","EVT_30_BODY_001","EVT_30_MKT_001","EVT_30_NAT_001",
@@ -178,4 +179,19 @@ const principal:EventDefinition[]=PRINCIPAL_EVENTS_30_34.filter(original=>!super
   return {...event,canonStatus:"technical_adaptation",tags:[...new Set(tags)]};
 });
 
-export const EVENTS_30_34=[...principal,...CANONICAL_ADDITIONS_30_34];
+const richOfferSource=PREPARED_SHIFTED_CANON_30_34_B.find(event=>event.id==="EVT_32_RICH_001");
+if(!richOfferSource) throw new Error("Missing prepared EVT_32_RICH_001");
+const richOffer=enforceCareerAuthority({
+  ...richOfferSource,
+  gates:[
+    ...(richOfferSource.gates??[]),
+    {path:"facts.pendingCareerOffer.context.kind",op:"eq",value:"late_rich_offer"}
+  ],
+  tags:[...new Set([
+    ...(richOfferSource.tags??[]).filter(tag=>tag!=="t51_blocked_rich_offer_threshold"),
+    "t51_rich_offer_authority_required",
+    "t51_offer_authority_bridge"
+  ])]
+});
+
+export const EVENTS_30_34=[...principal,...CANONICAL_ADDITIONS_30_34,richOffer];

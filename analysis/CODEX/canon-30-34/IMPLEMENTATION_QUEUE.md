@@ -30,12 +30,15 @@ A7 no registra el freeze/edge de contentIdentity. El target final debe tomarse d
 | EVT_31_TEAM_001 | LEGACY_CAPITAL alto | canon | threshold canónico | legacyCapital arbitrario sin threshold no habilita |
 | EVT_31_SQUAD_001 | SUCCESSION_PRESSURE alto | canon/A2 | threshold + identidad SEED_SUCCESSION_DECISION | no materializar seed ausente |
 | EVT_31_BIZ_001 | WEALTH_STRUCTURE/PERSONAL_BRAND altos | canon | thresholds canónicos | riqueza genérica no habilita |
-| EVT_32_RICH_001 | oferta formal excepcionalmente rica vs mercado | A3 | offer benchmark / rich-offer fact | marketHeat no sustituye oferta |
 | EVT_32_ELITE_001 | oferta de candidato máximo con rol de rotación explícito + TROPHY_HUNGER | A3/canon | offer role/minutes + threshold hunger | bigClub solo no habilita |
 | EVT_32_SUCCESSOR_001 | ausencia + sustituto excelente + equipo invicto | A4 | replacement recent performance/results | RECOVERING_INJURY solo no habilita |
 | EVT_32_LOAD_001 | calendario denso + viaje/carga real | A4 | congestion/travel-load authority | weekly 144/168 h no simula congestión |
 | EVT_32_BOSMAN_001 | Bosman real + precontrato/negociaciones paralelas | A3/A2 | multi-offer/precontract authority + seed identity | singleton pending no habilita paralelo |
 | EVT_33_RECORD_001 | récord a 6 apariciones + plan gestionado 4–5 titularidades | A4 | record-distance + role-plan authority | appearances agregado solo no habilita |
+
+## Authority consumida en esta pasada
+
+- `EVT_32_RICH_001`: activada con `facts.pendingCareerOffer.context.kind = late_rich_offer`; salario/ruta sin contexto explícito no habilitan la escena.
 
 ## Stable-ID gaps aún externos
 

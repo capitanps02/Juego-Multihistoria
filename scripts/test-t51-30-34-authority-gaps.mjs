@@ -7,7 +7,7 @@ import { eventGatesPass } from '../dist/narrative/event-gates.js';
 import { offerBridgeSpec } from '../dist/narrative/offer-bridge.js';
 import { narrativeConditionRoot } from '../dist/simulation/club-contract-intent.js';
 import { LOCKER_LEADERSHIP_ASSIGNMENTS } from '../dist/simulation/locker-leadership.js';
-import { careerTerms, getActiveCareerOffers, getEligibleCareerOffers } from '../dist/simulation/offers.js';
+import { careerTerms, getActiveCareerOffers, getEligibleCareerOffers, proposeCareerChange } from '../dist/simulation/offers.js';
 import { certifyPlayerClubLeadershipInPlace } from '../dist/simulation/player-leadership-authority.js';
 
 const authorityDebt = JSON.parse(fs.readFileSync('analysis/T5.1/canon-30-34-authority-debt.json', 'utf8'));
@@ -123,6 +123,44 @@ test('formal CareerTerms cannot yet prove the minutes-based renewal clause asser
   const event = byId('EVT_32_CON_001');
   assert.equal(event.canonStatus, 'technical_adaptation');
   assert.ok(offerBridgeSpec(event), 'the scene may consume a formal offer without claiming clause parity');
+});
+
+test('EVT_32_RICH_001 consumes only explicit formal late-rich offer context', () => {
+  const event = byId('EVT_32_RICH_001');
+  assert.equal(event.canonStatus, 'technical_adaptation');
+  assert.ok(event.tags?.includes('t51_rich_offer_authority_required'));
+  assert.ok(event.gates.some(g =>
+    g.path === 'facts.pendingCareerOffer.context.kind'
+    && g.op === 'eq'
+    && g.value === 'late_rich_offer'
+  ));
+  assert.deepEqual(['A','B','C','D'].map(id => offerBridgeSpec(event)?.choiceActions[id]), ['accept','reject','counter','defer']);
+
+  const ordinary = veteranState(32);
+  proposeCareerChange(ordinary, 'Oferta internacional enorme', draft => {
+    draft.club = 'Very Rich FC';
+    draft.professional.route = 'abroad';
+    draft.flags.ABROAD_ROUTE = true;
+    draft.contract.monthsRemaining = 36;
+    draft.contract.salaryMonthly = 999999;
+  });
+  assert.equal(eventGatesPass(ordinary, event), false, 'salary/route alone must not fabricate rich-offer authority');
+
+  const rich = veteranState(32);
+  proposeCareerChange(rich, 'Oferta internacional de final de carrera', draft => {
+    draft.club = 'Global City FC';
+    draft.professional.route = 'abroad';
+    draft.flags.ABROAD_ROUTE = true;
+    draft.contract.monthsRemaining = 36;
+    draft.contract.salaryMonthly = 25000;
+  }, {
+    kind: 'late_rich_offer',
+    housing: 'Vivienda familiar incluida.',
+    calendar: 'Calendario doméstico concentrado.',
+    commercialRole: 'Embajador internacional.'
+  });
+  assert.equal(narrativeConditionRoot(rich).facts.pendingCareerOffer?.context?.kind, 'late_rich_offer');
+  assert.equal(eventGatesPass(rich, event), true);
 });
 
 test('shared market authority exposes at most the single persisted pending CareerOffer', () => {

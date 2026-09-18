@@ -171,7 +171,7 @@ test('prepared shifted batch A is owner-complete but remains outside active EVEN
 });
 
 
-test('prepared shifted batch B is owner-complete and blocked only on exact external gates', () => {
+test('prepared shifted batch B stays owner-complete while the rich-offer scene activates on exact authority', () => {
   const expected = new Map([
     ['EVT_31_TEAM_001', ['SEED_FORMAL_MENTOR','SEED_MENTOR_ADVICE']],
     ['EVT_31_SQUAD_001', ['SEED_SQUAD_YOUTH_WAVE',null]],
@@ -182,7 +182,8 @@ test('prepared shifted batch B is owner-complete and blocked only on exact exter
   assert.equal(PREPARED_SHIFTED_CANON_30_34_B.length,5);
   for(const prepared of PREPARED_SHIFTED_CANON_30_34_B){
     assert.equal(expected.has(prepared.id),true,prepared.id);
-    assert.equal(EVENTS.some(event=>event.id===prepared.id),false,`${prepared.id}: must stay unscheduled before its authority gate`);
+    const shouldBeActive=prepared.id==='EVT_32_RICH_001';
+    assert.equal(EVENTS.some(event=>event.id===prepared.id),shouldBeActive,`${prepared.id}: authority activation mismatch`);
     assert.deepEqual(prepared.choices.map(choice=>choice.id),['A','B','C','D']);
     const [write,read]=expected.get(prepared.id);
     assert.deepEqual(prepared.seedsWrite,[write]);
@@ -280,6 +281,6 @@ test('all 18 shifted principals are either active canonical scenes or owner-comp
     shiftedIds.filter(id=>!active.has(id)&&!prepared.has(id)),
     []
   );
-  assert.equal(shiftedIds.filter(id=>active.has(id)).length,4);
-  assert.equal(shiftedIds.filter(id=>prepared.has(id)).length,14);
+  assert.equal(shiftedIds.filter(id=>active.has(id)).length,5);
+  assert.equal(shiftedIds.filter(id=>prepared.has(id)&&!active.has(id)).length,13);
 });
