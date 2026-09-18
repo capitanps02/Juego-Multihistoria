@@ -260,27 +260,72 @@
       {
         "canonicalId": "EVT_30_BRIDGE_001",
         "legacyCandidateId": "EVT_30_IDN_001",
-        "sameSceneMigrationAllowed": false
+        "sameSceneMigrationAllowed": false,
+        "decision": "distinct_scene",
+        "decisionReason": "Legacy EVT_30_IDN_001 shares the title/seed shell but uses generic choices and outcomes; canonical trigger, four choices, uncertainty and consequences are different.",
+        "migrationSemantics": {
+          "inheritSeen": false,
+          "inheritCooldown": false,
+          "rebindPending": false,
+          "rewriteHistory": false,
+          "rewriteSeedOrigin": false
+        }
       },
       {
         "canonicalId": "EVT_30_STATUS_001",
         "legacyCandidateId": "EVT_30_TEAM_001",
-        "sameSceneMigrationAllowed": false
+        "sameSceneMigrationAllowed": false,
+        "decision": "distinct_scene",
+        "decisionReason": "Legacy EVT_30_TEAM_001 is a generic maturity shell; canonical dorsal request has different trigger, information, four choices and succession consequences.",
+        "migrationSemantics": {
+          "inheritSeen": false,
+          "inheritCooldown": false,
+          "rebindPending": false,
+          "rewriteHistory": false,
+          "rewriteSeedOrigin": false
+        }
       },
       {
         "canonicalId": "EVT_30_EUR_001",
         "legacyCandidateId": "EVT_30_FINAL_001",
-        "sameSceneMigrationAllowed": false
+        "sameSceneMigrationAllowed": false,
+        "decision": "distinct_scene",
+        "decisionReason": "Legacy EVT_30_FINAL_001 uses generic maturity choices plus FINAL_CONTEXT; canonical scene is a continental semifinal tactical-role decision with distinct choices and consequences.",
+        "migrationSemantics": {
+          "inheritSeen": false,
+          "inheritCooldown": false,
+          "rebindPending": false,
+          "rewriteHistory": false,
+          "rewriteSeedOrigin": false
+        }
       },
       {
         "canonicalId": "EVT_30_RECORD_001",
         "legacyCandidateId": "EVT_31_REC_001",
-        "sameSceneMigrationAllowed": false
+        "sameSceneMigrationAllowed": false,
+        "decision": "distinct_scene",
+        "decisionReason": "Legacy EVT_31_REC_001 occurs at age 31 with generic maturity choices; canonical Partido 500 is age 30 and requires a real milestone/load decision.",
+        "migrationSemantics": {
+          "inheritSeen": false,
+          "inheritCooldown": false,
+          "rebindPending": false,
+          "rewriteHistory": false,
+          "rewriteSeedOrigin": false
+        }
       },
       {
         "canonicalId": "EVT_30_PAIN_001",
         "legacyCandidateId": "EVT_33_MED_001",
-        "sameSceneMigrationAllowed": false
+        "sameSceneMigrationAllowed": false,
+        "decision": "distinct_scene",
+        "decisionReason": "Legacy EVT_33_MED_001 occurs at age 33 with generic maturity choices; canonical clean-scan persistent-pain decision is age 30 with different medical uncertainty and choices.",
+        "migrationSemantics": {
+          "inheritSeen": false,
+          "inheritCooldown": false,
+          "rebindPending": false,
+          "rewriteHistory": false,
+          "rewriteSeedOrigin": false
+        }
       },
       {
         "canonicalId": "EVT_30_NANO_001",
@@ -348,7 +393,8 @@
         "legacyCandidateId": "EVT_33_END_001",
         "sameSceneMigrationAllowed": false
       }
-    ]
+    ],
+    "resolvedDistinctSceneCount": 5
   },
   "futureCanonicalMissingWork": {
     "ids": [
