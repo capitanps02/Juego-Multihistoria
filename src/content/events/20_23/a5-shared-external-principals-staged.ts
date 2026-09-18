@@ -3,30 +3,11 @@ import { ambiguousEvent, n, seedCreate } from "../18_20/helpers.js";
 
 const intensify = (seedId: string, intensity: number): SeedTransition => ({ seedId, action: "intensify", intensity });
 
-/**
- * Seven non-market/non-medical/non-agent principals that remain external-fact blocked.
- * Agent/market/medical principals live in their dedicated staged modules so every
- * canonical ID has exactly one owner-side definition in the A5 final branch.
- */
+/** Remaining non-agent/non-market/non-medical/non-sport owner-ready principals. */
 export const A5_SHARED_EXTERNAL_PRINCIPAL_REQUIREMENTS = Object.freeze({
-  EVT_20_MATCH_003: { owner:"A4", facts:["official match score","coach order","player on pitch at minute 65"], forbidden:["role/form as live-match fact","narrative RNG score"] },
   EVT_21_MONEY_001: { owner:"world/family", facts:["real family debt/request","amount/provenance"], forbidden:["cash threshold as family debt"] },
-  EVT_21_NAT_001: { owner:"A4/#174", facts:["official national-team list","protagonist omitted from that list"], forbidden:["nationalStanding as call-up","heat as list"] },
   EVT_21_CCH_002: { owner:"A1/shared-coach", facts:["actual current-club coach transition","new tactical-role assignment"], forbidden:["COACH_FIRED history as current change","fixed coach after club change"] },
-  EVT_22_LOCK_001: { owner:"A1/world", facts:["specific teammate sale case","salary conflict","participants","knowledge provenance"], forbidden:["lockerPower as sale fact","invented teammate"] },
-  EVT_22_HOME_001: { owner:"A4", facts:["official fixture against UDV/former home club","participation context"], forbidden:["calendar month as fixture","exit seed as match fact"] },
-  EVT_22_TACT_001: { owner:"A4+A1/coach", facts:["official high-value match","concrete tactical role/order","current coach authority"], forbidden:["roleScore as order","invented tactical moment"] }
-});
-
-const EVT_20_MATCH_003=ambiguousEvent({
- id:"EVT_20_MATCH_003",ageWindow:[20,20],phase:"20_23",family:"sport",title:"El minuto 65",
- body:"En un partido oficial, el entrenador cambia tu tarea en el minuto 65. Marcador, orden y tu presencia en campo deben existir como hechos A4 antes de que esta escena pueda activarse.",
- visible:["Conoces el marcador y la orden concreta cuando el match store los acredita.","Tus estadísticas recientes son contexto, no sustituto del momento."],uncertain:["No sabes qué valoran los scouts ni cuánto margen táctico tolerará el entrenador."],weight:13,
- choices:[
-  {id:"STRICT",label:"Cumplir de forma estricta",intentTags:["tactical","discipline"],primaryMessage:"Priorizas la orden incluso si reduce tus acciones visibles.",secondaryMessage:"La disciplina puede ganar confianza y dejar menos highlights.",primaryEffects:[n("professional.roleSecurity",4)],secondaryEffects:[n("reputation.marketHeat",-1)]},
-  {id:"HYBRID",label:"Cumplir sin renunciar a atacar cuando el contexto lo permita",intentTags:["tactical","adapt"],primaryMessage:"Buscas una lectura híbrida entre obediencia y oportunidad.",secondaryMessage:"La interpretación puede resolver el partido o parecer una licencia que nadie concedió.",primaryEffects:[n("professional.roleSecurity",2),n("control.career",2)],secondaryEffects:[n("professional.environmentStability",-2)]},
-  {id:"OWN_GAME",label:"Mantener tu juego y asumir el riesgo",intentTags:["identity","risk"],primaryMessage:"Proteges tu perfil ofensivo aunque te apartes de la orden.",secondaryMessage:"Una jugada decisiva puede justificarte o una sustitución inmediata dejar el conflicto abierto.",primaryEffects:[n("reputation.marketHeat",3)],secondaryEffects:[n("professional.roleSecurity",-6),n("reputation.mediaHeat",2)]}
- ],seedsRead:["SEED_MENA_EARLY_READ"],tags:["sport","live_match","tactical","a5_ready_external_blocker"],canonStatus:"verified"
+  EVT_22_LOCK_001: { owner:"A1/world", facts:["specific teammate sale case","salary conflict","participants","knowledge provenance"], forbidden:["lockerPower as sale fact","invented teammate"] }
 });
 
 const EVT_21_MONEY_001=ambiguousEvent({
@@ -39,18 +20,6 @@ const EVT_21_MONEY_001=ambiguousEvent({
   {id:"NO_MONEY",label:"No intervenir económicamente",intentTags:["family","autonomy"],primaryMessage:"Mantienes separadas carrera y responsabilidad económica familiar.",secondaryMessage:"La frontera preserva autonomía y puede dejar crecer un problema real.",primaryEffects:[n("control.career",4)],secondaryEffects:[n("rel.NPC_FAM_01.trust",-4)],primarySeedTransitions:[seedCreate("SEED_FAMILY_MONEY",50,{stance:"decline"})],secondarySeedTransitions:[seedCreate("SEED_FAMILY_MONEY",56,{stance:"decline",problem_persists:true})]},
   {id:"ASK_DOCUMENTS",label:"Pedir documentos y entender primero el problema",intentTags:["family","information"],primaryMessage:"Decides desde datos en vez de desde culpa o abundancia.",secondaryMessage:"La prudencia aclara el problema y puede sentirse humillante para quien pidió ayuda.",primaryEffects:[n("control.career",5)],secondaryEffects:[n("rel.NPC_FAM_02.affinity",-2)],primarySeedTransitions:[seedCreate("SEED_FAMILY_MONEY",54,{stance:"ask_documents"})],secondarySeedTransitions:[seedCreate("SEED_FAMILY_MONEY",58,{stance:"ask_documents",felt_distrusted:true})]}
  ],seedsWrite:["SEED_FAMILY_MONEY"],npcRefs:["NPC_FAM_01","NPC_FAM_02"],tags:["family","money","a5_ready_external_blocker"],canonStatus:"verified"
-});
-
-const EVT_21_NAT_001=ambiguousEvent({
- id:"EVT_21_NAT_001",ageWindow:[21,21],phase:"20_23",family:"selection",title:"La ausencia",
- body:"La lista oficial sale sin tu nombre. Solo una lista concreta puede demostrar la ausencia; standing, heat y caps son contexto agregado.",
- visible:["La lista es oficial cuando #174 la materializa."],uncertain:["No sabes si estuviste cerca, si pesa tu club o si nunca te consideraron."],weight:10,
- choices:[
-  {id:"DO_MORE",label:"Decir que debes hacer más",intentTags:["selection","humble"],primaryMessage:"Conviertes la ausencia en una exigencia propia sin atribuir motivos al seleccionador.",secondaryMessage:"La respuesta es prudente y puede pasar desapercibida.",primaryEffects:[n("professional.nationalHeat",2),n("professional.environmentStability",2)],secondaryEffects:[n("professional.nationalHeat",1)],primarySeedTransitions:[seedCreate("SEED_SELECTION_SNUB",50,{stance:"do_more"})],secondarySeedTransitions:[seedCreate("SEED_SELECTION_SNUB",54,{stance:"do_more",quiet:true})]},
-  {id:"MERIT_FIELD",label:"Decir que los méritos deberían medirse en el campo",intentTags:["selection","public"],primaryMessage:"Defiendes tu rendimiento sin afirmar conocer la causa de la lista.",secondaryMessage:"La frase proyecta hambre o se lee como crítica al criterio de selección.",primaryEffects:[n("professional.nationalHeat",4),n("reputation.mediaHeat",2)],secondaryEffects:[n("reputation.mediaHeat",5),n("professional.publicPolarization",3)],primarySeedTransitions:[seedCreate("SEED_SELECTION_SNUB",64,{stance:"merit_field"})],secondarySeedTransitions:[seedCreate("SEED_SELECTION_SNUB",70,{stance:"merit_field",critical_read:true})]},
-  {id:"NO_SELECTION_TALK",label:"No hablar de selección",intentTags:["selection","silence"],primaryMessage:"Evitas construir una explicación sin datos.",secondaryMessage:"El silencio protege del error y deja a otros llenar el vacío.",primaryEffects:[n("professional.environmentStability",3)],secondaryEffects:[n("reputation.mediaHeat",2)],primarySeedTransitions:[seedCreate("SEED_SELECTION_SNUB",46,{stance:"silence"})],secondarySeedTransitions:[seedCreate("SEED_SELECTION_SNUB",50,{stance:"silence",others_speculate:true})]},
-  {id:"PRIVATE_CHECK",label:"Llamar a tu agente para averiguar por vías privadas antes de responder",intentTags:["selection","agent","information"],eligibility:[{path:"facts.activeAgentNpcId",op:"exists"}],primaryMessage:"Buscas contexto sin presentarlo como verdad pública.",secondaryMessage:"La investigación puede aportar una pista o fabricar una certeza a partir de rumores.",primaryEffects:[n("control.career",4)],secondaryEffects:[n("professional.agentControl",2)],primarySeedTransitions:[seedCreate("SEED_SELECTION_SNUB",56,{stance:"private_check"})],secondarySeedTransitions:[seedCreate("SEED_SELECTION_SNUB",62,{stance:"private_check",uncertain_source:true})]}
- ],seedsWrite:["SEED_SELECTION_SNUB"],tags:["selection","official_list","a5_ready_external_blocker"],canonStatus:"verified"
 });
 
 const EVT_21_CCH_002=ambiguousEvent({
@@ -77,31 +46,6 @@ const EVT_22_LOCK_001=ambiguousEvent({
  ],seedsWrite:["SEED_LOCKER_VOTE"],tags:["locker","sale_conflict","a5_ready_external_blocker"],canonStatus:"verified"
 });
 
-const EVT_22_HOME_001=ambiguousEvent({
- id:"EVT_22_HOME_001",ageWindow:[22,22],phase:"20_23",family:"sport",title:"El partido contra casa",
- body:"Tu club actual se cruza oficialmente con UDV o tu club de origen. El fixture y tu participación deben existir en A4; la memoria de cómo saliste solo cambia el significado de tus gestos.",
- visible:["Conoces tu salida previa y el ambiente cuando existe fixture real."],uncertain:["No sabes qué gesto leerán como respeto, cálculo o deslealtad."],
- gates:[{path:"club",op:"neq",value:"UDV"},{path:"facts.exitStyleYear19",op:"exists"}],weight:10,
- choices:[
-  {id:"GREET",label:"Saludar a la grada antes del partido",intentTags:["home","respect"],primaryMessage:"Haces un gesto explícito antes de que el resultado condicione la lectura.",secondaryMessage:"El saludo puede reconciliar o parecer ensayado.",primaryEffects:[n("professional.environmentStability",3)],secondaryEffects:[n("reputation.mediaHeat",2)],primarySeedTransitions:[seedCreate("SEED_HOME_DISTANCE",54,{stance:"greet"})],secondarySeedTransitions:[seedCreate("SEED_HOME_DISTANCE",58,{stance:"greet",calculated_read:true})]},
-  {id:"ROUTINE",label:"Mantener rutina y no teatralizar",intentTags:["home","professional"],primaryMessage:"Tratas el partido como competición sin negar tu historia.",secondaryMessage:"La normalidad evita gesto artificial y puede parecer distancia.",primaryEffects:[n("control.career",3)],secondaryEffects:[n("professional.publicPolarization",2)],primarySeedTransitions:[seedCreate("SEED_HOME_DISTANCE",50,{stance:"routine"})],secondarySeedTransitions:[seedCreate("SEED_HOME_DISTANCE",54,{stance:"routine",distance_read:true})]},
-  {id:"NO_CELEBRATE",label:"Si marcas, no celebrar",intentTags:["home","symbolic"],primaryMessage:"Reservas un gesto de respeto si el hecho deportivo llega a ocurrir.",secondaryMessage:"El gesto puede agradar al origen y molestar a tu afición actual.",primaryEffects:[n("professional.environmentStability",2)],secondaryEffects:[n("professional.publicPolarization",3)],primarySeedTransitions:[seedCreate("SEED_HOME_DISTANCE",58,{stance:"no_celebrate"})],secondarySeedTransitions:[seedCreate("SEED_HOME_DISTANCE",62,{stance:"no_celebrate",current_fans_cost:true})]},
-  {id:"DECIDE_LIVE",label:"Decidir la celebración solo en el momento según el ambiente",intentTags:["home","adaptive"],primaryMessage:"No prometes un gesto condicionado a un gol que quizá no ocurra.",secondaryMessage:"La flexibilidad evita teatralidad y deja la lectura a un instante de presión.",primaryEffects:[n("control.career",4)],secondaryEffects:[n("reputation.mediaHeat",1)],primarySeedTransitions:[seedCreate("SEED_HOME_DISTANCE",52,{stance:"decide_live"})],secondarySeedTransitions:[seedCreate("SEED_HOME_DISTANCE",56,{stance:"decide_live",ambiguous_read:true})]}
- ],seedsRead:["SEED_EXIT_STYLE_UDV"],seedsWrite:["SEED_HOME_DISTANCE"],tags:["home","former_club_fixture","a5_ready_external_blocker"],canonStatus:"verified"
-});
-
-const EVT_22_TACT_001=ambiguousEvent({
- id:"EVT_22_TACT_001",ageWindow:[22,22],phase:"20_23",family:"tactical",title:"Noventa minutos que no te favorecen",
- body:"En un partido grande, el plan te asigna un trabajo útil que probablemente reduzca tus estadísticas. El rol y el partido deben ser hechos A4/coach, no una deducción de roleScore.",
- visible:["Conoces la tarea y su coste probable cuando la orden es real."],uncertain:["No sabes si mercado y selección valorarán esa labor ni si el plan funcionará."],weight:10,
- choices:[
-  {id:"ACCEPT",label:"Aceptar sin discutir",intentTags:["tactical","team"],primaryMessage:"Priorizas la tarea del equipo sin reservar condiciones.",secondaryMessage:"Puedes volverte imprescindible y quedar etiquetado en un rol menos brillante.",primaryEffects:[n("professional.roleSecurity",4),n("professional.roleAdaptability",3)],secondaryEffects:[n("reputation.marketHeat",-2)],primarySeedTransitions:[seedCreate("SEED_TACTICAL_SACRIFICE",58,{stance:"accept"})],secondarySeedTransitions:[seedCreate("SEED_TACTICAL_SACRIFICE",64,{stance:"accept",market_cost:true})]},
-  {id:"ATTACK_FREEDOM",label:"Aceptar y pedir una libertad ofensiva concreta",intentTags:["tactical","negotiate"],primaryMessage:"Intentas proteger una salida ofensiva dentro del plan colectivo.",secondaryMessage:"La petición puede mejorar la tarea o parecer negociación en vísperas del partido.",primaryEffects:[n("professional.roleAdaptability",4),n("control.career",3)],secondaryEffects:[n("professional.roleSecurity",-2)],primarySeedTransitions:[seedCreate("SEED_TACTICAL_SACRIFICE",60,{stance:"attack_freedom"})],secondarySeedTransitions:[seedCreate("SEED_TACTICAL_SACRIFICE",65,{stance:"attack_freedom",coach_cost:true})]},
-  {id:"MORE_ON_BALL",label:"Decir que puedes ayudar más con balón",intentTags:["tactical","identity"],primaryMessage:"Discutes el encaje deportivo sin negar la necesidad del equipo.",secondaryMessage:"La observación puede mejorar el plan o parecer resistencia a una tarea incómoda.",primaryEffects:[n("control.career",4)],secondaryEffects:[n("professional.environmentStability",-2)],primarySeedTransitions:[seedCreate("SEED_TACTICAL_SACRIFICE",62,{stance:"more_ball"})],secondarySeedTransitions:[seedCreate("SEED_TACTICAL_SACRIFICE",67,{stance:"more_ball",resistance_read:true})]},
-  {id:"SCOUT_CONTEXT",label:"Aceptar pero pedir al agente que prepare contexto para scouts",intentTags:["tactical","agent","market"],eligibility:[{path:"facts.activeAgentNpcId",op:"exists"}],primaryMessage:"Aceptas el rol y separas el relato de mercado de la decisión táctica.",secondaryMessage:"Contextualizar puede ser profesional o parecer obsesión por proteger estadísticas.",primaryEffects:[n("professional.agentControl",2),n("control.career",2)],secondaryEffects:[n("reputation.mediaHeat",2)],primarySeedTransitions:[seedCreate("SEED_TACTICAL_SACRIFICE",64,{stance:"scout_context"})],secondarySeedTransitions:[seedCreate("SEED_TACTICAL_SACRIFICE",69,{stance:"scout_context",image_read:true})]}
- ],seedsWrite:["SEED_TACTICAL_SACRIFICE"],tags:["tactical","big_match","a5_ready_external_blocker"],canonStatus:"verified"
-});
-
 export const A5_SHARED_EXTERNAL_OWNER_READY_PRINCIPALS: EventDefinition[] = [
-  EVT_20_MATCH_003, EVT_21_MONEY_001, EVT_21_NAT_001, EVT_21_CCH_002, EVT_22_LOCK_001, EVT_22_HOME_001, EVT_22_TACT_001
+  EVT_21_MONEY_001, EVT_21_CCH_002, EVT_22_LOCK_001
 ];
