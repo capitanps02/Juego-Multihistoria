@@ -1,3 +1,4 @@
+// A11 exact-head career-milestone certification trigger.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createInitialState } from '../dist/content/initial-state.js';
