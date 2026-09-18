@@ -9,14 +9,11 @@ test('T5-QA-027: canonical LOCK23 captain escalation is fail-closed at choice pr
   const event = EVENTS.find(candidate => candidate.id === LOCK23_ID);
   assert.ok(event, 'EVT_23_LOCK_001 must remain represented in the active catalog');
 
-  if (event.text.title !== CANONICAL_TITLE) {
-    assert.equal(
-      event.canonStatus,
-      'technical_adaptation',
-      'a non-canonical LOCK23 replacement must not masquerade as verified canon'
-    );
-    return;
-  }
+  assert.equal(
+    event.text.title,
+    CANONICAL_TITLE,
+    'final T5 certification requires the canonical LOCK23 scene to be active, not the technical placeholder'
+  );
 
   const byId = new Map(event.choices.map(choice => [choice.id, choice]));
   for (const id of ['A', 'B', 'C', 'D']) assert.ok(byId.has(id), `canonical LOCK23 missing choice ${id}`);
