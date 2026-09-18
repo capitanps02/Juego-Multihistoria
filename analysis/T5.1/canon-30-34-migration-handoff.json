@@ -518,7 +518,6 @@
     "ids": [
       "EVT_30_PRS_001",
       "EVT_30_NAT_002",
-      "EVT_30_JAN_001",
       "EVT_31_ROLE_001"
     ],
     "migrationRule": "Each canonical addition starts unseen with no inherited cooldown or synthesized history unless an independently approved mapping exists."
@@ -540,7 +539,8 @@
   ],
   "currentCanonicalAdditions": {
     "ids": [
-      "EVT_30_CCH_001"
+      "EVT_30_CCH_001",
+      "EVT_30_JAN_001"
     ],
     "migrationRule": "The newly added canonical principal did not exist in the frozen upstream source. It starts unseen with no inherited cooldown, pending state or synthesized history; historical events are not rebound to it."
   },
