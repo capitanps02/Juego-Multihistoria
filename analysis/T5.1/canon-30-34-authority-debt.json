@@ -226,7 +226,7 @@
     },
     {
       "eventId": "EVT_31_MKT_001",
-      "status": "blocked_multi_offer_authority",
+      "status": "blocked_shared_multi_offer_authority",
       "canonicalClaim": "Two simultaneous formal proposals are compared: two years as a star versus one year at an elite contender.",
       "currentAuthority": "MarketState.pending persists one CareerOffer. getEligibleCareerOffers() is plural-shaped but is derived from that singleton pending field and therefore exposes at most one eligible offer.",
       "risk": "A single pending offer cannot prove either the existence or the terms of both alternatives.",
@@ -234,7 +234,7 @@
     },
     {
       "eventId": "EVT_33_MKT_001",
-      "status": "blocked_multi_offer_authority",
+      "status": "blocked_shared_multi_offer_authority",
       "canonicalClaim": "Four concrete proposal types are simultaneously available: continuity, title contender specialist, rich league, and UDV leadership.",
       "currentApproximation": ["reputation.marketHeat >= 30"],
       "currentAuthority": "MarketState.pending persists one CareerOffer. Exact eligible-offer reads do not add simultaneous-offer storage.",
