@@ -18,7 +18,7 @@ QA intenta falsar invariantes. No reescribe canon ni corrige silenciosamente run
 - T5-QA-025 — **RESOLVED** — #131.
 - T5-QA-027 — **OPEN / P2 / serialized owner** — #133; permanent future-canonical guard integrated in QA shared contract gate.
 - T5-QA-028 — **OPEN / P1 / spec-ready, execution-blocked** — #130; cadena `#207 -> #157 -> #130 -> #176`.
-- T5-QA-029 — **OPEN / P2 / owner-fix PR #214** — #212; re-grounded en `main@49f16b21...`, HEAD `78c0ca4e...`, 1 ahead / 0 behind; exact-head RI `35336619877` pendiente.
+- T5-QA-029 — **OPEN / P2 / owner-fix PR #214** — #212; re-grounded en `main@49f16b21...`, HEAD `6e22e423...`, 1 ahead / 0 behind; exact-head RI `35337045305` pendiente.
 - T5-QA-030 — **OPEN / P2 / canon owner** — #161. `EVT_33_CAP_001` en main sigue con gates vacíos; reproducción permanente exige fail-closed sin captain real.
 - T5-QA-031 — **OPEN / P2 / owner-fix PR #207** — #175. `CareerOffer.context` se valida en productor/read, pero no en save boundary; malformed persisted context se acepta.
 - T5-QA-032 — **OPEN / P2 / A1+save owner** — #241. `npc.knowledge` solo valida el contenedor; una fila corrupta puede entrar en save y luego desaparecer semánticamente al leerse.
@@ -52,7 +52,7 @@ Ejecución bloqueada hasta:
 ## Codex-ready QA
 
 **0 tareas runtime libres.**  
-`implementation-ready.json` conserva #212 como `owner_fix_open` y #130 como `blocked`.
+`implementation-ready.json` conserva #212/#207/#241 como owner-routed y #130 como `blocked`; QA no debe implementar runtime ajeno.
 
 ## Gates verdes del QA branch
 
