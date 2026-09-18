@@ -1,9 +1,15 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
 import { createInitialState } from '../dist/content/initial-state.js';
 import { EVENTS_30_34 } from '../dist/content/events/30_34/index.js';
 import { scheduleEvent } from '../dist/narrative/scheduler.js';
-import { certifyPlayerClubLeadershipInPlace } from '../dist/simulation/player-leadership-authority.js';
+import { loadSave, serializeSave } from '../dist/save/save.js';
+import {
+  certifyPlayerClubLeadershipInPlace,
+  resolveCurrentPlayerClubLeadership
+} from '../dist/simulation/player-leadership-authority.js';
 
 function age33September(seed) {
   const state = createInitialState(seed);
@@ -21,6 +27,27 @@ function capEvent() {
 
 function scheduled(state) {
   return scheduleEvent(state, [capEvent()], { ignoreRhythmGate: true });
+}
+
+function productionCaptainWriterCallsites() {
+  const root = path.resolve('src');
+  const out = [];
+  function visit(dir) {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        visit(full);
+        continue;
+      }
+      if (!entry.isFile() || !entry.name.endsWith('.ts')) continue;
+      const rel = path.relative(process.cwd(), full).replaceAll('\\', '/');
+      if (rel === 'src/simulation/player-leadership-authority.ts') continue;
+      const source = fs.readFileSync(full, 'utf8');
+      if (/certifyPlayerClubLeadershipInPlace\s*\(/.test(source)) out.push(rel);
+    }
+  }
+  visit(root);
+  return out.sort();
 }
 
 test('T5-QA-030/#161: EVT_33_CAP_001 fails closed without real main-club captain authority', () => {
@@ -54,4 +81,47 @@ test('T5-QA-030/#161: EVT_33_CAP_001 fails closed without real main-club captain
     );
     assert.deepEqual(state, before, `${label} check must not mutate state`);
   }
+});
+
+test('T5-QA-030b/#161: final T5 requires at least one production main-captain writer callsite', () => {
+  const callsites = productionCaptainWriterCallsites();
+  assert.ok(
+    callsites.length > 0,
+    'no production call-site certifies explicit main-club captain authority; consumer-only gating is not enough'
+  );
+});
+
+test('T5-QA-030c/#161: captain authority preserves provenance/save-load and never follows a club switch', () => {
+  const state = age33September(161005);
+  const beforeRng = structuredClone(state.rngState);
+
+  certifyPlayerClubLeadershipInPlace(state, 'captain', 'QA_EXPLICIT_CAPTAIN_APPOINTMENT', 'ACCEPT');
+  assert.deepEqual(resolveCurrentPlayerClubLeadership(state), {
+    clubId: state.club,
+    role: 'captain',
+    certifiedAt: state.date,
+    sourceEventId: 'QA_EXPLICIT_CAPTAIN_APPOINTMENT',
+    sourceChoiceId: 'ACCEPT'
+  });
+
+  const restored = loadSave(serializeSave(state));
+  assert.deepEqual(resolveCurrentPlayerClubLeadership(restored), resolveCurrentPlayerClubLeadership(state));
+  assert.deepEqual(restored.rngState, beforeRng, 'captain authority save/load must consume 0 RNG');
+
+  restored.club = 'NEW_CLUB';
+  restored.professional.ownerClub = 'NEW_CLUB';
+  restored.professional.registrationClub = 'NEW_CLUB';
+  assert.equal(
+    resolveCurrentPlayerClubLeadership(restored),
+    null,
+    'captaincy from the previous club must not follow the protagonist'
+  );
+
+  const switched = loadSave(serializeSave(restored));
+  assert.equal(resolveCurrentPlayerClubLeadership(switched), null, 'save/load must not retroactively promote captaincy at the new club');
+  const historical = switched.world.playerClubLeadershipAuthority?.currentLeadership;
+  assert.equal(historical?.clubId, state.club, 'historical provenance must remain bound to the original club');
+  assert.equal(historical?.sourceEventId, 'QA_EXPLICIT_CAPTAIN_APPOINTMENT');
+  assert.equal(historical?.sourceChoiceId, 'ACCEPT');
+  assert.deepEqual(switched.rngState, beforeRng);
 });
