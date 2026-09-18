@@ -14,12 +14,12 @@ test('terminal conditional exact-ID overlap cannot self-accredit without canonic
   const storybook=event('CEVT_RET_STORYBOOK_LAST_GOAL');
 
   assert.equal(postOffer.canonStatus,'technical_adaptation');
-  assert.equal(noLastMatch.canonStatus,'technical_adaptation');
+  assert.equal(noLastMatch.canonStatus,'verified');
   assert.equal(storybook.canonStatus,'technical_adaptation');
 
   assert.ok(postOffer.tags?.includes('t536_canonical_pending_terminal_reversal_contract'));
-  assert.ok(noLastMatch.tags?.includes('t536_compatibility_closure'));
-  assert.ok(noLastMatch.tags?.includes('t536_canonical_pending_injury_or_suspension_fact'));
+  assert.ok(noLastMatch.tags?.includes('t536_canonical_injury_unavailability_fact'));
+  assert.ok(noLastMatch.tags?.includes('t536_suspension_route_fail_closed'));
   assert.ok(storybook.tags?.includes('t536_canonical_pending_last_goal_fact'));
 });
 

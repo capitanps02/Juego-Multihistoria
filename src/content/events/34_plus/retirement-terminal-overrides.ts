@@ -258,15 +258,16 @@ export function applyRetirementTerminalOverrides(principal:EventDefinition[],con
   if(noLastMatch){
     noLastMatch.gates=[
       {path:"retirement.status",op:"eq",value:"announced"},
-      {path:"retirement.daysInStatus",op:"gte",value:60},
-      {path:"flags.LAST_MATCH_PLAYED",op:"neq",value:true}
+      {path:"facts.retirementNoLastMatch.eligible",op:"eq",value:true},
+      {path:"facts.retirementNoLastMatch.cause",op:"eq",value:"injury"}
     ];
-    noLastMatch.text={title:"No habrá un último partido ceremonial",body:"La retirada sigue adelante y la simulación no ha registrado una aparición posterior al anuncio. La carrera puede cerrarse sin inventar una despedida sobre el césped."};
+    noLastMatch.text={title:"La lesión impide el último partido",body:"La última oportunidad oficial posterior al anuncio quedó registrada como indisponibilidad por lesión y no existe una aparición posterior. El cierre reconoce esos hechos; no fabrica una despedida."};
+    noLastMatch.intel={visible:["última aparición factual","última fixture oficial","indisponibilidad por lesión"],uncertain:["cómo se recordará un cierre sin despedida sobre el césped"]};
     noLastMatch.choices=[
       c("ACCEPT","Aceptar el cierre sin aparición",[s("retirement.status","closed"),s("retirement.closureType","no_last_match")]),
       c("PRIVATE_FAREWELL","Cerrar la etapa sin ceremonia deportiva",[s("retirement.status","closed"),s("retirement.closureType","no_last_match"),f("FAREWELL_PRIVATE")])
     ];
-    noLastMatch.outcomes=outcomes(noLastMatch.choices,"La carrera se cierra administrativamente sin fabricar un partido.");
+    noLastMatch.outcomes=outcomes(noLastMatch.choices,"La carrera se cierra sobre una ausencia causada por lesión ya registrada por Sport.");
     verified(noLastMatch);
   }
 

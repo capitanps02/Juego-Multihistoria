@@ -26,9 +26,9 @@ export function enforceRetirementTerminalCanonicalAccreditation(conditional:Even
 
   const noLastMatch=conditional.find(event=>event.id==="CEVT_RET_NO_LAST_MATCH");
   if(noLastMatch){
-    noLastMatch.canonStatus="technical_adaptation";
-    tag(noLastMatch,"t536_compatibility_closure");
-    tag(noLastMatch,"t536_canonical_pending_injury_or_suspension_fact");
+    noLastMatch.canonStatus="verified";
+    tag(noLastMatch,"t536_canonical_injury_unavailability_fact");
+    tag(noLastMatch,"t536_suspension_route_fail_closed");
   }
 
   const storybook=conditional.find(event=>event.id==="CEVT_RET_STORYBOOK_LAST_GOAL");
