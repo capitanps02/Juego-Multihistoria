@@ -244,7 +244,7 @@
       "engineId": "EVT_31_FINAL_001",
       "status": "needs_reimplementation",
       "title": "La final de 70 minutos",
-      "implementation": "canonical override; now fails closed unless authoritative current competition and next fixture exist. Exact planned-minutes/role parity remains unproved"
+      "implementation": "canonical override; currentCompetition/nextFixture are now populated by the weekly league model, so existence-only sport gates are partial and do not prove a final. Exact competition-stage plus planned-minutes/role parity remains unproved"
     },
     {
       "canonicalId": "EVT_31_BIZ_001",
@@ -328,7 +328,7 @@
       "engineId": "EVT_33_BODY_001",
       "status": "needs_reimplementation",
       "title": "Dos partidos en 72 horas",
-      "implementation": "canonical override; now fails closed unless authoritative next fixture and hours-to-next-fixture exist. Remaining high-intensity/start-role parity is unproved"
+      "implementation": "canonical override; nextFixture/hoursToNextFixture are now populated by the weekly league model, so existence-only timing gates are partial and do not prove two starts inside 72 hours. Congested-fixture/start-role parity remains unproved"
     },
     {
       "canonicalId": "EVT_33_RECORD_001",
@@ -395,32 +395,110 @@
     "status": "requires_manual_review",
     "reason": "The current T5.1 source set has no canonical conditional-ID inventory. Count/title/theme matches cannot establish identity.",
     "events": [
-      { "engineId": "CEVT_30_BODY_01", "status": "requires_manual_review" },
-      { "engineId": "CEVT_30_PROJECT_01", "status": "requires_manual_review" },
-      { "engineId": "CEVT_30_HOME_01", "status": "requires_manual_review" },
-      { "engineId": "CEVT_30_NAT_01", "status": "requires_manual_review" },
-      { "engineId": "CEVT_30_AGENT_01", "status": "requires_manual_review" },
-      { "engineId": "CEVT_30_RIVAL_01", "status": "requires_manual_review" },
-      { "engineId": "CEVT_30_FAN_01", "status": "requires_manual_review" },
-      { "engineId": "CEVT_31_SURGERY_01", "status": "requires_manual_review" },
-      { "engineId": "CEVT_31_SUCCESSOR_01", "status": "requires_manual_review" },
-      { "engineId": "CEVT_31_COACH_01", "status": "requires_manual_review" },
-      { "engineId": "CEVT_31_NTLOAD_01", "status": "requires_manual_review" },
-      { "engineId": "CEVT_31_FINAL_01", "status": "requires_manual_review" },
-      { "engineId": "CEVT_31_BUSINESS_01", "status": "requires_manual_review" },
-      { "engineId": "CEVT_31_RIVAS_01", "status": "requires_manual_review" },
-      { "engineId": "CEVT_32_RICH_01", "status": "requires_manual_review" },
-      { "engineId": "CEVT_32_REPLACE_01", "status": "requires_manual_review" },
-      { "engineId": "CEVT_32_HOME_01", "status": "requires_manual_review" },
-      { "engineId": "CEVT_32_BOSMAN_01", "status": "requires_manual_review" },
-      { "engineId": "CEVT_32_NT_01", "status": "requires_manual_review" },
-      { "engineId": "CEVT_32_FAN_01", "status": "requires_manual_review" },
-      { "engineId": "CEVT_33_RECOVERY_01", "status": "requires_manual_review" },
-      { "engineId": "CEVT_33_RECORD_01", "status": "requires_manual_review" },
-      { "engineId": "CEVT_33_RET_01", "status": "requires_manual_review" },
-      { "engineId": "CEVT_33_HOME_01", "status": "requires_manual_review" },
-      { "engineId": "CEVT_33_CONTRACT_01", "status": "requires_manual_review" },
-      { "engineId": "CEVT_33_MARKET_01", "status": "requires_manual_review" }
+      {
+        "engineId": "CEVT_30_BODY_01",
+        "status": "requires_manual_review"
+      },
+      {
+        "engineId": "CEVT_30_PROJECT_01",
+        "status": "requires_manual_review"
+      },
+      {
+        "engineId": "CEVT_30_HOME_01",
+        "status": "requires_manual_review"
+      },
+      {
+        "engineId": "CEVT_30_NAT_01",
+        "status": "requires_manual_review"
+      },
+      {
+        "engineId": "CEVT_30_AGENT_01",
+        "status": "requires_manual_review"
+      },
+      {
+        "engineId": "CEVT_30_RIVAL_01",
+        "status": "requires_manual_review"
+      },
+      {
+        "engineId": "CEVT_30_FAN_01",
+        "status": "requires_manual_review"
+      },
+      {
+        "engineId": "CEVT_31_SURGERY_01",
+        "status": "requires_manual_review"
+      },
+      {
+        "engineId": "CEVT_31_SUCCESSOR_01",
+        "status": "requires_manual_review"
+      },
+      {
+        "engineId": "CEVT_31_COACH_01",
+        "status": "requires_manual_review"
+      },
+      {
+        "engineId": "CEVT_31_NTLOAD_01",
+        "status": "requires_manual_review"
+      },
+      {
+        "engineId": "CEVT_31_FINAL_01",
+        "status": "requires_manual_review"
+      },
+      {
+        "engineId": "CEVT_31_BUSINESS_01",
+        "status": "requires_manual_review"
+      },
+      {
+        "engineId": "CEVT_31_RIVAS_01",
+        "status": "requires_manual_review"
+      },
+      {
+        "engineId": "CEVT_32_RICH_01",
+        "status": "requires_manual_review"
+      },
+      {
+        "engineId": "CEVT_32_REPLACE_01",
+        "status": "requires_manual_review"
+      },
+      {
+        "engineId": "CEVT_32_HOME_01",
+        "status": "requires_manual_review"
+      },
+      {
+        "engineId": "CEVT_32_BOSMAN_01",
+        "status": "requires_manual_review"
+      },
+      {
+        "engineId": "CEVT_32_NT_01",
+        "status": "requires_manual_review"
+      },
+      {
+        "engineId": "CEVT_32_FAN_01",
+        "status": "requires_manual_review"
+      },
+      {
+        "engineId": "CEVT_33_RECOVERY_01",
+        "status": "requires_manual_review"
+      },
+      {
+        "engineId": "CEVT_33_RECORD_01",
+        "status": "requires_manual_review"
+      },
+      {
+        "engineId": "CEVT_33_RET_01",
+        "status": "requires_manual_review"
+      },
+      {
+        "engineId": "CEVT_33_HOME_01",
+        "status": "requires_manual_review"
+      },
+      {
+        "engineId": "CEVT_33_CONTRACT_01",
+        "status": "requires_manual_review"
+      },
+      {
+        "engineId": "CEVT_33_MARKET_01",
+        "status": "requires_manual_review"
+      }
     ],
     "crossTypeWarnings": [
       {
@@ -477,10 +555,14 @@
     {
       "claim": "Current-club captain authority is explicit for EVT_33_CAP_001.",
       "evidence": "The scene requires facts.playerClubLeadership.currentRole == captain and fails closed for captain_group, secondary_captain, proxy flags/seeds and club changes."
+    },
+    {
+      "claim": "Weekly fixture authority does not certify final-stage or <72h two-start context.",
+      "evidence": "On main@5f4d14bc, currentCompetition/nextFixture/hoursToNextFixture are populated by the deterministic weekly league model; focused characterization proves an ordinary league fixture and a 144h gap can satisfy the current existence-only gates, so EVT_31_FINAL_001 and EVT_33_BODY_001 remain technical adaptations with partial guards."
     }
   ],
   "integrationStatus": {
-    "syncedBaselineMain": "fa3c8bae524fef62e4eb9802e895df88588998c4",
+    "syncedBaselineMain": "5f4d14bca4d696cfafadb58b64034c7cd40cc147",
     "sharedChoiceEligibility": "available_in_main",
     "sharedOrGateContract": "available_in_main",
     "contentMigrationArchitecture": "available_in_main",
@@ -503,7 +585,7 @@
     "contentMigrationSourceIdentity": "84871fae2bec92d74d1e607e0a48943e2e530a062d315a829cfe75eda9fe0886",
     "sharedT510Test": "resolved_in_main_lineage_aware",
     "renewalIntentFact": "available_in_main_and_consumed",
-    "officialIntegrityRun": 35258681318,
+    "officialIntegrityRun": 35263497858,
     "officialIntegrityResult": "blocked_only_at_missing_target_freeze_sentinel_after_build_saves_t52_t53_pass"
   },
   "implementationProgress": {
