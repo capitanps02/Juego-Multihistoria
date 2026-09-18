@@ -59,6 +59,17 @@ export interface SeasonPlayerStats extends MatchPlayerStats {
   appearances: number;
 }
 
+export interface RecentPlayerMatchStats extends MatchPlayerStats {
+  fixtureIds: string[];
+  matches: number;
+  appearances: number;
+  starts: number;
+  minutes: number;
+  wins: number;
+  draws: number;
+  losses: number;
+}
+
 export interface OfficialMatchRecord extends ScheduledFixture {
   player: MatchPlayerFact;
   decisionContext: MatchDecisionContext | null;
@@ -423,6 +434,49 @@ export function seasonPlayerStats(state: GameState, season = state.season): Seas
     aggregate.assists += stats.assists;
     aggregate.yellowCards += stats.yellowCards;
     aggregate.redCards += stats.redCards;
+  }
+  return aggregate;
+}
+
+/**
+ * Aggregate the latest complete official fixtures for the current registration
+ * club and season. Missing result/stats in any selected row makes the whole
+ * window unknown rather than mixing factual and inferred history.
+ */
+export function recentClubPlayerMatchStats(state: GameState, count = 6): RecentPlayerMatchStats | null {
+  if (!Number.isInteger(count) || count < 1 || count > 20) return null;
+  const store = getSportMatchModelStore(state);
+  if (!store) return null;
+  const rows = store.fixtures
+    .filter(row => row.season === state.season && row.club === state.professional.registrationClub)
+    .slice(-count);
+  if (rows.length !== count || rows.some(row => row.result === undefined || row.stats === undefined)) return null;
+
+  const aggregate: RecentPlayerMatchStats = {
+    fixtureIds: rows.map(row => row.id),
+    matches: rows.length,
+    appearances: 0,
+    starts: 0,
+    minutes: 0,
+    goals: 0,
+    assists: 0,
+    yellowCards: 0,
+    redCards: 0,
+    wins: 0,
+    draws: 0,
+    losses: 0
+  };
+  for (const row of rows) {
+    if (row.player.appeared) aggregate.appearances += 1;
+    if (row.player.started) aggregate.starts += 1;
+    aggregate.minutes += row.player.minutes;
+    aggregate.goals += row.stats!.goals;
+    aggregate.assists += row.stats!.assists;
+    aggregate.yellowCards += row.stats!.yellowCards;
+    aggregate.redCards += row.stats!.redCards;
+    if (row.result!.outcome === "win") aggregate.wins += 1;
+    else if (row.result!.outcome === "draw") aggregate.draws += 1;
+    else aggregate.losses += 1;
   }
   return aggregate;
 }
