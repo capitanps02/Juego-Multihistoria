@@ -13,6 +13,12 @@ import { loadSave, serializeSave } from '../dist/save/save.js';
 const SIM_SOURCE = { kind: 'simulation_publication', producerId: 'test-publication-boundary' };
 const EVENT_SOURCE = { kind: 'canonical_event', eventId: 'EVT_32_NAT_001', choiceId: 'ACCEPT_ROLE', outcomeId: 'ACCEPT_ROLE__PRIMARY' };
 
+function addDays(iso, days) {
+  const d = new Date(`${iso}T00:00:00Z`);
+  d.setUTCDate(d.getUTCDate() + days);
+  return d.toISOString().slice(0, 10);
+}
+
 function state32(seed = 17400) {
   const state = createInitialState(seed);
   state.age = 32;
@@ -75,7 +81,7 @@ test('national selection/3 final 26 is separately persisted and never implied by
   preselect(state);
   assert.equal(resolveNationalSelectionFacts(state).finalMembership, null);
   state.runtime.day += 7;
-  state.date = '2025-07-08';
+  state.date = addDays(state.date, 7);
   const final = recordNationalFinalSquadInPlace(state, {
     cycleId: 'NT_MAJOR_32',
     membership: 'selected',
