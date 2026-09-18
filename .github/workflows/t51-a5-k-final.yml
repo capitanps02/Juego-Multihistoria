@@ -1,6 +1,7 @@
 name: T51 A5 K final candidate
 
 on:
+  pull_request:
   push:
     branches:
       - 'a0/a5-k-final-after-a3'
