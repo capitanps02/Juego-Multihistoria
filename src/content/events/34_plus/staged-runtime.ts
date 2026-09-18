@@ -4,6 +4,7 @@ import { STAGED_PRINCIPAL_SPORT_BATCH } from "./staged-principal-sport-batch.js"
 import { STAGED_PRINCIPAL_ROLE_BATCH } from "./staged-principal-role-batch.js";
 import { STAGED_EXTERNAL_PRINCIPALS } from "./staged-principal-awaiting-external.js";
 import { STAGED_MARKET_BATCH_1 } from "./staged-principal-market-batch-1.js";
+import { STAGED_MARKET_BATCH_2 } from "./staged-principal-market-batch-2.js";
 import { STAGED_ORDINARY_CANONICAL_CONDITIONALS } from "./staged-conditional-ordinary.js";
 import { STAGED_MEMORY_CONDITIONALS } from "./staged-conditional-memory.js";
 import { CEVT_35_UDV_FINANCIAL_CRISIS } from "./staged-conditional-udv-crisis.js";
@@ -14,6 +15,7 @@ export const A8_STAGED_PRINCIPALS: readonly EventDefinition[] = [
   ...STAGED_PRINCIPAL_SPORT_BATCH,
   ...STAGED_PRINCIPAL_ROLE_BATCH,
   ...STAGED_MARKET_BATCH_1,
+  ...STAGED_MARKET_BATCH_2,
   ...STAGED_EXTERNAL_PRINCIPALS.map(row=>row.event)
 ];
 
