@@ -1,4 +1,4 @@
-// Exact-head corrected K certification trigger.
+// Exact-head corrected K certification trigger; frozen J→K lineage included.
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { EVENTS } from '../dist/content/events/index.js';
