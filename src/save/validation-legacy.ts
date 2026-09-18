@@ -108,10 +108,11 @@ function assertMarket(value: unknown, state: GameState): void {
     ensure((m.negotiationSequence??0)===negotiationIds.size&&maxNegotiationId===(m.negotiationSequence??0),"market.negotiationSequence","secuencia de negociación incompleta");
   }
   if(m.futureAgreements!==undefined){
-    ensure(m.futureNegotiations!==undefined,"market.futureAgreements","precontrato sin negociaciones");
     let openFuture=0;
     const agreementNegotiations=new Set<string>();
-    list(m.futureAgreements,"market.futureAgreements").forEach((x,i)=>{
+    const futureAgreementRows=list(m.futureAgreements,"market.futureAgreements");
+    if(futureAgreementRows.length>0)ensure(m.futureNegotiations!==undefined,"market.futureAgreements","precontrato sin negociaciones");
+    futureAgreementRows.forEach((x,i)=>{
       const row=record(x,`market.futureAgreements[${i}]`);
       exactKeys(row,`market.futureAgreements[${i}]`,["negotiationId","terms","signedDate","effectiveDate","status","activatedDate","source"],["negotiationId","terms","signedDate","effectiveDate","status","activatedDate"]);
       string(row.negotiationId,`market.futureAgreements[${i}].negotiationId`);
