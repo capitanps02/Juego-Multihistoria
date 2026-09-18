@@ -35,7 +35,14 @@
       199,
       200,
       201
-    ]
+    ],
+    "worldIncidentRouting": {
+      "financeCrisis": "canonical event occurrence may establish fact",
+      "sponsorExit": "unsupported without active sponsor lifecycle",
+      "sponsorLateBoom": "canonical event occurrence may establish campaign after factual trigger",
+      "emptyStadium": "unsupported without external venue incident",
+      "playerCoachEmergency": "unsupported without staff crisis"
+    }
   },
   "seeds": {
     "canonicalPasada7Identities": 54,
@@ -181,10 +188,6 @@
       "scope": "injury episode and rehabilitation history"
     },
     {
-      "issue": 201,
-      "scope": "club finance/sponsor/stadium/staff-crisis incidents"
-    },
-    {
       "issue": 169,
       "scope": "coach tenure/profile where consumed"
     },
@@ -206,6 +209,10 @@
     {
       "issue": 177,
       "state": "closed_completed_routing_guard"
+    },
+    {
+      "issue": 201,
+      "state": "closed_completed_design_gate"
     }
   ],
   "activation": {
