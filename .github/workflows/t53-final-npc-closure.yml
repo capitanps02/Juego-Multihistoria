@@ -1,0 +1,29 @@
+name: T5.3 Final NPC Closure
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  npc-final-closure:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Existing T5.3 suite
+        run: npm run test:t53
+      - name: Final 20-NPC invariants
+        run: node --test scripts/test-t53-final-closure.mjs
+      - name: Shared authority regressions
+        run: node --test scripts/test-t51-shared-contracts.mjs scripts/test-t51-locker-leadership.mjs
