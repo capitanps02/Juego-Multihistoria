@@ -294,7 +294,8 @@
       "canonicalId": "EVT_32_IMPACT_001",
       "engineId": "EVT_32_TACT_001",
       "status": "needs_reimplementation",
-      "title": "Peores números, mejor equipo"
+      "title": "Peores números, mejor equipo",
+      "implementation": "canonical scene active under canonical ID on the exact ROLE_REINVENTED_30 route; legacy EVT_32_TACT_001 superseded. Less-finalizer route remains blocked on sport authority."
     },
     {
       "canonicalId": "EVT_32_SUCCESSOR_001",
@@ -644,9 +645,10 @@
     "canonicalAdditionsCount": 2,
     "shiftedCanonicalImplemented": [
       "EVT_30_BRIDGE_001",
-      "EVT_33_FIN_001"
+      "EVT_33_FIN_001",
+      "EVT_32_IMPACT_001"
     ],
-    "shiftedCanonicalImplementedCount": 2
+    "shiftedCanonicalImplementedCount": 3
   },
   "implementationDisposition": {
     "safeNow": [
