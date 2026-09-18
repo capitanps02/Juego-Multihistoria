@@ -222,7 +222,7 @@ export function inspectNationalSelectionAuthorityStore(
     if (seen.has(row.cycleId)) return { path: path + ".cycleId", reason: "cycleId duplicado" };
     seen.add(row.cycleId);
     if (typeof row.tournamentId !== "string" || row.tournamentId.length === 0) return { path: path + ".tournamentId", reason: "tournamentId inválido" };
-    if (typeof row.season !== "string" || !/^d{4}-d{2}$/.test(row.season)) return { path: path + ".season", reason: "temporada inválida" };
+    if (typeof row.season !== "string" || !/^\d{4}-\d{2}$/.test(row.season)) return { path: path + ".season", reason: "temporada inválida" };
     if (typeof row.openedDate !== "string" || !ISO_DATE.test(row.openedDate)) return { path: path + ".openedDate", reason: "fecha de apertura inválida" };
     if (currentDate && row.openedDate > currentDate) return { path: path + ".openedDate", reason: "fecha futura" };
 
