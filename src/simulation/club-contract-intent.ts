@@ -6,6 +6,8 @@ import {
   eligibleCareerOfferKind,
   FORMAL_RENEWAL_REASON,
   getEligibleCareerOffers,
+  isCareerOfferContext,
+  type CareerOfferContext,
   type CareerOfferKind,
   type CareerTerms
 } from "./offers.js";
@@ -98,8 +100,8 @@ export function hasRoleGuaranteeAt23(state: GameState): boolean {
 /**
  * Exact, detached projection of the one formal offer that is still compatible with
  * live CareerTerms. Narrative conditions can inspect destination, salary, duration,
- * release clause and registration semantics without receiving mutation authority.
- * Stale offers fail closed to null.
+ * release clause, registration semantics and explicitly frozen narrative context
+ * without receiving mutation authority. Stale offers fail closed to null.
  */
 export interface PendingCareerOfferFacts {
   id: string;
@@ -107,6 +109,7 @@ export interface PendingCareerOfferFacts {
   date: string;
   reason: string;
   terms: Readonly<CareerTerms>;
+  context?: Readonly<CareerOfferContext>;
 }
 export function pendingCareerOfferFacts(state: GameState): PendingCareerOfferFacts | null {
   const offer = getEligibleCareerOffers(state)[0];
@@ -116,7 +119,8 @@ export function pendingCareerOfferFacts(state: GameState): PendingCareerOfferFac
     kind: careerOfferKind(offer),
     date: offer.date,
     reason: offer.reason,
-    terms: structuredClone(offer.terms)
+    terms: structuredClone(offer.terms),
+    ...(isCareerOfferContext(offer.context) ? { context: structuredClone(offer.context) } : {})
   };
 }
 
