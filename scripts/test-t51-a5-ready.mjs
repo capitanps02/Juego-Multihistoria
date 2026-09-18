@@ -5,6 +5,7 @@ import { A5_READY_EVENTS_18_23 } from '../dist/content/events/20_23/a5-ready-sta
 import { A5_AGENT_READY_EXTERNAL_EVENTS, A5_AGENT_EXTERNAL_REQUIREMENTS } from '../dist/content/events/20_23/a5-agent-ready-external.js';
 import { A5_EVT_18_END_002_OWNER_READY, EVT_18_END_002_EXTERNAL_REQUIREMENT } from '../dist/content/events/18_20/a5-end002-staged.js';
 import { A5_MARKET_EXTERNAL_REQUIREMENTS, A5_MARKET_OWNER_READY_PRINCIPALS } from '../dist/content/events/20_23/a5-market-external-staged.js';
+import { A5_SHARED_EXTERNAL_PRINCIPAL_REQUIREMENTS, A5_SHARED_EXTERNAL_OWNER_READY_PRINCIPALS } from '../dist/content/events/20_23/a5-shared-external-principals-staged.js';
 import { A5_READY_NPC_KNOWLEDGE_RULES } from '../dist/catalog/npc-knowledge-rules-a5-ready.js';
 import { createInitialState } from '../dist/content/initial-state.js';
 import { eventGatesPass } from '../dist/narrative/event-gates.js';
@@ -390,4 +391,95 @@ test('A5 external/5 dynamic agent knowledge targets resolve only from A1 authori
   );
   const recipients = new Set(allNotifyRules.flatMap(row => resolveNpcKnowledgeTargets(row, context)));
   assert.deepEqual(recipients, new Set(['NPC_PLR_12', 'NPC_AGT_02']));
+});
+
+
+test('A5 external principals/1 remaining thirteen principal blockers are complete owner-side', () => {
+  assert.deepEqual(A5_SHARED_EXTERNAL_OWNER_READY_PRINCIPALS.map(row => row.id), [
+    'EVT_20_MED_001','EVT_20_AGT_001','EVT_20_MATCH_003','EVT_20_BRUNO_001',
+    'EVT_21_MONEY_001','EVT_21_AGT_001','EVT_21_NAT_001','EVT_21_MED_001',
+    'EVT_21_CCH_002','EVT_22_LOCK_001','EVT_22_HOME_001','EVT_22_MED_001','EVT_22_TACT_001'
+  ]);
+  assert.equal(Object.keys(A5_SHARED_EXTERNAL_PRINCIPAL_REQUIREMENTS).length, 13);
+  for (const scene of A5_SHARED_EXTERNAL_OWNER_READY_PRINCIPALS) {
+    assert.ok(scene.choices.length >= 3, scene.id);
+    assert.ok(scene.outcomes.length >= scene.choices.length * 2, scene.id);
+    assert.ok(scene.tags.includes('a5_ready_external_blocker'), scene.id);
+  }
+});
+
+test('A5 external principals/2 no blocked principal mutates employment authority or fabricates forbidden facts', () => {
+  for (const scene of A5_SHARED_EXTERNAL_OWNER_READY_PRINCIPALS) {
+    const effects = [
+      ...scene.choices.flatMap(choice => [...(choice.immediateEffects ?? []), ...(choice.hiddenCosts ?? [])]),
+      ...scene.outcomes.flatMap(outcome => outcome.effects)
+    ];
+    const forbidden = effects.filter(effect => {
+      if (effect.kind === 'flag') return ['LOAN_ACTIVE','ABROAD_ROUTE','BIG_CLUB','NATIONAL_CALLED','COACH_FIRED'].includes(effect.flag);
+      return [
+        'club','tier','contract.monthsRemaining','contract.salaryMonthly','contract.releaseClause',
+        'professional.ownerClub','professional.registrationClub','professional.leagueTier','professional.route'
+      ].includes(effect.path);
+    });
+    assert.deepEqual(forbidden, [], scene.id);
+  }
+  const serialized = JSON.stringify(A5_SHARED_EXTERNAL_OWNER_READY_PRINCIPALS);
+  for (const fake of ['REAL_MATCH','REAL_DIAGNOSIS','RECENT_CONFLICT','HAS_OFFER','REAL_CALLUP']) {
+    assert.equal(serialized.includes(fake), false);
+  }
+});
+
+test('A5 external principals/3 agent-dependent choices consume A1 identity and fail closed', () => {
+  const state = stateAt(52001, 20, '2028-09-05');
+  const agentScene = A5_SHARED_EXTERNAL_OWNER_READY_PRINCIPALS.find(row => row.id === 'EVT_20_AGT_001');
+  assert.ok(agentScene);
+  assert.equal(eventGatesPass(state, agentScene), false);
+  state.flags.AGENT_CONTACT_HECTOR = true;
+  state.professional.agentControl = 100;
+  assert.equal(eventGatesPass(state, agentScene), false);
+  certifyActiveAgentInPlace(state, 'NPC_AGT_01');
+  assert.equal(eventGatesPass(state, agentScene), true);
+
+  const cch = A5_SHARED_EXTERNAL_OWNER_READY_PRINCIPALS.find(row => row.id === 'EVT_21_CCH_002');
+  state.age = 21; state.phase = '20_23';
+  assert.ok(eligibleChoices(state, cch).some(choice => choice.id === 'SOUND_MARKET'));
+});
+
+test('A5 external principals/4 Bruno consumes exact favor payload but cannot manufacture a current opportunity', () => {
+  const scene = A5_SHARED_EXTERNAL_OWNER_READY_PRINCIPALS.find(row => row.id === 'EVT_20_BRUNO_001');
+  const state = stateAt(52002,20,'2028-10-10');
+  addLiveSeed(state,'SEED_BRUNO_FAVOR','EVT_18_TEAM_001',{stance:'helped'});
+  assert.equal(narrativeCausalFacts(state).brunoFavorStance,'helped');
+  assert.equal(eventGatesPass(state,scene),true);
+  assert.equal(JSON.stringify(scene).includes('marketHeat'),false);
+  assert.ok(A5_SHARED_EXTERNAL_PRINCIPAL_REQUIREMENTS.EVT_20_BRUNO_001.facts.includes('current Bruno market contact'));
+});
+
+test('A5 external principals/5 national and medical requirements explicitly reject aggregate proxies', () => {
+  const nat=A5_SHARED_EXTERNAL_PRINCIPAL_REQUIREMENTS.EVT_21_NAT_001;
+  assert.ok(nat.facts.includes('official national-team list'));
+  assert.ok(nat.forbidden.includes('nationalStanding as call-up'));
+  const med=A5_SHARED_EXTERNAL_PRINCIPAL_REQUIREMENTS.EVT_21_MED_001;
+  assert.ok(med.facts.includes('compatible diagnosed injury'));
+  assert.ok(med.forbidden.includes('body.risk as diagnosis'));
+  const tact=A5_SHARED_EXTERNAL_PRINCIPAL_REQUIREMENTS.EVT_22_TACT_001;
+  assert.ok(tact.facts.includes('concrete tactical role/order'));
+  assert.ok(tact.forbidden.includes('roleScore as order'));
+});
+
+test('A5 external principals/6 staged dynamic NPC rules inform only certified participants', () => {
+  const state=stateAt(52003,20,'2028-09-05');
+  const agtRule=ruleFor('EVT_20_AGT_001','REPORT_ALL');
+  const brunoNotify=ruleFor('EVT_20_BRUNO_001','AUTHORIZE_NOTIFY');
+  const brunoPrivate=ruleFor('EVT_20_BRUNO_001','AUTHORIZE_PRIVATE');
+  assert.ok(agtRule); assert.ok(brunoNotify); assert.ok(brunoPrivate);
+  let context=captureNpcKnowledgeTargetContext(state);
+  assert.deepEqual(resolveNpcKnowledgeTargets(agtRule,context),[]);
+  assert.deepEqual(resolveNpcKnowledgeTargets(brunoNotify,context),['NPC_PLR_12']);
+  assert.deepEqual(resolveNpcKnowledgeTargets(brunoPrivate,context),['NPC_PLR_12']);
+  certifyActiveAgentInPlace(state,'NPC_AGT_02');
+  context=captureNpcKnowledgeTargetContext(state);
+  assert.deepEqual(resolveNpcKnowledgeTargets(agtRule,context),['NPC_AGT_02']);
+  assert.deepEqual(new Set(resolveNpcKnowledgeTargets(brunoNotify,context)),new Set(['NPC_PLR_12','NPC_AGT_02']));
+  assert.deepEqual(resolveNpcKnowledgeTargets(brunoPrivate,context),['NPC_PLR_12']);
 });
