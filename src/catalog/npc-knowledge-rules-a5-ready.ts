@@ -86,5 +86,63 @@ export const A5_READY_NPC_KNOWLEDGE_RULES: NpcEventKnowledgeRule[] = [
     certainty: 100,
     memory: "strong",
     relationshipMemory: true
+  },
+  {
+    eventId: "EVT_20_AGT_001",
+    choiceIds: ["BROAD_CONTROL", "INFORM_FIRST", "SPLIT_IMAGE", "NO_CENTRALIZE"],
+    outcomeIds: [
+      "BROAD_CONTROL__PRIMARY", "BROAD_CONTROL__SECONDARY",
+      "INFORM_FIRST__PRIMARY", "INFORM_FIRST__SECONDARY",
+      "SPLIT_IMAGE__PRIMARY", "SPLIT_IMAGE__SECONDARY",
+      "NO_CENTRALIZE__PRIMARY", "NO_CENTRALIZE__SECONDARY"
+    ],
+    npcIds: [],
+    targetSlots: ["activeAgent"],
+    source: "informed",
+    certainty: 100,
+    memory: "strong",
+    relationshipMemory: true
+  },
+  {
+    eventId: "EVT_20_BRUNO_001",
+    choiceIds: ["AUTHORIZE_NOTIFY", "AUTHORIZE_PRIVATE", "ASK_MORE", "DECLINE_HELP_OTHER"],
+    outcomeIds: [
+      "AUTHORIZE_NOTIFY__PRIMARY", "AUTHORIZE_NOTIFY__SECONDARY",
+      "AUTHORIZE_PRIVATE__PRIMARY", "AUTHORIZE_PRIVATE__SECONDARY",
+      "ASK_MORE__PRIMARY", "ASK_MORE__SECONDARY",
+      "DECLINE_HELP_OTHER__PRIMARY", "DECLINE_HELP_OTHER__SECONDARY"
+    ],
+    npcIds: ["NPC_PLR_12"],
+    source: "informed",
+    certainty: 100,
+    memory: "strong",
+    relationshipMemory: true
+  },
+  {
+    eventId: "EVT_20_BRUNO_001",
+    choiceIds: ["AUTHORIZE_NOTIFY"],
+    outcomeIds: ["AUTHORIZE_NOTIFY__PRIMARY", "AUTHORIZE_NOTIFY__SECONDARY"],
+    npcIds: [],
+    targetSlots: ["activeAgent"],
+    source: "informed",
+    certainty: 100,
+    memory: "strong",
+    relationshipMemory: true
+  },
+  {
+    eventId: "EVT_21_AGT_001",
+    choiceIds: ["ACCEPT_TARGETS", "KEEP_TERMS", "SOUND_OTHER_AGENCY", "SPLIT_RIGHTS"],
+    outcomeIds: [
+      "ACCEPT_TARGETS__PRIMARY", "ACCEPT_TARGETS__SECONDARY",
+      "KEEP_TERMS__PRIMARY", "KEEP_TERMS__SECONDARY",
+      "SOUND_OTHER_AGENCY__PRIMARY", "SOUND_OTHER_AGENCY__SECONDARY",
+      "SPLIT_RIGHTS__PRIMARY", "SPLIT_RIGHTS__SECONDARY"
+    ],
+    npcIds: [],
+    targetSlots: ["activeAgent"],
+    source: "informed",
+    certainty: 100,
+    memory: "strong",
+    relationshipMemory: true
   }
 ];
