@@ -169,7 +169,7 @@ const enforceCareerAuthority=(event:EventDefinition):EventDefinition=>{
   };
 };
 
-const supersededLegacyIds=new Set(["EVT_30_IDN_001","EVT_32_TACT_001","EVT_33_END_001"]);
+const supersededLegacyIds=new Set(["EVT_30_IDN_001","EVT_30_TEAM_001","EVT_32_TACT_001","EVT_33_END_001"]);
 
 const principal:EventDefinition[]=PRINCIPAL_EVENTS_30_34.filter(original=>!supersededLegacyIds.has(original.id)).map(original=>{
   const selected=overrides.get(original.id)??original;
