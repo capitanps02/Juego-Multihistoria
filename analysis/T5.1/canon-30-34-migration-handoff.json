@@ -352,7 +352,6 @@
   },
   "futureCanonicalMissingWork": {
     "ids": [
-      "EVT_30_CCH_001",
       "EVT_30_PRS_001",
       "EVT_30_NAT_002",
       "EVT_30_JAN_001",
@@ -374,5 +373,11 @@
   "requiredCurrentRouteAssertions": [
     "double migration is a no-op",
     "registered edge extends the existing upstream lineage without shortcut or ambiguity"
-  ]
+  ],
+  "currentCanonicalAdditions": {
+    "ids": [
+      "EVT_30_CCH_001"
+    ],
+    "migrationRule": "The newly added canonical principal did not exist in the frozen upstream source. It starts unseen with no inherited cooldown, pending state or synthesized history; historical events are not rebound to it."
+  }
 }
