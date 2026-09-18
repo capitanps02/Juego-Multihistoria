@@ -30,11 +30,11 @@
     "workflowRun": 35263497858,
     "owner": "t51/canon-30-34",
     "totalSeeds": 52,
-    "runtimeProduced": 49,
-    "withoutRuntimeProducer": 3,
+    "runtimeProduced": 50,
+    "withoutRuntimeProducer": 2,
     "withConsumers": 13,
     "withoutConsumers": 39,
-    "noProducerAndNoConsumer": 3,
+    "noProducerAndNoConsumer": 2,
     "terminalTransitionDefined": 0,
     "openEndedWithoutTerminalTransition": 52,
     "interpretation": "A7 is re-grounded on main@49f16b21, which adds T5.2 causal-fact audit tooling without changing EVENTS/contentIdentity/schema/RNG. A7 conditional generic callbacks are now superseded from active canon; seed closure remains evidence-driven."
@@ -53,13 +53,6 @@
       "canonicalTitle": "La selección gana sin ti",
       "runtimeStatus": "canonical_missing",
       "rule": "Do not infer automatically from any technical non-call-up; the canonical scene must establish the absence and its consequence."
-    },
-    {
-      "seed": "SEED_SPECIALIST_BIGCLUB",
-      "canonicalWriter": "EVT_30_JAN_001",
-      "canonicalTitle": "Enero: especialista de lujo",
-      "runtimeStatus": "canonical_missing",
-      "rule": "Create only from the canonical decision/outcome about the specialist role at a big club, never from a generic market shell."
     }
   ],
   "canonicalReferencesOutsideRuntimeCatalog": [
@@ -212,7 +205,7 @@
       "currentStatus": "Current Repository Integrity passes save/schema validation before stopping at the expected missing target-freeze sentinel; no frozen-save compatibility defect is currently attributed to this workstream."
     }
   },
-  "integrationStatus": "three_orphan_writers_pending_canonical_missing_scenes; SEED_ROLE_COMMUNICATION_writer_implemented; one_additional_canonical_seed_reference_missing_runtime_definition; seven_declared_seed_reads_declassified_from_causal_chains; six_boundary_seeds_handed_off_without_invented_consumers",
+  "integrationStatus": "two_orphan_writers_pending_canonical_missing_scenes; SEED_ROLE_COMMUNICATION_and_SEED_SPECIALIST_BIGCLUB_writers_implemented; SEED_LAST_PEAK_CONTRACT remains external; no artificial consumers or terminality",
   "resolvedCanonicalWriters": [
     {
       "seed": "SEED_ROLE_COMMUNICATION",
@@ -220,6 +213,13 @@
       "canonicalTitle": "Te enteras por la pizarra",
       "runtimeStatus": "implemented_writer",
       "rule": "Create only from the canonical scene/outcome that establishes communication or absence of communication about role."
+    },
+    {
+      "seed": "SEED_SPECIALIST_BIGCLUB",
+      "canonicalWriter": "EVT_30_JAN_001",
+      "canonicalTitle": "Enero: especialista de lujo",
+      "runtimeStatus": "implemented_writer",
+      "rule": "Created only by the canonical formal big-club offer scene; generic market heat or legacy market shells do not create it."
     }
   ]
 }
