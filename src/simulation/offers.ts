@@ -242,6 +242,7 @@ export function closePendingOfferBySystem(
 ):SystemOfferClosure{
   const market=marketState(s),offer=market.pending;
   if(!offer)throw Error("Esta oferta ya no está pendiente.");
+  if(reason==="expired"&&(!offer.validThrough||offer.validThrough>=s.date))throw Error("La oferta todavía no ha alcanzado su deadline.");
   market.pending=null;
   const row:SystemOfferClosure={offer:clone(offer),reason,date:s.date,source};
   closures(market).push(row);
