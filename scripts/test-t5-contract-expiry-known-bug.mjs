@@ -4,10 +4,16 @@ import { EVENTS } from '../dist/content/events/index.js';
 import { createInitialState } from '../dist/content/initial-state.js';
 import { resolveChoiceInPlace } from '../dist/narrative/resolver.js';
 import { scheduleEvent } from '../dist/narrative/scheduler.js';
+import { loadSave, serializeSave } from '../dist/save/save.js';
 import { advanceWorldDayInPlace } from '../dist/simulation/world-simulator.js';
-import { contractEmploymentStatus, respondToOffer } from '../dist/simulation/offers.js';
+import {
+  contractEmploymentStatus,
+  proposeCareerChange,
+  respondToOffer
+} from '../dist/simulation/offers.js';
 
 const WEIGHTS = { loyalty: 7, home: 7, team: 5, mentor: 4, family: 4, continuity: 5 };
+
 function loyalChoice(event) {
   let best = -Infinity;
   let bestIndex = Math.floor((event.choices.length - 1) / 2);
@@ -20,6 +26,7 @@ function loyalChoice(event) {
   }
   return event.choices[bestIndex].id;
 }
+
 function employment(state) {
   return {
     club: state.club,
@@ -29,29 +36,47 @@ function employment(state) {
     appearances: Number(state.sport.appearances ?? 0)
   };
 }
+
 function sameEmployer(a, b) {
-  return a.club === b.club && a.ownerClub === b.ownerClub && a.registrationClub === b.registrationClub && a.salary === b.salary;
+  return a.club === b.club
+    && a.ownerClub === b.ownerClub
+    && a.registrationClub === b.registrationClub
+    && a.salary === b.salary;
 }
 
-test('T5-QA-028: expired contract must not remain an ordinary registered playing zombie for a full year', () => {
-  const state = createInitialState(512000);
-  let firstZero = null;
-  let zeroDays = 0;
-  let guard = 0;
-
-  while (guard++ < 3000 && zeroDays < 365) {
+function advanceLoyalUntilExpiry(state, maxDays = 3000) {
+  for (let day = 0; day < maxDays; day += 1) {
     if (state.market?.pending) respondToOffer(state, state.market.pending.id, 'reject');
     const scheduled = scheduleEvent(state, EVENTS, { qa: true });
     if (scheduled) resolveChoiceInPlace(state, scheduled.event, loyalChoice(scheduled.event), true);
     advanceWorldDayInPlace(state);
+    if (Number(state.contract.monthsRemaining) === 0) return state;
+  }
+  throw new Error('reproduction invalid: loyal/512000 never reached contract expiry');
+}
 
-    if (Number(state.contract.monthsRemaining) !== 0) continue;
-    if (!firstZero) firstZero = { date: state.date, ...employment(state) };
-    if (sameEmployer(employment(state), firstZero) && contractEmploymentStatus(state) === 'expired_pending_resolution') zeroDays += 1;
-    else break;
+test('T5-QA-028a: expired contract must not remain an ordinary registered playing zombie for a full year', () => {
+  const state = createInitialState(512000);
+  advanceLoyalUntilExpiry(state);
+
+  const firstZero = { date: state.date, ...employment(state) };
+  let zeroDays = 0;
+
+  while (zeroDays < 365) {
+    if (state.market?.pending) respondToOffer(state, state.market.pending.id, 'reject');
+    advanceWorldDayInPlace(state);
+
+    if (
+      Number(state.contract.monthsRemaining) === 0
+      && sameEmployer(employment(state), firstZero)
+      && contractEmploymentStatus(state) === 'expired_pending_resolution'
+    ) {
+      zeroDays += 1;
+      continue;
+    }
+    break;
   }
 
-  assert.ok(firstZero, 'reproduction invalid: loyal/512000 never reached contract expiry');
   const now = employment(state);
   const zombie = zeroDays >= 365
     && sameEmployer(now, firstZero)
@@ -61,6 +86,76 @@ test('T5-QA-028: expired contract must not remain an ordinary registered playing
   assert.equal(
     zombie,
     false,
-    `T5-QA-028: contract expired on ${firstZero.date} but after ${zeroDays} days player is still registered to ${now.registrationClub} with same employer/salary and added ${now.appearances - firstZero.appearances} appearances`
+    `T5-QA-028a: contract expired on ${firstZero.date} but after ${zeroDays} days player is still registered to ${now.registrationClub} with same employer/salary and added ${now.appearances - firstZero.appearances} appearances`
   );
+});
+
+test('T5-QA-028b: a new 1→0 expiry becomes real unattached employment and survives save/load without RNG drift', () => {
+  const state = createInitialState(512000);
+  advanceLoyalUntilExpiry(state);
+
+  assert.equal(
+    contractEmploymentStatus(state),
+    'unattached',
+    'a newly observed natural expiry must become authoritative unattached employment, not legacy expired_pending_resolution'
+  );
+
+  const beforeRng = structuredClone(state.rngState);
+  const restored = loadSave(serializeSave(state));
+
+  assert.equal(contractEmploymentStatus(restored), 'unattached');
+  assert.deepEqual(restored.rngState, beforeRng, 'save/load at expiry must not consume or rewrite RNG');
+  assert.equal(Number(restored.contract.monthsRemaining), 0);
+});
+
+test('T5-QA-028c: unattached player cannot accumulate ordinary old-club appearances and only a formal accepted offer re-employs', () => {
+  const state = createInitialState(512000);
+  advanceLoyalUntilExpiry(state);
+  assert.equal(contractEmploymentStatus(state), 'unattached');
+
+  const oldEmployment = employment(state);
+  const rngAtExpiry = structuredClone(state.rngState);
+
+  for (let day = 0; day < 120; day += 1) {
+    if (state.market?.pending) respondToOffer(state, state.market.pending.id, 'reject');
+    advanceWorldDayInPlace(state);
+  }
+
+  assert.equal(
+    Number(state.sport.appearances ?? 0),
+    oldEmployment.appearances,
+    'unattached player must not keep adding official appearances for the former club'
+  );
+
+  if (state.market?.pending) respondToOffer(state, state.market.pending.id, 'reject');
+  proposeCareerChange(state, 'QA formal re-employment', draft => {
+    draft.club = 'QA_REEMPLOY_FC';
+    draft.professional.ownerClub = 'QA_REEMPLOY_FC';
+    draft.professional.registrationClub = 'QA_REEMPLOY_FC';
+    draft.contract.monthsRemaining = 24;
+    draft.contract.salaryMonthly = Math.max(1000, oldEmployment.salary + 1000);
+  });
+
+  assert.ok(state.market?.pending, 'formal CareerOffer authority must be able to represent re-employment');
+  const offerId = state.market.pending.id;
+  respondToOffer(state, offerId, 'accept');
+
+  assert.notEqual(contractEmploymentStatus(state), 'unattached');
+  assert.equal(state.club, 'QA_REEMPLOY_FC');
+  assert.equal(state.professional.ownerClub, 'QA_REEMPLOY_FC');
+  assert.equal(state.professional.registrationClub, 'QA_REEMPLOY_FC');
+  assert.ok(Number(state.contract.monthsRemaining) > 0);
+  assert.notDeepEqual(state.rngState, rngAtExpiry, '120 simulated days may consume world RNG before the formal offer; the offer read/accept path itself is covered by market 0-RNG tests');
+});
+
+test('T5-QA-028d: loyal/512000 expiry boundary is deterministic', () => {
+  const a = createInitialState(512000);
+  const b = createInitialState(512000);
+  advanceLoyalUntilExpiry(a);
+  advanceLoyalUntilExpiry(b);
+
+  assert.equal(a.date, b.date);
+  assert.deepEqual(employment(a), employment(b));
+  assert.deepEqual(a.rngState, b.rngState);
+  assert.equal(contractEmploymentStatus(a), contractEmploymentStatus(b));
 });
