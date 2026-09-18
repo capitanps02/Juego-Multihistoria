@@ -1,6 +1,6 @@
 import type { EventDefinition, EventFamily, GameState } from "../../../core/types.js";
 import { ambiguousEvent, n, seedCreate } from "../18_20/helpers.js";
-import { getEligibleCareerOffers, getEligibleRenewalOffers } from "../../../simulation/offers.js";
+import { getEligibleCareerOffers, getEligibleLateRichOffers, getEligibleRenewalOffers } from "../../../simulation/offers.js";
 
 type Delta = readonly [string, number];
 type ChoiceSpec = { id:string; label:string; stance:string; primary:readonly Delta[]; secondary:readonly Delta[]; note:string };
@@ -167,8 +167,9 @@ export function isStagedMarketBatch2Eligible(state:GameState,id:string,authorita
   case "EVT_36_LOWER_001":
   case "EVT_37_SHORT_001":
   case "EVT_37_HOME_001":
-  case "EVT_38_RICH_001":
     return offers.length>0;
+  case "EVT_38_RICH_001":
+    return getEligibleLateRichOffers(state).length>0;
   case "EVT_38_MARKET_001":
     return offers.length===0;
   default:
