@@ -11,6 +11,8 @@ import {
   eligibleCareerOfferKind,
   FORMAL_RENEWAL_REASON,
   getEligibleCareerOffers,
+  isCareerOfferContext,
+  type CareerOfferContext,
   type CareerOfferKind,
   type CareerTerms
 } from "./offers.js";
@@ -97,6 +99,7 @@ export interface PendingCareerOfferFacts {
   date: string;
   reason: string;
   terms: Readonly<CareerTerms>;
+  context?: Readonly<CareerOfferContext>;
 }
 
 export function pendingCareerOfferFacts(state: GameState): PendingCareerOfferFacts | null {
@@ -107,7 +110,8 @@ export function pendingCareerOfferFacts(state: GameState): PendingCareerOfferFac
     kind: careerOfferKind(offer),
     date: offer.date,
     reason: offer.reason,
-    terms: structuredClone(offer.terms)
+    terms: structuredClone(offer.terms),
+    ...(isCareerOfferContext(offer.context) ? { context: structuredClone(offer.context) } : {})
   };
 }
 
