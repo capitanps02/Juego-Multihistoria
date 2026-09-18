@@ -3,6 +3,8 @@ name: T51 A5 K identity probe
 on:
   push:
     branches: ['a0/a5-k-b4-after-293']
+
+  pull_request:
   workflow_dispatch:
 
 jobs:
