@@ -71,3 +71,53 @@ export function resolveNationalTeamAuthority(state: GameState): NationalTeamAuth
 export function hasNationalTeamHistory(state: GameState): boolean {
   return resolveNationalTeamAuthority(state).everCalled;
 }
+
+
+export interface ConcreteNationalTeamCallup {
+  schemaVersion: 1;
+  callupId: string;
+  date: string;
+  runtimeDay: number;
+  tournamentCycle: boolean;
+  status: "called";
+}
+
+/**
+ * Persist a concrete senior call-up only at the transition where the simulator
+ * actually opens a national gate for a non-retired player. This is not inferred
+ * by readers from caps, standing, reputation or tournament windows.
+ */
+export function recordConcreteNationalTeamCallupInPlace(state: GameState): ConcreteNationalTeamCallup | null {
+  if (state.flags.NATIONAL_RETIRED === true || state.flags.NATIONAL_GATE_OPEN !== true) return null;
+  const world = state.world as Record<string, unknown>;
+  const rows = Array.isArray(world.nationalTeamCallups)
+    ? world.nationalTeamCallups as ConcreteNationalTeamCallup[]
+    : [];
+  const callupId = `NT_CALLUP:${state.runtime.day}:${state.date}`;
+  const existing = rows.find(row => row.callupId === callupId);
+  if (existing) return existing;
+  const row: ConcreteNationalTeamCallup = {
+    schemaVersion: 1,
+    callupId,
+    date: state.date,
+    runtimeDay: state.runtime.day,
+    tournamentCycle: state.flags.NATIONAL_TOURNAMENT_CYCLE === true,
+    status: "called"
+  };
+  world.nationalTeamCallups = [...rows, row];
+  return row;
+}
+
+export function latestConcreteNationalTeamCallup(state: GameState): ConcreteNationalTeamCallup | null {
+  const rows = (state.world as Record<string, unknown>).nationalTeamCallups;
+  if (!Array.isArray(rows)) return null;
+  const valid = rows.filter((row): row is ConcreteNationalTeamCallup =>
+    !!row && typeof row === "object" &&
+    (row as ConcreteNationalTeamCallup).schemaVersion === 1 &&
+    (row as ConcreteNationalTeamCallup).status === "called" &&
+    typeof (row as ConcreteNationalTeamCallup).callupId === "string" &&
+    typeof (row as ConcreteNationalTeamCallup).date === "string" &&
+    Number.isInteger((row as ConcreteNationalTeamCallup).runtimeDay)
+  );
+  return valid.length ? valid[valid.length - 1]! : null;
+}
