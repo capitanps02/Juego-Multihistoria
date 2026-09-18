@@ -1,4 +1,5 @@
 import { knowledgeRulesFor, type NpcEventKnowledgeRule } from "../catalog/npc-knowledge-rules.js";
+import { isCompatibilityOnly34PlusSeed } from "../catalog/seed-34plus.js";
 import { SEED_CATALOG } from "../catalog/seeds.js";
 import { getSeedScopePolicy } from "../catalog/seed-scope.js";
 import { conditionsPass } from "../core/conditions.js";
@@ -88,6 +89,9 @@ function markSeedExpired(state: GameState, seed: SeedInstance, reason: string): 
 }
 
 function applySeedTransition(state: GameState, t: SeedTransition, event: EventDefinition): void {
+  if (t.action === "create" && isCompatibilityOnly34PlusSeed(t.seedId)) {
+  throw new Error(`Compatibility-only seed ${t.seedId} cannot be newly created in ${event.id}`);
+}
   if (t.action === "create" && !SEED_DEFINITIONS.has(t.seedId)) {
     throw new Error(`Unknown seed ${t.seedId} in ${event.id}`);
   }
