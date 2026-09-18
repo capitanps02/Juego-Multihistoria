@@ -1137,6 +1137,578 @@
         "analysis/CODEX/canon-23-30/HANDOFF_30_34.md#required-handoff-fields-concepts",
         "analysis/T5.2/README.md#lifecycle"
       ]
+    },
+    {
+      "seedId": "SEED_VETERAN_LABEL",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_VETERAN_LABEL pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_VETERAN_LABEL",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_AGE30_CONTRACT",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_AGE30_CONTRACT pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_AGE30_CONTRACT",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_MATCH_SELECTIVITY",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_MATCH_SELECTIVITY pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_MATCH_SELECTIVITY",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_LAST_BIG_MOVE_WINDOW",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_LAST_BIG_MOVE_WINDOW pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_LAST_BIG_MOVE_WINDOW",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_AGENT_LAST_CONTRACT",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_AGENT_LAST_CONTRACT pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_AGENT_LAST_CONTRACT",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_NATIONAL_PHASEDOWN",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_NATIONAL_PHASEDOWN pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_NATIONAL_PHASEDOWN",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_DORSAL_SUCCESSION",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_DORSAL_SUCCESSION pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_DORSAL_SUCCESSION",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_FAMILY_ANCHOR",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_FAMILY_ANCHOR pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_FAMILY_ANCHOR",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_RELOCATION_LIMIT",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_RELOCATION_LIMIT pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_RELOCATION_LIMIT",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_MEDICAL_AUTHORITY",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_MEDICAL_AUTHORITY pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_MEDICAL_AUTHORITY",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_BIG_GAME_ROTATION_30",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_BIG_GAME_ROTATION_30 pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_BIG_GAME_ROTATION_30",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_FALSE_RESURGENCE",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_FALSE_RESURGENCE pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_FALSE_RESURGENCE",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_ROLE_COMMUNICATION",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_ROLE_COMMUNICATION pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_ROLE_COMMUNICATION",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_CAPTAIN_HANDOVER",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_CAPTAIN_HANDOVER pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_CAPTAIN_HANDOVER",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_MILESTONE_CHASE_500",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_MILESTONE_CHASE_500 pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_MILESTONE_CHASE_500",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_PAIN_WITHOUT_SCAN",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_PAIN_WITHOUT_SCAN pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_PAIN_WITHOUT_SCAN",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_OLD_NETWORK_FAVOR",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_OLD_NETWORK_FAVOR pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_OLD_NETWORK_FAVOR",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_FALSE_ULTIMATUM",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_FALSE_ULTIMATUM pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_FALSE_ULTIMATUM",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_NATIONAL_ABSENCE",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_NATIONAL_ABSENCE pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_NATIONAL_ABSENCE",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_SPECIALIST_BIGCLUB",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_SPECIALIST_BIGCLUB pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_SPECIALIST_BIGCLUB",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_SURGERY_31",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_SURGERY_31 pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_SURGERY_31",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_LAST_BIG_MOVE_31",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_LAST_BIG_MOVE_31 pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_LAST_BIG_MOVE_31",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_HOME_RETURN_31",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_HOME_RETURN_31 pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_HOME_RETURN_31",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_SELF_REPRESENTATION_PREP",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_SELF_REPRESENTATION_PREP pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_SELF_REPRESENTATION_PREP",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_FORMAL_MENTOR",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_FORMAL_MENTOR pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_FORMAL_MENTOR",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_LEGACY_ACADEMY",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_LEGACY_ACADEMY pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_LEGACY_ACADEMY",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_COMEBACK_PACING",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_COMEBACK_PACING pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_COMEBACK_PACING",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_ROLE_REINVENTION_32",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_ROLE_REINVENTION_32 pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_ROLE_REINVENTION_32",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_NEW_COACH_RESET",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_NEW_COACH_RESET pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_NEW_COACH_RESET",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_SQUAD_YOUTH_WAVE",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_SQUAD_YOUTH_WAVE pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_SQUAD_YOUTH_WAVE",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_CLUB_NT_LOAD_TENSION",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_CLUB_NT_LOAD_TENSION pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_CLUB_NT_LOAD_TENSION",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_MANAGED_FINAL_ROLE",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_MANAGED_FINAL_ROLE pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_MANAGED_FINAL_ROLE",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_BUSINESS_REPUTATION_SHOCK",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_BUSINESS_REPUTATION_SHOCK pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_BUSINESS_REPUTATION_SHOCK",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_ROLLING_CONTRACT",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_ROLLING_CONTRACT pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_ROLLING_CONTRACT",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_LATE_RICH_OFFER",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_LATE_RICH_OFFER pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_LATE_RICH_OFFER",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_LATE_CONTENDER_BENCH",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_LATE_CONTENDER_BENCH pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_LATE_CONTENDER_BENCH",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_HOME_CAPTAIN_OFFER",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_HOME_CAPTAIN_OFFER pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_HOME_CAPTAIN_OFFER",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_SELF_REPRESENTATION",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_SELF_REPRESENTATION pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_SELF_REPRESENTATION",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_LOW_STATS_HIGH_IMPACT",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_LOW_STATS_HIGH_IMPACT pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_LOW_STATS_HIGH_IMPACT",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_REPLACEMENT_BREAKOUT",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_REPLACEMENT_BREAKOUT pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_REPLACEMENT_BREAKOUT",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_FAN_LEGACY_BUFFER",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_FAN_LEGACY_BUFFER pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_FAN_LEGACY_BUFFER",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_TRAVEL_LOAD",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_TRAVEL_LOAD pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_TRAVEL_LOAD",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_FINAL_NT_SQUAD",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_FINAL_NT_SQUAD pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_FINAL_NT_SQUAD",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_BOSMAN_33",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_BOSMAN_33 pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_BOSMAN_33",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_72H_LIMIT",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_72H_LIMIT cruza explícitamente la frontera 30–34→34+ sin terminalidad artificial. El owner downstream debe añadir un consumer real, un terminal canónico o mantenerla abierta; mientras no exista esa evidencia, A7 prescribe conservar la memoria abierta y su provenance.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_72H_LIMIT",
+        "analysis/T5.1/canon-30-34-downstream-seed-handoff.json#handoffs",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_RECORD_VS_BODY",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_RECORD_VS_BODY pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_RECORD_VS_BODY",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_VETERAN_LEADERSHIP_FINAL",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_VETERAN_LEADERSHIP_FINAL cruza explícitamente la frontera 30–34→34+ sin terminalidad artificial. El owner downstream debe añadir un consumer real, un terminal canónico o mantenerla abierta; mientras no exista esa evidencia, A7 prescribe conservar la memoria abierta y su provenance.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_VETERAN_LEADERSHIP_FINAL",
+        "analysis/T5.1/canon-30-34-downstream-seed-handoff.json#handoffs",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_FINAL_FOUR_WAYS",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_FINAL_FOUR_WAYS cruza explícitamente la frontera 30–34→34+ sin terminalidad artificial. El owner downstream debe añadir un consumer real, un terminal canónico o mantenerla abierta; mientras no exista esa evidencia, A7 prescribe conservar la memoria abierta y su provenance.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_FINAL_FOUR_WAYS",
+        "analysis/T5.1/canon-30-34-downstream-seed-handoff.json#handoffs",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_AGE34_PRIORITY",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_AGE34_PRIORITY cruza explícitamente la frontera 30–34→34+ sin terminalidad artificial. El owner downstream debe añadir un consumer real, un terminal canónico o mantenerla abierta; mientras no exista esa evidencia, A7 prescribe conservar la memoria abierta y su provenance.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_AGE34_PRIORITY",
+        "analysis/T5.1/canon-30-34-downstream-seed-handoff.json#handoffs",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_RETIREMENT_PUBLIC_TONE",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_RETIREMENT_PUBLIC_TONE cruza explícitamente la frontera 30–34→34+ sin terminalidad artificial. El owner downstream debe añadir un consumer real, un terminal canónico o mantenerla abierta; mientras no exista esa evidencia, A7 prescribe conservar la memoria abierta y su provenance.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_RETIREMENT_PUBLIC_TONE",
+        "analysis/T5.1/canon-30-34-downstream-seed-handoff.json#handoffs",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_HOME_PULL_PUBLIC",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_HOME_PULL_PUBLIC cruza explícitamente la frontera 30–34→34+ sin terminalidad artificial. El owner downstream debe añadir un consumer real, un terminal canónico o mantenerla abierta; mientras no exista esa evidencia, A7 prescribe conservar la memoria abierta y su provenance.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_HOME_PULL_PUBLIC",
+        "analysis/T5.1/canon-30-34-downstream-seed-handoff.json#handoffs",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
+    },
+    {
+      "seedId": "SEED_RETIREMENT_DISTANCE_PROFILE",
+      "owner": "t51/canon-30-34",
+      "disposition": "intentional_persistent",
+      "rationale": "SEED_RETIREMENT_DISTANCE_PROFILE pertenece al bloque 30–34 con lifecycle open-ended y sin transición terminal canónica. A7 resuelve los callbacks genéricos como no canónicos y prohíbe inventar consumo/terminalidad; por tanto la memoria permanece abierta intencionalmente hasta una consecuencia futura acreditada.",
+      "evidenceRefs": [
+        "analysis/T5.1/canon-30-34-seed-lifecycle.json#SEED_RETIREMENT_DISTANCE_PROFILE",
+        "analysis/CODEX/canon-30-34/IMPLEMENTATION_QUEUE.md#cerrado-a7",
+        "analysis/T5.1/canon-30-34-conditional-seed-read-debt.json#policy"
+      ]
     }
   ]
 }
