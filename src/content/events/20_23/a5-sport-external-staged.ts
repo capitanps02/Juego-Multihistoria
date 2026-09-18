@@ -44,7 +44,7 @@ const EVT_20_MATCH_003 = ambiguousEvent({
 });
 
 const EVT_21_NAT_001 = ambiguousEvent({
-  id:"EVT_21_NAT_001",ageWindow:[21,21],phase:"20_23",family:"national",
+  id:"EVT_21_NAT_001",ageWindow:[21,21],phase:"20_23",family:"selection",
   title:"La ausencia",
   body:"Tu nombre aparece en quinielas, pero una lista oficial concreta no te incluye. La ausencia solo existe cuando la autoridad de selección certifica esa lista; standing, heat y caps no demuestran una convocatoria actual.",
   visible:["La lista es oficial y tu ausencia es verificable cuando A4/shared-selection lo acredita.","No conoces por qué el seleccionador tomó la decisión."],
