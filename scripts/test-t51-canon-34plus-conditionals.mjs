@@ -3,8 +3,8 @@ import test from 'node:test';
 import { createInitialState } from '../dist/content/initial-state.js';
 import { STAGED_ORDINARY_CANONICAL_CONDITIONALS,stagedCanonicalConditionalEligible } from '../dist/content/events/34_plus/staged-conditional-ordinary.js';
 
-test('A8 stages exactly 28 non-terminal canonical Pasada-7 conditionals',()=>{
- assert.equal(STAGED_ORDINARY_CANONICAL_CONDITIONALS.length,28);
+test('A8 stages exactly 25 external-fact canonical Pasada-7 conditionals',()=>{
+ assert.equal(STAGED_ORDINARY_CANONICAL_CONDITIONALS.length,25);
  const ids=STAGED_ORDINARY_CANONICAL_CONDITIONALS.map(x=>x.event.id);
  assert.equal(new Set(ids).size,28);
  for(const row of STAGED_ORDINARY_CANONICAL_CONDITIONALS){
