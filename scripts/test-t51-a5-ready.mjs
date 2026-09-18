@@ -8,6 +8,8 @@ import { A5_MARKET_EXTERNAL_REQUIREMENTS, A5_MARKET_OWNER_READY_PRINCIPALS } fro
 import { A5_MEDICAL_EXTERNAL_REQUIREMENTS, A5_MEDICAL_OWNER_READY_PRINCIPALS } from '../dist/content/events/20_23/a5-medical-external-staged.js';
 import { A5_SPORT_EXTERNAL_REQUIREMENTS, A5_SPORT_OWNER_READY_PRINCIPALS } from '../dist/content/events/20_23/a5-sport-external-staged.js';
 import { A5_SHARED_EXTERNAL_PRINCIPAL_REQUIREMENTS, A5_SHARED_EXTERNAL_OWNER_READY_PRINCIPALS } from '../dist/content/events/20_23/a5-shared-external-principals-staged.js';
+import { A5_EXTERNAL_CONDITIONALS_18_20, A5_EXTERNAL_CONDITIONAL_REQUIREMENTS_18_20 } from '../dist/content/events/18_20/a5-external-conditionals-staged.js';
+import { A5_EXTERNAL_CONDITIONALS_20_23, A5_EXTERNAL_CONDITIONAL_REQUIREMENTS_20_23 } from '../dist/content/events/20_23/a5-external-conditionals-staged.js';
 import { A5_READY_NPC_KNOWLEDGE_RULES } from '../dist/catalog/npc-knowledge-rules-a5-ready.js';
 import { createInitialState } from '../dist/content/initial-state.js';
 import { eventGatesPass } from '../dist/narrative/event-gates.js';
@@ -396,96 +398,70 @@ test('A5 external/5 dynamic agent knowledge targets resolve only from A1 authori
 });
 
 
-test('A5 external principals/1 remaining thirteen principal blockers are complete owner-side', () => {
+test('A5 external principals/1 split staging covers exactly nineteen unique shared-blocked principals', () => {
+  const groups = [
+    A5_AGENT_READY_EXTERNAL_EVENTS,
+    A5_MARKET_OWNER_READY_PRINCIPALS,
+    A5_MEDICAL_OWNER_READY_PRINCIPALS,
+    A5_SPORT_OWNER_READY_PRINCIPALS,
+    A5_SHARED_EXTERNAL_OWNER_READY_PRINCIPALS
+  ];
+  const ids = groups.flat().map(row => row.id);
+  assert.equal(ids.length, 19);
+  assert.equal(new Set(ids).size, 19, 'every blocked principal must have exactly one staged owner definition');
   assert.deepEqual(A5_SHARED_EXTERNAL_OWNER_READY_PRINCIPALS.map(row => row.id), [
-    'EVT_20_MED_001','EVT_20_AGT_001','EVT_20_MATCH_003','EVT_20_BRUNO_001',
-    'EVT_21_MONEY_001','EVT_21_AGT_001','EVT_21_NAT_001','EVT_21_MED_001',
-    'EVT_21_CCH_002','EVT_22_LOCK_001','EVT_22_HOME_001','EVT_22_MED_001','EVT_22_TACT_001'
+    'EVT_21_MONEY_001','EVT_21_CCH_002','EVT_22_LOCK_001'
   ]);
-  assert.equal(Object.keys(A5_SHARED_EXTERNAL_PRINCIPAL_REQUIREMENTS).length, 13);
-  for (const scene of A5_SHARED_EXTERNAL_OWNER_READY_PRINCIPALS) {
+  assert.equal(Object.keys(A5_SHARED_EXTERNAL_PRINCIPAL_REQUIREMENTS).length, 3);
+  for (const scene of groups.flat()) {
     assert.ok(scene.choices.length >= 3, scene.id);
     assert.ok(scene.outcomes.length >= scene.choices.length * 2, scene.id);
     assert.ok(scene.tags.includes('a5_ready_external_blocker'), scene.id);
   }
 });
 
-test('A5 external principals/2 no blocked principal mutates employment authority or fabricates forbidden facts', () => {
-  for (const scene of A5_SHARED_EXTERNAL_OWNER_READY_PRINCIPALS) {
+test('A5 external principals/2 split staging does not fabricate employment, match, medical or selection authority', () => {
+  const scenes = [
+    ...A5_AGENT_READY_EXTERNAL_EVENTS,
+    ...A5_MARKET_OWNER_READY_PRINCIPALS,
+    ...A5_MEDICAL_OWNER_READY_PRINCIPALS,
+    ...A5_SPORT_OWNER_READY_PRINCIPALS,
+    ...A5_SHARED_EXTERNAL_OWNER_READY_PRINCIPALS
+  ];
+  for (const scene of scenes) {
     const effects = [
       ...scene.choices.flatMap(choice => [...(choice.immediateEffects ?? []), ...(choice.hiddenCosts ?? [])]),
-      ...scene.outcomes.flatMap(outcome => outcome.effects)
+      ...scene.outcomes.flatMap(outcome => outcome.effects ?? [])
     ];
-    const forbidden = effects.filter(effect => {
-      if (effect.kind === 'flag') return ['LOAN_ACTIVE','ABROAD_ROUTE','BIG_CLUB','NATIONAL_CALLED','COACH_FIRED'].includes(effect.flag);
-      return [
-        'club','tier','contract.monthsRemaining','contract.salaryMonthly','contract.releaseClause',
-        'professional.ownerClub','professional.registrationClub','professional.leagueTier','professional.route'
-      ].includes(effect.path);
-    });
-    assert.deepEqual(forbidden, [], scene.id);
+    for (const effect of effects) {
+      if (effect.kind === 'flag') {
+        assert.ok(!['LOAN_ACTIVE','ABROAD_ROUTE','BIG_CLUB','NATIONAL_CALLED','COACH_FIRED'].includes(effect.flag), scene.id);
+        continue;
+      }
+      const path = String(effect.path);
+      assert.ok(!path.startsWith('match.'), scene.id + ': ' + path);
+      assert.ok(!path.startsWith('world.sportMatchModel'), scene.id + ': ' + path);
+      assert.ok(!path.startsWith('world.national'), scene.id + ': ' + path);
+      assert.ok(!path.startsWith('body.'), scene.id + ': ' + path);
+      assert.ok(!['club','tier','contract.monthsRemaining','contract.salaryMonthly','contract.releaseClause',
+        'professional.ownerClub','professional.registrationClub','professional.leagueTier','professional.route'].includes(path), scene.id + ': ' + path);
+    }
   }
-  const serialized = JSON.stringify(A5_SHARED_EXTERNAL_OWNER_READY_PRINCIPALS);
-  for (const fake of ['REAL_MATCH','REAL_DIAGNOSIS','RECENT_CONFLICT','HAS_OFFER','REAL_CALLUP']) {
-    assert.equal(serialized.includes(fake), false);
+  const serialized = JSON.stringify(scenes);
+  for (const fake of ['REAL_MATCH','REAL_DIAGNOSIS','RECENT_CONFLICT','HAS_OFFER','REAL_CALLUP','REAL_TRANSFER']) {
+    assert.equal(serialized.includes(fake), false, fake);
   }
 });
 
-test('A5 external principals/3 agent-dependent choices consume A1 identity and fail closed', () => {
-  const state = stateAt(52001, 20, '2028-09-05');
-  const agentScene = A5_SHARED_EXTERNAL_OWNER_READY_PRINCIPALS.find(row => row.id === 'EVT_20_AGT_001');
-  assert.ok(agentScene);
-  assert.equal(eventGatesPass(state, agentScene), false);
-  state.flags.AGENT_CONTACT_HECTOR = true;
-  state.professional.agentControl = 100;
-  assert.equal(eventGatesPass(state, agentScene), false);
-  certifyActiveAgentInPlace(state, 'NPC_AGT_01');
-  assert.equal(eventGatesPass(state, agentScene), true);
-
-  const cch = A5_SHARED_EXTERNAL_OWNER_READY_PRINCIPALS.find(row => row.id === 'EVT_21_CCH_002');
-  state.age = 21; state.phase = '20_23';
-  assert.ok(eligibleChoices(state, cch).some(choice => choice.id === 'SOUND_MARKET'));
+test('A5 external principals/3 owner contracts reject the key prohibited proxies', () => {
+  assert.ok(A5_AGENT_EXTERNAL_REQUIREMENTS.EVT_20_AGT_001.forbidden.includes('contact flags'));
+  assert.ok(A5_MARKET_EXTERNAL_REQUIREMENTS.EVT_20_MKT_001.forbidden.includes('marketHeat as offer'));
+  assert.ok(A5_MEDICAL_EXTERNAL_REQUIREMENTS.EVT_21_MED_001.forbidden.includes('body.risk as treatment eligibility'));
+  assert.ok(A5_SPORT_EXTERNAL_REQUIREMENTS.EVT_21_NAT_001.forbidden.includes('nationalStanding as call-up'));
+  assert.ok(A5_SHARED_EXTERNAL_PRINCIPAL_REQUIREMENTS.EVT_21_MONEY_001.forbidden.includes('cash threshold as family debt'));
+  assert.ok(A5_SHARED_EXTERNAL_PRINCIPAL_REQUIREMENTS.EVT_21_CCH_002.forbidden.includes('COACH_FIRED history as current change'));
+  assert.ok(A5_SHARED_EXTERNAL_PRINCIPAL_REQUIREMENTS.EVT_22_LOCK_001.forbidden.includes('lockerPower as sale fact'));
 });
-
-test('A5 external principals/4 Bruno consumes exact favor payload but cannot manufacture a current opportunity', () => {
-  const scene = A5_SHARED_EXTERNAL_OWNER_READY_PRINCIPALS.find(row => row.id === 'EVT_20_BRUNO_001');
-  const state = stateAt(52002,20,'2028-10-10');
-  addLiveSeed(state,'SEED_BRUNO_FAVOR','EVT_18_TEAM_001',{stance:'helped'});
-  assert.equal(narrativeCausalFacts(state).brunoFavorStance,'helped');
-  assert.equal(eventGatesPass(state,scene),true);
-  assert.equal(JSON.stringify(scene).includes('marketHeat'),false);
-  assert.ok(A5_SHARED_EXTERNAL_PRINCIPAL_REQUIREMENTS.EVT_20_BRUNO_001.facts.includes('current Bruno market contact'));
-});
-
-test('A5 external principals/5 national and medical requirements explicitly reject aggregate proxies', () => {
-  const nat=A5_SHARED_EXTERNAL_PRINCIPAL_REQUIREMENTS.EVT_21_NAT_001;
-  assert.ok(nat.facts.includes('official national-team list'));
-  assert.ok(nat.forbidden.includes('nationalStanding as call-up'));
-  const med=A5_SHARED_EXTERNAL_PRINCIPAL_REQUIREMENTS.EVT_21_MED_001;
-  assert.ok(med.facts.includes('compatible diagnosed injury'));
-  assert.ok(med.forbidden.includes('body.risk as diagnosis'));
-  const tact=A5_SHARED_EXTERNAL_PRINCIPAL_REQUIREMENTS.EVT_22_TACT_001;
-  assert.ok(tact.facts.includes('concrete tactical role/order'));
-  assert.ok(tact.forbidden.includes('roleScore as order'));
-});
-
-test('A5 external principals/6 staged dynamic NPC rules inform only certified participants', () => {
-  const state=stateAt(52003,20,'2028-09-05');
-  const agtRule=ruleFor('EVT_20_AGT_001','REPORT_ALL');
-  const brunoNotify=ruleFor('EVT_20_BRUNO_001','AUTHORIZE_NOTIFY');
-  const brunoPrivate=ruleFor('EVT_20_BRUNO_001','AUTHORIZE_PRIVATE');
-  assert.ok(agtRule); assert.ok(brunoNotify); assert.ok(brunoPrivate);
-  let context=captureNpcKnowledgeTargetContext(state);
-  assert.deepEqual(resolveNpcKnowledgeTargets(agtRule,context),[]);
-  assert.deepEqual(resolveNpcKnowledgeTargets(brunoNotify,context),['NPC_PLR_12']);
-  assert.deepEqual(resolveNpcKnowledgeTargets(brunoPrivate,context),['NPC_PLR_12']);
-  certifyActiveAgentInPlace(state,'NPC_AGT_02');
-  context=captureNpcKnowledgeTargetContext(state);
-  assert.deepEqual(resolveNpcKnowledgeTargets(agtRule,context),['NPC_AGT_02']);
-  assert.deepEqual(new Set(resolveNpcKnowledgeTargets(brunoNotify,context)),new Set(['NPC_PLR_12','NPC_AGT_02']));
-  assert.deepEqual(resolveNpcKnowledgeTargets(brunoPrivate,context),['NPC_PLR_12']);
-});
-
 
 test('A5 external medical/1 three medical principals are canonical owner-ready with exact four choices', () => {
   assert.deepEqual(A5_MEDICAL_OWNER_READY_PRINCIPALS.map(row => row.id), [
@@ -581,4 +557,91 @@ test('A5 external sport/4 owner effects never write score/result/fixture or empl
     ));
     assert.deepEqual(forbidden, [], scene.id);
   }
+});
+
+
+test('A5 external conditionals/1 exact finite inventory is nineteen unique owner-complete callbacks', () => {
+  const ids18 = A5_EXTERNAL_CONDITIONALS_18_20.map(row => row.id);
+  const ids20 = A5_EXTERNAL_CONDITIONALS_20_23.map(row => row.id);
+  assert.deepEqual(ids18, ['CEVT_18_EARLY_01','CEVT_19_AGENT_01','CEVT_19_SOCIAL_01']);
+  assert.deepEqual(ids20, [
+    'CEVT_20_RIVAS_01','CEVT_20_VELA_01','CEVT_20_PAULA_01','CEVT_20_NANO_01','CEVT_20_MONT_01','CEVT_20_ADR_01',
+    'CEVT_21_BIGCLUB_01','CEVT_21_LOAN_01','CEVT_21_AGENT_02','CEVT_21_INJ_01',
+    'CEVT_22_UDV_01','CEVT_22_BRUNO_02','CEVT_22_ADR_02','CEVT_22_FREE_01','CEVT_22_SOC_02','CEVT_22_SHOCK_01'
+  ]);
+  assert.equal(new Set([...ids18,...ids20]).size, 19);
+  assert.equal(Object.keys(A5_EXTERNAL_CONDITIONAL_REQUIREMENTS_18_20).length, 3);
+  assert.equal(Object.keys(A5_EXTERNAL_CONDITIONAL_REQUIREMENTS_20_23).length, 16);
+});
+
+test('A5 external conditionals/2 every callback has specific choices, own outcomes and no generic shell', () => {
+  const scenes=[...A5_EXTERNAL_CONDITIONALS_18_20,...A5_EXTERNAL_CONDITIONALS_20_23];
+  const generic=new Set(['A','B','C','D','Tomar la iniciativa','Esperar y reunir información','Proteger tu posición','Buscar una solución intermedia']);
+  for(const scene of scenes){
+    assert.ok(scene.tags.includes('a5_ready_external_blocker'),scene.id);
+    assert.ok(scene.choices.length>=3,scene.id);
+    assert.equal(scene.outcomes.length,scene.choices.length*2,scene.id);
+    for(const choice of scene.choices){
+      assert.ok(!generic.has(choice.id),scene.id);
+      assert.ok(!generic.has(choice.label),scene.id);
+      assert.ok(choice.label.length>=8,scene.id);
+    }
+  }
+});
+
+test('A5 external conditionals/3 owner effects do not create external careers, employment, injuries, offers or match results', () => {
+  const scenes=[...A5_EXTERNAL_CONDITIONALS_18_20,...A5_EXTERNAL_CONDITIONALS_20_23];
+  for(const scene of scenes){
+    const effects=[
+      ...scene.choices.flatMap(choice=>[...(choice.immediateEffects??[]),...(choice.hiddenCosts??[])]),
+      ...scene.outcomes.flatMap(outcome=>outcome.effects??[])
+    ];
+    for(const effect of effects){
+      if(effect.kind==='flag'){
+        assert.ok(!['LOAN_ACTIVE','ABROAD_ROUTE','BIG_CLUB','COACH_FIRED','NATIONAL_CALLED','CLUB_OWNER_CHANGE'].includes(effect.flag),scene.id);
+        continue;
+      }
+      const path=String(effect.path);
+      assert.ok(!path.startsWith('body.'),scene.id+': '+path);
+      assert.ok(!path.startsWith('market.'),scene.id+': '+path);
+      assert.ok(!path.startsWith('world.sportMatchModel'),scene.id+': '+path);
+      assert.ok(!['club','tier','contract.monthsRemaining','contract.salaryMonthly','professional.ownerClub','professional.registrationClub'].includes(path),scene.id+': '+path);
+    }
+  }
+});
+
+test('A5 external conditionals/4 external facts stay external instead of being fabricated from seed or aggregate proxies', () => {
+  const r=A5_EXTERNAL_CONDITIONAL_REQUIREMENTS_20_23;
+  assert.ok(r.CEVT_20_RIVAS_01.forbidden.includes('SEED_RIVAS_TRUST creating promotion'));
+  assert.ok(r.CEVT_20_VELA_01.forbidden.includes('SEED_VELA_STANCE creating staff job'));
+  assert.ok(r.CEVT_20_NANO_01.forbidden.includes('SEED_NANO_SHADOW creating opportunity'));
+  assert.ok(r.CEVT_22_BRUNO_02.forbidden.includes('SEED_BRUNO_FAVOR creating need'));
+  assert.ok(r.CEVT_22_SOC_02.forbidden.includes('moneyComfort creating proposal'));
+  assert.ok(r.CEVT_22_SHOCK_01.forbidden.includes('random narrative shock'));
+  assert.ok(A5_EXTERNAL_CONDITIONAL_REQUIREMENTS_18_20.CEVT_18_EARLY_01.forbidden.includes('role/form as breakout'));
+  assert.ok(A5_EXTERNAL_CONDITIONAL_REQUIREMENTS_18_20.CEVT_19_AGENT_01.forbidden.includes('truth chosen retrospectively by response'));
+  assert.ok(A5_EXTERNAL_CONDITIONAL_REQUIREMENTS_18_20.CEVT_19_SOCIAL_01.forbidden.includes('synthetic RECENT_CONFLICT flag'));
+});
+
+test('A5 external conditionals/5 agent-specific routes fail closed without a certified A1 representative', () => {
+  const state=stateAt(53005,22,'2030-08-12');
+  const shock=A5_EXTERNAL_CONDITIONALS_20_23.find(row=>row.id==='CEVT_22_SHOCK_01');
+  assert.ok(shock);
+  state.flags.AGENT_ACTIVE=true;
+  state.flags.AGENT_CONTACT_HECTOR=true;
+  let ids=eligibleChoices(state,shock).map(choice=>choice.id);
+  assert.ok(!ids.includes('SOUND_MARKET'));
+  certifyActiveAgentInPlace(state,'NPC_AGT_01');
+  ids=eligibleChoices(state,shock).map(choice=>choice.id);
+  assert.ok(ids.includes('SOUND_MARKET'));
+});
+
+test('A5 external conditionals/6 seed memory can shape reactions but never proves the current external trigger', () => {
+  const state=stateAt(53006,20,'2028-11-12');
+  addLiveSeed(state,'SEED_NANO_SHADOW','EVT_18_PRE_001',{pattern:'limits'});
+  const nano=A5_EXTERNAL_CONDITIONALS_20_23.find(row=>row.id==='CEVT_20_NANO_01');
+  assert.ok(nano);
+  assert.ok(nano.seedsRead.includes('SEED_NANO_SHADOW'));
+  assert.equal(nano.gates.some(g=>g.path==='flags.HAS_SEED_NANO_SHADOW'),false,'seed presence must not create Nano opportunity');
+  assert.ok(A5_EXTERNAL_CONDITIONAL_REQUIREMENTS_20_23.CEVT_20_NANO_01.facts.includes('Nano real professional opportunity and current career state'));
 });
