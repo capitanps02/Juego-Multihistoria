@@ -1,6 +1,5 @@
 import type { Condition, Effect, EventDefinition } from "../../../core/types.js";
 import { PRINCIPAL_EVENTS_30_34 } from "./principal-events.js";
-import { CONDITIONAL_EVENTS_30_34 } from "./conditional-events.js";
 import { CANONICAL_REIMPLEMENTATIONS_30_34 } from "./canonical-reimplementations.js";
 import { CANONICAL_REIMPLEMENTATIONS_31B } from "./canonical-reimplementations-31b.js";
 import { CANONICAL_REIMPLEMENTATIONS_32A } from "./canonical-reimplementations-32a.js";
@@ -177,4 +176,4 @@ const principal:EventDefinition[]=PRINCIPAL_EVENTS_30_34.map(original=>{
   return {...event,canonStatus:"technical_adaptation",tags:[...new Set(tags)]};
 });
 
-export const EVENTS_30_34=[...principal,...CANONICAL_ADDITIONS_30_34,...CONDITIONAL_EVENTS_30_34];
+export const EVENTS_30_34=[...principal,...CANONICAL_ADDITIONS_30_34];
