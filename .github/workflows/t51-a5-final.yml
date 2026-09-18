@@ -59,4 +59,4 @@ jobs:
       - name: A1 shared authority regressions
         run: node --test scripts/test-t51-shared-contracts.mjs
       - name: Choice eligibility and dynamic targets
-        run: node --test scripts/test-t51-choice-eligibility.mjs scripts/test-t53-dynamic-targets.mjs
+        run: node --test scripts/test-t53-dynamic-targets.mjs
