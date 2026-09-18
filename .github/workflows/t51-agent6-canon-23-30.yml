@@ -38,6 +38,7 @@ jobs:
           scripts/test-t51-agent6-fin29.mjs
           scripts/test-t51-agent6-nat29.mjs
           scripts/test-t51-agent6-independent23-25.mjs
+          scripts/test-t51-agent6-external-principals.mjs
       - name: Shared authorities absorbed from main
         run: >-
           node --test
