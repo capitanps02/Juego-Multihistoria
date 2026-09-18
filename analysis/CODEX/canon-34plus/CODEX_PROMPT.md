@@ -65,7 +65,7 @@ Do not pretend current terms guarantee minutes, bonuses, bilateral termination, 
 - **#199** — rich sporting outcomes, awards and records;
 - **#200** — injury episode/rehab/return chronology.
 
-**#201** owns justified finance/sponsor/stadium/staff-crisis club-world incidents or an explicit fail-closed decision.
+**#201 is closed completed as a producer-design gate.** Do not build a generic world-incident subsystem. `CEVT_35_UDV_FINANCIAL_CRISIS` may establish its own finance incident; `CEVT_35_SPONSOR_LATE_BOOM` may establish a new campaign after a factual viral/new-market trigger. `CEVT_35_SPONSOR_EXIT`, `CEVT_37_EMPTY_STADIUM_FAREWELL` and `CEVT_37_PLAYER_COACH_EMERGENCY` remain fail-closed unless their pre-existing sponsor/venue/staff facts actually exist.
 
 ## Actor routing
 Issue **#177 is closed completed** after the 43/43 authority-matrix refresh. Do not create or reopen a generic late-career NPC subsystem merely because one scene lacks evidence. Use `AUTHORITY_MATRIX.json`:
