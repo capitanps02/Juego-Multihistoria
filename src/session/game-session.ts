@@ -5,7 +5,7 @@ import { EVENTS } from "../content/events/index.js";
 import { createInitialState } from "../content/initial-state.js";
 import { EventIndex } from "../narrative/event-index.js";
 import { scheduleEvent } from "../narrative/scheduler.js";
-import { eligibleChoices, isChoiceEligible } from "../narrative/choice-eligibility.js";
+import { eligibleChoices } from "../narrative/choice-eligibility.js";
 import { offerDispositionForChoice, selectOfferBridgeEvent } from "../narrative/offer-bridge.js";
 import {
   reconcileNpcKnowledgeFromHistoryInPlace,
@@ -365,7 +365,7 @@ export class GameSession {
     requireThat(command.expectedRevision === this.#snapshot.revision, "STALE_REVISION", "La partida ha cambiado; vuelve a cargar la pantalla.");
     const next = structuredClone(this.#snapshot);
     if (command.type === "continue") {
-      requireThat(!next.pendingDecision && !next.pendingResult && !next.state.market?.pending, "PENDING_SCREEN", "Resuelve la escena o continúa después del resultado.");
+      requireThat(!next.pendingDecision && !next.pendingResult && (!next.state.market?.pending || Boolean(next.state.market.pending.validThrough)), "PENDING_SCREEN", "Resuelve la escena o continúa después del resultado.");
       requireThat(next.state.retirement.status !== "closed", "CAREER_CLOSED", "La carrera ya ha terminado.");
       this.#advance(next, command.maxDays ?? 90);
     } else if (command.type === "offer") {
@@ -376,11 +376,25 @@ export class GameSession {
       const pending = next.pendingDecision;
       requireThat(pending && pending.instanceId === command.pendingInstanceId, "STALE_DECISION", "Esta escena ya no está pendiente.");
       const choice = pending.event.choices.find(c => c.id === command.choiceId);
-      requireThat(choice && isChoiceEligible(next.state, choice), "INVALID_CHOICE", "La elección no pertenece a esta escena o no está disponible.");
+      const availableChoice = choice && eligibleChoices(next.state, pending.event).some(candidate => candidate.id === choice.id);
+      requireThat(choice && availableChoice, "INVALID_CHOICE", "La elección no pertenece a esta escena o no está disponible.");
       const bridgeDisposition = offerDispositionForChoice(pending.event, choice.id);
       const beforeOfferTerms = bridgeDisposition ? careerTerms(next.state) : null;
       if (bridgeDisposition) requireThat(next.state.market?.pending, "STALE_OFFER", "La oferta asociada a esta escena ya no está pendiente.");
-      const result = resolveChoiceInPlace(next.state, pending.event, choice.id);
+      let result;
+      try {
+        result = resolveChoiceInPlace(next.state, pending.event, choice.id);
+      } catch (error) {
+        if (bridgeDisposition
+          && error instanceof Error
+          && error.message.startsWith("Narrative effect cannot ")) {
+          throw new SessionError(
+            "INVALID_OFFER_BRIDGE",
+            "Una escena de oferta no puede modificar autoridad contractual o de empleo mediante efectos narrativos."
+          );
+        }
+        throw error;
+      }
       let messages = result.messages;
       if (bridgeDisposition) {
         requireThat(JSON.stringify(careerTerms(next.state)) === JSON.stringify(beforeOfferTerms), "INVALID_OFFER_BRIDGE", "Una escena de oferta no puede modificar términos contractuales mediante efectos narrativos.");
@@ -451,8 +465,14 @@ export class GameSession {
     while (next.state.retirement.status !== "closed") {
       if (next.state.market?.pending) {
         const bridge = selectOfferBridgeEvent(next.state, this.#index.events);
-        if (bridge) this.#presentEvent(next, bridge.id);
-        return;
+        if (bridge) {
+          this.#presentEvent(next, bridge.id);
+          return;
+        }
+        if (!next.state.market.pending.validThrough || days >= maxDays) return;
+        this.#worldDay(next);
+        days++;
+        continue;
       }
       const scheduled = scheduleEvent(next.state, this.#index);
       if (scheduled) {

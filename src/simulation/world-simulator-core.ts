@@ -1,4 +1,4 @@
-import { proposeCareerChange } from "./offers.js";
+import { activateFutureCareerAgreementsInPlace, expireCareerOfferInPlace, proposeCareerChange } from "./offers.js";
 import { DeterministicRng } from "../core/rng.js";
 import type { GameState, NarrativePhase } from "../core/types.js";
 import { classifyState20 } from "./state20-classifier.js";
@@ -14,6 +14,7 @@ import { maturityWeek, runMaturityPreseason } from "./ageing-engine.js";
 import { lateCareerPreseason, lateCareerWeek, closeCareer } from "./late-career-engine.js";
 import { recordAgeMilestone } from "./age-milestones.js";
 import { expireDueSeedsInPlace } from "../narrative/resolver.js";
+import { hasActiveClubEmployment, transitionNaturalExpiryInPlace } from "./employment.js";
 
 const clamp = (x: number, min = 0, max = 100) => Math.min(max, Math.max(min, x));
 const num = (x: unknown, fallback = 0) => typeof x === "number" ? x : fallback;
@@ -36,8 +37,10 @@ function phaseForAge(age: number): NarrativePhase {
 
 function monthlyContractTick(state: GameState, oldDate: string): void {
   if (oldDate.slice(0, 7) === state.date.slice(0, 7)) return;
+  if (!hasActiveClubEmployment(state)) return;
   const months = num(state.contract.monthsRemaining, 0);
   state.contract.monthsRemaining = Math.max(0, months - 1);
+  transitionNaturalExpiryInPlace(state, months);
 }
 
 function updateContextFlags(state: GameState, rng: DeterministicRng): void {
@@ -62,7 +65,7 @@ function updateContextFlags(state: GameState, rng: DeterministicRng): void {
   }
 
   const seasonMonths = month >= 8 || month <= 5;
-  if (seasonMonths && !state.flags.OFFICIAL_DEBUT && role >= 22 && rng.next() < 0.18) {
+  if (seasonMonths && hasActiveClubEmployment(state) && !state.flags.OFFICIAL_DEBUT && role >= 22 && rng.next() < 0.18) {
     state.flags.OFFICIAL_DEBUT = true;
     state.flags.FIRST_TEAM_ATTENTION = true;
     state.flags.WIN_DEBUT = false;
@@ -90,10 +93,7 @@ function updateContextFlags(state: GameState, rng: DeterministicRng): void {
     if (draw < relegationP) {
       state.flags.UDV_RELEGATED = true;
       state.world.udvTier = 4;
-      if (state.club === "UDV") {
-        state.tier = 4;
-        state.professional.leagueTier = 4;
-      }
+      if (state.club === "UDV") state.tier = 4;
     } else if (draw < relegationP + playoffP) {
       state.flags.UDV_PLAYOFF = true;
     }
@@ -213,18 +213,23 @@ function professionalWeek(state: GameState, rng: DeterministicRng): void {
   const market = num(state.reputation.marketHeat, 25);
   const media = num(state.reputation.mediaHeat, 8);
   const month = Number(state.date.slice(5, 7));
+  const employed = hasActiveClubEmployment(state);
 
   const roleTarget=clamp(role + (form-50)*0.22 + (p.environmentStability-50)*0.08);
-  p.roleSecurity = clamp(p.roleSecurity*0.93 + roleTarget*0.07 + (rng.next()-0.5)*2.1);
-  const lockerTarget=clamp(12 + role*0.58 + num(state.reputation.prestige,0)*0.15);
-  p.lockerPower = clamp(p.lockerPower*0.975 + lockerTarget*0.025 + (rng.next()-0.5)*1.2);
+  if (employed) {
+    p.roleSecurity = clamp(p.roleSecurity*0.93 + roleTarget*0.07 + (rng.next()-0.5)*2.1);
+    const lockerTarget=clamp(12 + role*0.58 + num(state.reputation.prestige,0)*0.15);
+    p.lockerPower = clamp(p.lockerPower*0.975 + lockerTarget*0.025 + (rng.next()-0.5)*1.2);
+  }
   const monthsNow=num(state.contract.monthsRemaining,0);
   const contractTarget=clamp(18 + market*0.62 + (monthsNow<=18?12:0) + (state.flags.CONTRACT_DISPUTE?8:0));
   p.contractPower = clamp(p.contractPower*0.96 + contractTarget*0.04 + (rng.next()-0.5)*1.2);
-  p.moneyComfort = clamp(p.moneyComfort + Math.max(0, num(state.contract.salaryMonthly, 0) - 2500) / 85000);
+  if (employed) p.moneyComfort = clamp(p.moneyComfort + Math.max(0, num(state.contract.salaryMonthly, 0) - 2500) / 85000);
   p.nationalHeat = clamp(p.nationalHeat * 0.965 + media * 0.0175 + market * 0.0175 + (rng.next() - 0.5) * 1.5);
-  const trustTarget=clamp(34+p.roleSecurity*0.42+p.environmentStability*0.16-(state.flags.CONTRACT_DISPUTE?15:0));
-  p.institutionalTrust = clamp(p.institutionalTrust*0.96 + trustTarget*0.04 + (rng.next()-0.5)*1.0);
+  if (employed) {
+    const trustTarget=clamp(34+p.roleSecurity*0.42+p.environmentStability*0.16-(state.flags.CONTRACT_DISPUTE?15:0));
+    p.institutionalTrust = clamp(p.institutionalTrust*0.96 + trustTarget*0.04 + (rng.next()-0.5)*1.0);
+  }
 
   if (p.route === "abroad") {
     p.foreignAdaptation = clamp(p.foreignAdaptation + 1.4 + (rng.next() - 0.5) * 3);
@@ -239,7 +244,7 @@ function professionalWeek(state: GameState, rng: DeterministicRng): void {
     p.injuryMinutesImpact = clamp(p.injuryMinutesImpact - 0.45);
   }
 
-  proposeCareerChange(state, "Renovación de contrato", state => {
+  if (employed) proposeCareerChange(state, "Renovación de contrato", state => {
     const p=state.professional;
   // Renovaciones: la agencia libre es una posibilidad, no el destino por defecto.
   const months = num(state.contract.monthsRemaining, 0);
@@ -257,7 +262,7 @@ function professionalWeek(state: GameState, rng: DeterministicRng): void {
   }
 
   });
-  proposeCareerChange(state, "Continuidad de la cesión", state => {
+  if (employed && state.age < 34) proposeCareerChange(state, "Continuidad de la cesión", state => {
     const p=state.professional;
   // Cierre o continuidad de cesiones al final de temporada.
   if (p.ownerClub !== p.registrationClub && [5, 6].includes(month) && rng.next() < 0.12) {
@@ -278,7 +283,7 @@ function professionalWeek(state: GameState, rng: DeterministicRng): void {
   }
 
   });
-  proposeCareerChange(state, "Propuesta de mercado", state => {
+  if (state.age < 34) proposeCareerChange(state, "Propuesta de mercado", state => {
     const p=state.professional;
   // Ventana de verano: movimientos plausibles y separados entre nivel y prestigio.
   if ([7, 8].includes(month) && state.runtime.day % 14 === 0 && market >= 38 && rng.next() < 0.09) {
@@ -401,17 +406,21 @@ function professionalWeek(state: GameState, rng: DeterministicRng): void {
 }
 
 export function advanceWorldDayInPlace(next: GameState): GameState {
-  if(next.market?.pending)return next;
+  const pending = next.market?.pending;
+  if (pending && !pending.validThrough) return next;
+  expireCareerOfferInPlace(next);
   const oldDate = next.date;
   next.date = addDays(next.date, 1);
   next.runtime.day += 1;
   next.runtime.seasonDay += 1;
   next.runtime.daysSinceNarrative += 1;
+  expireCareerOfferInPlace(next);
 
   expireDueSeedsInPlace(next);
 
   for (const id of Object.keys(next.eventCooldowns)) next.eventCooldowns[id] = Math.max(0, next.eventCooldowns[id]! - 1);
   monthlyContractTick(next, oldDate);
+  activateFutureCareerAgreementsInPlace(next);
 
   const oldMonthDay = oldDate.slice(5);
   const newMonthDay = next.date.slice(5);
@@ -463,7 +472,7 @@ export function advanceWorldDayInPlace(next: GameState): GameState {
   }
 
   if (next.runtime.day % 7 === 0) {
-    footballWeek(next);
+    if (hasActiveClubEmployment(next)) footballWeek(next);
     const rng = new DeterministicRng(next.rngState.football);
     professionalWeek(next, rng);
     maturityWeek(next);

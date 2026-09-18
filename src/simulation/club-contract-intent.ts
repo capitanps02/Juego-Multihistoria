@@ -2,16 +2,24 @@ import type { GameState } from "../core/types.js";
 import { earlyCareerSeedFacts, type EarlyCareerSeedFacts } from "../narrative/seed-memory.js";
 import { lockerSlotAffinity } from "./locker-leadership.js";
 import {
+  bosmanEligibility,
   careerOfferKind,
   eligibleCareerOfferKind,
   FORMAL_RENEWAL_REASON,
   getEligibleCareerOffers,
+  getFutureCareerAgreements,
+  getOpenFutureEmploymentNegotiations,
   isCareerOfferContext,
   type CareerOfferContext,
   type CareerOfferKind,
-  type CareerTerms
+  type CareerTerms,
+  type BosmanEligibility,
+  type FutureCareerAgreement,
+  type FutureEmploymentNegotiation
 } from "./offers.js";
 import { getCurrentMatchContext, getSportContext, type CurrentMatchContext, type SportContext } from "./sport-context.js";
+import { employmentStatus, type EmploymentStatus } from "./employment.js";
+import { getVeteranMarketApproaches, type VeteranMarketApproach } from "./veteran-market.js";
 
 export { FORMAL_RENEWAL_REASON };
 export const CLUB_WANTS_RENEWAL_FACT = "facts.clubWantsRenewal" as const;
@@ -47,10 +55,12 @@ export function clubRenewalPropensity(state: GameState): number {
 
 /** A materialised, still-compatible same-club renewal is direct evidence of club renewal intent. */
 export function hasFormalClubRenewalOffer(state: GameState): boolean {
-  const offer = state.market?.pending;
-  if (!offer || offer.reason !== FORMAL_RENEWAL_REASON || eligibleCareerOfferKind(state) !== "renewal") return false;
-  return offer.before.club === offer.terms.club
-    && offer.before.ownerClub === offer.terms.ownerClub;
+  return getEligibleCareerOffers(state).some(offer =>
+    offer.reason === FORMAL_RENEWAL_REASON
+    && careerOfferKind(offer) === "renewal"
+    && offer.before.club === offer.terms.club
+    && offer.before.ownerClub === offer.terms.ownerClub
+  );
 }
 
 /**
@@ -63,6 +73,7 @@ export function hasFormalClubRenewalOffer(state: GameState): boolean {
 export function clubWantsRenewal(state: GameState): boolean {
   if (hasFormalClubRenewalOffer(state)) return true;
   if (state.retirement.status !== "playing") return false;
+  if (!["contracted","loaned"].includes(employmentStatus(state))) return false;
   if (state.age < 20 || state.age >= 34) return false;
   if (state.flags.CONTRACT_DISPUTE) return false;
 
@@ -110,6 +121,7 @@ export interface PendingCareerOfferFacts {
   reason: string;
   terms: Readonly<CareerTerms>;
   context?: Readonly<CareerOfferContext>;
+  validThrough?: string;
 }
 export function pendingCareerOfferFacts(state: GameState): PendingCareerOfferFacts | null {
   const offer = getEligibleCareerOffers(state)[0];
@@ -120,7 +132,8 @@ export function pendingCareerOfferFacts(state: GameState): PendingCareerOfferFac
     date: offer.date,
     reason: offer.reason,
     terms: structuredClone(offer.terms),
-    ...(isCareerOfferContext(offer.context) ? { context: structuredClone(offer.context) } : {})
+    ...(isCareerOfferContext(offer.context) ? { context: structuredClone(offer.context) } : {}),
+    ...(offer.validThrough ? { validThrough: offer.validThrough } : {})
   };
 }
 
@@ -130,6 +143,16 @@ export interface NarrativeCausalFacts extends EarlyCareerSeedFacts {
   lockerStarAffinity: number | null;
   roleDropSince23: number;
   roleGuaranteeAt23: boolean;
+  /** Explicit employment truth. Legacy ambiguous zero-month saves project expired_pending_resolution. */
+  employmentStatus: EmploymentStatus;
+  /** Detached formal future negotiations; never current employment. */
+  futureEmploymentNegotiations: readonly FutureEmploymentNegotiation[];
+  /** Detached signed/activated future-employment agreements. */
+  futureCareerAgreements: readonly FutureCareerAgreement[];
+  /** Exact Bosman gate; zero-month/unattached/non-January states fail closed. */
+  bosman: BosmanEligibility;
+  /** Factual veteran approaches/medical evaluations; never signable offers by themselves. */
+  veteranMarketApproaches: readonly VeteranMarketApproach[];
   /** Compatible formal offer kind for deterministic event/choice gating; null includes stale offers. */
   pendingCareerOfferKind: CareerOfferKind | null;
   /** Exact detached formal-offer projection; null includes no offer and stale offers. */
@@ -148,6 +171,11 @@ export function narrativeCausalFacts(state: GameState): NarrativeCausalFacts {
     lockerStarAffinity: lockerSlotAffinity(state, "star"),
     roleDropSince23: roleDropSince23(state),
     roleGuaranteeAt23: hasRoleGuaranteeAt23(state),
+    employmentStatus: employmentStatus(state),
+    futureEmploymentNegotiations: getOpenFutureEmploymentNegotiations(state),
+    futureCareerAgreements: getFutureCareerAgreements(state),
+    bosman: bosmanEligibility(state),
+    veteranMarketApproaches: getVeteranMarketApproaches(state),
     pendingCareerOfferKind: eligibleCareerOfferKind(state),
     pendingCareerOffer: pendingCareerOfferFacts(state),
     sport: getSportContext(state),
