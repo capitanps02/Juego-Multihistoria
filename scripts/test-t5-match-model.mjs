@@ -6,6 +6,7 @@ import {
   currentOfficialMatch,
   getSportMatchModelStore,
   inspectSportMatchModelStore,
+  lastPlayerAppearance,
   recordOfficialMatchInPlace
 } from '../dist/simulation/match-model.js';
 import { getCurrentMatchContext, getSportContext } from '../dist/simulation/sport-context.js';
@@ -13,6 +14,7 @@ import { advanceWorldDayInPlace } from '../dist/simulation/world-simulator.js';
 import { advanceWorldDayInPlace as advanceCoreWorldDayInPlace } from '../dist/simulation/world-simulator-core.js';
 import { assertGameState } from '../dist/save/validation.js';
 import { loadSave, serializeSave } from '../dist/save/save.js';
+import { GameSession } from '../dist/session/game-session.js';
 
 const invalidSave = error => error?.code === 'INVALID_SAVE';
 
@@ -42,16 +44,18 @@ function canonicalDebutState() {
   throw new Error('No deterministic canonical debut context found in directed seed range');
 }
 
-test('match model/1 public simulator preserves core simulation and RNG apart from the additive fact store', () => {
+test('match model/1 public simulator preserves core simulation and RNG apart from additive sporting fact stores', () => {
   const wrapped = createInitialState(8811);
   const core = createInitialState(8811);
   for (let day = 0; day < 70; day += 1) {
     advanceWorldDayInPlace(wrapped);
     advanceCoreWorldDayInPlace(core);
   }
-  const withoutStore = structuredClone(wrapped);
-  delete withoutStore.world.sportMatchModel;
-  assert.deepEqual(withoutStore, core);
+  const withoutStores = structuredClone(wrapped);
+  delete withoutStores.world.sportMatchModel;
+  delete withoutStores.world.sportPenaltySetups;
+  delete withoutStores.world.sportCompetitionMoments;
+  assert.deepEqual(withoutStores, core);
   assert.deepEqual(wrapped.rngState, core.rngState);
   assert.ok(getSportMatchModelStore(wrapped)?.fixtures.length > 0);
 });
@@ -146,6 +150,110 @@ test('match model/8 validator and projections consume zero RNG and mutate nothin
   assert.deepEqual(state, before);
 });
 
+test('match model/12 impossible squad and appearance facts fail closed without mutation', () => {
+  const state = matchDayState(8818);
+  recordOfficialMatchInPlace(state, { appeared: true, debutOccurred: false, injuryUnavailable: false });
+  const mutations = [
+    p => Object.assign(p, { calledUp: false, onBench: true, started: false, appeared: false, minutes: 0 }),
+    p => Object.assign(p, { calledUp: true, onBench: true, started: false, appeared: true, minutes: 0 }),
+    p => Object.assign(p, { calledUp: true, onBench: false, started: false, appeared: true, minutes: 12 }),
+    p => Object.assign(p, { calledUp: true, onBench: false, started: false, appeared: false, minutes: 0 })
+  ];
+  for (const mutate of mutations) {
+    const bad = structuredClone(state);
+    mutate(bad.world.sportMatchModel.fixtures[0].player);
+    const before = structuredClone(bad);
+    assert.throws(() => assertGameState(bad), invalidSave);
+    assert.throws(() => loadSave(JSON.stringify(bad)), invalidSave);
+    assert.deepEqual(bad, before);
+  }
+});
+
+test('match model/13 milestones prove the earliest recorded qualifying fixture, including across clubs', () => {
+  const state = matchDayState(8850);
+  // Build a history through the real producer with repeated qualifiers and absences.
+  for (let week = 0; week < 520; week++) {
+    state.date = new Date(Date.UTC(2026, 7, 5 + week * 7)).toISOString().slice(0, 10);
+    state.runtime.day = 35 + week * 7;
+    if (week === 40) state.professional.registrationClub = 'TEST_OTHER_CLUB';
+    recordOfficialMatchInPlace(state, { appeared: week % 3 !== 0, debutOccurred: false, injuryUnavailable: week % 3 === 0 });
+  }
+  const store = state.world.sportMatchModel;
+  assert.equal(inspectSportMatchModelStore(store, state.date), null);
+  assert.doesNotThrow(() => assertGameState(state));
+  assert.deepEqual(loadSave(serializeSave(state)).world.sportMatchModel, store);
+  const predicates = {
+    firstMatchSquadCall: row => row.player.calledUp,
+    firstBench: row => row.player.onBench,
+    firstAppearance: row => row.player.appeared,
+    firstStart: row => row.player.started,
+    firstFullMatch: row => row.player.appeared && row.player.minutes === 90
+  };
+  for (const [key, predicate] of Object.entries(predicates)) {
+    const qualifying = store.fixtures.filter(predicate);
+    const wrong = store.fixtures.find(row => !predicate(row));
+    assert.ok(qualifying.length >= 2 && wrong, key);
+    assert.equal(store.milestones[key], qualifying[0].id);
+    for (const reference of [wrong.id, qualifying[1].id, null]) {
+      const bad = structuredClone(state);
+      bad.world.sportMatchModel.milestones[key] = reference;
+      const before = structuredClone(bad);
+      assert.equal(inspectSportMatchModelStore(bad.world.sportMatchModel, bad.date)?.path, `world.sportMatchModel.milestones.${key}`);
+      assert.throws(() => assertGameState(bad), invalidSave);
+      assert.throws(() => loadSave(JSON.stringify(bad)), invalidSave);
+      assert.deepEqual(bad, before);
+    }
+  }
+});
+
+test('match model/14 first goal remains unavailable at every save boundary', () => {
+  const bad = validStoredState(8851);
+  bad.world.sportMatchModel.milestones.firstGoal = bad.world.sportMatchModel.fixtures[0].id;
+  assert.equal(inspectSportMatchModelStore(bad.world.sportMatchModel, bad.date)?.path, 'world.sportMatchModel.milestones.firstGoal');
+  assert.throws(() => assertGameState(bad), invalidSave);
+  assert.throws(() => loadSave(JSON.stringify(bad)), invalidSave);
+});
+
+test('match model/15 real bench, substitute and starter facts retain exact save and RNG round-trips', () => {
+  const covered = new Set();
+  for (let seed = 8800; seed < 9000 && covered.size < 3; seed++) {
+    for (const appeared of [false, true]) {
+      const state = matchDayState(seed);
+      const row = recordOfficialMatchInPlace(state, { appeared, debutOccurred: false, injuryUnavailable: false });
+      const kind = row.player.started ? 'starter' : row.player.appeared ? 'substitute' : row.player.onBench ? 'bench' : null;
+      if (!kind || covered.has(kind)) continue;
+      const before = structuredClone(state);
+      const loaded = loadSave(serializeSave(state));
+      assert.deepEqual(loaded.world.sportMatchModel, before.world.sportMatchModel);
+      assert.deepEqual(loaded.rngState, before.rngState);
+      assert.deepEqual(state, before);
+      covered.add(kind);
+    }
+  }
+  assert.deepEqual([...covered].sort(), ['bench', 'starter', 'substitute']);
+});
+
+test('match model/16 session restore rejects fabricated authority before committing', async () => {
+  const session = await GameSession.create(8852);
+  const snapshot = session.exportSnapshot();
+  snapshot.state = validStoredState(8852);
+  const valid = await GameSession.resume(structuredClone(snapshot));
+  assert.deepEqual(valid.exportSnapshot().state.rngState, snapshot.state.rngState);
+  for (const mutate of [
+    store => { store.milestones.firstGoal = store.fixtures[0].id; },
+    store => { store.milestones.firstAppearance = null; },
+    store => { store.fixtures[0].player.minutes = 0; }
+  ]) {
+    const bad = structuredClone(snapshot);
+    mutate(bad.state.world.sportMatchModel);
+    const before = structuredClone(bad);
+    let writes = 0;
+    await assert.rejects(GameSession.resume(bad, { commit: async () => { writes++; } }), invalidSave);
+    assert.equal(writes, 0);
+    assert.deepEqual(bad, before);
+  }
+});
+
 test('match model/9 league objective closure is persisted, deterministic and save-valid', () => {
   const state = validStoredState(8819);
   const beforeRng = structuredClone(state.rngState);
@@ -195,4 +303,169 @@ test('match model/11 coarse UDV resolution cannot close the authoritative object
   assert.equal(context.seasonObjectiveStatus, 'closed');
   const store = getSportMatchModelStore(state);
   assert.equal(store.objective.resolvedAt, '2027-05-26');
+});
+
+
+test('match model/17 new official rows persist deterministic football-owned result without RNG draws or proxy influence', () => {
+  const a = matchDayState(8860);
+  const b = matchDayState(8860);
+  a.sport.form = 1;
+  a.sport.roleScore = 1;
+  a.reputation.prestige = 1;
+  b.sport.form = 99;
+  b.sport.roleScore = 99;
+  b.reputation.prestige = 99;
+
+  const beforeA = structuredClone(a.rngState);
+  const beforeB = structuredClone(b.rngState);
+  const rowA = recordOfficialMatchInPlace(a, { appeared: false, debutOccurred: false, injuryUnavailable: false });
+  const rowB = recordOfficialMatchInPlace(b, { appeared: true, debutOccurred: false, injuryUnavailable: false });
+  assert.ok(rowA?.result);
+  assert.ok(rowB?.result);
+  assert.deepEqual(rowA.result, rowB.result, 'player/proxy state must not alter team result for same seed+fixture');
+  assert.deepEqual(a.rngState, beforeA);
+  assert.deepEqual(b.rngState, beforeB);
+
+  const clubGoals = rowA.homeAway === 'home' ? rowA.result.homeGoals : rowA.result.awayGoals;
+  const opponentGoals = rowA.homeAway === 'home' ? rowA.result.awayGoals : rowA.result.homeGoals;
+  assert.equal(rowA.result.outcome, clubGoals > opponentGoals ? 'win' : clubGoals < opponentGoals ? 'loss' : 'draw');
+  assert.ok(rowA.result.halfTimeHomeGoals <= rowA.result.homeGoals);
+  assert.ok(rowA.result.halfTimeAwayGoals <= rowA.result.awayGoals);
+  assert.deepEqual(getCurrentMatchContext(a).result, rowA.result);
+});
+
+test('match model/18 historical v1 rows without result remain valid and read as unknown rather than backfilled', () => {
+  const state = validStoredState(8861);
+  const row = state.world.sportMatchModel.fixtures[0];
+  delete row.result;
+  delete row.stats;
+  const before = structuredClone(state);
+  assert.equal(inspectSportMatchModelStore(state.world.sportMatchModel, state.date, state), null);
+  assert.doesNotThrow(() => assertGameState(state));
+  assert.equal(getCurrentMatchContext(state).result, null);
+  const restored = loadSave(serializeSave(state));
+  assert.equal(restored.world.sportMatchModel.fixtures[0].result, undefined);
+  assert.deepEqual(restored, before);
+});
+
+test('match model/19 forged persisted result fails closed at common save/runtime boundary', () => {
+  const state = validStoredState(8862);
+  const original = structuredClone(state.world.sportMatchModel.fixtures[0].result);
+  assert.ok(original);
+  const corruptions = [
+    result => { result.homeGoals = Math.min(9, result.homeGoals + 1); },
+    result => { result.halfTimeHomeGoals = result.homeGoals + 1; },
+    result => { result.outcome = result.outcome === 'win' ? 'loss' : 'win'; }
+  ];
+  for (const mutate of corruptions) {
+    const bad = structuredClone(state);
+    mutate(bad.world.sportMatchModel.fixtures[0].result);
+    assert.throws(() => assertGameState(bad), invalidSave);
+    assert.throws(() => loadSave(JSON.stringify(bad)), invalidSave);
+  }
+});
+
+test('match model/20 lastPlayerAppearance skips later non-appearance fixtures and survives save/load', () => {
+  const state = matchDayState(8863);
+  const first = recordOfficialMatchInPlace(state, { appeared: true, debutOccurred: false, injuryUnavailable: false });
+  assert.ok(first);
+
+  state.date = '2026-08-12';
+  state.runtime.day += 7;
+  state.runtime.seasonDay += 7;
+  const second = recordOfficialMatchInPlace(state, { appeared: false, debutOccurred: false, injuryUnavailable: false });
+  assert.ok(second);
+  assert.equal(second.player.appeared, false);
+
+  const last = lastPlayerAppearance(state);
+  assert.equal(last?.id, first.id);
+  assert.deepEqual(last?.result, first.result);
+
+  const restored = loadSave(serializeSave(state));
+  assert.equal(lastPlayerAppearance(restored)?.id, first.id);
+  assert.deepEqual(lastPlayerAppearance(restored)?.result, first.result);
+});
+
+
+test('match model/21 player stats are football-owned, bounded by appearance/team goals and consume zero RNG', () => {
+  let scoring = null;
+  for (let seed = 8870; seed < 9400; seed += 1) {
+    const state = matchDayState(seed);
+    const beforeRng = structuredClone(state.rngState);
+    const row = recordOfficialMatchInPlace(state, { appeared: true, debutOccurred: false, injuryUnavailable: false });
+    assert.ok(row?.stats);
+    assert.deepEqual(state.rngState, beforeRng);
+    const clubGoals = row.homeAway === 'home' ? row.result.homeGoals : row.result.awayGoals;
+    assert.ok(row.stats.goals <= clubGoals);
+    assert.ok(row.stats.assists <= Math.max(0, clubGoals - row.stats.goals));
+    if (row.stats.goals > 0) { scoring = { state, row }; break; }
+  }
+  assert.ok(scoring, 'directed seed range should contain a factual player goal');
+  assert.equal(scoring.state.world.sportMatchModel.milestones.firstGoal, scoring.row.id);
+  const context = getCurrentMatchContext(scoring.state);
+  assert.equal(context.goals, scoring.row.stats.goals);
+  assert.equal(context.assists, scoring.row.stats.assists);
+  assert.deepEqual(context.cards, { yellow: scoring.row.stats.yellowCards, red: scoring.row.stats.redCards });
+});
+
+test('match model/22 non-appearance has known zero stats and cannot be corrupted into goals/cards', () => {
+  const state = matchDayState(8871);
+  const row = recordOfficialMatchInPlace(state, { appeared: false, debutOccurred: false, injuryUnavailable: false });
+  assert.deepEqual(row.stats, { goals: 0, assists: 0, yellowCards: 0, redCards: 0 });
+  for (const key of ['goals', 'assists', 'yellowCards', 'redCards']) {
+    const bad = structuredClone(state);
+    bad.world.sportMatchModel.fixtures[0].stats[key] = 1;
+    assert.throws(() => assertGameState(bad), invalidSave);
+  }
+});
+
+test('match model/23 historical appeared row without stats makes firstGoal and season aggregate fail closed', () => {
+  const state = validStoredState(8872);
+  const first = state.world.sportMatchModel.fixtures[0];
+  delete first.stats;
+  state.world.sportMatchModel.milestones.firstGoal = null;
+
+  state.date = '2026-08-12';
+  state.runtime.day += 7;
+  state.runtime.seasonDay += 7;
+  for (let i = 0; i < 40 && state.world.sportMatchModel.milestones.firstGoal === null; i += 1) {
+    recordOfficialMatchInPlace(state, { appeared: true, debutOccurred: false, injuryUnavailable: false });
+    if (state.world.sportMatchModel.fixtures.at(-1)?.stats?.goals > 0) break;
+    state.date = new Date(Date.parse(state.date + 'T00:00:00Z') + 7 * 86400000).toISOString().slice(0, 10);
+    state.runtime.day += 7;
+    state.runtime.seasonDay += 7;
+  }
+  assert.equal(state.world.sportMatchModel.milestones.firstGoal, null, 'unknown earlier scoring history must block a claimed career first goal');
+  const context = getSportContext(state);
+  assert.equal(context.firstGoal, null);
+  assert.equal(context.availability.firstGoal, 'unavailable');
+  assert.equal(context.currentSeasonPlayerStats, null);
+  assert.equal(context.availability.currentSeasonPlayerStats, 'unavailable');
+  assert.doesNotThrow(() => assertGameState(state));
+});
+
+test('match model/24 complete current-season stats aggregate only persisted match stats and survive save/load', () => {
+  const state = matchDayState(8873);
+  for (let week = 0; week < 4; week += 1) {
+    if (week > 0) {
+      state.date = new Date(Date.parse(state.date + 'T00:00:00Z') + 7 * 86400000).toISOString().slice(0, 10);
+      state.runtime.day += 7;
+      state.runtime.seasonDay += 7;
+    }
+    recordOfficialMatchInPlace(state, { appeared: week !== 2, debutOccurred: false, injuryUnavailable: false });
+  }
+  const context = getSportContext(state);
+  const rows = state.world.sportMatchModel.fixtures;
+  const expected = rows.reduce((acc, row) => {
+    if (row.player.appeared) acc.appearances += 1;
+    acc.goals += row.stats.goals;
+    acc.assists += row.stats.assists;
+    acc.yellowCards += row.stats.yellowCards;
+    acc.redCards += row.stats.redCards;
+    return acc;
+  }, { appearances: 0, goals: 0, assists: 0, yellowCards: 0, redCards: 0 });
+  assert.deepEqual(context.currentSeasonPlayerStats, { season: state.season, ...expected });
+  assert.equal(context.availability.currentSeasonPlayerStats, 'known');
+  const restored = loadSave(serializeSave(state));
+  assert.deepEqual(getSportContext(restored).currentSeasonPlayerStats, context.currentSeasonPlayerStats);
 });
