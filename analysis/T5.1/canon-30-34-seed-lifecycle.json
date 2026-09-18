@@ -73,6 +73,12 @@
       "canonicalReaderOrWriterContext": "EVT_31_SQUAD_001",
       "status": "missing_unclassified_runtime_definition",
       "rule": "Do not create, rename or map this canonical seed by similarity. The prepared scene writes only SEED_SQUAD_YOUTH_WAVE until T5.2/canonical ownership defines SEED_SUCCESSION_DECISION."
+    },
+    {
+      "seed": "SEED_PARALLEL_NEGOTIATION",
+      "canonicalReaderOrWriterContext": "EVT_32_BOSMAN_001",
+      "status": "missing_unclassified_runtime_definition",
+      "rule": "Do not synthesize this canonical seed. The prepared Bosman scene writes only SEED_BOSMAN_33 until T5.2/canonical ownership defines parallel-negotiation identity and A3 exposes real multi-offer persistence."
     }
   ],
   "orphanMigrationRule": "PASADA_6_30_34 remains editorial catalog provenance and is not a runtime originEvent. New instances use the real canonical event that produced them. Existing historical SeedInstance.originEvent is preserved unless an independently approved rewriteExisting mapping exists.",
