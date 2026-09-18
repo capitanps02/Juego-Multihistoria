@@ -384,11 +384,17 @@ export function signFutureEmploymentAgreement(
 export function getFutureCareerAgreements(s:GameState):readonly FutureCareerAgreement[]{return (s.market?.futureAgreements??[]).map(clone);}
 export function activateFutureCareerAgreementsInPlace(s:GameState):FutureCareerAgreement[]{
   const activated:FutureCareerAgreement[]=[];
+  if(s.retirement.status!=="playing")return activated;
   for(const agreement of agreements(marketState(s))){
     if(agreement.status!=="signed_future"||agreement.effectiveDate>s.date)continue;
-    const status=employmentStatus(s);
-    if(status!=="unattached"&&Number(s.contract.monthsRemaining)>0)continue;
-    applyTerms(s,agreement.terms);activateEmploymentFromAcceptedTermsInPlace(s);agreement.status="activated";agreement.activatedDate=s.date;activated.push(clone(agreement));
+    // The signed future contract owns the employment boundary from its effective date.
+    // Natural expiry normally makes the player unattached first, but a bookkeeping
+    // mismatch must never keep the old employer alive past a signed effective date.
+    applyTerms(s,agreement.terms);
+    activateEmploymentFromAcceptedTermsInPlace(s);
+    agreement.status="activated";
+    agreement.activatedDate=s.date;
+    activated.push(clone(agreement));
   }
   return activated;
 }
