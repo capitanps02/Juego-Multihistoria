@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 
 import { A5_READY_EVENTS_18_23 } from '../dist/content/events/20_23/a5-ready-staged.js';
+import { A5_EVT_18_END_002_OWNER_READY, EVT_18_END_002_EXTERNAL_REQUIREMENT } from '../dist/content/events/18_20/a5-end002-staged.js';
 import { A5_READY_NPC_KNOWLEDGE_RULES } from '../dist/catalog/npc-knowledge-rules-a5-ready.js';
 import { createInitialState } from '../dist/content/initial-state.js';
 import { eventGatesPass } from '../dist/narrative/event-gates.js';
@@ -223,4 +224,23 @@ test('A5 ready/8 staged NPC provenance uses only explicit participants and A1 dy
   state.professional.registrationClub = 'TRANSFER_FC';
   context = captureNpcKnowledgeTargetContext(state);
   assert.deepEqual(resolveNpcKnowledgeTargets(directorRule, context), []);
+});
+
+
+test('A5 canon blocker/1 EVT_18_END_002 is canon-resolved owner-side without coach-status proxy', () => {
+  const scene = A5_EVT_18_END_002_OWNER_READY;
+  assert.equal(scene.id, 'EVT_18_END_002');
+  assert.deepEqual(scene.choices.map(choice => choice.id), [
+    'DEFEND', 'CLUB_DECIDES', 'NEED_DIFFERENT_ROLE', 'SILENCE'
+  ]);
+  assert.deepEqual(scene.seedsWrite, ['SEED_COACH_PUBLIC']);
+  assert.deepEqual(scene.gates, [{ path: 'reputation.mediaHeat', op: 'gte', value: 8 }]);
+
+  const serialized = JSON.stringify(scene);
+  assert.ok(!serialized.includes('coachSecurity'));
+  assert.ok(!serialized.includes('COACH_FIRED'));
+  assert.equal(EVT_18_END_002_EXTERNAL_REQUIREMENT.owner, 'A1/shared-coach');
+  assert.ok(EVT_18_END_002_EXTERNAL_REQUIREMENT.mustProve.includes('questioned=true'));
+  assert.ok(EVT_18_END_002_EXTERNAL_REQUIREMENT.mustProve.includes('continuityDecided=false'));
+  assert.ok(scene.tags.includes('a5_ready_external_blocker'));
 });
