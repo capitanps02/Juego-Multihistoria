@@ -1,3 +1,4 @@
+// freeze workflow trigger
 // exact K probe trigger
 import { EVENTS } from '../dist/content/events/index.js';
 import { contentIdentity } from '../dist/session/content-identity.js';
