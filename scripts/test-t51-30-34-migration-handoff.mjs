@@ -104,6 +104,23 @@ test('T5.1 30-34 first shifted decision batch is explicit distinct_scene', () =>
   assert.equal(handoff.futureShiftedIdentityWork.resolvedDistinctSceneCount >= 5, true);
 });
 
+test('T5.1 30-34 all 18 shifted identities have explicit distinct-scene migration semantics', () => {
+  const pairs=handoff.futureShiftedIdentityWork.pairs;
+  assert.equal(pairs.length,18);
+  assert.equal(handoff.futureShiftedIdentityWork.resolvedDistinctSceneCount,18);
+  assert.equal(handoff.futureShiftedIdentityWork.unresolvedCount,0);
+  for(const pair of pairs){
+    assert.equal(pair.decision,'distinct_scene', `${pair.canonicalId}: shifted identity must be explicitly decided`);
+    assert.equal(pair.sameSceneMigrationAllowed,false);
+    assert.equal(pair.migrationSemantics.inheritSeen,false);
+    assert.equal(pair.migrationSemantics.inheritCooldown,false);
+    assert.equal(pair.migrationSemantics.rebindPending,false);
+    assert.equal(pair.migrationSemantics.rewriteHistory,false);
+    assert.equal(pair.migrationSemantics.rewriteSeedOrigin,false);
+    assert.ok(pair.decisionReason);
+  }
+});
+
 test('T5.1 30-34 documenta la doble colisión especial de EVT_31_TEAM_001', () => {
   const pair = handoff.futureShiftedIdentityWork.pairs.find(row => row.canonicalId === 'EVT_31_TEAM_001');
   assert.ok(pair);
