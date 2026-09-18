@@ -6,6 +6,7 @@ import {
   currentOfficialMatch,
   getSportMatchModelStore,
   inspectSportMatchModelStore,
+  lastPlayerAppearance,
   recordOfficialMatchInPlace
 } from '../dist/simulation/match-model.js';
 import { getCurrentMatchContext, getSportContext } from '../dist/simulation/sport-context.js';
@@ -301,4 +302,84 @@ test('match model/11 coarse UDV resolution cannot close the authoritative object
   assert.equal(context.seasonObjectiveStatus, 'closed');
   const store = getSportMatchModelStore(state);
   assert.equal(store.objective.resolvedAt, '2027-05-26');
+});
+
+
+test('match model/17 new official rows persist deterministic football-owned result without RNG draws or proxy influence', () => {
+  const a = matchDayState(8860);
+  const b = matchDayState(8860);
+  a.sport.form = 1;
+  a.sport.roleScore = 1;
+  a.reputation.prestige = 1;
+  b.sport.form = 99;
+  b.sport.roleScore = 99;
+  b.reputation.prestige = 99;
+
+  const beforeA = structuredClone(a.rngState);
+  const beforeB = structuredClone(b.rngState);
+  const rowA = recordOfficialMatchInPlace(a, { appeared: false, debutOccurred: false, injuryUnavailable: false });
+  const rowB = recordOfficialMatchInPlace(b, { appeared: true, debutOccurred: false, injuryUnavailable: false });
+  assert.ok(rowA?.result);
+  assert.ok(rowB?.result);
+  assert.deepEqual(rowA.result, rowB.result, 'player/proxy state must not alter team result for same seed+fixture');
+  assert.deepEqual(a.rngState, beforeA);
+  assert.deepEqual(b.rngState, beforeB);
+
+  const clubGoals = rowA.homeAway === 'home' ? rowA.result.homeGoals : rowA.result.awayGoals;
+  const opponentGoals = rowA.homeAway === 'home' ? rowA.result.awayGoals : rowA.result.homeGoals;
+  assert.equal(rowA.result.outcome, clubGoals > opponentGoals ? 'win' : clubGoals < opponentGoals ? 'loss' : 'draw');
+  assert.ok(rowA.result.halfTimeHomeGoals <= rowA.result.homeGoals);
+  assert.ok(rowA.result.halfTimeAwayGoals <= rowA.result.awayGoals);
+  assert.deepEqual(getCurrentMatchContext(a).result, rowA.result);
+});
+
+test('match model/18 historical v1 rows without result remain valid and read as unknown rather than backfilled', () => {
+  const state = validStoredState(8861);
+  const row = state.world.sportMatchModel.fixtures[0];
+  delete row.result;
+  const before = structuredClone(state);
+  assert.equal(inspectSportMatchModelStore(state.world.sportMatchModel, state.date, state), null);
+  assert.doesNotThrow(() => assertGameState(state));
+  assert.equal(getCurrentMatchContext(state).result, null);
+  const restored = loadSave(serializeSave(state));
+  assert.equal(restored.world.sportMatchModel.fixtures[0].result, undefined);
+  assert.deepEqual(restored, before);
+});
+
+test('match model/19 forged persisted result fails closed at common save/runtime boundary', () => {
+  const state = validStoredState(8862);
+  const original = structuredClone(state.world.sportMatchModel.fixtures[0].result);
+  assert.ok(original);
+  const corruptions = [
+    result => { result.homeGoals = Math.min(9, result.homeGoals + 1); },
+    result => { result.halfTimeHomeGoals = result.homeGoals + 1; },
+    result => { result.outcome = result.outcome === 'win' ? 'loss' : 'win'; }
+  ];
+  for (const mutate of corruptions) {
+    const bad = structuredClone(state);
+    mutate(bad.world.sportMatchModel.fixtures[0].result);
+    assert.throws(() => assertGameState(bad), invalidSave);
+    assert.throws(() => loadSave(JSON.stringify(bad)), invalidSave);
+  }
+});
+
+test('match model/20 lastPlayerAppearance skips later non-appearance fixtures and survives save/load', () => {
+  const state = matchDayState(8863);
+  const first = recordOfficialMatchInPlace(state, { appeared: true, debutOccurred: false, injuryUnavailable: false });
+  assert.ok(first);
+
+  state.date = '2026-08-12';
+  state.runtime.day += 7;
+  state.runtime.seasonDay += 7;
+  const second = recordOfficialMatchInPlace(state, { appeared: false, debutOccurred: false, injuryUnavailable: false });
+  assert.ok(second);
+  assert.equal(second.player.appeared, false);
+
+  const last = lastPlayerAppearance(state);
+  assert.equal(last?.id, first.id);
+  assert.deepEqual(last?.result, first.result);
+
+  const restored = loadSave(serializeSave(state));
+  assert.equal(lastPlayerAppearance(restored)?.id, first.id);
+  assert.deepEqual(lastPlayerAppearance(restored)?.result, first.result);
 });
