@@ -26,9 +26,9 @@
   },
   "counts": {
     "canonicalPrincipals": 50,
-    "enginePrincipals": 51,
+    "enginePrincipals": 52,
     "needsReimplementation": 46,
-    "canonicalMissing": 4,
+    "canonicalMissing": 3,
     "approvedAliases": 0,
     "verifiedSameIdentity": 0,
     "engineOnlyNoncanonical": 5,
@@ -152,9 +152,10 @@
     },
     {
       "canonicalId": "EVT_30_JAN_001",
-      "engineId": null,
-      "status": "canonical_missing",
-      "title": "Enero: especialista de lujo"
+      "engineId": "EVT_30_JAN_001",
+      "status": "needs_reimplementation",
+      "title": "Enero: especialista de lujo",
+      "implementation": "canonical principal active on an eligible formal big-club transfer/loan CareerOffer; all choices consume the offer through shared offerBridge and write SEED_SPECIALIST_BIGCLUB without direct club/contract mutation."
     },
     {
       "canonicalId": "EVT_31_MED_001",
@@ -637,9 +638,10 @@
     "runtimeCanonStatus": "technical_adaptation",
     "reasonNotVerified": "Strict identity requires exact trigger, choices, knowledge, consequences, seeds/NPC and continuity. These scenes carry canonical decision semantics but at least one trigger/state or downstream-continuity element remains approximate or unproved.",
     "canonicalAdditionsImplemented": [
-      "EVT_30_CCH_001"
+      "EVT_30_CCH_001",
+      "EVT_30_JAN_001"
     ],
-    "canonicalAdditionsCount": 1,
+    "canonicalAdditionsCount": 2,
     "shiftedCanonicalImplemented": [
       "EVT_30_BRIDGE_001",
       "EVT_33_FIN_001"
