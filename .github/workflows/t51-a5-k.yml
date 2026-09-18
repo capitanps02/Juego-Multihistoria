@@ -36,3 +36,22 @@ jobs:
         run: node scripts/final-gate-v08.mjs
       - name: Exact K identity
         run: node scripts/print-t51-a5-k-identity.mjs
+      - name: Generate K freeze artifacts
+        run: |
+          node scripts/freeze-t51-active-source.mjs
+          node scripts/generate-t51-post-legacy-registry.mjs
+          node scripts/generate-t51-offer-bridge-evidence.mjs
+      - name: Verify generated K freeze
+        run: |
+          node scripts/freeze-t51-active-source.mjs --check
+          node scripts/generate-t51-post-legacy-registry.mjs --check
+          node scripts/generate-t51-offer-bridge-evidence.mjs --check
+      - name: Upload K freeze artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: a5-k-freeze
+          path: |
+            qa/fixtures/t5.1/post-t51-sources/9daf27e0566cf0a98f10d13f84160f9ab45d1c915407b5a7d5e06ddc3551c51d.json
+            src/session/post-t51-legacy-registry.ts
+            src/session/frozen-offer-bridge-evidence.ts
+          if-no-files-found: error
