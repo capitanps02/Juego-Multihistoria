@@ -1,6 +1,6 @@
-# Canon 34+ blockers — post sport-authority integration
+# Canon 34+ blockers — post sport-authority integration / #177 closed
 
-Base: `main@5f4d14bca4d696cfafadb58b64034c7cd40cc147`.
+Base: `main@5f4d14bca4d696cfafadb58b64034c7cd40cc147`. Updated 2026-09-18.
 
 Agent 8 has complete canonical preparation for 43 ordinary principals and 32 conditionals. PR #156 / #124 is integrated, so basic fixture/calendar/usage facts are no longer an upstream blocker. Runtime remains 0 because serialized lineage/seed Wave 0 and richer authorities are still open.
 
@@ -48,9 +48,9 @@ Now unblocked by #156. Aggregate injury counts/risk do not prove an episode, lon
 **Owner:** #201.  
 Finance crisis, sponsor lifecycle, stadium/closed-door and staff-crisis/player-coach context need a justified factual producer or explicit unsupported/fail-closed decision. No random booleans or proxy scores.
 
-## B11 — Actor/identity routing
-**Guard:** #177; coach tenure #169.  
-No standalone generic NPC subsystem is required. Existing agent authority, generic institutional voices, non-persistent actors where canon permits, #169 coach chronology and #199 record truth cover most former Wave-D concerns. `EVT_36_PEER_001` remains blocked until causal peer-retirement history exists.
+## B11 — Actor/identity routing — coordination closed
+**Historical guard:** #177 (**closed completed**); coach tenure #169 remains factual authority where consumed.  
+Agent 8 has refreshed all 43 ordinary routes, so no standalone generic NPC subsystem remains. Existing agent authority, generic institutional voices, non-persistent actors where canon permits, #169 coach chronology and #199 record truth cover the former Wave-D routing questions. `EVT_36_PEER_001` remains fail-closed until exact peer identity + causal peer-retirement history exists; that missing scene fact does **not** reopen #177.
 
 ## B12 — Exact conditional deck
 **Owner:** #192; terminal boundary PR #118.  
@@ -62,3 +62,6 @@ Agent 8 never owns terminal retirement state changes, announcement, terminal las
 
 ## Closure rule
 A principal/conditional is executable only when #59 authorizes the actual 34+ generation, the exact seed authority is integrated into the current main, every scene-specific factual owner exists, save/history/pending provenance is safe and exact-head QA is green. Missing authority is not replaced by a proxy.
+
+## QA note
+Exact HEAD `aed49c362e6dda02bc981e0ea8d83d152604f840` passed Repository Integrity run `35263846340`. This documentation refresh creates a newer HEAD, so that run is historical evidence only until the refreshed HEAD is certified.
