@@ -56,7 +56,8 @@
     "test:t51:renewal-intent": "npm run build && node --test scripts/test-t51-renewal-intent.mjs",
     "test:t51:prs": "npm run build && node --test scripts/test-t51-prs-23-26.mjs",
     "test:t51:t511b": "npm run build && node --test scripts/test-t51-t511b-eur.mjs",
-    "test:t51:role-expectation": "npm run build && node --test scripts/test-t51-role-expectation.mjs"
+    "test:t51:role-expectation": "npm run build && node --test scripts/test-t51-role-expectation.mjs",
+    "test:t51:34plus": "npm run build && node --test scripts/test-t51-canon-34plus-wave-a.mjs"
   },
   "devDependencies": {
     "typescript": "5.8.3"
