@@ -1,4 +1,6 @@
 import { respondToOffer } from "./offers.js";
+import { eligibleChoices } from "../narrative/choice-eligibility.js";
+import { offerDispositionForChoice, selectOfferBridgeEvent } from "../narrative/offer-bridge.js";
 import { createInitialState } from "../content/initial-state.js";
 import { EVENTS } from "../content/events/index.js";
 import { DeterministicRng } from "../core/rng.js";
@@ -57,6 +59,15 @@ function selectChoice(state: GameState, event: EventDefinition, strategy: Choice
   return event.choices[Math.floor(rng.next() * event.choices.length)]!.id;
 }
 
+function selectBridgeChoice(state: GameState, event: EventDefinition, strategy: ChoiceStrategy): string {
+  const choices = eligibleChoices(state, event);
+  if (choices.length === 0) throw new Error(`Offer bridge ${event.id} has no eligible choices`);
+  if (strategy === "first") return choices[0]!.id;
+  if (strategy === "balanced") return choices[Math.floor((choices.length - 1) / 2)]!.id;
+  const rng = new DeterministicRng(state.rngState.qa);
+  return choices[Math.floor(rng.next() * choices.length)]!.id;
+}
+
 function historySignature(history: HistoryEntry[]): string {
   return history.map(h => `${h.date}:${h.eventId}:${h.choiceId}:${h.outcomeId}`).join("|");
 }
@@ -86,11 +97,34 @@ export function simulateCareer(options: CareerSimulationOptions): CareerSimulati
   let state = createInitialState(options.seed);
 
   for (let day = 0; day < days; day++) {
-    if(state.market?.pending)respondToOffer(state,state.market.pending.id,options.offerStrategy ?? "accept");
-    const scheduled = scheduleEvent(state, index, { qa: options.qa });
-    if (scheduled) {
-      const choiceId = selectChoice(state, scheduled.event, strategy);
-      resolveChoiceInPlace(state, scheduled.event, choiceId, options.qa);
+    let resolvedOfferBridge = false;
+    if (state.market?.pending) {
+      const bridge = selectOfferBridgeEvent(state, index.events);
+      if (bridge) {
+        const choiceId = selectBridgeChoice(state, bridge, strategy);
+        const disposition = offerDispositionForChoice(bridge, choiceId);
+        if (!disposition) throw new Error(`Missing offer disposition for ${bridge.id}/${choiceId}`);
+        resolveChoiceInPlace(state, bridge, choiceId, options.qa);
+        const historyIndex = state.history.length - 1;
+        const offerId = state.market?.pending?.id;
+        if (!offerId) throw new Error(`Offer bridge ${bridge.id} lost its pending CareerOffer`);
+        respondToOffer(state, offerId, disposition, {
+          kind: "narrative_choice",
+          historyIndex,
+          eventId: bridge.id,
+          choiceId
+        });
+        resolvedOfferBridge = true;
+      } else {
+        respondToOffer(state, state.market.pending.id, options.offerStrategy ?? "accept");
+      }
+    }
+    if (!resolvedOfferBridge) {
+      const scheduled = scheduleEvent(state, index, { qa: options.qa });
+      if (scheduled) {
+        const choiceId = selectChoice(state, scheduled.event, strategy);
+        resolveChoiceInPlace(state, scheduled.event, choiceId, options.qa);
+      }
     }
     if(state.flags.EARLY_RETIRED_30_34&&state.retirement.status!=="closed") closeCareer(state,"early_retirement_30_34","early_retirement");
     if(state.retirement.status==="closed") { generateEpilogue(state); break; }
