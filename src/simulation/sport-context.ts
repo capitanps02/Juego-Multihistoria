@@ -72,9 +72,9 @@ export interface SportContextAvailability {
 export interface SportContext {
   currentSeason: string;
   /** Registration club is the sporting authority during transfers and loans. */
-  sportingClub: string;
-  ownerClub: string;
-  leagueTier: number;
+  sportingClub: string | null;
+  ownerClub: string | null;
+  leagueTier: number | null;
   careerAppearances: number;
   /** Legacy coarse fact retained for compatibility; prefer match-model milestones for new content. */
   officialDebutRecorded: boolean;
