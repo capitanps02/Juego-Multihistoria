@@ -48,18 +48,29 @@ function bridgeEvent(id = 'EVT_T51_OFFER_BRIDGE_PROVENANCE', choiceActions = {})
   };
 }
 
-async function advanceUntil(session, screen, limit = 8) {
+async function rejectPre20OfferIfPresent(session) {
+  const view = session.getView();
+  if (view.screen !== 'offer' || !view.offer || view.age >= 20) return false;
+  await session.dispatch(command(session, 'offer', { offerId: view.offer.id, action: 'reject' }));
+  return true;
+}
+
+async function advanceUntil(session, screen, { limit = 10, minAge = 0 } = {}) {
   for (let i = 0; i < limit; i++) {
-    if (session.getView().screen === screen) return session;
+    const view = session.getView();
+    if (view.screen === screen && view.age >= minAge) return session;
+    if (minAge >= 20 && await rejectPre20OfferIfPresent(session)) continue;
     await session.dispatch(command(session, 'continue', { maxDays: 366 }));
   }
-  assert.equal(session.getView().screen, screen, `No apareció la pantalla ${screen}`);
+  const view = session.getView();
+  assert.equal(view.screen, screen, `No apareció la pantalla ${screen}`);
+  assert.ok(view.age >= minAge, `La pantalla ${screen} apareció antes de edad ${minAge}`);
   return session;
 }
 
 async function resolvedBridge(event, choiceId) {
   const session = await GameSession.create(123, { events: [event] });
-  await advanceUntil(session, 'decision');
+  await advanceUntil(session, 'decision', { minAge: 20 });
   const decision = session.getView().decision;
   await session.dispatch(command(session, 'choose', { pendingInstanceId: decision.instanceId, choiceId }));
   return session;
@@ -90,7 +101,7 @@ test('valid active ACCEPT -> accept remains resumable', async () => {
   const event = bridgeEvent();
   const session = await resolvedBridge(event, 'ACCEPT');
   const snapshot = session.exportSnapshot();
-  assert.equal(snapshot.state.market.history[0].source.disposition, 'accept');
+  assert.equal(snapshot.state.market.history.at(-1).source.disposition, 'accept');
   const resumed = await GameSession.resume(snapshot, { events: [event] });
   assert.deepEqual(resumed.exportSnapshot(), snapshot);
 });
@@ -99,8 +110,9 @@ test('tampered ACCEPT -> delegate is rejected even with a coherently changed per
   const event = bridgeEvent();
   const session = await resolvedBridge(event, 'ACCEPT');
   const bad = session.exportSnapshot();
-  bad.state.market.history[0].source.disposition = 'delegate';
-  bad.state.market.history[0].action = 'delegate';
+  const entry = bad.state.market.history.at(-1);
+  entry.source.disposition = 'delegate';
+  entry.action = 'delegate';
   await assert.rejects(GameSession.resume(bad, { events: [event] }), { code: 'INVALID_SAVE' });
 });
 
@@ -108,8 +120,9 @@ test('tampered COUNTER -> defer is rejected although both normalize to reject', 
   const event = bridgeEvent();
   const session = await resolvedBridge(event, 'COUNTER');
   const bad = session.exportSnapshot();
-  assert.equal(bad.state.market.history[0].action, 'reject');
-  bad.state.market.history[0].source.disposition = 'defer';
+  const entry = bad.state.market.history.at(-1);
+  assert.equal(entry.action, 'reject');
+  entry.source.disposition = 'defer';
   await assert.rejects(GameSession.resume(bad, { events: [event] }), { code: 'INVALID_SAVE' });
 });
 
@@ -131,7 +144,7 @@ test('same-ID content migration validates the historical bridge mapping, never t
   const after = migrated.exportSnapshot();
   assert.equal(after.contentIdentity, newIdentity);
   assert.equal(after.decisionProvenance[0].sourceContentIdentity, oldIdentity);
-  assert.equal(after.state.market.history[0].source.disposition, 'counter');
+  assert.equal(after.state.market.history.at(-1).source.disposition, 'counter');
 });
 
 test('historical narrative offer fails closed when its source has no bridge evidence', async () => {
