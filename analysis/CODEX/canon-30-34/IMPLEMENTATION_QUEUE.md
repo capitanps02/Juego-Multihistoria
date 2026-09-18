@@ -5,7 +5,7 @@ Baseline vigente: `main@5f4d14bca4d696cfafadb58b64034c7cd40cc147`.
 Lineage de integración actual:
 
 - fuente upstream congelada: `84871fae2bec92d74d1e607e0a48943e2e530a062d315a829cfe75eda9fe0886`;
-- target 30–34: `9151d6620739f5f63face23f412abdeca9898cac8e510cc44d86c1468da8d0f4`;
+- target 30–34: `db72c94ee93ad928e08e86a59f5063060a963e17edfc7b5e25198e1da6fd1eb1`;
 - este workstream **no** crea el freeze target ni registra `CONTENT_MIGRATION_ROUTES`.
 
 El Documento Maestro es autoridad. Un dato compartido `null`/`unavailable` implica fail-closed; no autoriza proxies.
@@ -64,7 +64,7 @@ Guard: `scripts/test-t51-30-34-conditional-seed-reads.mjs`.
 
 Se eliminaron 17 escrituras directas a club/contrato de las definiciones raw 30–34 que el guard de autoridad ya descartaba en runtime. La limpieza no eleva deuda compartida ni cambia semántica activa.
 
-Se preservó explícitamente el orden estable de tags del offer bridge. Una comparación determinista del catálogo antes/después terminó con `DIFFERING_EVENTS=0`, por lo que el target permanece exactamente en `9151d662…8d0f4`.
+Se preservó explícitamente el orden estable de tags del offer bridge. Una comparación determinista del catálogo antes/después terminó con `DIFFERING_EVENTS=0`, por lo que el target permanece exactamente en `db72c94e…d1eb1`.
 
 ### Autoridad de liderazgo — `EVT_33_CAP_001` / `EVT_30_CAP_001`
 
@@ -124,7 +124,7 @@ Deben entrar como batch coordinado posterior al freeze/edge actual; su alta prod
 
 Precondiciones:
 
-1. integración congela y registra el target actual `9151d662…8d0f4`;
+1. integración congela y registra el target actual `db72c94e…d1eb1`;
 2. existe decisión autoritativa sobre la identidad de los condicionales implicados.
 
 Solo entonces añadir `seedsRead` exacto donde proceda y generar un nuevo freeze/edge explícito.
@@ -168,11 +168,11 @@ Fuente congelada vigente del handoff:
 
 Target:
 
-`9151d6620739f5f63face23f412abdeca9898cac8e510cc44d86c1468da8d0f4`
+`db72c94ee93ad928e08e86a59f5063060a963e17edfc7b5e25198e1da6fd1eb1`
 
 Freeze que coordinación/integración deberá crear antes de registrar la ruta:
 
-`qa/fixtures/t5.1/post-t51-sources/9151d6620739f5f63face23f412abdeca9898cac8e510cc44d86c1468da8d0f4.json`
+`qa/fixtures/t5.1/post-t51-sources/db72c94ee93ad928e08e86a59f5063060a963e17edfc7b5e25198e1da6fd1eb1.json`
 
 ## Validación exacta
 
@@ -182,11 +182,11 @@ Contrato de validación exigido para este workstream:
 
 - `T5.1 canon 30-34` debe terminar **SUCCESS**;
 - `T5 Market Contract Authority` debe terminar **SUCCESS**;
-- `Repository Integrity` solo puede quedar rojo por el sentinel de `freeze-t51-active-source --check` mientras coordinación/integración no haya creado `qa/fixtures/t5.1/post-t51-sources/9151d6620739f5f63face23f412abdeca9898cac8e510cc44d86c1468da8d0f4.json`;
+- `Repository Integrity` solo puede quedar rojo por el sentinel de `freeze-t51-active-source --check` mientras coordinación/integración no haya creado `qa/fixtures/t5.1/post-t51-sources/db72c94ee93ad928e08e86a59f5063060a963e17edfc7b5e25198e1da6fd1eb1.json`;
 - cualquier fallo anterior a ese sentinel es regresión real y bloquea el handoff;
 - la rama debe permanecer `behind_by=0` respecto de `main` antes de declarar el handoff vigente.
 
-El target activo continúa siendo `9151d662…8d0f4`; este workstream no crea su freeze ni registra la ruta.
+El target activo continúa siendo `db72c94e…d1eb1`; este workstream no crea su freeze ni registra la ruta.
 
 ## Invariantes
 
