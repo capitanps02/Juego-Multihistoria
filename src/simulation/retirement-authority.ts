@@ -1,6 +1,6 @@
 import type { GameState } from "../core/types.js";
 import { getEligibleCareerOffers } from "./offers.js";
-import { getLastPlayerAppearanceContext, getSportContext } from "./sport-context.js";
+import { getLastPlayerAppearanceContext, getSportContext, type LastPlayerAppearanceContext } from "./sport-context.js";
 import type { MatchResultFact } from "./match-model.js";
 
 export interface RetirementLastAppearanceFact {
