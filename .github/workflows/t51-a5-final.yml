@@ -1,0 +1,62 @@
+name: T51 A5 final 18-23
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/content/events/20_23/a5-ready-staged.ts'
+      - 'src/content/events/20_23/a5-agent-ready-external.ts'
+      - 'src/content/events/20_23/a5-market-external-staged.ts'
+      - 'src/content/events/20_23/a5-medical-external-staged.ts'
+      - 'src/content/events/20_23/a5-sport-external-staged.ts'
+      - 'src/content/events/20_23/a5-shared-external-principals-staged.ts'
+      - 'src/content/events/20_23/a5-external-conditionals-staged.ts'
+      - 'src/content/events/18_20/a5-end002-staged.ts'
+      - 'src/content/events/18_20/a5-external-conditionals-staged.ts'
+      - 'src/catalog/npc-knowledge-rules-a5-ready.ts'
+      - 'src/catalog/seeds.ts'
+      - 'src/narrative/seed-memory.ts'
+      - 'src/simulation/club-contract-intent.ts'
+      - 'scripts/test-t51-a5-ready.mjs'
+      - '.github/workflows/t51-a5-final.yml'
+  push:
+    branches:
+      - 't51/canon-18-23-a5-final-v2'
+    paths:
+      - 'src/content/events/20_23/a5-ready-staged.ts'
+      - 'src/content/events/20_23/a5-agent-ready-external.ts'
+      - 'src/content/events/20_23/a5-market-external-staged.ts'
+      - 'src/content/events/20_23/a5-medical-external-staged.ts'
+      - 'src/content/events/20_23/a5-sport-external-staged.ts'
+      - 'src/content/events/20_23/a5-shared-external-principals-staged.ts'
+      - 'src/content/events/20_23/a5-external-conditionals-staged.ts'
+      - 'src/content/events/18_20/a5-end002-staged.ts'
+      - 'src/content/events/18_20/a5-external-conditionals-staged.ts'
+      - 'src/catalog/npc-knowledge-rules-a5-ready.ts'
+      - 'src/catalog/seeds.ts'
+      - 'src/narrative/seed-memory.ts'
+      - 'src/simulation/club-contract-intent.ts'
+      - 'scripts/test-t51-a5-ready.mjs'
+      - '.github/workflows/t51-a5-final.yml'
+  workflow_dispatch:
+
+jobs:
+  a5-ready:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Five staged canonical scenes
+        run: node --test scripts/test-t51-a5-ready.mjs
+      - name: Existing early causal consumers
+        run: node --test scripts/test-t51-early-seed-consumers.mjs
+      - name: A1 shared authority regressions
+        run: node --test scripts/test-t51-shared-contracts.mjs
+      - name: Choice eligibility and dynamic targets
+        run: node --test scripts/test-t51-choice-eligibility.mjs scripts/test-t53-dynamic-targets.mjs
