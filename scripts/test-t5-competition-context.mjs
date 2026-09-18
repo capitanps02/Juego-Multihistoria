@@ -4,7 +4,9 @@ import { createInitialState } from '../dist/content/initial-state.js';
 import {
   activeCompetitionMoment,
   getCompetitionMomentStore,
+  getCompetitionSchedule,
   getCurrentCompetitionContext,
+  getFixtureCongestionContext,
   inspectCompetitionMomentStore,
   latestCompetitionMoment,
   recordCoreFinalCompetitionMomentInPlace
@@ -184,4 +186,91 @@ test('competition context/7 ordinary official league fixture exposes league stag
   // here we only assert absence before a real row exists.
   const context = getCurrentCompetitionContext(state);
   assert.equal(context.status, 'no_current_competition');
+});
+
+
+test('competition calendar/8 league-only horizon exposes factual weekly schedule without proxy influence', () => {
+  const a = createInitialState(9620);
+  const b = createInitialState(9620);
+  a.sport.form = 1;
+  a.sport.roleScore = 1;
+  a.reputation.prestige = 1;
+  b.sport.form = 99;
+  b.sport.roleScore = 99;
+  b.reputation.prestige = 99;
+
+  const beforeA = structuredClone(a);
+  const scheduleA = getCompetitionSchedule(a, 14);
+  const scheduleB = getCompetitionSchedule(b, 14);
+  assert.deepEqual(scheduleA, scheduleB);
+  assert.ok(scheduleA.length >= 2);
+  assert.equal(scheduleA.every(row => row.competition === 'league' && row.stage === 'league'), true);
+  const congestion = getFixtureCongestionContext(a);
+  assert.equal(congestion.matchesNext14, scheduleA.length);
+  assert.deepEqual(congestion.competitionMixNext14, ['league']);
+  assert.equal(congestion.multipleCompetitionsNext14, false);
+  assert.deepEqual(a, beforeA);
+});
+
+test('competition calendar/9 produced final enters future schedule and creates factual multi-competition congestion', () => {
+  const state = directFinalState();
+  const beforeRng = structuredClone(state.rngState);
+  const moment = recordCoreFinalCompetitionMomentInPlace(state);
+  assert.ok(moment);
+
+  const schedule = getCompetitionSchedule(state, 14);
+  const final = schedule.find(row => row.source === 'competition_moment');
+  assert.ok(final);
+  assert.equal(final.competition, 'continental');
+  assert.equal(final.stage, 'final');
+  assert.equal(final.highProfile, true);
+  assert.equal(final.date, '2035-04-18');
+  assert.equal(final.opponent, null);
+  assert.equal(final.homeAway, null);
+
+  const congestion = getFixtureCongestionContext(state);
+  assert.equal(congestion.multipleCompetitionsNext14, true);
+  assert.ok(congestion.competitionMixNext14.includes('league'));
+  assert.ok(congestion.competitionMixNext14.includes('continental'));
+  assert.ok(congestion.matchesNext14 >= 3);
+  assert.ok(congestion.minimumRestHoursNext14 !== null);
+  assert.deepEqual(state.rngState, beforeRng);
+});
+
+test('competition calendar/10 final schedule is scoped to current registration club', () => {
+  const state = directFinalState();
+  recordCoreFinalCompetitionMomentInPlace(state);
+  assert.ok(getCompetitionSchedule(state, 14).some(row => row.competition === 'continental'));
+
+  state.professional.registrationClub = 'NEW_CLUB';
+  state.club = 'NEW_CLUB';
+  const schedule = getCompetitionSchedule(state, 14);
+  assert.equal(schedule.some(row => row.competition === 'continental'), false);
+  assert.equal(schedule.every(row => row.club === 'NEW_CLUB'), true);
+});
+
+test('competition calendar/11 combined schedule and congestion are save/load stable and zero-RNG', () => {
+  const state = directFinalState();
+  recordCoreFinalCompetitionMomentInPlace(state);
+  const before = structuredClone(state);
+  const schedule = getCompetitionSchedule(state, 14);
+  const congestion = getFixtureCongestionContext(state);
+  assert.deepEqual(state, before);
+
+  const restored = loadSave(serializeSave(state));
+  assert.deepEqual(getCompetitionSchedule(restored, 14), schedule);
+  assert.deepEqual(getFixtureCongestionContext(restored), congestion);
+  assert.deepEqual(restored.rngState, state.rngState);
+});
+
+test('competition calendar/12 horizon excludes a produced final outside the requested window', () => {
+  const state = directFinalState();
+  recordCoreFinalCompetitionMomentInPlace(state);
+  const seven = getCompetitionSchedule(state, 7);
+  const fourteen = getCompetitionSchedule(state, 14);
+  assert.equal(seven.some(row => row.source === 'competition_moment'), false);
+  assert.equal(fourteen.some(row => row.source === 'competition_moment'), true);
+  const congestion = getFixtureCongestionContext(state);
+  assert.equal(congestion.matchesNext7, seven.length);
+  assert.equal(congestion.matchesNext14, fourteen.length);
 });
