@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "scope": "30_34 conditional seed consumer metadata debt",
-  "sourceMainSha": "fa3c8bae524fef62e4eb9802e895df88588998c4",
+  "sourceMainSha": "5f4d14bca4d696cfafadb58b64034c7cd40cc147",
   "summary": {
     "ownerDeclaredReadMismatches": 7,
     "runtimePositiveSeedGates": 7,
@@ -26,13 +26,97 @@
     "reasonForDeferringSeedsReadMetadataMutation": "contentIdentity is SHA-256 over JSON.stringify(EVENTS); adding seedsRead to these runtime definitions would create a new catalog identity while target 9151d662... is still awaiting its integration-owned freeze and migration edge. Classification and guard can close now without changing runtime content."
   },
   "rows": [
-    {"eventId":"CEVT_31_SURGERY_01","seedId":"SEED_SURGERY_31","gate":{"path":"flags.HAS_SEED_SURGERY_31","op":"eq","value":true},"runtimeConsumer":true,"currentMetadataDeclared":false,"canonStatus":"technical_adaptation","canonicalCertification":"blocked_missing_authoritative_conditional_identity"},
-    {"eventId":"CEVT_31_COACH_01","seedId":"SEED_NEW_COACH_RESET","gate":{"path":"flags.HAS_SEED_NEW_COACH_RESET","op":"eq","value":true},"runtimeConsumer":true,"currentMetadataDeclared":false,"canonStatus":"technical_adaptation","canonicalCertification":"blocked_missing_authoritative_conditional_identity"},
-    {"eventId":"CEVT_31_NTLOAD_01","seedId":"SEED_CLUB_NT_LOAD_TENSION","gate":{"path":"flags.HAS_SEED_CLUB_NT_LOAD_TENSION","op":"eq","value":true},"runtimeConsumer":true,"currentMetadataDeclared":false,"canonStatus":"technical_adaptation","canonicalCertification":"blocked_missing_authoritative_conditional_identity"},
-    {"eventId":"CEVT_31_FINAL_01","seedId":"SEED_MANAGED_FINAL_ROLE","gate":{"path":"flags.HAS_SEED_MANAGED_FINAL_ROLE","op":"eq","value":true},"runtimeConsumer":true,"currentMetadataDeclared":false,"canonStatus":"technical_adaptation","canonicalCertification":"blocked_missing_authoritative_conditional_identity"},
-    {"eventId":"CEVT_32_REPLACE_01","seedId":"SEED_REPLACEMENT_BREAKOUT","gate":{"path":"flags.HAS_SEED_REPLACEMENT_BREAKOUT","op":"eq","value":true},"runtimeConsumer":true,"currentMetadataDeclared":false,"canonStatus":"technical_adaptation","canonicalCertification":"blocked_missing_authoritative_conditional_identity"},
-    {"eventId":"CEVT_32_BOSMAN_01","seedId":"SEED_BOSMAN_33","gate":{"path":"flags.HAS_SEED_BOSMAN_33","op":"eq","value":true},"runtimeConsumer":true,"currentMetadataDeclared":false,"canonStatus":"technical_adaptation","canonicalCertification":"blocked_missing_authoritative_conditional_identity"},
-    {"eventId":"CEVT_32_FAN_01","seedId":"SEED_FAN_LEGACY_BUFFER","gate":{"path":"flags.HAS_SEED_FAN_LEGACY_BUFFER","op":"eq","value":true},"runtimeConsumer":true,"currentMetadataDeclared":false,"canonStatus":"technical_adaptation","canonicalCertification":"blocked_missing_authoritative_conditional_identity"}
+    {
+      "eventId": "CEVT_31_SURGERY_01",
+      "seedId": "SEED_SURGERY_31",
+      "gate": {
+        "path": "flags.HAS_SEED_SURGERY_31",
+        "op": "eq",
+        "value": true
+      },
+      "runtimeConsumer": true,
+      "currentMetadataDeclared": false,
+      "canonStatus": "technical_adaptation",
+      "canonicalCertification": "blocked_missing_authoritative_conditional_identity"
+    },
+    {
+      "eventId": "CEVT_31_COACH_01",
+      "seedId": "SEED_NEW_COACH_RESET",
+      "gate": {
+        "path": "flags.HAS_SEED_NEW_COACH_RESET",
+        "op": "eq",
+        "value": true
+      },
+      "runtimeConsumer": true,
+      "currentMetadataDeclared": false,
+      "canonStatus": "technical_adaptation",
+      "canonicalCertification": "blocked_missing_authoritative_conditional_identity"
+    },
+    {
+      "eventId": "CEVT_31_NTLOAD_01",
+      "seedId": "SEED_CLUB_NT_LOAD_TENSION",
+      "gate": {
+        "path": "flags.HAS_SEED_CLUB_NT_LOAD_TENSION",
+        "op": "eq",
+        "value": true
+      },
+      "runtimeConsumer": true,
+      "currentMetadataDeclared": false,
+      "canonStatus": "technical_adaptation",
+      "canonicalCertification": "blocked_missing_authoritative_conditional_identity"
+    },
+    {
+      "eventId": "CEVT_31_FINAL_01",
+      "seedId": "SEED_MANAGED_FINAL_ROLE",
+      "gate": {
+        "path": "flags.HAS_SEED_MANAGED_FINAL_ROLE",
+        "op": "eq",
+        "value": true
+      },
+      "runtimeConsumer": true,
+      "currentMetadataDeclared": false,
+      "canonStatus": "technical_adaptation",
+      "canonicalCertification": "blocked_missing_authoritative_conditional_identity"
+    },
+    {
+      "eventId": "CEVT_32_REPLACE_01",
+      "seedId": "SEED_REPLACEMENT_BREAKOUT",
+      "gate": {
+        "path": "flags.HAS_SEED_REPLACEMENT_BREAKOUT",
+        "op": "eq",
+        "value": true
+      },
+      "runtimeConsumer": true,
+      "currentMetadataDeclared": false,
+      "canonStatus": "technical_adaptation",
+      "canonicalCertification": "blocked_missing_authoritative_conditional_identity"
+    },
+    {
+      "eventId": "CEVT_32_BOSMAN_01",
+      "seedId": "SEED_BOSMAN_33",
+      "gate": {
+        "path": "flags.HAS_SEED_BOSMAN_33",
+        "op": "eq",
+        "value": true
+      },
+      "runtimeConsumer": true,
+      "currentMetadataDeclared": false,
+      "canonStatus": "technical_adaptation",
+      "canonicalCertification": "blocked_missing_authoritative_conditional_identity"
+    },
+    {
+      "eventId": "CEVT_32_FAN_01",
+      "seedId": "SEED_FAN_LEGACY_BUFFER",
+      "gate": {
+        "path": "flags.HAS_SEED_FAN_LEGACY_BUFFER",
+        "op": "eq",
+        "value": true
+      },
+      "runtimeConsumer": true,
+      "currentMetadataDeclared": false,
+      "canonStatus": "technical_adaptation",
+      "canonicalCertification": "blocked_missing_authoritative_conditional_identity"
+    }
   ],
   "nextSafeAction": "After coordination freezes/registers target 9151d662... and an authoritative conditional identity decision exists, add exact seedsRead metadata for rows that remain approved runtime callbacks, then freeze/register the resulting new content identity. Until then preserve the working positive HAS_SEED gates and do not label the callbacks canonically verified."
 }
