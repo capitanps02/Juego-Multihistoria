@@ -9,12 +9,14 @@ import {
   nextScheduledFixture,
   nextScheduledTrainingDate,
   previousOfficialMatch,
+  recentClubPlayerMatchStats,
   remainingLeagueFixtures,
   seasonPlayerStats,
   type LeagueObjectiveStatus,
   type MatchCompetition,
   type MatchResultFact,
   type OfficialMatchRecord,
+  type RecentPlayerMatchStats,
   type SeasonPlayerStats,
   type ScheduledFixture,
   type SquadStatus
@@ -49,6 +51,7 @@ export interface SportContextAvailability {
   firstFullMatch: SportFactAvailability;
   firstGoal: SportFactAvailability;
   currentSeasonPlayerStats: SportFactAvailability;
+  recentSixMatchStats: SportFactAvailability;
 }
 
 export interface SportContext {
@@ -81,6 +84,7 @@ export interface SportContext {
   firstFullMatch: string | null;
   firstGoal: string | null;
   currentSeasonPlayerStats: SeasonPlayerStats | null;
+  recentSixMatchStats: RecentPlayerMatchStats | null;
   availability: SportContextAvailability;
   unavailableReason: "standing_model_not_implemented" | "historical_match_store_not_initialized" | "historical_player_stats_incomplete" | null;
 }
@@ -140,6 +144,7 @@ export function getSportContext(state: GameState): SportContext {
   const milestonesKnown = store !== null;
   const goalHistoryKnown = careerGoalHistoryComplete(state);
   const seasonStats = seasonPlayerStats(state);
+  const recentSix = recentClubPlayerMatchStats(state, 6);
 
   return {
     currentSeason: state.season,
@@ -168,6 +173,7 @@ export function getSportContext(state: GameState): SportContext {
     firstFullMatch: store?.milestones.firstFullMatch ?? null,
     firstGoal: goalHistoryKnown ? (store?.milestones.firstGoal ?? null) : null,
     currentSeasonPlayerStats: seasonStats,
+    recentSixMatchStats: recentSix,
     availability: {
       currentSeason: known(),
       sportingClub: known(),
@@ -193,7 +199,8 @@ export function getSportContext(state: GameState): SportContext {
       firstStart: milestonesKnown ? known() : unavailable(),
       firstFullMatch: milestonesKnown ? known() : unavailable(),
       firstGoal: goalHistoryKnown ? known() : unavailable(),
-      currentSeasonPlayerStats: seasonStats ? known() : unavailable()
+      currentSeasonPlayerStats: seasonStats ? known() : unavailable(),
+      recentSixMatchStats: recentSix ? known() : unavailable()
     },
     unavailableReason: !milestonesKnown
       ? "historical_match_store_not_initialized"

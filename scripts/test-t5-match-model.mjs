@@ -7,6 +7,7 @@ import {
   getSportMatchModelStore,
   inspectSportMatchModelStore,
   lastPlayerAppearance,
+  recentClubPlayerMatchStats,
   recordOfficialMatchInPlace
 } from '../dist/simulation/match-model.js';
 import { getCurrentMatchContext, getSportContext } from '../dist/simulation/sport-context.js';
@@ -466,4 +467,85 @@ test('match model/24 complete current-season stats aggregate only persisted matc
   assert.equal(context.availability.currentSeasonPlayerStats, 'known');
   const restored = loadSave(serializeSave(state));
   assert.deepEqual(getSportContext(restored).currentSeasonPlayerStats, context.currentSeasonPlayerStats);
+});
+
+
+test('match model/25 recent-six facts aggregate exactly six complete current-club fixtures', () => {
+  const state = matchDayState(8880);
+  for (let week = 0; week < 6; week += 1) {
+    if (week > 0) {
+      state.date = new Date(Date.parse(state.date + 'T00:00:00Z') + 7 * 86400000).toISOString().slice(0, 10);
+      state.runtime.day += 7;
+      state.runtime.seasonDay += 7;
+    }
+    recordOfficialMatchInPlace(state, { appeared: week !== 4, debutOccurred: false, injuryUnavailable: false });
+  }
+  const before = structuredClone(state);
+  const recent = recentClubPlayerMatchStats(state, 6);
+  assert.ok(recent);
+  assert.equal(recent.matches, 6);
+  assert.equal(recent.fixtureIds.length, 6);
+  const rows = state.world.sportMatchModel.fixtures.slice(-6);
+  assert.equal(recent.appearances, rows.filter(row => row.player.appeared).length);
+  assert.equal(recent.starts, rows.filter(row => row.player.started).length);
+  assert.equal(recent.minutes, rows.reduce((sum, row) => sum + row.player.minutes, 0));
+  assert.equal(recent.goals, rows.reduce((sum, row) => sum + row.stats.goals, 0));
+  assert.equal(recent.assists, rows.reduce((sum, row) => sum + row.stats.assists, 0));
+  assert.equal(recent.wins + recent.draws + recent.losses, 6);
+  assert.deepEqual(getSportContext(state).recentSixMatchStats, recent);
+  assert.equal(getSportContext(state).availability.recentSixMatchStats, 'known');
+  assert.deepEqual(state, before, 'recent-six read must not mutate state or RNG');
+});
+
+test('match model/26 recent-six fails closed until six complete fixtures exist', () => {
+  const state = matchDayState(8881);
+  for (let week = 0; week < 5; week += 1) {
+    if (week > 0) {
+      state.date = new Date(Date.parse(state.date + 'T00:00:00Z') + 7 * 86400000).toISOString().slice(0, 10);
+      state.runtime.day += 7;
+      state.runtime.seasonDay += 7;
+    }
+    recordOfficialMatchInPlace(state, { appeared: true, debutOccurred: false, injuryUnavailable: false });
+  }
+  assert.equal(recentClubPlayerMatchStats(state, 6), null);
+  assert.equal(getSportContext(state).recentSixMatchStats, null);
+  assert.equal(getSportContext(state).availability.recentSixMatchStats, 'unavailable');
+});
+
+test('match model/27 recent-six fails closed when any selected historical row lacks result or stats', () => {
+  const state = matchDayState(8882);
+  for (let week = 0; week < 6; week += 1) {
+    if (week > 0) {
+      state.date = new Date(Date.parse(state.date + 'T00:00:00Z') + 7 * 86400000).toISOString().slice(0, 10);
+      state.runtime.day += 7;
+      state.runtime.seasonDay += 7;
+    }
+    recordOfficialMatchInPlace(state, { appeared: true, debutOccurred: false, injuryUnavailable: false });
+  }
+  delete state.world.sportMatchModel.fixtures[2].stats;
+  state.world.sportMatchModel.milestones.firstGoal = null;
+  assert.equal(recentClubPlayerMatchStats(state, 6), null);
+  assert.equal(getSportContext(state).recentSixMatchStats, null);
+});
+
+test('match model/28 recent-six is scoped to current registration club and save/load stable', () => {
+  const state = matchDayState(8883);
+  for (let week = 0; week < 6; week += 1) {
+    if (week > 0) {
+      state.date = new Date(Date.parse(state.date + 'T00:00:00Z') + 7 * 86400000).toISOString().slice(0, 10);
+      state.runtime.day += 7;
+      state.runtime.seasonDay += 7;
+    }
+    recordOfficialMatchInPlace(state, { appeared: true, debutOccurred: false, injuryUnavailable: false });
+  }
+  const oldClubWindow = recentClubPlayerMatchStats(state, 6);
+  assert.ok(oldClubWindow);
+
+  state.professional.registrationClub = 'NEW_CLUB';
+  state.club = 'NEW_CLUB';
+  assert.equal(recentClubPlayerMatchStats(state, 6), null, 'old-club form window must not leak across transfer');
+
+  const restored = loadSave(serializeSave(state));
+  assert.equal(recentClubPlayerMatchStats(restored, 6), null);
+  assert.deepEqual(restored.rngState, state.rngState);
 });
