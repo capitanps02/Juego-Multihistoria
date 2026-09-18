@@ -2,7 +2,7 @@
   "workstream": "retirement-epilogues",
   "snapshot": {
     "date": "2026-09-18",
-    "mainAtAudit": "5f4d14bca4d696cfafadb58b64034c7cd40cc147",
+    "mainAtAudit": "5bcc892020f56d81a9b3963d82a9e56a17e3c07c",
     "lastCertifiedRetirementHead": "46a305e6406c1116b05d09a70157910c5fc6706c",
     "lastCertifiedRelationToMain": "83_ahead_0_behind",
     "terminalWorkflowRun": 35330749211,
@@ -10,7 +10,9 @@
     "repositoryIntegrityRun": 35330749282,
     "repositoryIntegrityState": "expected_fail_closed_active_source_freeze_sentinel",
     "provisionalTerminalContentIdentity": "06cebf93a642ff776670356449777255cb8afe009b424d9cb0a22b44e158dcb0",
-    "note": "Runtime is re-grounded on the match-model main. Repository Integrity reaches the intentional terminal active-source freeze sentinel; do not freeze before ordinary 34+ is final. Documentation commits after this runtime-certified head require exact-head re-certification."
+    "note": "A9 is ancestry-synchronized with main@5bcc892. PR #202's exact authoritative-vs-historical-none last-appearance contract is consumed on the A9 branch while preserving stacked SPORT-2/3 rich rows. Terminal freeze remains intentionally blocked until ordinary 34+ is final.",
+    "currentRetirementHead": "f913c632ceec04499f850db8106d67e0c2edc8aa",
+    "currentRelationToMain": "115_ahead_0_behind"
   },
   "rules": [
     "Do not duplicate tasks marked implemented.",
@@ -98,7 +100,7 @@
     {
       "id": "CODEX-RET-005",
       "status": "blocked",
-      "readiness": "partially_unblocked_fact_owners_assigned",
+      "readiness": "consumer_complete_waiting_external_integration",
       "task": "Replace aggregate post-announcement appearance observation with a rich authoritative LastMatchFact and factual terminal no-last-match/last-goal evidence.",
       "matchProducer": {
         "pr": 156,
@@ -125,7 +127,9 @@
         "focusedRun": 35331003785,
         "focusedResult": "success_18_of_18",
         "api": "getLastPlayerAppearanceContext(state)",
-        "integrationState": "focused_green_main_based_not_integrated"
+        "integrationState": "focused_and_repository_integrity_green_consumed_on_a9_branch_not_main",
+        "repositoryIntegrityRun": 35331003706,
+        "repositoryIntegrityResult": "success"
       },
       "richSportingHistory": {
         "issue": 199,
@@ -135,7 +139,7 @@
           "goals/assists/cards linked to exact fixture",
           "exact latest-appearance fixture goal for CEVT_RET_STORYBOOK_LAST_GOAL"
         ],
-        "state": "open_not_integrated"
+        "state": "SPORT-2_PR221_and_SPORT-3_PR223_exist_A9_match_model_matches_SPORT3_not_integrated_main"
       },
       "injuryChronology": {
         "issue": 200,
@@ -155,7 +159,7 @@
         "CEVT_RET_NO_LAST_MATCH may become supported through the factual injury path before suspension exists; current timer compatibility path remains noncanonical.",
         "CEVT_RET_STORYBOOK_LAST_GOAL requires a factual goal on the exact latest-player-appearance fixture from #199."
       ],
-      "unblockContract": "Integrate #202 or equivalent public last-appearance API plus the exact #199/#200 facts used by supported terminal branches; then replace aggregate retirement observations with those public reads. Keep unavailable result/goal/assist/card/suspension subfacts null/fail-closed."
+      "unblockContract": "Integrate the public last-appearance contract and SPORT-2/3 factual result/stat authority into main (or equivalent certified shared stack). A9 already projects LastMatchFact from that public row and fails missing historical rich fields closed. Injury no-last-match currently uses the exact persisted final-fixture injuryUnavailable fact; #200 episode chronology may strengthen provenance but suspension remains unsupported."
     },
     {
       "id": "CODEX-RET-006",
@@ -256,7 +260,7 @@
     {
       "id": "CODEX-RET-012",
       "status": "blocked",
-      "readiness": "design_ready_waiting_for_market_producer_and_offer_staging",
+      "readiness": "consumer_and_transition_complete_waiting_market_producer",
       "task": "Implement canonical CEVT_38_RETIREMENT_REVERSAL as an exceptional post-announcement comeback without weakening ordinary terminality.",
       "canonicalId": "CEVT_38_RETIREMENT_REVERSAL",
       "mustRemainDistinctFrom": "CEVT_RET_RECONSIDER",
@@ -276,12 +280,12 @@
         "fake flags, stale offers, marketHeat, age and RNG cannot authorize reversal",
         "legacy history/provenance is not renamed to the canonical ID"
       ],
-      "unblockContract": "#176 supplies deterministic post-announcement offer production/provenance; Agent 9 then implements the exact canonical event/transition with mutually exclusive offer-bridge staging and directed GameSession/save tests."
+      "unblockContract": "#176/A3 supplies deterministic post-announcement CareerOffer production/provenance. A9 already has the exact canonical ID, mutually exclusive Stage A/B consumer, narrow announced->playing authorization, offer bridge, one-time costs and save/closed guards; canonical accreditation remains blocked until producer integration."
     }
   ],
   "implementedCount": 9,
   "readyCount": 0,
   "blockedCount": 3,
-  "partiallyUnblockedCount": 1,
-  "codexNextAction": "Do not duplicate implemented retirement lots. RET-005 now consumes the shared match model already in main but still waits on #202/equivalent last-appearance API plus exact #199/#200 facts. RET-011 waits on serial ordinary 34+ runtime activation/freeze. RET-012 is design-ready but must not be coded until #176 supplies ambiguity-safe factual post-announcement CareerOffer staging/provenance."
+  "partiallyUnblockedCount": 0,
+  "codexNextAction": "Do not add more A9 architecture. Integrate external authorities in serial order: shared last-appearance + SPORT-2/3; A3 post-announcement CareerOffer producer; ordinary 34+ final frozen predecessor. Then A9 only flips factual accreditation, final adjacent lineage and exact-head QA."
 }
