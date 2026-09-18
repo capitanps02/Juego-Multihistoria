@@ -20,5 +20,5 @@ test('A8 terminal-looking choices only emit Agent9 intent handoff',()=>{
 test('market accept/reject actions are commands, not direct contract field writes',()=>{
  const market=EXTERNAL_PRINCIPAL_CHOICE_ACTIONS.filter(x=>x.kind.startsWith('market_'));
  assert.ok(market.length>40);
- for(const row of market) assert.doesNotMatch(row.note,/direct contract mutation/i);
+ for(const row of market) assert.doesNotMatch(row.note,/\bset\s+contract\b|contract\.(monthsRemaining|salaryMonthly|releaseClause)|professional\.(registrationClub|ownerClub)/i);
 });
