@@ -1,6 +1,5 @@
 import type { EventDefinition, GameState } from "../../../core/types.js";
 import { ambiguousEvent, n } from "../18_20/helpers.js";
-import { projectSeedMemory } from "../../../narrative/seed-memory.js";
 
 /**
  * This canonical conditional establishes the late commercial boom itself.
@@ -9,8 +8,9 @@ import { projectSeedMemory } from "../../../narrative/seed-memory.js";
  */
 export function isSponsorLateBoomEligible(state:GameState):boolean{
   if(state.retirement.status!=="playing" || state.age<35) return false;
-  const prior=projectSeedMemory(state,"SEED_SPONSOR_IMAGE");
-  return prior.historicalExists || state.professional.commercialPower>=45;
+  const factualViralHistory=state.microfeeds.some(feed=>feed.id==="FEED_26_30_ORG_02");
+  const factualNewMarketHistory=state.flags.TRANSATLANTIC_PROJECT===true || state.flags.RICH_LEAGUE_ROUTE===true;
+  return factualViralHistory || factualNewMarketHistory;
 }
 
 export const CEVT_35_SPONSOR_LATE_BOOM:EventDefinition=ambiguousEvent({
@@ -30,7 +30,6 @@ export const CEVT_35_SPONSOR_LATE_BOOM:EventDefinition=ambiguousEvent({
     {id:"USE_FOR_FREEDOM",label:"Usar el ingreso para ganar libertad deportiva",intentTags:["image","money","control"],primaryMessage:"Tratas la campaña como colchón económico, no como sustituto de una oferta deportiva.",secondaryMessage:"Ganas margen para elegir contratos futuros, pero aumenta la separación entre fama y fútbol.",primaryEffects:[n("professional.moneyComfort",5),n("professional.careerControl",4)],secondaryEffects:[n("professional.publicPolarization",1)]},
     {id:"DECLINE_BOOM",label:"Rechazar la campaña",intentTags:["image","focus"],primaryMessage:"Evitas que el tramo final quede dominado por una campaña comercial.",secondaryMessage:"Mantienes foco deportivo y dejas pasar una ventana económica que puede no repetirse.",primaryEffects:[n("professional.careerControl",3),n("reputation.mediaHeat",-2)],secondaryEffects:[n("professional.commercialPower",-2)]}
   ],
-  seedsRead:["SEED_SPONSOR_IMAGE"],
   tags:["canonical_34plus","conditional","staged_not_registered","event_establishes_incident","commercial_not_football_offer"],
   canonStatus:"verified"
 });
