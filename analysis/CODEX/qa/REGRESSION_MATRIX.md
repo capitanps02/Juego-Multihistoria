@@ -11,7 +11,7 @@
 | sport save authority | persisted facts must be producer-possible and milestone-semantic | `scripts/test-t5-match-model-known-bug.mjs` | **PR #214 re-grounded 1 ahead / 0 behind on current main; exact-head RI 35336619877 pending** | sport/save |
 | saves | round-trip + malformed authoritative state fail closed | save suite + integration probes | covered except #212 and future employment state from #130 | save |
 | migrations | path adjacent, frozen evidence, no history rewrite | T5.1 migration/freeze suites | covered through generation H | T5.1/session |
-| 18–23 | cross-boundary + references | `qa:t5:fast` | smoke only; content work ongoing | content 18–23 |
+| 18–23 / LOCK23 | captain-dependent choice fails closed without authoritative captain; A/B/C remain independent | `scripts/test-t5-lock23-captain-choice-guard.mjs` via shared-contract gate | permanent guard active; canonical scene still pending #133 | content 18–23 |
 | 23–30 | causal role provenance | `scripts/test-t51-prs-23-26.mjs` | covered; #109 resolved | content 23–30 |
 | 30–34 captaincy | main-captain consumers require explicit current-club captain authority; proxies/secondary/group fail closed | `scripts/test-t5-captain-gap-known-bug.mjs` | **failing/open T5-QA-030 / #161** | content 30–34 |
 | 34+ | no age-only forced retirement | retirement known-bug + simulations | open via #61 | 34+/retirement |
