@@ -1,6 +1,6 @@
 # Codex QA bugfix prompt
 
-Use exactly one task from `analysis/CODEX/qa/implementation-ready.json`.
+Use exactly one task with `status=ready` from `analysis/CODEX/qa/implementation-ready.json`.
 
 Repository: `capitanps02/Juego-Multihistoria`  
 Recorded base: `main@5f4d14bca4d696cfafadb58b64034c7cd40cc147`. Fetch the real current `main` immediately before work and re-ground safely if it moved.  
@@ -17,9 +17,9 @@ Do not merge automatically.
 
 ## Current task selection
 
-- Prefer **T5-QA-029 / #212** first: isolated fail-closed match-model/save validator hardening.
-- Then **T5-QA-028 / #130**: Pass A employment authority is now unblocked because PR #156 is in main.
+- **READY now: T5-QA-029 / #212** — isolated fail-closed match-model/save validator hardening.
+- **BLOCKED: T5-QA-028 / #130** — do not implement yet. Coordination requires `#207 -> #157 -> #130`; reattachment must consume the final MarketState v2 formal-offer authority.
 - Do **not** create a second fix for T5-QA-016/#61; owner PR #118 already carries that runtime fix.
 - Do **not** implement T5-QA-027/#133 from QA; it belongs to the next serialized LOCK23 content owner.
 
-For contentIdentity-changing fixes, never create shortcut migrations or rewrite historical freezes. These two ready QA tasks are non-content fixes and must not touch EVENTS/contentIdentity.
+For contentIdentity-changing fixes, never create shortcut migrations or rewrite historical freezes. #212 is a non-content fix and must not touch EVENTS/contentIdentity.
