@@ -3,6 +3,7 @@ import { advanceWorldDayInPlace as advanceCoreWorldDayInPlace } from "./world-si
 import { closeLeagueObjectiveInPlace, recordOfficialMatchInPlace, remainingLeagueFixtures } from "./match-model.js";
 import { hasActiveClubEmployment } from "./employment.js";
 import { recordPenaltyDecisionSetupInPlace } from "./match-penalty-context.js";
+import { recordCoreFinalCompetitionMomentInPlace } from "./competition-context.js";
 
 const num = (value: unknown, fallback = 0): number =>
   typeof value === "number" && Number.isFinite(value) ? value : fallback;
@@ -17,9 +18,15 @@ export function advanceWorldDayInPlace(next: GameState): GameState {
   const beforeDate = next.date;
   const beforeAppearances = num(next.sport.appearances);
   const beforeDebut = next.flags.OFFICIAL_DEBUT === true;
+  const beforeFinalContext = next.flags.FINAL_CONTEXT === true;
 
   advanceCoreWorldDayInPlace(next);
   if (next.date === beforeDate) return next;
+
+  if (!beforeFinalContext && next.flags.FINAL_CONTEXT === true && hasActiveClubEmployment(next)) {
+    // Persist only a core-produced final owned by the player's active club.
+    recordCoreFinalCompetitionMomentInPlace(next);
+  }
 
   if (next.runtime.day % 7 === 0 && hasActiveClubEmployment(next)) {
     const appeared = num(next.sport.appearances) > beforeAppearances;
