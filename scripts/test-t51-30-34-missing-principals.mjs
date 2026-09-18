@@ -120,3 +120,26 @@ test('EVT_32_IMPACT_001 replaces the generic legacy shell and only uses the cert
   state.flags.ROLE_REINVENTED_30=true;
   assert.equal(eventGatesPass(state,impact),true);
 });
+
+
+test('EVT_30_STATUS_001 uses exact young-successor memory and replaces the legacy dorsal shell', () => {
+  const dorsal=EVENTS.find(row=>row.id==='EVT_30_STATUS_001');
+  assert.ok(dorsal);
+  assert.equal(EVENTS.some(row=>row.id==='EVT_30_TEAM_001'),false);
+  assert.deepEqual(dorsal.choices.map(choice=>choice.id),['A','B','C','D']);
+  assert.deepEqual(dorsal.seedsRead,['SEED_YOUNG_SUCCESSOR']);
+  assert.deepEqual(dorsal.seedsWrite,['SEED_DORSAL_SUCCESSION']);
+
+  const state=createInitialState(300501);
+  state.age=30; state.phase='30_34'; state.professional.initializedAt30=true;
+  state.flags.HAS_SEED_YOUNG_SUCCESSOR=false;
+  assert.equal(eventGatesPass(state,dorsal),false);
+  state.flags.HAS_SEED_YOUNG_SUCCESSOR=true;
+  assert.equal(eventGatesPass(state,dorsal),true);
+  for(const choice of dorsal.choices){
+    const outcomes=dorsal.outcomes.filter(outcome=>choice.outcomeIds.includes(outcome.id));
+    assert.equal(outcomes.length,2);
+    assert.equal(outcomes.every(outcome=>(outcome.seedTransitions??[]).some(t=>t.seedId==='SEED_DORSAL_SUCCESSION'&&t.action==='create')),true);
+    assert.equal(outcomes.some(outcome=>(outcome.seedTransitions??[]).some(t=>t.seedId==='SEED_SUCCESSOR_PEAK')),false);
+  }
+});
