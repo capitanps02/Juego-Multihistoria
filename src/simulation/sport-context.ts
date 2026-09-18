@@ -1,4 +1,5 @@
 import type { GameState } from "../core/types.js";
+import { getLeagueStandingContext, type LeagueStandingContext } from "./league-table.js";
 import {
   currentOfficialMatch,
   getSportMatchModelStore,
@@ -68,7 +69,7 @@ export interface SportContext {
   remainingOfficialMatches: number;
   remainingLeagueMatches: number;
   seasonObjectiveStatus: LeagueObjectiveStatus | null;
-  currentStanding: null;
+  currentStanding: LeagueStandingContext | null;
   currentSquadStatus: SquadStatus | null;
   firstMatchSquadCall: string | null;
   firstBench: string | null;
@@ -77,7 +78,7 @@ export interface SportContext {
   firstFullMatch: string | null;
   firstGoal: null;
   availability: SportContextAvailability;
-  unavailableReason: "standing_and_goal_model_not_implemented" | "historical_match_store_not_initialized" | null;
+  unavailableReason: "league_table_history_incomplete" | "standing_and_goal_model_not_implemented" | "historical_match_store_not_initialized" | null;
 }
 
 export interface CurrentMatchContext {
@@ -133,6 +134,7 @@ export function getSportContext(state: GameState): SportContext {
     ? store.objective
     : null;
   const milestonesKnown = store !== null;
+  const standing = getLeagueStandingContext(state);
 
   return {
     currentSeason: state.season,
@@ -152,7 +154,7 @@ export function getSportContext(state: GameState): SportContext {
     remainingOfficialMatches: remainingLeagueFixtures(state),
     remainingLeagueMatches: remainingLeagueFixtures(state),
     seasonObjectiveStatus: objective?.status ?? null,
-    currentStanding: null,
+    currentStanding: standing.status === "authoritative" ? standing : null,
     currentSquadStatus: squadStatus(current),
     firstMatchSquadCall: store?.milestones.firstMatchSquadCall ?? null,
     firstBench: store?.milestones.firstBench ?? null,
@@ -177,7 +179,7 @@ export function getSportContext(state: GameState): SportContext {
       remainingOfficialMatches: known(),
       remainingLeagueMatches: known(),
       seasonObjectiveStatus: objective ? known() : unavailable(),
-      currentStanding: unavailable(),
+      currentStanding: standing.status === "authoritative" ? known() : unavailable(),
       currentSquadStatus: milestonesKnown ? known() : unavailable(),
       firstMatchSquadCall: milestonesKnown ? known() : unavailable(),
       firstBench: milestonesKnown ? known() : unavailable(),
@@ -188,7 +190,9 @@ export function getSportContext(state: GameState): SportContext {
     },
     unavailableReason: !milestonesKnown
       ? "historical_match_store_not_initialized"
-      : "standing_and_goal_model_not_implemented"
+      : standing.status !== "authoritative"
+        ? "league_table_history_incomplete"
+        : "standing_and_goal_model_not_implemented"
   };
 }
 
