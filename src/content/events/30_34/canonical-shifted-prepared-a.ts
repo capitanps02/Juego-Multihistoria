@@ -276,10 +276,15 @@ const RELOCATION_LIMIT = ambiguousEvent({
   canonStatus: "technical_adaptation"
 });
 
+const RELOCATION_LIMIT_WITH_OFFER = {
+  ...RELOCATION_LIMIT,
+  offerBridge: { choiceActions: { A: "reject", B: "accept", C: "accept", D: "counter" } }
+} as EventDefinition & { offerBridge: { choiceActions: Record<string, "accept" | "reject" | "counter"> } };
+
 export const PREPARED_SHIFTED_CANON_30_34_A: EventDefinition[] = [
   EURO_SEMIFINAL,
   MATCH_500,
   PAIN_WITHOUT_SCAN,
   NANO_CALL,
-  RELOCATION_LIMIT
+  RELOCATION_LIMIT_WITH_OFFER
 ];
