@@ -1,0 +1,29 @@
+name: T5 Unattached Employment
+
+on:
+  pull_request:
+    branches: [main, t5/rich-offer-context]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  unattached-employment:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Unattached employment regressions
+        run: node --test scripts/test-t5-unattached-employment.mjs
+      - name: Existing market authority regressions
+        run: node --test scripts/test-offers.mjs scripts/test-t5-market-contract-authority.mjs
+      - name: Sport producer regressions
+        run: node --test scripts/test-t5-match-model.mjs scripts/test-t5-sport-context.mjs
