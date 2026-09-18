@@ -188,7 +188,7 @@ const richOffer=enforceCareerAuthority({
     {path:"facts.pendingCareerOffer.context.kind",op:"eq",value:"late_rich_offer"}
   ],
   tags:[...new Set([
-    ...(richOfferSource.tags??[]).filter(tag=>tag!=="t51_blocked_rich_offer_threshold"),
+    ...(richOfferSource.tags??[]).filter(tag=>tag!=="t51_blocked_rich_offer_threshold" && tag!=="t51_shifted_prepared"),
     "t51_rich_offer_authority_required",
     "t51_offer_authority_bridge"
   ])]

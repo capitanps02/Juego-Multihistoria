@@ -129,6 +129,7 @@ test('EVT_32_RICH_001 consumes only explicit formal late-rich offer context', ()
   const event = byId('EVT_32_RICH_001');
   assert.equal(event.canonStatus, 'technical_adaptation');
   assert.ok(event.tags?.includes('t51_rich_offer_authority_required'));
+  assert.equal(event.tags?.includes('t51_shifted_prepared'), false, 'active canonical scene must not remain labelled prepared');
   assert.ok(event.gates.some(g =>
     g.path === 'facts.pendingCareerOffer.context.kind'
     && g.op === 'eq'
