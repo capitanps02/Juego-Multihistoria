@@ -183,7 +183,7 @@
     },
     "clubWorldIncidents": {
       "issue": 201,
-      "state": "open_design_gate"
+      "state": "closed_completed_design_gate"
     },
     "nationalConcreteSelection": {
       "issue": 174,
@@ -233,7 +233,7 @@
     "nationalTeamConcrete": "#174: unblocked but not implemented",
     "richSportHistory": "#199: results/goals/awards/records still missing",
     "injuryRehab": "#200: episode/rehab chronology still missing",
-    "clubWorldIncidents": "#201: finance/sponsor/stadium/staff-crisis facts require justified producers or explicit fail-closed decisions",
+    "clubWorldIncidents": "coordination closed in #201: finance crisis and sponsor late boom may be established by their exact canonical conditional occurrences; sponsor exit, empty-stadium farewell and player-coach emergency remain fail-closed unless their required pre-existing facts exist",
     "peerRetirement": "scene-local fail-closed: EVT_36_PEER_001 still lacks exact peer identity plus causal peer-retirement history; #177 coordination is closed and no standalone NPC subsystem is authorized",
     "terminalRetirement": "PR #118 retains terminal state transitions and terminal conditionals"
   },
@@ -250,5 +250,14 @@
     "repositoryIntegrityRun": 35263846340,
     "conclusion": "success",
     "note": "Historical after this documentation refresh; certify the new exact HEAD before calling the refreshed snapshot green."
+  },
+  "conditionalWorldIncidentDecisions": {
+    "issue": 201,
+    "state": "closed_completed",
+    "CEVT_35_UDV_FINANCIAL_CRISIS": "event_establishes_incident; no prior random finance producer",
+    "CEVT_35_SPONSOR_EXIT": "unsupported/fail_closed without factual active sponsor deal",
+    "CEVT_35_SPONSOR_LATE_BOOM": "event_establishes_campaign after factual viral/new-market trigger",
+    "CEVT_37_EMPTY_STADIUM_FAREWELL": "unsupported/fail_closed without factual external venue restriction bound to fixture",
+    "CEVT_37_PLAYER_COACH_EMERGENCY": "unsupported/fail_closed without factual staff crisis"
   }
 }
