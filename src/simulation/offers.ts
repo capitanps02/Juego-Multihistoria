@@ -8,7 +8,21 @@ export interface CareerTerms {
   prestigeTier: number; prestigeScore: number; route: GameState["professional"]["route"];
   abroad: boolean; loan: boolean; bigClub: boolean;
 }
-export interface CareerOffer { id: string; date: string; reason: string; before: CareerTerms; terms: CareerTerms; }
+/**
+ * Optional frozen narrative context carried by a formal offer.
+ *
+ * This is deliberately explicit instead of being inferred later from salary, league,
+ * reputation or seeds. Historical offers may omit it. New context kinds must be added
+ * here rather than smuggled through arbitrary save payloads.
+ */
+export interface LateRichOfferContext {
+  kind: "late_rich_offer";
+  housing: string;
+  calendar: string;
+  commercialRole: string;
+}
+export type CareerOfferContext = LateRichOfferContext;
+export interface CareerOffer { id: string; date: string; reason: string; before: CareerTerms; terms: CareerTerms; context?: CareerOfferContext; }
 export type CareerOfferKind = "renewal" | "transfer" | "loan" | "loan_return" | "loan_conversion";
 export type ContractEmploymentStatus = "active_contract" | "expiring" | "expired_pending_resolution" | "retired";
 /** Direct player actions exposed by the ordinary offer screen and persisted in market.history.action. */
@@ -44,6 +58,19 @@ export function careerTerms(s: GameState): CareerTerms {
 function sameTerms(a: CareerTerms, b: CareerTerms): boolean {
   return JSON.stringify(a)===JSON.stringify(b);
 }
+function boundedContextText(value: unknown): value is string {
+  return typeof value === "string" && value.length > 0 && value.length <= 500;
+}
+/** Fail-closed runtime guard for optional persisted offer context. */
+export function isCareerOfferContext(value: unknown): value is CareerOfferContext {
+  if (value === null || typeof value !== "object" || Array.isArray(value)) return false;
+  const context = value as Record<string, unknown>;
+  if (Object.keys(context).sort().join() !== "calendar,commercialRole,housing,kind") return false;
+  return context.kind === "late_rich_offer"
+    && boundedContextText(context.housing)
+    && boundedContextText(context.calendar)
+    && boundedContextText(context.commercialRole);
+}
 
 /**
  * Read-only semantic classification over the persisted CareerOffer shape.
@@ -71,6 +98,14 @@ export function getActiveCareerOffers(s: GameState): readonly CareerOffer[] {
 export function getEligibleCareerOffers(s: GameState): readonly CareerOffer[] {
   const current = careerTerms(s);
   return getActiveCareerOffers(s).filter(offer => sameTerms(current, offer.before));
+}
+/**
+ * Returns formal late-rich offers only when the producer explicitly froze the canonical
+ * side-term context. Salary, league, reputation and seeds never upgrade an ordinary
+ * CareerOffer into a rich offer at read time.
+ */
+export function getEligibleLateRichOffers(s: GameState): readonly CareerOffer[] {
+  return getEligibleCareerOffers(s).filter(offer => isCareerOfferContext(offer.context) && offer.context.kind === "late_rich_offer");
 }
 /**
  * Read-only kind of the one formal offer that is still compatible with the live
@@ -124,9 +159,15 @@ export function applyTerms(s: GameState, t: CareerTerms): void {
   Object.assign(s.flags,{ABROAD_ROUTE:t.abroad,LOAN_ACTIVE:t.loan,BIG_CLUB:t.bigClub});
 }
 /** Run the world's proposal on a detached state. No signature or destination leaks. */
-export function proposeCareerChange(s: GameState, reason: string, propose: (draft: GameState)=>void): void {
+export function proposeCareerChange(
+  s: GameState,
+  reason: string,
+  propose: (draft: GameState)=>void,
+  context?: CareerOfferContext
+): void {
   const market=marketState(s);
   if(market.pending || s.retirement.status!=="playing")return;
+  if(context !== undefined && !isCareerOfferContext(context))throw Error("Contexto formal de oferta no válido.");
   const draft=structuredClone(s),before=careerTerms(s);
   propose(draft);
   const terms=careerTerms(draft);
@@ -150,7 +191,7 @@ export function proposeCareerChange(s: GameState, reason: string, propose: (draf
   terms.registrationClub=terms.club;
   if(!terms.loan)terms.ownerClub=terms.club;
   terms.tier=terms.leagueTier;
-  market.pending={id:`offer:${++market.sequence}`,date:s.date,reason,before,terms};
+  market.pending={id:`offer:${++market.sequence}`,date:s.date,reason,before,terms,...(context?{context:structuredClone(context)}:{})};
 }
 /**
  * Single authority for closing an offer. Narrative choices may counter/defer, but only
