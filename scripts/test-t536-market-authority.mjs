@@ -5,6 +5,7 @@ import { createInitialState } from '../dist/content/initial-state.js';
 import { offerBridgeSpec } from '../dist/narrative/offer-bridge.js';
 import { lateCareerPreseason, lateCareerWeek } from '../dist/simulation/late-career-engine.js';
 import { proposeCareerChange, respondToOffer } from '../dist/simulation/offers.js';
+import { retirementPostAnnouncementOfferFact } from '../dist/simulation/retirement-authority.js';
 
 function lateState(seed=53691){
   const state=createInitialState(seed);
@@ -96,7 +97,8 @@ test('T5.36 market authority: marketHeat cannot fabricate a post-announcement of
   state.reputation.marketHeat=100;
   lateCareerWeek(state);
   assert.equal(state.market.pending,null);
-  assert.equal(state.flags.POST_ANNOUNCE_OFFER,false);
+  assert.equal(retirementPostAnnouncementOfferFact(state).eligible,false);
+  assert.notEqual(state.flags.POST_ANNOUNCE_OFFER,true,'retirement must not synthesize a market flag');
   assert.equal(state.retirement.status,'announced');
 });
 
@@ -110,7 +112,8 @@ test('T5.36 market authority: post-announcement offer scene closes only a real C
   announced(state);
 
   lateCareerWeek(state);
-  assert.equal(state.flags.POST_ANNOUNCE_OFFER,true);
+  assert.equal(retirementPostAnnouncementOfferFact(state).stage,'initial');
+  assert.notEqual(state.flags.POST_ANNOUNCE_OFFER,true,'real CareerOffer must be read directly, not mirrored into a flag');
 
   const definition=EVENTS.find(item=>item.id==='CEVT_38_OFFER_AFTER_RETIREMENT_ANNOUNCED');
   assert.ok(definition);
