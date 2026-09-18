@@ -29,3 +29,17 @@ This matrix distinguishes committed legacy fixtures from deterministic snapshots
 | sportMatchModel impossible authority | `scripts/test-t5-match-model-known-bug.mjs` | bench/call-up, minutes, firstGoal, milestone semantics/firstness | **PR #214 re-grounded on current main; exact-head RI pending** |
 
 Acceptance for every materialized fixture: `serialize -> load -> semantic equality`, no RNG drift on read/migration, and no reinterpretation of historical event meaning.
+
+
+## Finite corrupt-save matrix
+
+| Required corruption | Regression | State |
+|---|---|---|
+| malformed match authority | `scripts/test-t5-match-model-known-bug.mjs` | owner fix #214 pending integration |
+| malformed offer/context | `scripts/test-t5-offer-context-known-bug.mjs` | P2 #175/#207 owner fix required |
+| invalid new seed ID | `scripts/test-t52.mjs` unknown-create regression | covered |
+| malformed NPC knowledge | `scripts/test-t5-npc-knowledge-save-known-bug.mjs` | P2 #241 owner fix required |
+| impossible retirement transition | `scripts/test-t5-retirement-save-known-bug.mjs` | existing P1 #61/#118 |
+| invalid migration identity / tampered pending fingerprint | `scripts/test-t51-content-migration.mjs` | covered |
+
+All six finite corruption classes now have an executable regression or established green migration regression. A10 does not add more corrupt-save categories unless a new P1/P2 directly violates the defined matrix.
