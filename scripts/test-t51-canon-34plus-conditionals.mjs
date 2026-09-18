@@ -37,3 +37,34 @@ test('ordinary conditional staging never owns terminal retirement state mutation
    }
  }
 });
+
+test('all externally gated ordinary conditionals have scene-specific local effects',()=>{
+ for(const row of STAGED_ORDINARY_CANONICAL_CONDITIONALS){
+  for(const outcome of row.event.outcomes){
+   assert.ok((outcome.effects??[]).length>0,`${row.event.id}/${outcome.id}`);
+   for(const effect of outcome.effects??[]){
+    if('path' in effect){
+     assert.equal(effect.path.startsWith('sport.'),false,`${row.event.id}/${effect.path}`);
+     assert.notEqual(effect.path,'retirement.status',row.event.id);
+     assert.equal(effect.path.startsWith('contract.'),false,`${row.event.id}/${effect.path}`);
+    }
+   }
+  }
+ }
+});
+
+test('known causal-memory conditionals declare exact seed reads instead of HAS_SEED proxies',()=>{
+ const expected={
+  CEVT_34_RIVAS_RETURNS:['SEED_RIVAS_TRUST'],
+  CEVT_34_NANO_DIRECTOR:['SEED_NANO_SHADOW'],
+  CEVT_34_ADRIAN_LAST_DERBY:['SEED_ADRIAN_MIRROR'],
+  CEVT_34_SUCCESSOR_INJURED:['SEED_YOUNG_SUCCESSOR'],
+  CEVT_35_UDV_CUP_RUN:['SEED_HOME_INSTITUTION'],
+  CEVT_36_RECORD_BROKEN_BY_OTHER:['SEED_RECORD_CHASE']
+ };
+ for(const [id,seeds] of Object.entries(expected)){
+  const row=STAGED_ORDINARY_CANONICAL_CONDITIONALS.find(x=>x.event.id===id);
+  assert.ok(row,id);
+  assert.deepEqual(row.event.seedsRead,seeds,id);
+ }
+});
