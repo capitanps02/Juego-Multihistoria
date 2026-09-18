@@ -13,7 +13,7 @@ function matchDayState(seed = 9700) {
   return state;
 }
 
-test('last appearance/1 skips later non-appearance and exposes the factual rich row', () => {
+test('last appearance/1 skips later non-appearance and exposes the exact factual row', () => {
   const state = matchDayState(9701);
   const first = recordOfficialMatchInPlace(state, { appeared: true, debutOccurred: false, injuryUnavailable: false });
   assert.ok(first);
@@ -27,22 +27,14 @@ test('last appearance/1 skips later non-appearance and exposes the factual rich 
 
   const context = getLastPlayerAppearanceContext(state);
   assert.equal(context.status, 'authoritative');
-  assert.equal(context.fixtureId, first.id);
-  assert.equal(context.date, first.date);
-  assert.equal(context.competition, first.competition);
-  assert.equal(context.opponent, first.opponent);
-  assert.equal(context.homeAway, first.homeAway);
-  assert.equal(context.started, first.player.started);
-  assert.equal(context.onBench, first.player.onBench);
-  assert.equal(context.minutes, first.player.minutes);
-  assert.deepEqual(context.result, first.result);
-  assert.equal(context.goals, first.stats.goals);
-  assert.equal(context.assists, first.stats.assists);
-  assert.deepEqual(context.cards, { yellow: first.stats.yellowCards, red: first.stats.redCards });
-  assert.equal(getSportContext(state).lastPlayerAppearanceContext.fixtureId, first.id);
+  assert.equal(context.match?.id, first.id);
+  assert.equal(context.match?.date, first.date);
+  assert.deepEqual(context.match?.result, first.result);
+  assert.equal(context.match?.stats?.goals, first.stats.goals);
+  assert.equal(getSportContext(state).lastPlayerAppearanceContext.match?.id, first.id);
 });
 
-test('last appearance/2 historical row with unknown result/stats preserves known identity and fails closed on missing details', () => {
+test('last appearance/2 historical row keeps identity while unsupported rich fields stay unknown', () => {
   const state = matchDayState(9702);
   const row = recordOfficialMatchInPlace(state, { appeared: true, debutOccurred: false, injuryUnavailable: false });
   assert.ok(row);
@@ -53,16 +45,14 @@ test('last appearance/2 historical row with unknown result/stats preserves known
   const before = structuredClone(state);
   const context = getLastPlayerAppearanceContext(state);
   assert.equal(context.status, 'authoritative');
-  assert.equal(context.fixtureId, row.id);
-  assert.equal(context.minutes, row.player.minutes);
-  assert.equal(context.result, null);
-  assert.equal(context.goals, null);
-  assert.equal(context.assists, null);
-  assert.equal(context.cards, null);
+  assert.equal(context.match?.id, row.id);
+  assert.equal(context.match?.player.minutes, row.player.minutes);
+  assert.equal(context.match?.result, undefined);
+  assert.equal(context.match?.stats, undefined);
   assert.deepEqual(state, before);
 });
 
-test('last appearance/3 no factual appearance stays unavailable despite aggregate appearances/proxies', () => {
+test('last appearance/3 initialized store with no appearance is authoritative none, not unavailable', () => {
   const state = matchDayState(9703);
   state.sport.appearances = 99;
   state.sport.roleScore = 99;
@@ -71,12 +61,22 @@ test('last appearance/3 no factual appearance stays unavailable despite aggregat
   const row = recordOfficialMatchInPlace(state, { appeared: false, debutOccurred: false, injuryUnavailable: false });
   assert.ok(row);
   const context = getLastPlayerAppearanceContext(state);
-  assert.equal(context.status, 'unavailable');
-  assert.equal(context.fixtureId, null);
+  assert.equal(context.status, 'authoritative');
+  assert.equal(context.match, null);
+  assert.equal(getSportContext(state).availability.lastPlayerAppearanceContext, 'known');
 });
 
-test('last appearance/4 read is mutation/RNG free and stable across save/load', () => {
-  const state = matchDayState(9704);
+test('last appearance/4 historical save without store is explicitly unavailable', () => {
+  const state = createInitialState(9704);
+  delete state.world.sportMatchModel;
+  const context = getLastPlayerAppearanceContext(state);
+  assert.equal(context.status, 'historical_match_store_not_initialized');
+  assert.equal(context.match, null);
+  assert.equal(getSportContext(state).availability.lastPlayerAppearanceContext, 'unavailable');
+});
+
+test('last appearance/5 read is mutation/RNG free and stable across save/load', () => {
+  const state = matchDayState(9705);
   recordOfficialMatchInPlace(state, { appeared: true, debutOccurred: false, injuryUnavailable: false });
   const before = structuredClone(state);
   const a = getLastPlayerAppearanceContext(state);
