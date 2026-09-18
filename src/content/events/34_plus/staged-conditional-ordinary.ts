@@ -706,7 +706,7 @@ function toConditional(spec:typeof ALL_SPECS[number]):EventDefinition{
     gates:[{path:"flags.__A8_EXTERNAL_CONDITIONAL_FACT_NEVER_SYNTHESIZE",op:"eq",value:true}],
     cooldown:99999,repeatable:false,weight:1,
     text:{title:spec.id,body:spec.premise},
-    intel:{visible:[spec.canonicalTrigger],uncertain:[spec.meaning]},
+    intel:{visible:[spec.trigger],uncertain:[spec.meaning]},
     choices,outcomes,
     seedsRead:[...conditionalSeedReads(spec.id)],
     tags:["canonical_34plus","conditional","staged_not_registered","awaiting_external_fact","no_generic_shell"],
