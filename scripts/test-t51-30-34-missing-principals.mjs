@@ -8,6 +8,7 @@ import { offerBridgeEligible, offerDispositionForChoice } from '../dist/narrativ
 import { proposeCareerChange } from '../dist/simulation/offers.js';
 import { PREPARED_SHIFTED_CANON_30_34_A } from '../dist/content/events/30_34/canonical-shifted-prepared-a.js';
 import { PREPARED_SHIFTED_CANON_30_34_B } from '../dist/content/events/30_34/canonical-shifted-prepared-b.js';
+import { PREPARED_SHIFTED_CANON_30_34_C } from '../dist/content/events/30_34/canonical-shifted-prepared-c.js';
 
 const event = EVENTS.find(row => row.id === 'EVT_30_CCH_001');
 
@@ -198,4 +199,26 @@ test('prepared offer-based shifted scenes are already wired to shared offer disp
   assert.deepEqual(['A','B','C','D'].map(id=>offerDispositionForChoice(family,id)),['reject','accept','accept','counter']);
   assert.deepEqual(['A','B','C','D'].map(id=>offerDispositionForChoice(rich,id)),['accept','reject','counter','defer']);
   assert.deepEqual(['A','B','C','D'].map(id=>offerDispositionForChoice(elite,id)),['accept','reject','counter','defer']);
+});
+
+
+test('prepared shifted batch C completes owner-side content for the remaining four shifted principals', () => {
+  const expected = new Map([
+    ['EVT_32_SUCCESSOR_001','SEED_REPLACEMENT_BREAKOUT'],
+    ['EVT_32_LOAD_001','SEED_TRAVEL_LOAD'],
+    ['EVT_32_BOSMAN_001','SEED_BOSMAN_33'],
+    ['EVT_33_RECORD_001','SEED_RECORD_VS_BODY']
+  ]);
+  assert.equal(PREPARED_SHIFTED_CANON_30_34_C.length,4);
+  for(const prepared of PREPARED_SHIFTED_CANON_30_34_C){
+    assert.equal(expected.has(prepared.id),true,prepared.id);
+    assert.equal(EVENTS.some(event=>event.id===prepared.id),false,`${prepared.id}: external authority gate is not ready`);
+    assert.deepEqual(prepared.choices.map(choice=>choice.id),['A','B','C','D']);
+    assert.deepEqual(prepared.seedsWrite,[expected.get(prepared.id)]);
+    assert.ok((prepared.tags??[]).includes('t51_shifted_prepared'));
+  }
+  const successor=PREPARED_SHIFTED_CANON_30_34_C.find(event=>event.id==='EVT_32_SUCCESSOR_001');
+  const bosman=PREPARED_SHIFTED_CANON_30_34_C.find(event=>event.id==='EVT_32_BOSMAN_001');
+  assert.equal(successor.outcomes.some(outcome=>(outcome.seedTransitions??[]).some(t=>t.seedId==='SEED_SUCCESSION_DECISION')),false);
+  assert.equal(bosman.outcomes.some(outcome=>(outcome.seedTransitions??[]).some(t=>t.seedId==='SEED_PARALLEL_NEGOTIATION')),false);
 });
