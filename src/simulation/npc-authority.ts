@@ -1,4 +1,5 @@
 import type { DataValue, GameState, NarrativePhase } from "../core/types.js";
+import { currentEmploymentClub } from "./offers.js";
 
 export type ActiveAgentNpcId = "NPC_AGT_01" | "NPC_AGT_02";
 
@@ -81,12 +82,14 @@ export function clearActiveAgentInPlace(state: GameState): void {
  * Abstract institutional effects remain valid even when this returns null.
  */
 export function resolveCurrentClubInstitutionalNpc(state: GameState): string | null {
+  const club = currentEmploymentClub(state);
+  if (club === null) return null;
   const assignment = CLUB_INSTITUTIONAL_ASSIGNMENTS.find(
-    candidate => candidate.club === state.club && candidate.phases.includes(state.phase)
+    candidate => candidate.club === club && candidate.phases.includes(state.phase)
   );
   if (!assignment) return null;
 
   const npc = state.npcs.find(candidate => candidate.id === assignment.npcId);
-  if (!npc || npc.careerState !== "active" || npc.club !== state.club) return null;
+  if (!npc || npc.careerState !== "active" || npc.club !== club) return null;
   return npc.id;
 }
