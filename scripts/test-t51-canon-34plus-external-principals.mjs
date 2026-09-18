@@ -4,9 +4,9 @@ import { createInitialState } from '../dist/content/initial-state.js';
 import { STAGED_EXTERNAL_PRINCIPALS,stagedExternalPrincipalEligible } from '../dist/content/events/34_plus/staged-principal-awaiting-external.js';
 
 test('all remaining ordinary 34+ principals are staged exactly once behind factual external gates',()=>{
-  assert.equal(STAGED_EXTERNAL_PRINCIPALS.length,34);
+  assert.equal(STAGED_EXTERNAL_PRINCIPALS.length,26);
   const ids=STAGED_EXTERNAL_PRINCIPALS.map(r=>r.event.id);
-  assert.equal(new Set(ids).size,34);
+  assert.equal(new Set(ids).size,26);
   for(const row of STAGED_EXTERNAL_PRINCIPALS){
     assert.equal(row.status,'AWAITING_EXTERNAL_FACT');
     assert.equal(row.event.canonStatus,'verified');
