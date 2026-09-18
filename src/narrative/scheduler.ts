@@ -74,10 +74,9 @@ function knowledgePass(state:GameState,event:EventDefinition):boolean {
   return knowledgeRequirementsFor(event.id).every(requirement=>npcKnows(state,requirement.npcId,requirement.factId));
 }
 function effectCanRestoreEmployment(effect: import("../core/types.js").Effect): boolean {
-  if (effect.path !== "contract.monthsRemaining") return false;
+  if (effect.kind === "flag" || effect.path !== "contract.monthsRemaining") return false;
   if (effect.kind === "set") return typeof effect.value === "number" && effect.value > 0;
-  if (effect.kind === "numeric") return effect.delta > 0;
-  return false;
+  return effect.delta > 0;
 }
 function eventCanRestoreEmploymentDirectly(event: EventDefinition): boolean {
   return event.choices.some(choice =>
