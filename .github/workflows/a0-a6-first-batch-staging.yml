@@ -1,0 +1,26 @@
+name: A0 A6 first batch staging
+
+on:
+  push:
+    branches:
+      - 'a0/a6-first-batch-staged-on-k'
+    paths:
+      - 'src/content/events/23_26/**'
+      - 'scripts/test-t51-agent6-lock23.mjs'
+      - 'scripts/test-t51-agent6-offers23-25.mjs'
+      - '.github/workflows/a0-a6-first-batch-staging.yml'
+
+jobs:
+  staging:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: A6 owner-focused first batch
+        run: node --test scripts/test-t51-agent6-lock23.mjs scripts/test-t51-agent6-offers23-25.mjs
