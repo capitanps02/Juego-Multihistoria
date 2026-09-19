@@ -1,0 +1,24 @@
+name: T51 A6 Candidate Identity
+
+on:
+  push:
+    branches: ['a12/a6-prefreeze-first5-after-460']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  candidate-identity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Five A6 semantic slots and candidate identity
+        run: node --test scripts/test-t51-a6-l.mjs
