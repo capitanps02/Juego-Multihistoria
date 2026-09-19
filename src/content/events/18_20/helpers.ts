@@ -1,5 +1,6 @@
 import type { Effect, EventDefinition, EventFamily, NarrativePhase, OutcomeModifier, PresentationSpec, SeedTransition } from "../../../core/types.js";
 import type { EventWithGateAlternatives } from "../../../narrative/event-gates.js";
+import type { EventWithRepresentationBridge, RepresentationBridgeSpec } from "../../../narrative/representation-bridge.js";
 
 export interface AmbiguousChoiceSpec {
   id: string;
@@ -41,9 +42,11 @@ export interface AmbiguousEventSpec {
   tags?: string[];
   presentation?: PresentationSpec;
   canonStatus?: EventDefinition["canonStatus"];
+  /** Optional authoritative post-choice representation bridge metadata. */
+  representationBridge?: RepresentationBridgeSpec;
 }
 
-export function ambiguousEvent(spec: AmbiguousEventSpec): EventWithGateAlternatives {
+export function ambiguousEvent(spec: AmbiguousEventSpec): EventWithGateAlternatives & EventWithRepresentationBridge {
   return {
     id: spec.id,
     ageWindow: spec.ageWindow,
@@ -51,6 +54,7 @@ export function ambiguousEvent(spec: AmbiguousEventSpec): EventWithGateAlternati
     family: spec.family,
     gates: spec.gates ?? [],
     ...(spec.gateAlternatives !== undefined ? { gateAlternatives: spec.gateAlternatives } : {}),
+    ...(spec.representationBridge !== undefined ? { representationBridge: spec.representationBridge } : {}),
     exclusions: spec.exclusions,
     timeWindow: spec.timeWindow,
     cooldown: spec.cooldown ?? 99999,
