@@ -1,4 +1,5 @@
 name: CI A6 first5 + retirement reopen stratified
+# exact composition trigger
 
 on:
   push:
