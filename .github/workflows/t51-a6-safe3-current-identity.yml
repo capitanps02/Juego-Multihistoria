@@ -1,0 +1,22 @@
+name: T51 A6 SAFE3 current identity
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  safe3:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Owner SAFE3 pre-freeze regressions
+        run: node --test scripts/test-t51-agent6-age26-bridge.mjs scripts/test-t51-agent6-body27.mjs scripts/test-t51-agent6-fin29.mjs scripts/test-t51-a6-safe3-prefreeze.mjs
+      - name: Emit exact current SAFE3 identity
+        run: |
+          node --input-type=module -e "import { EVENTS } from './dist/content/events/index.js'; import { contentIdentity } from './dist/session/content-identity.js'; console.log('SAFE3_TARGET_IDENTITY=' + await contentIdentity(EVENTS)); console.log('SAFE3_EVENT_COUNT=' + EVENTS.length);"
