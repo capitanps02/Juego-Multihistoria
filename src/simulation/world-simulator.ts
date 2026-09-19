@@ -6,6 +6,7 @@ import { recordCoreFinalCompetitionMomentInPlace } from "./competition-context.j
 import { recordPenaltyDecisionSetupInPlace } from "./match-penalty-context.js";
 import { hasActiveClubEmployment } from "./employment.js";
 import { linkFirstPostReturnAppearanceInPlace, recordInjuryClearanceInPlace, recordInjuryEpisodeStartInPlace } from "./injury-episode-authority.js";
+import { publishNationalSelectionFactsInPlace } from "./national-selection-producer.js";
 
 const num = (value: unknown, fallback = 0): number =>
   typeof value === "number" && Number.isFinite(value) ? value : fallback;
@@ -23,9 +24,12 @@ export function advanceWorldDayInPlace(next: GameState): GameState {
   const beforeFinalContext = next.flags.FINAL_CONTEXT === true;
   const beforeInjuryWeeks = num(next.world.injuryWeeksRemaining, 0);
   const beforeRecovering = next.flags.RECOVERING_INJURY === true;
+  const beforeNationalTournamentCycle = next.flags.NATIONAL_TOURNAMENT_CYCLE === true;
 
   advanceCoreWorldDayInPlace(next);
   if (next.date === beforeDate) return next;
+
+  publishNationalSelectionFactsInPlace(next, beforeNationalTournamentCycle);
 
   const afterInjuryWeeks = num(next.world.injuryWeeksRemaining, 0);
   if (beforeInjuryWeeks <= 0 && afterInjuryWeeks > 0 && next.flags.RECOVERING_INJURY === true) {
