@@ -5,7 +5,6 @@ import { CANONICAL_REIMPLEMENTATIONS_30_34 } from "./canonical-reimplementations
 import { CANONICAL_REIMPLEMENTATIONS_31B } from "./canonical-reimplementations-31b.js";
 import { CANONICAL_REIMPLEMENTATIONS_32A } from "./canonical-reimplementations-32a.js";
 import { CANONICAL_REIMPLEMENTATIONS_33A } from "./canonical-reimplementations-33a.js";
-import { CANONICAL_ADDITIONS_30_34 } from "./canonical-missing-principals.js";
 import { PREPARED_SHIFTED_CANON_30_34_B } from "./canonical-shifted-prepared-b.js";
 
 const reimplementedIds=new Set([
@@ -170,7 +169,7 @@ const enforceCareerAuthority=(event:EventDefinition):EventDefinition=>{
   };
 };
 
-const supersededLegacyIds=new Set(["EVT_30_IDN_001","EVT_30_TEAM_001","EVT_32_TACT_001","EVT_33_END_001"]);
+const supersededLegacyIds=new Set(["EVT_30_IDN_001","EVT_30_TEAM_001","EVT_32_MKT_001","EVT_32_TACT_001","EVT_33_END_001"]);
 
 const principal:EventDefinition[]=PRINCIPAL_EVENTS_30_34.filter(original=>!supersededLegacyIds.has(original.id)).map(original=>{
   const selected=overrides.get(original.id)??original;
@@ -199,4 +198,6 @@ const richOffer=enforceCareerAuthority({
   ])]
 });
 
-export const EVENTS_30_34=[...principal,...CANONICAL_ADDITIONS_30_34,richOffer,...CONDITIONAL_EVENTS_30_34];
+// Genuine canonical additions EVT_30_CCH_001 / EVT_30_JAN_001 stay staged until
+// A0 has an owner-approved retirement slot; do not grow the 388-event catalog here.
+export const EVENTS_30_34=[...principal,richOffer,...CONDITIONAL_EVENTS_30_34];
