@@ -1,0 +1,24 @@
+name: QA A6 L #133 certification
+
+on:
+  push:
+    branches:
+      - qa/cert-a6-l-133
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  lock23:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Permanent LOCK23 regression
+        run: node --test scripts/test-t5-lock23-captain-choice-guard.mjs
