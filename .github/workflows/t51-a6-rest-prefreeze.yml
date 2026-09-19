@@ -1,0 +1,29 @@
+name: T51 A6 rest pre-freeze
+
+on:
+  push:
+    branches:
+      - 'a0/a6-rest-prefreeze-after-544'
+  workflow_dispatch:
+
+jobs:
+  prefreeze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Exact second-batch activation
+        run: node --test scripts/test-t51-a6-rest-prefreeze.mjs
+      - name: Owner focused regressions
+        run: |
+          node --test scripts/test-t51-agent6-age26-bridge.mjs
+          node --test scripts/test-t51-agent6-doc26.mjs
+          node --test scripts/test-t51-agent6-body27.mjs
+          node --test scripts/test-t51-agent6-con27.mjs
+          node --test scripts/test-t51-agent6-fin29.mjs
