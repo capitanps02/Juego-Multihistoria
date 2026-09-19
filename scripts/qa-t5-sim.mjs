@@ -42,15 +42,14 @@ function choose(profile, event, decisionIndex) {
 
 const segmentForAge = age => age < 20 ? '18_20' : age < 23 ? '20_23' : age < 26 ? '23_26' : age < 30 ? '26_30' : age < 34 ? '30_34' : '34_plus';
 const liveSeed = seed => !['resolved', 'expired'].includes(seed.state);
-const announcementEvent = EVENTS.find(event => event.id === 'EVT_RET_ANNOUNCE_001') ?? null;
-const hasExplicitAnnouncementChoice = announcementEvent?.choices?.some(choice =>
-  (choice.immediateEffects ?? []).some(effect =>
-    effect.kind === 'set' && effect.path === 'retirement.status' && effect.value === 'announced'
-  )
-) ?? false;
-
 function agencyDeferredRetirement(state) {
-  return state.retirement.status === 'decided' && hasExplicitAnnouncementChoice;
+  const decidedDate = state.retirement.decidedDate;
+  if (state.retirement.status !== 'decided' || !decidedDate) return false;
+  return state.history.some(entry =>
+    entry.eventId === 'EVT_RET_ANNOUNCE_001' &&
+    entry.choiceId === 'WAIT' &&
+    entry.date >= decidedDate
+  );
 }
 
 function impossibleStates(state) {
