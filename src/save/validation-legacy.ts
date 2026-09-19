@@ -4,6 +4,7 @@ import { careerTerms, isCareerOfferContext } from "../simulation/offers.js";
 import { AGE_MILESTONES } from "../simulation/age-milestones.js";
 import { inspectFootballMomentStore } from "../simulation/football-moments.js";
 import { inspectNationalSelectionAuthorityStore } from "../simulation/national-team-authority.js";
+import { inspectInjuryEpisodeStore } from "../simulation/injury-episode-authority.js";
 
 function assertMarket(value: unknown, state: GameState): void {
   const m=record(value,"market");
@@ -291,6 +292,8 @@ export function validateGameSave(value: unknown, version: number): void {
   if (footballMomentIssue) ensure(false, footballMomentIssue.path, footballMomentIssue.reason);
   const nationalSelectionIssue = inspectNationalSelectionAuthorityStore(record(s.world,"world").nationalSelectionAuthority, s.date as string);
   if (nationalSelectionIssue) ensure(false, nationalSelectionIssue.path, nationalSelectionIssue.reason);
+  const injuryEpisodeIssue = inspectInjuryEpisodeStore(record(s.world,"world").injuryEpisodes, s as unknown as GameState);
+  if (injuryEpisodeIssue) ensure(false, injuryEpisodeIssue.path, injuryEpisodeIssue.reason);
   const requiredNumbers: Record<string,string[]> = {
     contract:["monthsRemaining","salaryMonthly"],finances:["cash"],body:["risk","fatigue","fitness"],
     reputation:["prestige","mediaHeat","marketHeat"],control:["career","agentDependency"],
