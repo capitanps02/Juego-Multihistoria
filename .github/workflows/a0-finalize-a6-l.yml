@@ -1,0 +1,40 @@
+name: A0 finalize A6 L generated evidence
+permissions:
+  contents: write
+on:
+  push:
+    branches: ['a0/a6-l-candidate']
+    paths:
+      - 'src/session/content-migration.ts'
+      - 'scripts/test-t51-a6-l.mjs'
+      - '.github/workflows/a0-finalize-a6-l.yml'
+jobs:
+  finalize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Freeze exact L source
+        run: node scripts/freeze-t51-active-source.mjs
+      - name: Regenerate post-T5.1 evidence
+        run: |
+          node scripts/generate-t51-post-legacy-registry.mjs
+          node scripts/generate-t51-offer-bridge-evidence.mjs
+      - name: Commit generated evidence
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add qa/fixtures/t5.1/post-t51-sources src/session/post-t51-legacy-registry.ts src/session/frozen-offer-bridge-evidence.ts
+          if ! git diff --cached --quiet; then
+            git commit -m "A6 L: freeze exact source and generated evidence"
+            git push origin HEAD:${{ github.ref_name }}
+          fi
