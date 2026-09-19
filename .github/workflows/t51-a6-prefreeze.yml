@@ -36,6 +36,8 @@ jobs:
         run: node --test scripts/test-t51-agent6-lock23.mjs scripts/test-t51-agent6-mkt25.mjs scripts/test-t51-agent6-offers23-25.mjs
       - name: T5.2 L scope proof
         run: node scripts/audit-t52-deferred.mjs && node --test scripts/test-t52-deferred.mjs
+      - name: Candidate identity without freeze
+        run: node --test scripts/test-t51-a6-l.mjs
       - name: Content validation without freezing future identity
         run: npm run validate
 # A12 v2 trigger on main
