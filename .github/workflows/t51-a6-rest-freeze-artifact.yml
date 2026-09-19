@@ -17,6 +17,11 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
+      - name: Require integrated #549 predecessor on main
+        shell: bash
+        run: |
+          git fetch origin main --depth=1
+          git show origin/main:src/session/content-migration.ts | grep -q '8bb987042cccdce110d4de200aad5c4da760c34a4fb717cccfc4d31f4f0c9b16'
       - name: Focused second-batch certification
         run: |
           node --test scripts/test-t51-a6-rest-prefreeze.mjs
