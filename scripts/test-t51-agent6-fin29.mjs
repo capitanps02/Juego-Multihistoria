@@ -69,9 +69,9 @@ test('Agent6 FIN29 preserves the age-26 priority as historical context', () => {
   assert.deepEqual(result.state.seeds.find(seed => seed.id === 'SEED_AGE26_PRIORITY'), before);
 });
 
-test('Agent6 FIN29 stays staged while replacing the active four-choice placeholder semantically', () => {
+test('Agent6 FIN29 canonical five-choice replacement is active after integration', () => {
   const active = EVENTS_26_30.find(candidate => candidate.id === 'EVT_29_FIN_001');
-  assert.ok(active, 'active placeholder must still exist until integration-owned replacement');
-  assert.equal(active.choices.length, 4, 'current active generation still has four choices');
-  assert.equal(event.choices.length, 5, 'staged canonical replacement has five choices');
+  assert.ok(active, 'canonical FIN29 must be active');
+  assert.equal(active.choices.length, 5, 'active FIN29 must expose all five canonical priorities');
+  assert.deepEqual(active.choices.map(choice => choice.id), event.choices.map(choice => choice.id));
 });
