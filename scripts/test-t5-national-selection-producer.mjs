@@ -10,6 +10,8 @@ import {
   publishNationalSelectionFactsInPlace
 } from '../dist/simulation/national-selection-producer.js';
 import { loadSave, serializeSave } from '../dist/save/save.js';
+import { advanceWorldDayInPlace as advanceCoreWorldDayInPlace } from '../dist/simulation/world-simulator-core.js';
+import { advanceWorldDayInPlace } from '../dist/simulation/world-simulator.js';
 
 function addDays(iso,days){
   const d=new Date(`${iso}T00:00:00Z`);
@@ -134,4 +136,36 @@ test('national producer/9 produced facts survive save/load with exact provenance
   const restored=loadSave(serializeSave(s));
   assert.deepEqual(restored.world.nationalSelectionAuthority,s.world.nationalSelectionAuthority);
   assert.deepEqual(resolveNationalSelectionFacts(restored),resolveNationalSelectionFacts(s));
+});
+
+
+test('national producer/10 wrapper observes real core cycle opening without extra RNG',()=>{
+  const base=createInitialState(17410);
+  base.age=32;
+  base.phase='30_34';
+  base.date='2026-02-28';
+  base.season='2025-26';
+  base.professional.initializedAt20=true;
+  base.professional.initializedAt23=true;
+  base.professional.initializedAt26=true;
+  base.professional.initializedAt30=true;
+  base.professional.nationalStanding=80;
+  base.professional.nationalHeat=90;
+  base.professional.leagueTier=1;
+  base.sport.roleScore=80;
+  base.sport.form=65;
+  base.flags.NATIONAL_RETIRED=false;
+  base.flags.NATIONAL_TOURNAMENT_CYCLE=false;
+  base.flags.NATIONAL_GATE_OPEN=false;
+
+  const coreOnly=structuredClone(base);
+  const wrapped=structuredClone(base);
+  advanceCoreWorldDayInPlace(coreOnly);
+  advanceWorldDayInPlace(wrapped);
+
+  assert.equal(coreOnly.flags.NATIONAL_TOURNAMENT_CYCLE,true,'direct core must open the age-32 March cycle');
+  assert.equal(wrapped.flags.NATIONAL_TOURNAMENT_CYCLE,true);
+  assert.deepEqual(wrapped.rngState,coreOnly.rngState,'producer wrapper must not consume additional RNG');
+  assert.equal(coreOnly.world.nationalSelectionAuthority,undefined,'core alone does not materialize shared authority');
+  assert.equal(resolveNationalSelectionFacts(wrapped).preselected30,wrapped.flags.NATIONAL_GATE_OPEN===true);
 });
