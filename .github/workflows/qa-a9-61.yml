@@ -1,4 +1,5 @@
 name: QA A9 #61 certification
+# retrigger exact A9 head
 
 on:
   push:
