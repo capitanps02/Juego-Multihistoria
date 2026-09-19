@@ -1,3 +1,4 @@
+// finalize-evidence trigger
 // exact-head trigger for A6 L certification
 import test from 'node:test';
 import assert from 'node:assert/strict';
