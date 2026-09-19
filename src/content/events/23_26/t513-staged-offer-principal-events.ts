@@ -8,7 +8,20 @@ function formalOfferEvent(
   offerKinds: CareerOfferKind[],
   choiceActions: Record<string, OfferDisposition>
 ): EventWithOfferBridge {
-  return Object.assign(event, { offerBridge: { offerKinds, choiceActions } });
+  if (offerKinds.length !== 1) {
+    throw new Error(`A6 formal offer event ${event.id} must declare exactly one CareerOffer kind`);
+  }
+  const [offerKind] = offerKinds;
+  return Object.assign(
+    {
+      ...event,
+      gates: [
+        ...(event.gates ?? []),
+        { path: "facts.pendingCareerOfferKind", op: "eq", value: offerKind }
+      ]
+    },
+    { offerBridge: { choiceActions } }
+  );
 }
 
 const MKT23 = formalOfferEvent(ambiguousEvent({
