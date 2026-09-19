@@ -2,6 +2,8 @@
 name: T51 A6 PRE-FREEZE
 
 on:
+  pull_request:
+    branches: [main]
   push:
     branches: ['a0/a6-prefreeze-after-450']
     paths:
