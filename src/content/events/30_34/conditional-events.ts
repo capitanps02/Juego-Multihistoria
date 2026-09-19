@@ -34,4 +34,7 @@ function make(r:Row):EventDefinition{return ambiguousEvent({id:r.id,ageWindow:[r
 {id:"B",label:"Aceptar el cambio de contexto",intentTags:["adapt"],primaryMessage:"Aceptas que el equilibrio ya es distinto.",secondaryMessage:"La adaptación protege una parte de la carrera y cede otra.",primaryEffects:[n("professional.roleAdaptability",3)],secondaryEffects:[n("professional.statusInertia",-1)]},
 {id:"C",label:"Ganar tiempo",intentTags:["wait"],primaryMessage:"Esperas y recoges más información.",secondaryMessage:"Otro actor aprovecha el hueco.",primaryEffects:[n("professional.environmentStability",2)],secondaryEffects:[n("professional.veteranLeverage",-2)]}
 ],gates:r.gates,timeWindow:{months:r.months},weight:8,cooldown:99999,tags:["conditional","maturity_callback"],canonStatus:"technical_adaptation"});}
-export const CONDITIONAL_EVENTS_30_34:EventDefinition[]=rows.map(make);
+export const LEGACY_TECHNICAL_CONDITIONAL_EVENTS_30_34:EventDefinition[]=rows.map(make);
+// No conditional in this legacy generator has an authoritative canonical identity.
+// Keep definitions only as historical migration evidence; do not schedule them as active canon.
+export const CONDITIONAL_EVENTS_30_34:EventDefinition[]=[];
