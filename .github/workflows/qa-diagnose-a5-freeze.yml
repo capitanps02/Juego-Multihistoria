@@ -3,6 +3,9 @@ on:
   push:
     branches:
       - qa/diagnose-444-freeze
+  pull_request:
+    branches:
+      - main
 jobs:
   freeze-diagnostic:
     runs-on: ubuntu-latest
