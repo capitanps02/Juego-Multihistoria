@@ -62,7 +62,7 @@ export const SEED_CATALOG_23_26: SeedDefinition[] = [
 
 
 export const SEED_CATALOG_26_30: SeedDefinition[] = [
-  { id:"SEED_PEAK_IDENTITY", originEvents:["EVT_26_IDN_001"], npcRefs:[], ageWindow:[26,34], description:"Cómo reacciona a ser tratado como activo maduro y reemplazable." },
+  { id:"SEED_PEAK_IDENTITY", originEvents:["EVT_26_BRIDGE_001"], npcRefs:[], ageWindow:[26,34], description:"Cómo reacciona a ser tratado como activo maduro y reemplazable." },
   { id:"SEED_SHADOW_ESCAPE", originEvents:["EVT_26_MKT_001"], npcRefs:[], ageWindow:[26,34], description:"Si prefiere protagonismo a permanecer en una máquina ganadora." },
   { id:"SEED_PROJECT_FACE", originEvents:["EVT_26_CLB_001"], npcRefs:[], ageWindow:[26,36], description:"Aceptación de ser centro deportivo y comercial de un proyecto." },
   { id:"SEED_PEAK_CONTRACT", originEvents:["EVT_26_CON_001"], npcRefs:["NPC_AGT_01","NPC_AGT_02"], ageWindow:[26,36], description:"Contrato estructural firmado en el pico." },
