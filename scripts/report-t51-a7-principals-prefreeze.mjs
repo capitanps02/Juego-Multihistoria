@@ -1,3 +1,4 @@
+// A7 principal-only exact prefreeze probe; no runtime mutation.
 import assert from 'node:assert/strict';
 import { EVENTS, EVENTS_30_34 } from '../dist/content/events/index.js';
 import { CONDITIONAL_EVENTS_30_34 } from '../dist/content/events/30_34/conditional-events.js';
