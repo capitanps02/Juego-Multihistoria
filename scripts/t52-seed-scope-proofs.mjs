@@ -17,6 +17,6 @@ export const SEED_SCOPE_PROOFS = [
     producerEventId: 'EVT_20_LOCK_002',
     consumerEventId: 'EVT_23_LOCK_001',
     proofType: 'scope_expiry_blocks_consumer',
-    rationale: 'The locker-cover consequence is local to the dressing room where EVT_20_LOCK_002 occurred; generation L may consume it in EVT_23_LOCK_001 only while that origin-club scope remains valid.'
+    rationale: 'A teammate-cover precedent is dressing-room local: after leaving the origin club it cannot unlock a later locker-room cover decision at a different club.'
   }
 ];
