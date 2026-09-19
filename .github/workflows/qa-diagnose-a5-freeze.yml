@@ -17,13 +17,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
-      - name: Generate exact active source fixture
-        run: node scripts/freeze-t51-active-source.mjs
-      - name: Show generated fixture
-        run: |
-          ls -l qa/fixtures/t5.1/post-t51-sources
-          git status --short
-      - uses: actions/upload-artifact@v4
-        with:
-          name: a5-freeze-diagnostic
-          path: qa/fixtures/t5.1/post-t51-sources/*.json
+      - name: Check exact active source fixture
+        run: node scripts/freeze-t51-active-source.mjs --check
+      - name: Emit active A5 identity
+        run: node --test scripts/test-t51-a5-next-prefreeze.mjs
