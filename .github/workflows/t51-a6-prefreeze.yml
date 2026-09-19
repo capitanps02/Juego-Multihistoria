@@ -1,0 +1,38 @@
+# PRE-FREEZE certification trigger; no content identity is derived here.
+name: T51 A6 PRE-FREEZE
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: ['a0/a6-prefreeze-after-450']
+    paths:
+      - 'src/content/events/23_26/index.ts'
+      - 'src/content/events/23_26/t512-staged-market-principal-events.ts'
+      - 'src/content/events/23_26/t513-staged-offer-principal-events.ts'
+      - 'src/content/events/23_26/t514-staged-lock-principal-events.ts'
+      - 'scripts/test-t51-agent6-lock23.mjs'
+      - 'scripts/test-t51-agent6-mkt25.mjs'
+      - 'scripts/test-t51-agent6-offers23-25.mjs'
+      - '.github/workflows/t51-a6-prefreeze.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  prefreeze-a6:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Five A6 runtime scenes
+        run: node --test scripts/test-t51-agent6-lock23.mjs scripts/test-t51-agent6-mkt25.mjs scripts/test-t51-agent6-offers23-25.mjs
+      - name: Content validation without freezing future identity
+        run: npm run validate
