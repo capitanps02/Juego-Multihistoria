@@ -1,3 +1,4 @@
+# PRE-FREEZE certification trigger; no content identity is derived here.
 name: T51 A6 PRE-FREEZE
 
 on:
