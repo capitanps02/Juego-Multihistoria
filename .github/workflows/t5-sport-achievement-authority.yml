@@ -1,0 +1,26 @@
+name: T5 Sport Achievement Authority
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: ['a0/sport-achievement-authority-after-injury']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sport-achievement-authority:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Award and record factual history
+        run: node --test scripts/test-t5-sport-achievement-authority.mjs
