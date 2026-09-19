@@ -1,0 +1,40 @@
+name: A12 A6 Combined Staging
+
+on:
+  push:
+    branches: ['a12/ci-a6-combined-460']
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/content/events/23_26/**'
+      - 'src/content/events/26_30/**'
+      - 'scripts/test-t51-agent6-*.mjs'
+      - '.github/workflows/a12-a6-combined-staging.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  staged-a6:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: A6 combined staged definitions
+        run: >-
+          node --test
+          scripts/test-t51-agent6-lock23.mjs
+          scripts/test-t51-agent6-mkt25.mjs
+          scripts/test-t51-agent6-offers23-25.mjs
+          scripts/test-t51-agent6-age26-bridge.mjs
+          scripts/test-t51-agent6-doc26.mjs
+          scripts/test-t51-agent6-body27.mjs
+          scripts/test-t51-agent6-con27.mjs
+          scripts/test-t51-agent6-fin29.mjs
