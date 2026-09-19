@@ -1,3 +1,4 @@
+import { agencyDeferredRetirement } from './qa-t5-retirement-deferral.mjs';
 import fs from 'node:fs';
 import { EVENTS } from '../dist/content/events/index.js';
 import { createInitialState } from '../dist/content/initial-state.js';
@@ -42,16 +43,6 @@ function choose(profile, event, decisionIndex) {
 
 const segmentForAge = age => age < 20 ? '18_20' : age < 23 ? '20_23' : age < 26 ? '23_26' : age < 30 ? '26_30' : age < 34 ? '30_34' : '34_plus';
 const liveSeed = seed => !['resolved', 'expired'].includes(seed.state);
-function agencyDeferredRetirement(state) {
-  const decidedDate = state.retirement.decidedDate;
-  if (state.retirement.status !== 'decided' || !decidedDate) return false;
-  return state.history.some(entry =>
-    entry.eventId === 'EVT_RET_ANNOUNCE_001' &&
-    entry.choiceId === 'WAIT' &&
-    entry.date >= decidedDate
-  );
-}
-
 function impossibleStates(state) {
   const issues = [];
   if (state.phase !== segmentForAge(state.age)) issues.push(`phase:${state.phase}/age:${state.age}`);
