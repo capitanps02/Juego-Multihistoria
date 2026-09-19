@@ -161,6 +161,7 @@ export interface ExitStyleMemory extends SeedMemoryProjection {
   summer: string | null;
   market18: string | null;
   year19: string | null;
+  playoff: string | null;
 }
 
 export function getExitStyleMemory(state: GameState): ExitStyleMemory {
@@ -170,7 +171,8 @@ export function getExitStyleMemory(state: GameState): ExitStyleMemory {
     end: liveStringPayload(state, "SEED_EXIT_STYLE_UDV", "end"),
     summer: liveStringPayload(state, "SEED_EXIT_STYLE_UDV", "summer"),
     market18: liveStringPayload(state, "SEED_EXIT_STYLE_UDV", "market18"),
-    year19: liveStringPayload(state, "SEED_EXIT_STYLE_UDV", "year19")
+    year19: liveStringPayload(state, "SEED_EXIT_STYLE_UDV", "year19"),
+    playoff: liveStringPayload(state, "SEED_EXIT_STYLE_UDV", "playoff")
   };
 }
 
@@ -213,6 +215,22 @@ export function getLoadManagementMemory(state: GameState): LoadManagementMemory 
   };
 }
 
+export function getDaniNormalityPattern(state: GameState): string | null {
+  return liveStringPayload(state, "SEED_DANI_NORMALITY", "pattern");
+}
+
+export function getClaraChannelMode(state: GameState): string | null {
+  return liveStringPayload(state, "SEED_CLARA_CHANNEL", "mode");
+}
+
+export function getAgentPowerChoice(state: GameState): string | null {
+  return liveStringPayload(state, "SEED_AGENT_POWER", "choice");
+}
+
+export function getPublicContractChoice(state: GameState): string | null {
+  return liveStringPayload(state, "SEED_PUBLIC_CONTRACT", "choice");
+}
+
 export interface EarlyCareerSeedFacts {
   brunoFavorStance: string | null;
   coachPublicStance: string | null;
@@ -223,6 +241,12 @@ export interface EarlyCareerSeedFacts {
   exitStyleSummer: string | null;
   exitStyleMarket18: string | null;
   exitStyleYear19: string | null;
+  exitStylePlayoff: string | null;
+  daniNormalityPattern: string | null;
+  claraChannelMode: string | null;
+  agentPowerChoice: string | null;
+  agentOmissionLive: boolean;
+  publicContractChoice: string | null;
   bodyPrecedentPattern: string | null;
   bodyPrecedentEarly: string | null;
   bodyPrecedentReturn19: string | null;
@@ -254,6 +278,12 @@ export function earlyCareerSeedFacts(state: GameState): EarlyCareerSeedFacts {
     exitStyleSummer: exit.summer,
     exitStyleMarket18: exit.market18,
     exitStyleYear19: exit.year19,
+    exitStylePlayoff: exit.playoff,
+    daniNormalityPattern: getDaniNormalityPattern(state),
+    claraChannelMode: getClaraChannelMode(state),
+    agentPowerChoice: getAgentPowerChoice(state),
+    agentOmissionLive: projectSeedMemory(state, "SEED_AGENT_OMISSION").live,
+    publicContractChoice: getPublicContractChoice(state),
     bodyPrecedentPattern: body.pattern,
     bodyPrecedentEarly: body.early,
     bodyPrecedentReturn19: body.return19,
