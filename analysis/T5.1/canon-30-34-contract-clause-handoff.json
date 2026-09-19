@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "scope": "T5.1 canon 30-34 automatic-renewal-by-minutes shared contract handoff",
+  "sourceMainSha": "5f4d14bca4d696cfafadb58b64034c7cd40cc147",
+  "eventId": "EVT_32_CON_001",
+  "status": "shared_contract_schema_required",
+  "canonicalClaim": {
+    "baseOffer": "Formal same-club one-year renewal.",
+    "conditionalClause": "The signed renewal includes an automatic renewal condition based on a known minutes threshold.",
+    "valuesNotEstablishedByThisWorkstream": {
+      "thresholdMinutes": null,
+      "evaluationWindow": null,
+      "automaticExtensionMonths": null
+    },
+    "rule": "Null values are deliberate. This workstream must not invent a threshold, evaluation window or extension duration that is not fixed by authoritative canon/shared contract design."
+  },
+  "currentRuntime": {
+    "careerTermsPath": "src/simulation/offers.ts",
+    "contractStatePath": "src/core/types.ts",
+    "offerShape": "CareerOffer persists before and terms snapshots plus reason/date/id; MarketState.pending persists zero-or-one offer.",
+    "supportedCareerTerms": [
+      "club",
+      "tier",
+      "months",
+      "salary",
+      "releaseClause",
+      "ownerClub",
+      "registrationClub",
+      "leagueTier",
+      "prestigeTier",
+      "prestigeScore",
+      "route",
+      "abroad",
+      "loan",
+      "bigClub"
+    ],
+    "missingClauseAuthority": [
+      "automatic renewal clause identity",
+      "minutes threshold",
+      "evaluation window",
+      "automatic extension terms",
+      "persisted clause state after acceptance",
+      "authoritative official-minutes evaluator for the clause"
+    ]
+  },
+  "ownership": {
+    "implementationOwner": "shared market/contract authority",
+    "consumer": "t51/canon-30-34 / EVT_32_CON_001",
+    "workstreamMayFakeClauseWithNarrativeState": false,
+    "workstreamMayInferThresholdFromExistingStats": false
+  },
+  "requiredSemantics": [
+    "The clause is part of the formal offer/contract authority, not a narrative flag, tag or seed.",
+    "The exact clause survives offer creation, acceptance, save, restore and subsequent contract reads without reinterpretation.",
+    "Offer provenance identifies the exact signed terms including the clause; a generic 12-month renewal is not clause parity.",
+    "Counter/defer/reject cannot silently activate the clause as if the original offer had been accepted.",
+    "Clause evaluation uses authoritative official playing minutes for the defined evaluation window; aggregate form, roleScore, career appearances, reputation, age and narrative flags are not substitutes.",
+    "The automatic extension transition is idempotent: replay/retry/save-restore cannot apply the same earned extension twice.",
+    "Evaluation and read projections consume zero narrative RNG and do not mutate state until an explicit authoritative transition is applied.",
+    "Legacy saves without this future clause field remain migratable under the shared save-schema migration policy; absence must not be interpreted as an earned or failed clause.",
+    "The 30-34 event remains technical_adaptation until the exact persisted clause can be proven on the pending/signed offer."
+  ],
+  "prohibitedApproximations": [
+    "contract.monthsRemaining as proof that the minutes clause exists",
+    "sport.form as official minutes",
+    "professional.roleSecurity or roleScore as official minutes",
+    "sport.careerAppearances as the clause evaluation total",
+    "SEED_ROLLING_CONTRACT or any other seed as the legal contract clause itself",
+    "offer reason text alone as proof of the clause"
+  ],
+  "codexAcceptanceEvidence": [
+    "Type/schema test showing the clause can be represented with an exact non-null canonical threshold once that value is authoritatively supplied.",
+    "Offer lifecycle test: create -> counter/defer/reject/accept with the clause and verify only acceptance installs the accepted clause state.",
+    "Save/restore test before and after acceptance preserving clause identity, threshold and provenance.",
+    "Official-minutes boundary tests immediately below, at and above the threshold using authoritative match/minutes data for the defined window.",
+    "Idempotence test proving the same threshold crossing cannot extend the contract twice.",
+    "Negative-proxy tests proving form, appearances, role and narrative flags cannot satisfy the clause.",
+    "Migration test for pre-clause saves preserving their historical contract semantics without fabricating a clause."
+  ],
+  "integrationOrder": [
+    "Freeze/register the current 30-34 target before any event metadata/gate change that would create another content identity.",
+    "Shared contract owner defines and migrates the persisted clause schema plus authoritative minutes evaluation surface.",
+    "Canon/shared owner supplies the exact threshold/window/extension values; this 30-34 workstream does not guess them.",
+    "Only then may EVT_32_CON_001 require and certify the exact clause on its formal offer in a new coordinated content-identity batch."
+  ]
+}
