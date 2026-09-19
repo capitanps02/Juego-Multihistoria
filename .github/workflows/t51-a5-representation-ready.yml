@@ -24,3 +24,5 @@ jobs:
       - run: npm run build
       - name: A5 representation-ready staged scene
         run: node --test scripts/test-t51-a5-representation-ready.mjs
+      - name: A5 market-ready staged scene
+        run: node --test scripts/test-t51-a5-market-ready.mjs
