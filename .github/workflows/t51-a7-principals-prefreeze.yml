@@ -1,0 +1,25 @@
+name: T51 A7 PRINCIPALS PRE-FREEZE
+
+on:
+  push:
+    branches:
+      - 'a0/a7-principals-prefreeze-after-safe3'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  certify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Principal-only 388 catalog and exact identity
+        run: node scripts/report-t51-a7-principals-prefreeze.mjs
