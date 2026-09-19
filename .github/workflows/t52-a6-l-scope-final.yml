@@ -1,0 +1,26 @@
+name: T5.2 A6 L scope final
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  t52-a6-l-scope:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: T5.2 canonical closure + L scope proof
+        run: node scripts/audit-t52-deferred.mjs && node --test scripts/test-t52-deferred.mjs
+      - name: LOCK23 transfer-scope regression
+        run: node --test scripts/test-t51-agent6-lock23.mjs
