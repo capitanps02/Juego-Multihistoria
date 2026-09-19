@@ -1,0 +1,23 @@
+name: QA #61 post-merge exact main
+on:
+  push:
+    branches:
+      - qa/postmerge-61-f20f
+  pull_request:
+    branches:
+      - main
+jobs:
+  retirement-postmerge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Runtime + persisted retirement authority
+        run: node --test scripts/test-t5-retirement-authority-known-bug.mjs scripts/test-t5-retirement-save-known-bug.mjs
+      - name: Strict deferral classifier
+        run: node --test scripts/test-qa-retirement-deferral-classifier.mjs scripts/test-qa-retirement-deferral-directed.mjs
