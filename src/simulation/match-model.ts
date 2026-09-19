@@ -54,6 +54,20 @@ export interface MatchPlayerStats {
   redCards: number;
 }
 
+export interface CareerSportMilestones {
+  /** True only when every aggregate career appearance is represented by a persisted appeared fixture with stats. */
+  historyComplete: boolean;
+  appearances: number | null;
+  goals: number | null;
+  assists: number | null;
+  yellowCards: number | null;
+  redCards: number | null;
+  appearance500: boolean | null;
+  appearance700: boolean | null;
+  /** Exact ordinal only when the career ledger is complete; it does not guarantee another appearance. */
+  nextAppearanceOrdinal: number | null;
+}
+
 export interface SeasonPlayerStats extends MatchPlayerStats {
   season: string;
   appearances: number;
@@ -393,6 +407,59 @@ export function lastPlayerAppearance(state: GameState): OfficialMatchRecord | nu
     if (row.player.appeared) return row;
   }
   return null;
+}
+
+function finiteCareerAppearances(state: GameState): number {
+  return typeof state.sport.appearances === "number"
+    && Number.isInteger(state.sport.appearances)
+    && state.sport.appearances >= 0
+      ? state.sport.appearances
+      : -1;
+}
+
+/**
+ * Career totals are factual only when the persisted ledger is complete.
+ * Aggregate appearance counters, form, reputation and age never backfill missing rows.
+ */
+export function careerSportMilestones(state: GameState): CareerSportMilestones {
+  const store = getSportMatchModelStore(state);
+  const unavailable: CareerSportMilestones = {
+    historyComplete: false,
+    appearances: null,
+    goals: null,
+    assists: null,
+    yellowCards: null,
+    redCards: null,
+    appearance500: null,
+    appearance700: null,
+    nextAppearanceOrdinal: null
+  };
+  if (!store) return unavailable;
+
+  const appeared = store.fixtures.filter(row => row.player.appeared);
+  const aggregateAppearances = finiteCareerAppearances(state);
+  const historyComplete = aggregateAppearances >= 0
+    && appeared.length === aggregateAppearances
+    && appeared.every(row => row.stats !== undefined);
+  if (!historyComplete) return unavailable;
+
+  const totals = appeared.reduce((acc, row) => {
+    const stats = row.stats!;
+    acc.goals += stats.goals;
+    acc.assists += stats.assists;
+    acc.yellowCards += stats.yellowCards;
+    acc.redCards += stats.redCards;
+    return acc;
+  }, { goals: 0, assists: 0, yellowCards: 0, redCards: 0 });
+
+  return {
+    historyComplete: true,
+    appearances: appeared.length,
+    ...totals,
+    appearance500: appeared.length >= 500,
+    appearance700: appeared.length >= 700,
+    nextAppearanceOrdinal: appeared.length + 1
+  };
 }
 
 export function careerGoalHistoryComplete(state: GameState): boolean {
