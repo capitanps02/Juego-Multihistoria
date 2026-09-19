@@ -2,11 +2,11 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createInitialState } from '../dist/content/initial-state.js';
 import { EVENTS_26_30 } from '../dist/content/events/26_30/index.js';
-import { T519_STAGED_CONTRACT_PRINCIPAL_EVENTS_27 } from '../dist/content/events/26_30/t519-staged-contract-principal-events.js';
 import { offerBridgeEligible, offerDispositionForChoice } from '../dist/narrative/offer-bridge.js';
 import { careerTerms, respondToOffer } from '../dist/simulation/offers.js';
 
-const event = T519_STAGED_CONTRACT_PRINCIPAL_EVENTS_27[0];
+const event = EVENTS_26_30.find(candidate => candidate.id === 'EVT_27_CON_001');
+assert.ok(event, 'EVT_27_CON_001 must already be active in SAFE3');
 
 function state27(seed = 61901) {
   const state = createInitialState(seed);
