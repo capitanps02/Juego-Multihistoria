@@ -1,0 +1,22 @@
+name: CI A6 first5 + retirement reopen stratified
+
+on:
+  push:
+    branches:
+      - a0/ci-a6-first5-with-retirement-reopen
+  workflow_dispatch:
+
+jobs:
+  strict-stratified:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Strict T5 stratified simulation
+        run: node scripts/qa-t5-sim.mjs
