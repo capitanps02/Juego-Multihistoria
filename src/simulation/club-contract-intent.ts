@@ -24,6 +24,7 @@ import { resolveActiveAgent, resolveCurrentClubInstitutionalNpc } from "./npc-au
 import { employmentStatus, type EmploymentStatus } from "./employment.js";
 import { getVeteranMarketApproaches, type VeteranMarketApproach } from "./veteran-market.js";
 import { resolveNationalSelectionFacts, type NationalSelectionFacts } from "./national-team-authority.js";
+import { resolveInjuryEpisodeFacts, type InjuryEpisodeFacts } from "./injury-episode-authority.js";
 
 export { FORMAL_RENEWAL_REASON };
 export const CLUB_WANTS_RENEWAL_FACT = "facts.clubWantsRenewal" as const;
@@ -198,6 +199,8 @@ export interface NarrativeCausalFacts extends EarlyCareerSeedFacts {
   representation: RepresentationAgreement | null;
   /** Exact persisted-history + official-fixture progress for WAIT_THREE_MATCHES. */
   coachPromiseWait: CoachPromiseWaitFacts | null;
+  /** Factual injury/rehab chronology; aggregate risk/fatigue never create episodes. */
+  injuryEpisodes: InjuryEpisodeFacts;
   /** Exact persisted national preselection/final-squad facts; no aggregate proxies. */
   nationalSelection: NationalSelectionFacts;
   /** Authoritative/read-only sporting projection. Unavailable sporting facts are null. */
@@ -225,6 +228,7 @@ export function narrativeCausalFacts(state: GameState): NarrativeCausalFacts {
     pendingCareerOffer: pendingCareerOfferFacts(state),
     representation: resolveCurrentRepresentation(state),
     coachPromiseWait: coachPromiseWaitFacts(state),
+    injuryEpisodes: resolveInjuryEpisodeFacts(state),
     nationalSelection: resolveNationalSelectionFacts(state),
     sport: getSportContext(state),
     match: getCurrentMatchContext(state)
