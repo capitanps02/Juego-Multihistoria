@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://multihistoria.invalid/release/rc-record.schema.json",
+  "title": "Multihistoria Release Candidate Evidence",
+  "type": "object",
+  "required": ["schemaVersion", "rcId", "classification", "gitSha", "manifestIdentity", "contentIdentity", "versionName", "versionCode", "applicationId", "artifacts", "qa", "store", "knownDefects", "evidence"],
+  "properties": {
+    "schemaVersion": {"const": 1},
+    "rcId": {"type": "string", "pattern": "^RC[1-9][0-9]*$"},
+    "classification": {"enum": ["SIGNED_RELEASE_CANDIDATE", "UNSIGNED_TECHNICAL_CANDIDATE"]},
+    "gitSha": {"type": "string", "pattern": "^[0-9a-fA-F]{40}$"},
+    "manifestIdentity": {"type": "string", "pattern": "^[0-9a-fA-F]{64}$"},
+    "contentIdentity": {"type": "string", "pattern": "^[0-9a-fA-F]{64}$"},
+    "versionName": {"type": "string", "minLength": 1},
+    "versionCode": {"type": "integer", "minimum": 1},
+    "applicationId": {"const": "com.multihistoria"},
+    "artifacts": {
+      "type": "object",
+      "required": ["apk", "aab"],
+      "properties": {
+        "apk": {"$ref": "#/$defs/artifact"},
+        "aab": {"$ref": "#/$defs/artifact"}
+      }
+    },
+    "qa": {"type": "object"},
+    "store": {"enum": ["AWAITING_STORE_ACTION", "INTERNAL_TEST", "CLOSED_TEST", "PRODUCTION"]},
+    "knownDefects": {"type": "array", "items": {"type": "string"}},
+    "evidence": {"type": "object"}
+  },
+  "$defs": {
+    "artifact": {
+      "type": "object",
+      "required": ["path", "bytes", "sha256"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "bytes": {"type": "integer", "minimum": 1},
+        "sha256": {"type": "string", "pattern": "^[0-9a-fA-F]{64}$"}
+      }
+    }
+  }
+}

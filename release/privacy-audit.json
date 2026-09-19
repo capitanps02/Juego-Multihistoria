@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "auditDate": "2026-09-16",
+  "status": "TECHNICALLY_ASSESSED_FINAL_STORE_DECLARATION_PENDING",
+  "observedImplementation": {
+    "internetPermission": false,
+    "cleartextTraffic": false,
+    "contentSecurityPolicyConnectSrc": "none",
+    "remoteAnalytics": false,
+    "remoteCrashReporting": false,
+    "advertisingSdk": false,
+    "authentication": false,
+    "localPersistence": "IndexedDB",
+    "legacyLocalPersistence": "localStorage migration only",
+    "userInitiatedFileExportImport": true,
+    "networkDataCollectionObserved": false
+  },
+  "dataSafetyAssessment": {
+    "candidateAnswerIfFinalBinaryUnchanged": "NO_USER_DATA_COLLECTED_OR_SHARED_OFF_DEVICE",
+    "reason": "La build auditada funciona offline, carece de permiso INTERNET y no integra telemetría remota. Los datos de carrera permanecen en almacenamiento local o se exportan por acción explícita del usuario.",
+    "mustReauditIfAdded": [
+      "analytics",
+      "crash reporting",
+      "ads",
+      "network permission",
+      "remote APIs",
+      "account system",
+      "persistent identifiers",
+      "third-party SDKs with data transfer"
+    ],
+    "playConsoleSubmission": "EXTERNAL_ACTION_REQUIRED"
+  },
+  "privacyPolicy": {
+    "requiredEvenIfNoUserDataCollected": true,
+    "publicHttpsUrl": "EXTERNAL_ACTION_REQUIRED",
+    "inAppAccess": "HANDOFF_TO_PRESENTATION_OWNER",
+    "finalLegalReview": "EXTERNAL_ACTION_REQUIRED"
+  }
+}
