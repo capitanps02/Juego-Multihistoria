@@ -18,6 +18,8 @@ import {
   type FutureEmploymentNegotiation
 } from "./offers.js";
 import { getCurrentMatchContext, getSportContext, type CurrentMatchContext, type SportContext } from "./sport-context.js";
+import { getSportMatchModelStore } from "./match-model.js";
+import { resolveActiveAgent, resolveCurrentClubInstitutionalNpc } from "./npc-authority.js";
 import { employmentStatus, type EmploymentStatus } from "./employment.js";
 import { getVeteranMarketApproaches, type VeteranMarketApproach } from "./veteran-market.js";
 
@@ -137,12 +139,45 @@ export function pendingCareerOfferFacts(state: GameState): PendingCareerOfferFac
   };
 }
 
+export interface CoachPromiseWaitFacts {
+  choiceDate: string;
+  club: string;
+  officialMatchesElapsed: number;
+  complete: boolean;
+}
+
+export function coachPromiseWaitFacts(state: GameState): CoachPromiseWaitFacts | null {
+  let choice: GameState["history"][number] | null = null;
+  for (let i = state.history.length - 1; i >= 0; i -= 1) {
+    const row = state.history[i]!;
+    if (row.eventId === "EVT_20_CCH_001" && row.choiceId === "WAIT_THREE_MATCHES") {
+      choice = row;
+      break;
+    }
+  }
+  if (!choice) return null;
+  const store = getSportMatchModelStore(state);
+  const elapsed = store
+    ? store.fixtures.filter(row =>
+        row.official === true
+        && row.date > choice!.date
+        && row.date <= state.date
+        && row.club === choice!.club
+      ).length
+    : 0;
+  return { choiceDate: choice.date, club: choice.club, officialMatchesElapsed: elapsed, complete: elapsed >= 3 };
+}
+
 export interface NarrativeCausalFacts extends EarlyCareerSeedFacts {
   clubWantsRenewal: boolean;
   lockerCaptainAffinity: number | null;
   lockerStarAffinity: number | null;
   roleDropSince23: number;
   roleGuaranteeAt23: boolean;
+  /** Explicitly certified current representative; null means no authority. */
+  activeAgentNpcId: string | null;
+  /** Current-club institutional recipient only when shared authority certifies one. */
+  currentClubInstitutionalNpcId: string | null;
   /** Explicit employment truth. Legacy ambiguous zero-month saves project expired_pending_resolution. */
   employmentStatus: EmploymentStatus;
   /** Detached formal future negotiations; never current employment. */
@@ -157,6 +192,8 @@ export interface NarrativeCausalFacts extends EarlyCareerSeedFacts {
   pendingCareerOfferKind: CareerOfferKind | null;
   /** Exact detached formal-offer projection; null includes no offer and stale offers. */
   pendingCareerOffer: PendingCareerOfferFacts | null;
+  /** Exact persisted-history + official-fixture progress for WAIT_THREE_MATCHES. */
+  coachPromiseWait: CoachPromiseWaitFacts | null;
   /** Authoritative/read-only sporting projection. Unavailable sporting facts are null. */
   sport: SportContext;
   /** Current match projection. Fails closed until a real match producer exists. */
@@ -171,6 +208,8 @@ export function narrativeCausalFacts(state: GameState): NarrativeCausalFacts {
     lockerStarAffinity: lockerSlotAffinity(state, "star"),
     roleDropSince23: roleDropSince23(state),
     roleGuaranteeAt23: hasRoleGuaranteeAt23(state),
+    activeAgentNpcId: resolveActiveAgent(state),
+    currentClubInstitutionalNpcId: resolveCurrentClubInstitutionalNpc(state),
     employmentStatus: employmentStatus(state),
     futureEmploymentNegotiations: getOpenFutureEmploymentNegotiations(state),
     futureCareerAgreements: getFutureCareerAgreements(state),
@@ -178,6 +217,7 @@ export function narrativeCausalFacts(state: GameState): NarrativeCausalFacts {
     veteranMarketApproaches: getVeteranMarketApproaches(state),
     pendingCareerOfferKind: eligibleCareerOfferKind(state),
     pendingCareerOffer: pendingCareerOfferFacts(state),
+    coachPromiseWait: coachPromiseWaitFacts(state),
     sport: getSportContext(state),
     match: getCurrentMatchContext(state)
   };
