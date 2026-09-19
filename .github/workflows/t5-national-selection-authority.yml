@@ -1,0 +1,28 @@
+name: T5 National Selection Authority
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: ['a0/national-selection-authority-after-shared-stack']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  national-selection-authority:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: National selection cycle authority
+        run: node --test scripts/test-t5-national-selection-authority.mjs
+      - name: Shared contracts including selection facts
+        run: node --test scripts/test-t51-shared-contracts.mjs
