@@ -1,0 +1,53 @@
+name: T51 A6 rest freeze artifact
+
+on:
+  push:
+    branches:
+      - 'a0/a6-rest-freeze-post549'
+
+jobs:
+  freeze-artifact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Focused second-batch certification
+        run: |
+          node --test scripts/test-t51-a6-rest-prefreeze.mjs
+          node --test scripts/test-t51-agent6-age26-bridge.mjs
+          node --test scripts/test-t51-agent6-doc26.mjs
+          node --test scripts/test-t51-agent6-body27.mjs
+          node --test scripts/test-t51-agent6-con27.mjs
+          node --test scripts/test-t51-agent6-fin29.mjs
+      - name: Compute exact post-predecessor identity
+        id: identity
+        shell: bash
+        run: |
+          ID="$(node --input-type=module -e "import { EVENTS } from './dist/content/events/index.js'; import { contentIdentity } from './dist/session/content-identity.js'; process.stdout.write(await contentIdentity(EVENTS));")"
+          echo "id=$ID" >> "$GITHUB_OUTPUT"
+          echo "$ID" > /tmp/a6-rest-content-identity.txt
+      - name: Generate official frozen source and registries
+        run: |
+          node scripts/freeze-t51-active-source.mjs
+          node scripts/generate-t51-post-legacy-registry.mjs
+          node scripts/generate-t51-offer-bridge-evidence.mjs
+      - name: Collect exact generated evidence
+        shell: bash
+        run: |
+          mkdir -p /tmp/a6-freeze-artifact/qa/fixtures/t5.1/post-t51-sources
+          mkdir -p /tmp/a6-freeze-artifact/src/session
+          cp "qa/fixtures/t5.1/post-t51-sources/${{ steps.identity.outputs.id }}.json" /tmp/a6-freeze-artifact/qa/fixtures/t5.1/post-t51-sources/
+          cp src/session/post-t51-legacy-registry.ts /tmp/a6-freeze-artifact/src/session/
+          cp src/session/frozen-offer-bridge-evidence.ts /tmp/a6-freeze-artifact/src/session/
+          cp /tmp/a6-rest-content-identity.txt /tmp/a6-freeze-artifact/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: a6-rest-freeze-${{ steps.identity.outputs.id }}
+          path: /tmp/a6-freeze-artifact
+          if-no-files-found: error
