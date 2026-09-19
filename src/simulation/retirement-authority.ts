@@ -1,7 +1,6 @@
 import type { GameState } from "../core/types.js";
 import { getEligibleCareerOffers } from "./offers.js";
 import { getLastPlayerAppearanceContext, getSportContext } from "./sport-context.js";
-import type { LastPlayerAppearanceContext } from "./sport-context.js";
 import type { MatchResultFact } from "./match-model.js";
 
 export interface RetirementLastAppearanceFact {
@@ -18,7 +17,7 @@ export interface RetirementLastAppearanceFact {
   result: MatchResultFact | null;
   goals: number | null;
   assists: number | null;
-  cards: LastPlayerAppearanceContext["cards"];
+  cards: { yellow: number; red: number } | null;
   postAnnouncement: boolean | null;
 }
 
