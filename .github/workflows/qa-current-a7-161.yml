@@ -1,0 +1,20 @@
+name: QA current A7 #161
+on:
+  push:
+    branches:
+      - qa/cert-596-161-current
+  pull_request:
+    branches:
+      - main
+jobs:
+  captain:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: node --test scripts/test-t5-captain-gap-known-bug.mjs
