@@ -1,0 +1,38 @@
+name: T51 A6 FREEZE ARTIFACT
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  freeze-a6-artifact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Generate exact active source fixture
+        run: node scripts/freeze-t51-active-source.mjs
+      - name: Regenerate post-T5.1 evidence
+        run: |
+          node scripts/generate-t51-post-legacy-registry.mjs
+          node scripts/generate-t51-offer-bridge-evidence.mjs
+      - name: Show generated identity
+        run: |
+          node -e "const fs=require('fs');const p='qa/fixtures/t5.1/post-t51-sources';const a=fs.readdirSync(p).filter(x=>x.endsWith('.json')).sort();console.log(JSON.stringify({sources:a,last:a.at(-1)}))"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: a6-first5-freeze-evidence
+          path: |
+            qa/fixtures/t5.1/post-t51-sources/
+            src/session/post-t51-legacy-registry.ts
+            src/session/frozen-offer-bridge-evidence.ts
