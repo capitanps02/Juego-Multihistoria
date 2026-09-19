@@ -56,6 +56,6 @@ test('Agent6 DOC26 proposal gate is read-only and consumes no RNG', () => {
   assert.deepEqual(state, before);
 });
 
-test('Agent6 DOC26 stays staged until content lineage and seed origin are integrated', () => {
-  assert.equal(EVENTS_26_30.some(candidate => candidate.id === 'EVT_26_DOC_001'), false);
+test('Agent6 DOC26 is active once content lineage and seed origin are integrated', () => {
+  assert.equal(EVENTS_26_30.some(candidate => candidate.id === 'EVT_26_DOC_001'), true);
 });
