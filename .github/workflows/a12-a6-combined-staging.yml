@@ -1,6 +1,8 @@
 name: A12 A6 Combined Staging
 
 on:
+  push:
+    branches: ['a12/ci-a6-combined-460']
   pull_request:
     branches: [main]
     paths:
