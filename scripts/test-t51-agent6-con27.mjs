@@ -102,11 +102,11 @@ test('Agent6 CON27 accept applies exact pending terms and every counter preserve
   }
 });
 
-test('Agent6 CON27 eligibility is read-only and candidate remains staged', () => {
+test('Agent6 CON27 eligibility is read-only and candidate is active', () => {
   const state = state27(61930);
   installRenewal(state);
   const before = structuredClone(state);
   assert.equal(offerBridgeEligible(state, event), true);
   assert.deepEqual(state, before);
-  assert.equal(EVENTS_26_30.some(candidate => candidate.id === 'EVT_27_CON_001'), false);
+  assert.equal(EVENTS_26_30.some(candidate => candidate.id === 'EVT_27_CON_001'), true);
 });
