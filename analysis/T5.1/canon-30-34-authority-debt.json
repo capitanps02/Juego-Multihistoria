@@ -1,0 +1,276 @@
+{
+  "schemaVersion": 2,
+  "scope": "T5.1 canon 30-34 shared-authority debt",
+  "sourceMainSha": "5f4d14bca4d696cfafadb58b64034c7cd40cc147",
+  "principle": "Concrete match, squad, competition, offer, leadership and contract-clause claims must come from an authoritative shared surface. Aggregate form, reputation, age, role, month and narrative flags are not substitutes.",
+  "upstreamReview": {
+    "newFactsAtSourceMain": [
+      "facts.roleDropSince23",
+      "facts.roleGuaranteeAt23",
+      "facts.pendingCareerOfferKind",
+      "facts.pendingCareerOffer",
+      "facts.playerClubLeadership.currentRole",
+      "facts.playerClubLeadership.hasCertifiedMainCaptainHistory",
+      "facts.sport.currentCompetition",
+      "facts.sport.nextFixture",
+      "facts.sport.previousFixture",
+      "facts.sport.hoursToNextFixture",
+      "facts.sport.isMatchDay",
+      "facts.sport.isTrainingWindow",
+      "facts.sport.nextTrainingDate",
+      "facts.sport.remainingOfficialMatches",
+      "facts.sport.remainingLeagueMatches",
+      "facts.sport.currentSquadStatus",
+      "facts.match.competition",
+      "facts.match.opponent",
+      "facts.match.playerCalledUp",
+      "facts.match.playerOnBench",
+      "facts.match.playerStarted",
+      "facts.match.playerAppeared",
+      "facts.match.minutes",
+      "facts.match.injury"
+    ],
+    "resultFor30_34": "The new persisted weekly match model materially improves fixture/squad authority but does not prove a cup/continental final, two high-intensity starts inside 72 hours, recent goals, crowd response, national-team preselection, multi-offer persistence, a minutes-based renewal clause, or a quantified 30-34 locker-weight threshold. Previous EVT_31_FINAL_001 and EVT_33_BODY_001 existence-only sport gates are therefore reclassified as partial/insufficient rather than protected fail-closed gates."
+  },
+  "sharedSurfaces": {
+    "sport": {
+      "path": "src/simulation/sport-context.ts",
+      "known": [
+        "currentSeason",
+        "sportingClub",
+        "ownerClub",
+        "leagueTier",
+        "careerAppearances",
+        "officialDebutRecorded",
+        "currentCompetition from current/next scheduled league fixture",
+        "nextFixture",
+        "hoursToNextFixture",
+        "isMatchDay",
+        "isTrainingWindow",
+        "nextTrainingDate",
+        "remainingOfficialMatches",
+        "remainingLeagueMatches"
+      ],
+      "conditionallyAuthoritativeAfterPersistedMatchRows": [
+        "previousFixture",
+        "seasonObjectiveStatus",
+        "currentSquadStatus",
+        "match.competition",
+        "match.opponent",
+        "match.playerCalledUp",
+        "match.playerOnBench",
+        "match.playerStarted",
+        "match.playerAppeared",
+        "match.minutes",
+        "match.injury"
+      ],
+      "currentlyUnavailable": [
+        "currentStanding",
+        "authoritative final/cup stage identity",
+        "congested multi-fixture schedule under 72h",
+        "per-match result",
+        "per-match goals",
+        "per-match assists",
+        "per-match cards",
+        "crowd/stadium reaction",
+        "national-team preselection/roster facts"
+      ],
+      "competitionConstraint": "MatchCompetition is currently only 'league'. A scheduled league fixture cannot certify that a narrative scene is a domestic or continental final.",
+      "cadenceConstraint": "The current official fixture model materializes one league fixture every seven runtime days. Existence of nextFixture/hoursToNextFixture does not prove two starts inside 72 hours."
+    },
+    "market": {
+      "path": "src/simulation/offers.ts",
+      "shape": "MarketState.pending is zero-or-one CareerOffer",
+      "exactReadApis": [
+        "getActiveCareerOffers",
+        "getEligibleCareerOffers",
+        "facts.pendingCareerOfferKind",
+        "facts.pendingCareerOffer"
+      ],
+      "cardinalityConstraint": "The plural getEligibleCareerOffers API is derived from the singleton MarketState.pending field; it can expose zero or one eligible CareerOffer, not a persisted simultaneous offer set.",
+      "careerTerms": [
+        "club",
+        "tier",
+        "months",
+        "salary",
+        "releaseClause",
+        "ownerClub",
+        "registrationClub",
+        "leagueTier",
+        "prestigeTier",
+        "prestigeScore",
+        "route",
+        "abroad",
+        "loan",
+        "bigClub"
+      ],
+      "missingForCanon30_34": [
+        "simultaneous comparable offers",
+        "automatic-renewal-by-minutes clause",
+        "minutes threshold attached to a formal offer"
+      ]
+    },
+    "lockerLeadership": {
+      "path": "src/simulation/locker-leadership.ts",
+      "currentAssignments": [
+        "UDV / phase 23_26 / captain NPC_PLR_10 / star unavailable"
+      ],
+      "veteran30_34Assignment": null,
+      "readFacts": [
+        "facts.lockerCaptainAffinity",
+        "facts.lockerStarAffinity"
+      ],
+      "constraint": "Without an explicit assignment for phase 30_34, captain/star affinity resolves null. professional.lockerPower is an aggregate protagonist score and is not certified as the canonical LOCKER_WEIGHT scale or threshold."
+    }
+  },
+  "scenes": [
+    {
+      "eventId": "EVT_30_FORM_001",
+      "status": "blocked_missing_sport_history_authority",
+      "canonicalClaim": "The scene is specifically triggered by a six-match spell containing five goals.",
+      "currentApproximation": ["aggregate sport.form / narrative maturity context"],
+      "missingFacts": [
+        "authoritative ordered recent-match history",
+        "authoritative player appearance for each relevant match",
+        "authoritative per-match goal totals",
+        "query/projection capable of proving five goals across the six-match window"
+      ],
+      "risk": "The new match store can persist fixtures and minutes but still has no per-match goal production. Aggregate form cannot prove five goals across six matches.",
+      "codexAction": "Keep the scene technical-adaptation debt until sport authority exposes goal-bearing recent-match history; do not reconstruct the claim from form or career totals."
+    },
+    {
+      "eventId": "EVT_31_FINAL_001",
+      "status": "partial_guard_insufficient_after_match_model",
+      "canonicalClaim": "The decision is specifically about a final and a planned role/minutes context.",
+      "currentGuardFacts": [
+        "flags.FINAL_CONTEXT == true",
+        "sport.roleScore >= 35",
+        "facts.sport.currentCompetition exists",
+        "facts.sport.nextFixture exists"
+      ],
+      "newAuthority": "facts.sport.currentCompetition and nextFixture are now populated by the ordinary weekly league fixture model; MatchCompetition currently supports only 'league'.",
+      "missingFacts": [
+        "authoritative competition identity capable of representing domestic/continental cup context",
+        "authoritative competition stage proving that the concrete fixture is a final"
+      ],
+      "risk": "FINAL_CONTEXT plus an ordinary scheduled league fixture can satisfy the current gate set even though the fixture is not a final. The previous protected_fail_closed classification is no longer true after main@5f4d14bc.",
+      "codexAction": "Do not certify or call this fail-closed. Shared sport authority must expose final-stage identity before a new coordinated content batch can replace the partial gate. Do not reinterpret FINAL_CONTEXT as match authority."
+    },
+    {
+      "eventId": "EVT_33_BODY_001",
+      "status": "partial_guard_insufficient_after_match_model",
+      "canonicalClaim": "The decision concerns two high-intensity starts separated by less than 72 hours.",
+      "currentGuardFacts": [
+        "professional.recoveryMargin <= 55",
+        "facts.sport.nextFixture exists",
+        "facts.sport.hoursToNextFixture exists"
+      ],
+      "newAuthority": "The shared fixture model now exposes nextFixture and timing, but its official league cadence is weekly and the event gate does not require <72 hours or prove two player starts.",
+      "missingFacts": [
+        "authoritative pair of relevant fixtures separated by less than 72 hours",
+        "authoritative player-start status for the first fixture",
+        "authoritative player-start/expected-start context for the second fixture",
+        "authoritative intensity/load context if required by canon"
+      ],
+      "risk": "Existence of a next fixture and a numeric hour distance is not the canonical congested-schedule claim; a 144/168-hour league gap can satisfy the current existence-only gates.",
+      "codexAction": "Do not certify or call this fail-closed. Add an exact congested-fixture/start authority in shared sport infrastructure, then update the event in a new coordinated content-identity batch."
+    },
+    {
+      "eventId": "EVT_32_FAN_001",
+      "status": "blocked_missing_authority",
+      "canonicalClaim": "The player has just played a clearly bad match and the stadium reaction is part of the scene.",
+      "currentApproximation": ["professional.legacyCapital >= 45", "sport.form <= 48"],
+      "missingFacts": [
+        "authoritative player appearance in the relevant match",
+        "authoritative per-match performance assessment",
+        "authoritative crowd/stadium reaction"
+      ],
+      "risk": "The new match store can prove an appearance/minutes on a recorded current match, but still has no performance rating or crowd response. Aggregate form remains insufficient.",
+      "codexAction": "Do not reinterpret sport.form as a match rating. Add/use explicit match-performance and crowd-response facts before certifying or unblocking this scene."
+    },
+    {
+      "eventId": "EVT_31_RETURN_001",
+      "status": "blocked_missing_authority",
+      "canonicalClaim": "The player has medical clearance after injury/surgery, training data is still below prior levels, and the coach must decide whether to call him up now.",
+      "currentApproximation": ["flags.RECOVERING_INJURY == true"],
+      "missingFacts": [
+        "authoritative medical clearance",
+        "authoritative recent training-load/readiness evidence",
+        "authoritative immediate squad-call decision context"
+      ],
+      "risk": "The match store can persist call-up status once a match row exists, but RECOVERING_INJURY still proves neither medical clearance nor the pre-match call-up decision described by canon.",
+      "codexAction": "Keep this as technical adaptation until medical/training/squad authority exposes the exact facts; do not infer clearance from recovery flags."
+    },
+    {
+      "eventId": "EVT_32_NAT_001",
+      "status": "blocked_missing_authority",
+      "canonicalClaim": "The player is inside a 30-player preselection for a 26-player major-tournament squad and competes for overlapping roles.",
+      "currentApproximation": ["professional.nationalStanding >= 40"],
+      "missingFacts": [
+        "authoritative national-team preselection membership",
+        "authoritative tournament context",
+        "authoritative roster-size/cut context",
+        "authoritative role competition"
+      ],
+      "risk": "nationalStanding is a standing score, not evidence that the described 30-to-26 selection exists.",
+      "codexAction": "Require a national-team roster authority before certifying the trigger; do not derive preselection from nationalStanding."
+    },
+    {
+      "eventId": "EVT_30_CAP_001",
+      "status": "blocked_unquantified_locker_authority",
+      "canonicalClaim": "The captaincy handover is conditioned by a high LOCKER_WEIGHT / established dressing-room leadership context.",
+      "currentAuthority": "LOCKER_LEADERSHIP_ASSIGNMENTS has no phase 30_34 assignment. facts.lockerCaptainAffinity and facts.lockerStarAffinity therefore fail closed to null in a veteran state.",
+      "currentApproximationRisk": ["professional.lockerPower", "generic NPC relationship affinity/respect", "captaincy-related seeds or flags"],
+      "risk": "No approved mapping proves that any aggregate runtime score is the canonical LOCKER_WEIGHT scale or defines the required high threshold.",
+      "codexAction": "Keep EVT_30_CAP_001 as technical adaptation. When shared locker authority gains a 30_34 assignment or canon defines the LOCKER_WEIGHT mapping, revisit the trigger explicitly; do not infer the threshold from lockerPower or arbitrary relationship values."
+    },
+    {
+      "eventId": "EVT_31_MKT_001",
+      "status": "blocked_shared_multi_offer_authority",
+      "canonicalClaim": "Two simultaneous formal proposals are compared: two years as a star versus one year at an elite contender.",
+      "currentAuthority": "MarketState.pending persists one CareerOffer. getEligibleCareerOffers() is plural-shaped but is derived from that singleton pending field and therefore exposes at most one eligible offer.",
+      "risk": "A single pending offer cannot prove either the existence or the terms of both alternatives.",
+      "codexAction": "Do not add offerBridge until market authority supports multiple simultaneous offers with persistent identity/provenance."
+    },
+    {
+      "eventId": "EVT_33_MKT_001",
+      "status": "blocked_shared_multi_offer_authority",
+      "canonicalClaim": "Four concrete proposal types are simultaneously available: continuity, title contender specialist, rich league, and UDV leadership.",
+      "currentApproximation": ["reputation.marketHeat >= 30"],
+      "currentAuthority": "MarketState.pending persists one CareerOffer. Exact eligible-offer reads do not add simultaneous-offer storage.",
+      "risk": "marketHeat or one exact pending offer can trigger/prove at most a single proposal, not the four canonical alternatives.",
+      "codexAction": "Treat this as the same multi-offer blocker class as EVT_31_MKT_001. Do not bridge or certify from marketHeat or singleton eligible-offer facts."
+    },
+    {
+      "eventId": "EVT_32_CON_001",
+      "status": "formal_offer_consumed_clause_parity_blocked",
+      "canonicalClaim": "The formal one-year renewal includes automatic renewal based on a known minutes threshold.",
+      "currentBridge": "Requires a formal same-club 12-month renewal with reason 'Renovación de contrato'.",
+      "currentAuthority": "CareerTerms has no automatic-renewal-by-minutes or minutes-threshold field.",
+      "risk": "A generic 12-month renewal can satisfy the bridge even though the canonical clause cannot be represented or verified.",
+      "codexAction": "Preserve CareerOffer ownership and provenance, but do not mark full contract parity complete until the shared formal-offer model can represent the minutes clause."
+    },
+    {
+      "eventId": "EVT_31_ROLE_001",
+      "status": "canonical_missing_and_sport_blocked",
+      "canonicalClaim": "Canonical title: 'Tres goles y al banquillo'.",
+      "newSharedFactsReviewed": ["facts.roleDropSince23", "facts.roleGuaranteeAt23", "persisted match squad/minutes facts"],
+      "missingFacts": [
+        "authoritative recent goal history for the relevant matches",
+        "authoritative bench/squad decision after that production"
+      ],
+      "risk": "The match model still does not produce goals. Historical role facts describe expectation/drop history, not the concrete three-goal-plus-bench sequence.",
+      "codexAction": "Do not use role facts or a generic bench row as a substitute trigger. Keep the canonical addition in the coordinated missing-ID batch until sport authority can represent its exact context."
+    }
+  ],
+  "implementationRules": [
+    "No generic sport gate may be added solely to make a test pass.",
+    "No missing match fact may be replaced by sport.form, roleScore, age, reputation, coach trust, month, seasonDay or a narrative flag.",
+    "A scheduled league fixture is not evidence of a cup/continental final.",
+    "Existence of nextFixture/hoursToNextFixture is not evidence of two starts inside 72 hours.",
+    "No multi-offer scene may be certified from MarketState.pending or from getEligibleCareerOffers while persistence remains single-offer.",
+    "No contractual clause may be claimed as authoritative if CareerTerms cannot persist it.",
+    "No canonical LOCKER_WEIGHT threshold may be inferred from professional.lockerPower or an arbitrary NPC relationship scalar.",
+    "Authority gaps remain technical-adaptation debt, not aliases or verified identity."
+  ]
+}
