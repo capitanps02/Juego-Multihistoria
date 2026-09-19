@@ -1,3 +1,4 @@
+// A0 exact-head SAFE3 certification trigger; no runtime/content effect.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { EVENTS } from '../dist/content/events/index.js';
