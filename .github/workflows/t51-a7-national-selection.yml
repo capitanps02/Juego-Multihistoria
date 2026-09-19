@@ -1,0 +1,24 @@
+name: T51 A7 National Selection
+
+on:
+  push:
+    branches: ['a0/a7-national-selection-gate-after-482']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  a7-national-selection:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Exact A7 national preselection consumer
+        run: node --test scripts/test-t51-a7-national-selection.mjs
