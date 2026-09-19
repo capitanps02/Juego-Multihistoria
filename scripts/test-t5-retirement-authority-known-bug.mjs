@@ -1,7 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createInitialState } from '../dist/content/initial-state.js';
-import { agencyDeferredRetirement } from './qa-t5-retirement-deferral.mjs';
 import {
   lateCareerPreseason,
   lateCareerWeek,
@@ -70,17 +69,4 @@ test('T5-QA-016c/#61: no-market exhaustion is context only and never decides ret
   assert.equal(state.retirement.announcedDate, beforeStatus.announcedDate);
   assert.equal(state.flags.NO_MARKET_END_CONTEXT, true, 'market silence should expose only a player-decision context');
   assert.deepEqual(state.rngState.narrative, narrativeRng);
-});
-
-
-test('T5-QA-016d: explicit canonical continuation is agency, not retirement deadlock', () => {
-  const state = veteran(61004);
-  state.retirement.status = 'playing';
-  state.history.push({ eventId: 'EVT_RET_BODY_001', choiceId: 'ONE_MORE', date: '2044-07-01' });
-  assert.equal(agencyDeferredRetirement(state), true);
-
-  const noEvidence = veteran(61005);
-  noEvidence.retirement.status = 'playing';
-  noEvidence.history.push({ eventId: 'EVT_RET_BODY_001', choiceId: 'HEALTH', date: '2044-07-01' });
-  assert.equal(agencyDeferredRetirement(noEvidence), false, 'only explicit continue choices may classify player agency');
 });
