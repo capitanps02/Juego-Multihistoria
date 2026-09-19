@@ -1,0 +1,77 @@
+name: T51 A6 SAFE3 FREEZE BUILDER
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  freeze-safe3:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Assert exact SAFE3 identity
+        run: |
+          node --input-type=module <<'NODE'
+          import { EVENTS } from './dist/content/events/index.js';
+          import { contentIdentity } from './dist/session/content-identity.js';
+          const expected='4973518cdceb84b86be62179ada2c0782da9f007c443d7ffd132ec88353229a3';
+          const actual=await contentIdentity(EVENTS);
+          if(actual!==expected) throw new Error('SAFE3 identity drift: '+actual);
+          if(EVENTS.length!==388 || new Set(EVENTS.map(e=>e.id)).size!==388) throw new Error('SAFE3 event count/uniqueness drift');
+          console.log(JSON.stringify({actual,events:EVENTS.length}));
+          NODE
+      - name: Freeze exact catalog and regenerate evidence
+        run: |
+          node scripts/freeze-t51-active-source.mjs
+          node scripts/generate-t51-post-legacy-registry.mjs
+          node scripts/generate-t51-offer-bridge-evidence.mjs
+      - name: Register adjacent A6-L to SAFE3 edge
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const file='src/session/content-migration.ts';
+          let s=fs.readFileSync(file,'utf8');
+          const target='4973518cdceb84b86be62179ada2c0782da9f007c443d7ffd132ec88353229a3';
+          const sourceConst='export const T51_A6_FIRST5_CONTENT_IDENTITY = "8bb987042cccdce110d4de200aad5c4da760c34a4fb717cccfc4d31f4f0c9b16";';
+          const targetConst='export const T51_A6_SAFE3_CONTENT_IDENTITY = "'+target+'";';
+          if(!s.includes(sourceConst)) throw new Error('A6 first-five identity constant missing');
+          if(!s.includes(targetConst)) s=s.replace(sourceConst,sourceConst+'\n'+targetConst);
+          if(!s.includes('sourceContentIdentity: T51_A6_FIRST5_CONTENT_IDENTITY')){
+            const marker='\n];\n\nconst activeEvidenceCache';
+            const idx=s.indexOf(marker);
+            if(idx<0) throw new Error('migration array terminator not found');
+            const route=',\n  {\n    sourceContentIdentity: T51_A6_FIRST5_CONTENT_IDENTITY,\n    targetContentIdentity: T51_A6_SAFE3_CONTENT_IDENTITY,\n    schedulerMappings: [\n      { kind: "distinct_scene", legacyEventId: "EVT_26_IDN_001", canonicalEventId: "EVT_26_BRIDGE_001", clearCanonicalSeen: true, clearCanonicalCooldown: true },\n      { kind: "distinct_scene", legacyEventId: "EVT_27_BODY_001", canonicalEventId: "EVT_27_BODY_001", clearCanonicalSeen: true, clearCanonicalCooldown: true },\n      { kind: "distinct_scene", legacyEventId: "EVT_29_FIN_001", canonicalEventId: "EVT_29_FIN_001", clearCanonicalSeen: true, clearCanonicalCooldown: true }\n    ],\n    seedOriginMappings: []\n  }';
+            s=s.slice(0,idx)+route+s.slice(idx);
+          }
+          fs.writeFileSync(file,s);
+          NODE
+      - run: npm run build
+      - name: Verify freeze, lineage and owner semantics
+        run: |
+          node scripts/freeze-t51-active-source.mjs --check
+          node scripts/generate-t51-post-legacy-registry.mjs --check
+          node scripts/generate-t51-offer-bridge-evidence.mjs --check
+          node scripts/check-t51-content-migration-route.mjs
+          node --test scripts/test-t51-content-migration.mjs scripts/test-t51-content-lineage.mjs scripts/test-t51-migration-source-policy.mjs scripts/test-t51-agent6-age26-bridge.mjs scripts/test-t51-agent6-body27.mjs scripts/test-t51-agent6-fin29.mjs scripts/test-t51-a6-safe3-prefreeze.mjs
+      - name: Validate frozen candidate
+        run: npm run validate
+      - name: Publish SAFE3 frozen branch
+        run: |
+          git config user.name "A0 T5 Integration"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B a0/a6-safe3-frozen
+          git add qa/fixtures/t5.1/post-t51-sources src/session/content-migration.ts src/session/post-t51-legacy-registry.ts src/session/frozen-offer-bridge-evidence.ts src/content/events/26_30/index.ts src/catalog/seeds.ts scripts/test-t51-agent6-age26-bridge.mjs scripts/test-t51-agent6-fin29.mjs scripts/test-t51-a6-safe3-prefreeze.mjs
+          git commit -m "A0 freeze: A6 SAFE3 generation after first-five"
+          git push --force origin HEAD:a0/a6-safe3-frozen
