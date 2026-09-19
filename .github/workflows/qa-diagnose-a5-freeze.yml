@@ -1,0 +1,26 @@
+name: QA diagnose A5 freeze
+on:
+  push:
+    branches:
+      - qa/diagnose-444-freeze
+jobs:
+  freeze-diagnostic:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Generate exact active source fixture
+        run: node scripts/freeze-t51-active-source.mjs
+      - name: Show generated fixture
+        run: |
+          ls -l qa/fixtures/t5.1/post-t51-sources
+          git status --short
+      - uses: actions/upload-artifact@v4
+        with:
+          name: a5-freeze-diagnostic
+          path: qa/fixtures/t5.1/post-t51-sources/*.json
