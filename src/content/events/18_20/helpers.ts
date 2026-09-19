@@ -1,5 +1,7 @@
 import type { Effect, EventDefinition, EventFamily, NarrativePhase, OutcomeModifier, PresentationSpec, SeedTransition } from "../../../core/types.js";
 import type { EventWithGateAlternatives } from "../../../narrative/event-gates.js";
+import type { EventWithRepresentationBridge, RepresentationBridgeSpec } from "../../../narrative/representation-bridge.js";
+import type { EventWithOfferBridge, OfferBridgeSpec } from "../../../narrative/offer-bridge.js";
 
 export interface AmbiguousChoiceSpec {
   id: string;
@@ -41,9 +43,13 @@ export interface AmbiguousEventSpec {
   tags?: string[];
   presentation?: PresentationSpec;
   canonStatus?: EventDefinition["canonStatus"];
+  /** Optional authoritative post-choice representation bridge metadata. */
+  representationBridge?: RepresentationBridgeSpec;
+  /** Optional authoritative formal-offer response bridge metadata. */
+  offerBridge?: OfferBridgeSpec;
 }
 
-export function ambiguousEvent(spec: AmbiguousEventSpec): EventWithGateAlternatives {
+export function ambiguousEvent(spec: AmbiguousEventSpec): EventWithGateAlternatives & EventWithRepresentationBridge & EventWithOfferBridge {
   return {
     id: spec.id,
     ageWindow: spec.ageWindow,
@@ -51,6 +57,8 @@ export function ambiguousEvent(spec: AmbiguousEventSpec): EventWithGateAlternati
     family: spec.family,
     gates: spec.gates ?? [],
     ...(spec.gateAlternatives !== undefined ? { gateAlternatives: spec.gateAlternatives } : {}),
+    ...(spec.representationBridge !== undefined ? { representationBridge: spec.representationBridge } : {}),
+    ...(spec.offerBridge !== undefined ? { offerBridge: spec.offerBridge } : {}),
     exclusions: spec.exclusions,
     timeWindow: spec.timeWindow,
     cooldown: spec.cooldown ?? 99999,
