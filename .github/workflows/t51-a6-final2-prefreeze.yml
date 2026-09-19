@@ -1,0 +1,33 @@
+name: T51 A6 final2 prefreeze
+
+on:
+  push:
+    branches:
+      - 'a0/a6-final2-prefreeze'
+    paths:
+      - 'src/content/events/26_30/**'
+      - 'src/catalog/seeds.ts'
+      - 'scripts/test-t51-agent6-doc26.mjs'
+      - 'scripts/test-t51-agent6-con27.mjs'
+      - 'scripts/report-t51-a6-final2-identity.mjs'
+      - '.github/workflows/t51-a6-final2-prefreeze.yml'
+  workflow_dispatch:
+
+jobs:
+  certify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: A6 DOC26
+        run: node --test scripts/test-t51-agent6-doc26.mjs
+      - name: A6 CON27
+        run: node --test scripts/test-t51-agent6-con27.mjs
+      - name: Exact active identity
+        run: node scripts/report-t51-a6-final2-identity.mjs
