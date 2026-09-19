@@ -8,6 +8,8 @@ import { applyAge18MarketOfferBridges } from "./18_20/t51-age18-market-offer-bri
 import { applyT51SeedConsumerRepairs } from "./18_20/t51-seed-consumer-repairs.js";
 import { EVENTS_20_23 as BASE_EVENTS_20_23 } from "./20_23/index.js";
 import { A5_READY_EVENTS_18_23 } from "./20_23/a5-ready-staged.js";
+import { A5_REPRESENTATION_READY_EVENTS } from "./20_23/a5-agent-ready-external.js";
+import { A5_MARKET_READY_EVENTS } from "./20_23/a5-market-external-staged.js";
 import { EVENTS_23_26 } from "./23_26/index.js";
 import { EVENTS_26_30 } from "./26_30/index.js";
 import { EVENTS_30_34 } from "./30_34/index.js";
@@ -29,6 +31,7 @@ function replaceById(base: readonly import("../../core/types.js").EventDefinitio
 
 const A5_READY_18_20 = A5_READY_EVENTS_18_23.filter(event => event.phase === "18_20");
 const A5_READY_20_23 = A5_READY_EVENTS_18_23.filter(event => event.phase === "20_23");
+const A5_NEXT_AUTHORITY_READY_20_23 = [...A5_REPRESENTATION_READY_EVENTS, ...A5_MARKET_READY_EVENTS];
 const RETIRED_TECHNICAL_20_23 = new Set(["EVT_20_MATCH_001", "EVT_21_CCH_001", "EVT_22_LIFE_001"]);
 
 export const EVENTS_18_20 = replaceById([
@@ -38,8 +41,11 @@ export const EVENTS_18_20 = replaceById([
 ], A5_READY_18_20);
 
 export const EVENTS_20_23 = replaceById(
-  BASE_EVENTS_20_23.filter(event => !RETIRED_TECHNICAL_20_23.has(event.id)),
-  A5_READY_20_23
+  replaceById(
+    BASE_EVENTS_20_23.filter(event => !RETIRED_TECHNICAL_20_23.has(event.id)),
+    A5_READY_20_23
+  ),
+  A5_NEXT_AUTHORITY_READY_20_23
 );
 
 export { EVENTS_23_26, EVENTS_26_30, EVENTS_30_34, EVENTS_34_PLUS };
