@@ -49,7 +49,9 @@ export function closeCareer(state:GameState,reason:string,closureType:string){
 }
 
 export function reverseRetirement(state:GameState){
-  if(state.retirement.status!=="announced"&&state.retirement.status!=="decided")return;
+  // Player authority: only a private retirement decision may be reconsidered.
+  // Once public, retirement can reopen only through the later canonical A9 reversal flow.
+  if(state.retirement.status!=="decided")return;
   state.retirement.status="playing"; state.retirement.daysInStatus=0; state.retirement.reversals+=1;
   state.retirement.decidedDate=null; state.retirement.announcedDate=null;
   state.flags.RETIREMENT_ANNOUNCED=false; state.flags.RETIREMENT_DECISION_CONTEXT=false; state.flags.RETIREMENT_RECONSIDERED=true;
@@ -136,10 +138,10 @@ export function lateCareerWeek(state:GameState):void{
   }
   state.flags.POST_ANNOUNCE_OFFER=false;
 
-  // Deadlock guard: after a firm decision, communication becomes administrative.
-  if(state.retirement.status==="decided"&&state.retirement.daysInStatus>=45){
-    setStatus(state,"announced");
-    state.flags.ADMIN_ANNOUNCEMENT_FALLBACK=true;
+  // A private retirement decision remains private until an explicit announcement scene.
+  // Elapsed time is context only and cannot fabricate public retirement history.
+  if(state.retirement.status==="decided"){
+    state.flags.ADMIN_ANNOUNCEMENT_FALLBACK=false;
   }
   // An announced retirement cannot remain open forever. Give narrative last-match windows first.
   if(state.retirement.status==="announced"){
