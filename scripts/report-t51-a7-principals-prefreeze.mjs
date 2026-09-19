@@ -1,3 +1,4 @@
+// A0 corrected A7 exact prefreeze certification trigger.
 // A7 principal-only exact prefreeze probe; no runtime mutation.
 import assert from 'node:assert/strict';
 import { EVENTS, EVENTS_30_34 } from '../dist/content/events/index.js';
