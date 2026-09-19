@@ -27,6 +27,8 @@ test('career milestones/1 aggregate counter cannot backfill missing persisted ap
   assert.equal(facts.historyComplete,false);
   assert.equal(facts.appearances,null);
   assert.equal(facts.appearance500,null);
+  assert.equal(facts.appearance700,null);
+  assert.equal(facts.nextAppearanceOrdinal,null);
   assert.equal(getSportContext(s).careerMilestones,null);
   assert.equal(getSportContext(s).availability.careerMilestones,'unavailable');
 });
@@ -40,6 +42,8 @@ test('career milestones/2 complete one-match ledger exposes exact totals and fal
   assert.equal(facts.historyComplete,true);
   assert.equal(facts.appearances,1);
   assert.equal(facts.appearance500,false);
+  assert.equal(facts.appearance700,false);
+  assert.equal(facts.nextAppearanceOrdinal,2);
   assert.equal(facts.goals,row.stats.goals);
   assert.equal(facts.assists,row.stats.assists);
   assert.equal(facts.yellowCards,row.stats.yellowCards);
@@ -102,4 +106,34 @@ test('career milestones/5 read is 0-RNG and ignores form/reputation',()=>{
   const rng=structuredClone(a.rngState);
   assert.deepEqual(careerSportMilestones(a),careerSportMilestones(b));
   assert.deepEqual(a.rngState,rng);
+});
+
+
+test('career milestones/6 complete 699 ledger exposes only a possible next appearance 700',()=>{
+  const s=matchState(9916);
+  const first=recordOfficialMatchInPlace(s,{appeared:true,debutOccurred:false,injuryUnavailable:false});
+  assert.ok(first?.stats);
+  const store=getSportMatchModelStore(s);
+  assert.ok(store);
+  const prototype=structuredClone(first);
+  for(let i=1;i<699;i+=1){
+    const date=addDays('1998-01-01',i);
+    store.fixtures.push({
+      ...structuredClone(prototype),
+      id:`fixture:1997-98:${date}:UDV`,
+      date,
+      season:'1997-98',
+      club:'UDV',
+      player:{...prototype.player,appeared:true,calledUp:true,onBench:!prototype.player.started,minutes:prototype.player.minutes||1},
+      stats:structuredClone(prototype.stats)
+    });
+  }
+  s.sport.appearances=699;
+  const facts=careerSportMilestones(s);
+  assert.equal(facts.historyComplete,true);
+  assert.equal(facts.appearances,699);
+  assert.equal(facts.appearance700,false);
+  assert.equal(facts.nextAppearanceOrdinal,700);
+  // This is an ordinal fact only; the reader does not create a fixture or appearance.
+  assert.equal(store.fixtures.length,699);
 });
