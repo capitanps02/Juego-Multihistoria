@@ -10,5 +10,13 @@ export const SEED_SCOPE_PROOFS = [
     consumerEventId: 'CEVT_24_CHAT_01',
     proofType: 'scope_expiry_blocks_consumer',
     rationale: 'The private dressing-room chat only remains causally available while the player stays at the club where it originated.'
+  },
+  {
+    seedId: 'SEED_TEAMMATE_COVER',
+    scope: 'origin_club',
+    producerEventId: 'EVT_20_LOCK_002',
+    consumerEventId: 'EVT_23_LOCK_001',
+    proofType: 'scope_expiry_blocks_consumer',
+    rationale: 'A teammate-cover precedent is dressing-room local: after leaving the origin club it cannot unlock a later locker-room cover decision at a different club.'
   }
 ];
