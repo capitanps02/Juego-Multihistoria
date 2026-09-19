@@ -2,11 +2,11 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createInitialState } from '../dist/content/initial-state.js';
 import { EVENTS_26_30 } from '../dist/content/events/26_30/index.js';
-import { T516_STAGED_DOC_PRINCIPAL_EVENTS_26 } from '../dist/content/events/26_30/t516-staged-doc-principal-events.js';
 import { eventGatesPass } from '../dist/narrative/event-gates.js';
 import { resolveChoice } from '../dist/narrative/resolver.js';
 
-const event = T516_STAGED_DOC_PRINCIPAL_EVENTS_26[0];
+const event = EVENTS_26_30.find(candidate => candidate.id === 'EVT_26_DOC_001');
+assert.ok(event, 'EVT_26_DOC_001 must already be active in SAFE3');
 
 function state26(seed = 61601) {
   const state = createInitialState(seed);
