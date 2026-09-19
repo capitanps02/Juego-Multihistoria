@@ -1,0 +1,33 @@
+name: T51 A6 SAFE3 PRE-FREEZE
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  safe3-prefreeze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Safe3 focused owner + activation tests
+        run: |
+          node --test scripts/test-t51-agent6-age26-bridge.mjs scripts/test-t51-agent6-body27.mjs scripts/test-t51-agent6-fin29.mjs scripts/test-t51-a6-safe3-prefreeze.mjs
+      - name: Emit exact active identity
+        run: |
+          node --input-type=module <<'NODE'
+          import { EVENTS } from './dist/content/events/index.js';
+          import { contentIdentity } from './dist/session/content-identity.js';
+          const identity=await contentIdentity(EVENTS);
+          console.log(JSON.stringify({identity,events:EVENTS.length,unique:new Set(EVENTS.map(e=>e.id)).size}));
+          if(EVENTS.length!==388 || new Set(EVENTS.map(e=>e.id)).size!==388) process.exit(1);
+          NODE
