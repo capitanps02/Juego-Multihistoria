@@ -1,3 +1,4 @@
+import { agencyDeferredRetirement } from './qa-t5-retirement-deferral.mjs';
 import fs from 'node:fs';
 import { EVENTS } from '../dist/content/events/index.js';
 import { createInitialState } from '../dist/content/initial-state.js';
@@ -42,7 +43,6 @@ function choose(profile, event, decisionIndex) {
 
 const segmentForAge = age => age < 20 ? '18_20' : age < 23 ? '20_23' : age < 26 ? '23_26' : age < 30 ? '26_30' : age < 34 ? '30_34' : '34_plus';
 const liveSeed = seed => !['resolved', 'expired'].includes(seed.state);
-
 function impossibleStates(state) {
   const issues = [];
   if (state.phase !== segmentForAge(state.age)) issues.push(`phase:${state.phase}/age:${state.age}`);
@@ -83,6 +83,7 @@ function runProfile(profile, seed, maxAge = 55) {
     profile: profile.id,
     seed,
     closed: state.retirement.status === 'closed',
+    agencyDeferred: agencyDeferredRetirement(state),
     retirementAge: state.retirement.decisionAge,
     closureType: state.retirement.closureType,
     finalAge: state.age,
@@ -108,7 +109,8 @@ const report = {
   totalRuns: results.length,
   metrics: {
     careersClosed: results.filter(row => row.closed).length,
-    blockedCareers: results.filter(row => !row.closed).map(row => ({ profile: row.profile, seed: row.seed, finalAge: row.finalAge })),
+    agencyDeferredCareers: results.filter(row => !row.closed && row.agencyDeferred).map(row => ({ profile: row.profile, seed: row.seed, finalAge: row.finalAge })),
+    blockedCareers: results.filter(row => !row.closed && !row.agencyDeferred).map(row => ({ profile: row.profile, seed: row.seed, finalAge: row.finalAge })),
     impossibleStates: results.flatMap(row => row.impossibleStates.map(issue => ({ profile: row.profile, seed: row.seed, issue }))),
     retirementAges: results.filter(row => row.retirementAge !== null).map(row => row.retirementAge),
     epilogueFamilies: [...new Set(results.flatMap(row => row.epilogues))]
