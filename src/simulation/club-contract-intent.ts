@@ -2,6 +2,11 @@ import type { GameState } from "../core/types.js";
 import { earlyCareerSeedFacts, type EarlyCareerSeedFacts } from "../narrative/seed-memory.js";
 import { lockerSlotAffinity } from "./locker-leadership.js";
 import {
+  listCertifiedPlayerClubLeadership,
+  resolveCurrentPlayerClubLeadership,
+  type PlayerClubLeadershipRole
+} from "./player-leadership-authority.js";
+import {
   bosmanEligibility,
   careerOfferKind,
   eligibleCareerOfferKind,
@@ -35,6 +40,8 @@ export const ROLE_DROP_SINCE_23_FACT = "facts.roleDropSince23" as const;
 export const ROLE_GUARANTEE_AT_23_FACT = "facts.roleGuaranteeAt23" as const;
 export const PENDING_CAREER_OFFER_KIND_FACT = "facts.pendingCareerOfferKind" as const;
 export const PENDING_CAREER_OFFER_FACT = "facts.pendingCareerOffer" as const;
+export const PLAYER_CLUB_LEADERSHIP_ROLE_FACT = "facts.playerClubLeadership.currentRole" as const;
+export const PLAYER_CLUB_MAIN_CAPTAIN_HISTORY_FACT = "facts.playerClubLeadership.hasCertifiedMainCaptainHistory" as const;
 export const CLUB_RENEWAL_INTENT_MAX_MONTHS = 24;
 export const CLUB_RENEWAL_INTENT_THRESHOLD = 0.50;
 
@@ -120,6 +127,20 @@ export function hasRoleGuaranteeAt23(state: GameState): boolean {
  * release clause, registration semantics and explicitly frozen narrative context
  * without receiving mutation authority. Stale offers fail closed to null.
  */
+export interface PlayerClubLeadershipFacts {
+  currentRole: PlayerClubLeadershipRole | null;
+  hasCertifiedMainCaptainHistory: boolean;
+}
+
+export function playerClubLeadershipFacts(state: GameState): PlayerClubLeadershipFacts {
+  const current = resolveCurrentPlayerClubLeadership(state);
+  return {
+    currentRole: current?.role ?? null,
+    hasCertifiedMainCaptainHistory: listCertifiedPlayerClubLeadership(state)
+      .some(row => row.role === "captain")
+  };
+}
+
 export interface PendingCareerOfferFacts {
   id: string;
   kind: CareerOfferKind;
@@ -196,6 +217,8 @@ export interface NarrativeCausalFacts extends EarlyCareerSeedFacts {
   pendingCareerOfferKind: CareerOfferKind | null;
   /** Exact detached formal-offer projection; null includes no offer and stale offers. */
   pendingCareerOffer: PendingCareerOfferFacts | null;
+  /** Certified current role plus explicit historical main-captain fact; never inferred from affinity/reputation. */
+  playerClubLeadership: PlayerClubLeadershipFacts;
   /** Exact detached representation agreement; identity-only/contact states remain null. */
   representation: RepresentationAgreement | null;
   /** Exact persisted-history + official-fixture progress for WAIT_THREE_MATCHES. */
@@ -229,6 +252,7 @@ export function narrativeCausalFacts(state: GameState): NarrativeCausalFacts {
     veteranMarketApproaches: getVeteranMarketApproaches(state),
     pendingCareerOfferKind: eligibleCareerOfferKind(state),
     pendingCareerOffer: pendingCareerOfferFacts(state),
+    playerClubLeadership: playerClubLeadershipFacts(state),
     representation: resolveCurrentRepresentation(state),
     coachPromiseWait: coachPromiseWaitFacts(state),
     achievements: resolveAchievementHistoryFacts(state),
