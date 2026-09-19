@@ -1,4 +1,4 @@
-import type { EventDefinition } from "../../../core/types.js";
+import type { Condition, EventDefinition } from "../../../core/types.js";
 import type { CareerOfferKind, OfferDisposition } from "../../../simulation/offers.js";
 import type { EventWithOfferBridge } from "../../../narrative/offer-bridge.js";
 import { ambiguousEvent, n, seedCreate } from "../18_20/helpers.js";
@@ -12,13 +12,15 @@ function formalOfferEvent(
     throw new Error(`A6 formal offer event ${event.id} must declare exactly one CareerOffer kind`);
   }
   const [offerKind] = offerKinds;
+  const kindGate: Condition = {
+    path: "facts.pendingCareerOfferKind",
+    op: "eq",
+    value: offerKind
+  };
   return Object.assign(
     {
       ...event,
-      gates: [
-        ...(event.gates ?? []),
-        { path: "facts.pendingCareerOfferKind", op: "eq", value: offerKind }
-      ]
+      gates: [...(event.gates ?? []), kindGate]
     },
     { offerBridge: { choiceActions } }
   );
