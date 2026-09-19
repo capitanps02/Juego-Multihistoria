@@ -1,0 +1,21 @@
+name: QA retirement deferral simulation
+on:
+  push:
+    branches:
+      - qa/harden-480-retirement-deferral
+  pull_request:
+    branches:
+      - main
+jobs:
+  stratified-retirement:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Strict stratified simulation
+        run: node scripts/qa-t5-sim.mjs
