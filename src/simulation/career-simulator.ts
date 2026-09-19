@@ -1,6 +1,7 @@
 import { respondToOffer } from "./offers.js";
 import { eligibleChoices } from "../narrative/choice-eligibility.js";
 import { offerDispositionForChoice, selectOfferBridgeEvent } from "../narrative/offer-bridge.js";
+import { applyRepresentationBridgeChoiceInPlace, representationTermsForChoice } from "../narrative/representation-bridge.js";
 import { createInitialState } from "../content/initial-state.js";
 import { EVENTS } from "../content/events/index.js";
 import { DeterministicRng } from "../core/rng.js";
@@ -106,7 +107,10 @@ export function simulateCareer(options: CareerSimulationOptions): CareerSimulati
         const choiceId = selectBridgeChoice(state, bridge, strategy);
         const disposition = offerDispositionForChoice(bridge, choiceId);
         if (!disposition) throw new Error(`Missing offer disposition for ${bridge.id}/${choiceId}`);
-        resolveChoiceInPlace(state, bridge, choiceId, options.qa);
+        const bridgeResolution = resolveChoiceInPlace(state, bridge, choiceId, options.qa);
+        if (representationTermsForChoice(bridge, choiceId)) {
+          applyRepresentationBridgeChoiceInPlace(state, bridge, choiceId, bridgeResolution.outcomeId);
+        }
         const historyIndex = state.history.length - 1;
         const offerId = state.market?.pending?.id;
         if (!offerId) throw new Error(`Offer bridge ${bridge.id} lost its pending CareerOffer`);
@@ -125,7 +129,10 @@ export function simulateCareer(options: CareerSimulationOptions): CareerSimulati
       const scheduled = scheduleEvent(state, index, { qa: options.qa });
       if (scheduled) {
         const choiceId = selectChoice(state, scheduled.event, strategy);
-        resolveChoiceInPlace(state, scheduled.event, choiceId, options.qa);
+        const resolution = resolveChoiceInPlace(state, scheduled.event, choiceId, options.qa);
+        if (representationTermsForChoice(scheduled.event, choiceId)) {
+          applyRepresentationBridgeChoiceInPlace(state, scheduled.event, choiceId, resolution.outcomeId);
+        }
       }
     }
     if(state.flags.EARLY_RETIRED_30_34&&state.retirement.status!=="closed") closeCareer(state,"early_retirement_30_34","early_retirement");
