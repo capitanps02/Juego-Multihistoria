@@ -3,6 +3,9 @@ import { NPC_CATALOG } from "../catalog/npcs.js";
 import { careerTerms, isCareerOfferContext } from "../simulation/offers.js";
 import { AGE_MILESTONES } from "../simulation/age-milestones.js";
 import { inspectFootballMomentStore } from "../simulation/football-moments.js";
+import { inspectNationalSelectionAuthorityStore } from "../simulation/national-team-authority.js";
+import { inspectInjuryEpisodeStore } from "../simulation/injury-episode-authority.js";
+import { inspectSportAchievementStore } from "../simulation/sport-achievement-authority.js";
 
 function assertMarket(value: unknown, state: GameState): void {
   const m=record(value,"market");
@@ -288,6 +291,12 @@ export function validateGameSave(value: unknown, version: number): void {
   for (const key of ["contract","finances","body","selection","reputation","control","sport","world","personality","flags","eventCooldowns","familyLastSeen","narrativePressure"]) record(s[key],key);
   const footballMomentIssue = inspectFootballMomentStore(record(s.world,"world").footballMomentResults, s.date as string);
   if (footballMomentIssue) ensure(false, footballMomentIssue.path, footballMomentIssue.reason);
+  const nationalSelectionIssue = inspectNationalSelectionAuthorityStore(record(s.world,"world").nationalSelectionAuthority, s.date as string);
+  if (nationalSelectionIssue) ensure(false, nationalSelectionIssue.path, nationalSelectionIssue.reason);
+  const injuryEpisodeIssue = inspectInjuryEpisodeStore(record(s.world,"world").injuryEpisodes, s as unknown as GameState);
+  if (injuryEpisodeIssue) ensure(false, injuryEpisodeIssue.path, injuryEpisodeIssue.reason);
+  const achievementIssue = inspectSportAchievementStore(record(s.world,"world").sportAchievements, s as unknown as GameState);
+  if (achievementIssue) ensure(false, achievementIssue.path, achievementIssue.reason);
   const requiredNumbers: Record<string,string[]> = {
     contract:["monthsRemaining","salaryMonthly"],finances:["cash"],body:["risk","fatigue","fitness"],
     reputation:["prestige","mediaHeat","marketHeat"],control:["career","agentDependency"],
@@ -370,6 +379,17 @@ export function validateGameSave(value: unknown, version: number): void {
     for (const k of ["reversals","noMarketWindows","daysInStatus"]) integer(r[k],`retirement.${k}`);
     if (r.decisionAge!==null) integer(r.decisionAge,"retirement.decisionAge",18,s.age);
     for (const k of ["reason","closureType"]) if (r[k]!==null) string(r[k],`retirement.${k}`);
+    if (r.status==="playing") {
+      ensure(r.decidedDate===null,"retirement.decidedDate","carrera activa con decisión de retirada vigente");
+      ensure(r.announcedDate===null,"retirement.announcedDate","carrera activa con anuncio de retirada vigente");
+    }
+    if (r.status==="announced") {
+      ensure(r.decidedDate!==null,"retirement.decidedDate","anuncio sin decisión previa");
+      ensure(r.announcedDate!==null,"retirement.announcedDate","estado anunciado sin fecha de anuncio");
+      if (r.decidedDate!==null && r.announcedDate!==null) {
+        ensure((r.decidedDate as string)<=(r.announcedDate as string),"retirement.announcedDate","anuncio anterior a la decisión");
+      }
+    }
     if (r.status==="closed") ensure(r.closedDate!==null && r.closureType!==null,"retirement","cierre sin fecha o tipo");
     else ensure(r.closedDate===null,"retirement.closedDate","carrera abierta con fecha de cierre");
   }

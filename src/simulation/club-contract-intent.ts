@@ -18,10 +18,14 @@ import {
   type FutureEmploymentNegotiation
 } from "./offers.js";
 import { getCurrentMatchContext, getSportContext, type CurrentMatchContext, type SportContext } from "./sport-context.js";
+import { resolveCurrentRepresentation, type RepresentationAgreement } from "./representation-authority.js";
 import { getSportMatchModelStore } from "./match-model.js";
 import { resolveActiveAgent, resolveCurrentClubInstitutionalNpc } from "./npc-authority.js";
 import { employmentStatus, type EmploymentStatus } from "./employment.js";
 import { getVeteranMarketApproaches, type VeteranMarketApproach } from "./veteran-market.js";
+import { resolveNationalSelectionFacts, type NationalSelectionFacts } from "./national-team-authority.js";
+import { resolveInjuryEpisodeFacts, type InjuryEpisodeFacts } from "./injury-episode-authority.js";
+import { resolveAchievementHistoryFacts, type AchievementHistoryFacts } from "./sport-achievement-authority.js";
 
 export { FORMAL_RENEWAL_REASON };
 export const CLUB_WANTS_RENEWAL_FACT = "facts.clubWantsRenewal" as const;
@@ -192,8 +196,16 @@ export interface NarrativeCausalFacts extends EarlyCareerSeedFacts {
   pendingCareerOfferKind: CareerOfferKind | null;
   /** Exact detached formal-offer projection; null includes no offer and stale offers. */
   pendingCareerOffer: PendingCareerOfferFacts | null;
+  /** Exact detached representation agreement; identity-only/contact states remain null. */
+  representation: RepresentationAgreement | null;
   /** Exact persisted-history + official-fixture progress for WAIT_THREE_MATCHES. */
   coachPromiseWait: CoachPromiseWaitFacts | null;
+  /** Explicit factual award/record history; reputation/form/seeds never create results. */
+  achievements: AchievementHistoryFacts;
+  /** Factual injury/rehab chronology; aggregate risk/fatigue never create episodes. */
+  injuryEpisodes: InjuryEpisodeFacts;
+  /** Exact persisted national preselection/final-squad facts; no aggregate proxies. */
+  nationalSelection: NationalSelectionFacts;
   /** Authoritative/read-only sporting projection. Unavailable sporting facts are null. */
   sport: SportContext;
   /** Current match projection. Fails closed until a real match producer exists. */
@@ -217,7 +229,11 @@ export function narrativeCausalFacts(state: GameState): NarrativeCausalFacts {
     veteranMarketApproaches: getVeteranMarketApproaches(state),
     pendingCareerOfferKind: eligibleCareerOfferKind(state),
     pendingCareerOffer: pendingCareerOfferFacts(state),
+    representation: resolveCurrentRepresentation(state),
     coachPromiseWait: coachPromiseWaitFacts(state),
+    achievements: resolveAchievementHistoryFacts(state),
+    injuryEpisodes: resolveInjuryEpisodeFacts(state),
+    nationalSelection: resolveNationalSelectionFacts(state),
     sport: getSportContext(state),
     match: getCurrentMatchContext(state)
   };

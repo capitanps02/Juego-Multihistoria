@@ -5,6 +5,8 @@ import { closeLeagueObjectiveInPlace, recordOfficialMatchInPlace, remainingLeagu
 import { recordCoreFinalCompetitionMomentInPlace } from "./competition-context.js";
 import { recordPenaltyDecisionSetupInPlace } from "./match-penalty-context.js";
 import { hasActiveClubEmployment } from "./employment.js";
+import { linkFirstPostReturnAppearanceInPlace, recordInjuryClearanceInPlace, recordInjuryEpisodeStartInPlace } from "./injury-episode-authority.js";
+import { publishNationalSelectionFactsInPlace } from "./national-selection-producer.js";
 
 const num = (value: unknown, fallback = 0): number =>
   typeof value === "number" && Number.isFinite(value) ? value : fallback;
@@ -20,9 +22,21 @@ export function advanceWorldDayInPlace(next: GameState): GameState {
   const beforeAppearances = num(next.sport.appearances);
   const beforeDebut = next.flags.OFFICIAL_DEBUT === true;
   const beforeFinalContext = next.flags.FINAL_CONTEXT === true;
+  const beforeInjuryWeeks = num(next.world.injuryWeeksRemaining, 0);
+  const beforeRecovering = next.flags.RECOVERING_INJURY === true;
+  const beforeNationalTournamentCycle = next.flags.NATIONAL_TOURNAMENT_CYCLE === true;
 
   advanceCoreWorldDayInPlace(next);
   if (next.date === beforeDate) return next;
+
+  publishNationalSelectionFactsInPlace(next, beforeNationalTournamentCycle);
+
+  const afterInjuryWeeks = num(next.world.injuryWeeksRemaining, 0);
+  if (beforeInjuryWeeks <= 0 && afterInjuryWeeks > 0 && next.flags.RECOVERING_INJURY === true) {
+    recordInjuryEpisodeStartInPlace(next, Math.trunc(afterInjuryWeeks), next.flags.LONG_INJURY === true ? "long" : "standard");
+  } else if (beforeInjuryWeeks > 0 && afterInjuryWeeks <= 0 && beforeRecovering && next.flags.RECOVERING_INJURY !== true) {
+    recordInjuryClearanceInPlace(next);
+  }
 
   // Age-18 JAN/SUM offers are formal CareerOffer rows produced at the world boundary.
   // The paired active content overlay consumes them through the existing offer bridge.
@@ -40,7 +54,10 @@ export function advanceWorldDayInPlace(next: GameState): GameState {
       injuryUnavailable: next.body.acuteInjury === true && !appeared
     });
 
-    if (match) recordPenaltyDecisionSetupInPlace(next, match);
+    if (match) {
+      recordPenaltyDecisionSetupInPlace(next, match);
+      linkFirstPostReturnAppearanceInPlace(next, match);
+    }
 
     // The legacy udvSeasonResolved flag can flip on the first May tick while
     // scheduled league fixtures still remain. It is therefore not authoritative
