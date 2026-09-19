@@ -5,6 +5,7 @@ import { AGE_MILESTONES } from "../simulation/age-milestones.js";
 import { inspectFootballMomentStore } from "../simulation/football-moments.js";
 import { inspectNationalSelectionAuthorityStore } from "../simulation/national-team-authority.js";
 import { inspectInjuryEpisodeStore } from "../simulation/injury-episode-authority.js";
+import { inspectSportAchievementStore } from "../simulation/sport-achievement-authority.js";
 
 function assertMarket(value: unknown, state: GameState): void {
   const m=record(value,"market");
@@ -294,6 +295,8 @@ export function validateGameSave(value: unknown, version: number): void {
   if (nationalSelectionIssue) ensure(false, nationalSelectionIssue.path, nationalSelectionIssue.reason);
   const injuryEpisodeIssue = inspectInjuryEpisodeStore(record(s.world,"world").injuryEpisodes, s as unknown as GameState);
   if (injuryEpisodeIssue) ensure(false, injuryEpisodeIssue.path, injuryEpisodeIssue.reason);
+  const achievementIssue = inspectSportAchievementStore(record(s.world,"world").sportAchievements, s as unknown as GameState);
+  if (achievementIssue) ensure(false, achievementIssue.path, achievementIssue.reason);
   const requiredNumbers: Record<string,string[]> = {
     contract:["monthsRemaining","salaryMonthly"],finances:["cash"],body:["risk","fatigue","fitness"],
     reputation:["prestige","mediaHeat","marketHeat"],control:["career","agentDependency"],
