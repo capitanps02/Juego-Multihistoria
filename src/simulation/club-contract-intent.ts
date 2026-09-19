@@ -2,6 +2,11 @@ import type { GameState } from "../core/types.js";
 import { earlyCareerSeedFacts, type EarlyCareerSeedFacts } from "../narrative/seed-memory.js";
 import { lockerSlotAffinity } from "./locker-leadership.js";
 import {
+  listCertifiedPlayerClubLeadership,
+  resolveCurrentPlayerClubLeadership,
+  type PlayerClubLeadershipRole
+} from "./player-leadership-authority.js";
+import {
   bosmanEligibility,
   careerOfferKind,
   eligibleCareerOfferKind,
@@ -35,6 +40,8 @@ export const ROLE_DROP_SINCE_23_FACT = "facts.roleDropSince23" as const;
 export const ROLE_GUARANTEE_AT_23_FACT = "facts.roleGuaranteeAt23" as const;
 export const PENDING_CAREER_OFFER_KIND_FACT = "facts.pendingCareerOfferKind" as const;
 export const PENDING_CAREER_OFFER_FACT = "facts.pendingCareerOffer" as const;
+export const PLAYER_CLUB_LEADERSHIP_ROLE_FACT = "facts.playerClubLeadership.currentRole" as const;
+export const PLAYER_CLUB_MAIN_CAPTAIN_HISTORY_FACT = "facts.playerClubLeadership.hasCertifiedMainCaptainHistory" as const;
 export const CLUB_RENEWAL_INTENT_MAX_MONTHS = 24;
 export const CLUB_RENEWAL_INTENT_THRESHOLD = 0.50;
 
@@ -114,6 +121,20 @@ export function hasRoleGuaranteeAt23(state: GameState): boolean {
   );
 }
 
+export interface PlayerClubLeadershipFacts {
+  currentRole: PlayerClubLeadershipRole | null;
+  hasCertifiedMainCaptainHistory: boolean;
+}
+
+export function playerClubLeadershipFacts(state: GameState): PlayerClubLeadershipFacts {
+  const current = resolveCurrentPlayerClubLeadership(state);
+  return {
+    currentRole: current?.role ?? null,
+    hasCertifiedMainCaptainHistory: listCertifiedPlayerClubLeadership(state)
+      .some(row => row.role === "captain")
+  };
+}
+
 /**
  * Exact, detached projection of the one formal offer that is still compatible with
  * live CareerTerms. Narrative conditions can inspect destination, salary, duration,
@@ -178,6 +199,8 @@ export interface NarrativeCausalFacts extends EarlyCareerSeedFacts {
   lockerStarAffinity: number | null;
   roleDropSince23: number;
   roleGuaranteeAt23: boolean;
+  /** Certified current/history club leadership facts for A7 canonical gates. */
+  playerClubLeadership: PlayerClubLeadershipFacts;
   /** Explicitly certified current representative; null means no authority. */
   activeAgentNpcId: string | null;
   /** Current-club institutional recipient only when shared authority certifies one. */
@@ -220,6 +243,7 @@ export function narrativeCausalFacts(state: GameState): NarrativeCausalFacts {
     lockerStarAffinity: lockerSlotAffinity(state, "star"),
     roleDropSince23: roleDropSince23(state),
     roleGuaranteeAt23: hasRoleGuaranteeAt23(state),
+    playerClubLeadership: playerClubLeadershipFacts(state),
     activeAgentNpcId: resolveActiveAgent(state),
     currentClubInstitutionalNpcId: resolveCurrentClubInstitutionalNpc(state),
     employmentStatus: employmentStatus(state),
