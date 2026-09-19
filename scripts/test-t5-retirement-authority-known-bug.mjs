@@ -107,6 +107,7 @@ test('T5-QA-016e: only explicit continue choices reopen and save/load preserves 
   state.date='2044-07-01';
   recordVoluntaryContinue(state,'EVT_RET_LOW_001','FIGHT','2044-07-01');
   recordVoluntaryContinue(state,'EVT_RET_HIGH_001','HIGH','2044-07-02');
+  state.date='2044-07-03';
   state=loadSave(serializeSave(state));
   state.date='2045-07-03';
 
