@@ -274,3 +274,12 @@ test('competition calendar/12 horizon excludes a produced final outside the requ
   assert.equal(congestion.matchesNext7, seven.length);
   assert.equal(congestion.matchesNext14, fourteen.length);
 });
+
+
+test('competition calendar/12 away load is factual while geographic travel fails closed', () => {
+  const state = createInitialState(9624);
+  const context = getFixtureCongestionContext(state);
+  assert.equal(context.awayMatchesNext14, getCompetitionSchedule(state, 14).filter(row => row.homeAway === 'away').length);
+  assert.equal(context.travelLoadKnown, false);
+  assert.equal(context.travelLoadReason, 'no_authoritative_locations');
+});
