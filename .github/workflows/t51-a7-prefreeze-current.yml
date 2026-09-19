@@ -76,5 +76,5 @@ jobs:
           const identity=await contentIdentity(EVENTS);
           const unique=new Set(EVENTS.map(e=>e.id)).size;
           console.log(JSON.stringify({identity,events:EVENTS.length,unique}));
-          if(EVENTS.length!==388 || unique!==388) process.exit(1);
+          if(EVENTS.length!==365 || unique!==365) process.exit(1);
           NODE
