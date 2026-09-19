@@ -42,6 +42,16 @@ function choose(profile, event, decisionIndex) {
 
 const segmentForAge = age => age < 20 ? '18_20' : age < 23 ? '20_23' : age < 26 ? '23_26' : age < 30 ? '26_30' : age < 34 ? '30_34' : '34_plus';
 const liveSeed = seed => !['resolved', 'expired'].includes(seed.state);
+const announcementEvent = EVENTS.find(event => event.id === 'EVT_RET_ANNOUNCE_001') ?? null;
+const hasExplicitAnnouncementChoice = announcementEvent?.choices?.some(choice =>
+  (choice.immediateEffects ?? []).some(effect =>
+    effect.kind === 'set' && effect.path === 'retirement.status' && effect.value === 'announced'
+  )
+) ?? false;
+
+function agencyDeferredRetirement(state) {
+  return state.retirement.status === 'decided' && hasExplicitAnnouncementChoice;
+}
 
 function impossibleStates(state) {
   const issues = [];
@@ -83,6 +93,7 @@ function runProfile(profile, seed, maxAge = 55) {
     profile: profile.id,
     seed,
     closed: state.retirement.status === 'closed',
+    agencyDeferred: agencyDeferredRetirement(state),
     retirementAge: state.retirement.decisionAge,
     closureType: state.retirement.closureType,
     finalAge: state.age,
@@ -108,7 +119,8 @@ const report = {
   totalRuns: results.length,
   metrics: {
     careersClosed: results.filter(row => row.closed).length,
-    blockedCareers: results.filter(row => !row.closed).map(row => ({ profile: row.profile, seed: row.seed, finalAge: row.finalAge })),
+    agencyDeferredCareers: results.filter(row => !row.closed && row.agencyDeferred).map(row => ({ profile: row.profile, seed: row.seed, finalAge: row.finalAge })),
+    blockedCareers: results.filter(row => !row.closed && !row.agencyDeferred).map(row => ({ profile: row.profile, seed: row.seed, finalAge: row.finalAge })),
     impossibleStates: results.flatMap(row => row.impossibleStates.map(issue => ({ profile: row.profile, seed: row.seed, issue }))),
     retirementAges: results.filter(row => row.retirementAge !== null).map(row => row.retirementAge),
     epilogueFamilies: [...new Set(results.flatMap(row => row.epilogues))]
