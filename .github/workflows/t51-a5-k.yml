@@ -1,0 +1,29 @@
+name: T51 A5 K certification
+
+on:
+  push:
+    branches: ['a0/a5-k-corrected-after-293']
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  a5-k:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Canonical 388 inventory and A5 K semantics
+        run: node --test scripts/test-t51-a5-k.mjs
+      - name: Frozen K source and lineage
+        run: |
+          node scripts/freeze-t51-active-source.mjs --check
+          node scripts/generate-t51-post-legacy-registry.mjs --check
+          node scripts/generate-t51-offer-bridge-evidence.mjs --check
+          node scripts/check-t51-content-migration-route.mjs
+          node --test scripts/test-t51-content-migration.mjs scripts/test-t51-content-lineage.mjs scripts/test-t51-migration-source-policy.mjs
