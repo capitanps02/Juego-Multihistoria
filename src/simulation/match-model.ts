@@ -63,6 +63,9 @@ export interface CareerSportMilestones {
   yellowCards: number | null;
   redCards: number | null;
   appearance500: boolean | null;
+  appearance700: boolean | null;
+  /** Exact ordinal only when the career ledger is complete; it does not guarantee another appearance. */
+  nextAppearanceOrdinal: number | null;
 }
 
 export interface SeasonPlayerStats extends MatchPlayerStats {
@@ -427,7 +430,9 @@ export function careerSportMilestones(state: GameState): CareerSportMilestones {
     assists: null,
     yellowCards: null,
     redCards: null,
-    appearance500: null
+    appearance500: null,
+    appearance700: null,
+    nextAppearanceOrdinal: null
   };
   if (!store) return unavailable;
 
@@ -451,7 +456,9 @@ export function careerSportMilestones(state: GameState): CareerSportMilestones {
     historyComplete: true,
     appearances: appeared.length,
     ...totals,
-    appearance500: appeared.length >= 500
+    appearance500: appeared.length >= 500,
+    appearance700: appeared.length >= 700,
+    nextAppearanceOrdinal: appeared.length + 1
   };
 }
 
