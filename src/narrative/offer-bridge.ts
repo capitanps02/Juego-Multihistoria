@@ -2,21 +2,18 @@ import { knowledgeRequirementsFor } from "../catalog/npc-knowledge-rules.js";
 import { conditionsPass } from "../core/conditions.js";
 import { npcKnows } from "../core/npc-knowledge.js";
 import type { EventDefinition, GameState } from "../core/types.js";
-import { careerOfferKind, type CareerOfferKind, type OfferDisposition } from "../simulation/offers.js";
+import type { OfferDisposition } from "../simulation/offers.js";
 import { eligibleChoices } from "./choice-eligibility.js";
 import { eventGatesPass } from "./event-gates.js";
 
 export interface OfferBridgeSpec {
   /** Every choice closes the currently pending CareerOffer through respondToOffer(). */
   choiceActions: Record<string, OfferDisposition>;
-  /** Optional authoritative CareerOffer classes accepted by this narrative bridge. */
-  offerKinds?: CareerOfferKind[];
 }
 
 export type EventWithOfferBridge = EventDefinition & { offerBridge?: OfferBridgeSpec };
 
 const DISPOSITIONS = new Set<OfferDisposition>(["accept", "reject", "delegate", "counter", "defer"]);
-const OFFER_KINDS = new Set<CareerOfferKind>(["renewal", "transfer", "loan", "loan_return", "loan_conversion"]);
 
 export function offerBridgeSpec(event: EventDefinition): OfferBridgeSpec | undefined {
   const spec = (event as EventWithOfferBridge).offerBridge;
@@ -31,11 +28,6 @@ export function offerBridgeSpec(event: EventDefinition): OfferBridgeSpec | undef
   }
   for (const [choiceId, action] of Object.entries(spec.choiceActions)) {
     if (!DISPOSITIONS.has(action)) throw new Error(`Invalid offer disposition ${String(action)} for ${event.id}/${choiceId}`);
-  }
-  if (spec.offerKinds !== undefined) {
-    if (!Array.isArray(spec.offerKinds) || spec.offerKinds.length === 0) throw new Error(`Offer bridge ${event.id} must declare at least one offer kind`);
-    if (new Set(spec.offerKinds).size !== spec.offerKinds.length) throw new Error(`Offer bridge ${event.id} has duplicate offer kinds`);
-    for (const kind of spec.offerKinds) if (!OFFER_KINDS.has(kind)) throw new Error(`Invalid offer kind ${String(kind)} for ${event.id}`);
   }
   return spec;
 }
@@ -65,10 +57,7 @@ function knowledgePass(state: GameState, event: EventDefinition): boolean {
  * Their eligibility is deterministic and consumes no RNG.
  */
 export function offerBridgeEligible(state: GameState, event: EventDefinition): boolean {
-  const pending = state.market?.pending;
-  const spec = offerBridgeSpec(event);
-  if (!pending || !spec) return false;
-  if (spec.offerKinds && !spec.offerKinds.includes(careerOfferKind(pending))) return false;
+  if (!state.market?.pending || !offerBridgeSpec(event)) return false;
   const maxAge = event.ageWindow[1] ?? Infinity;
   if (state.age < event.ageWindow[0] || state.age > maxAge || state.phase !== event.phase) return false;
   if ((state.eventCooldowns[event.id] ?? 0) > 0 || (!event.repeatable && state.flags[`SEEN_${event.id}`] === true)) return false;
