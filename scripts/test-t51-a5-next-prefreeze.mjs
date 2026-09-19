@@ -1,3 +1,4 @@
+// A0 exact-head certification after retirement-runtime predecessor.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { EVENTS, EVENTS_20_23 } from '../dist/content/events/index.js';
