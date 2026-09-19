@@ -5,6 +5,7 @@ import { EVENTS } from '../dist/content/events/index.js';
 import { SEED_CATALOG } from '../dist/catalog/seeds.js';
 import { getSeedScopePolicy } from '../dist/catalog/seed-scope.js';
 import { seedPresencePolarity } from './t52-seed-condition-polarity.mjs';
+import { T52_CAUSAL_SEED_FACTS } from './t52-causal-seed-facts.mjs';
 import { SIMULATION_SEED_CONSUMERS } from './t52-simulation-seed-consumers.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -42,6 +43,18 @@ export function temporalFeasibility(seedAgeWindow, producerAgeWindow, consumerAg
 
 function dedupeRows(rows, keyFn) {
   return [...new Map(rows.map(row => [keyFn(row), row])).values()];
+}
+
+function causalFactPolarity(condition) {
+  if (condition.op === 'eq') return condition.value === null ? 'negative' : 'positive';
+  if (condition.op === 'neq') return condition.value === null ? 'positive' : 'neutral';
+  if (condition.op === 'in' && Array.isArray(condition.value)) {
+    return condition.value.includes(null) ? 'neutral' : 'positive';
+  }
+  if (condition.op === 'notIn' && Array.isArray(condition.value)) {
+    return condition.value.includes(null) ? 'positive' : 'neutral';
+  }
+  return 'neutral';
 }
 
 function walkTsFiles(dir) {
@@ -137,6 +150,9 @@ export function buildDeferredConsequenceReport(events = EVENTS, seeds = SEED_CAT
           invalidWindows: []
         }
   );
+  const causalFactRegistry = options.causalFactRegistry ?? (
+    useDefaultSimulationRegistry ? T52_CAUSAL_SEED_FACTS : {}
+  );
 
   const seedFromPresencePath = value => (
     typeof value === 'string' && value.startsWith('flags.HAS_SEED_')
@@ -146,6 +162,34 @@ export function buildDeferredConsequenceReport(events = EVENTS, seeds = SEED_CAT
 
   const collectConditions = (event, conditions, context) => {
     for (const condition of conditions ?? []) {
+      const causalSeedId = typeof condition.path === 'string'
+        ? (causalFactRegistry[condition.path] ?? null)
+        : null;
+      if (causalSeedId) {
+        if (!localSeedIds.has(causalSeedId)) {
+          unknownRefs.push({ seedId: causalSeedId, eventId: event.id, kind: 'causal_fact_condition', context, factPath: condition.path });
+          continue;
+        }
+        const polarity = causalFactPolarity(condition);
+        const row = {
+          seedId: causalSeedId,
+          eventId: event.id,
+          kind: 'causal_fact',
+          context,
+          polarity,
+          op: condition.op,
+          value: condition.value,
+          factPath: condition.path,
+          ageWindow: event.ageWindow,
+          phase: event.phase,
+          family: event.family
+        };
+        if (polarity === 'positive') consumers.push(row);
+        else if (polarity === 'negative') negativeDependencies.push(row);
+        else neutralDependencies.push(row);
+        continue;
+      }
+
       const seedId = seedFromPresencePath(condition.path);
       if (!seedId) continue;
       if (!localSeedIds.has(seedId)) {
@@ -384,7 +428,7 @@ export function buildDeferredConsequenceReport(events = EVENTS, seeds = SEED_CAT
     generatedAt: new Date().toISOString(),
     model: {
       purpose: 'prove necessary temporal feasibility for positive runtime producer→consumer seed chains without inventing canonical semantics',
-      consumerEvidence: 'positive HAS_SEED_* conditions in event gates/gate alternatives/exclusions/outcomes/modifiers/choice eligibility, resolve/expire transitions, plus registered direct positive HAS_SEED_* effects in src/simulation; negative/neutral dependencies and seedsRead-only metadata are reported separately',
+      consumerEvidence: 'positive HAS_SEED_* conditions plus registered causal facts.* conditions in event gates/gate alternatives/exclusions/outcomes/modifiers/choice eligibility, resolve/expire transitions, and registered direct positive HAS_SEED_* effects in src/simulation; negative/neutral dependencies and seedsRead-only metadata are reported separately',
       polarity: 'boolean HAS_SEED_* predicates are classified by whether the same comparator passes for true vs false; only positive presence requirements create producer→consumer edges',
       simulationRegistry: 'every direct HAS_SEED_* read in src/simulation must map to exactly one declared file+seed entry with an evidence-based runtime age window',
       ageExpiry: 'catalog max age is treated as terminal because expireDueSeedsInPlace expires live seeds when state.age > maxAge',

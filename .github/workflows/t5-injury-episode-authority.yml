@@ -1,0 +1,26 @@
+name: T5 Injury Episode Authority
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: ['a0/injury-episode-authority-after-national']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  injury-episode-authority:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Injury episode and rehabilitation authority
+        run: node --test scripts/test-t5-injury-episode-authority.mjs

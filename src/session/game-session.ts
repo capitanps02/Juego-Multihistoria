@@ -7,6 +7,7 @@ import { EventIndex } from "../narrative/event-index.js";
 import { scheduleEvent } from "../narrative/scheduler.js";
 import { eligibleChoices } from "../narrative/choice-eligibility.js";
 import { offerDispositionForChoice, selectOfferBridgeEvent } from "../narrative/offer-bridge.js";
+import { applyRepresentationBridgeChoiceInPlace, representationTermsForChoice } from "../narrative/representation-bridge.js";
 import {
   reconcileNpcKnowledgeFromHistoryInPlace,
   type NpcKnowledgeLegacyCertification
@@ -377,6 +378,7 @@ export class GameSession {
       requireThat(pending && pending.instanceId === command.pendingInstanceId, "STALE_DECISION", "Esta escena ya no está pendiente.");
       const choice = pending.event.choices.find(c => c.id === command.choiceId);
       const bridgeDisposition = choice ? offerDispositionForChoice(pending.event, choice.id) : null;
+      const representationTerms = choice ? representationTermsForChoice(pending.event, choice.id) : undefined;
       const availableChoice = choice && eligibleChoices(next.state, pending.event).some(candidate => candidate.id === choice.id);
       if (choice && bridgeDisposition && !availableChoice) {
         throw new SessionError(
@@ -386,6 +388,7 @@ export class GameSession {
       }
       requireThat(choice && availableChoice, "INVALID_CHOICE", "La elección no pertenece a esta escena o no está disponible.");
       const beforeOfferTerms = bridgeDisposition ? careerTerms(next.state) : null;
+      const beforeRepresentation = representationTerms ? structuredClone(next.state.world.representationAuthority) : null;
       if (bridgeDisposition) requireThat(next.state.market?.pending, "STALE_OFFER", "La oferta asociada a esta escena ya no está pendiente.");
       let result;
       try {
@@ -402,6 +405,17 @@ export class GameSession {
         throw error;
       }
       let messages = result.messages;
+      if (representationTerms) {
+        try {
+          applyRepresentationBridgeChoiceInPlace(next.state, pending.event, choice.id, result.outcomeId);
+        } catch (error) {
+          next.state.world.representationAuthority = beforeRepresentation as never;
+          throw new SessionError(
+            "INVALID_REPRESENTATION_BRIDGE",
+            error instanceof Error ? error.message : "No se pudo aplicar la decisión de representación."
+          );
+        }
+      }
       if (bridgeDisposition) {
         requireThat(JSON.stringify(careerTerms(next.state)) === JSON.stringify(beforeOfferTerms), "INVALID_OFFER_BRIDGE", "Una escena de oferta no puede modificar términos contractuales mediante efectos narrativos.");
         const historyIndex = next.state.history.length - 1;
