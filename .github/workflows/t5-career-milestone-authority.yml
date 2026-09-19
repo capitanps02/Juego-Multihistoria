@@ -1,0 +1,28 @@
+name: T5 Career Milestone Authority
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: ['a0/career-milestone-authority-current-main']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  career-milestones:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Career milestone factual authority
+        run: node --test scripts/test-t5-career-sport-milestones.mjs
+      - name: Existing sport context regressions
+        run: node --test scripts/test-t5-sport-context.mjs
