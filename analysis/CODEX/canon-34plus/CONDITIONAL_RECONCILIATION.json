@@ -1,0 +1,176 @@
+{
+  "version": 1,
+  "generatedAt": "2026-09-17",
+  "source": {
+    "document": "analysis/2026-09-11/guion-extraido.txt",
+    "section": "25.13 Baraja condicional - 32 eventos que pueden alterar el final"
+  },
+  "engineSource": "src/content/events/34_plus/conditional-events.ts",
+  "summary": {
+    "canonicalCount": 32,
+    "engineCount": 32,
+    "exactIdOverlap": 5,
+    "exactIdSemanticallyAccredited": 0,
+    "exactIdNeedsReimplementation": 5,
+    "canonicalMissingExactId": 27,
+    "engineTechnicalExtraExactId": 27,
+    "engineGenericTechnicalAdaptations": 29,
+    "engineCanonStatusVerifiedRows": 3,
+    "verifiedMetadataAcceptedAsCanonEvidence": 0
+  },
+  "canonicalIds": [
+    "CEVT_34_LATE_BALLON_WIN",
+    "CEVT_34_MAJOR_COMEBACK",
+    "CEVT_34_COACH_BECOMES_DIRECTOR",
+    "CEVT_34_RIVAS_RETURNS",
+    "CEVT_34_CLARA_EXCLUSIVE",
+    "CEVT_34_NANO_DIRECTOR",
+    "CEVT_34_ADRIAN_LAST_DERBY",
+    "CEVT_34_FAMILY_CLUB_BUYIN",
+    "CEVT_34_CLUB_RELEGATION",
+    "CEVT_34_CLUB_PROMOTION",
+    "CEVT_34_MANAGER_SACKED_AFTER_PROMISE",
+    "CEVT_34_SUCCESSOR_INJURED",
+    "CEVT_35_UDV_FINANCIAL_CRISIS",
+    "CEVT_35_UDV_CUP_RUN",
+    "CEVT_35_NT_TOURNAMENT_INJURY",
+    "CEVT_35_NT_FINAL_GOAL",
+    "CEVT_35_NT_FINAL_BENCH",
+    "CEVT_35_PUBLIC_FEUD_RETURNS",
+    "CEVT_35_SPONSOR_EXIT",
+    "CEVT_35_SPONSOR_LATE_BOOM",
+    "CEVT_36_YOUTH_ASSIST",
+    "CEVT_36_YOUTH_REPLACES_YOU",
+    "CEVT_36_RECORD_BROKEN_BY_OTHER",
+    "CEVT_36_NO_MEDICAL_CLEARANCE",
+    "CEVT_36_ONE_LAST_CHAMPIONS_RUN",
+    "CEVT_37_PLAYER_COACH_EMERGENCY",
+    "CEVT_37_EMPTY_STADIUM_FAREWELL",
+    "CEVT_37_LAST_DERBY",
+    "CEVT_38_OFFER_AFTER_RETIREMENT_ANNOUNCED",
+    "CEVT_38_RETIREMENT_REVERSAL",
+    "CEVT_RET_NO_LAST_MATCH",
+    "CEVT_RET_STORYBOOK_LAST_GOAL"
+  ],
+  "exactIdOverlapRows": [
+    {
+      "id": "CEVT_34_MAJOR_COMEBACK",
+      "classification": "needs_reimplementation",
+      "canonicalPremise": "major injury plus successful rehab; return after 7-10 months and outperform expectations for weeks",
+      "enginePremise": "generic MAJOR_COMEBACK_CONTEXT flag with generic A-D choices",
+      "reason": "same ID but engine does not encode canonical producer/gate/scene-specific choices or factual rehab history"
+    },
+    {
+      "id": "CEVT_36_NO_MEDICAL_CLEARANCE",
+      "classification": "needs_reimplementation",
+      "canonicalPremise": "interested club fails medical clearance or requests special conditions",
+      "enginePremise": "LATE_BODY_REDLINE flag with generic A-D choices",
+      "reason": "same ID but missing real interested-club/formal-market and medical-evaluation authority"
+    },
+    {
+      "id": "CEVT_38_OFFER_AFTER_RETIREMENT_ANNOUNCED",
+      "classification": "needs_reimplementation_terminal_shared",
+      "canonicalPremise": "retirement announced plus real market emergency; a club asks whether the player would reconsider",
+      "enginePremise": "announced status plus POST_ANNOUNCE_OFFER flag; LISTEN/DECLINE toggle reconsideration flags",
+      "reason": "same ID but narrative flag is not a formal CareerOffer and terminal reversal semantics belong to Agent 9/shared retirement authority"
+    },
+    {
+      "id": "CEVT_RET_NO_LAST_MATCH",
+      "classification": "needs_reimplementation_agent9",
+      "canonicalPremise": "retirement plus injury/suspension causes career to end without a final on-field match",
+      "enginePremise": "announced status plus daysInStatus >= 60; closes career by elapsed timer",
+      "reason": "same ID but current engine fabricates closure from elapsed time rather than factual sporting unavailability"
+    },
+    {
+      "id": "CEVT_RET_STORYBOOK_LAST_GOAL",
+      "classification": "needs_reimplementation_agent9",
+      "canonicalPremise": "actual last match plus plausible goal window; scoring may occur but is never forced",
+      "enginePremise": "LAST_MATCH_WINDOW plus roleScore; TAKE choice writes STORYBOOK_LAST_GOAL and closes career",
+      "reason": "same ID but current choice can manufacture the goal/closure without authoritative match/goal fact"
+    }
+  ],
+  "canonicalMissingExactIds": [
+    "CEVT_34_LATE_BALLON_WIN",
+    "CEVT_34_COACH_BECOMES_DIRECTOR",
+    "CEVT_34_RIVAS_RETURNS",
+    "CEVT_34_CLARA_EXCLUSIVE",
+    "CEVT_34_NANO_DIRECTOR",
+    "CEVT_34_ADRIAN_LAST_DERBY",
+    "CEVT_34_FAMILY_CLUB_BUYIN",
+    "CEVT_34_CLUB_RELEGATION",
+    "CEVT_34_CLUB_PROMOTION",
+    "CEVT_34_MANAGER_SACKED_AFTER_PROMISE",
+    "CEVT_34_SUCCESSOR_INJURED",
+    "CEVT_35_UDV_FINANCIAL_CRISIS",
+    "CEVT_35_UDV_CUP_RUN",
+    "CEVT_35_NT_TOURNAMENT_INJURY",
+    "CEVT_35_NT_FINAL_GOAL",
+    "CEVT_35_NT_FINAL_BENCH",
+    "CEVT_35_PUBLIC_FEUD_RETURNS",
+    "CEVT_35_SPONSOR_EXIT",
+    "CEVT_35_SPONSOR_LATE_BOOM",
+    "CEVT_36_YOUTH_ASSIST",
+    "CEVT_36_YOUTH_REPLACES_YOU",
+    "CEVT_36_RECORD_BROKEN_BY_OTHER",
+    "CEVT_36_ONE_LAST_CHAMPIONS_RUN",
+    "CEVT_37_PLAYER_COACH_EMERGENCY",
+    "CEVT_37_EMPTY_STADIUM_FAREWELL",
+    "CEVT_37_LAST_DERBY",
+    "CEVT_38_RETIREMENT_REVERSAL"
+  ],
+  "engineTechnicalExtraExactIds": [
+    "CEVT_34_RENEWAL_GHOST",
+    "CEVT_34_ROLE_COLLAPSE",
+    "CEVT_34_HOME_CALL",
+    "CEVT_34_FAMILY_STOP",
+    "CEVT_34_MEDIA_END",
+    "CEVT_34_CAPTAIN_WITHOUT_MINUTES",
+    "CEVT_34_MARKET_DOWNGRADE",
+    "CEVT_35_BODY_SETBACK",
+    "CEVT_35_YOUNG_STARTER",
+    "CEVT_35_NT_EXCLUSION",
+    "CEVT_35_LATE_FINAL",
+    "CEVT_35_AGENT_SPLIT",
+    "CEVT_35_CLUB_LEGACY",
+    "CEVT_35_RICH_LAST",
+    "CEVT_35_INJURY_RETURN",
+    "CEVT_36_COMEBACK_FINAL",
+    "CEVT_36_MARKET_SILENCE",
+    "CEVT_36_MENTOR_CONFLICT",
+    "CEVT_36_FAMILY_RETURN",
+    "CEVT_36_SELECTION_GOODBYE",
+    "CEVT_37_NO_LAST_DERBY",
+    "CEVT_37_RECORD_WINDOW",
+    "CEVT_37_HOME_CROWD",
+    "CEVT_37_PRIVATE_DOUBT",
+    "CEVT_38_MEDIA_FAREWELL",
+    "CEVT_38_FAMILY_REVERSAL",
+    "CEVT_RET_RECONSIDER"
+  ],
+  "candidateNonIdentityRelation": [
+    {
+      "engineId": "CEVT_RET_RECONSIDER",
+      "canonicalId": "CEVT_38_RETIREMENT_REVERSAL",
+      "status": "possible_semantic_replacement_not_approved",
+      "reason": "both concern post-announcement/retirement reconsideration, but IDs and state-machine semantics differ; no alias or migration mapping may be inferred",
+      "owner": "agent9_shared_retirement"
+    }
+  ],
+  "engineMetadataAudit": {
+    "genericFactoryCanonStatus": "technical_adaptation",
+    "verifiedRows": [
+      "CEVT_RET_RECONSIDER",
+      "CEVT_RET_STORYBOOK_LAST_GOAL",
+      "CEVT_RET_NO_LAST_MATCH"
+    ],
+    "finding": "canonStatus=verified is not sufficient evidence: CEVT_RET_RECONSIDER is not a canonical Pasada-7 ID, while the two exact-ID terminal rows have semantic/authority mismatches against the canonical definitions"
+  },
+  "hardRules": [
+    "Do not treat equal counts 32/32 as semantic reconciliation",
+    "Do not fuzzy-match technical extras to canonical IDs by title/theme",
+    "Do not preserve technical generic A-D choice shells as canonical behavior",
+    "Do not use roleScore, market flags, agentControl, nationalCaps or retirement timers as substitutes for the factual canonical trigger",
+    "Do not migrate/alias CEVT_RET_RECONSIDER to CEVT_38_RETIREMENT_REVERSAL without Agent-9/shared-retirement approval and save evidence",
+    "Terminal conditional implementation remains outside Agent-8 runtime ownership"
+  ]
+}

@@ -1,0 +1,267 @@
+{
+  "version": 7,
+  "generatedAt": "2026-09-18",
+  "baseMain": "5f4d14bca4d696cfafadb58b64034c7cd40cc147",
+  "ownerBranch": "t51/canon-34plus",
+  "scope": {
+    "ordinaryPrincipals": 43,
+    "canonicalCardsPrepared": 43,
+    "runtimeActivated": 0,
+    "strictCodexReady": 0,
+    "canonicalConditionals": 32,
+    "conditionalIdentitiesReconciled": 32,
+    "conditionalAuthorityMatrixCoverage": 32,
+    "conditionalRuntimeAccredited": 0
+  },
+  "lineage": {
+    "issue": 59,
+    "migrationGraphImplementedOnMain": true,
+    "currentActiveGeneration": "H",
+    "currentActiveIdentity": "84871fae2bec92d74d1e607e0a48943e2e530a062d315a829cfe75eda9fe0886",
+    "agent8SuccessorAuthorizedNow": false,
+    "rule": "34+ waits for the serialized authoritative final 30-34 predecessor; never register a parallel H successor or provisional shortcut"
+  },
+  "wave0": {
+    "lineage": {
+      "issue": 59,
+      "state": "blocking_serialized_turn"
+    },
+    "seedCatalog": {
+      "issue": 180,
+      "pullRequest": 191,
+      "state": "green_ready_not_integrated_on_current_main"
+    }
+  },
+  "sharedRuntimeOrder": [
+    {
+      "step": 1,
+      "owner": "sport_boundary",
+      "issue": 124,
+      "pullRequest": 156,
+      "state": "integrated",
+      "mainCommit": "5f4d14bca4d696cfafadb58b64034c7cd40cc147"
+    },
+    {
+      "step": 2,
+      "owner": "rich_offer_context",
+      "issue": 175,
+      "pullRequest": 207,
+      "state": "green_ready_not_integrated",
+      "reason": "MarketState v2 must preserve CareerOffer.context natively"
+    },
+    {
+      "step": 3,
+      "owner": "market_state_v2",
+      "issue": 157,
+      "state": "wait_for_207_then_implement"
+    },
+    {
+      "step": 4,
+      "owner": "employment_unattached",
+      "issue": 130,
+      "state": "contract_ready_coordinate_with_157"
+    },
+    {
+      "step": 5,
+      "owner": "veteran_market_producer",
+      "issue": 176,
+      "state": "wait_for_157_130"
+    }
+  ],
+  "routes": [
+    {
+      "domain": "sport_match_usage_calendar",
+      "ownerIssue": 124,
+      "pullRequest": 156,
+      "state": "integrated",
+      "mainCommit": "5f4d14bca4d696cfafadb58b64034c7cd40cc147",
+      "provides": [
+        "official_league_fixture_identity",
+        "next_previous_fixture",
+        "remaining_league_fixtures",
+        "squad_call",
+        "bench",
+        "start",
+        "appearance",
+        "minutes",
+        "injury_unavailable",
+        "historical_usage"
+      ],
+      "doesNotProvide": [
+        "per_match_final_result",
+        "goals",
+        "assists",
+        "cards",
+        "awards",
+        "records",
+        "concrete_national_selection",
+        "stadium_incidents"
+      ]
+    },
+    {
+      "domain": "rich_offer_context",
+      "ownerIssue": 175,
+      "pullRequest": 207,
+      "state": "green_ready_not_integrated",
+      "contract": "optional validated CareerOffer.context for explicit rich late-career side terms; factual context only, no synthetic offer production",
+      "downstreamReason": "#157 must preserve context through v2 migration/open-offer collection rather than forcing a second migration"
+    },
+    {
+      "domain": "market_state_v2",
+      "ownerIssue": 157,
+      "state": "waiting_207",
+      "contract": "authoritative 0..N open CareerOffer collection, stable IDs, deterministic v1 migration including CareerOffer.context, durable system-closure provenance and ambiguity-fail-closed narrative selection"
+    },
+    {
+      "domain": "employment_unattached",
+      "ownerIssue": 130,
+      "state": "contract_ready_coordinate_with_157",
+      "contract": "persist contracted|unattached|expired_pending_resolution; new-game natural expiry contracted->unattached once and 0-RNG; ambiguous old zero-month saves fail closed"
+    },
+    {
+      "domain": "veteran_market_contract",
+      "ownerIssue": 176,
+      "state": "waiting_157_130",
+      "alreadyIntegrated": [
+        "exact eligible CareerOffer reads",
+        "offer bridge",
+        "stale-offer fail-closed eligibility",
+        "direct market mutation audit"
+      ],
+      "remaining": [
+        "34plus veteran offer production",
+        "supported late-career terms/context",
+        "veteran market approach and medical-assessment facts"
+      ]
+    },
+    {
+      "domain": "concrete_national_selection",
+      "ownerIssue": 174,
+      "state": "unblocked_to_start_after_156",
+      "contract": "persist ordinary called_up/omitted publications and separate tournament preliminary/final squad facts"
+    },
+    {
+      "domain": "rich_sporting_history_records_awards",
+      "ownerIssue": 199,
+      "state": "unblocked_to_start_after_156",
+      "owns": [
+        "results",
+        "goals_assists_cards_when_produced",
+        "awards",
+        "record_definition_holder_progress_surpass"
+      ]
+    },
+    {
+      "domain": "injury_rehab_history",
+      "ownerIssue": 200,
+      "state": "unblocked_to_start_after_156",
+      "owns": [
+        "injury_episode_chronology",
+        "rehab_clearance",
+        "post_return_fixture_linkage"
+      ],
+      "composesWith": [
+        124,
+        199
+      ]
+    },
+    {
+      "domain": "club_world_incidents",
+      "ownerIssue": 201,
+      "state": "closed_completed_design_gate",
+      "owns": [
+        "club_financial_state",
+        "commercial_sponsor_state",
+        "stadium_closed_door_context",
+        "staff_crisis_player_coach_context"
+      ],
+      "rule": "No generic random world-incident engine is authorized. Prefer exact canonical event history when the event itself is the occurrence; otherwise fail closed.",
+      "decisions": {
+        "CEVT_35_UDV_FINANCIAL_CRISIS": "event_establishes_incident",
+        "CEVT_35_SPONSOR_EXIT": "unsupported_current_release_without_active_sponsor_fact",
+        "CEVT_35_SPONSOR_LATE_BOOM": "event_establishes_incident_after_factual_viral_or_new_market_trigger",
+        "CEVT_37_EMPTY_STADIUM_FAREWELL": "unsupported_current_release_without_external_venue_incident",
+        "CEVT_37_PLAYER_COACH_EMERGENCY": "unsupported_current_release_without_staff_crisis"
+      }
+    },
+    {
+      "domain": "canonical_conditional_content",
+      "ownerIssue": 192,
+      "state": "identity_and_authority_routed_runtime_0_of_32",
+      "formerCoordinationGap": {
+        "issue": 195,
+        "state": "closed_completed"
+      },
+      "factOwners": [
+        176,
+        199,
+        200,
+        201
+      ]
+    },
+    {
+      "domain": "seed_catalog_provenance",
+      "ownerIssue": 180,
+      "pullRequest": 191,
+      "state": "green_ready_not_integrated_on_current_main",
+      "contract": "54 exact Pasada-7 IDs, 45+9 ownership, 14 bridge dispositions, no fuzzy aliases"
+    },
+    {
+      "domain": "late_career_identity_routing",
+      "ownerIssue": 177,
+      "relatedCoachIssue": 169,
+      "state": "closed_completed_routing_guard",
+      "decisions": {
+        "EVT_35_AGT_001": "existing resolveActiveAgent or null",
+        "EVT_35_DUAL_001": "generic club voice allowed; factual offer/context authority comes from #207/#157/#176",
+        "EVT_36_CCH_001": "coach tenure/profile -> #169; persistent NPC not required",
+        "EVT_34_DORSAL_001": "generic young actor allowed if no named continuity/T5.3 mutation",
+        "EVT_34_MENTOR_001": "same boundary",
+        "EVT_35_RECORD_001": "record -> #199; named actor only when canon explicitly requires it",
+        "EVT_36_PEER_001": "blocked until exact peer plus causal retirement history"
+      },
+      "closure": "Issue #177 closed after Agent 8 refreshed all 43 ordinary principal routes; no standalone shared-runtime NPC pass remains.",
+      "peerRetirementRule": "EVT_36_PEER_001 remains fail-closed until an exact peer identity plus causal peer-retirement history exists; this is scene-local factual evidence, not reason to reopen a generic NPC subsystem."
+    },
+    {
+      "domain": "terminal_career_retirement",
+      "ownerPullRequest": 118,
+      "owner": "agent9",
+      "state": "open_draft"
+    },
+    {
+      "domain": "agent8_context_specific",
+      "owner": "agent8_after_wave0",
+      "events": [
+        "EVT_35_FAM_001",
+        "EVT_35_BODY_001",
+        "EVT_35_IMG_001",
+        "EVT_36_MED_001"
+      ]
+    }
+  ],
+  "independentWorkAfter156": [
+    174,
+    199,
+    200
+  ],
+  "marketChain": [
+    207,
+    157,
+    130,
+    176
+  ],
+  "codexRule": "Do not start #157 against a model that lacks #207 context support. Integrated #156 removes basic fixture/usage blocker only. Re-evaluate every scene's exact remaining facts plus #59/#191; unavailable facts fail closed.",
+  "closedCoordination": [
+    {
+      "issue": 177,
+      "state": "closed_completed",
+      "scope": "late-career identity routing"
+    },
+    {
+      "issue": 201,
+      "state": "closed_completed",
+      "scope": "club-world incident producer design"
+    }
+  ]
+}

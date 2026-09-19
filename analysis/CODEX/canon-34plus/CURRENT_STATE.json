@@ -1,0 +1,263 @@
+{
+  "generatedAt": "2026-09-18",
+  "owner": "agent8",
+  "branch": "t51/canon-34plus",
+  "baseMain": "5f4d14bca4d696cfafadb58b64034c7cd40cc147",
+  "scope": {
+    "canonicalPrincipals": 50,
+    "ordinaryAgent8": 43,
+    "terminalAgent9": 7,
+    "identityReconciled": 50,
+    "runtimeImplementedOnAgent8Branch": 0,
+    "strictCodexReady": 0,
+    "canonicalConditionals": 32,
+    "canonicalConditionalIdentitiesReconciled": 32,
+    "canonicalConditionalsRuntimeAccredited": 0
+  },
+  "lineage": {
+    "issue": 59,
+    "migrationGraphImplementedOnMain": true,
+    "currentMainGeneration": "H",
+    "currentActiveIdentity": "84871fae2bec92d74d1e607e0a48943e2e530a062d315a829cfe75eda9fe0886",
+    "currentMainCommit": "5f4d14bca4d696cfafadb58b64034c7cd40cc147",
+    "agent8SuccessorAuthorizedNow": false,
+    "immediate34PlusPredecessorAuthoritative": false,
+    "reason": "shared runtime authorities may advance without EVENTS/contentIdentity, but 34+ still waits for serialized earlier content and the final 30-34 predecessor",
+    "rule": "at the real 34+ turn, calculate only the adjacent final30_34_to_34plus generation"
+  },
+  "seedCatalog": {
+    "issue": 180,
+    "pullRequest": 191,
+    "state": "ready_for_review_green_but_not_integrated_and_currently_needs_rebase_or_reground_after_main_moved",
+    "canonicalIds": 54,
+    "ordinaryProducerIds": 45,
+    "terminalProducerIds": 9,
+    "bridgeConcepts": 14,
+    "activationRule": "Wave 0 remains incomplete until the exact seed authority is integrated into the current main lineage"
+  },
+  "conditionalReconciliation": {
+    "ownerIssue": 192,
+    "canonicalCount": 32,
+    "engineCount": 32,
+    "exactIdOverlap": 5,
+    "exactIdSemanticallyAccredited": 0,
+    "canonicalMissingExactId": 27,
+    "engineTechnicalExtraExactId": 27,
+    "authorityMatrixCoverage": 32,
+    "unresolvedSharedAuthorityDomains": 0,
+    "formerGapIssue": {
+      "issue": 195,
+      "state": "closed_completed"
+    },
+    "explicitFactOwners": [
+      176,
+      199,
+      200,
+      201
+    ],
+    "runtimeAccredited": 0
+  },
+  "preparation": {
+    "ordinaryTaskRows": 43,
+    "canonicalCardsPreparedUnique": 43,
+    "canonicalCardPreparationPercent": 100,
+    "authorityMatrixCoverage": 43,
+    "canonicalConditionalsIdentified": 32,
+    "conditionalIdentityCoveragePercent": 100,
+    "conditionalAuthorityMatrixCoverage": 32,
+    "canonicalPasada7SeedsClassified": 54,
+    "bridgeMemoryConceptsClassified": 14
+  },
+  "sharedRuntimeOrder": [
+    {
+      "step": 1,
+      "ref": "#124 / PR #156",
+      "domain": "sport boundary",
+      "state": "integrated_in_main_5f4d14bc"
+    },
+    {
+      "step": 2,
+      "ref": "PR #207 / #175",
+      "domain": "CareerOffer rich side-term context",
+      "state": "ready_for_review_green_not_integrated; prerequisite_for_157"
+    },
+    {
+      "step": 3,
+      "ref": "#157",
+      "domain": "MarketState v2 multi-offer authority",
+      "state": "wait_for_207_integration_then_implement"
+    },
+    {
+      "step": 4,
+      "ref": "#130",
+      "domain": "employment/unattached authority",
+      "state": "implementation_ready_but_coordinate_after_157_collection_contract"
+    },
+    {
+      "step": 5,
+      "ref": "#176",
+      "domain": "veteran 34+ offer producer and market assessment",
+      "state": "wait_for_157_and_130"
+    }
+  ],
+  "sportAuthorityOnMain": {
+    "integrated": true,
+    "sourceCommit": "5f4d14bca4d696cfafadb58b64034c7cd40cc147",
+    "factsAvailable": [
+      "official_league_fixture_identity",
+      "next_previous_fixture",
+      "remaining_league_fixtures",
+      "squad_call",
+      "bench",
+      "start",
+      "appearance",
+      "minutes",
+      "injury_unavailable",
+      "historical_usage"
+    ],
+    "stillUnavailable": [
+      "per_match_final_result",
+      "goals",
+      "assists",
+      "cards",
+      "award_results",
+      "generic_records",
+      "concrete_national_selection",
+      "stadium_incident_context"
+    ]
+  },
+  "marketContextPrerequisite": {
+    "issue": 175,
+    "pullRequest": 207,
+    "state": "ready_for_review_green_not_integrated",
+    "purpose": "persist validated CareerOffer.context before MarketState v2 so multi-offer migration and selectors preserve rich late-career side-term context natively",
+    "agent8Rule": "do not implement local rich-offer context or start veteran multi-offer consumers against a model that will be immediately migrated"
+  },
+  "newlyUnblockedSharedOwnersAfter156": [
+    {
+      "issue": 174,
+      "reason": "national selection authority may build on integrated sport boundary"
+    },
+    {
+      "issue": 199,
+      "reason": "rich sport history can extend integrated fixture identity/history"
+    },
+    {
+      "issue": 200,
+      "reason": "injury/rehab history can compose with integrated fixture participation"
+    }
+  ],
+  "marketOwnersPending207": [
+    157,
+    130,
+    176
+  ],
+  "downstreamOwners": {
+    "contentLineage": {
+      "issue": 59
+    },
+    "seedCatalog": {
+      "issue": 180,
+      "pullRequest": 191
+    },
+    "conditionalCanonicalContent": {
+      "issue": 192
+    },
+    "sportBoundary": {
+      "issue": 124,
+      "pullRequest": 156,
+      "state": "integrated"
+    },
+    "richOfferContext": {
+      "issue": 175,
+      "pullRequest": 207,
+      "state": "ready_green_not_integrated"
+    },
+    "richSportHistoryRecordsAwards": {
+      "issue": 199,
+      "state": "unblocked_to_start"
+    },
+    "injuryRehabHistory": {
+      "issue": 200,
+      "state": "unblocked_to_start"
+    },
+    "clubWorldIncidents": {
+      "issue": 201,
+      "state": "closed_completed_design_gate"
+    },
+    "nationalConcreteSelection": {
+      "issue": 174,
+      "state": "unblocked_to_start"
+    },
+    "marketStateV2": {
+      "issue": 157,
+      "state": "waiting_207"
+    },
+    "veteranMarketContracts": {
+      "issue": 176,
+      "state": "waiting_207_157_130"
+    },
+    "freeAgency": {
+      "issue": 130,
+      "state": "contract_ready_coordinate_with_157"
+    },
+    "coachChronology": {
+      "issue": 169
+    },
+    "lateCareerIdentityRouting": {
+      "issue": 177,
+      "state": "closed_completed_routing_guard"
+    },
+    "terminalRetirement": {
+      "pullRequest": 118,
+      "owner": "agent9"
+    }
+  },
+  "routingRefinements": {
+    "EVT_35_AGT_001": "existing active-agent authority or null; no #177 implementation dependency",
+    "EVT_35_DUAL_001": "generic club voice allowed; contract/institutional facts route through #207/#157/#176",
+    "EVT_36_CCH_001": "coach tenure/profile routes to #169; persistent NPC identity not required",
+    "EVT_34_DORSAL_001": "generic non-persistent young actor allowed if canon needs no named continuity/T5.3 mutation",
+    "EVT_34_MENTOR_001": "same generic-actor boundary",
+    "EVT_35_RECORD_001": "record truth routes to #199; named identity only if explicitly required/certified",
+    "EVT_36_PEER_001": "still blocked on exact peer identity plus causal peer-retirement history"
+  },
+  "verifiedCurrentBlockers": {
+    "contentLineage": "#59: 34+ is not the next authorized serialized EVENTS generation and final 30-34 predecessor is not authoritative",
+    "seedCatalog": "#180/#191: exact seed authority is green but not integrated into current main",
+    "conditionalDeck": "#192: 32/32 identities/routing prepared, 0/32 runtime-accredited",
+    "richOfferContext": "#175/#207: green/ready but not integrated; #157 must follow it",
+    "marketCollection": "#157: wait for #207, then implement MarketState v2",
+    "freeAgency": "#130: contract ready; coordinate with #157 before final integration",
+    "veteranMarket": "#176: waits for #157/#130",
+    "nationalTeamConcrete": "#174: unblocked but not implemented",
+    "richSportHistory": "#199: results/goals/awards/records still missing",
+    "injuryRehab": "#200: episode/rehab chronology still missing",
+    "clubWorldIncidents": "coordination closed in #201: finance crisis and sponsor late boom may be established by their exact canonical conditional occurrences; sponsor exit, empty-stadium farewell and player-coach emergency remain fail-closed unless their required pre-existing facts exist",
+    "peerRetirement": "scene-local fail-closed: EVT_36_PEER_001 still lacks exact peer identity plus causal peer-retirement history; #177 coordination is closed and no standalone NPC subsystem is authorized",
+    "terminalRetirement": "PR #118 retains terminal state transitions and terminal conditionals"
+  },
+  "nextSafeActivation": [
+    "EVT_35_FAM_001",
+    "EVT_35_BODY_001",
+    "EVT_35_IMG_001",
+    "EVT_36_MED_001"
+  ],
+  "nextPreparationTarget": "Do not create Agent-8 runtime while #59/#191 block Wave 0. #177 routing coordination is closed. Re-ground/integrate #207 first, then #157/#130/#176; #174/#199/#200 may proceed independently on the integrated sport boundary.",
+  "activationCondition": "serialized 34+ lineage turn plus exact seed authority in current main plus every selected scene's exact factual authorities",
+  "previousExactHeadQa": {
+    "head": "aed49c362e6dda02bc981e0ea8d83d152604f840",
+    "repositoryIntegrityRun": 35263846340,
+    "conclusion": "success",
+    "note": "Historical after this documentation refresh; certify the new exact HEAD before calling the refreshed snapshot green."
+  },
+  "conditionalWorldIncidentDecisions": {
+    "issue": 201,
+    "state": "closed_completed",
+    "CEVT_35_UDV_FINANCIAL_CRISIS": "event_establishes_incident; no prior random finance producer",
+    "CEVT_35_SPONSOR_EXIT": "unsupported/fail_closed without factual active sponsor deal",
+    "CEVT_35_SPONSOR_LATE_BOOM": "event_establishes_campaign after factual viral/new-market trigger",
+    "CEVT_37_EMPTY_STADIUM_FAREWELL": "unsupported/fail_closed without factual external venue restriction bound to fixture",
+    "CEVT_37_PLAYER_COACH_EMERGENCY": "unsupported/fail_closed without factual staff crisis"
+  }
+}

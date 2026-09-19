@@ -1,0 +1,422 @@
+{
+  "version": 4,
+  "generatedAt": "2026-09-18",
+  "baseMain": "5f4d14bca4d696cfafadb58b64034c7cd40cc147",
+  "source": "Documento Maestro section 25.13",
+  "ownerIssue": 192,
+  "coordinationGapIssue": {
+    "issue": 195,
+    "state": "closed_completed",
+    "supersededByOwners": [
+      176,
+      199,
+      200,
+      201
+    ]
+  },
+  "status": "authority_classification_routed_preimplementation",
+  "summary": {
+    "canonicalConditionals": 32,
+    "runtimeAccredited": 0,
+    "allEntriesClassified": 32,
+    "unresolvedSharedAuthorityDomains": 0,
+    "routedFailClosedDomains": 8,
+    "sportBoundaryIntegrated": true
+  },
+  "knownSharedOwners": {
+    "content_lineage": {
+      "issue": 59
+    },
+    "seed_memory": {
+      "issue": 180,
+      "pullRequest": 191,
+      "state": "ready_for_review_not_integrated"
+    },
+    "canonical_conditional_content": {
+      "issue": 192
+    },
+    "sport_match_calendar": {
+      "issue": 124,
+      "pullRequest": 156,
+      "state": "integrated_main_5f4d14bc"
+    },
+    "rich_sporting_history_records_awards": {
+      "issue": 199,
+      "state": "unblocked_to_start"
+    },
+    "injury_rehab_history": {
+      "issue": 200,
+      "state": "unblocked_to_start"
+    },
+    "club_world_incidents": {
+      "issue": 201,
+      "state": "open_design_gate"
+    },
+    "national_selection": {
+      "issue": 174,
+      "state": "unblocked_to_start"
+    },
+    "market_state_v2": {
+      "issue": 157,
+      "state": "unblocked_to_start"
+    },
+    "veteran_market_contract": {
+      "issue": 176,
+      "state": "waiting_157_130"
+    },
+    "free_agency": {
+      "issue": 130,
+      "state": "unblocked_to_start"
+    },
+    "coach_chronology": {
+      "issue": 169
+    },
+    "npc_routing_guard": {
+      "issue": 177
+    },
+    "terminal_retirement": {
+      "pullRequest": 118,
+      "owner": "agent9"
+    }
+  },
+  "routedFormerGapDomains": {
+    "individual_award_history_and_win": {
+      "ownerIssue": 199
+    },
+    "major_injury_rehab_history_and_successful_return": {
+      "ownerIssue": 200,
+      "composesWith": [
+        124,
+        199
+      ]
+    },
+    "club_financial_state": {
+      "ownerIssue": 201
+    },
+    "commercial_sponsor_state": {
+      "ownerIssue": 201
+    },
+    "club_medical_evaluation_or_clearance_fact": {
+      "ownerIssue": 176
+    },
+    "stadium_availability_or_external_closed-door_context": {
+      "ownerIssue": 201,
+      "composesWith": [
+        124,
+        199
+      ]
+    },
+    "explicit_staff_crisis_and_temporary_player_coach_context": {
+      "ownerIssue": 201,
+      "composesWith": [
+        169
+      ]
+    },
+    "generic_record_definition_and_competitor_record_fact": {
+      "ownerIssue": 199
+    }
+  },
+  "entries": [
+    {
+      "id": "CEVT_34_LATE_BALLON_WIN",
+      "ownerRefs": [
+        199,
+        124,
+        176
+      ],
+      "status": "blocked_owner_facts"
+    },
+    {
+      "id": "CEVT_34_MAJOR_COMEBACK",
+      "ownerRefs": [
+        200,
+        124,
+        199
+      ],
+      "status": "same_id_needs_reimplementation_blocked_owner_facts"
+    },
+    {
+      "id": "CEVT_34_COACH_BECOMES_DIRECTOR",
+      "ownerRefs": [
+        169,
+        176
+      ],
+      "status": "blocked_owner_facts"
+    },
+    {
+      "id": "CEVT_34_RIVAS_RETURNS",
+      "ownerRefs": [
+        180,
+        177,
+        176
+      ],
+      "status": "blocked_owner_facts"
+    },
+    {
+      "id": "CEVT_34_CLARA_EXCLUSIVE",
+      "ownerRefs": [
+        180,
+        177,
+        "PR118"
+      ],
+      "status": "blocked_terminal_boundary"
+    },
+    {
+      "id": "CEVT_34_NANO_DIRECTOR",
+      "ownerRefs": [
+        180,
+        177,
+        176
+      ],
+      "status": "blocked_owner_facts"
+    },
+    {
+      "id": "CEVT_34_ADRIAN_LAST_DERBY",
+      "ownerRefs": [
+        180,
+        177,
+        124
+      ],
+      "status": "blocked_owner_facts"
+    },
+    {
+      "id": "CEVT_34_FAMILY_CLUB_BUYIN",
+      "ownerRefs": [
+        180
+      ],
+      "status": "blocked_until_exact_predecessor_history_exists"
+    },
+    {
+      "id": "CEVT_34_CLUB_RELEGATION",
+      "ownerRefs": [
+        124,
+        199,
+        176
+      ],
+      "status": "blocked_owner_facts"
+    },
+    {
+      "id": "CEVT_34_CLUB_PROMOTION",
+      "ownerRefs": [
+        124,
+        199
+      ],
+      "status": "blocked_owner_facts"
+    },
+    {
+      "id": "CEVT_34_MANAGER_SACKED_AFTER_PROMISE",
+      "ownerRefs": [
+        169,
+        176
+      ],
+      "status": "blocked_owner_facts"
+    },
+    {
+      "id": "CEVT_34_SUCCESSOR_INJURED",
+      "ownerRefs": [
+        177,
+        200,
+        124
+      ],
+      "status": "blocked_owner_facts"
+    },
+    {
+      "id": "CEVT_35_UDV_FINANCIAL_CRISIS",
+      "ownerRefs": [
+        176
+      ],
+      "status": "blocked_exact_content_event_establishes_incident",
+      "requiredDomains": [
+        "home_route",
+        "veteran_market_contract",
+        "canonical_event_establishes_financial_crisis"
+      ],
+      "routingDecision": "The conditional itself is the canonical occurrence of the UDV crisis; do not require a pre-existing random finance-crisis fact."
+    },
+    {
+      "id": "CEVT_35_UDV_CUP_RUN",
+      "ownerRefs": [
+        124,
+        199
+      ],
+      "status": "blocked_owner_facts"
+    },
+    {
+      "id": "CEVT_35_NT_TOURNAMENT_INJURY",
+      "ownerRefs": [
+        174,
+        200
+      ],
+      "status": "blocked_owner_facts"
+    },
+    {
+      "id": "CEVT_35_NT_FINAL_GOAL",
+      "ownerRefs": [
+        174,
+        124,
+        199
+      ],
+      "status": "blocked_owner_facts"
+    },
+    {
+      "id": "CEVT_35_NT_FINAL_BENCH",
+      "ownerRefs": [
+        174,
+        124,
+        199
+      ],
+      "status": "blocked_owner_facts"
+    },
+    {
+      "id": "CEVT_35_PUBLIC_FEUD_RETURNS",
+      "ownerRefs": [
+        180,
+        177
+      ],
+      "status": "blocked_until_exact_history_exists"
+    },
+    {
+      "id": "CEVT_35_SPONSOR_EXIT",
+      "ownerRefs": [],
+      "status": "unsupported_current_release_no_active_sponsor_lifecycle",
+      "requiredDomains": [
+        "active_sponsor_deal",
+        "commercial_decline"
+      ],
+      "routingDecision": "Do not invent a sponsor so non-renewal can occur; old sponsor-image memory/reputation/mediaHeat are insufficient."
+    },
+    {
+      "id": "CEVT_35_SPONSOR_LATE_BOOM",
+      "ownerRefs": [
+        180
+      ],
+      "status": "blocked_exact_trigger_event_establishes_campaign",
+      "requiredDomains": [
+        "factual_viral_or_new_market_history",
+        "canonical_event_establishes_new_campaign"
+      ],
+      "routingDecision": "No prior sponsor deal required; exact factual viral/new-market premise is required, then the canonical conditional occurrence establishes the campaign."
+    },
+    {
+      "id": "CEVT_36_YOUTH_ASSIST",
+      "ownerRefs": [
+        177,
+        124,
+        199
+      ],
+      "status": "blocked_owner_facts"
+    },
+    {
+      "id": "CEVT_36_YOUTH_REPLACES_YOU",
+      "ownerRefs": [
+        177,
+        124
+      ],
+      "status": "blocked_owner_facts"
+    },
+    {
+      "id": "CEVT_36_RECORD_BROKEN_BY_OTHER",
+      "ownerRefs": [
+        199
+      ],
+      "status": "blocked_owner_facts"
+    },
+    {
+      "id": "CEVT_36_NO_MEDICAL_CLEARANCE",
+      "ownerRefs": [
+        176
+      ],
+      "status": "same_id_needs_reimplementation_blocked_owner_facts"
+    },
+    {
+      "id": "CEVT_36_ONE_LAST_CHAMPIONS_RUN",
+      "ownerRefs": [
+        124,
+        199
+      ],
+      "status": "blocked_owner_facts"
+    },
+    {
+      "id": "CEVT_37_PLAYER_COACH_EMERGENCY",
+      "ownerRefs": [
+        169
+      ],
+      "status": "unsupported_current_release_no_staff_crisis_fact",
+      "requiredDomains": [
+        "coach_chronology",
+        "preexisting_staff_crisis"
+      ],
+      "routingDecision": "Coach tenure/change alone is not a staff crisis; do not synthesize absence merely to open the scene."
+    },
+    {
+      "id": "CEVT_37_EMPTY_STADIUM_FAREWELL",
+      "ownerRefs": [
+        124,
+        "PR118"
+      ],
+      "status": "unsupported_current_release_no_external_venue_incident",
+      "requiredDomains": [
+        "sport_match_calendar",
+        "external_venue_restriction",
+        "terminal_retirement"
+      ],
+      "routingDecision": "Sanction/works/external cause must pre-exist and bind to the fixture; the farewell conditional must not invent it."
+    },
+    {
+      "id": "CEVT_37_LAST_DERBY",
+      "ownerRefs": [
+        124,
+        "PR118"
+      ],
+      "status": "blocked_terminal_boundary"
+    },
+    {
+      "id": "CEVT_38_OFFER_AFTER_RETIREMENT_ANNOUNCED",
+      "ownerRefs": [
+        176,
+        "PR118"
+      ],
+      "status": "same_id_needs_reimplementation_terminal_shared"
+    },
+    {
+      "id": "CEVT_38_RETIREMENT_REVERSAL",
+      "ownerRefs": [
+        176,
+        "PR118"
+      ],
+      "status": "canonical_missing_terminal_shared"
+    },
+    {
+      "id": "CEVT_RET_NO_LAST_MATCH",
+      "ownerRefs": [
+        124,
+        200,
+        "PR118"
+      ],
+      "status": "same_id_needs_reimplementation_agent9"
+    },
+    {
+      "id": "CEVT_RET_STORYBOOK_LAST_GOAL",
+      "ownerRefs": [
+        124,
+        199,
+        "PR118"
+      ],
+      "status": "same_id_needs_reimplementation_agent9"
+    }
+  ],
+  "rules": [
+    "Owner #124 is now integrated and may be consumed, but it does not supply rich outcomes/records/awards or concrete national selection.",
+    "Every entry still inherits #59 lineage and #180/#191 seed/provenance where applicable.",
+    "Issue #195 is coordination-complete; former gaps route to #176/#199/#200/#201.",
+    "No owner reference implies runtime accreditation until all facts exist.",
+    "No technical flag or aggregate proxy may substitute for missing factual authority.",
+    "Terminal retirement mutation remains Agent 9 / PR #118 ownership.",
+    "Issue #201 is closed as producer-design coordination: event-established incidents use exact canonical event provenance; unsupported external contexts remain fail-closed."
+  ],
+  "coordinationGapIssue201": {
+    "issue": 201,
+    "state": "closed_completed",
+    "rule": "No generic incident engine; exact event establishes fact where canon says so, otherwise fail closed."
+  }
+}

@@ -1,0 +1,417 @@
+{
+  "version": 1,
+  "generatedAt": "2026-09-17",
+  "owner": "t51/canon-34plus",
+  "canonicalSource": "analysis/2026-09-11/guion-extraido.txt",
+  "scope": "Wave C — 16 ordinary 34+ sport/usage/selection principals",
+  "summary": {
+    "events": 16,
+    "canonicalCardsExtracted": 16,
+    "runtimeActivated": 0,
+    "strictCodexReady": 0,
+    "npcOverlap": ["EVT_35_RECORD_001"],
+    "agent9ContextDependency": ["EVT_37_PEN_001"]
+  },
+  "globalRules": [
+    "A sporting premise must be supported by authoritative fixture, usage, result, selection, record or medical facts; age, form, roleScore, reputation and generic flags are not substitutes.",
+    "Aggregate career appearances do not prove a current fixture, recent starts, bench status or a specific milestone match.",
+    "National standing/caps do not prove a current call, pre-list, omission or emergency return.",
+    "Narrative content may react to a real football fact; it may not manufacture the fact in order to create a cinematic scene.",
+    "Choice-level market or contract follow-up may open/request negotiation but cannot sign or mutate terms outside market authority.",
+    "International retirement is distinct from career retirement. Career-terminal transitions remain Agent 9 ownership.",
+    "EVT_37_PEN_001 may consume an authoritative farewell/possible-last-match context, but Agent 8 must not create or close the terminal last match.",
+    "All events additionally require Wave 0 lineage, canonical seed catalog/provenance and save/pending/history compatibility."
+  ],
+  "events": [
+    {
+      "eventId": "EVT_34_NT_001",
+      "sourceHeading": "25.6.3. Última ventana de selección",
+      "sourceBlock": "B1252-B1254",
+      "title": "Última ventana de selección",
+      "premise": "El seleccionador te incluye en una prelista y avisa de que ya no garantizará convocatoria.",
+      "trigger": "NT_STANDING > bajo + ciclo internacional.",
+      "visible": ["Competidores", "calendario", "mensaje del seleccionador"],
+      "imperfect": ["No sabes si aceptar rol secundario te dará un último torneo", "puede darte meses de viajes sin jugar"],
+      "hiddenState": ["NATIONAL_CYCLE_FIT", "BODY_REDLINE", "ROLE_ACCEPTANCE", "LEGACY_ANXIETY"],
+      "options": [
+        {"id":"A","label":"Seguir disponible para cualquier rol."},
+        {"id":"B","label":"Pedir claridad."},
+        {"id":"C","label":"Retirarte internacionalmente ahora.","retirementType":"international_only"},
+        {"id":"D","label":"Estar disponible solo para ventanas competitivas."}
+      ],
+      "canonicalSeeds": ["SEED_FINAL_NT_POSTURE"],
+      "authority": {
+        "requires": ["authoritative_current_national_prelist", "international_cycle_context", "coach_message_or_selection_context"],
+        "forbidden": ["nationalStanding_as_current_call", "caps_as_prelist", "career_retirement_from_international_retirement"]
+      },
+      "status": "blocked_shared_authority",
+      "outcomeEffects": "implementation_pending"
+    },
+    {
+      "eventId": "EVT_34_LOAD_001",
+      "sourceHeading": "25.6.6. El plan de 28 partidos",
+      "sourceBlock": "B1261-B1263",
+      "title": "El plan de 28 partidos",
+      "premise": "El staff propone limitarte a 28-32 titularidades y reservarte para semanas concretas.",
+      "trigger": "Club competitivo + MATCH_SELECTIVITY aplicable.",
+      "visible": ["Plan de carga", "calendario", "datos del último año"],
+      "imperfect": ["No sabes si la limitación te alargará", "puede hacerte perder ritmo y puesto"],
+      "hiddenState": ["MATCH_SELECTIVITY", "RECOVERY_DEBT", "ROLE_ACCEPTANCE", "STATUS_INERTIA"],
+      "options": [
+        {"id":"A","label":"Aceptar."},
+        {"id":"B","label":"Negociar 35 si el cuerpo responde."},
+        {"id":"C","label":"Rechazar límite previo."},
+        {"id":"D","label":"Aceptar solo para viajes/partidos menores."}
+      ],
+      "canonicalSeeds": ["SEED_28_MATCH_PLAN"],
+      "authority": {
+        "requires": ["authoritative_competition_calendar", "factual_prior_season_load_data", "explicit_staff_load_plan_authority"],
+        "forbidden": ["invented_28_match_schedule", "age_as_load_fact", "roleScore_as_planned_starts"]
+      },
+      "status": "blocked_shared_authority",
+      "outcomeEffects": "implementation_pending"
+    },
+    {
+      "eventId": "EVT_34_ROLE_001",
+      "sourceHeading": "25.7.1. Dos suplencias y una ovación",
+      "sourceBlock": "B1272-B1274",
+      "title": "Dos suplencias y una ovación",
+      "premise": "Empiezas dos partidos seguidos en el banquillo, pero la afición te ovaciona al calentar.",
+      "trigger": "Rol reducido + legado alto.",
+      "visible": ["Once", "explicación del técnico", "reacción del estadio"],
+      "imperfect": ["No sabes si el entrenador te reserva", "puede estar sacándote del núcleo"],
+      "hiddenState": ["ROLE_COMPRESSION", "FAN_LEGACY_BUFFER", "MANAGER_POWER", "EGO"],
+      "options": [
+        {"id":"A","label":"Pedir reunión ya."},
+        {"id":"B","label":"Esperar cinco partidos."},
+        {"id":"C","label":"Aceptar y centrarse en impacto."},
+        {"id":"D","label":"Dejar caer en prensa que necesitas jugar."}
+      ],
+      "canonicalSeeds": ["SEED_FINAL_ROLE_ACCEPTANCE"],
+      "authority": {
+        "requires": ["two_consecutive_authoritative_bench_starts", "factual_manager_explanation_if_displayed", "high_fan_legacy_context"],
+        "forbidden": ["roleScore_as_bench_history", "coachTrust_as_lineup", "fabricated_ovation_as_sport_fact"]
+      },
+      "status": "blocked_shared_authority",
+      "outcomeEffects": "implementation_pending"
+    },
+    {
+      "eventId": "EVT_34_BODY_001",
+      "sourceHeading": "25.7.3. Dolor que tarda dos días",
+      "sourceBlock": "B1278-B1280",
+      "title": "Dolor que tarda dos días",
+      "premise": "Ya no duele durante el partido: duele 36 horas después. Las pruebas no muestran lesión.",
+      "trigger": "RECOVERY_DEBT o BODY_REDLINE creciente.",
+      "visible": ["Sensaciones", "pruebas"],
+      "imperfect": ["No sabes si es envejecimiento normal", "puede ser carga puntual", "puede ser inicio de un patrón crónico"],
+      "hiddenState": ["BODY_REDLINE", "PAIN_WITHOUT_SCAN", "PHYSIO_CONFIDENCE", "MOTIVATION_RESERVE"],
+      "options": [
+        {"id":"A","label":"Gestionar sin parar."},
+        {"id":"B","label":"Bajar carga un mes."},
+        {"id":"C","label":"Parar hasta desaparecer."},
+        {"id":"D","label":"Cambiar preparación y rol."}
+      ],
+      "canonicalSeeds": ["SEED_POST_MATCH_PAIN"],
+      "authority": {
+        "requires": ["real_preceding_match_or_load_context", "explicit_delayed_pain_or_recovery_evidence", "authoritative_medical_evaluation_showing_no_visible_injury_if_stated"],
+        "forbidden": ["synthetic_match", "invented_scan_result", "age_only_pain", "invented_injury"]
+      },
+      "status": "blocked_shared_authority",
+      "outcomeEffects": "implementation_pending"
+    },
+    {
+      "eventId": "EVT_34_MATCH_001",
+      "sourceHeading": "25.7.4. Un gol que rompe el plan",
+      "sourceBlock": "B1281-B1283",
+      "title": "Un gol que rompe el plan",
+      "premise": "Entras en una eliminatoria, marcas el gol decisivo y todo el debate sobre tu rol cambia durante 48 horas.",
+      "trigger": "Big-game role + impacto decisivo.",
+      "visible": ["Resultado", "titulares", "elogios"],
+      "imperfect": ["No sabes si el técnico cambiará su modelo por un momento heroico"],
+      "hiddenState": ["BIG_GAME_REPUTATION", "STATUS_INERTIA", "FORM_VS_PLAN", "LEGACY_ANXIETY"],
+      "options": [
+        {"id":"A","label":"Pedir titularidad aprovechando el momento."},
+        {"id":"B","label":"Repetir que aceptas el rol."},
+        {"id":"C","label":"No hablar."},
+        {"id":"D","label":"Usarlo para abrir renovación.","choiceLevelDependency":"market_negotiation"}
+      ],
+      "canonicalSeeds": ["SEED_LAST_HERO_MOMENT"],
+      "authority": {
+        "requires": ["real_knockout_fixture", "authoritative_player_entry", "authoritative_decisive_goal", "real_result"],
+        "forbidden": ["cinematic_synthetic_goal", "aggregate_appearances_as_match", "form_as_decisive_impact"],
+        "choiceD": "May request/open renewal discussion; cannot materialize or sign a renewal without Wave-B authority."
+      },
+      "status": "blocked_shared_authority",
+      "outcomeEffects": "implementation_pending"
+    },
+    {
+      "eventId": "EVT_34_NT_002",
+      "sourceHeading": "25.7.5. Te dejan fuera de una convocatoria",
+      "sourceBlock": "B1284-B1286",
+      "title": "Te dejan fuera de una convocatoria",
+      "premise": "Por primera vez quedas fuera de una lista internacional estando sano.",
+      "trigger": "Selección activa + competencia.",
+      "visible": ["Lista", "explicación pública genérica"],
+      "imperfect": ["No sabes si es descanso", "puede ser transición", "puede ser final no comunicado"],
+      "hiddenState": ["NATIONAL_CYCLE_FIT", "STATUS_INERTIA", "LEGACY_ANXIETY", "PUBLIC_MYTH"],
+      "options": [
+        {"id":"A","label":"Llamar al seleccionador."},
+        {"id":"B","label":"Felicitar a los convocados."},
+        {"id":"C","label":"Anunciar retirada internacional.","retirementType":"international_only"},
+        {"id":"D","label":"No reaccionar y esperar siguiente lista."}
+      ],
+      "canonicalSeeds": ["SEED_NT_FIRST_OMISSION_LATE"],
+      "authority": {
+        "requires": ["authoritative_current_national_omission", "explicit_healthy_status", "prior_active_selection_context"],
+        "forbidden": ["nationalStanding_as_omission", "injury_absence_assumed_from_no_injury_flag", "career_retirement_from_international_retirement"]
+      },
+      "status": "blocked_shared_authority",
+      "outcomeEffects": "implementation_pending"
+    },
+    {
+      "eventId": "EVT_34_FAN_001",
+      "sourceHeading": "25.7.6. La grada pide que empieces",
+      "sourceBlock": "B1287-B1289",
+      "title": "La grada pide que empieces",
+      "premise": "Tras varias suplencias, un sector canta tu nombre antes de los partidos. El entrenador se incomoda con la presión.",
+      "trigger": "Fan legacy alto + rol discutido.",
+      "visible": ["Cánticos", "pregunta de prensa"],
+      "imperfect": ["No sabes si alimentarlos te dará minutos", "puede volver tu presencia tóxica para el técnico"],
+      "hiddenState": ["FAN_LEGACY_BUFFER", "MANAGER_POWER", "PUBLIC_MYTH", "CAPTAINCY_STYLE"],
+      "options": [
+        {"id":"A","label":"Pedir públicamente que apoyen al equipo."},
+        {"id":"B","label":"Agradecer sin frenar."},
+        {"id":"C","label":"No comentar."},
+        {"id":"D","label":"Hablar con el técnico sobre cómo manejarlo juntos."}
+      ],
+      "canonicalSeeds": ["SEED_FAREWELL_CROWD_POWER"],
+      "authority": {
+        "requires": ["authoritative_recent_bench_or_reduced_usage_history", "high_fan_legacy_context", "manager_relationship_context"],
+        "forbidden": ["roleScore_as_several_benches", "invented_current_starts", "fan_support_as_lineup_authority"]
+      },
+      "status": "blocked_shared_authority",
+      "outcomeEffects": "implementation_pending"
+    },
+    {
+      "eventId": "EVT_34_TRAVEL_001",
+      "sourceHeading": "25.7.7. El viaje que no haces",
+      "sourceBlock": "B1290-B1292",
+      "title": "El viaje que no haces",
+      "premise": "Te quedas en casa por plan de carga y el equipo logra una gran victoria sin ti.",
+      "trigger": "MATCH_SELECTIVITY + partido omitido.",
+      "visible": ["Resultado", "descanso ganado"],
+      "imperfect": ["No sabes si el éxito refuerza la política de descansarte", "puede reducir tu centralidad"],
+      "hiddenState": ["TRAVEL_LOAD", "ROLE_COMPRESSION", "RECOVERY_DEBT", "STATUS_INERTIA"],
+      "options": [
+        {"id":"A","label":"Celebrar el plan."},
+        {"id":"B","label":"Pedir volver al siguiente once."},
+        {"id":"C","label":"No cambiar nada."},
+        {"id":"D","label":"Viajar siempre aunque no juegues."}
+      ],
+      "canonicalSeeds": ["SEED_TEAM_WINS_WITHOUT_YOU"],
+      "authority": {
+        "requires": ["real_omitted_fixture", "authoritative_non_participation_due_to_load_plan", "real_team_victory", "travel_or_rest_context"],
+        "forbidden": ["synthetic_team_result", "invented_omission_reason", "aggregate_schedule_proxy"]
+      },
+      "status": "blocked_shared_authority",
+      "outcomeEffects": "implementation_pending"
+    },
+    {
+      "eventId": "EVT_35_TACT_001",
+      "sourceHeading": "25.9.1. El nuevo rol funciona demasiado bien",
+      "sourceBlock": "B1321-B1323",
+      "title": "El nuevo rol funciona demasiado bien",
+      "premise": "Una reconversión te hace importante como organizador/interior aunque tus cifras ofensivas caigan.",
+      "trigger": "ROLE_REINVENTION + rendimiento positivo.",
+      "visible": ["Minutos", "métricas", "elogios del técnico"],
+      "imperfect": ["No sabes si el mercado exterior entiende el valor", "no sabes si ese rol existe con otro entrenador"],
+      "hiddenState": ["ROLE_REINVENTION", "LOW_STATS_HIGH_IMPACT", "MARKET_FLOOR", "STATUS_INERTIA"],
+      "options": [
+        {"id":"A","label":"Especializarte del todo."},
+        {"id":"B","label":"Mantener capacidades antiguas."},
+        {"id":"C","label":"Buscar club que valore ese rol.","choiceLevelDependency":"market_interest"},
+        {"id":"D","label":"Usarlo para renovar.","choiceLevelDependency":"market_negotiation"}
+      ],
+      "canonicalSeeds": ["SEED_FINAL_REINVENTION"],
+      "authority": {
+        "requires": ["authoritative_reinvented_role_fact", "real_recent_minutes_and_performance_metrics", "factual_manager_feedback_if_displayed"],
+        "forbidden": ["roleScore_as_role_definition", "generic_form_as_metrics", "synthetic_market_offer"],
+        "choiceMarketBoundary": "C/D may open market/renewal intent; any formal offer or signing requires Wave-B authority."
+      },
+      "status": "blocked_shared_authority",
+      "outcomeEffects": "implementation_pending"
+    },
+    {
+      "eventId": "EVT_35_BENCH_001",
+      "sourceHeading": "25.9.2. Un mes sin jugar y sigues entrenando",
+      "sourceBlock": "B1324-B1326",
+      "title": "Un mes sin jugar y sigues entrenando",
+      "premise": "No participas en cinco partidos consecutivos sin lesión.",
+      "trigger": "Rol bajo + contrato vigente.",
+      "visible": ["Convocatorias", "feedback ambiguo"],
+      "imperfect": ["No sabes si volverás por calendario", "puede ser por lesión ajena", "puede ser nunca"],
+      "hiddenState": ["ROLE_ACCEPTANCE", "MOTIVATION_RESERVE", "MANAGER_POWER", "MARKET_FLOOR"],
+      "options": [
+        {"id":"A","label":"Aguantar hasta invierno."},
+        {"id":"B","label":"Pedir rescisión.","choiceLevelDependency":"contract_exit_authority"},
+        {"id":"C","label":"Presionar por minutos."},
+        {"id":"D","label":"Convertirte en mentor activo y esperar."}
+      ],
+      "canonicalSeeds": ["SEED_FIVE_MATCHES_UNUSED"],
+      "authority": {
+        "requires": ["five_consecutive_authoritative_non_participations", "explicit_not_injured_status", "active_contract", "callup_or_usage_history"],
+        "forbidden": ["roleScore_as_five_matches", "synthetic_bench_run", "no_injury_inferred_from_missing_record"],
+        "choiceB": "Requesting termination does not directly clear the contract; use authoritative contract/market resolution."
+      },
+      "status": "blocked_shared_authority",
+      "outcomeEffects": "implementation_pending"
+    },
+    {
+      "eventId": "EVT_35_RECORD_001",
+      "sourceHeading": "25.9.3. El canterano rompe tu récord",
+      "sourceBlock": "B1327-B1329",
+      "title": "El canterano rompe tu récord",
+      "premise": "Un joven del club supera un récord de precocidad o una marca que durante años se asoció contigo.",
+      "trigger": "Legado/club + sucesor.",
+      "visible": ["Récord", "celebración"],
+      "imperfect": ["No sabes si la prensa busca tu reacción por homenaje", "puede buscar conflicto generacional"],
+      "hiddenState": ["LEGACY_ANXIETY", "PUBLIC_MYTH", "SUCCESSION_PRESSURE", "MENTOR_ADVICE"],
+      "options": [
+        {"id":"A","label":"Felicitarlo con entusiasmo."},
+        {"id":"B","label":"Respuesta breve."},
+        {"id":"C","label":"Recordar que los récords cambian."},
+        {"id":"D","label":"Invitarlo a hablar en privado."}
+      ],
+      "canonicalSeeds": ["SEED_RECORD_PASSED"],
+      "authority": {
+        "requires": ["authoritative_record_definition_and_value", "certified_young_club_successor_identity", "real_record_surpass_fact"],
+        "forbidden": ["invented_record", "npcRefs_as_successor_identity", "age_as_young_player_identity"],
+        "waveOverlap": ["C", "D"]
+      },
+      "status": "blocked_shared_authority",
+      "outcomeEffects": "implementation_pending"
+    },
+    {
+      "eventId": "EVT_35_NT_001",
+      "sourceHeading": "25.9.4. Te llaman por una emergencia internacional",
+      "sourceBlock": "B1330-B1332",
+      "title": "Te llaman por una emergencia internacional",
+      "premise": "Una lesión de otro jugador abre una convocatoria inesperada tras meses fuera o incluso tras una retirada internacional reciente.",
+      "trigger": "SEED_NATIONAL_PHASEDOWN + torneo/partido relevante.",
+      "visible": ["Llamada", "rol probable"],
+      "imperfect": ["No sabes si volver te dará un cierre mejor", "puede convertirte en parche simbólico"],
+      "hiddenState": ["NATIONAL_CYCLE_FIT", "BODY_REDLINE", "LEGACY_ANXIETY", "MOTIVATION_RESERVE"],
+      "options": [
+        {"id":"A","label":"Volver."},
+        {"id":"B","label":"Rechazar."},
+        {"id":"C","label":"Aceptar solo si puedes competir."},
+        {"id":"D","label":"Pedir 24 horas para hablar con club/familia."}
+      ],
+      "canonicalSeeds": ["SEED_EMERGENCY_NT_RETURN"],
+      "authority": {
+        "requires": ["canonical_national_phasedown_memory", "authoritative_current_emergency_call", "real_relevant_international_fixture_or_tournament_context", "injury_replacement_cause_if_stated"],
+        "forbidden": ["nationalStanding_as_call", "synthetic_other_player_injury", "automatic_return_after_international_retirement"]
+      },
+      "status": "blocked_shared_authority",
+      "outcomeEffects": "implementation_pending"
+    },
+    {
+      "eventId": "EVT_35_FINAL_001",
+      "sourceHeading": "25.9.6. La final que miras desde fuera",
+      "sourceBlock": "B1336-B1338",
+      "title": "La final que miras desde fuera",
+      "premise": "Tu equipo llega a una final y el técnico no te incluye entre los primeros cambios previstos.",
+      "trigger": "Club candidato + rol especialista.",
+      "visible": ["Plan", "convocatoria"],
+      "imperfect": ["No sabes si el partido pedirá tu perfil", "no sabes si esta será tu última final"],
+      "hiddenState": ["BIG_GAME_REPUTATION", "ROLE_ACCEPTANCE", "LEGACY_ANXIETY", "MANAGER_POWER"],
+      "options": [
+        {"id":"A","label":"Prepararte sin protestar."},
+        {"id":"B","label":"Pedir conversación táctica."},
+        {"id":"C","label":"Mostrar que quieres entrar si hay prórroga."},
+        {"id":"D","label":"Filtrar malestar después, nunca antes."}
+      ],
+      "canonicalSeeds": ["SEED_LAST_FINAL_BENCH"],
+      "authority": {
+        "requires": ["real_final_fixture", "authoritative_squad_call", "factual_preplanned_substitution_or_role_context"],
+        "forbidden": ["invented_final", "club_reputation_as_final", "synthetic_bench_or_sub_plan"]
+      },
+      "status": "blocked_shared_authority",
+      "outcomeEffects": "implementation_pending"
+    },
+    {
+      "eventId": "EVT_36_BODY_001",
+      "sourceHeading": "25.10.2. Ya no puedes jugar domingo-miércoles-domingo",
+      "sourceBlock": "B1350-B1352",
+      "title": "Ya no puedes jugar domingo-miércoles-domingo",
+      "premise": "Los datos muestran caída clara tras secuencias de tres partidos en ocho días.",
+      "trigger": "Edad 36+ + recuperación limitada.",
+      "visible": ["Patrón de rendimiento propio"],
+      "imperfect": ["No sabes qué partidos serán realmente decisivos cuando hagas el plan"],
+      "hiddenState": ["RECOVERY_DEBT", "MATCH_SELECTIVITY", "ROLE_ACCEPTANCE", "MANAGER_POWER"],
+      "options": [
+        {"id":"A","label":"Elegir uno de cada tres."},
+        {"id":"B","label":"Dejar al técnico elegir."},
+        {"id":"C","label":"Priorizar Europa/copa."},
+        {"id":"D","label":"Priorizar liga."}
+      ],
+      "canonicalSeeds": ["SEED_COMPETITION_SELECTIVITY"],
+      "authority": {
+        "requires": ["authoritative_three_matches_in_eight_days_history", "measured_performance_drop_pattern", "explicit_recovery_limitation", "competition_calendar"],
+        "forbidden": ["age_as_recovery_limit", "invented_schedule", "generic_form_as_measured_pattern"]
+      },
+      "status": "blocked_shared_authority",
+      "outcomeEffects": "implementation_pending"
+    },
+    {
+      "eventId": "EVT_36_RECORD_001",
+      "sourceHeading": "25.10.4. El partido 700",
+      "sourceBlock": "B1356-B1358",
+      "title": "El partido 700",
+      "premise": "Se acerca un hito enorme de partidos profesionales, pero coincide con una semana donde el staff recomienda descanso.",
+      "trigger": "Hito real + carga.",
+      "visible": ["Número", "recomendación"],
+      "imperfect": ["No sabes si llegarás igualmente la semana siguiente", "una lesión podría impedirlo"],
+      "hiddenState": ["RECORD_DRIVE", "BODY_REDLINE", "PUBLIC_MYTH", "LEGACY_ANXIETY"],
+      "options": [
+        {"id":"A","label":"Jugar para asegurar hito."},
+        {"id":"B","label":"Descansar."},
+        {"id":"C","label":"Entrar solo si el marcador lo permite."},
+        {"id":"D","label":"No comunicar el hito al staff."}
+      ],
+      "canonicalSeeds": ["SEED_700_MATCH_CHOICE"],
+      "authority": {
+        "requires": ["authoritative_professional_appearance_count_near_700", "real_upcoming_fixture", "explicit_staff_rest_recommendation", "load_context"],
+        "forbidden": ["fabricated_700th_match", "aggregate_appearance_count_without_next_fixture", "synthetic_staff_advice"],
+        "choiceC": "Requires real in-match score/substitution opportunity; pre-match intent alone must not guarantee appearance 700."
+      },
+      "status": "blocked_shared_authority",
+      "outcomeEffects": "implementation_pending"
+    },
+    {
+      "eventId": "EVT_37_PEN_001",
+      "sourceHeading": "25.11.4. El penalti de despedida",
+      "sourceBlock": "B1379-B1381",
+      "title": "El penalti de despedida",
+      "premise": "En un partido con ambiente de despedida, el equipo recibe un penalti y el lanzador habitual te ofrece tirarlo.",
+      "trigger": "Homenaje/último partido posible + penalti.",
+      "visible": ["Marcador", "lanzador", "contexto"],
+      "imperfect": ["No sabes si aceptar parece homenaje natural", "puede parecer anteponer narrativa al resultado"],
+      "hiddenState": ["PENALTY_HIERARCHY", "LEGACY_ANXIETY", "TEAM_TRUST", "PUBLIC_MYTH"],
+      "options": [
+        {"id":"A","label":"Tirarlo."},
+        {"id":"B","label":"Dejar al especialista."},
+        {"id":"C","label":"Tirarlo solo si el partido está resuelto."},
+        {"id":"D","label":"Decidir según el capitán/entrenador."}
+      ],
+      "canonicalSeeds": ["SEED_FAREWELL_PENALTY"],
+      "authority": {
+        "requires": ["real_match", "authoritative_farewell_or_possible_last_match_context", "real_penalty_awarded", "certified_regular_penalty_taker", "authoritative_penalty_assignment_or_choice_context", "captain_or_coach_authority_for_choice_D_if_named"],
+        "forbidden": ["cinematic_penalty_fabrication", "fabricated_farewell_match", "forced_goal_or_miss", "agent8_terminal_last_match_closure"],
+        "agent9Boundary": "Farewell/possible-last-match context may be consumed from terminal/preterminal authority; Agent 8 does not declare this the final career appearance or close retirement."
+      },
+      "status": "blocked_shared_authority",
+      "outcomeEffects": "implementation_pending"
+    }
+  ]
+}

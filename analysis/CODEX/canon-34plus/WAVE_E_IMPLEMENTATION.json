@@ -1,0 +1,79 @@
+{
+  "version": 1,
+  "generatedAt": "2026-09-17",
+  "owner": "t51/canon-34plus",
+  "canonicalSource": "analysis/2026-09-11/guion-extraido.txt",
+  "scope": "Wave E — ordinary 34+ scenes requiring authoritative unattached/free-agent state",
+  "summary": {
+    "events": 2,
+    "canonicalCardsExtracted": 2,
+    "runtimeActivated": 0,
+    "strictCodexReady": 0,
+    "marketOverlap": ["EVT_37_SHORT_001"],
+    "terminalChoiceDelegations": ["EVT_38_MARKET_001:D"]
+  },
+  "globalRules": [
+    "Free agency/unattached status must be an explicit authoritative employment/registration state.",
+    "monthsRemaining <= 0 currently means expired_pending_resolution and is not sufficient.",
+    "Market silence must be measured against real professional offer/contact history over real elapsed time; low marketHeat is not silence.",
+    "A narrative scene cannot fabricate a formal offer in order to end market silence.",
+    "Lowering salary/level changes willingness/search posture; it does not directly sign a club or alter tier.",
+    "Any protagonist career-retirement choice delegates terminal transition to Agent 9.",
+    "All events additionally require Wave 0 lineage, canonical seed catalog/provenance and save/pending/history compatibility."
+  ],
+  "events": [
+    {
+      "eventId": "EVT_37_SHORT_001",
+      "sourceHeading": "25.11.1. Contrato de tres meses",
+      "sourceBlock": "B1370-B1372",
+      "title": "Contrato de tres meses",
+      "premise": "Un club con una emergencia te ofrece solo tres meses hasta final de temporada.",
+      "trigger": "Agente libre 37+ + mercado puntual.",
+      "visible": ["Duración", "rol", "calendario"],
+      "imperfect": ["No sabes si servirá de escaparate", "puede ser despedida", "puede ser simple parche"],
+      "hiddenState": ["MARKET_FLOOR", "MOTIVATION_RESERVE", "ROLE_ACCEPTANCE", "FAREWELL_CONTROL"],
+      "options": [
+        {"id":"A","label":"Aceptar."},
+        {"id":"B","label":"Rechazar por falta de proyecto."},
+        {"id":"C","label":"Pedir opción automática."},
+        {"id":"D","label":"Aceptar sin promesas y decidir después."}
+      ],
+      "canonicalSeeds": ["SEED_THREE_MONTH_CONTRACT"],
+      "authority": {
+        "requires": ["authoritative_unattached_free_agent_state", "real_three_month_formal_offer", "real_role_and_calendar_context"],
+        "forbidden": ["monthsRemaining_zero_as_free_agency", "synthetic_emergency_offer", "direct_contract_mutation"],
+        "waveOverlap": ["B", "E"],
+        "representabilityGap": "Automatic option must be represented by authoritative terms before choice C can sign it."
+      },
+      "status": "blocked_shared_authority",
+      "outcomeEffects": "implementation_pending"
+    },
+    {
+      "eventId": "EVT_38_MARKET_001",
+      "sourceHeading": "25.11.6. Nadie llama en julio",
+      "sourceBlock": "B1385-B1387",
+      "title": "Nadie llama en julio",
+      "premise": "Termina tu contrato y pasan semanas sin una oferta profesional que cumpla tus condiciones.",
+      "trigger": "Agente libre 37+ + market floor bajo.",
+      "visible": ["Silencio real", "contactos informales"],
+      "imperfect": ["No sabes si el mercado despertará por una lesión en agosto", "puede haberse terminado"],
+      "hiddenState": ["MARKET_FLOOR", "ROLE_ACCEPTANCE", "EGO", "RETIREMENT_DISTANCE"],
+      "options": [
+        {"id":"A","label":"Bajar salario."},
+        {"id":"B","label":"Bajar nivel."},
+        {"id":"C","label":"Esperar hasta septiembre."},
+        {"id":"D","label":"Retirarte.","terminalChoiceOwner":"agent9"},
+        {"id":"E","label":"Llamar tú a UDV/club concreto."}
+      ],
+      "canonicalSeeds": ["SEED_MARKET_SILENCE_END", "SEED_MARKET_FLOOR_FINAL"],
+      "authority": {
+        "requires": ["authoritative_unattached_free_agent_state", "real_elapsed_weeks_without_acceptable_professional_offer", "formal_offer_and_contact_history", "current_search_conditions"],
+        "forbidden": ["monthsRemaining_zero_as_free_agency", "marketHeat_as_market_silence", "no_offer_as_auto_retirement", "direct_tier_or_salary_contract_mutation"],
+        "terminalBoundary": "Choice D may persist retirement intent/handoff, but Agent 9 owns decided/announced/closed retirement state.",
+        "choiceE": "Creates contact/search intent only; no UDV/specific-club offer exists until market authority authors one."
+      },
+      "status": "blocked_shared_authority",
+      "outcomeEffects": "implementation_pending"
+    }
+  ]
+}
