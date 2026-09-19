@@ -1,0 +1,84 @@
+name: T51 A6 FREEZE BUILDER
+
+on:
+  push:
+    branches: ['a0/a6-freeze-builder']
+
+permissions:
+  contents: write
+
+jobs:
+  freeze-and-publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Reset to exact pre-freeze product tree
+        run: git checkout --detach 1a736627447ab4e162f74b0a72dfcf24c317c513
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Assert exact candidate identity
+        run: |
+          node --input-type=module <<'NODE'
+          import { EVENTS } from './dist/content/events/index.js';
+          import { contentIdentity } from './dist/session/content-identity.js';
+          const expected='8bb987042cccdce110d4de200aad5c4da760c34a4fb717cccfc4d31f4f0c9b16';
+          const actual=await contentIdentity(EVENTS);
+          if(actual!==expected) throw new Error('A6 identity drift: '+actual);
+          if(EVENTS.length!==388) throw new Error('A6 event count drift: '+EVENTS.length);
+          console.log(JSON.stringify({actual,events:EVENTS.length}));
+          NODE
+      - name: Freeze exact catalog and regenerate evidence
+        run: |
+          node scripts/freeze-t51-active-source.mjs
+          node scripts/generate-t51-post-legacy-registry.mjs
+          node scripts/generate-t51-offer-bridge-evidence.mjs
+      - name: Register adjacent A5 to A6 migration edge
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const file='src/session/content-migration.ts';
+          let s=fs.readFileSync(file,'utf8');
+          const target='8bb987042cccdce110d4de200aad5c4da760c34a4fb717cccfc4d31f4f0c9b16';
+          const constNeedle='export const T51_A5_REP_MARKET_CONTENT_IDENTITY = "73591bc91387fc94502f24d80aa48cc2a8e3957a1ad42964cf312c61cbba923d";';
+          const constLine='export const T51_A6_FIRST5_CONTENT_IDENTITY = "'+target+'";';
+          if(!s.includes(constLine)){
+            if(!s.includes(constNeedle)) throw new Error('A5 identity constant not found');
+            s=s.replace(constNeedle,constNeedle+'\n'+constLine);
+          }
+          const routeNeedle='sourceContentIdentity: T51_A5_REP_MARKET_CONTENT_IDENTITY';
+          if(!s.includes(routeNeedle)){
+            const marker='\n];\n\nconst activeEvidenceCache';
+            const idx=s.indexOf(marker);
+            if(idx<0) throw new Error('migration array terminator not found');
+            const ids=['EVT_23_LOCK_001','EVT_23_MKT_001','EVT_23_CON_001','EVT_25_CON_001','EVT_25_MKT_001'];
+            const mappings=ids.map(id=>'      { kind: "distinct_scene", legacyEventId: "'+id+'", canonicalEventId: "'+id+'", clearCanonicalSeen: true, clearCanonicalCooldown: true }').join(',\n');
+            const route=',\n  {\n    sourceContentIdentity: T51_A5_REP_MARKET_CONTENT_IDENTITY,\n    targetContentIdentity: T51_A6_FIRST5_CONTENT_IDENTITY,\n    schedulerMappings: [\n'+mappings+'\n    ],\n    seedOriginMappings: []\n  }';
+            s=s.slice(0,idx)+route+s.slice(idx);
+          }
+          fs.writeFileSync(file,s);
+          NODE
+      - run: npm run build
+      - name: Verify freeze, generated evidence and migration route
+        run: |
+          node scripts/freeze-t51-active-source.mjs --check
+          node scripts/generate-t51-post-legacy-registry.mjs --check
+          node scripts/generate-t51-offer-bridge-evidence.mjs --check
+          node scripts/check-t51-content-migration-route.mjs
+          node --test scripts/test-t51-content-migration.mjs scripts/test-t51-content-lineage.mjs scripts/test-t51-migration-source-policy.mjs scripts/test-t51-a6-l.mjs
+      - name: Validate frozen candidate
+        run: npm run validate
+      - name: Publish frozen candidate branch
+        run: |
+          git config user.name "A0 T5 Integration"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B a0/a6-first5-frozen
+          git add qa/fixtures/t5.1/post-t51-sources src/session/content-migration.ts src/session/post-t51-legacy-registry.ts src/session/frozen-offer-bridge-evidence.ts
+          git commit -m "A0 freeze: A6 first-five generation after A5 73591"
+          git push --force origin HEAD:a0/a6-first5-frozen
