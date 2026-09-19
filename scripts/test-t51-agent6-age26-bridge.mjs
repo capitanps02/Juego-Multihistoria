@@ -64,9 +64,9 @@ test('Agent6 age26 bridge does not sign, transfer or mutate pending offers', () 
   assert.deepEqual(result.state.market.pending, pending);
 });
 
-test('Agent6 age26 bridge remains staged until lineage and seed-origin handoff are integrated', () => {
-  assert.equal(EVENTS_26_30.some(event => event.id === 'EVT_26_BRIDGE_001'), false);
-  assert.equal(EVENTS_26_30.some(event => event.id === 'EVT_26_IDN_001'), true);
+test('Agent6 age26 bridge is active after the integration-owned lineage handoff', () => {
+  assert.equal(EVENTS_26_30.some(event => event.id === 'EVT_26_BRIDGE_001'), true);
+  assert.equal(EVENTS_26_30.some(event => event.id === 'EVT_26_IDN_001'), false);
 });
 
 test('Agent6 age26 bridge can win phase-boundary scheduling when evaluated as candidate', () => {
