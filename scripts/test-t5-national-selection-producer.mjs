@@ -143,7 +143,7 @@ test('national producer/10 wrapper observes real core cycle opening without extr
   const base=createInitialState(17410);
   base.age=32;
   base.phase='30_34';
-  base.date='2026-02-28';
+  base.date='2026-02-10';
   base.season='2025-26';
   base.professional.initializedAt20=true;
   base.professional.initializedAt23=true;
@@ -160,12 +160,27 @@ test('national producer/10 wrapper observes real core cycle opening without extr
 
   const coreOnly=structuredClone(base);
   const wrapped=structuredClone(base);
-  advanceCoreWorldDayInPlace(coreOnly);
-  advanceWorldDayInPlace(wrapped);
+  let opened=false;
 
-  assert.equal(coreOnly.flags.NATIONAL_TOURNAMENT_CYCLE,true,'direct core must open the age-32 March cycle');
-  assert.equal(wrapped.flags.NATIONAL_TOURNAMENT_CYCLE,true);
-  assert.deepEqual(wrapped.rngState,coreOnly.rngState,'producer wrapper must not consume additional RNG');
-  assert.equal(coreOnly.world.nationalSelectionAuthority,undefined,'core alone does not materialize shared authority');
-  assert.equal(resolveNationalSelectionFacts(wrapped).preselected30,wrapped.flags.NATIONAL_GATE_OPEN===true);
+  for(let day=0; day<70; day+=1){
+    const beforeCycle=coreOnly.flags.NATIONAL_TOURNAMENT_CYCLE===true;
+    advanceCoreWorldDayInPlace(coreOnly);
+    advanceWorldDayInPlace(wrapped);
+
+    assert.equal(wrapped.date,coreOnly.date);
+    assert.equal(wrapped.flags.NATIONAL_TOURNAMENT_CYCLE,coreOnly.flags.NATIONAL_TOURNAMENT_CYCLE);
+    assert.equal(wrapped.flags.NATIONAL_GATE_OPEN,coreOnly.flags.NATIONAL_GATE_OPEN);
+    assert.deepEqual(wrapped.rngState,coreOnly.rngState,'producer wrapper must not consume additional RNG');
+
+    if(!beforeCycle && coreOnly.flags.NATIONAL_TOURNAMENT_CYCLE===true){
+      opened=true;
+      assert.equal(coreOnly.world.nationalSelectionAuthority,undefined,'core alone does not materialize shared authority');
+      const facts=resolveNationalSelectionFacts(wrapped);
+      assert.notEqual(facts.cycleId,null);
+      assert.equal(facts.preselected30,wrapped.flags.NATIONAL_GATE_OPEN===true);
+      break;
+    }
+  }
+
+  assert.equal(opened,true,'direct core must eventually open the factual age-32 tournament cycle');
 });
