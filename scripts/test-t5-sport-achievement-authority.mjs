@@ -18,6 +18,11 @@ const SOURCE={kind:'simulation_boundary',producerId:'test-achievement-boundary'}
 const EVENT_SOURCE={kind:'canonical_event',eventId:'EVT_TEST_RECORD',choiceId:'A',outcomeId:'A__PRIMARY'};
 
 function state(seed=19900){ return createInitialState(seed); }
+function addDays(iso,days){
+  const d=new Date(`${iso}T00:00:00Z`);
+  d.setUTCDate(d.getUTCDate()+days);
+  return d.toISOString().slice(0,10);
+}
 function appearanceState(seed=19910){
   const s=state(seed);
   s.date='2026-08-05'; s.season='2026-27'; s.runtime.day=35; s.runtime.seasonDay=35;
@@ -78,7 +83,7 @@ test('achievement authority/3 record definition, progress and holder chain requi
     eventId:'REC_EVT:bad',recordId:'REC_CLUB_APPS',kind:'surpassed',previousHolderRef:'protagonist',newHolderRef:'NPC_YOUTH',
     value:399,fixtureId:null,source:SOURCE
   }),null,'non-improving value cannot surpass a higher-is-better record');
-  s.runtime.day+=7; s.date='2025-07-08';
+  s.runtime.day+=7; s.date=addDays(s.date,7);
   const surpassed=recordSportRecordEventInPlace(s,{
     eventId:'REC_EVT:2',recordId:'REC_CLUB_APPS',kind:'surpassed',previousHolderRef:'protagonist',newHolderRef:'NPC_YOUTH',
     value:401,fixtureId:null,source:SOURCE
