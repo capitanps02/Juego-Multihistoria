@@ -6,6 +6,7 @@ import {
   lateCareerWeek,
   reverseRetirement
 } from '../dist/simulation/late-career-engine.js';
+import { agencyDeferredRetirement } from './qa-t5-retirement-deferral.mjs';
 
 function veteran(seed) {
   const state = createInitialState(seed);
@@ -69,4 +70,69 @@ test('T5-QA-016c/#61: no-market exhaustion is context only and never decides ret
   assert.equal(state.retirement.announcedDate, beforeStatus.announcedDate);
   assert.equal(state.flags.NO_MARKET_END_CONTEXT, true, 'market silence should expose only a player-decision context');
   assert.deepEqual(state.rngState.narrative, narrativeRng);
+});
+
+
+test('T5-QA-016d: stratified QA recognizes only explicit player continue as playing deferral', () => {
+  const state = veteran(61004);
+  state.retirement.status = 'playing';
+  state.history.push({
+    eventId: 'EVT_RET_HOME_001',
+    date: '2044-07-01',
+    season: state.season,
+    choiceId: 'KEEP',
+    outcomeId: 'KEEP',
+    club: state.club,
+    snapshot: { age: 36, phase: '34_plus', family: 'life' },
+    salience: 80,
+    visibility: 'private'
+  });
+  assert.equal(agencyDeferredRetirement(state), true);
+
+  state.history.push({
+    eventId: 'EVT_RET_LOW_001',
+    date: '2044-08-01',
+    season: state.season,
+    choiceId: 'LOW',
+    outcomeId: 'LOW',
+    club: state.club,
+    snapshot: { age: 36, phase: '34_plus', family: 'life' },
+    salience: 80,
+    visibility: 'private'
+  });
+  assert.equal(agencyDeferredRetirement(state), false, 'latest retirement decision is not a continue choice');
+});
+
+test('T5-QA-016e: stratified QA remains fail-closed without exact retirement-agency evidence', () => {
+  const state = veteran(61005);
+  state.retirement.status = 'playing';
+  assert.equal(agencyDeferredRetirement(state), false);
+
+  state.history.push({
+    eventId: 'EVT_34_HOME_001',
+    date: '2044-07-01',
+    season: state.season,
+    choiceId: 'KEEP',
+    outcomeId: 'KEEP',
+    club: state.club,
+    snapshot: { age: 36, phase: '34_plus', family: 'life' },
+    salience: 80,
+    visibility: 'private'
+  });
+  assert.equal(agencyDeferredRetirement(state), false, 'lookalike choice outside retirement decision surfaces must not count');
+
+  state.retirement.status = 'decided';
+  state.retirement.decidedDate = '2044-09-01';
+  state.history.push({
+    eventId: 'EVT_RET_ANNOUNCE_001',
+    date: '2044-08-15',
+    season: state.season,
+    choiceId: 'WAIT',
+    outcomeId: 'WAIT',
+    club: state.club,
+    snapshot: { age: 36, phase: '34_plus', family: 'life' },
+    salience: 80,
+    visibility: 'private'
+  });
+  assert.equal(agencyDeferredRetirement(state), false, 'pre-decision WAIT must not count');
 });
