@@ -1,3 +1,4 @@
+// exact-head A6 preactivation certification trigger
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { EVENTS } from '../dist/content/events/index.js';
