@@ -1,0 +1,34 @@
+name: T51 A7 CURRENT PRE-FREEZE
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  a7-prefreeze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: A7 owner certification
+        run: |
+          node --test             scripts/test-t51-30-34-authority-gaps.mjs             scripts/test-t51-30-34-career-authority.mjs             scripts/test-t51-30-34-conditional-seed-reads.mjs             scripts/test-t51-30-34-conditionals.mjs             scripts/test-t51-30-34-contract-clause-handoff.mjs             scripts/test-t51-30-34-downstream-seed-handoff.mjs             scripts/test-t51-30-34-migration-handoff.mjs             scripts/test-t51-30-34-missing-principals.mjs             scripts/test-t51-30-34-multi-offer-handoff.mjs             scripts/test-t51-30-34-readiness.mjs             scripts/test-t51-30-34-seed-consumption.mjs             scripts/test-t51-30-34-seed-handoff.mjs             scripts/test-t51-30-34-sport-authority.mjs             scripts/test-t51-30-34-trigger.mjs
+      - name: Emit exact A7 identity
+        run: |
+          node --input-type=module <<'NODE'
+          import { EVENTS } from './dist/content/events/index.js';
+          import { contentIdentity } from './dist/session/content-identity.js';
+          const identity=await contentIdentity(EVENTS);
+          const unique=new Set(EVENTS.map(e=>e.id)).size;
+          console.log(JSON.stringify({identity,events:EVENTS.length,unique}));
+          if(EVENTS.length!==388 || unique!==388) process.exit(1);
+          NODE
