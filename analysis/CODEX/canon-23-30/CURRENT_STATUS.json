@@ -1,0 +1,23 @@
+{
+  "agent": 6,
+  "scope": "canon-23-30",
+  "branch": "t51/canon-23-30",
+  "baseMain": "5f4d14bca4d696cfafadb58b64034c7cd40cc147",
+  "compareAtSportMerge": {"ahead": 21, "behind": 0},
+  "focalCI": {"head":"6308fdaa4629d84e71f07e32209a40c965af432c","status":"success","run":35263206770},
+  "activeCatalogChangedByAgent6": false,
+  "schemaChangedByAgent6": false,
+  "rngPolicyChangedByAgent6": false,
+  "stagedImplemented": [
+    "EVT_23_LOCK_001", "EVT_23_MKT_001", "EVT_23_CON_001", "EVT_25_CON_001", "EVT_25_MKT_001",
+    "EVT_26_BRIDGE_001", "EVT_26_DOC_001", "EVT_27_IMG_001", "EVT_27_BODY_001", "EVT_27_CON_001",
+    "EVT_28_MEDIA_001", "EVT_29_FIN_001", "EVT_29_NAT_002"
+  ],
+  "sharedAuthorityDelta": {
+    "sportMainCommit": "5f4d14bca4d696cfafadb58b64034c7cd40cc147",
+    "nowKnown": ["weekly league calendar","current/previous league fixture","squad status","called up","bench","started","appeared","minutes","injury unavailable","debut decision context"],
+    "stillUnknown": ["result","goals","assists","cards","penalty occurrence","standing","continental/cup/final identity","multi-competition congestion","tactical proposal"]
+  },
+  "conditionalOwnership": {"23_26":20,"26_30":24,"fullyCertified":0},
+  "nextMicrobatch": ["CEVT_24_CHAT_01 source recovery", "CEVT_25_BODY_02 seed-plan fact handoff", "re-audit sport-gated principals against exact new facts"]
+}

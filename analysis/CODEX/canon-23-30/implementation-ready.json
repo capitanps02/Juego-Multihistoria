@@ -1,0 +1,39 @@
+{
+  "policy": "Re-check authority on latest main immediately before coding; never substitute narrative proxies.",
+  "alreadyImplementedStaged": [
+    "EVT_23_LOCK_001", "EVT_23_MKT_001", "EVT_23_CON_001", "EVT_25_CON_001", "EVT_25_MKT_001",
+    "EVT_26_BRIDGE_001", "EVT_26_DOC_001", "EVT_27_IMG_001", "EVT_27_BODY_001", "EVT_27_CON_001",
+    "EVT_28_MEDIA_001", "EVT_29_FIN_001", "EVT_29_NAT_002"
+  ],
+  "auditNext": ["EVT_27_LOCK_001", "EVT_27_NAT_001", "EVT_28_CON_001", "EVT_29_PRS_001"],
+  "retiredNoncanonicalTargets": [
+    {"id":"EVT_28_IMG_001","status":"retired_noncanonical","reason":"T5.1 audit classifies current engine ID as engine-only noncanonical; do not spend Codex work treating it as a missing canonical target"},
+    {"id":"EVT_29_FORM_001","status":"retired_noncanonical","reason":"T5.1 audit classifies current engine ID as engine-only noncanonical; canonical FORM target is EVT_28_FORM_001"}
+  ],
+  "blockedAfterAudit": [
+    {"id":"EVT_26_BODY_001","reason":"private-staff proposal/high-income route lacks complete authoritative proposal/income threshold"},
+    {"id":"EVT_26_CON_001","reason":"CareerOffer lacks image-control/bonus semantics required by canonical peak contract"},
+    {"id":"EVT_26_IMG_001","reason":"no authoritative joint club/brand commercial package"},
+    {"id":"EVT_26_AGT_001","reason":"CareerOffer does not persist sporting-role promise or agent commission/conflict terms"},
+    {"id":"EVT_27_HOME_001","reason":"no authoritative high-net-worth model/cutoff"},
+    {"id":"EVT_27_MONEY_001","reason":"no authoritative high-net-worth model/cutoff"},
+    {"id":"EVT_27_PRS_001","reason":"no authoritative stadium/fan negative-reaction fact"},
+    {"id":"EVT_27_MKT_001","reason":"formal offer lacks project coach/budget/role promises"},
+    {"id":"EVT_27_MED_001","reason":"no compatible surgical diagnosis authority"},
+    {"id":"EVT_27_TACT_001","reason":"no authoritative tactical reconversion proposal"},
+    {"id":"EVT_27_AWARD_001","reason":"no authoritative award nomination"},
+    {"id":"EVT_27_STAR_001","reason":"no certified second-star current-club context"},
+    {"id":"EVT_27_AGT_002","reason":"market authority stores one pending offer, not two simultaneous advanced negotiations"},
+    {"id":"EVT_27_EUR_001","reason":"no authoritative semifinal/fixture plus tactical-plan proposal"},
+    {"id":"EVT_27_TEAM_001","reason":"no certified successor performance during a real player absence"},
+    {"id":"EVT_28_FORM_001","reason":"instant form/peak fields do not prove prior high peak plus sustained medium run"},
+    {"id":"EVT_28_MED_001","reason":"no authoritative high-calendar density/club-national schedule"},
+    {"id":"EVT_28_STAR_001","reason":"no certified successor peak/performance history"},
+    {"id":"EVT_28_CLUB_001","reason":"world.coachSecurity is carried across clubs and does not identify a current-club coach/president crisis"}
+  ],
+  "lineageNeeded": [
+    {"id":"EVT_28_MEDIA_001","needs":"register SEED_DOCUMENTARY_FALLOUT and activate canonical event lineage"},
+    {"id":"EVT_29_FIN_001","needs":"replace active four-choice same-ID placeholder with five-choice staged definition through integrator-owned contentIdentity/migration; SEED_AGE30_PRIORITY catalog origin is already correct"},
+    {"id":"EVT_29_NAT_002","needs":"register SEED_NATIONAL_AVAILABILITY_30 and activate the staged policy event; aggregate national authority is sufficient, but it must never be treated as a concrete call-up"}
+  ]
+}
