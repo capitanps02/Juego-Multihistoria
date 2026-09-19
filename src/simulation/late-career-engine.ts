@@ -6,6 +6,40 @@ import { materializeVeteranRenewalInPlace, veteranMarketDemand } from "./veteran
 const clamp=(x:number,min=0,max=100)=>Math.min(max,Math.max(min,x));
 const num=(x:unknown,f=0)=>typeof x==="number"?x:f;
 
+const RETIREMENT_REVISIT_DAYS=365;
+const VOLUNTARY_CONTINUE_CHOICES:Record<string,ReadonlySet<string>>={
+  EVT_RET_HOME_001:new Set(["KEEP"]),
+  EVT_RET_BODY_001:new Set(["ONE_MORE"]),
+  EVT_RET_HIGH_001:new Set(["CONTINUE"]),
+  EVT_RET_LOW_001:new Set(["FIGHT"])
+};
+
+function daysBetween(from:string,to:string):number{
+  const start=Date.parse(from+"T00:00:00Z"), end=Date.parse(to+"T00:00:00Z");
+  if(!Number.isFinite(start)||!Number.isFinite(end))return 0;
+  return Math.max(0,Math.floor((end-start)/86400000));
+}
+
+/**
+ * A voluntary "keep playing" answer must not permanently consume every future
+ * retirement decision surface. Re-open only the exact dialogue previously used,
+ * only after one full year, and never consume RNG or manufacture a retirement.
+ */
+export function reopenVoluntaryRetirementDialoguesInPlace(state:GameState):void{
+  if(state.age<34||state.retirement.status!=="playing")return;
+  for(const [eventId,continueChoices] of Object.entries(VOLUNTARY_CONTINUE_CHOICES)){
+    let latest:GameState["history"][number]|undefined;
+    for(let i=state.history.length-1;i>=0;i--){
+      const row=state.history[i]!;
+      if(row.eventId===eventId){latest=row;break;}
+    }
+    if(!latest||!continueChoices.has(latest.choiceId))continue;
+    if(daysBetween(latest.date,state.date)<RETIREMENT_REVISIT_DAYS)continue;
+    state.flags[`SEEN_${eventId}`]=false;
+    state.eventCooldowns[eventId]=0;
+  }
+}
+
 function setStatus(state:GameState,status:GameState["retirement"]["status"],reason?:string,closureType?:string){
   state.retirement.status=status; state.retirement.daysInStatus=0;
   if(status==="decided"){
@@ -122,6 +156,8 @@ export function lateCareerWeek(state:GameState):void{
   p.retirementDistance=clamp(p.retirementDistance*.985+clamp(Math.max(0,48-role)*.8+Math.max(0,40-market)*.5+Math.max(0,p.recoveryDebt-55)*.55+Math.max(0,50-p.motivationReserve)*.8+ageDrift*4.3)*.015);
 
   if(state.retirement.status!=="playing") state.retirement.daysInStatus+=7;
+
+  reopenVoluntaryRetirementDialoguesInPlace(state);
 
   // Real world contexts feeding retirement stories.
   state.flags.RETIRE_AFTER_WIN_CONTEXT=String(state.world.finalOutcome)==="win"&&form>=55&&state.retirement.status==="playing";
