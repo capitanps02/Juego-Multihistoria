@@ -395,3 +395,55 @@ test('origin-club proof: private chat callback becomes unreachable after transfe
   assert.equal(state.flags.HAS_SEED_PRIVATE_CHAT, false);
   assert.equal(eventGatesPass(state, consumer), false, 'tras cambiar de club la consecuencia local no puede filtrarse al nuevo vestuario');
 });
+
+
+test('origin-club proof: teammate-cover route cannot leak into a new dressing room', async () => {
+  const { EVENTS } = await import('../dist/content/events/index.js');
+  const { createInitialState } = await import('../dist/content/initial-state.js');
+  const { expireDueSeedsInPlace } = await import('../dist/narrative/resolver.js');
+  const { eventGatesPass } = await import('../dist/narrative/event-gates.js');
+  const { SEED_SCOPE_PROOFS } = await import('./t52-seed-scope-proofs.mjs');
+
+  const proof = SEED_SCOPE_PROOFS.find(row => row.seedId === 'SEED_TEAMMATE_COVER');
+  assert.ok(proof);
+  const producer = EVENTS.find(event => event.id === proof.producerEventId);
+  const consumer = EVENTS.find(event => event.id === proof.consumerEventId);
+  assert.ok(producer, 'falta el productor canónico de teammate cover');
+  assert.ok(consumer, 'falta el consumidor canónico de teammate cover');
+  assert.ok(
+    producer.outcomes.some(outcome => (outcome.seedTransitions ?? []).some(transition => transition.seedId === proof.seedId && transition.action === 'create')),
+    'EVT_20_LOCK_002 debe crear SEED_TEAMMATE_COVER'
+  );
+
+  const state = createInitialState(5264);
+  state.age = 23;
+  state.phase = '23_26';
+  state.date = '2031-10-01';
+  state.club = 'UDV';
+  state.professional.ownerClub = 'UDV';
+  state.professional.registrationClub = 'UDV';
+  state.world.ownerClub = 'UDV';
+  const captainRelation = state.relationships.find(row => row.npcId === 'NPC_PLR_10');
+  if (captainRelation) captainRelation.affinity = 0;
+  state.seeds.push({
+    id: proof.seedId,
+    state: 'active',
+    intensity: 70,
+    originEvent: proof.producerEventId,
+    originSeason: state.season,
+    npcRefs: [],
+    payload: { __t52OriginClub: state.club, stance: 'confirm_story' },
+    lastTouchedDate: state.date
+  });
+  state.flags.HAS_SEED_TEAMMATE_COVER = true;
+
+  assert.equal(eventGatesPass(state, consumer), true, 'la memoria local puede abrir la escena en el club de origen');
+
+  state.club = 'TRANSFER_DESTINATION';
+  expireDueSeedsInPlace(state);
+  const seed = state.seeds.find(item => item.id === proof.seedId);
+  assert.equal(seed?.state, 'expired');
+  assert.equal(seed?.payload.__t52TerminalReason, 'club_scope');
+  assert.equal(state.flags.HAS_SEED_TEAMMATE_COVER, false);
+  assert.equal(eventGatesPass(state, consumer), false, 'la memoria de otro vestuario no puede abrir EVT_23_LOCK_001 tras el traspaso');
+});
