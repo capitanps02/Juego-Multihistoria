@@ -3,6 +3,8 @@ name: T51 A6 FREEZE BUILDER
 on:
   push:
     branches: ['a0/a6-freeze-builder']
+  pull_request:
+    branches: [main]
 
 permissions:
   contents: write
