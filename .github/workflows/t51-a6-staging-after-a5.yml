@@ -32,3 +32,6 @@ jobs:
           scripts/test-t51-agent6-doc26.mjs
           scripts/test-t51-agent6-fin29.mjs
           scripts/test-t51-a6-preactivation.mjs
+
+      - name: A6 L scope proof
+        run: node scripts/audit-t52-deferred.mjs && node --test scripts/test-t52-deferred.mjs
