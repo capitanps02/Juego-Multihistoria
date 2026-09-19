@@ -1,0 +1,27 @@
+name: T51 A6 CURRENT IDENTITY
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  a6-current-identity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Five A6 owner scenes
+        run: node --test scripts/test-t51-agent6-lock23.mjs scripts/test-t51-agent6-mkt25.mjs scripts/test-t51-agent6-offers23-25.mjs
+      - name: Emit exact current identity
+        run: node scripts/test-t51-a6-l.mjs
+      - name: Validate candidate tree
+        run: npm run validate
