@@ -1,0 +1,75 @@
+name: QA T5 finite certification matrix
+
+on:
+  push:
+    branches:
+      - qa/t5-finite-cert-v4
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  blocker-matrix:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        test:
+          - scripts/test-t5-contract-expiry-known-bug.mjs
+          - scripts/test-t5-match-model-known-bug.mjs
+          - scripts/test-t5-captain-gap-known-bug.mjs
+          - scripts/test-t5-offer-context-known-bug.mjs
+          - scripts/test-t5-npc-knowledge-save-known-bug.mjs
+          - scripts/test-t5-retirement-save-known-bug.mjs
+          - scripts/test-t5-retirement-authority-known-bug.mjs
+          - scripts/test-t5-lock23-captain-choice-guard.mjs
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Directed T5 regression
+        run: node --test "${{ matrix.test }}"
+
+  saves-migrations:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Save + migration finite gate
+        run: npm run qa:t5:saves
+
+  cross-system:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Cross-system invariant probes
+        run: npm run qa:t5:integration
+
+  determinism-long-career:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Determinism and RNG isolation
+        run: node --test --test-name-pattern="T5 determinism" scripts/test-t5-regression.mjs
+      - name: Stratified finite long-career matrix
+        run: node scripts/qa-t5-sim.mjs
