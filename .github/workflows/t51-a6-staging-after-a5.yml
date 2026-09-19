@@ -1,0 +1,24 @@
+name: T51 A6 Staging After A5
+
+on:
+  push:
+    branches: ['a6/staging-after-a5-73591']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  staged-a6:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: A6 staged definitions only
+        run: node --test scripts/test-t51-agent6-lock23.mjs scripts/test-t51-agent6-mkt25.mjs scripts/test-t51-agent6-offers23-25.mjs
