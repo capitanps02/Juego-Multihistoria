@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { createInitialState } from '../dist/content/initial-state.js';
 import { careerSportMilestones, getSportMatchModelStore, recordOfficialMatchInPlace } from '../dist/simulation/match-model.js';
 import { getSportContext } from '../dist/simulation/sport-context.js';
+import { ensureEmploymentStateInPlace, transitionNaturalExpiryInPlace } from '../dist/simulation/employment.js';
 
 function matchState(seed=9910){
   const s=createInitialState(seed);
@@ -86,10 +87,10 @@ test('career milestones/4 read is historical and remains available when unattach
   recordOfficialMatchInPlace(s,{appeared:true,debutOccurred:false,injuryUnavailable:false});
   s.sport.appearances=1;
   const before=careerSportMilestones(s);
+  ensureEmploymentStateInPlace(s);
+  const previousMonths=Math.max(1,Number(s.contract.monthsRemaining));
   s.contract.monthsRemaining=0;
-  s.contract.salaryMonthly=0;
-  s.professional.route='free_agent';
-  s.flags.LOAN_ACTIVE=false;
+  assert.equal(transitionNaturalExpiryInPlace(s,previousMonths),true);
   const context=getSportContext(s);
   assert.deepEqual(context.careerMilestones,before);
   assert.equal(context.sportingClub,null);
