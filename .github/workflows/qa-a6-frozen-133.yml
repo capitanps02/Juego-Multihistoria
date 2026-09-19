@@ -1,0 +1,20 @@
+name: QA A6 frozen #133
+on:
+  push:
+    branches:
+      - qa/cert-591-lock23
+  pull_request:
+    branches:
+      - main
+jobs:
+  lock23:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: node --test scripts/test-t5-lock23-captain-choice-guard.mjs scripts/test-t51-agent6-lock23.mjs
