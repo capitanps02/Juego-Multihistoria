@@ -33,12 +33,12 @@ test('A5 next pre-freeze/2 no other external-owner-ready A5 principal is activat
   }
 });
 
-test('A5 next pre-freeze/3 catalog remains unique and deterministic',()=>{
+test('A5 next pre-freeze/3 catalog remains unique and deterministic',async()=>{
   const ids=EVENTS.map(e=>e.id);
   assert.equal(new Set(ids).size,ids.length);
   assert.equal(EVENTS_20_23.filter(e=>e.id==='EVT_20_AGT_001').length,1);
   assert.equal(EVENTS_20_23.filter(e=>e.id==='EVT_20_MKT_001').length,1);
-  const identity=contentIdentity(EVENTS);
+  const identity=await contentIdentity(EVENTS);
   assert.match(identity,/^[a-f0-9]{64}$/);
   console.log('A5_NEXT_TARGET_IDENTITY='+identity);
 });
