@@ -1,0 +1,562 @@
+{
+  "schemaVersion": 2,
+  "workstream": "T5.1 canon 30-34 migration handoff",
+  "generatedAt": "2026-09-17",
+  "sourceMainSha": "49f16b21c8f68f1439901437dcf16e1384966de2",
+  "sourceContentIdentity": "84871fae2bec92d74d1e607e0a48943e2e530a062d315a829cfe75eda9fe0886",
+  "observedTargetContentIdentity": "d02b2f86559b9c280570999794e7c39bf860b2d083f20d69f20fb689973ec15f",
+  "targetIdentityEvidence": {
+    "workflowRun": 35358629840,
+    "source": "Focused CI after activating EVT_30_STATUS_001 and canonical EVT_31_TEAM_001 computed the exact active 30-34 contentIdentity as d02b2f86...ec15f. No target freeze or migration edge is registered by A7.",
+    "rule": "Observed target identity follows the exact active catalog. Freeze and adjacent route registration remain coordination/integration ownership."
+  },
+  "consumer": {
+    "implementationOwner": "coordination/integration",
+    "routeFile": "src/session/content-migration.ts",
+    "routeRegistry": "CONTENT_MIGRATION_ROUTES",
+    "workstreamMayRegisterRoute": false,
+    "targetFreezeRequiredBeforeRouteRegistration": true,
+    "targetFreezeFixture": "qa/fixtures/t5.1/post-t51-sources/d02b2f86559b9c280570999794e7c39bf860b2d083f20d69f20fb689973ec15f.json"
+  },
+  "invariants": {
+    "approvedSameSceneMappings": [],
+    "approvedAliases": [],
+    "unknownIdentityAccepted": false,
+    "legacyDefinitionScheduled": false,
+    "legacyHistoryRewrittenAsCanonical": false,
+    "legacyPendingReboundToNewDefinition": false,
+    "legacySeenSuppressesNonEquivalentCanonical": false,
+    "legacyCooldownSuppressesNonEquivalentCanonical": false,
+    "migrationConsumesRng": false,
+    "migrationSchedulesEvents": false,
+    "seedHistoricalOriginRewriteAuthorized": false
+  },
+  "currentBatch": {
+    "sameSceneMappings": [],
+    "exactIdSemanticCollisions": [
+      "EVT_30_CON_001",
+      "EVT_30_BODY_001",
+      "EVT_30_MKT_001",
+      "EVT_30_NAT_001",
+      "EVT_30_FAM_001",
+      "EVT_30_MED_001",
+      "EVT_30_FORM_001",
+      "EVT_30_CAP_001",
+      "EVT_31_MED_001",
+      "EVT_31_MKT_001",
+      "EVT_31_HOME_001",
+      "EVT_31_AGT_001",
+      "EVT_31_LEGACY_001",
+      "EVT_31_RETURN_001",
+      "EVT_31_TACT_001",
+      "EVT_31_CCH_001",
+      "EVT_31_NAT_001",
+      "EVT_31_FINAL_001",
+      "EVT_32_CON_001",
+      "EVT_32_HOME_001",
+      "EVT_32_AGT_001",
+      "EVT_32_FAN_001",
+      "EVT_32_NAT_001",
+      "EVT_33_BODY_001",
+      "EVT_33_CAP_001",
+      "EVT_33_MKT_001",
+      "EVT_33_PRS_001"
+    ],
+    "schedulerMappingsCandidate": [
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_30_CON_001",
+        "canonicalEventId": "EVT_30_CON_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_30_BODY_001",
+        "canonicalEventId": "EVT_30_BODY_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_30_MKT_001",
+        "canonicalEventId": "EVT_30_MKT_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_30_NAT_001",
+        "canonicalEventId": "EVT_30_NAT_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_30_FAM_001",
+        "canonicalEventId": "EVT_30_FAM_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_30_MED_001",
+        "canonicalEventId": "EVT_30_MED_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_30_FORM_001",
+        "canonicalEventId": "EVT_30_FORM_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_30_CAP_001",
+        "canonicalEventId": "EVT_30_CAP_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_31_MED_001",
+        "canonicalEventId": "EVT_31_MED_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_31_MKT_001",
+        "canonicalEventId": "EVT_31_MKT_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_31_HOME_001",
+        "canonicalEventId": "EVT_31_HOME_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_31_AGT_001",
+        "canonicalEventId": "EVT_31_AGT_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_31_LEGACY_001",
+        "canonicalEventId": "EVT_31_LEGACY_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_31_RETURN_001",
+        "canonicalEventId": "EVT_31_RETURN_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_31_TACT_001",
+        "canonicalEventId": "EVT_31_TACT_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_31_CCH_001",
+        "canonicalEventId": "EVT_31_CCH_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_31_NAT_001",
+        "canonicalEventId": "EVT_31_NAT_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_31_FINAL_001",
+        "canonicalEventId": "EVT_31_FINAL_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_32_CON_001",
+        "canonicalEventId": "EVT_32_CON_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_32_HOME_001",
+        "canonicalEventId": "EVT_32_HOME_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_32_AGT_001",
+        "canonicalEventId": "EVT_32_AGT_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_32_FAN_001",
+        "canonicalEventId": "EVT_32_FAN_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_32_NAT_001",
+        "canonicalEventId": "EVT_32_NAT_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_33_BODY_001",
+        "canonicalEventId": "EVT_33_BODY_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_33_CAP_001",
+        "canonicalEventId": "EVT_33_CAP_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_33_MKT_001",
+        "canonicalEventId": "EVT_33_MKT_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      },
+      {
+        "kind": "distinct_scene",
+        "legacyEventId": "EVT_33_PRS_001",
+        "canonicalEventId": "EVT_33_PRS_001",
+        "clearCanonicalSeen": true,
+        "clearCanonicalCooldown": true
+      }
+    ],
+    "seedOriginMappingsCandidate": []
+  },
+  "futureShiftedIdentityWork": {
+    "pairs": [
+      {
+        "canonicalId": "EVT_30_BRIDGE_001",
+        "legacyCandidateId": "EVT_30_IDN_001",
+        "sameSceneMigrationAllowed": false,
+        "decision": "distinct_scene",
+        "decisionReason": "Legacy EVT_30_IDN_001 shares the title/seed shell but uses generic choices and outcomes; canonical trigger, four choices, uncertainty and consequences are different.",
+        "migrationSemantics": {
+          "inheritSeen": false,
+          "inheritCooldown": false,
+          "rebindPending": false,
+          "rewriteHistory": false,
+          "rewriteSeedOrigin": false
+        }
+      },
+      {
+        "canonicalId": "EVT_30_STATUS_001",
+        "legacyCandidateId": "EVT_30_TEAM_001",
+        "sameSceneMigrationAllowed": false,
+        "decision": "distinct_scene",
+        "decisionReason": "Legacy EVT_30_TEAM_001 is a generic maturity shell; canonical dorsal request has different trigger, information, four choices and succession consequences.",
+        "migrationSemantics": {
+          "inheritSeen": false,
+          "inheritCooldown": false,
+          "rebindPending": false,
+          "rewriteHistory": false,
+          "rewriteSeedOrigin": false
+        }
+      },
+      {
+        "canonicalId": "EVT_30_EUR_001",
+        "legacyCandidateId": "EVT_30_FINAL_001",
+        "sameSceneMigrationAllowed": false,
+        "decision": "distinct_scene",
+        "decisionReason": "Legacy EVT_30_FINAL_001 uses generic maturity choices plus FINAL_CONTEXT; canonical scene is a continental semifinal tactical-role decision with distinct choices and consequences.",
+        "migrationSemantics": {
+          "inheritSeen": false,
+          "inheritCooldown": false,
+          "rebindPending": false,
+          "rewriteHistory": false,
+          "rewriteSeedOrigin": false
+        }
+      },
+      {
+        "canonicalId": "EVT_30_RECORD_001",
+        "legacyCandidateId": "EVT_31_REC_001",
+        "sameSceneMigrationAllowed": false,
+        "decision": "distinct_scene",
+        "decisionReason": "Legacy EVT_31_REC_001 occurs at age 31 with generic maturity choices; canonical Partido 500 is age 30 and requires a real milestone/load decision.",
+        "migrationSemantics": {
+          "inheritSeen": false,
+          "inheritCooldown": false,
+          "rebindPending": false,
+          "rewriteHistory": false,
+          "rewriteSeedOrigin": false
+        }
+      },
+      {
+        "canonicalId": "EVT_30_PAIN_001",
+        "legacyCandidateId": "EVT_33_MED_001",
+        "sameSceneMigrationAllowed": false,
+        "decision": "distinct_scene",
+        "decisionReason": "Legacy EVT_33_MED_001 occurs at age 33 with generic maturity choices; canonical clean-scan persistent-pain decision is age 30 with different medical uncertainty and choices.",
+        "migrationSemantics": {
+          "inheritSeen": false,
+          "inheritCooldown": false,
+          "rebindPending": false,
+          "rewriteHistory": false,
+          "rewriteSeedOrigin": false
+        }
+      },
+      {
+        "canonicalId": "EVT_30_NANO_001",
+        "legacyCandidateId": "EVT_33_NET_001",
+        "sameSceneMigrationAllowed": false,
+        "decision": "distinct_scene",
+        "decisionReason": "Legacy EVT_33_NET_001 is age 33 and uses generic maturity choices; canonical Nano call is age 30 with contact/recommendation-specific choices and seed semantics.",
+        "migrationSemantics": {
+          "inheritSeen": false,
+          "inheritCooldown": false,
+          "rebindPending": false,
+          "rewriteHistory": false,
+          "rewriteSeedOrigin": false
+        }
+      },
+      {
+        "canonicalId": "EVT_31_FAM_001",
+        "legacyCandidateId": "EVT_30_LIFE_001",
+        "sameSceneMigrationAllowed": false,
+        "decision": "distinct_scene",
+        "decisionReason": "Legacy EVT_30_LIFE_001 is age 30 with generic maturity choices; canonical no-more-moves scene is age 31 and has family/relocation-specific choices.",
+        "migrationSemantics": {
+          "inheritSeen": false,
+          "inheritCooldown": false,
+          "rebindPending": false,
+          "rewriteHistory": false,
+          "rewriteSeedOrigin": false
+        }
+      },
+      {
+        "canonicalId": "EVT_31_TEAM_001",
+        "legacyCandidateId": "EVT_31_MENT_001",
+        "sameSceneMigrationAllowed": false,
+        "specialCase": "The canonical target string EVT_31_TEAM_001 is already occupied in the legacy catalog by a different youth-wave identity; it remains distinct_scene.",
+        "decision": "distinct_scene",
+        "decisionReason": "Legacy EVT_31_MENT_001 uses generic maturity choices; canonical official-mentor scene has explicit formalization choices and different consequences.",
+        "migrationSemantics": {
+          "inheritSeen": false,
+          "inheritCooldown": false,
+          "rebindPending": false,
+          "rewriteHistory": false,
+          "rewriteSeedOrigin": false
+        }
+      },
+      {
+        "canonicalId": "EVT_31_SQUAD_001",
+        "legacyCandidateId": "EVT_31_TEAM_001",
+        "sameSceneMigrationAllowed": false,
+        "decision": "distinct_scene",
+        "decisionReason": "Legacy EVT_31_TEAM_001 uses generic maturity choices; canonical two-young-signings scene has succession-plan choices and distinct consequences.",
+        "migrationSemantics": {
+          "inheritSeen": false,
+          "inheritCooldown": false,
+          "rebindPending": false,
+          "rewriteHistory": false,
+          "rewriteSeedOrigin": false
+        }
+      },
+      {
+        "canonicalId": "EVT_31_BIZ_001",
+        "legacyCandidateId": "EVT_32_IMG_001",
+        "sameSceneMigrationAllowed": false,
+        "decision": "distinct_scene",
+        "decisionReason": "Legacy EVT_32_IMG_001 is age 32 with generic maturity choices; canonical partner-crisis scene is age 31 with audit/communication-specific choices.",
+        "migrationSemantics": {
+          "inheritSeen": false,
+          "inheritCooldown": false,
+          "rebindPending": false,
+          "rewriteHistory": false,
+          "rewriteSeedOrigin": false
+        }
+      },
+      {
+        "canonicalId": "EVT_32_RICH_001",
+        "legacyCandidateId": "EVT_32_MKT_001",
+        "sameSceneMigrationAllowed": false,
+        "decision": "distinct_scene",
+        "decisionReason": "Legacy EVT_32_MKT_001 uses generic maturity choices; canonical lifetime-money offer has explicit accept/reject/one-year/tournament timing choices.",
+        "migrationSemantics": {
+          "inheritSeen": false,
+          "inheritCooldown": false,
+          "rebindPending": false,
+          "rewriteHistory": false,
+          "rewriteSeedOrigin": false
+        }
+      },
+      {
+        "canonicalId": "EVT_32_ELITE_001",
+        "legacyCandidateId": "EVT_32_CLB_001",
+        "sameSceneMigrationAllowed": false,
+        "decision": "distinct_scene",
+        "decisionReason": "Legacy EVT_32_CLB_001 uses generic maturity choices; canonical twelfth-man contender decision has explicit role/titularity alternatives.",
+        "migrationSemantics": {
+          "inheritSeen": false,
+          "inheritCooldown": false,
+          "rebindPending": false,
+          "rewriteHistory": false,
+          "rewriteSeedOrigin": false
+        }
+      },
+      {
+        "canonicalId": "EVT_32_IMPACT_001",
+        "legacyCandidateId": "EVT_32_TACT_001",
+        "sameSceneMigrationAllowed": false,
+        "decision": "distinct_scene",
+        "decisionReason": "Legacy EVT_32_TACT_001 uses generic maturity choices; canonical lower-stats/better-team scene has role/messaging/finalization-specific choices.",
+        "migrationSemantics": {
+          "inheritSeen": false,
+          "inheritCooldown": false,
+          "rebindPending": false,
+          "rewriteHistory": false,
+          "rewriteSeedOrigin": false
+        }
+      },
+      {
+        "canonicalId": "EVT_32_SUCCESSOR_001",
+        "legacyCandidateId": "EVT_32_TEAM_001",
+        "sameSceneMigrationAllowed": false,
+        "decision": "distinct_scene",
+        "decisionReason": "Legacy EVT_32_TEAM_001 uses generic maturity choices; canonical replacement-breakout scene has return/bench/coexistence/market-specific choices.",
+        "migrationSemantics": {
+          "inheritSeen": false,
+          "inheritCooldown": false,
+          "rebindPending": false,
+          "rewriteHistory": false,
+          "rewriteSeedOrigin": false
+        }
+      },
+      {
+        "canonicalId": "EVT_32_LOAD_001",
+        "legacyCandidateId": "EVT_32_BODY_001",
+        "sameSceneMigrationAllowed": false,
+        "decision": "distinct_scene",
+        "decisionReason": "Legacy EVT_32_BODY_001 uses generic maturity choices; canonical no-travel scene has exact travel/titularity/captain-group choices.",
+        "migrationSemantics": {
+          "inheritSeen": false,
+          "inheritCooldown": false,
+          "rebindPending": false,
+          "rewriteHistory": false,
+          "rewriteSeedOrigin": false
+        }
+      },
+      {
+        "canonicalId": "EVT_32_BOSMAN_001",
+        "legacyCandidateId": "EVT_32_BOS_001",
+        "sameSceneMigrationAllowed": false,
+        "decision": "distinct_scene",
+        "decisionReason": "Legacy EVT_32_BOS_001 has a coarse expiry gate but generic maturity choices; canonical Bosman scene has precontract/club-window/parallel-negotiation/season-end choices.",
+        "migrationSemantics": {
+          "inheritSeen": false,
+          "inheritCooldown": false,
+          "rebindPending": false,
+          "rewriteHistory": false,
+          "rewriteSeedOrigin": false
+        }
+      },
+      {
+        "canonicalId": "EVT_33_RECORD_001",
+        "legacyCandidateId": "EVT_33_REC_001",
+        "sameSceneMigrationAllowed": false,
+        "decision": "distinct_scene",
+        "decisionReason": "Legacy EVT_33_REC_001 uses generic maturity choices; canonical six-games-to-record scene has record-specific appearance/minutes/public-tone choices.",
+        "migrationSemantics": {
+          "inheritSeen": false,
+          "inheritCooldown": false,
+          "rebindPending": false,
+          "rewriteHistory": false,
+          "rewriteSeedOrigin": false
+        }
+      },
+      {
+        "canonicalId": "EVT_33_FIN_001",
+        "legacyCandidateId": "EVT_33_END_001",
+        "sameSceneMigrationAllowed": false,
+        "decision": "distinct_scene",
+        "decisionReason": "Legacy EVT_33_END_001 uses four generic maturity choices; canonical age-34 bridge has six explicit future-priority choices and different memory semantics.",
+        "migrationSemantics": {
+          "inheritSeen": false,
+          "inheritCooldown": false,
+          "rebindPending": false,
+          "rewriteHistory": false,
+          "rewriteSeedOrigin": false
+        }
+      }
+    ],
+    "resolvedDistinctSceneCount": 18,
+    "unresolvedCount": 0
+  },
+  "futureCanonicalMissingWork": {
+    "ids": [
+      "EVT_30_PRS_001",
+      "EVT_30_NAT_002",
+      "EVT_31_ROLE_001"
+    ],
+    "migrationRule": "Each canonical addition starts unseen with no inherited cooldown or synthesized history unless an independently approved mapping exists."
+  },
+  "engineOnlyCurrentBatch": {
+    "status": "keep_active_pending_canonical_decision",
+    "ids": [
+      "EVT_30_AGT_001",
+      "EVT_33_NAT_001",
+      "EVT_33_HOME_001",
+      "EVT_33_CON_001",
+      "EVT_33_RET_001"
+    ],
+    "earlyRetirementException": "EVT_33_RET_001 remains a technical voluntary early-retirement adaptation until an explicit canonical owner decision replaces it."
+  },
+  "requiredCurrentRouteAssertions": [
+    "double migration is a no-op",
+    "registered edge extends the existing upstream lineage without shortcut or ambiguity"
+  ],
+  "currentCanonicalAdditions": {
+    "ids": [
+      "EVT_30_CCH_001",
+      "EVT_30_JAN_001"
+    ],
+    "migrationRule": "The newly added canonical principal did not exist in the frozen upstream source. It starts unseen with no inherited cooldown, pending state or synthesized history; historical events are not rebound to it."
+  },
+  "currentShiftedImplementations": {
+    "ids": [
+      "EVT_30_BRIDGE_001",
+      "EVT_33_FIN_001",
+      "EVT_32_IMPACT_001",
+      "EVT_30_STATUS_001"
+    ],
+    "supersededLegacyIds": [
+      "EVT_30_IDN_001",
+      "EVT_33_END_001",
+      "EVT_32_TACT_001",
+      "EVT_30_TEAM_001"
+    ],
+    "migrationRule": "Implemented shifted canon remains distinct-scene. Canonical definitions start unseen; legacy seen/cooldown/pending/history and seed origins are not rebound or rewritten."
+  }
+}
