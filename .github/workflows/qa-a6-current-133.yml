@@ -1,0 +1,20 @@
+name: QA A6 current #133
+on:
+  push:
+    branches:
+      - qa/cert-a6-prefreeze-133-current
+  pull_request:
+    branches:
+      - main
+jobs:
+  lock23:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: node --test scripts/test-t5-lock23-captain-choice-guard.mjs
