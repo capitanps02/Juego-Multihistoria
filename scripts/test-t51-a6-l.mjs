@@ -1,9 +1,8 @@
-// finalize-evidence trigger
-// exact-head trigger for A6 L certification
+// PRE-ACTIVATION evidence only; successor identity is computed after real predecessors land in main.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { EVENTS } from '../dist/content/events/index.js';
-import { contentIdentity, eventFingerprint } from '../dist/session/content-identity.js';
+import { eventFingerprint } from '../dist/session/content-identity.js';
 import { validateBuild } from '../dist/validation/build-validation.js';
 import { T512_STAGED_MARKET_PRINCIPAL_EVENTS_25 } from '../dist/content/events/23_26/t512-staged-market-principal-events.js';
 import { T513_STAGED_OFFER_PRINCIPAL_EVENTS_23_25 } from '../dist/content/events/23_26/t513-staged-offer-principal-events.js';
@@ -33,4 +32,3 @@ test('A6 L changes only the selected 23-25 semantic slots',()=>{
   ]);
 });
 
-console.log(JSON.stringify({a6LIdentity:await contentIdentity(EVENTS),events:EVENTS.length,ids:[...IDS].sort()}));
