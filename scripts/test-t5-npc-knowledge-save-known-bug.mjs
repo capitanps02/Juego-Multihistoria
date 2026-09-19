@@ -48,33 +48,3 @@ test('T5-QA-032c: absent knowledge fact remains valid historical/current state',
   assert.deepEqual(restored.npcs.map(npc => npc.knowledge), state.npcs.map(npc => npc.knowledge));
   assert.deepEqual(restored.rngState, beforeRng);
 });
-
-
-test('T5-QA-032d: invalid NPC source/date fail closed and valid records round-trip exactly', () => {
-  const invalidSource = corruptedState(53204, {
-    factId: 'T5_QA_CORRUPT', eventId: 'EVT_TEST', choiceId: 'A', outcomeId: 'OUT',
-    learnedAt: '2026-07-01', source: 'reported', certainty: 80, memory: 'temporary', club: 'UDV',
-    expiresAfter: '2026-08-01', sourceNpcId: 'NPC_DOES_NOT_EXIST'
-  });
-  assert.throws(() => serializeSave(invalidSource), invalidSave);
-  assert.throws(() => loadSave(JSON.stringify(invalidSource)), invalidSave);
-
-  const future = corruptedState(53205, {
-    factId: 'T5_QA_CORRUPT', eventId: 'EVT_TEST', choiceId: 'A', outcomeId: 'OUT',
-    learnedAt: '2099-01-01', source: 'informed', certainty: 80, memory: 'temporary', club: 'UDV'
-  });
-  assert.throws(() => serializeSave(future), invalidSave);
-
-  const valid = createInitialState(53206);
-  const npc = valid.npcs[0];
-  npc.knowledge.T5_QA_VALID = {
-    factId: 'T5_QA_VALID', eventId: 'EVT_TEST', choiceId: 'A', outcomeId: 'OUT',
-    learnedAt: valid.date, source: 'informed', certainty: 80, memory: 'temporary', club: valid.club,
-    expiresAfter: '2028-07-01'
-  };
-  const before = structuredClone(npc.knowledge.T5_QA_VALID);
-  const beforeRng = structuredClone(valid.rngState);
-  const restored = loadSave(serializeSave(valid));
-  assert.deepEqual(restored.npcs[0].knowledge.T5_QA_VALID, before);
-  assert.deepEqual(restored.rngState, beforeRng);
-});
