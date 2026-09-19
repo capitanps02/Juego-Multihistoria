@@ -1,0 +1,28 @@
+name: T51 A5 Representation Ready
+
+on:
+  pull_request:
+    branches: [main, 'a0/representation-choice-bridge']
+  push:
+    branches: ['a5/evt20-agent-ready-after-representation-bridge']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  a5-representation-ready:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: A5 representation-ready staged scene
+        run: node --test scripts/test-t51-a5-representation-ready.mjs
+      - name: A5 market-ready staged scene
+        run: node --test scripts/test-t51-a5-market-ready.mjs
