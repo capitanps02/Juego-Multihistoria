@@ -14,15 +14,17 @@ for (const id of [
   'EVT_30_STATUS_001',
   'EVT_32_RICH_001',
   'EVT_32_IMPACT_001',
-  'EVT_33_FIN_001',
-  'EVT_30_CCH_001',
-  'EVT_30_JAN_001'
+  'EVT_33_FIN_001'
 ]) {
   assert.equal(EVENTS_30_34.some(event => event.id === id), true, id + ' must be active');
 }
 
-for (const id of ['EVT_30_IDN_001','EVT_30_TEAM_001','EVT_32_TACT_001','EVT_33_END_001']) {
+for (const id of ['EVT_30_IDN_001','EVT_30_TEAM_001','EVT_32_MKT_001','EVT_32_TACT_001','EVT_33_END_001']) {
   assert.equal(EVENTS_30_34.some(event => event.id === id), false, id + ' must be retired from active principals');
+}
+
+for (const id of ['EVT_30_CCH_001','EVT_30_JAN_001']) {
+  assert.equal(EVENTS_30_34.some(event => event.id === id), false, id + ' must remain staged until retirement capacity is owner-approved');
 }
 
 assert.deepEqual(validateBuild(EVENTS).filter(issue => issue.level === 'error'), []);
