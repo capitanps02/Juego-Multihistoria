@@ -74,6 +74,7 @@ const CONTRACT_CLAUSE = formalOfferEvent(ambiguousEvent({
   ],
   gates: [
     { path: "professional.contractPower", op: "gte", value: 65 },
+    { path: "facts.pendingCareerOfferKind", op: "eq", value: "renewal" },
     { path: "facts.pendingCareerOffer.terms.releaseClause", op: "gte", value: 1 }
   ],
   weight: 20,
