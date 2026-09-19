@@ -1,0 +1,29 @@
+name: QA derive #444 freeze
+on:
+  push:
+    branches:
+      - qa/derive-444-freeze
+  pull_request:
+    branches:
+      - main
+jobs:
+  derive-freeze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Generate exact active source fixture
+        run: node scripts/freeze-t51-active-source.mjs
+      - name: List generated fixture
+        run: |
+          ls -l qa/fixtures/t5.1/post-t51-sources/
+          grep -R '"contentIdentity"' qa/fixtures/t5.1/post-t51-sources/8bb987042cccdce110d4de200aad5c4da760c34a4fb717cccfc4d31f4f0c9b16.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: a5-444-exact-freeze
+          path: qa/fixtures/t5.1/post-t51-sources/8bb987042cccdce110d4de200aad5c4da760c34a4fb717cccfc4d31f4f0c9b16.json
