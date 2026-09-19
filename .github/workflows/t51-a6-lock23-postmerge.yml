@@ -1,0 +1,21 @@
+name: T51 A6 LOCK23 post-merge certification
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  lock23:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Strict T5-QA-027 regression
+        run: node --test scripts/test-t51-agent6-lock23.mjs
+      - name: Current migration route
+        run: node scripts/check-t51-content-migration-route.mjs
