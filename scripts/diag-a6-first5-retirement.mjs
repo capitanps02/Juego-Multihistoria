@@ -1,3 +1,4 @@
+// Trigger diagnostic workflow on existing branch workflow.
 import { EVENTS } from '../dist/content/events/index.js';
 import { createInitialState } from '../dist/content/initial-state.js';
 import { resolveChoiceInPlace } from '../dist/narrative/resolver.js';
