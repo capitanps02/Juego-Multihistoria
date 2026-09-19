@@ -65,7 +65,17 @@ function runProfile(profile, seed, maxAge = 55) {
     if (state.market?.pending) respondToOffer(state, state.market.pending.id, profile.offer);
     const scheduled = scheduleEvent(state, EVENTS, { qa: true });
     if (scheduled) {
-      const choiceId = choose(profile, scheduled.event, decisions++);
+      let choiceId = choose(profile, scheduled.event, decisions++);
+      // Headless QA must not model an infinite sequence of "WAIT" clicks as a
+      // runtime deadlock. #61 intentionally removed time-driven auto-announcement:
+      // after one explicit wait/cooldown cycle, the bot must make an explicit
+      // announcement choice so the terminal flow itself can still be exercised.
+      if (
+        scheduled.event.id === 'EVT_RET_ANNOUNCE_001' &&
+        choiceId === 'WAIT' &&
+        state.retirement.status === 'decided' &&
+        state.retirement.daysInStatus >= 45
+      ) choiceId = 'PRIVATE';
       resolveChoiceInPlace(state, scheduled.event, choiceId, true);
     }
     if (state.flags.EARLY_RETIRED_30_34 && state.retirement.status !== 'closed') closeCareer(state, 'early_retirement_30_34', 'early_retirement');
