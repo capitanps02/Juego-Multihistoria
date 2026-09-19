@@ -19,6 +19,22 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
+      - name: Refresh CI-only A7 migration handoff to current SAFE3 predecessor
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import { EVENTS } from './dist/content/events/index.js';
+          import { contentIdentity } from './dist/session/content-identity.js';
+          const file='analysis/T5.1/canon-30-34-migration-handoff.json';
+          const handoff=JSON.parse(fs.readFileSync(file,'utf8'));
+          const source='4973518cdceb84b86be62179ada2c0782da9f007c443d7ffd132ec88353229a3';
+          const target=await contentIdentity(EVENTS);
+          handoff.sourceContentIdentity=source;
+          handoff.observedTargetContentIdentity=target;
+          handoff.consumer.targetFreezeFixture='qa/fixtures/t5.1/post-t51-sources/'+target+'.json';
+          fs.writeFileSync(file,JSON.stringify(handoff,null,2)+'\n');
+          console.log(JSON.stringify({source,target}));
+          NODE
       - name: A7 owner certification
         run: |
           node --test             scripts/test-t51-30-34-authority-gaps.mjs             scripts/test-t51-30-34-career-authority.mjs             scripts/test-t51-30-34-conditional-seed-reads.mjs             scripts/test-t51-30-34-conditionals.mjs             scripts/test-t51-30-34-contract-clause-handoff.mjs             scripts/test-t51-30-34-downstream-seed-handoff.mjs             scripts/test-t51-30-34-migration-handoff.mjs             scripts/test-t51-30-34-missing-principals.mjs             scripts/test-t51-30-34-multi-offer-handoff.mjs             scripts/test-t51-30-34-readiness.mjs             scripts/test-t51-30-34-seed-consumption.mjs             scripts/test-t51-30-34-seed-handoff.mjs             scripts/test-t51-30-34-sport-authority.mjs             scripts/test-t51-30-34-trigger.mjs
