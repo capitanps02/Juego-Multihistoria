@@ -1,0 +1,38 @@
+name: T5 Representation Authority
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/simulation/representation-authority.ts'
+      - 'src/simulation/club-contract-intent.ts'
+      - 'scripts/test-t5-representation-authority.mjs'
+      - '.github/workflows/t5-representation-authority.yml'
+  push:
+    branches:
+      - 't5/representation-contract-terms'
+    paths:
+      - 'src/simulation/representation-authority.ts'
+      - 'src/simulation/club-contract-intent.ts'
+      - 'scripts/test-t5-representation-authority.mjs'
+      - '.github/workflows/t5-representation-authority.yml'
+  workflow_dispatch:
+
+jobs:
+  representation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Representation authority
+        run: node --test scripts/test-t5-representation-authority.mjs
+      - name: Existing shared authority regressions
+        run: node --test scripts/test-t51-shared-contracts.mjs
+      - name: Save/load regressions
+        run: node --test scripts/test-saves.mjs
