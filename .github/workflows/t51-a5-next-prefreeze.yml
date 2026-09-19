@@ -2,9 +2,9 @@ name: T51 A5 Next Pre-freeze
 
 on:
   pull_request:
-    branches: ['a0/representation-choice-bridge']
+    branches: ['a0/shared-closure-bundle-main']
   push:
-    branches: ['a0/a5-next-two-pre-freeze']
+    branches: ['a0/a5-next-two-after-shared-bundle']
   workflow_dispatch:
 
 permissions:
