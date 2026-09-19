@@ -65,6 +65,9 @@ export interface FixtureCongestionContext {
   hoursToNextFixture: number | null;
   hoursSincePreviousFixture: number | null;
   minimumRestHoursNext14: number | null;
+  awayMatchesNext14: number;
+  travelLoadKnown: boolean;
+  travelLoadReason: "no_authoritative_locations" | null;
 }
 
 export interface CompetitionMomentIssue {
@@ -341,6 +344,9 @@ export function getFixtureCongestionContext(state: GameState): FixtureCongestion
     multipleCompetitionsNext14: mix.length > 1,
     hoursToNextFixture: nextFixture ? dayDiff(state.date, nextFixture.date) * 24 : null,
     hoursSincePreviousFixture: previousDate ? dayDiff(previousDate, state.date) * 24 : null,
-    minimumRestHoursNext14: gaps.length > 0 ? Math.min(...gaps) : null
+    minimumRestHoursNext14: gaps.length > 0 ? Math.min(...gaps) : null,
+    awayMatchesNext14: schedule.filter(row => row.homeAway === "away").length,
+    travelLoadKnown: false,
+    travelLoadReason: "no_authoritative_locations"
   };
 }
