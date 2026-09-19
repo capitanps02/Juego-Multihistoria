@@ -24,3 +24,5 @@ jobs:
       - run: npm run build
       - name: T5 #61 player retirement authority
         run: node --test scripts/test-t5-retirement-authority-known-bug.mjs
+      - name: CI-only strict stratified proof
+        run: node scripts/qa-t5-sim.mjs
