@@ -43,7 +43,8 @@ function productionCaptainWriterCallsites() {
       const rel = path.relative(process.cwd(), full).replaceAll('\\', '/');
       if (rel === 'src/simulation/player-leadership-authority.ts') continue;
       const source = fs.readFileSync(full, 'utf8');
-      if (/certifyPlayerClubLeadershipInPlace\s*\(/.test(source)) out.push(rel);
+      const explicitMainCaptain = /certifyPlayerClubLeadershipInPlace\s*\(\s*[^,]+,\s*['\"]captain['\"]\s*,/s;
+      if (explicitMainCaptain.test(source)) out.push(rel);
     }
   }
   visit(root);
