@@ -1,0 +1,27 @@
+name: A12 A9 career summary staging
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/epilogue/career-summary.ts'
+      - 'src/simulation/retirement-authority.ts'
+      - 'src/content/events/34_plus/retirement-terminal-canonical-guard.ts'
+      - 'src/content/events/34_plus/retirement-terminal-overrides.ts'
+      - 'scripts/test-t536-career-summary.mjs'
+      - '.github/workflows/a12-a9-career-summary.yml'
+  workflow_dispatch:
+
+jobs:
+  a9-career-summary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: node --test scripts/test-t536-career-summary.mjs
