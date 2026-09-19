@@ -2,9 +2,9 @@ name: T51 A5 Representation Ready
 
 on:
   pull_request:
-    branches: [main, 'a0/representation-choice-bridge']
+    branches: ['a0/shared-closure-bundle-main']
   push:
-    branches: ['a5/evt20-agent-ready-after-representation-bridge']
+    branches: ['a0/a5-next-two-after-shared-bundle']
   workflow_dispatch:
 
 permissions:
