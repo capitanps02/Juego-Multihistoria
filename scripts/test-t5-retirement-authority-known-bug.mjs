@@ -1,9 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createInitialState } from '../dist/content/initial-state.js';
+import { loadSave, serializeSave } from '../dist/save/save.js';
 import {
   lateCareerPreseason,
   lateCareerWeek,
+  reopenVoluntaryRetirementDialoguesInPlace,
   reverseRetirement
 } from '../dist/simulation/late-career-engine.js';
 
@@ -69,4 +71,50 @@ test('T5-QA-016c/#61: no-market exhaustion is context only and never decides ret
   assert.equal(state.retirement.announcedDate, beforeStatus.announcedDate);
   assert.equal(state.flags.NO_MARKET_END_CONTEXT, true, 'market silence should expose only a player-decision context');
   assert.deepEqual(state.rngState.narrative, narrativeRng);
+});
+
+
+function recordVoluntaryContinue(state,eventId,choiceId,date){
+  state.history.push({
+    eventId,date,season:state.season,choiceId,outcomeId:choiceId,club:state.club,
+    snapshot:{age:state.age,phase:state.phase,family:'life'},salience:80,visibility:'private'
+  });
+  state.flags['SEEN_'+eventId]=true;
+  state.eventCooldowns[eventId]=99999;
+}
+
+test('T5-QA-016d: voluntary continuation does not permanently consume retirement decision surfaces', () => {
+  const state=veteran(61004);
+  state.date='2044-07-01';
+  recordVoluntaryContinue(state,'EVT_RET_BODY_001','ONE_MORE','2044-07-01');
+  const narrativeRng=structuredClone(state.rngState.narrative);
+
+  state.date='2045-06-30';
+  reopenVoluntaryRetirementDialoguesInPlace(state);
+  assert.equal(state.flags.SEEN_EVT_RET_BODY_001,true,'dialogue stays consumed before one full year');
+  assert.equal(state.eventCooldowns.EVT_RET_BODY_001,99999);
+
+  state.date='2045-07-01';
+  reopenVoluntaryRetirementDialoguesInPlace(state);
+  assert.equal(state.flags.SEEN_EVT_RET_BODY_001,false,'same retirement dialogue reopens after one year');
+  assert.equal(state.eventCooldowns.EVT_RET_BODY_001,0);
+  assert.equal(state.retirement.status,'playing','reopening does not decide retirement');
+  assert.deepEqual(state.rngState.narrative,narrativeRng,'reopening consumes no narrative RNG');
+});
+
+test('T5-QA-016e: only explicit continue choices reopen and save/load preserves the evidence', () => {
+  let state=veteran(61005);
+  state.date='2044-07-01';
+  recordVoluntaryContinue(state,'EVT_RET_LOW_001','FIGHT','2044-07-01');
+  recordVoluntaryContinue(state,'EVT_RET_HIGH_001','HIGH','2044-07-02');
+  state.date='2044-07-03';
+  state=loadSave(serializeSave(state));
+  state.date='2045-07-03';
+
+  reopenVoluntaryRetirementDialoguesInPlace(state);
+
+  assert.equal(state.flags.SEEN_EVT_RET_LOW_001,false,'FIGHT is an explicit continue choice and must reopen later');
+  assert.equal(state.eventCooldowns.EVT_RET_LOW_001,0);
+  assert.equal(state.flags.SEEN_EVT_RET_HIGH_001,true,'a retirement choice must never be reinterpreted as continuation');
+  assert.equal(state.eventCooldowns.EVT_RET_HIGH_001,99999);
 });
