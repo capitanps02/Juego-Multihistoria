@@ -9,7 +9,8 @@ import { DeterministicRng } from "../core/rng.js";
 import type { ChoiceDefinition, Effect, EventDefinition, GameState, OutcomeDefinition, ResolutionResult, SeedInstance, SeedTransition } from "../core/types.js";
 import { narrativeConditionRoot } from "../simulation/club-contract-intent.js";
 import { syncRetirementState } from "../simulation/late-career-engine.js";
-import { currentEmploymentClub } from "../simulation/employment.js";\nimport { certifyPlayerClubLeadershipInPlace } from "../simulation/player-leadership-authority.js";
+import { currentEmploymentClub } from "../simulation/employment.js";
+import { certifyPlayerClubLeadershipInPlace } from "../simulation/player-leadership-authority.js";
 import {
   captureNpcKnowledgeTargetContext,
   resolveNpcKnowledgeTargets,
@@ -277,7 +278,14 @@ function resolveChoiceCore(next: GameState, event: EventDefinition, choiceId: st
 
   for (const e of selected.effects) applyEffect(next, e);
   for (const e of choice.hiddenCosts ?? []) applyEffect(next, e);
-  for (const t of selected.seedTransitions ?? []) applySeedTransition(next, t, event);\n\n  // #161 staged canon candidate: only an explicit accepted appointment may\n  // materialise main-club captain authority. The candidate event itself is not\n  // active in EVENTS until A0 approves canon and integration ownership.\n  if (event.id === "EVT_29_CAP_001" && choiceId === "ACCEPT_MAIN_CAPTAIN") {\n    certifyPlayerClubLeadershipInPlace(next, "captain", event.id, choiceId);\n  }
+  for (const t of selected.seedTransitions ?? []) applySeedTransition(next, t, event);
+
+  // #161 staged canon candidate: only an explicit accepted appointment may
+  // materialise main-club captain authority. The candidate event itself is not
+  // active in EVENTS until A0 approves canon and integration ownership.
+  if (event.id === "EVT_29_CAP_001" && choiceId === "ACCEPT_MAIN_CAPTAIN") {
+    certifyPlayerClubLeadershipInPlace(next, "captain", event.id, choiceId);
+  }
 
   // A club change authorized by a narrative choice is one coherent transaction.
   if(next.club!==previousClub){
