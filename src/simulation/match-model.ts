@@ -548,6 +548,54 @@ export function recentClubPlayerMatchStats(state: GameState, count = 6): RecentP
   return aggregate;
 }
 
+/**
+ * Aggregate complete official fixtures strictly before the current state date
+ * for the current registration club + season. A current-day match is excluded
+ * deliberately so narrative consumers can combine a prior form window with
+ * today's factual lineup/squad decision without double-counting.
+ */
+export function priorClubPlayerMatchStats(state: GameState, count = 2): RecentPlayerMatchStats | null {
+  if (!Number.isInteger(count) || count < 1 || count > 20) return null;
+  const store = getSportMatchModelStore(state);
+  if (!store) return null;
+  const rows = store.fixtures
+    .filter(row =>
+      row.season === state.season
+      && row.club === state.professional.registrationClub
+      && row.date < state.date
+    )
+    .slice(-count);
+  if (rows.length !== count || rows.some(row => row.result === undefined || row.stats === undefined)) return null;
+
+  const aggregate: RecentPlayerMatchStats = {
+    fixtureIds: rows.map(row => row.id),
+    matches: rows.length,
+    appearances: 0,
+    starts: 0,
+    minutes: 0,
+    goals: 0,
+    assists: 0,
+    yellowCards: 0,
+    redCards: 0,
+    wins: 0,
+    draws: 0,
+    losses: 0
+  };
+  for (const row of rows) {
+    if (row.player.appeared) aggregate.appearances += 1;
+    if (row.player.started) aggregate.starts += 1;
+    aggregate.minutes += row.player.minutes;
+    aggregate.goals += row.stats!.goals;
+    aggregate.assists += row.stats!.assists;
+    aggregate.yellowCards += row.stats!.yellowCards;
+    aggregate.redCards += row.stats!.redCards;
+    if (row.result!.outcome === "win") aggregate.wins += 1;
+    else if (row.result!.outcome === "draw") aggregate.draws += 1;
+    else aggregate.losses += 1;
+  }
+  return aggregate;
+}
+
 export function previousOfficialMatch(state: GameState): OfficialMatchRecord | null {
   const store = getSportMatchModelStore(state);
   if (!store) return null;
