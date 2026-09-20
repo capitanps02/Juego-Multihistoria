@@ -45,6 +45,7 @@ function qaValueForCondition(state, condition) {
   throw new Error(`QA no sabe sintetizar condición ${condition.op} en ${condition.path}`);
 }
 
+// Nested offer gates need a complete CareerOffer fixture; partial path writes are invalid save state.
 function ensureValidPendingOffer(state) {
   if (state.market?.pending?.id) return;
   const before = careerTerms(state);
