@@ -37,7 +37,7 @@ export const SEED_CATALOG_18_20: SeedDefinition[] = [
 
 export const SEED_CATALOG_23_26: SeedDefinition[] = [
   { id:"SEED_ELITE_ROLE_BARGAIN", originEvents:["EVT_23_BRIDGE_001","EVT_23_MKT_001"], npcRefs:[], ageWindow:[23,30], description:"Techo deportivo frente a rol real en operaciones de alto nivel." },
-  { id:"SEED_CONTRACT_CEILING", originEvents:["EVT_23_CON_001","EVT_25_CON_001","EVT_27_CON_001"], npcRefs:["NPC_AGT_01","NPC_AGT_02"], ageWindow:[23,32], description:"Cuánto techo salarial y libertad se sacrifica por seguridad contractual." },
+  { id:"SEED_CONTRACT_CEILING", originEvents:["EVT_23_CON_001","EVT_25_CON_001"], npcRefs:["NPC_AGT_01","NPC_AGT_02"], ageWindow:[23,32], description:"Cuánto techo salarial y libertad se sacrifica por seguridad contractual." },
   { id:"SEED_DIRECT_RECRUIT", originEvents:["EVT_23_AGT_001","EVT_25_MKT_001"], npcRefs:["NPC_AGT_01","NPC_AGT_02"], ageWindow:[23,32], description:"Interés directo de estructuras deportivas y agencias de mayor alcance." },
   { id:"SEED_LOAD_MANAGEMENT", originEvents:["EVT_23_BODY_001"], npcRefs:["NPC_MED_01"], ageWindow:[23,null], description:"Patrón adulto de gestión de carga y disponibilidad." },
   { id:"SEED_FAMILY_BUSINESS", originEvents:["EVT_23_MONEY_001","EVT_25_FAM_001"], npcRefs:["NPC_FAM_01","NPC_FAM_02"], ageWindow:[23,null], description:"Capital, límites y responsabilidades dentro de un proyecto familiar." },
@@ -75,7 +75,7 @@ export const SEED_CATALOG_26_30: SeedDefinition[] = [
   { id:"SEED_RECORD_CHASE", originEvents:["EVT_27_REC_001"], npcRefs:[], ageWindow:[27,null], description:"Peso dado a récords y su persecución." },
   { id:"SEED_LOCKER_ENDORSEMENT", originEvents:["EVT_27_LOCK_001"], npcRefs:[], ageWindow:[27,36], description:"Uso del poder en conflictos colectivos." },
   { id:"SEED_PEAK_LOAD", originEvents:["EVT_27_BODY_001"], npcRefs:["NPC_MED_01"], ageWindow:[27,null], description:"Patrón de descanso en máxima densidad." },
-  { id:"SEED_DOCUMENTARY_ACCESS", originEvents:["EVT_26_DOC_001","EVT_27_PRS_001"], npcRefs:["NPC_PRS_01"], ageWindow:[27,null], description:"Acceso concedido a vida y vestuario." },
+  { id:"SEED_DOCUMENTARY_ACCESS", originEvents:["EVT_27_PRS_001"], npcRefs:["NPC_PRS_01"], ageWindow:[27,null], description:"Acceso concedido a vida y vestuario." },
   { id:"SEED_AGENT_CONFLICT_PEAK", originEvents:["EVT_27_AGT_001"], npcRefs:["NPC_AGT_01","NPC_AGT_02"], ageWindow:[27,36], description:"Conflictos de incentivo con la agencia en máximo mercado." },
   { id:"SEED_PUBLIC_RIVALRY", originEvents:["EVT_27_RIV_001"], npcRefs:["NPC_PLR_15"], ageWindow:[27,null], description:"Grado de rivalidad pública con el espejo generacional." },
   { id:"SEED_MENTOR_ADVICE", originEvents:["EVT_27_MENT_001"], npcRefs:[], ageWindow:[27,null], description:"Consejo dado a un joven sobre su carrera." },
