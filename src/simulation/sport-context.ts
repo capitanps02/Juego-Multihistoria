@@ -71,6 +71,7 @@ export interface SportContextAvailability {
   firstFullMatch: SportFactAvailability;
   firstGoal: SportFactAvailability;
   currentSeasonPlayerStats: SportFactAvailability;
+  recentTwoMatchStats: SportFactAvailability;
   recentSixMatchStats: SportFactAvailability;
   careerMilestones: SportFactAvailability;
 }
@@ -110,6 +111,8 @@ export interface SportContext {
   firstFullMatch: string | null;
   firstGoal: string | null;
   currentSeasonPlayerStats: SeasonPlayerStats | null;
+  /** Exact latest two complete current-club/current-season official fixtures. */
+  recentTwoMatchStats: RecentPlayerMatchStats | null;
   recentSixMatchStats: RecentPlayerMatchStats | null;
   /** Exact career aggregates only when the persisted appearance/stat ledger is complete. */
   careerMilestones: CareerSportMilestones | null;
@@ -189,6 +192,7 @@ export function getSportContext(state: GameState): SportContext {
   const milestonesKnown = store !== null;
   const goalHistoryKnown = employed && careerGoalHistoryComplete(state);
   const seasonStats = employed ? seasonPlayerStats(state) : null;
+  const recentTwo = employed ? recentClubPlayerMatchStats(state, 2) : null;
   const recentSix = employed ? recentClubPlayerMatchStats(state, 6) : null;
   const careerMilestones = careerSportMilestones(state);
 
@@ -224,6 +228,7 @@ export function getSportContext(state: GameState): SportContext {
     firstFullMatch: store?.milestones.firstFullMatch ?? null,
     firstGoal: goalHistoryKnown ? (store?.milestones.firstGoal ?? null) : null,
     currentSeasonPlayerStats: seasonStats,
+    recentTwoMatchStats: recentTwo,
     recentSixMatchStats: recentSix,
     careerMilestones: careerMilestones.historyComplete ? careerMilestones : null,
     availability: {
@@ -257,6 +262,7 @@ export function getSportContext(state: GameState): SportContext {
       firstFullMatch: milestonesKnown ? known() : unavailable(),
       firstGoal: goalHistoryKnown ? known() : unavailable(),
       currentSeasonPlayerStats: seasonStats ? known() : unavailable(),
+      recentTwoMatchStats: recentTwo ? known() : unavailable(),
       recentSixMatchStats: recentSix ? known() : unavailable(),
       careerMilestones: careerMilestones.historyComplete ? known() : unavailable()
     },
