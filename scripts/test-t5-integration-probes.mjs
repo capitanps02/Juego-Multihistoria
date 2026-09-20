@@ -6,6 +6,7 @@ import { conditionsPass } from '../dist/core/conditions.js';
 import { getPath, setPath } from '../dist/core/path.js';
 import { assertGameState } from '../dist/save/validation.js';
 import * as resolver from '../dist/narrative/resolver.js';
+import { careerTerms } from '../dist/simulation/offers.js';
 
 async function optionalImport(path) {
   try {
@@ -44,8 +45,23 @@ function qaValueForCondition(state, condition) {
   throw new Error(`QA no sabe sintetizar condición ${condition.op} en ${condition.path}`);
 }
 
+function ensureValidPendingOffer(state) {
+  if (state.market?.pending?.id) return;
+  const before = careerTerms(state);
+  state.market.pending = {
+    id: 'offer:qa-integration',
+    date: state.date,
+    reason: 'QA integration fixture',
+    before,
+    terms: { ...before }
+  };
+}
+
 function satisfyConditions(state, conditions = []) {
-  for (const condition of conditions) setPath(state, condition.path, qaValueForCondition(state, condition));
+  for (const condition of conditions) {
+    if (condition.path.startsWith('market.pending.')) ensureValidPendingOffer(state);
+    setPath(state, condition.path, qaValueForCondition(state, condition));
+  }
   assert.equal(conditionsPass(state, conditions), true, `fixture QA no pudo satisfacer ${JSON.stringify(conditions)}`);
 }
 
