@@ -85,6 +85,7 @@ export const T51_A5_POST_J_K_CONTENT_IDENTITY = "586055d1636c16c88e18ea4367325e3
 export const T51_A5_REP_MARKET_CONTENT_IDENTITY = "73591bc91387fc94502f24d80aa48cc2a8e3957a1ad42964cf312c61cbba923d";
 export const T51_A6_FIRST5_CONTENT_IDENTITY = "8bb987042cccdce110d4de200aad5c4da760c34a4fb717cccfc4d31f4f0c9b16";
 export const T51_A6_SAFE3_CONTENT_IDENTITY = "4973518cdceb84b86be62179ada2c0782da9f007c443d7ffd132ec88353229a3";
+export const T51_A7_SHIFTED5_CONTENT_IDENTITY = "ee5904632512feb3f99fe5b68a794ae12b4f73b4edd469a436d6f5431d7aa4bc";
 
 /**
  * Explicit identity-bound edges. Successive canonical batches extend this as a
@@ -281,6 +282,18 @@ export const CONTENT_MIGRATION_ROUTES: readonly ContentMigrationRoute[] = [
       { kind: "distinct_scene", legacyEventId: "EVT_26_IDN_001", canonicalEventId: "EVT_26_BRIDGE_001", clearCanonicalSeen: true, clearCanonicalCooldown: true },
       { kind: "distinct_scene", legacyEventId: "EVT_27_BODY_001", canonicalEventId: "EVT_27_BODY_001", clearCanonicalSeen: true, clearCanonicalCooldown: true },
       { kind: "distinct_scene", legacyEventId: "EVT_29_FIN_001", canonicalEventId: "EVT_29_FIN_001", clearCanonicalSeen: true, clearCanonicalCooldown: true }
+    ],
+    seedOriginMappings: []
+  },
+  {
+    sourceContentIdentity: T51_A6_SAFE3_CONTENT_IDENTITY,
+    targetContentIdentity: T51_A7_SHIFTED5_CONTENT_IDENTITY,
+    schedulerMappings: [
+      { kind: "distinct_scene", legacyEventId: "EVT_30_IDN_001", canonicalEventId: "EVT_30_BRIDGE_001", clearCanonicalSeen: true, clearCanonicalCooldown: true },
+      { kind: "distinct_scene", legacyEventId: "EVT_30_TEAM_001", canonicalEventId: "EVT_30_STATUS_001", clearCanonicalSeen: true, clearCanonicalCooldown: true },
+      { kind: "distinct_scene", legacyEventId: "EVT_32_MKT_001", canonicalEventId: "EVT_32_RICH_001", clearCanonicalSeen: true, clearCanonicalCooldown: true },
+      { kind: "distinct_scene", legacyEventId: "EVT_32_TACT_001", canonicalEventId: "EVT_32_IMPACT_001", clearCanonicalSeen: true, clearCanonicalCooldown: true },
+      { kind: "distinct_scene", legacyEventId: "EVT_33_END_001", canonicalEventId: "EVT_33_FIN_001", clearCanonicalSeen: true, clearCanonicalCooldown: true }
     ],
     seedOriginMappings: []
   }
