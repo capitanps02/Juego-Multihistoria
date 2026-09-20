@@ -1,0 +1,21 @@
+name: QA A7 current shifted-five
+on:
+  push:
+    branches:
+      - qa/cert-a7-627-current
+  pull_request:
+    branches:
+      - main
+jobs:
+  a7-current:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Current A7 shifted-five inventory
+        run: node scripts/report-t51-a7-principals-prefreeze.mjs
