@@ -1,0 +1,30 @@
+name: T51 A7 shifted-five current identity
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  identity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: |
+          node --input-type=module <<'NODE'
+          import { EVENTS } from './dist/content/events/index.js';
+          import { contentIdentity } from './dist/session/content-identity.js';
+          const identity=await contentIdentity(EVENTS);
+          const unique=new Set(EVENTS.map(e=>e.id)).size;
+          const ids=['EVT_30_BRIDGE_001','EVT_30_STATUS_001','EVT_32_RICH_001','EVT_32_IMPACT_001','EVT_33_FIN_001'];
+          console.log('A7_SHIFTED5_IDENTITY='+identity);
+          console.log('A7_SHIFTED5_EVENTS='+EVENTS.length);
+          console.log('A7_SHIFTED5_UNIQUE='+unique);
+          console.log('A7_SHIFTED5_PRESENT='+ids.filter(id=>EVENTS.some(e=>e.id===id)).join(','));
+          if(EVENTS.length!==388 || unique!==388 || ids.some(id=>!EVENTS.some(e=>e.id===id))) process.exit(1);
+          NODE
