@@ -563,15 +563,15 @@ test('A4 recent-six/4 is current-registration-club scoped and unattached fail-cl
 test('A4 prior-two/1 excludes current-day bench row from the scoring window', () => {
   const state = matchDayState(8890);
   // Two prior factual matches.
-  state.date = '2026-07-22'; state.runtime.day = 21; state.runtime.seasonDay = 21;
+  state.date = '2026-08-05'; state.runtime.day = 35; state.runtime.seasonDay = 35;
   const first = recordOfficialMatchInPlace(state, { appeared: true, debutOccurred: false, injuryUnavailable: false });
   assert.ok(first?.stats);
-  state.date = '2026-07-29'; state.runtime.day = 28; state.runtime.seasonDay = 28;
+  state.date = '2026-08-12'; state.runtime.day = 42; state.runtime.seasonDay = 42;
   const second = recordOfficialMatchInPlace(state, { appeared: true, debutOccurred: false, injuryUnavailable: false });
   assert.ok(second?.stats);
 
   // Current match/lineup fact must not be included in priorTwo.
-  state.date = '2026-08-05'; state.runtime.day = 35; state.runtime.seasonDay = 35;
+  state.date = '2026-08-19'; state.runtime.day = 49; state.runtime.seasonDay = 49;
   const current = recordOfficialMatchInPlace(state, { appeared: false, debutOccurred: false, injuryUnavailable: false });
   assert.ok(current);
   const before = structuredClone(state);
@@ -587,12 +587,13 @@ test('A4 prior-two/1 excludes current-day bench row from the scoring window', ()
 
 test('A4 prior-two/2 fails closed for incomplete history, transfer and unattached state', () => {
   const state = matchDayState(8891);
-  state.date = '2026-07-29'; state.runtime.day = 28; state.runtime.seasonDay = 28;
-  assert.ok(recordOfficialMatchInPlace(state, { appeared: true, debutOccurred: false, injuryUnavailable: false }));
   state.date = '2026-08-05'; state.runtime.day = 35; state.runtime.seasonDay = 35;
+  assert.ok(recordOfficialMatchInPlace(state, { appeared: true, debutOccurred: false, injuryUnavailable: false }));
+  state.date = '2026-08-12'; state.runtime.day = 42; state.runtime.seasonDay = 42;
   assert.equal(priorClubPlayerMatchStats(state, 2), null);
 
-  state.date = '2026-08-12'; state.runtime.day = 42; state.runtime.seasonDay = 42;
+  assert.ok(recordOfficialMatchInPlace(state, { appeared: true, debutOccurred: false, injuryUnavailable: false }));
+  state.date = '2026-08-19'; state.runtime.day = 49; state.runtime.seasonDay = 49;
   assert.ok(recordOfficialMatchInPlace(state, { appeared: true, debutOccurred: false, injuryUnavailable: false }));
   assert.ok(priorClubPlayerMatchStats(state, 2));
 
