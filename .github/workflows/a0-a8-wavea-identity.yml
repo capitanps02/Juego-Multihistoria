@@ -1,0 +1,29 @@
+name: A0 A8 Wave A identity probe
+
+on:
+  push:
+    branches:
+      - 'a0/ci-a8-wavea-identity'
+    paths:
+      - 'src/content/events/**'
+      - 'src/session/content-identity.ts'
+      - 'scripts/test-t51-a8-wavea-prefreeze.mjs'
+      - 'scripts/test-t5-a3-final-market.mjs'
+      - 'scripts/print-a8-wavea-identity.mjs'
+      - '.github/workflows/a0-a8-wavea-identity.yml'
+  workflow_dispatch:
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: node --test scripts/test-t51-a8-wavea-prefreeze.mjs scripts/test-t5-a3-final-market.mjs
+      - run: node scripts/print-a8-wavea-identity.mjs
