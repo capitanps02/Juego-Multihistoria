@@ -8,7 +8,7 @@ import { validateBuild } from '../dist/validation/build-validation.js';
 
 assert.equal(EVENTS.length, 388, 'A7 principal-only generation must preserve 388 active events');
 assert.equal(new Set(EVENTS.map(event => event.id)).size, 388, 'A7 principal-only generation must preserve unique IDs');
-assert.equal(CONDITIONAL_EVENTS_30_34.length, 23, 'legacy 30-34 callbacks stay active until canonical replacements exist');
+assert.equal(CONDITIONAL_EVENTS_30_34.length, 26, 'all current legacy 30-34 callbacks stay active until canonical replacements exist');
 
 for (const id of [
   'EVT_30_BRIDGE_001',
