@@ -6,6 +6,11 @@ import {
   A8_STAGED_PRINCIPALS,
   A8_STAGED_ORDINARY_CONDITIONALS
 } from "./staged-runtime.js";
+import { applyRetirementTerminalOverrides } from "./retirement-terminal-overrides.js";
+import { enforceRetirementTerminalCanonicalAccreditation } from "./retirement-terminal-canonical-guard.js";
+
+applyRetirementTerminalOverrides(PRINCIPAL_EVENTS_34_PLUS,CONDITIONAL_EVENTS_34_PLUS);
+enforceRetirementTerminalCanonicalAccreditation(CONDITIONAL_EVENTS_34_PLUS);
 
 const A8_WAVE_A_IDS = new Set(STAGED_PRINCIPAL_WAVE_A.map(event=>event.id));
 const A8_WAVE_A_RETIRED_TECHNICAL = new Set(["EVT_34_MKT_001"]);
@@ -22,17 +27,17 @@ export const PRINCIPAL_EVENTS_34_PLUS_WAVE_A: EventDefinition[] = [
 
 const A9_TERMINAL_PRINCIPAL_IDS = new Set([
   "EVT_37_ANNOUNCE_001",
-  "EVT_RET_HOME_001",
+  "EVT_RET_FAM_001",
   "EVT_RET_BODY_001",
   "EVT_RET_HIGH_001",
   "EVT_RET_LOW_001",
   "EVT_RET_ANNOUNCE_001",
-  "EVT_RET_LAST_001"
+  "EVT_RET_LASTMATCH_001"
 ]);
 
 const A9_TERMINAL_CONDITIONAL_IDS = new Set([
   "CEVT_38_OFFER_AFTER_RETIREMENT_ANNOUNCED",
-  "CEVT_RET_RECONSIDER",
+  "CEVT_38_RETIREMENT_REVERSAL",
   "CEVT_RET_NO_LAST_MATCH",
   "CEVT_RET_STORYBOOK_LAST_GOAL"
 ]);
