@@ -6,7 +6,7 @@ import { CANONICAL_REIMPLEMENTATIONS_31B } from "./canonical-reimplementations-3
 import { CANONICAL_REIMPLEMENTATIONS_32A } from "./canonical-reimplementations-32a.js";
 import { CANONICAL_REIMPLEMENTATIONS_33A } from "./canonical-reimplementations-33a.js";
 import { PREPARED_SHIFTED_CANON_30_34_B } from "./canonical-shifted-prepared-b.js";
-import { CANONICAL_ADDITIONS_30_34 } from "./canonical-missing-principals.js";
+import { BLOCKED_CANONICAL_ADDITIONS_30_34, CANONICAL_ADDITIONS_30_34 } from "./canonical-missing-principals.js";
 
 const reimplementedIds=new Set([
   "EVT_30_CON_001","EVT_30_BODY_001","EVT_30_MKT_001","EVT_30_NAT_001",
@@ -180,7 +180,7 @@ const enforceCareerAuthority=(event:EventDefinition):EventDefinition=>{
 
 const supersededLegacyIds=new Set([
   "EVT_30_IDN_001","EVT_30_TEAM_001","EVT_32_MKT_001","EVT_32_TACT_001","EVT_33_END_001",
-  "EVT_30_AGT_001","EVT_33_NAT_001"
+  "EVT_30_AGT_001","EVT_33_NAT_001","EVT_33_HOME_001"
 ]);
 
 const principal:EventDefinition[]=PRINCIPAL_EVENTS_30_34.filter(original=>!supersededLegacyIds.has(original.id)).map(original=>{
@@ -214,6 +214,26 @@ const richOffer=enforceCareerAuthority({
   ])]
 });
 
+const role31Source=BLOCKED_CANONICAL_ADDITIONS_30_34.find(event=>event.id==="EVT_31_ROLE_001");
+if(!role31Source) throw new Error("Missing prepared EVT_31_ROLE_001");
+const role31=enforceCareerAuthority({
+  ...role31Source,
+  gates:[
+    {path:"facts.sport.priorTwoMatchStats.goals",op:"gte",value:3},
+    {path:"facts.match.playerOnBench",op:"eq",value:true}
+  ],
+  tags:[...new Set([
+    ...(role31Source.tags??[]).filter(tag=>
+      tag!=="t51_blocked_three_goals_and_bench_authority"
+      && tag!=="t51_blocked_SEED_FORM_VS_PLAN_identity"
+      && tag!=="t51_canonical_missing_prepared"
+    ),
+    "t51_canonical_missing_addition",
+    "t51_sport_authority_required",
+    "t51_seed_form_vs_plan_persistent_memory"
+  ])]
+});
+
 const SERIAL_ADDITION_IDS=new Set(["EVT_30_CCH_001","EVT_30_JAN_001"]);
 const serialCanonicalAdditions=CANONICAL_ADDITIONS_30_34.filter(event=>SERIAL_ADDITION_IDS.has(event.id));
 if(serialCanonicalAdditions.length!==2) throw new Error("Missing one or more selected A7 canonical additions");
@@ -225,5 +245,6 @@ export const EVENTS_30_34=[
   ...serialShiftedAdditions,
   richOffer,
   ...serialCanonicalAdditions,
+  role31,
   ...CONDITIONAL_EVENTS_30_34
 ];
