@@ -1,0 +1,83 @@
+name: A10 T5 final certification
+
+on:
+  push:
+    branches:
+      - qa/t5-cert-current-2a64ce
+  workflow_dispatch:
+
+concurrency:
+  group: a10-t5-final-certification
+  cancel-in-progress: true
+
+jobs:
+  final:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Pin exact final product main
+        run: |
+          git fetch origin main --quiet
+          test "$(git merge-base HEAD origin/main)" = "e2b511467a0b0f66368e640ea6e3e74bced5bb84"
+      - run: npm ci
+      - run: npm run build
+      - name: Pin final content identity
+        run: |
+          node --input-type=module <<'NODE'
+          import { EVENTS } from './dist/content/events/index.js';
+          import { contentIdentity } from './dist/session/content-identity.js';
+          const id=await contentIdentity(EVENTS);
+          console.log('FINAL_T5_CONTENT_IDENTITY='+id);
+          if(id!=='d0fee1ceef2c3bdb7d8cd933ce773341a3c375b39deedcc21cd801a8c3f67770') process.exit(1);
+          if(EVENTS.length!==388 || new Set(EVENTS.map(e=>e.id)).size!==388) process.exit(1);
+          NODE
+
+      - name: Directed historical blocker regressions
+        run: |
+          node --test \
+            scripts/test-t5-contract-expiry-known-bug.mjs \
+            scripts/test-t5-match-model-known-bug.mjs \
+            scripts/test-t5-captain-gap-known-bug.mjs \
+            scripts/test-t5-offer-context-known-bug.mjs \
+            scripts/test-t5-npc-knowledge-save-known-bug.mjs \
+            scripts/test-t5-retirement-save-known-bug.mjs \
+            scripts/test-t5-retirement-authority-known-bug.mjs \
+            scripts/test-t5-lock23-captain-choice-guard.mjs
+
+      - name: Saves and migrations
+        run: npm run qa:t5:saves
+
+      - name: Cross-system integration
+        run: npm run qa:t5:integration
+
+      - name: Owner A6-A8 final regressions
+        shell: bash
+        run: |
+          shopt -s nullglob
+          tests=(scripts/test-t51-agent6-*.mjs scripts/test-t51-a7-*.mjs scripts/test-a0-a8-ordinary-final.mjs)
+          test "${#tests[@]}" -gt 0
+          node --test "${tests[@]}"
+
+      - name: Final A9 terminal regression matrix
+        run: |
+          node --test \
+            scripts/test-t536-canonical-accreditation.mjs \
+            scripts/test-t536-terminal-seeds.mjs \
+            scripts/test-t536-retirement-reversal.mjs \
+            scripts/test-t536-t537-retirement.mjs \
+            scripts/test-t536-status-writer-inventory.mjs \
+            scripts/test-t536-career-summary.mjs \
+            scripts/test-t536-no-last-match-authority.mjs
+
+      - name: Determinism and RNG isolation
+        run: node --test --test-name-pattern="T5 determinism" scripts/test-t5-regression.mjs
+
+      - name: Stratified finite long-career matrix
+        run: node scripts/qa-t5-sim.mjs

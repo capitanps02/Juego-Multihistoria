@@ -81,6 +81,22 @@ export function syncRetirementState(
 
 export function closeCareer(state:GameState,reason:string,closureType:string){
   if(state.retirement.status==="closed")return;
+
+  // Before the 34+ terminal system, only the explicit historical 30–34
+  // early-retirement bridge may close a career. No generic caller may turn
+  // age/flags/context into retirement authority.
+  if(state.age<34){
+    const historicalEarlyRetirement=
+      state.flags.EARLY_RETIRED_30_34===true
+      && reason==="early_retirement_30_34"
+      && closureType==="early_retirement";
+    if(!historicalEarlyRetirement){
+      state.flags.RETIREMENT_INVALID_TRANSITION_BLOCKED=true;
+      return;
+    }
+    state.flags.RETIREMENT_WAS_ANNOUNCED=true;
+  }
+
   state.retirement.reason=state.retirement.reason??reason;
   setStatus(state,"closed",reason,closureType);
   generateEpilogue(state);

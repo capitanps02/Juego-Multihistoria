@@ -4,7 +4,7 @@ import { EVENTS } from '../dist/content/events/index.js';
 import { createInitialState } from '../dist/content/initial-state.js';
 import { eventGatesPass } from '../dist/narrative/event-gates.js';
 import { resolveChoiceInPlace } from '../dist/narrative/resolver.js';
-import { careerTerms, marketState, respondToOffer } from '../dist/simulation/offers.js';
+import { marketState, proposePostAnnouncementCareerChange, respondToOffer } from '../dist/simulation/offers.js';
 import { retirementPostAnnouncementOfferFact } from '../dist/simulation/retirement-authority.js';
 import { syncRetirementState } from '../dist/simulation/late-career-engine.js';
 import { serializeSave, loadSave } from '../dist/save/save.js';
@@ -28,13 +28,17 @@ function announced(seed=536700){
   return state;
 }
 function putOffer(state,id,date,salaryDelta=100){
-  const market=marketState(state);
-  const before=careerTerms(state);
-  market.sequence+=1;
-  market.pending={
-    id,date,reason:'Post-announcement exceptional offer',before,
-    terms:{...before,months:Math.max(12,before.months),salary:before.salary+salaryDelta}
-  };
+  state.date=date;
+  const offer=proposePostAnnouncementCareerChange(
+    state,
+    'Post-announcement exceptional offer',
+    draft=>{
+      draft.contract.monthsRemaining=Math.max(12,draft.contract.monthsRemaining);
+      draft.contract.salaryMonthly=Math.max(1000,draft.contract.salaryMonthly+salaryDelta);
+    }
+  );
+  assert.ok(offer,id);
+  return offer;
 }
 
 test('T5.36 Stage A requires a real post-announcement CareerOffer and Stage B is exclusive',()=>{
