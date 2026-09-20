@@ -1,0 +1,48 @@
+name: A0 freeze A8 Wave A
+
+on:
+  push:
+    branches:
+      - a0/a8-wavea-current-main
+
+permissions:
+  contents: write
+
+jobs:
+  freeze:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: a0/a8-wavea-current-main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Verify exact Wave A identity
+        run: |
+          node --input-type=module <<'NODE'
+          import { EVENTS } from './dist/content/events/index.js';
+          import { contentIdentity } from './dist/session/content-identity.js';
+          const target='b360a1ef1e0d0c19f4600f174bf9d3b2693ed88058a283ed2cdbfaf29d26200b';
+          const identity=await contentIdentity(EVENTS);
+          if(identity!==target) throw new Error('unexpected identity '+identity);
+          if(EVENTS.length!==388 || new Set(EVENTS.map(e=>e.id)).size!==388) throw new Error('inventory mismatch');
+          console.log('A8_WAVEA_IDENTITY='+identity);
+          NODE
+      - name: Freeze Wave A source
+        run: |
+          node scripts/freeze-t51-active-source.mjs
+          node scripts/generate-t51-post-legacy-registry.mjs
+          node scripts/generate-t51-offer-bridge-evidence.mjs
+          test -f qa/fixtures/t5.1/post-t51-sources/b360a1ef1e0d0c19f4600f174bf9d3b2693ed88058a283ed2cdbfaf29d26200b.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add qa/fixtures/t5.1/post-t51-sources/b360a1ef1e0d0c19f4600f174bf9d3b2693ed88058a283ed2cdbfaf29d26200b.json src/session/post-t51-legacy-registry.ts src/session/frozen-offer-bridge-evidence.ts
+          git commit -m "A0 freeze: serialize A8 Wave A identity b360a1ef1e0d"
+          git push origin HEAD:a0/a8-wavea-current-main
