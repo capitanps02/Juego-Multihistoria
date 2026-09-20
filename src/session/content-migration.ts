@@ -92,6 +92,7 @@ export const T51_A7_ROLE31_CONTENT_IDENTITY = "96a196d6c66dc2d7c5d22a1a9272783ca
 export const T51_A8_WAVE_A_CONTENT_IDENTITY = "b360a1ef1e0d0c19f4600f174bf9d3b2693ed88058a283ed2cdbfaf29d26200b";
 export const T51_T5_161_CAPTAIN_CONTENT_IDENTITY = "56b9ca09b872ac6dc8fc78ec9459bf15fb7ab21c20707f354af06c99ee00d0f4";
 export const T51_A8_ORDINARY_FINAL_CONTENT_IDENTITY = "ab7c3e62f7ca6d90973e657f2eb0a9cec0a745fe12369ac9df770bcf6614e658";
+export const T51_A9_TERMINAL_FINAL_CONTENT_IDENTITY = "d0fee1ceef2c3bdb7d8cd933ce773341a3c375b39deedcc21cd801a8c3f67770";
 
 /**
  * Explicit identity-bound edges. Successive canonical batches extend this as a
@@ -377,6 +378,23 @@ export const CONTENT_MIGRATION_ROUTES: readonly ContentMigrationRoute[] = [
       { kind: "distinct_scene", legacyEventId: "EVT_38_MKT_001", canonicalEventId: "EVT_38_MARKET_001", clearCanonicalSeen: true, clearCanonicalCooldown: true },
       { kind: "distinct_scene", legacyEventId: "CEVT_34_MAJOR_COMEBACK", canonicalEventId: "CEVT_34_MAJOR_COMEBACK", clearCanonicalSeen: true, clearCanonicalCooldown: true },
       { kind: "distinct_scene", legacyEventId: "CEVT_36_NO_MEDICAL_CLEARANCE", canonicalEventId: "CEVT_36_NO_MEDICAL_CLEARANCE", clearCanonicalSeen: true, clearCanonicalCooldown: true }
+    ],
+    seedOriginMappings: []
+  },
+  {
+    sourceContentIdentity: T51_A8_ORDINARY_FINAL_CONTENT_IDENTITY,
+    targetContentIdentity: T51_A9_TERMINAL_FINAL_CONTENT_IDENTITY,
+    schedulerMappings: [
+      { kind: "distinct_scene", legacyEventId: "EVT_37_ANNOUNCE_001", canonicalEventId: "EVT_37_ANNOUNCE_001", clearCanonicalSeen: true, clearCanonicalCooldown: true },
+      { kind: "distinct_scene", legacyEventId: "EVT_RET_HOME_001", canonicalEventId: "EVT_RET_FAM_001", clearCanonicalSeen: true, clearCanonicalCooldown: true },
+      { kind: "distinct_scene", legacyEventId: "EVT_RET_BODY_001", canonicalEventId: "EVT_RET_BODY_001", clearCanonicalSeen: true, clearCanonicalCooldown: true },
+      { kind: "distinct_scene", legacyEventId: "EVT_RET_HIGH_001", canonicalEventId: "EVT_RET_HIGH_001", clearCanonicalSeen: true, clearCanonicalCooldown: true },
+      { kind: "distinct_scene", legacyEventId: "EVT_RET_LOW_001", canonicalEventId: "EVT_RET_LOW_001", clearCanonicalSeen: true, clearCanonicalCooldown: true },
+      { kind: "distinct_scene", legacyEventId: "EVT_RET_ANNOUNCE_001", canonicalEventId: "EVT_RET_ANNOUNCE_001", clearCanonicalSeen: true, clearCanonicalCooldown: true },
+      { kind: "distinct_scene", legacyEventId: "EVT_RET_LAST_001", canonicalEventId: "EVT_RET_LASTMATCH_001", clearCanonicalSeen: true, clearCanonicalCooldown: true },
+      { kind: "distinct_scene", legacyEventId: "CEVT_38_OFFER_AFTER_RETIREMENT_ANNOUNCED", canonicalEventId: "CEVT_38_OFFER_AFTER_RETIREMENT_ANNOUNCED", clearCanonicalSeen: true, clearCanonicalCooldown: true },
+      { kind: "distinct_scene", legacyEventId: "CEVT_RET_NO_LAST_MATCH", canonicalEventId: "CEVT_RET_NO_LAST_MATCH", clearCanonicalSeen: true, clearCanonicalCooldown: true },
+      { kind: "distinct_scene", legacyEventId: "CEVT_RET_STORYBOOK_LAST_GOAL", canonicalEventId: "CEVT_RET_STORYBOOK_LAST_GOAL", clearCanonicalSeen: true, clearCanonicalCooldown: true }
     ],
     seedOriginMappings: []
   }
