@@ -1,0 +1,50 @@
+name: Freeze A7 ROLE31 successor
+
+on:
+  push:
+    branches: [a0/a7-role31-prefreeze-117cda]
+    paths:
+      - '.github/workflows/freeze-a7-role31.yml'
+      - 'src/session/content-migration.ts'
+
+permissions:
+  contents: write
+
+jobs:
+  freeze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Freeze exact active source
+        run: |
+          if [ -f qa/fixtures/t5.1/post-t51-sources/96a196d6c66dc2d7c5d22a1a9272783ca748dec36812fc9f7ff6360ef4c2983a.json ]; then
+            node scripts/freeze-t51-active-source.mjs --check
+          else
+            node scripts/freeze-t51-active-source.mjs
+          fi
+      - name: Regenerate frozen evidence registries
+        run: |
+          node scripts/generate-t51-post-legacy-registry.mjs
+          node scripts/generate-t51-offer-bridge-evidence.mjs
+          npm run build
+          node scripts/check-t51-content-migration-route.mjs
+      - name: Commit generated freeze evidence
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add             qa/fixtures/t5.1/post-t51-sources/96a196d6c66dc2d7c5d22a1a9272783ca748dec36812fc9f7ff6360ef4c2983a.json             src/session/post-t51-legacy-registry.ts             src/session/frozen-offer-bridge-evidence.ts
+          if git diff --cached --quiet; then
+            echo "Freeze evidence already current"
+          else
+            git commit -m "A7 ROLE31: freeze exact successor evidence"
+            git push origin HEAD:a0/a7-role31-prefreeze-117cda
+          fi
