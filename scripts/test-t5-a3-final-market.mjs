@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createInitialState } from '../dist/content/initial-state.js';
-import { EVENTS } from '../dist/content/events/index.js';
+import { PRINCIPAL_EVENTS_34_PLUS } from '../dist/content/events/34_plus/principal-events.js';
 import { resolveChoice } from '../dist/narrative/resolver.js';
 import { eligibleChoices } from '../dist/narrative/choice-eligibility.js';
 import { advanceWorldDayInPlace } from '../dist/simulation/world-simulator.js';
@@ -75,7 +75,7 @@ test('A3-2 loyal/512000 expiry becomes unattached, stops old-club sport, preserv
   assert.equal(sport.availability.fixtureCongestion,'unavailable');
   assert.deepEqual(s.rngState,rng,'the expiry transition itself consumes no RNG');
 
-  const legacyDirect=EVENTS.find(event=>event.id==='EVT_34_MKT_001');
+  const legacyDirect=PRINCIPAL_EVENTS_34_PLUS.find(event=>event.id==='EVT_34_MKT_001');
   assert.ok(legacyDirect);
   const unattachedForNarrative=structuredClone(s);
   unattachedForNarrative.age=34;unattachedForNarrative.phase='34_plus';
