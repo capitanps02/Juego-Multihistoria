@@ -1,0 +1,34 @@
+name: Sync A8 Wave A generated registries #686
+on:
+  pull_request:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  sync:
+    if: github.event.pull_request.number == 686 && github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Regenerate exact registries on PR merge composition
+        run: |
+          node scripts/generate-t51-post-legacy-registry.mjs
+          node scripts/generate-t51-offer-bridge-evidence.mjs
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/session/post-t51-legacy-registry.ts src/session/frozen-offer-bridge-evidence.ts
+          if git diff --cached --quiet; then
+            echo "generated registries already current"
+            exit 0
+          fi
+          git commit -m "A8 Wave A: regenerate frozen registries on current main"
+          git push origin HEAD:a12/a8-wavea-clean-current-647
