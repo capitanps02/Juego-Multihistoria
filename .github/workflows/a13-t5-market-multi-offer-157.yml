@@ -1,0 +1,26 @@
+name: A13 T5 market multi-offer #157
+on:
+  push:
+    branches: [a13/t5-market-multi-offer-157]
+permissions:
+  contents: read
+jobs:
+  market:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: a13/t5-market-multi-offer-157
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Multi-offer authority
+        run: node --test scripts/test-t5-market-multi-offer.mjs
+      - name: Existing formal offer regressions
+        run: node --test scripts/test-offers.mjs scripts/test-t5-market-contract-authority.mjs scripts/test-t5-a3-final-market.mjs
+      - name: A8 final catalog regression
+        run: node --test scripts/test-a0-a8-ordinary-final.mjs
