@@ -1,0 +1,20 @@
+name: T51 A7 shifted-five current pre-freeze
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  a7:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Certify shifted-five pre-freeze
+        run: node scripts/report-t51-a7-principals-prefreeze.mjs
