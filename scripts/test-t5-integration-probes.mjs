@@ -5,6 +5,7 @@ import { createInitialState } from '../dist/content/initial-state.js';
 import { conditionsPass } from '../dist/core/conditions.js';
 import { getPath, setPath } from '../dist/core/path.js';
 import { assertGameState } from '../dist/save/validation.js';
+import { careerTerms } from '../dist/simulation/offers.js';
 import * as resolver from '../dist/narrative/resolver.js';
 
 async function optionalImport(path) {
@@ -44,7 +45,25 @@ function qaValueForCondition(state, condition) {
   throw new Error(`QA no sabe sintetizar condición ${condition.op} en ${condition.path}`);
 }
 
+function ensureFormalOfferFixture(state, conditions = []) {
+  if (!conditions.some(condition => condition.path.startsWith('market.pending.'))) return;
+  if (state.market?.pending) return;
+  const before = careerTerms(state);
+  state.market.sequence = 1;
+  state.market.pending = {
+    id: 'offer:1',
+    date: state.date,
+    reason: 'QA formal offer fixture',
+    before,
+    // Keep the formal offer valid even when a gate later rewrites only one nested
+    // term (for example terms.club). Save validation requires offered terms to
+    // differ from the current CareerTerms snapshot.
+    terms: { ...structuredClone(before), salary: before.salary + 1 }
+  };
+}
+
 function satisfyConditions(state, conditions = []) {
+  ensureFormalOfferFixture(state, conditions);
   for (const condition of conditions) setPath(state, condition.path, qaValueForCondition(state, condition));
   assert.equal(conditionsPass(state, conditions), true, `fixture QA no pudo satisfacer ${JSON.stringify(conditions)}`);
 }
