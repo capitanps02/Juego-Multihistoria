@@ -10,6 +10,7 @@ import type { ChoiceDefinition, Effect, EventDefinition, GameState, OutcomeDefin
 import { narrativeConditionRoot } from "../simulation/club-contract-intent.js";
 import { syncRetirementState } from "../simulation/late-career-engine.js";
 import { currentEmploymentClub } from "../simulation/employment.js";
+import { certifyPlayerClubLeadershipInPlace } from "../simulation/player-leadership-authority.js";
 import {
   captureNpcKnowledgeTargetContext,
   resolveNpcKnowledgeTargets,
@@ -278,6 +279,11 @@ function resolveChoiceCore(next: GameState, event: EventDefinition, choiceId: st
   for (const e of selected.effects) applyEffect(next, e);
   for (const e of choice.hiddenCosts ?? []) applyEffect(next, e);
   for (const t of selected.seedTransitions ?? []) applySeedTransition(next, t, event);
+
+  // #161: only explicit acceptance of the formal main-club appointment certifies captaincy.
+  if (event.id === "EVT_29_CAP_001" && choiceId === "ACCEPT_MAIN_CAPTAIN") {
+    certifyPlayerClubLeadershipInPlace(next, "captain", event.id, choiceId);
+  }
 
   // A club change authorized by a narrative choice is one coherent transaction.
   if(next.club!==previousClub){
