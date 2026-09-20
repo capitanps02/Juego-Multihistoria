@@ -1,0 +1,38 @@
+name: T51 A7 final current pre-freeze
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  a7-final:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Focused A7 final regressions
+        run: |
+          node --test \
+            scripts/test-a11-a7-captain-factual-gate.mjs \
+            scripts/test-a13-a7-form30-factual.mjs \
+            scripts/test-t51-a7-add2-prefreeze.mjs
+      - name: Emit exact A7 final identity
+        run: |
+          node --input-type=module <<'NODE'
+          import { EVENTS } from './dist/content/events/index.js';
+          import { contentIdentity } from './dist/session/content-identity.js';
+          const identity=await contentIdentity(EVENTS);
+          const unique=new Set(EVENTS.map(e=>e.id)).size;
+          const must=['EVT_30_CCH_001','EVT_30_JAN_001','EVT_33_CAP_001','EVT_30_FORM_001'];
+          console.log('A7_FINAL_IDENTITY='+identity);
+          console.log('A7_FINAL_EVENTS='+EVENTS.length);
+          console.log('A7_FINAL_UNIQUE='+unique);
+          console.log('A7_FINAL_PRESENT='+must.filter(id=>EVENTS.some(e=>e.id===id)).join(','));
+          if(EVENTS.length!==388 || unique!==388 || must.some(id=>!EVENTS.some(e=>e.id===id))) process.exit(1);
+          NODE
