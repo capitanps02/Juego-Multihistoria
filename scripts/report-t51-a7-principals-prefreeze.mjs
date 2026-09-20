@@ -1,3 +1,4 @@
+// Final A6-cleanup exact-head A7 pre-freeze probe.
 // Exact-head A7 pre-freeze probe on corrected SAFE3.
 // A0 corrected A7 exact prefreeze certification trigger.
 // A7 principal-only exact prefreeze probe; no runtime mutation.
