@@ -90,6 +90,7 @@ export const T51_A7_FACTUAL2_CONTENT_IDENTITY = "4ac0ff3cb30f950f8241aee28cf47bf
 // Exact successor emitted by T51 A7 ROLE31 pre-freeze CI.
 export const T51_A7_ROLE31_CONTENT_IDENTITY = "96a196d6c66dc2d7c5d22a1a9272783ca748dec36812fc9f7ff6360ef4c2983a";
 export const T51_A8_WAVE_A_CONTENT_IDENTITY = "b360a1ef1e0d0c19f4600f174bf9d3b2693ed88058a283ed2cdbfaf29d26200b";
+export const T51_T5_161_CAPTAIN_CONTENT_IDENTITY = "56b9ca09b872ac6dc8fc78ec9459bf15fb7ab21c20707f354af06c99ee00d0f4";
 
 /**
  * Explicit identity-bound edges. Successive canonical batches extend this as a
@@ -351,6 +352,12 @@ export const CONTENT_MIGRATION_ROUTES: readonly ContentMigrationRoute[] = [
       { kind: "distinct_scene", legacyEventId: "EVT_35_BODY_001", canonicalEventId: "EVT_35_BODY_001", clearCanonicalSeen: true, clearCanonicalCooldown: true },
       { kind: "distinct_scene", legacyEventId: "EVT_36_MED_001", canonicalEventId: "EVT_36_MED_001", clearCanonicalSeen: true, clearCanonicalCooldown: true }
     ],
+    seedOriginMappings: []
+  },
+  {
+    sourceContentIdentity: T51_A8_WAVE_A_CONTENT_IDENTITY,
+    targetContentIdentity: T51_T5_161_CAPTAIN_CONTENT_IDENTITY,
+    schedulerMappings: [],
     seedOriginMappings: []
   }
 ];
