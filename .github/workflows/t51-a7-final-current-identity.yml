@@ -1,0 +1,35 @@
+name: T51 A7 final current identity
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  identity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Emit A7 final identity and active IDs
+        run: |
+          node --input-type=module <<'NODE'
+          import { EVENTS } from './dist/content/events/index.js';
+          import { contentIdentity } from './dist/session/content-identity.js';
+          const identity=await contentIdentity(EVENTS);
+          const unique=new Set(EVENTS.map(e=>e.id));
+          const additions=['EVT_30_CCH_001','EVT_30_PRS_001','EVT_30_NAT_002','EVT_30_JAN_001','EVT_31_ROLE_001'];
+          const technical=EVENTS.filter(e=>e.phase==='30_34' && e.id.startsWith('CEVT_')).map(e=>e.id);
+          console.log('A7_FINAL_IDENTITY='+identity);
+          console.log('A7_FINAL_EVENTS='+EVENTS.length);
+          console.log('A7_FINAL_UNIQUE='+unique.size);
+          console.log('A7_FINAL_ADDITIONS_PRESENT='+additions.filter(id=>unique.has(id)).join(','));
+          console.log('A7_FINAL_TECHNICAL_CONDITIONALS='+technical.join(','));
+          if(unique.size!==EVENTS.length) process.exit(1);
+          if(additions.some(id=>!unique.has(id))) process.exit(1);
+          if(technical.length!==0) process.exit(1);
+          NODE
