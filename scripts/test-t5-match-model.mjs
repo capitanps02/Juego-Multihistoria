@@ -558,3 +558,57 @@ test('A4 recent-six/4 is current-registration-club scoped and unattached fail-cl
   assert.equal(getSportContext(state).recentSixMatchStats, null);
   assert.equal(getSportContext(state).availability.recentSixMatchStats, 'unavailable');
 });
+
+
+test('A13 recent-two/1 exposes exactly two complete current-club fixtures read-only', () => {
+  const state = matchDayState(8890);
+  for (let week = 0; week < 2; week += 1) {
+    if (week > 0) {
+      state.date = new Date(Date.parse(state.date + 'T00:00:00Z') + 7 * 86400000).toISOString().slice(0, 10);
+      state.runtime.day += 7;
+      state.runtime.seasonDay += 7;
+    }
+    assert.ok(recordOfficialMatchInPlace(state, { appeared: true, debutOccurred: false, injuryUnavailable: false }));
+  }
+  const before = structuredClone(state);
+  const exact = recentClubPlayerMatchStats(state, 2);
+  assert.ok(exact);
+  assert.equal(exact.matches, 2);
+  const context = getSportContext(state);
+  assert.deepEqual(context.recentTwoMatchStats, exact);
+  assert.equal(context.availability.recentTwoMatchStats, 'known');
+  assert.deepEqual(state, before);
+});
+
+test('A13 recent-two/2 fails closed for incomplete history, transfer and unattached state', () => {
+  const state = matchDayState(8891);
+  assert.ok(recordOfficialMatchInPlace(state, { appeared: true, debutOccurred: false, injuryUnavailable: false }));
+  assert.equal(getSportContext(state).recentTwoMatchStats, null);
+  assert.equal(getSportContext(state).availability.recentTwoMatchStats, 'unavailable');
+
+  state.date = new Date(Date.parse(state.date + 'T00:00:00Z') + 7 * 86400000).toISOString().slice(0, 10);
+  state.runtime.day += 7;
+  state.runtime.seasonDay += 7;
+  assert.ok(recordOfficialMatchInPlace(state, { appeared: true, debutOccurred: false, injuryUnavailable: false }));
+  assert.ok(getSportContext(state).recentTwoMatchStats);
+
+  state.professional.registrationClub = 'NEW_CLUB';
+  state.club = 'NEW_CLUB';
+  assert.equal(getSportContext(state).recentTwoMatchStats, null);
+
+  state.employment = {
+    version: 1,
+    status: 'unattached',
+    since: state.date,
+    previous: {
+      club: 'NEW_CLUB',
+      ownerClub: state.professional.ownerClub,
+      registrationClub: 'NEW_CLUB',
+      salaryMonthly: state.contract.salaryMonthly,
+      endedDate: state.date,
+      reason: 'contract_expired'
+    }
+  };
+  assert.equal(getSportContext(state).recentTwoMatchStats, null);
+  assert.equal(getSportContext(state).availability.recentTwoMatchStats, 'unavailable');
+});
