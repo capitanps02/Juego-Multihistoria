@@ -6,7 +6,7 @@ import { conditionsPass } from '../dist/core/conditions.js';
 import { getPath, setPath } from '../dist/core/path.js';
 import { assertGameState } from '../dist/save/validation.js';
 import * as resolver from '../dist/narrative/resolver.js';
-import { careerTerms } from '../dist/simulation/offers.js';
+import { proposeCareerChange } from '../dist/simulation/offers.js';
 
 async function optionalImport(path) {
   try {
@@ -45,17 +45,13 @@ function qaValueForCondition(state, condition) {
   throw new Error(`QA no sabe sintetizar condición ${condition.op} en ${condition.path}`);
 }
 
-// Nested offer gates need a complete CareerOffer fixture; partial path writes are invalid save state.
+// Nested offer gates need a real CareerOffer fixture; partial/manual offer objects are invalid save state.
 function ensureValidPendingOffer(state) {
   if (state.market?.pending?.id) return;
-  const before = careerTerms(state);
-  state.market.pending = {
-    id: 'offer:qa-integration',
-    date: state.date,
-    reason: 'QA integration fixture',
-    before,
-    terms: { ...before }
-  };
+  const offer = proposeCareerChange(state, 'QA integration fixture', draft => {
+    draft.contract.salaryMonthly = Number(draft.contract.salaryMonthly) + 1;
+  });
+  assert.ok(offer, 'QA no pudo materializar una CareerOffer válida para satisfacer el gate narrativo');
 }
 
 function satisfyConditions(state, conditions = []) {
