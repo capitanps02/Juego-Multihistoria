@@ -1,0 +1,34 @@
+name: QA prepare #161 freeze fixture
+on:
+  push:
+    branches:
+      - qa/prepare-161-freeze-fixture
+permissions:
+  contents: write
+jobs:
+  fixture:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: qa/prepare-161-freeze-fixture
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Generate exact target fixture once
+        run: |
+          TARGET=qa/fixtures/t5.1/post-t51-sources/2b92cb8369842e607f4ed20f0d04e33b198150738a8a8ed79d3efba7ad31c8e3.json
+          if [ ! -f "$TARGET" ]; then
+            node scripts/freeze-t51-active-source.mjs
+            test -f "$TARGET"
+            git config user.name "A10 QA"
+            git config user.email "actions@github.com"
+            git add "$TARGET"
+            git commit -m "qa(#161): freeze exact captain target fixture"
+            git push origin HEAD:qa/prepare-161-freeze-fixture
+          else
+            echo "fixture already generated"
+          fi
