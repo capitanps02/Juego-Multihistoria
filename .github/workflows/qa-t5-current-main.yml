@@ -25,7 +25,7 @@ jobs:
       - name: Pin exact final product main
         run: |
           git fetch origin main --quiet
-          test "$(git merge-base HEAD origin/main)" = "e2b511467a0b0f66368e640ea6e3e74bced5bb84"
+          test "$(git merge-base HEAD origin/main)" = "82c836ab8cf5ac4bfb4d8d4c5a2ebf190d20b61f"
       - run: npm ci
       - run: npm run build
       - name: Pin final content identity
