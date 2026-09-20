@@ -1,0 +1,21 @@
+import assert from 'node:assert/strict';
+import { EVENTS } from '../dist/content/events/index.js';
+import { createInitialState } from '../dist/content/initial-state.js';
+import { resolveChoiceInPlace } from '../dist/narrative/resolver.js';
+import { assertGameState } from '../dist/save/validation.js';
+
+const event = EVENTS.find(e => e.id === 'EVT_31_HOME_001');
+assert.ok(event);
+const state = createInitialState(56000);
+state.age = 31;
+state.phase = '30_34';
+state.runtime.daysSinceNarrative = 999;
+state.runtime.eventsThisSeason = 0;
+state.professional.homePull = 55;
+assert.equal(state.market.pending, null);
+assert.doesNotThrow(() => assertGameState(state));
+console.log('BEFORE', JSON.stringify(state.market.pending));
+const result = resolveChoiceInPlace(state, event, 'A', true);
+console.log('RESULT', JSON.stringify({outcomeId:result.outcomeId}));
+console.log('AFTER', JSON.stringify(state.market.pending));
+assert.doesNotThrow(() => assertGameState(state));
