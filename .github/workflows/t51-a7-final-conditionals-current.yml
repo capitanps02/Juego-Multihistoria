@@ -1,0 +1,47 @@
+name: T51 A7 conditional retirement current identity
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  a7-final:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Verify final A7 active catalog
+        run: |
+          node --input-type=module <<'NODE'
+          import { EVENTS } from './dist/content/events/index.js';
+          import { contentIdentity } from './dist/session/content-identity.js';
+          const identity=await contentIdentity(EVENTS);
+          const unique=new Set(EVENTS.map(e=>e.id));
+          const technical=EVENTS.filter(e=>/^CEVT_(30|31|32|33)_/.test(e.id)).map(e=>e.id);
+          const blocked=['EVT_30_PRS_001','EVT_30_NAT_002','EVT_31_ROLE_001'];
+          const required=['EVT_30_CCH_001','EVT_30_JAN_001','EVT_30_FORM_001','EVT_33_CAP_001'];
+          const form=EVENTS.find(e=>e.id==='EVT_30_FORM_001');
+          const cap=EVENTS.find(e=>e.id==='EVT_33_CAP_001');
+          console.log('A7_FINAL_IDENTITY='+identity);
+          console.log('A7_FINAL_EVENTS='+EVENTS.length);
+          console.log('A7_FINAL_UNIQUE='+unique.size);
+          console.log('A7_FINAL_TECHNICAL='+technical.join(','));
+          console.log('A7_FINAL_BLOCKED_PRESENT='+blocked.filter(id=>unique.has(id)).join(','));
+          console.log('A7_FINAL_REQUIRED_PRESENT='+required.filter(id=>unique.has(id)).join(','));
+          console.log('A7_FORM_GATES='+JSON.stringify(form?.gates??[]));
+          console.log('A7_CAP_GATES='+JSON.stringify(cap?.gates??[]));
+          if(unique.size!==EVENTS.length) process.exit(1);
+          if(technical.length!==0) process.exit(1);
+          if(blocked.some(id=>unique.has(id))) process.exit(1);
+          if(required.some(id=>!unique.has(id))) process.exit(1);
+          if((form?.gates??[]).some(g=>g.path==='sport.form')) process.exit(1);
+          if(!(form?.gates??[]).some(g=>g.path==='facts.sport.recentSixMatchStats.goals' && g.op==='gte' && g.value===5)) process.exit(1);
+          if((cap?.gates??[]).some(g=>g.path==='professional.successionPressure')) process.exit(1);
+          if(!(cap?.gates??[]).some(g=>g.path==='facts.playerClubLeadership.currentRole' && g.op==='eq' && g.value==='captain')) process.exit(1);
+          NODE
