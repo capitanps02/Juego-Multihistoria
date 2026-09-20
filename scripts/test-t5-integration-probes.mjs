@@ -184,9 +184,9 @@ test('T5 integration/T5.1 30-34: cada elección reimplementada produce un GameSt
       state.phase = event.phase;
       state.runtime.daysSinceNarrative = 999;
       state.runtime.eventsThisSeason = 0;
-      installFormalQaOfferForBridge(state, event);
       const nonOfferGates = (event.gates ?? []).filter(condition => !condition.path.startsWith('market.pending.'));
       satisfyConditions(state, nonOfferGates);
+      installFormalQaOfferForBridge(state, event);
       assert.equal(
         conditionsPass(state, event.gates ?? []),
         true,
