@@ -23,6 +23,14 @@ import {
   type FutureEmploymentNegotiation
 } from "./offers.js";
 import { getCurrentMatchContext, getSportContext, type CurrentMatchContext, type SportContext } from "./sport-context.js";
+import {
+  retirementNoLastMatchFact,
+  retirementPostAnnouncementOfferFact,
+  retirementStorybookLastGoalFact,
+  type RetirementNoLastMatchFact,
+  type RetirementPostAnnouncementOfferFact,
+  type RetirementStorybookLastGoalFact
+} from "./retirement-authority.js";
 import { resolveCurrentRepresentation, type RepresentationAgreement } from "./representation-authority.js";
 import { getSportMatchModelStore } from "./match-model.js";
 import { resolveActiveAgent, resolveCurrentClubInstitutionalNpc } from "./npc-authority.js";
@@ -233,6 +241,10 @@ export interface NarrativeCausalFacts extends EarlyCareerSeedFacts {
   sport: SportContext;
   /** Current match projection. Fails closed until a real match producer exists. */
   match: CurrentMatchContext;
+  /** Factual terminal retirement projections; unavailable evidence fails closed. */
+  retirementNoLastMatch: RetirementNoLastMatchFact;
+  retirementStorybookLastGoal: RetirementStorybookLastGoalFact;
+  retirementPostAnnouncementOffer: RetirementPostAnnouncementOfferFact;
 }
 
 export function narrativeCausalFacts(state: GameState): NarrativeCausalFacts {
@@ -259,7 +271,10 @@ export function narrativeCausalFacts(state: GameState): NarrativeCausalFacts {
     injuryEpisodes: resolveInjuryEpisodeFacts(state),
     nationalSelection: resolveNationalSelectionFacts(state),
     sport: getSportContext(state),
-    match: getCurrentMatchContext(state)
+    match: getCurrentMatchContext(state),
+    retirementNoLastMatch: retirementNoLastMatchFact(state),
+    retirementStorybookLastGoal: retirementStorybookLastGoalFact(state),
+    retirementPostAnnouncementOffer: retirementPostAnnouncementOfferFact(state)
   };
 }
 
