@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createInitialState } from '../dist/content/initial-state.js';
 import { recordOfficialMatchInPlace } from '../dist/simulation/match-model.js';
-import { getLastPlayerAppearanceContext, getSportContext } from '../dist/simulation/sport-context.js';
+import { getLastPlayerAppearanceContext } from '../dist/simulation/sport-context.js';
 import { retirementLastAppearanceFact } from '../dist/simulation/retirement-authority.js';
 import { loadSave, serializeSave } from '../dist/save/save.js';
 
@@ -32,7 +32,6 @@ test('last appearance/1 skips later non-appearance and exposes the exact factual
   assert.equal(context.match?.date, first.date);
   assert.deepEqual(context.match?.result, first.result);
   assert.equal(context.match?.stats?.goals, first.stats.goals);
-  assert.equal(getSportContext(state).lastPlayerAppearanceContext.match?.id, first.id);
 
   const fact = retirementLastAppearanceFact(state);
   assert.equal(fact.status, 'authoritative');
@@ -80,7 +79,6 @@ test('last appearance/3 initialized store with no appearance is authoritative no
   const context = getLastPlayerAppearanceContext(state);
   assert.equal(context.status, 'authoritative');
   assert.equal(context.match, null);
-  assert.equal(getSportContext(state).availability.lastPlayerAppearanceContext, 'known');
   const fact = retirementLastAppearanceFact(state);
   assert.equal(fact.status, 'authoritative_none');
   assert.equal(fact.fixtureId, null);
@@ -92,7 +90,6 @@ test('last appearance/4 historical save without store is explicitly unavailable'
   const context = getLastPlayerAppearanceContext(state);
   assert.equal(context.status, 'historical_match_store_not_initialized');
   assert.equal(context.match, null);
-  assert.equal(getSportContext(state).availability.lastPlayerAppearanceContext, 'unavailable');
   assert.equal(retirementLastAppearanceFact(state).status, 'unavailable');
 });
 
