@@ -1,0 +1,20 @@
+name: A13 ROLE31 prior-two authority
+on:
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  certify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Match model and ROLE31 authority regressions
+        run: node --test scripts/test-t5-match-model.mjs
