@@ -46,8 +46,36 @@ function verified(event:EventDefinition):void{
 export function applyRetirementTerminalOverrides(principal:EventDefinition[],conditional:EventDefinition[]):void{
   const farewellTiming=principal.find(event=>event.id==="EVT_37_ANNOUNCE_001");
   if(farewellTiming){
+    farewellTiming.ageWindow=[37,null];
+    farewellTiming.family="press";
+    farewellTiming.gates=[
+      {path:"retirement.status",op:"eq",value:"playing"},
+      {path:"professional.retirementDistance",op:"gte",value:45}
+    ];
+    farewellTiming.timeWindow={months:[2,3,4]};
+    farewellTiming.repeatable=false;
+    farewellTiming.cooldown=99999;
+    farewellTiming.weight=5.5;
+    farewellTiming.text={
+      title:"Te piden que anuncies antes del último partido",
+      body:"El club cree que, si esta acaba siendo tu última temporada, necesita semanas para preparar homenaje y entradas. Puedes comprometerte con el final, conservar libertad o permitir un homenaje sin confirmar todavía una retirada."
+    };
+    farewellTiming.intel={
+      visible:["Plan de homenaje del club","calendario restante","tu intención de carrera actual"],
+      uncertain:["No sabes si dentro de tres semanas seguirás queriendo retirarte","esperar puede hacer imposible una ceremonia preparada"]
+    };
+    farewellTiming.choices=[
+      c("ANNOUNCE_NOW","Anunciar ya",[s("retirement.status","decided"),s("retirement.reason","voluntary"),f("FAREWELL_ANNOUNCE_NOW_INTENT")]),
+      c("WAIT_END","Esperar al final",[n("professional.careerControl",4),f("FAREWELL_WAIT_UNTIL_END")]),
+      c("TRIBUTE_NO_RETIREMENT","Autorizar homenaje sin confirmar retirada",[n("professional.institutionalTrust",3),n("professional.publicMyth",2),f("FAREWELL_TRIBUTE_WITHOUT_RETIREMENT")]),
+      c("LOCKER_ONLY","Decirlo solo al vestuario",[n("professional.lockerPower",3),n("professional.environmentStability",2),f("FAREWELL_LOCKER_ONLY")])
+    ];
+    farewellTiming.outcomes=outcomes(
+      farewellTiming.choices,
+      "El timing queda registrado; la retirada pública solo existe después de una decisión y su escena de anuncio."
+    );
     addSeedCreates(farewellTiming,Object.fromEntries(farewellTiming.choices.map(choice=>[choice.id,["SEED_FAREWELL_ANNOUNCEMENT_TIMING"]])));
-    terminal(farewellTiming);
+    verified(farewellTiming);
   }
 
   const noMarket=principal.find(event=>event.id==="EVT_38_MKT_001");
