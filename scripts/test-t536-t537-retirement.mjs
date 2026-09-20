@@ -99,10 +99,12 @@ test('T5.36/1 playing -> decided only through explicit retirement choice',()=>{
 test('T5.36/2 decided -> playing requires explicit pre-announcement reconsideration',()=>{
   const state=lateState();
   resolveChoiceInPlace(state,event('EVT_RET_FAM_001'),'RETIRE_NOW');
-  assert.equal(reverseRetirement(state),false,'a bare offer/RNG-free decision must not reverse without a narrative window');
+  assert.equal(reverseRetirement(state),false,'a bare decision must not reverse without a narrative reconsideration window');
   resolveChoiceInPlace(state,event('EVT_RET_ANNOUNCE_001'),'WAIT');
   assert.equal(state.retirement.status,'decided');
-  resolveChoiceInPlace(state,event('CEVT_RET_RECONSIDER'),'RETURN');
+  assert.equal(state.flags.RECONSIDERATION_WINDOW,true);
+  assert.equal(state.flags.RETIREMENT_ANNOUNCEMENT_DEFERRED,true);
+  assert.equal(reverseRetirement(state),true);
   assert.equal(state.retirement.status,'playing');
   assert.equal(state.retirement.reversals,1);
   assert.equal(state.flags.RETIREMENT_RECONSIDERED,true);
