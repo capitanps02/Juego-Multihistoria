@@ -7,6 +7,7 @@ import {
   getSportMatchModelStore,
   inspectSportMatchModelStore,
   lastPlayerAppearance,
+  priorClubPlayerMatchStats,
   recentClubPlayerMatchStats,
   recordOfficialMatchInPlace
 } from '../dist/simulation/match-model.js';
