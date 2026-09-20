@@ -1,7 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createInitialState } from '../dist/content/initial-state.js';
-import { EVENTS } from '../dist/content/events/index.js';
 import { resolveChoice } from '../dist/narrative/resolver.js';
 import { eligibleChoices } from '../dist/narrative/choice-eligibility.js';
 import { advanceWorldDayInPlace } from '../dist/simulation/world-simulator.js';
@@ -75,14 +74,34 @@ test('A3-2 loyal/512000 expiry becomes unattached, stops old-club sport, preserv
   assert.equal(sport.availability.fixtureCongestion,'unavailable');
   assert.deepEqual(s.rngState,rng,'the expiry transition itself consumes no RNG');
 
-  const legacyDirect=EVENTS.find(event=>event.id==='EVT_34_MKT_001');
-  assert.ok(legacyDirect);
+  const unsafeDirectEmploymentEvent={
+    id:'TEST_A3_DIRECT_EMPLOYMENT_MUTATION',
+    phase:'34_plus',
+    ageWindow:[34,null],
+    family:'contract',
+    weight:1,
+    cooldown:0,
+    text:{title:'Authority guard',body:'Authority guard'},
+    intel:{visible:[],uncertain:[]},
+    gates:[],
+    npcRefs:[],
+    choices:[{
+      id:'UNSAFE_DIRECT',
+      label:'Mutate employment directly',
+      outcomeIds:['UNSAFE_DIRECT_OUT'],
+      immediateEffects:[
+        {kind:'set',path:'contract.monthsRemaining',value:12},
+        {kind:'set',path:'contract.salaryMonthly',value:10000}
+      ]
+    }],
+    outcomes:[{id:'UNSAFE_DIRECT_OUT',baseWeight:1,effects:[],messages:['unsafe']}]
+  };
   const unattachedForNarrative=structuredClone(s);
   unattachedForNarrative.age=34;unattachedForNarrative.phase='34_plus';
   assert.throws(
-    ()=>resolveChoice(unattachedForNarrative,legacyDirect,'ACCEPT_SHORT'),
+    ()=>resolveChoice(unattachedForNarrative,unsafeDirectEmploymentEvent,'UNSAFE_DIRECT'),
     /cannot mutate unattached employment/,
-    'legacy narrative contract effects cannot re-employ an unattached player'
+    'narrative contract effects cannot re-employ an unattached player'
   );
 
   s=loadSave(serializeSave(s));
