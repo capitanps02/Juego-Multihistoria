@@ -6,6 +6,7 @@ import { EVENTS } from '../dist/content/events/index.js';
 import { EventIndex } from '../dist/narrative/event-index.js';
 import { contentIdentity } from '../dist/session/content-identity.js';
 import { PRE_T51_CONTENT_IDENTITY } from '../dist/session/pre-t51-legacy-registry.js';
+import { CONTENT_MIGRATION_ROUTES, T51_A6_SAFE3_CONTENT_IDENTITY, T51_A7_SHIFTED5_CONTENT_IDENTITY } from '../dist/session/content-migration.js';
 
 const PRE_T51_EVENTS = JSON.parse(fs.readFileSync('qa/fixtures/t5.1/pre-t51-event-catalog.json', 'utf8'));
 const clone = value => structuredClone(value);
@@ -71,6 +72,49 @@ async function targetWithMutation(eventId, mutate) {
 function route(sourceIdentity, targetIdentity, extra = {}) {
   return { sourceContentIdentity: sourceIdentity, targetContentIdentity: targetIdentity, ...extra };
 }
+
+test('A7 SAFE3 successor maps every owner-approved semantic collision as distinct_scene', () => {
+  const migration = CONTENT_MIGRATION_ROUTES.find(row =>
+    row.sourceContentIdentity === T51_A6_SAFE3_CONTENT_IDENTITY
+    && row.targetContentIdentity === T51_A7_SHIFTED5_CONTENT_IDENTITY
+  );
+  assert.ok(migration);
+  assert.deepEqual(migration.seedOriginMappings ?? [], []);
+  assert.equal(migration.schedulerMappings?.length, 32);
+
+  const exactIds = [
+    'EVT_30_CON_001','EVT_30_BODY_001','EVT_30_MKT_001','EVT_30_NAT_001',
+    'EVT_30_FAM_001','EVT_30_MED_001','EVT_30_FORM_001','EVT_30_CAP_001',
+    'EVT_31_MED_001','EVT_31_MKT_001','EVT_31_HOME_001','EVT_31_AGT_001',
+    'EVT_31_LEGACY_001','EVT_31_RETURN_001','EVT_31_TACT_001','EVT_31_CCH_001',
+    'EVT_31_NAT_001','EVT_31_FINAL_001','EVT_32_CON_001','EVT_32_HOME_001',
+    'EVT_32_AGT_001','EVT_32_FAN_001','EVT_32_NAT_001','EVT_33_BODY_001',
+    'EVT_33_CAP_001','EVT_33_MKT_001','EVT_33_PRS_001'
+  ];
+  const shifted = new Map([
+    ['EVT_30_IDN_001','EVT_30_BRIDGE_001'],
+    ['EVT_30_TEAM_001','EVT_30_STATUS_001'],
+    ['EVT_32_MKT_001','EVT_32_RICH_001'],
+    ['EVT_32_TACT_001','EVT_32_IMPACT_001'],
+    ['EVT_33_END_001','EVT_33_FIN_001']
+  ]);
+  const mappings = migration.schedulerMappings ?? [];
+  for (const id of exactIds) {
+    const row = mappings.find(item => item.legacyEventId === id && item.canonicalEventId === id);
+    assert.ok(row, id);
+    assert.equal(row.kind, 'distinct_scene', id);
+    assert.equal(row.clearCanonicalSeen, true, id);
+    assert.equal(row.clearCanonicalCooldown, true, id);
+  }
+  for (const [legacyEventId, canonicalEventId] of shifted) {
+    const row = mappings.find(item => item.legacyEventId === legacyEventId && item.canonicalEventId === canonicalEventId);
+    assert.ok(row, legacyEventId);
+    assert.equal(row.kind, 'distinct_scene', legacyEventId);
+    assert.equal(row.clearCanonicalSeen, true, legacyEventId);
+    assert.equal(row.clearCanonicalCooldown, true, legacyEventId);
+  }
+  assert.equal(mappings.every(row => row.kind === 'distinct_scene'), true);
+});
 
 test('current v2 snapshot upgrades to Session v3 provenance without changing game/RNG truth', async () => {
   const { snapshot } = await sourceWithResolved(710);
