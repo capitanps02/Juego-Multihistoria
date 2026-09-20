@@ -87,6 +87,7 @@ export const T51_A6_FIRST5_CONTENT_IDENTITY = "8bb987042cccdce110d4de200aad5c4da
 export const T51_A6_SAFE3_CONTENT_IDENTITY = "4973518cdceb84b86be62179ada2c0782da9f007c443d7ffd132ec88353229a3";
 export const T51_A7_SHIFTED5_CONTENT_IDENTITY = "ee5904632512feb3f99fe5b68a794ae12b4f73b4edd469a436d6f5431d7aa4bc";
 export const T51_A7_FACTUAL2_CONTENT_IDENTITY = "4ac0ff3cb30f950f8241aee28cf47bfc092b7dc35fc7f8c703caf7602b127670";
+export const T51_A7_FINAL_CONTENT_IDENTITY = "56fb0e3c2e433d10d4deba483bae8e0cacc71bd1f6874b4c4628d5e5c132911c";
 
 /**
  * Explicit identity-bound edges. Successive canonical batches extend this as a
@@ -332,6 +333,12 @@ export const CONTENT_MIGRATION_ROUTES: readonly ContentMigrationRoute[] = [
       { kind: "distinct_scene", legacyEventId: "EVT_30_FORM_001", canonicalEventId: "EVT_30_FORM_001", clearCanonicalSeen: true, clearCanonicalCooldown: true },
       { kind: "distinct_scene", legacyEventId: "EVT_33_CAP_001", canonicalEventId: "EVT_33_CAP_001", clearCanonicalSeen: true, clearCanonicalCooldown: true }
     ],
+    seedOriginMappings: []
+  },
+  {
+    sourceContentIdentity: T51_A7_FACTUAL2_CONTENT_IDENTITY,
+    targetContentIdentity: T51_A7_FINAL_CONTENT_IDENTITY,
+    schedulerMappings: [],
     seedOriginMappings: []
   }
 ];
