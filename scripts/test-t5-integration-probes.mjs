@@ -63,8 +63,21 @@ function ensureFormalOfferFixture(state, conditions = []) {
 }
 
 function satisfyConditions(state, conditions = []) {
-  ensureFormalOfferFixture(state, conditions);
-  for (const condition of conditions) setPath(state, condition.path, qaValueForCondition(state, condition));
+  const marketConditions = conditions.filter(condition => condition.path.startsWith('market.pending.'));
+  const ordinaryConditions = conditions.filter(condition => !condition.path.startsWith('market.pending.'));
+
+  // First establish the current player/employment state. CareerOffer.before must
+  // snapshot these terms exactly; constructing the offer earlier would make the
+  // fixture stale as soon as a contract gate (e.g. monthsRemaining) is satisfied.
+  for (const condition of ordinaryConditions) {
+    setPath(state, condition.path, qaValueForCondition(state, condition));
+  }
+
+  ensureFormalOfferFixture(state, marketConditions);
+  for (const condition of marketConditions) {
+    setPath(state, condition.path, qaValueForCondition(state, condition));
+  }
+
   assert.equal(conditionsPass(state, conditions), true, `fixture QA no pudo satisfacer ${JSON.stringify(conditions)}`);
 }
 
