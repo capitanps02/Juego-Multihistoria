@@ -1,0 +1,37 @@
+name: A0 freeze #161 after A8 Wave A
+on:
+  push:
+    branches:
+      - a0/t5-161-after-a8-wavea
+permissions:
+  contents: write
+jobs:
+  freeze:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: a0/t5-161-after-a8-wavea
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Generate exact active source and registries
+        run: |
+          if [ -f "qa/fixtures/t5.1/post-t51-sources/56b9ca09b872ac6dc8fc78ec9459bf15fb7ab21c20707f354af06c99ee00d0f4.json" ]; then
+            echo "already frozen"
+            exit 0
+          fi
+          node scripts/freeze-t51-active-source.mjs
+          node scripts/generate-t51-post-legacy-registry.mjs
+          node scripts/generate-t51-offer-bridge-evidence.mjs
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add qa/fixtures/t5.1/post-t51-sources/56b9ca09b872ac6dc8fc78ec9459bf15fb7ab21c20707f354af06c99ee00d0f4.json src/session/post-t51-legacy-registry.ts src/session/frozen-offer-bridge-evidence.ts
+          git commit -m "A0 freeze: serialize #161 identity 56b9ca09b872"
+          git push origin HEAD:a0/t5-161-after-a8-wavea
