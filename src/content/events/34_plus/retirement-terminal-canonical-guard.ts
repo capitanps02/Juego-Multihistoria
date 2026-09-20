@@ -14,8 +14,8 @@ function tag(event:EventDefinition,value:string):void{
 export function enforceRetirementTerminalCanonicalAccreditation(conditional:EventDefinition[]):void{
   const postAnnounceOffer=conditional.find(event=>event.id==="CEVT_38_OFFER_AFTER_RETIREMENT_ANNOUNCED");
   if(postAnnounceOffer){
-    postAnnounceOffer.canonStatus="technical_adaptation";
-    tag(postAnnounceOffer,"t536_canonical_pending_terminal_reversal_contract");
+    postAnnounceOffer.canonStatus="verified";
+    tag(postAnnounceOffer,"t536_canonical_factual_post_announcement_offer");
   }
 
   const reconsider=conditional.find(event=>event.id==="CEVT_RET_RECONSIDER");
@@ -39,7 +39,7 @@ export function enforceRetirementTerminalCanonicalAccreditation(conditional:Even
 
   const reversal=conditional.find(event=>event.id==="CEVT_38_RETIREMENT_REVERSAL");
   if(reversal){
-    reversal.canonStatus="technical_adaptation";
-    tag(reversal,"t536_canonical_consumer_waiting_post_announcement_offer_producer");
+    reversal.canonStatus="verified";
+    tag(reversal,"t536_canonical_factual_retirement_reversal");
   }
 }
