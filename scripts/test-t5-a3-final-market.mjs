@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createInitialState } from '../dist/content/initial-state.js';
 import { EVENTS } from '../dist/content/events/index.js';
+import { PRINCIPAL_EVENTS_34_PLUS } from '../dist/content/events/34_plus/principal-events.js';
 import { resolveChoice } from '../dist/narrative/resolver.js';
 import { eligibleChoices } from '../dist/narrative/choice-eligibility.js';
 import { advanceWorldDayInPlace } from '../dist/simulation/world-simulator.js';
@@ -75,21 +76,19 @@ test('A3-2 loyal/512000 expiry becomes unattached, stops old-club sport, preserv
   assert.equal(sport.availability.fixtureCongestion,'unavailable');
   assert.deepEqual(s.rngState,rng,'the expiry transition itself consumes no RNG');
 
-  const legacyDirect=EVENTS.find(event=>event.id==='EVT_34_MKT_001');
-  if(legacyDirect){
-    const unattachedForNarrative=structuredClone(s);
-    unattachedForNarrative.age=34;unattachedForNarrative.phase='34_plus';
-    assert.throws(
-      ()=>resolveChoice(unattachedForNarrative,legacyDirect,'ACCEPT_SHORT'),
-      /cannot mutate unattached employment/,
-      'legacy narrative contract effects cannot re-employ an unattached player'
-    );
-  } else {
-    // A later serialized content generation may retire the legacy direct-contract
-    // scene entirely. Absence is at least as fail-closed as rejecting its direct
-    // employment mutation; formal re-employment is still covered below.
-    assert.equal(EVENTS.some(event=>event.id==='EVT_34_MKT_001'),false);
-  }
+  // Wave A intentionally retires the obsolete direct-contract scene from the
+  // active catalog, but its source definition remains a useful adversarial fixture:
+  // even historical/direct effects must never bypass formal employment authority.
+  assert.equal(EVENTS.some(event=>event.id==='EVT_34_MKT_001'),false);
+  const legacyDirect=PRINCIPAL_EVENTS_34_PLUS.find(event=>event.id==='EVT_34_MKT_001');
+  assert.ok(legacyDirect);
+  const unattachedForNarrative=structuredClone(s);
+  unattachedForNarrative.age=34;unattachedForNarrative.phase='34_plus';
+  assert.throws(
+    ()=>resolveChoice(unattachedForNarrative,legacyDirect,'ACCEPT_SHORT'),
+    /cannot mutate unattached employment/,
+    'retired legacy narrative contract effects cannot re-employ an unattached player'
+  );
 
   s=loadSave(serializeSave(s));
   assert.equal(employmentStatus(s),'unattached');
