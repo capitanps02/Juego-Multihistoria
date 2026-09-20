@@ -1,0 +1,23 @@
+name: A11 exact A8 Wave A current
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  certify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Wave A exact prefreeze invariants
+        run: node scripts/test-t51-a8-wavea-prefreeze.mjs
+      - name: A3 re-employment guard after legacy retirement
+        run: node --test scripts/test-t5-a3-final-market.mjs
