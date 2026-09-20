@@ -1,0 +1,27 @@
+name: A0 A7 add2 identity probe
+
+on:
+  push:
+    branches:
+      - 'a0/ci-a7-add2-identity'
+    paths:
+      - 'src/content/events/30_34/index.ts'
+      - 'scripts/test-t51-a7-add2-prefreeze.mjs'
+      - 'scripts/print-a7-add2-identity.mjs'
+      - '.github/workflows/a0-a7-add2-identity.yml'
+  workflow_dispatch:
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: node --test scripts/test-t51-a7-add2-prefreeze.mjs
+      - run: node scripts/print-a7-add2-identity.mjs
