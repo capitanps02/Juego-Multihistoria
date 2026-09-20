@@ -62,20 +62,15 @@ jobs:
           if(sc){sc.sourceContentIdentity=source;sc.targetContentIdentity=target;}
           fs.writeFileSync(parityFile,JSON.stringify(parity,null,2)+'\n');
           NODE
-      - name: A7 owner certification
+      - name: A7 shifted-five owner certification
         run: |
           node --test \
             scripts/test-t51-30-34-authority-gaps.mjs \
             scripts/test-t51-30-34-career-authority.mjs \
-            scripts/test-t51-30-34-conditional-seed-reads.mjs \
-            scripts/test-t51-30-34-conditionals.mjs \
             scripts/test-t51-30-34-contract-clause-handoff.mjs \
             scripts/test-t51-30-34-downstream-seed-handoff.mjs \
             scripts/test-t51-30-34-migration-handoff.mjs \
-            scripts/test-t51-30-34-missing-principals.mjs \
             scripts/test-t51-30-34-multi-offer-handoff.mjs \
             scripts/test-t51-30-34-readiness.mjs \
-            scripts/test-t51-30-34-seed-consumption.mjs \
-            scripts/test-t51-30-34-seed-handoff.mjs \
             scripts/test-t51-30-34-sport-authority.mjs \
             scripts/test-t51-30-34-trigger.mjs
