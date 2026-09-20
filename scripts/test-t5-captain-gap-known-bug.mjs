@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { createInitialState } from '../dist/content/initial-state.js';
+import { EVENTS } from '../dist/content/events/index.js';
 import { EVENTS_30_34 } from '../dist/content/events/30_34/index.js';
 import { scheduleEvent } from '../dist/narrative/scheduler.js';
 import { loadSave, serializeSave } from '../dist/save/save.js';
@@ -89,6 +90,23 @@ test('T5-QA-030b/#161: final T5 requires at least one production main-captain wr
   assert.ok(
     callsites.length > 0,
     'no production call-site certifies explicit main-club captain authority; consumer-only gating is not enough'
+  );
+});
+
+test('T5-QA-030b2/#161: explicit main-captain appointment is active and canon-approved, not staging-only', () => {
+  const event = EVENTS.find(row => row.id === 'EVT_29_CAP_001');
+  assert.ok(
+    event,
+    'explicit main-club captain appointment exists only as staged/inactive content; #161 is not closed until the producer joins active EVENTS'
+  );
+  assert.ok(
+    event.choices.some(choice => choice.id === 'ACCEPT_MAIN_CAPTAIN'),
+    'active captain appointment must expose the exact factual acceptance choice'
+  );
+  assert.equal(
+    event.tags?.includes('requires_a0_canon_approval') ?? false,
+    false,
+    'active main-captain producer must not remain marked as awaiting A0 canon approval'
   );
 });
 
