@@ -14,23 +14,21 @@ test('terminal factual conditionals accredit only exact shared-authority facts',
   const noLastMatch=event('CEVT_RET_NO_LAST_MATCH');
   const storybook=event('CEVT_RET_STORYBOOK_LAST_GOAL');
 
-  assert.equal(postOffer.canonStatus,'technical_adaptation');
-  assert.equal(reversal.canonStatus,'technical_adaptation');
+  assert.equal(postOffer.canonStatus,'verified');
+  assert.equal(reversal.canonStatus,'verified');
   assert.equal(noLastMatch.canonStatus,'verified');
   assert.equal(storybook.canonStatus,'verified');
 
   assert.match(JSON.stringify(postOffer.gates),/facts\.retirementPostAnnouncementOffer\.stage/);
   assert.match(JSON.stringify(reversal.gates),/facts\.retirementPostAnnouncementOffer\.stage/);
-  assert.ok(reversal.tags?.includes('t536_canonical_consumer_waiting_post_announcement_offer_producer'));
+  assert.ok(reversal.tags?.includes('t536_canonical_factual_retirement_reversal'));
   assert.ok(noLastMatch.tags?.includes('t536_canonical_injury_unavailability_fact'));
   assert.ok(storybook.tags?.includes('t536_canonical_factual_last_goal'));
 });
 
-test('legacy pre-announcement reconsideration keeps distinct noncanonical identity',()=>{
-  const reconsider=event('CEVT_RET_RECONSIDER');
-  assert.equal(reconsider.canonStatus,'technical_adaptation');
-  assert.ok(reconsider.tags?.includes('t536_noncanonical_conditional_id'));
-  assert.notEqual(reconsider.id,'CEVT_38_RETIREMENT_REVERSAL');
+test('legacy pre-announcement reconsideration is retired from the active final catalog',()=>{
+  assert.equal(EVENTS.some(item=>item.id==='CEVT_RET_RECONSIDER'),false);
+  assert.ok(EVENTS.some(item=>item.id==='CEVT_38_RETIREMENT_REVERSAL'));
 });
 
 test('no-last-match and storybook gates contain no timer, role or synthetic-goal proxy',()=>{
