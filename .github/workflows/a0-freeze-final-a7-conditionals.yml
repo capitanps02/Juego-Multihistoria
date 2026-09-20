@@ -1,0 +1,52 @@
+name: A0 freeze final A7 conditionals
+
+on:
+  push:
+    branches:
+      - a0/a7-final-conditionals-frozen-main
+
+permissions:
+  contents: write
+
+jobs:
+  freeze:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: a0/a7-final-conditionals-frozen-main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Verify exact final A7 identity
+        run: |
+          node --input-type=module <<'NODE'
+          import { EVENTS } from './dist/content/events/index.js';
+          import { contentIdentity } from './dist/session/content-identity.js';
+          const target='56fb0e3c2e433d10d4deba483bae8e0cacc71bd1f6874b4c4628d5e5c132911c';
+          const identity=await contentIdentity(EVENTS);
+          const technical=EVENTS.filter(e=>/^CEVT_(30|31|32|33)_/.test(e.id));
+          const blocked=['EVT_30_PRS_001','EVT_30_NAT_002','EVT_31_ROLE_001'];
+          if(identity!==target) throw new Error('unexpected identity '+identity);
+          if(technical.length) throw new Error('technical conditionals remain active');
+          if(blocked.some(id=>EVENTS.some(e=>e.id===id))) throw new Error('blocked canonical addition became active');
+          console.log('A7_FINAL_IDENTITY='+identity);
+          console.log('A7_FINAL_EVENTS='+EVENTS.length);
+          NODE
+      - name: Freeze exact active source
+        run: |
+          node scripts/freeze-t51-active-source.mjs
+          node scripts/generate-t51-post-legacy-registry.mjs
+          node scripts/generate-t51-offer-bridge-evidence.mjs
+          test -f qa/fixtures/t5.1/post-t51-sources/56fb0e3c2e433d10d4deba483bae8e0cacc71bd1f6874b4c4628d5e5c132911c.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add qa/fixtures/t5.1/post-t51-sources/56fb0e3c2e433d10d4deba483bae8e0cacc71bd1f6874b4c4628d5e5c132911c.json src/session/post-t51-legacy-registry.ts src/session/frozen-offer-bridge-evidence.ts
+          git commit -m "A0 freeze: serialize final A7 identity 56fb0e3c2e43"
+          git push origin HEAD:a0/a7-final-conditionals-frozen-main
