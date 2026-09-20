@@ -1,0 +1,56 @@
+name: T51 A7 freeze builder current
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  freeze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Certify A7 pre-freeze identity
+        run: node scripts/report-t51-a7-principals-prefreeze.mjs
+      - name: Freeze active A7 source
+        shell: bash
+        run: |
+          set -euo pipefail
+          target="qa/fixtures/t5.1/post-t51-sources/ee5904632512feb3f99fe5b68a794ae12b4f73b4edd469a436d6f5431d7aa4bc.json"
+          if [ -f "$target" ]; then
+            node scripts/freeze-t51-active-source.mjs --check
+          else
+            node scripts/freeze-t51-active-source.mjs
+          fi
+          node scripts/generate-t51-post-legacy-registry.mjs
+          node scripts/generate-t51-offer-bridge-evidence.mjs
+          npm run build
+          node scripts/check-t51-content-migration-route.mjs
+          node scripts/freeze-t51-active-source.mjs --check
+          node scripts/generate-t51-post-legacy-registry.mjs --check
+          node scripts/generate-t51-offer-bridge-evidence.mjs --check
+      - name: Commit generated freeze artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add qa/fixtures/t5.1/post-t51-sources/ee5904632512feb3f99fe5b68a794ae12b4f73b4edd469a436d6f5431d7aa4bc.json                   src/session/post-t51-legacy-registry.ts                   src/session/frozen-offer-bridge-evidence.ts
+          if git diff --cached --quiet; then
+            echo "Freeze artifacts already current"
+          else
+            git commit -m "Freeze A7 shifted-five content source"
+            git push origin HEAD:${{ github.event.pull_request.head.ref }}
+          fi
