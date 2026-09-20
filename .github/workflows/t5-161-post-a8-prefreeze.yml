@@ -1,0 +1,34 @@
+name: T5 #161 captain post-A8 pre-freeze
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  captain:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Permanent #161 semantics
+        run: node --test scripts/test-t5-161-main-captain-final.mjs
+      - name: Emit exact post-A8 target
+        run: |
+          node --input-type=module <<'NODE'
+          import { EVENTS } from './dist/content/events/index.js';
+          import { contentIdentity } from './dist/session/content-identity.js';
+          const identity=await contentIdentity(EVENTS);
+          const unique=new Set(EVENTS.map(e=>e.id)).size;
+          console.log('T5_161_POST_A8_IDENTITY='+identity);
+          console.log('T5_161_POST_A8_EVENTS='+EVENTS.length);
+          console.log('T5_161_POST_A8_UNIQUE='+unique);
+          console.log('T5_161_CAPTAIN_ACTIVE='+EVENTS.some(e=>e.id==='EVT_29_CAP_001'));
+          console.log('T5_161_RETIRED_26_PRS='+!EVENTS.some(e=>e.id==='EVT_26_PRS_001'));
+          if(EVENTS.length!==388 || unique!==388 || !EVENTS.some(e=>e.id==='EVT_29_CAP_001') || EVENTS.some(e=>e.id==='EVT_26_PRS_001')) process.exit(1);
+          NODE
