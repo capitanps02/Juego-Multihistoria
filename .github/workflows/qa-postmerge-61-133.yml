@@ -1,0 +1,21 @@
+name: QA post-merge #61 #133
+on:
+  push:
+    branches:
+      - qa/postmerge-61-133-main-60ef
+  pull_request:
+    branches:
+      - main
+jobs:
+  closed-blockers:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Permanent closed-blocker regressions
+        run: node --test scripts/test-t5-retirement-authority-known-bug.mjs scripts/test-t5-retirement-save-known-bug.mjs scripts/test-t5-lock23-captain-choice-guard.mjs scripts/test-t51-agent6-lock23.mjs
