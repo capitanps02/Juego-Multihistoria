@@ -1,0 +1,23 @@
+name: A11 A7 add2 + captain staging
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  certify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: CCH30 JAN30 prefreeze invariants
+        run: node scripts/test-t51-a7-add2-prefreeze.mjs
+      - name: CAP33 factual gate
+        run: node scripts/test-a11-a7-captain-factual-gate.mjs
