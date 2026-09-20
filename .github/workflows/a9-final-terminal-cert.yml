@@ -1,0 +1,52 @@
+name: A9 final terminal certification
+on:
+  push:
+    branches: [t5/retirement-epilogues]
+permissions:
+  contents: read
+jobs:
+  certify:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: t5/retirement-epilogues
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Preserve A8 final inventory with canonical A9 terminal IDs
+        run: node --test scripts/test-a0-a8-ordinary-final.mjs
+      - name: Restore A9 owner regressions ephemerally
+        run: |
+          git show dbea3df60109aa52193ddf54eac3d10f827d49a3:scripts/test-t536-t537-retirement.mjs > scripts/test-t536-t537-retirement.mjs
+          git show dbea3df60109aa52193ddf54eac3d10f827d49a3:scripts/test-t536-career-summary.mjs > scripts/test-t536-career-summary.mjs
+          git show dbea3df60109aa52193ddf54eac3d10f827d49a3:scripts/test-t536-market-authority.mjs > scripts/test-t536-market-authority.mjs
+          git show dbea3df60109aa52193ddf54eac3d10f827d49a3:scripts/test-t536-sport-authority.mjs > scripts/test-t536-sport-authority.mjs
+          git show dbea3df60109aa52193ddf54eac3d10f827d49a3:scripts/test-t536-npc-announcement.mjs > scripts/test-t536-npc-announcement.mjs
+          git show dbea3df60109aa52193ddf54eac3d10f827d49a3:scripts/test-t536-canonical-accreditation.mjs > scripts/test-t536-canonical-accreditation.mjs
+          git show dbea3df60109aa52193ddf54eac3d10f827d49a3:scripts/test-t537-family-minimums.mjs > scripts/test-t537-family-minimums.mjs
+          git show dbea3df60109aa52193ddf54eac3d10f827d49a3:scripts/test-t536-status-writer-inventory.mjs > scripts/test-t536-status-writer-inventory.mjs
+          git show dbea3df60109aa52193ddf54eac3d10f827d49a3:scripts/test-t536-terminal-seeds.mjs > scripts/test-t536-terminal-seeds.mjs
+          git show dbea3df60109aa52193ddf54eac3d10f827d49a3:scripts/test-t536-no-last-match-authority.mjs > scripts/test-t536-no-last-match-authority.mjs
+          git show dbea3df60109aa52193ddf54eac3d10f827d49a3:scripts/test-t536-retirement-reversal.mjs > scripts/test-t536-retirement-reversal.mjs
+          git show dbea3df60109aa52193ddf54eac3d10f827d49a3:scripts/test-t5-last-player-appearance.mjs > scripts/test-t5-last-player-appearance.mjs
+          git show dbea3df60109aa52193ddf54eac3d10f827d49a3:scripts/test-t537-epilogue-profiles.mjs > scripts/test-t537-epilogue-profiles.mjs
+      - name: A9 terminal owner suite
+        run: node --test scripts/test-t536-t537-retirement.mjs scripts/test-t536-career-summary.mjs scripts/test-t536-market-authority.mjs scripts/test-t536-sport-authority.mjs scripts/test-t536-npc-announcement.mjs scripts/test-t536-canonical-accreditation.mjs scripts/test-t537-family-minimums.mjs scripts/test-t536-status-writer-inventory.mjs scripts/test-t536-terminal-seeds.mjs scripts/test-t536-no-last-match-authority.mjs scripts/test-t536-retirement-reversal.mjs scripts/test-t5-last-player-appearance.mjs scripts/test-t537-epilogue-profiles.mjs
+      - name: Emit final terminal identity
+        run: |
+          node --input-type=module <<'NODE'
+          import { EVENTS } from './dist/content/events/index.js';
+          import { contentIdentity } from './dist/session/content-identity.js';
+          const identity=await contentIdentity(EVENTS);
+          console.log('A9_FINAL_IDENTITY='+identity);
+          console.log('A9_FINAL_EVENTS='+EVENTS.length);
+          console.log('A9_FINAL_UNIQUE='+new Set(EVENTS.map(e=>e.id)).size);
+          if(EVENTS.length!==388 || new Set(EVENTS.map(e=>e.id)).size!==388) process.exit(1);
+          NODE
