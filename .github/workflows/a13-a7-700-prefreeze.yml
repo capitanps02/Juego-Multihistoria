@@ -1,0 +1,22 @@
+name: A13 exact A7 700 prefreeze
+on:
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  certify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: A7 add2 inventory and authority
+        run: node --test scripts/test-t51-a7-add2-prefreeze.mjs
+      - name: A7 factual captain gate exactness
+        run: node --test scripts/test-a11-a7-captain-factual-gate.mjs
