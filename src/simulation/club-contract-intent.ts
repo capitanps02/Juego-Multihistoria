@@ -31,6 +31,14 @@ import { getVeteranMarketApproaches, type VeteranMarketApproach } from "./vetera
 import { resolveNationalSelectionFacts, type NationalSelectionFacts } from "./national-team-authority.js";
 import { resolveInjuryEpisodeFacts, type InjuryEpisodeFacts } from "./injury-episode-authority.js";
 import { resolveAchievementHistoryFacts, type AchievementHistoryFacts } from "./sport-achievement-authority.js";
+import {
+  retirementNoLastMatchFact,
+  retirementPostAnnouncementOfferFact,
+  retirementStorybookLastGoalFact,
+  type RetirementNoLastMatchFact,
+  type RetirementPostAnnouncementOfferFact,
+  type RetirementStorybookLastGoalFact
+} from "./retirement-authority.js";
 
 export { FORMAL_RENEWAL_REASON };
 export const CLUB_WANTS_RENEWAL_FACT = "facts.clubWantsRenewal" as const;
@@ -233,6 +241,10 @@ export interface NarrativeCausalFacts extends EarlyCareerSeedFacts {
   sport: SportContext;
   /** Current match projection. Fails closed until a real match producer exists. */
   match: CurrentMatchContext;
+  /** Factual A9 terminal authorities. */
+  retirementNoLastMatch: RetirementNoLastMatchFact;
+  retirementStorybookLastGoal: RetirementStorybookLastGoalFact;
+  retirementPostAnnouncementOffer: RetirementPostAnnouncementOfferFact;
 }
 
 export function narrativeCausalFacts(state: GameState): NarrativeCausalFacts {
@@ -259,7 +271,10 @@ export function narrativeCausalFacts(state: GameState): NarrativeCausalFacts {
     injuryEpisodes: resolveInjuryEpisodeFacts(state),
     nationalSelection: resolveNationalSelectionFacts(state),
     sport: getSportContext(state),
-    match: getCurrentMatchContext(state)
+    match: getCurrentMatchContext(state),
+    retirementNoLastMatch: retirementNoLastMatchFact(state),
+    retirementStorybookLastGoal: retirementStorybookLastGoalFact(state),
+    retirementPostAnnouncementOffer: retirementPostAnnouncementOfferFact(state)
   };
 }
 
