@@ -87,7 +87,8 @@ export const T51_A6_FIRST5_CONTENT_IDENTITY = "8bb987042cccdce110d4de200aad5c4da
 export const T51_A6_SAFE3_CONTENT_IDENTITY = "4973518cdceb84b86be62179ada2c0782da9f007c443d7ffd132ec88353229a3";
 export const T51_A7_SHIFTED5_CONTENT_IDENTITY = "ee5904632512feb3f99fe5b68a794ae12b4f73b4edd469a436d6f5431d7aa4bc";
 export const T51_A7_FACTUAL2_CONTENT_IDENTITY = "4ac0ff3cb30f950f8241aee28cf47bfc092b7dc35fc7f8c703caf7602b127670";
-export const T51_A8_WAVE_A_CONTENT_IDENTITY = "6a511209e08514759d082e90182fa8fe4ef6a1e75cb8aa379f1bf0d87d044018";
+// Exact successor emitted by T51 A7 ROLE31 pre-freeze CI.
+export const T51_A7_ROLE31_CONTENT_IDENTITY = "96a196d6c66dc2d7c5d22a1a9272783ca748dec36812fc9f7ff6360ef4c2983a";
 
 /**
  * Explicit identity-bound edges. Successive canonical batches extend this as a
@@ -337,12 +338,8 @@ export const CONTENT_MIGRATION_ROUTES: readonly ContentMigrationRoute[] = [
   },
   {
     sourceContentIdentity: T51_A7_FACTUAL2_CONTENT_IDENTITY,
-    targetContentIdentity: T51_A8_WAVE_A_CONTENT_IDENTITY,
-    schedulerMappings: [
-      { kind: "distinct_scene", legacyEventId: "EVT_35_FAM_001", canonicalEventId: "EVT_35_FAM_001", clearCanonicalSeen: true, clearCanonicalCooldown: true },
-      { kind: "distinct_scene", legacyEventId: "EVT_35_BODY_001", canonicalEventId: "EVT_35_BODY_001", clearCanonicalSeen: true, clearCanonicalCooldown: true },
-      { kind: "distinct_scene", legacyEventId: "EVT_36_MED_001", canonicalEventId: "EVT_36_MED_001", clearCanonicalSeen: true, clearCanonicalCooldown: true }
-    ],
+    targetContentIdentity: T51_A7_ROLE31_CONTENT_IDENTITY,
+    schedulerMappings: [],
     seedOriginMappings: []
   }
 ];
