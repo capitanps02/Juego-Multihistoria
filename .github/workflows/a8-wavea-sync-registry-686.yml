@@ -37,3 +37,4 @@ jobs:
             git commit -m "A8 Wave A: sync generated registries on current main"
           fi
           git push origin HEAD:a12/a8-wavea-clean-current-647
+# retrigger after ROLE31 main merge
