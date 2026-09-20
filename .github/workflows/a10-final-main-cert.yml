@@ -41,7 +41,7 @@ jobs:
             scripts/test-t536-canonical-accreditation.mjs \
             scripts/test-t536-terminal-seeds.mjs \
             scripts/test-t536-retirement-reversal.mjs \
-            scripts/test-t536-t537-retirement.mjs \
+            scripts/test-a0-a9-terminal-final.mjs \
             scripts/test-t536-status-writer-inventory.mjs \
             scripts/test-t536-career-summary.mjs \
             scripts/test-t536-no-last-match-authority.mjs
