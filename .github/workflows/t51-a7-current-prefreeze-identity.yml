@@ -1,0 +1,88 @@
+name: T51 A7 current pre-freeze identity
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  a7:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Refresh CI-only A7 lineage evidence
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import { EVENTS } from './dist/content/events/index.js';
+          import { contentIdentity } from './dist/session/content-identity.js';
+          const source='4973518cdceb84b86be62179ada2c0782da9f007c443d7ffd132ec88353229a3';
+          const target=await contentIdentity(EVENTS);
+          const updates=[
+            ['analysis/T5.1/canon-30-34-migration-handoff.json', obj=>{
+              obj.sourceContentIdentity=source;
+              obj.observedTargetContentIdentity=target;
+              if(obj.consumer) obj.consumer.targetFreezeFixture='qa/fixtures/t5.1/post-t51-sources/'+target+'.json';
+            }],
+            ['analysis/T5.1/canon-30-34-implementation-readiness.json', obj=>{
+              if(obj.currentTarget){obj.currentTarget.contentIdentity=target;obj.currentTarget.fixture='qa/fixtures/t5.1/post-t51-sources/'+target+'.json';}
+              if(obj.architectureEvidence?.contentMigration) obj.architectureEvidence.contentMigration='Current predecessor '+source+'; current A7 target '+target+'.';
+            }],
+            ['analysis/T5.1/canon-30-34.json', obj=>{
+              const dep=obj.globalDependencies?.find?.(row=>row.id==='DEP_T51_EVENT_ID_MIGRATION');
+              if(dep) dep.description='Latest frozen upstream '+source+'; current A7 target '+target+'.';
+              if(obj.integrationStatus){
+                obj.integrationStatus.contentMigrationSourceIdentity=source;
+                obj.integrationStatus.targetContentIdentity=target;
+                obj.integrationStatus.contentMigrationTargetFreeze='pending:'+target+'.json';
+                obj.integrationStatus.contentMigrationLineage='frozen_upstream_'+source+'_available_in_current_lineage';
+              }
+            }],
+            ['analysis/T5.1/canon-30-34-parity-evidence.json', obj=>{
+              const sc=obj.events?.EVT_30_CON_001?.dimensions?.saveContinuity;
+              if(sc){sc.sourceContentIdentity=source;sc.targetContentIdentity=target;}
+            }]
+          ];
+          for(const [file,mutate] of updates){
+            const obj=JSON.parse(fs.readFileSync(file,'utf8')); mutate(obj); fs.writeFileSync(file,JSON.stringify(obj,null,2)+'\n');
+          }
+          console.log(JSON.stringify({source,target,events:EVENTS.length,unique:new Set(EVENTS.map(e=>e.id)).size}));
+          NODE
+      - name: A7 owner certification
+        run: |
+          node --test \
+            scripts/test-t51-30-34-authority-gaps.mjs \
+            scripts/test-t51-30-34-career-authority.mjs \
+            scripts/test-t51-30-34-conditional-seed-reads.mjs \
+            scripts/test-t51-30-34-conditionals.mjs \
+            scripts/test-t51-30-34-contract-clause-handoff.mjs \
+            scripts/test-t51-30-34-downstream-seed-handoff.mjs \
+            scripts/test-t51-30-34-migration-handoff.mjs \
+            scripts/test-t51-30-34-missing-principals.mjs \
+            scripts/test-t51-30-34-multi-offer-handoff.mjs \
+            scripts/test-t51-30-34-readiness.mjs \
+            scripts/test-t51-30-34-seed-consumption.mjs \
+            scripts/test-t51-30-34-seed-handoff.mjs \
+            scripts/test-t51-30-34-sport-authority.mjs \
+            scripts/test-t51-30-34-trigger.mjs
+      - name: Emit exact A7 identity
+        run: |
+          node --input-type=module <<'NODE'
+          import { EVENTS } from './dist/content/events/index.js';
+          import { contentIdentity } from './dist/session/content-identity.js';
+          const identity=await contentIdentity(EVENTS);
+          const unique=new Set(EVENTS.map(e=>e.id)).size;
+          console.log('A7_TARGET_IDENTITY='+identity);
+          console.log('A7_EVENT_COUNT='+EVENTS.length);
+          console.log('A7_UNIQUE_COUNT='+unique);
+          if(unique!==EVENTS.length) process.exit(1);
+          NODE
