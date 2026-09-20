@@ -1,3 +1,4 @@
+# exact-stack retrigger; no product/runtime change
 name: A11 A8 Wave A prefreeze
 on:
   pull_request:
