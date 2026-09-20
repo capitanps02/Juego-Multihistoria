@@ -1,3 +1,4 @@
+// A8 Wave A exact-current prefreeze certification.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { EVENTS, EVENTS_34_PLUS } from '../dist/content/events/index.js';
