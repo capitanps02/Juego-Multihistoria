@@ -56,7 +56,7 @@ test('T5.36 terminal seed writers are exact create-only producers with no invent
 
 test('T5.36 terminal seed provenance uses exact canonical event IDs and does not duplicate live instances', () => {
   const cases = [
-    ['EVT_37_ANNOUNCE_001','A',['SEED_FAREWELL_ANNOUNCEMENT_TIMING'],'playing'],
+    ['EVT_37_ANNOUNCE_001','ANNOUNCE_NOW',['SEED_FAREWELL_ANNOUNCEMENT_TIMING'],'playing'],
     ['EVT_RET_FAM_001','LAST_SEASON',['SEED_FINAL_FAMILY_CONVERSATION'],'playing'],
     ['EVT_RET_BODY_001','REHAB_RETURN',['SEED_LAST_REHAB_DECISION'],'playing'],
     ['EVT_RET_HIGH_001','RETIRE',['SEED_RETIRE_ON_HIGH_CHOICE'],'playing'],
