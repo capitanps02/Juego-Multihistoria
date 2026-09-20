@@ -1,12 +1,11 @@
 import type { Condition, Effect, EventDefinition } from "../../../core/types.js";
 import { PRINCIPAL_EVENTS_30_34 } from "./principal-events.js";
-import { CONDITIONAL_EVENTS_30_34 } from "./conditional-events.js";
 import { CANONICAL_REIMPLEMENTATIONS_30_34 } from "./canonical-reimplementations.js";
 import { CANONICAL_REIMPLEMENTATIONS_31B } from "./canonical-reimplementations-31b.js";
 import { CANONICAL_REIMPLEMENTATIONS_32A } from "./canonical-reimplementations-32a.js";
 import { CANONICAL_REIMPLEMENTATIONS_33A } from "./canonical-reimplementations-33a.js";
-import { PREPARED_SHIFTED_CANON_30_34_B } from "./canonical-shifted-prepared-b.js";
 import { CANONICAL_ADDITIONS_30_34 } from "./canonical-missing-principals.js";
+import { PREPARED_SHIFTED_CANON_30_34_B } from "./canonical-shifted-prepared-b.js";
 
 const reimplementedIds=new Set([
   "EVT_30_CON_001","EVT_30_BODY_001","EVT_30_MKT_001","EVT_30_NAT_001",
@@ -170,7 +169,7 @@ const enforceCareerAuthority=(event:EventDefinition):EventDefinition=>{
   };
 };
 
-const supersededLegacyIds=new Set(["EVT_30_IDN_001","EVT_30_TEAM_001","EVT_32_MKT_001","EVT_32_TACT_001","EVT_33_END_001"]);
+const supersededLegacyIds=new Set(["EVT_30_IDN_001","EVT_30_TEAM_001","EVT_32_TACT_001","EVT_33_END_001"]);
 
 const principal:EventDefinition[]=PRINCIPAL_EVENTS_30_34.filter(original=>!supersededLegacyIds.has(original.id)).map(original=>{
   const selected=overrides.get(original.id)??original;
@@ -183,10 +182,6 @@ const principal:EventDefinition[]=PRINCIPAL_EVENTS_30_34.filter(original=>!super
   const tags=[...(event.tags??[]).filter(tag=>tag!=="t51_verified_same_identity"),"t51_canonical_reimplementation"];
   return {...event,canonStatus:"technical_adaptation",tags:[...new Set(tags)]};
 });
-
-const SERIAL_SHIFTED_IDS=new Set(["EVT_30_BRIDGE_001","EVT_30_STATUS_001","EVT_32_IMPACT_001","EVT_33_FIN_001"]);
-const serialShiftedAdditions=CANONICAL_ADDITIONS_30_34.filter(event=>SERIAL_SHIFTED_IDS.has(event.id));
-if(serialShiftedAdditions.length!==4) throw new Error("Missing one or more selected A7 shifted canonical additions");
 
 const richOfferSource=PREPARED_SHIFTED_CANON_30_34_B.find(event=>event.id==="EVT_32_RICH_001");
 if(!richOfferSource) throw new Error("Missing prepared EVT_32_RICH_001");
@@ -203,6 +198,4 @@ const richOffer=enforceCareerAuthority({
   ])]
 });
 
-// Genuine canonical additions EVT_30_CCH_001 / EVT_30_JAN_001 stay staged until
-// A0 has an owner-approved retirement slot; do not grow the 388-event catalog here.
-export const EVENTS_30_34=[...principal,...serialShiftedAdditions,richOffer,...CONDITIONAL_EVENTS_30_34];
+export const EVENTS_30_34=[...principal,...CANONICAL_ADDITIONS_30_34,richOffer];
