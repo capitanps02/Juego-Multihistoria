@@ -1,0 +1,37 @@
+name: A0 freeze A7 ROLE31 #725
+on:
+  push:
+    branches:
+      - a0/a7-role31-prefreeze-117cda
+permissions:
+  contents: write
+jobs:
+  freeze:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: a0/a7-role31-prefreeze-117cda
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Generate exact active source and registries
+        run: |
+          if [ -f "qa/fixtures/t5.1/post-t51-sources/96a196d6c66dc2d7c5d22a1a9272783ca748dec36812fc9f7ff6360ef4c2983a.json" ]; then
+            echo "already frozen"
+            exit 0
+          fi
+          node scripts/freeze-t51-active-source.mjs
+          node scripts/generate-t51-post-legacy-registry.mjs
+          node scripts/generate-t51-offer-bridge-evidence.mjs
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add qa/fixtures/t5.1/post-t51-sources/96a196d6c66dc2d7c5d22a1a9272783ca748dec36812fc9f7ff6360ef4c2983a.json src/session/post-t51-legacy-registry.ts src/session/frozen-offer-bridge-evidence.ts
+          git commit -m "A0 freeze: serialize A7 ROLE31 identity 96a196d6c66d"
+          git push origin HEAD:a0/a7-role31-prefreeze-117cda
