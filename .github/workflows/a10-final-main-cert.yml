@@ -35,14 +35,24 @@ jobs:
         run: npm run qa:t5:saves
       - name: Cross-system integration
         run: npm run qa:t5:integration
-      - name: Final A9 terminal regression matrix
+      - name: Final content identity and catalog contract
+        run: |
+          node --input-type=module <<'NODE'
+          import { EVENTS } from './dist/content/events/index.js';
+          import { contentIdentity } from './dist/session/content-identity.js';
+          const id=await contentIdentity(EVENTS);
+          console.log('FINAL_T5_CONTENT_IDENTITY='+id);
+          if(id!=='d0fee1ceef2c3bdb7d8cd933ce773341a3c375b39deedcc21cd801a8c3f67770') process.exit(1);
+          if(EVENTS.length!==388 || new Set(EVENTS.map(e=>e.id)).size!==388) process.exit(1);
+          NODE
+      - name: Final A8/A9 terminal regression matrix
         run: |
           node --test \
+            scripts/test-a0-a8-ordinary-final.mjs \
+            scripts/test-a0-a9-terminal-final.mjs \
             scripts/test-t536-canonical-accreditation.mjs \
             scripts/test-t536-terminal-seeds.mjs \
             scripts/test-t536-retirement-reversal.mjs \
-            scripts/test-t536-t537-retirement.mjs \
-            scripts/test-t536-status-writer-inventory.mjs \
             scripts/test-t536-career-summary.mjs \
             scripts/test-t536-no-last-match-authority.mjs
       - name: Determinism and RNG isolation
