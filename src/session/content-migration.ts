@@ -91,6 +91,7 @@ export const T51_A7_FACTUAL2_CONTENT_IDENTITY = "4ac0ff3cb30f950f8241aee28cf47bf
 export const T51_A7_ROLE31_CONTENT_IDENTITY = "96a196d6c66dc2d7c5d22a1a9272783ca748dec36812fc9f7ff6360ef4c2983a";
 export const T51_A8_WAVE_A_CONTENT_IDENTITY = "b360a1ef1e0d0c19f4600f174bf9d3b2693ed88058a283ed2cdbfaf29d26200b";
 export const T51_T5_161_CAPTAIN_CONTENT_IDENTITY = "56b9ca09b872ac6dc8fc78ec9459bf15fb7ab21c20707f354af06c99ee00d0f4";
+export const T51_A8_ORDINARY_FINAL_CONTENT_IDENTITY = "ab7c3e62f7ca6d90973e657f2eb0a9cec0a745fe12369ac9df770bcf6614e658";
 
 /**
  * Explicit identity-bound edges. Successive canonical batches extend this as a
@@ -358,6 +359,25 @@ export const CONTENT_MIGRATION_ROUTES: readonly ContentMigrationRoute[] = [
     sourceContentIdentity: T51_A8_WAVE_A_CONTENT_IDENTITY,
     targetContentIdentity: T51_T5_161_CAPTAIN_CONTENT_IDENTITY,
     schedulerMappings: [],
+    seedOriginMappings: []
+  },
+  {
+    sourceContentIdentity: T51_T5_161_CAPTAIN_CONTENT_IDENTITY,
+    targetContentIdentity: T51_A8_ORDINARY_FINAL_CONTENT_IDENTITY,
+    schedulerMappings: [
+      { kind: "distinct_scene", legacyEventId: "EVT_34_HOME_001", canonicalEventId: "EVT_34_HOME_001", clearCanonicalSeen: true, clearCanonicalCooldown: true },
+      { kind: "distinct_scene", legacyEventId: "EVT_34_CON_001", canonicalEventId: "EVT_34_CON_001", clearCanonicalSeen: true, clearCanonicalCooldown: true },
+      { kind: "distinct_scene", legacyEventId: "EVT_34_ROLE_001", canonicalEventId: "EVT_34_ROLE_001", clearCanonicalSeen: true, clearCanonicalCooldown: true },
+      { kind: "distinct_scene", legacyEventId: "EVT_34_BODY_001", canonicalEventId: "EVT_34_BODY_001", clearCanonicalSeen: true, clearCanonicalCooldown: true },
+      { kind: "distinct_scene", legacyEventId: "EVT_34_MAR_001", canonicalEventId: "EVT_34_MAR_001", clearCanonicalSeen: true, clearCanonicalCooldown: true },
+      { kind: "distinct_scene", legacyEventId: "EVT_35_MKT_001", canonicalEventId: "EVT_35_MKT_001", clearCanonicalSeen: true, clearCanonicalCooldown: true },
+      { kind: "distinct_scene", legacyEventId: "EVT_35_FINAL_001", canonicalEventId: "EVT_35_FINAL_001", clearCanonicalSeen: true, clearCanonicalCooldown: true },
+      { kind: "distinct_scene", legacyEventId: "EVT_35_HOME_001", canonicalEventId: "EVT_35_HOME_001", clearCanonicalSeen: true, clearCanonicalCooldown: true },
+      { kind: "distinct_scene", legacyEventId: "EVT_36_CON_001", canonicalEventId: "EVT_36_CON_001", clearCanonicalSeen: true, clearCanonicalCooldown: true },
+      { kind: "distinct_scene", legacyEventId: "EVT_38_MKT_001", canonicalEventId: "EVT_38_MARKET_001", clearCanonicalSeen: true, clearCanonicalCooldown: true },
+      { kind: "distinct_scene", legacyEventId: "CEVT_34_MAJOR_COMEBACK", canonicalEventId: "CEVT_34_MAJOR_COMEBACK", clearCanonicalSeen: true, clearCanonicalCooldown: true },
+      { kind: "distinct_scene", legacyEventId: "CEVT_36_NO_MEDICAL_CLEARANCE", canonicalEventId: "CEVT_36_NO_MEDICAL_CLEARANCE", clearCanonicalSeen: true, clearCanonicalCooldown: true }
+    ],
     seedOriginMappings: []
   }
 ];
