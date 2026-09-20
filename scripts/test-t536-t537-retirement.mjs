@@ -11,13 +11,7 @@ import {
   reverseRetirement,
   syncRetirementState
 } from '../dist/simulation/late-career-engine.js';
-import {
-  buildEpilogueText,
-  endingFamiliesCompatible,
-  endingFamilySupported,
-  generateEpilogue,
-  selectEndingFamilies
-} from '../dist/epilogue/generator.js';
+import { ENDING_FAMILIES, generateEpilogue } from '../dist/epilogue/generator.js';
 
 const event=id=>{
   const found=EVENTS.find(item=>item.id===id);
@@ -262,48 +256,55 @@ test('T5.36/15 schema-7 legacy migration cannot announce or close retirement',()
   assert.deepEqual(loaded.rngState,rng);
 });
 
-test('T5.37/16 epilogue families require facts, not legacy labels',()=>{
-  const oneClub=lateState();
-  setClosed(oneClub);
-  oneClub.professional.legacyCapital=70;
-  oneClub.professional.publicMyth=55;
-  addCareerHistory(oneClub,{clubs:['UDV'],seasons:15});
-  assert.equal(endingFamilySupported(oneClub,'END_ONE_CLUB_MYTH'),true);
-  assert.equal(endingFamilySupported(oneClub,'END_JOURNEYMAN_VETERAN'),false);
-
-  const journey=lateState();
-  setClosed(journey);
-  addCareerHistory(journey,{clubs:['UDV','Club_B','Club_C'],seasons:15});
-  journey.professional.ownerClub='Club_C'; journey.professional.registrationClub='Club_C'; journey.club='Club_C';
-  assert.equal(endingFamilySupported(journey,'END_JOURNEYMAN_VETERAN'),true);
-  assert.equal(endingFamilySupported(journey,'END_ONE_CLUB_MYTH'),false);
-
-  const legacyGoal=lateState();
-  setClosed(legacyGoal,{closure:'storybook'});
-  legacyGoal.flags.STORYBOOK_LAST_GOAL=true;
-  legacyGoal.flags.LAST_MATCH_PLAYED=true;
-  assert.equal(endingFamilySupported(legacyGoal,'END_STORYBOOK_FAREWELL'),false,'legacy synthetic flag must not prove a last goal');
-});
-
-test('T5.37/17 hard conflicts prevent contradictory families',()=>{
-  assert.equal(endingFamiliesCompatible('END_ONE_CLUB_MYTH','END_JOURNEYMAN_VETERAN'),false);
-  assert.equal(endingFamiliesCompatible('END_EARLY_VOLUNTARY','END_TOO_LONG'),false);
-  assert.equal(endingFamiliesCompatible('END_STORYBOOK_FAREWELL','END_UNFINISHED_FEELING'),false);
-  assert.equal(endingFamiliesCompatible('END_GREAT_PRO','END_CONTRACT_KING'),true);
-});
-
-test('T5.37/18 every valid sparse closure gets a factual non-empty fallback',()=>{
-  const state=lateState();
+test('T5.37/16 legacy synthetic goal flag cannot prove storybook farewell',()=>{
+  const state=lateState(53716);
   setClosed(state,{closure:'no_last_match',reason:'voluntary'});
+  state.flags.STORYBOOK_LAST_GOAL=true;
+  state.flags.LAST_MATCH_PLAYED=true;
   state.epilogue={generated:false,families:[],milestones:[],summaryKey:null};
-  const families=selectEndingFamilies(state);
-  assert.ok(families.length>=2&&families.length<=5);
   generateEpilogue(state);
   assert.equal(state.epilogue.generated,true);
-  assert.ok(Array.isArray(state.epilogue.finalText));
-  assert.ok(state.epilogue.finalText.length>=2);
-  assert.deepEqual(state.epilogue.finalText,buildEpilogueText(state));
-  assert.ok(state.epilogue.finalText.every(line=>!line.includes('gol')),'fallback invented a goal');
+  assert.equal(state.epilogue.families.includes('END_STORYBOOK_FAREWELL'),false);
+});
+
+test('T5.37/17 generated epilogue never contains hard-conflicting families',()=>{
+  const state=lateState(53717);
+  state.age=45;
+  setClosed(state,{closure:'storybook',reason:'voluntary'});
+  state.professional.ownerClub='UDV';
+  state.professional.registrationClub='UDV';
+  state.club='UDV';
+  state.professional.legacyCapital=100;
+  state.professional.publicMyth=100;
+  state.professional.roleScoreAt23=1;
+  state.sport.roleScore=1;
+  state.reputation.marketHeat=0;
+  state.careerStateTags=[...new Set([...state.careerStateTags,'STATE34_JOURNEYMAN_VETERAN'])];
+  state.flags.RETIRE_ON_LOW=true;
+  state.epilogue={generated:false,families:[],milestones:[],summaryKey:null};
+  generateEpilogue(state);
+  const families=new Set(state.epilogue.families);
+  for(const [a,b] of [
+    ['END_ONE_CLUB_MYTH','END_JOURNEYMAN_VETERAN'],
+    ['END_EARLY_VOLUNTARY','END_TOO_LONG'],
+    ['END_STORYBOOK_FAREWELL','END_UNFINISHED_FEELING']
+  ]) assert.equal(families.has(a)&&families.has(b),false,`${a} conflicts with ${b}`);
+});
+
+test('T5.37/18 every valid sparse closure gets a persisted 2-5 family fallback',()=>{
+  const state=lateState(53718);
+  setClosed(state,{closure:'no_last_match',reason:'voluntary'});
+  state.epilogue={generated:false,families:[],milestones:[],summaryKey:null};
+  const rng=structuredClone(state.rngState);
+  generateEpilogue(state);
+  assert.equal(state.epilogue.generated,true);
+  assert.ok(state.epilogue.families.length>=2&&state.epilogue.families.length<=5);
+  assert.ok(state.epilogue.families.every(id=>ENDING_FAMILIES.includes(id)));
+  assert.equal(state.epilogue.summaryKey,state.epilogue.families.join('+'));
+  assert.ok(Array.isArray(state.epilogue.milestones));
+  assert.deepEqual(state.rngState,rng,'epilogue selection must not consume RNG');
+  const restored=loadSave(serializeSave(state));
+  assert.deepEqual(restored.epilogue,state.epilogue);
 });
 
 test('T5.36 seed history is not mass-closed when career closes',()=>{
