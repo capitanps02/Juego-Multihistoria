@@ -31,6 +31,7 @@ import { getVeteranMarketApproaches, type VeteranMarketApproach } from "./vetera
 import { resolveNationalSelectionFacts, type NationalSelectionFacts } from "./national-team-authority.js";
 import { resolveInjuryEpisodeFacts, type InjuryEpisodeFacts } from "./injury-episode-authority.js";
 import { resolveAchievementHistoryFacts, type AchievementHistoryFacts } from "./sport-achievement-authority.js";
+import { retirementPostAnnouncementOfferFact, retirementNoLastMatchFact, retirementStorybookLastGoalFact, type RetirementPostAnnouncementOfferFact, type RetirementNoLastMatchFact, type RetirementStorybookLastGoalFact } from "./retirement-authority.js";
 
 export { FORMAL_RENEWAL_REASON };
 export const CLUB_WANTS_RENEWAL_FACT = "facts.clubWantsRenewal" as const;
@@ -229,6 +230,12 @@ export interface NarrativeCausalFacts extends EarlyCareerSeedFacts {
   injuryEpisodes: InjuryEpisodeFacts;
   /** Exact persisted national preselection/final-squad facts; no aggregate proxies. */
   nationalSelection: NationalSelectionFacts;
+  /** Formal post-announcement offer stage from Market authority. */
+  retirementPostAnnouncementOffer: RetirementPostAnnouncementOfferFact;
+  /** Injury-caused no-last-match fact at the terminal sporting boundary. */
+  retirementNoLastMatch: RetirementNoLastMatchFact;
+  /** Factual last-goal terminal fact; never synthesized by narrative. */
+  retirementStorybookLastGoal: RetirementStorybookLastGoalFact;
   /** Authoritative/read-only sporting projection. Unavailable sporting facts are null. */
   sport: SportContext;
   /** Current match projection. Fails closed until a real match producer exists. */
@@ -258,6 +265,9 @@ export function narrativeCausalFacts(state: GameState): NarrativeCausalFacts {
     achievements: resolveAchievementHistoryFacts(state),
     injuryEpisodes: resolveInjuryEpisodeFacts(state),
     nationalSelection: resolveNationalSelectionFacts(state),
+    retirementPostAnnouncementOffer: retirementPostAnnouncementOfferFact(state),
+    retirementNoLastMatch: retirementNoLastMatchFact(state),
+    retirementStorybookLastGoal: retirementStorybookLastGoalFact(state),
     sport: getSportContext(state),
     match: getCurrentMatchContext(state)
   };
