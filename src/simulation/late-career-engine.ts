@@ -2,6 +2,7 @@ import { DeterministicRng } from "../core/rng.js";
 import type { GameState } from "../core/types.js";
 import { generateEpilogue } from "../epilogue/generator.js";
 import { materializeVeteranRenewalInPlace, veteranMarketDemand } from "./veteran-market.js";
+import { canonicalRetirementReversalTransitionAuthorized } from "./retirement-authority.js";
 
 const clamp=(x:number,min=0,max=100)=>Math.min(max,Math.max(min,x));
 const num=(x:unknown,f=0)=>typeof x==="number"?x:f;
@@ -12,7 +13,7 @@ function setStatus(state:GameState,status:GameState["retirement"]["status"],reas
     state.retirement.decidedDate=state.date; state.retirement.decisionAge=state.age; if(reason)state.retirement.reason=reason;
     state.flags.RETIREMENT_DECISION_CONTEXT=true;
   } else if(status==="announced"){
-    state.retirement.announcedDate=state.date; state.flags.RETIREMENT_ANNOUNCED=true; state.flags.RETIREMENT_DECISION_CONTEXT=false;
+    state.retirement.announcedDate=state.date; state.flags.RETIREMENT_ANNOUNCED=true; state.flags.RETIREMENT_WAS_ANNOUNCED=true; state.flags.RETIREMENT_DECISION_CONTEXT=false;
   } else if(status==="closed"){
     state.retirement.closedDate=state.date; if(closureType)state.retirement.closureType=closureType; state.flags.RETIRED=true;
     state.flags.RETIREMENT_ANNOUNCED=false; state.flags.RETIREMENT_DECISION_CONTEXT=false;
@@ -20,23 +21,60 @@ function setStatus(state:GameState,status:GameState["retirement"]["status"],reas
 }
 
 
-export function syncRetirementState(state:GameState,previous:GameState["retirement"]["status"]):void{
+export function syncRetirementState(
+  state:GameState,
+  previous:GameState["retirement"]["status"],
+  source?:{eventId?:string;choiceId?:string}
+):void{
   const current=state.retirement.status;
   if(current===previous)return;
+
+  // Closed is terminal. Public retirement can reopen only through the exact
+  // canonical A9 reversal choice backed by a still-eligible formal CareerOffer.
+  if(previous==="closed" && current!=="closed"){
+    state.retirement.status="closed";
+    state.flags.RETIREMENT_INVALID_TRANSITION_BLOCKED=true;
+    return;
+  }
+  if(previous==="announced" && current==="playing"
+    && !canonicalRetirementReversalTransitionAuthorized(state,source?.eventId,source?.choiceId)){
+    state.retirement.status="announced";
+    state.flags.RETIREMENT_ANNOUNCED=true;
+    state.flags.RETIREMENT_WAS_ANNOUNCED=true;
+    state.flags.RETIREMENT_INVALID_TRANSITION_BLOCKED=true;
+    return;
+  }
+
   state.retirement.daysInStatus=0;
   if(current==="decided"){
-    state.retirement.decidedDate=state.retirement.decidedDate??state.date; state.retirement.decisionAge=state.retirement.decisionAge??state.age;
+    state.retirement.decidedDate=state.retirement.decidedDate??state.date;
+    state.retirement.decisionAge=state.retirement.decisionAge??state.age;
     state.flags.RETIREMENT_DECISION_CONTEXT=true;
   }
   if(current==="announced"){
-    state.retirement.announcedDate=state.date; state.flags.RETIREMENT_ANNOUNCED=true; state.flags.RETIREMENT_DECISION_CONTEXT=false;
+    state.retirement.announcedDate=state.date;
+    state.flags.RETIREMENT_ANNOUNCED=true;
+    state.flags.RETIREMENT_WAS_ANNOUNCED=true;
+    state.flags.RETIREMENT_DECISION_CONTEXT=false;
   }
   if(current==="playing"){
-    state.retirement.decidedDate=null; state.retirement.announcedDate=null;
-    state.flags.RETIREMENT_ANNOUNCED=false; state.flags.RETIREMENT_DECISION_CONTEXT=false;
+    state.retirement.decidedDate=null;
+    state.retirement.announcedDate=null;
+    state.flags.RETIREMENT_ANNOUNCED=false;
+    state.flags.RETIREMENT_DECISION_CONTEXT=false;
+    state.retirement.reversals+=1;
+    state.flags.RETIREMENT_RECONSIDERED=true;
+    if(previous==="announced"){
+      state.sport.form=clamp(num(state.sport.form)-5);
+      state.reputation.prestige=clamp(num(state.reputation.prestige)-5);
+      state.professional.careerControl=clamp(state.professional.careerControl-5);
+    }
   }
   if(current==="closed"){
-    state.retirement.closedDate=state.date; state.flags.RETIRED=true; state.flags.RETIREMENT_ANNOUNCED=false; state.flags.RETIREMENT_DECISION_CONTEXT=false;
+    state.retirement.closedDate=state.date;
+    state.flags.RETIRED=true;
+    state.flags.RETIREMENT_ANNOUNCED=false;
+    state.flags.RETIREMENT_DECISION_CONTEXT=false;
     generateEpilogue(state);
   }
 }
