@@ -21,6 +21,8 @@ import {
   nextScheduledFixture,
   nextScheduledTrainingDate,
   previousOfficialMatch,
+  priorClubPlayerMatchStats,
+  recentClubPlayerMatchStats,
   remainingLeagueFixtures,
   seasonPlayerStats,
   type CareerSportMilestones,
@@ -28,6 +30,7 @@ import {
   type MatchCompetition,
   type MatchResultFact,
   type OfficialMatchRecord,
+  type RecentPlayerMatchStats,
   type SeasonPlayerStats,
   type ScheduledFixture,
   type SquadStatus
@@ -69,6 +72,8 @@ export interface SportContextAvailability {
   firstFullMatch: SportFactAvailability;
   firstGoal: SportFactAvailability;
   currentSeasonPlayerStats: SportFactAvailability;
+  recentSixMatchStats: SportFactAvailability;
+  priorTwoMatchStats: SportFactAvailability;
   careerMilestones: SportFactAvailability;
 }
 
@@ -107,6 +112,9 @@ export interface SportContext {
   firstFullMatch: string | null;
   firstGoal: string | null;
   currentSeasonPlayerStats: SeasonPlayerStats | null;
+  recentSixMatchStats: RecentPlayerMatchStats | null;
+  /** Latest two complete current-club/current-season matches strictly before today. */
+  priorTwoMatchStats: RecentPlayerMatchStats | null;
   /** Exact career aggregates only when the persisted appearance/stat ledger is complete. */
   careerMilestones: CareerSportMilestones | null;
   availability: SportContextAvailability;
@@ -185,6 +193,8 @@ export function getSportContext(state: GameState): SportContext {
   const milestonesKnown = store !== null;
   const goalHistoryKnown = employed && careerGoalHistoryComplete(state);
   const seasonStats = employed ? seasonPlayerStats(state) : null;
+  const recentSix = employed ? recentClubPlayerMatchStats(state, 6) : null;
+  const priorTwo = employed ? priorClubPlayerMatchStats(state, 2) : null;
   const careerMilestones = careerSportMilestones(state);
 
   return {
@@ -219,6 +229,8 @@ export function getSportContext(state: GameState): SportContext {
     firstFullMatch: store?.milestones.firstFullMatch ?? null,
     firstGoal: goalHistoryKnown ? (store?.milestones.firstGoal ?? null) : null,
     currentSeasonPlayerStats: seasonStats,
+    recentSixMatchStats: recentSix,
+    priorTwoMatchStats: priorTwo,
     careerMilestones: careerMilestones.historyComplete ? careerMilestones : null,
     availability: {
       currentSeason: known(),
@@ -251,6 +263,8 @@ export function getSportContext(state: GameState): SportContext {
       firstFullMatch: milestonesKnown ? known() : unavailable(),
       firstGoal: goalHistoryKnown ? known() : unavailable(),
       currentSeasonPlayerStats: seasonStats ? known() : unavailable(),
+      recentSixMatchStats: recentSix ? known() : unavailable(),
+      priorTwoMatchStats: priorTwo ? known() : unavailable(),
       careerMilestones: careerMilestones.historyComplete ? known() : unavailable()
     },
     unavailableReason: !milestonesKnown

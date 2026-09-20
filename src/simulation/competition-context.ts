@@ -66,6 +66,11 @@ export interface FixtureCongestionContext {
   hoursToNextFixture: number | null;
   hoursSincePreviousFixture: number | null;
   minimumRestHoursNext14: number | null;
+  /** Count is factual from scheduled fixture home/away rows; no distance is inferred. */
+  awayMatchesNext14: number;
+  /** Geographic travel load remains unavailable until venue/location authority exists. */
+  travelLoadKnown: boolean;
+  travelLoadReason: "no_authoritative_locations" | null;
 }
 
 export interface CompetitionMomentIssue {
@@ -332,7 +337,10 @@ export function getFixtureCongestionContext(state: GameState): FixtureCongestion
       multipleCompetitionsNext14: false,
       hoursToNextFixture: null,
       hoursSincePreviousFixture: null,
-      minimumRestHoursNext14: null
+      minimumRestHoursNext14: null,
+      awayMatchesNext14: 0,
+      travelLoadKnown: false,
+      travelLoadReason: "no_authoritative_locations"
     };
   }
   const schedule = getCompetitionSchedule(state, 14);
@@ -368,6 +376,9 @@ export function getFixtureCongestionContext(state: GameState): FixtureCongestion
     multipleCompetitionsNext14: mix.length > 1,
     hoursToNextFixture: nextFixture ? dayDiff(state.date, nextFixture.date) * 24 : null,
     hoursSincePreviousFixture: previousDate ? dayDiff(previousDate, state.date) * 24 : null,
-    minimumRestHoursNext14: gaps.length > 0 ? Math.min(...gaps) : null
+    minimumRestHoursNext14: gaps.length > 0 ? Math.min(...gaps) : null,
+    awayMatchesNext14: schedule.filter(row => row.homeAway === "away").length,
+    travelLoadKnown: false,
+    travelLoadReason: "no_authoritative_locations"
   };
 }
