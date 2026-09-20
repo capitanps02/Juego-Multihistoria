@@ -6,6 +6,8 @@ import {
   A8_STAGED_PRINCIPALS,
   A8_STAGED_ORDINARY_CONDITIONALS
 } from "./staged-runtime.js";
+import { applyRetirementTerminalOverrides } from "./retirement-terminal-overrides.js";
+import { enforceRetirementTerminalCanonicalAccreditation } from "./retirement-terminal-canonical-guard.js";
 
 const A8_WAVE_A_IDS = new Set(STAGED_PRINCIPAL_WAVE_A.map(event=>event.id));
 const A8_WAVE_A_RETIRED_TECHNICAL = new Set(["EVT_34_MKT_001"]);
@@ -37,19 +39,25 @@ const A9_TERMINAL_CONDITIONAL_IDS = new Set([
   "CEVT_RET_STORYBOOK_LAST_GOAL"
 ]);
 
-const a9TerminalPrincipals = PRINCIPAL_EVENTS_34_PLUS.filter(event =>
+const a9TerminalPrincipals: EventDefinition[] = PRINCIPAL_EVENTS_34_PLUS.filter(event =>
   A9_TERMINAL_PRINCIPAL_IDS.has(event.id)
 );
-const a9TerminalConditionals = CONDITIONAL_EVENTS_34_PLUS.filter(event =>
+const a9TerminalConditionalsWorking: EventDefinition[] = CONDITIONAL_EVENTS_34_PLUS.filter(event =>
   A9_TERMINAL_CONDITIONAL_IDS.has(event.id)
 );
 
+applyRetirementTerminalOverrides(a9TerminalPrincipals,a9TerminalConditionalsWorking);
+
+const a9TerminalConditionals = a9TerminalConditionalsWorking.filter(event =>
+  event.id !== "CEVT_RET_RECONSIDER"
+);
+enforceRetirementTerminalCanonicalAccreditation(a9TerminalConditionals);
+
 /**
- * Final ordinary A8 catalog.
- *
- * 43 canonical A8 principals + the 7 still-A9-owned terminal principal rows.
- * 28 canonical A8 conditionals + the 4 still-A9-owned terminal conditional rows.
- * The total 34+ surface remains 82 events, preserving the global 388-event budget.
+ * Final T5 34+ catalog:
+ * - 43 ordinary A8 principals + 7 terminal A9 principals
+ * - 28 ordinary A8 conditionals + 4 terminal A9 conditionals
+ * Total 82 events for 34+, preserving the global 388-event contract.
  */
 export const PRINCIPAL_EVENTS_34_PLUS_A8_FINAL: EventDefinition[] = [
   ...A8_STAGED_PRINCIPALS,
