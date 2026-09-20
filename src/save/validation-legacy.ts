@@ -14,7 +14,7 @@ function assertMarket(value: unknown, state: GameState): void {
     ensure(required.every(key=>Object.prototype.hasOwnProperty.call(row,key)),path,"faltan campos obligatorios");
   };
   ensure(m.version===1,"market.version","versión no compatible");
-  exactKeys(m,"market",["version","sequence","pending","history","systemClosures","negotiationSequence","futureNegotiations","futureAgreements"],["version","sequence","pending","history"]);
+  exactKeys(m,"market",["version","sequence","pending","openOffers","history","systemClosures","negotiationSequence","futureNegotiations","futureAgreements"],["version","sequence","pending","history"]);
   integer(m.sequence,"market.sequence");
   const terms=(value:unknown,path:string)=>{
     const t=record(value,path);
@@ -67,7 +67,16 @@ function assertMarket(value: unknown, state: GameState): void {
     ensure(h.accepted===accepted,`market.history[${i}].accepted`,"firma incompatible con autorización");
   });
   ensure(m.pending!==undefined,"market.pending","falta oferta pendiente");
-  if(m.pending!==null){
+  if(m.openOffers!==undefined){
+    const active=list(m.openOffers,"market.openOffers");
+    active.forEach((value,i)=>{
+      const {o,before}=offer(value,`market.openOffers[${i}]`);
+      ensure(JSON.stringify(before)===JSON.stringify(careerTerms(state)),`market.openOffers[${i}].before`,"condiciones obsoletas");
+      if(o.validThrough!==undefined)ensure((o.validThrough as string)>=state.date,`market.openOffers[${i}].validThrough`,"oferta ya expirada");
+    });
+    if(active.length===0)ensure(m.pending===null,"market.pending","proyección pendiente sin oferta abierta");
+    else ensure(JSON.stringify(m.pending)===JSON.stringify(active[0]),"market.pending","proyección pendiente distinta de la primera oferta abierta");
+  }else if(m.pending!==null){
     const {o,before}=offer(m.pending,"market.pending");
     ensure(JSON.stringify(before)===JSON.stringify(careerTerms(state)),"market.pending.before","condiciones obsoletas");
     if(o.validThrough!==undefined)ensure((o.validThrough as string)>=state.date,"market.pending.validThrough","oferta ya expirada");

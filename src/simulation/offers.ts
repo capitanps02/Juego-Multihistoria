@@ -92,7 +92,10 @@ export interface FutureCareerAgreement {
 export interface MarketState {
   version: 1;
   sequence: number;
+  /** Legacy/UI projection of the first live formal offer. */
   pending: CareerOffer | null;
+  /** Authoritative 0..N live formal-offer collection. Absent in historical saves. */
+  openOffers?: CareerOffer[];
   history: OfferDecision[];
   /** Optional extensions keep schema-8 historical saves valid. */
   systemClosures?: SystemOfferClosure[];
@@ -103,7 +106,26 @@ export interface MarketState {
 
 const clone=<T>(value:T):T=>structuredClone(value);
 
+function liveOffers(m:MarketState):CareerOffer[]{
+  if(!m.openOffers)m.openOffers=m.pending?[clone(m.pending)]:[];
+  return m.openOffers;
+}
+function syncPending(m:MarketState):void{
+  const first=liveOffers(m)[0]??null;
+  // Keep the historical field as a live alias of the first authoritative row:
+  // old runtime/tests may still address market.pending directly.
+  m.pending=first??null;
+}
+function removeLiveOffer(m:MarketState,id:string):CareerOffer|null{
+  const rows=liveOffers(m),index=rows.findIndex(offer=>offer.id===id);
+  if(index<0)return null;
+  const [removed]=rows.splice(index,1);
+  syncPending(m);
+  return removed?clone(removed):null;
+}
 export function marketState(s: GameState): MarketState {
+  // Do not eagerly add openOffers to historical saves. The collection is
+  // materialized only by a real market mutation; reads project legacy pending.
   return s.market ??= { version: 1, sequence: 0, pending: null, history: [] };
 }
 function closures(m:MarketState):SystemOfferClosure[]{return m.systemClosures??=[];}
@@ -153,7 +175,12 @@ export function careerOfferKind(offer:CareerOffer):CareerOfferKind{
   if(terms.club!==before.club||terms.ownerClub!==before.ownerClub||terms.registrationClub!==before.registrationClub)return "transfer";
   return "renewal";
 }
-export function getActiveCareerOffers(s:GameState):readonly CareerOffer[]{const p=s.market?.pending;return p?[clone(p)]:[];}
+export function getActiveCareerOffers(s:GameState):readonly CareerOffer[]{
+  const market=s.market;
+  if(!market)return [];
+  const rows=market.openOffers??(market.pending?[market.pending]:[]);
+  return rows.map(clone);
+}
 export function getEligibleCareerOffers(s:GameState):readonly CareerOffer[]{const current=careerTerms(s);return getActiveCareerOffers(s).filter(o=>sameCareerTerms(current,o.before));}
 export function getEligibleLateRichOffers(s:GameState):readonly CareerOffer[]{return getEligibleCareerOffers(s).filter(o=>isCareerOfferContext(o.context)&&o.context.kind==="late_rich_offer");}
 export function eligibleCareerOfferKind(s:GameState):CareerOfferKind|null{const o=getEligibleCareerOffers(s)[0];return o?careerOfferKind(o):null;}
@@ -200,7 +227,7 @@ function materializeCareerOffer(
 ):CareerOffer|null{
   const market=marketState(s);
   const retirementAllowed=s.retirement.status==="playing"||(allowAnnounced&&s.retirement.status==="announced");
-  if(market.pending||!retirementAllowed)return null;
+  if(!retirementAllowed)return null;
   const options=normalizeOptions(contextOrOptions);
   if(options.context!==undefined&&!isCareerOfferContext(options.context))throw Error("Contexto formal de oferta no válido.");
   if(options.validThrough!==undefined&&(!validDateText(options.validThrough)||options.validThrough<s.date))throw Error("Fecha límite de oferta no válida.");
@@ -221,8 +248,17 @@ function materializeCareerOffer(
     if(!terms.loan)terms.releaseClause=null;
   }
   terms.registrationClub=terms.club;if(!terms.loan)terms.ownerClub=terms.club;terms.tier=terms.leagueTier;
+  const duplicate=liveOffers(market).find(existing=>
+    existing.reason===reason
+    && sameCareerTerms(existing.before,before)
+    && sameCareerTerms(existing.terms,terms)
+    && JSON.stringify(existing.context??null)===JSON.stringify(options.context??null)
+    && (existing.validThrough??null)===(options.validThrough??null)
+  );
+  if(duplicate)return null;
   const offer:CareerOffer={id:`offer:${++market.sequence}`,date:s.date,reason,before,terms,...(options.context?{context:clone(options.context)}:{}),...(options.validThrough?{validThrough:options.validThrough}:{})};
-  market.pending=offer;
+  liveOffers(market).push(offer);
+  syncPending(market);
   return clone(offer);
 }
 export function proposeCareerChange(
@@ -249,25 +285,32 @@ export function proposeLateRichCareerOffer(
   return proposeCareerChange(s,reason,propose,{context,validThrough});
 }
 
-export function closePendingOfferBySystem(
-  s:GameState,reason:SystemOfferCloseReason,source:SystemOfferClosure["source"]="system"
+export function closeCareerOfferBySystem(
+  s:GameState,id:string,reason:SystemOfferCloseReason,source:SystemOfferClosure["source"]="system"
 ):SystemOfferClosure{
-  const market=marketState(s),offer=market.pending;
+  const market=marketState(s);
+  const offer=liveOffers(market).find(row=>row.id===id);
   if(!offer)throw Error("Esta oferta ya no está pendiente.");
   if(reason==="expired"&&(!offer.validThrough||offer.validThrough>=s.date))throw Error("La oferta todavía no ha alcanzado su deadline.");
-  market.pending=null;
+  removeLiveOffer(market,id);
   const row:SystemOfferClosure={offer:clone(offer),reason,date:s.date,source};
   closures(market).push(row);
   return clone(row);
 }
+export function closePendingOfferBySystem(
+  s:GameState,reason:SystemOfferCloseReason,source:SystemOfferClosure["source"]="system"
+):SystemOfferClosure{
+  const pending=marketState(s).pending;
+  if(!pending)throw Error("Esta oferta ya no está pendiente.");
+  return closeCareerOfferBySystem(s,pending.id,reason,source);
+}
 export function withdrawCareerOffer(s:GameState,id:string):SystemOfferClosure{
-  if(s.market?.pending?.id!==id)throw Error("Esta oferta ya no está pendiente.");
-  return closePendingOfferBySystem(s,"withdrawn","producer");
+  return closeCareerOfferBySystem(s,id,"withdrawn","producer");
 }
 export function expireCareerOfferInPlace(s:GameState):SystemOfferClosure|null{
-  const offer=s.market?.pending;
-  if(!offer?.validThrough||offer.validThrough>=s.date)return null;
-  return closePendingOfferBySystem(s,"expired","calendar");
+  const offer=getActiveCareerOffers(s).find(row=>row.validThrough!==undefined&&row.validThrough<s.date);
+  if(!offer)return null;
+  return closeCareerOfferBySystem(s,offer.id,"expired","calendar");
 }
 export function supersedePendingCareerOffer(
   s:GameState,
@@ -275,18 +318,18 @@ export function supersedePendingCareerOffer(
   propose:(draft:GameState)=>void,
   contextOrOptions?:CareerOfferContext|CareerOfferOptions
 ):CareerOffer|null{
-  const current=s.market?.pending;
+  const current=marketState(s).pending;
   if(!current)return proposeCareerChange(s,reason,propose,contextOrOptions);
-  const preview=clone(s);
-  if(preview.market)preview.market.pending=null;
+  const preview=clone(s),previewMarket=marketState(preview);
+  removeLiveOffer(previewMarket,current.id);
   const candidate=proposeCareerChange(preview,reason,propose,contextOrOptions);
   if(!candidate)return null;
-  closePendingOfferBySystem(s,"superseded","producer");
+  closeCareerOfferBySystem(s,current.id,"superseded","producer");
   return proposeCareerChange(s,reason,propose,contextOrOptions);
 }
 export function offerLifecycleStatus(s:GameState,id:string):"open"|"accepted"|"rejected"|"countered"|"deferred"|"expired"|"withdrawn"|"superseded"|null{
   const market=s.market;if(!market)return null;
-  if(market.pending?.id===id)return "open";
+  if(getActiveCareerOffers(s).some(offer=>offer.id===id))return "open";
   const d=market.history.find(x=>x.offer.id===id);
   if(d){if(d.accepted)return "accepted";const disposition=d.source?.disposition??d.action;return disposition==="counter"?"countered":disposition==="defer"?"deferred":"rejected";}
   return market.systemClosures?.find(x=>x.offer.id===id)?.reason??null;
@@ -295,8 +338,8 @@ export function offerLifecycleStatus(s:GameState,id:string):"open"|"accepted"|"r
 export function respondToOffer(
   s:GameState,id:string,disposition:OfferDisposition,source?:Omit<NarrativeOfferSource,"disposition">
 ):OfferDecision{
-  const market=marketState(s),offer=market.pending;
-  if(!offer||offer.id!==id)throw Error("Esta oferta ya no está pendiente.");
+  const market=marketState(s),offer=liveOffers(market).find(row=>row.id===id);
+  if(!offer)throw Error("Esta oferta ya no está pendiente.");
   if(!["accept","reject","delegate","counter","defer"].includes(disposition))throw Error("Respuesta de oferta no válida.");
   if((disposition==="counter"||disposition==="defer")&&!source)throw Error("Contraofertar o aplazar requiere una decisión narrativa identificada.");
   if(!sameCareerTerms(careerTerms(s),offer.before))throw Error("Las condiciones han cambiado; la oferta ya no corresponde a esta partida.");
@@ -306,10 +349,22 @@ export function respondToOffer(
     :disposition==="counter"?"Has planteado una contraoferta. El contrato actual sigue vigente hasta que exista una nueva propuesta formal."
     :disposition==="defer"?"Has aplazado la firma. El contrato actual sigue vigente y esta propuesta deja de estar pendiente."
     :accepted?"Has aceptado la oferta. Las nuevas condiciones ya están en vigor.":"Has rechazado la oferta. Conservas tus condiciones actuales.";
-  if(accepted){applyTerms(s,offer.terms);activateEmploymentFromAcceptedTermsInPlace(s);}
+  removeLiveOffer(market,id);
+  if(accepted){
+    applyTerms(s,offer.terms);
+    activateEmploymentFromAcceptedTermsInPlace(s);
+  }
   const narrativeSource=source?{...clone(source),disposition}:undefined;
   const decision:OfferDecision={offer:clone(offer),action,accepted,explanation,...(narrativeSource?{source:narrativeSource}:{})};
-  market.history.push(decision);market.pending=null;
+  market.history.push(decision);
+  if(accepted){
+    for(const other of [...liveOffers(market)]){
+      // The accepted terms replace the shared baseline; all other formal proposals
+      // from that prior employment snapshot are now incompatible by construction.
+      closeCareerOfferBySystem(s,other.id,"superseded","system");
+    }
+  }
+  syncPending(market);
   return clone(decision);
 }
 
