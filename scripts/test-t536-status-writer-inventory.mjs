@@ -18,7 +18,6 @@ function collectStatusWrites(value,out=[]){
 
 const expected=new Map([
   ['EVT_37_ANNOUNCE_001',['decided']],
-  ['EVT_38_MKT_001',['decided']],
   ['EVT_RET_FAM_001',['decided']],
   ['EVT_RET_BODY_001',['decided']],
   ['EVT_RET_HIGH_001',['decided']],
