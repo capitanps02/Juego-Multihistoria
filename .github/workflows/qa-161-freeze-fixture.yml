@@ -1,0 +1,34 @@
+name: QA generate #161 exact freeze fixture
+on:
+  pull_request:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  freeze-fixture:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: qa/161-freeze-fixture-732
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Generate exact active source fixture once
+        run: |
+          TARGET="qa/fixtures/t5.1/post-t51-sources/56b9ca09b872ac6dc8fc78ec9459bf15fb7ab21c20707f354af06c99ee00d0f4.json"
+          if [ ! -f "$TARGET" ]; then
+            node scripts/freeze-t51-active-source.mjs
+            test -f "$TARGET"
+            git config user.name "A10 QA"
+            git config user.email "actions@github.com"
+            git add "$TARGET"
+            git commit -m "qa(#161): freeze exact post-A8 captain source"
+            git push origin HEAD:qa/161-freeze-fixture-732
+          else
+            echo "Exact fixture already present"
+          fi
