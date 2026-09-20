@@ -68,11 +68,12 @@ const applySportAuthority=(event:EventDefinition):EventDefinition=>{
 
 const applyLeadershipAuthority=(event:EventDefinition):EventDefinition=>{
   if(event.id!=="EVT_33_CAP_001") return event;
+  const factualCaptainGate={path:"facts.playerClubLeadership.currentRole",op:"eq",value:"captain"} as const;
   return {
     ...event,
     gates:[
-      ...(event.gates??[]),
-      {path:"facts.playerClubLeadership.currentRole",op:"eq",value:"captain"}
+      ...(event.gates??[]).filter(gate=>!(gate.path===factualCaptainGate.path && gate.op===factualCaptainGate.op && gate.value===factualCaptainGate.value)),
+      factualCaptainGate
     ],
     tags:[...new Set([...(event.tags??[]),"t51_leadership_authority_required"])]
   };
