@@ -276,7 +276,7 @@ export function lateCareerWeek(state:GameState):void{
   if(state.retirement.status==="announced"){
     const sportContext=getSportContext(state);
     const appearances=sportContext.careerAppearances;
-    const factualAppearance=sportContext.lastPlayerAppearanceContext.status==="authoritative"
+    const factualAppearance=sportContext.availability.lastPlayerAppearance==="known"
       ? sportContext.lastPlayerAppearance
       : null;
     if(factualAppearance&&announcedDate!==null&&factualAppearance.date>=announcedDate){
