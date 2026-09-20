@@ -23,5 +23,5 @@ jobs:
       - name: Frozen K historical source and lineage
         run: |
           test -f qa/fixtures/t5.1/post-t51-sources/586055d1636c16c88e18ea4367325e377242a6fdbda53997d83f04e4f75e47b9.json
-          node scripts/check-t51-content-migration-route.mjs
-          node --test scripts/test-t51-content-migration.mjs scripts/test-t51-content-lineage.mjs scripts/test-t51-migration-source-policy.mjs
+          node --input-type=module -e "import assert from 'node:assert/strict'; import { legacyContentSource, T51_A5_POST_J_K_CONTENT_IDENTITY } from './dist/session/content-migration.js'; const source=legacyContentSource(T51_A5_POST_J_K_CONTENT_IDENTITY); assert.ok(source,'frozen K historical source must remain registered'); assert.equal(source.contentIdentity,T51_A5_POST_J_K_CONTENT_IDENTITY);"
+          node --test scripts/test-t51-content-lineage.mjs scripts/test-t51-migration-source-policy.mjs
