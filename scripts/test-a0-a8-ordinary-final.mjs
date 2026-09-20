@@ -12,17 +12,17 @@ import { validateBuild } from '../dist/validation/build-validation.js';
 
 const TERMINAL_PRINCIPALS=[
   'EVT_37_ANNOUNCE_001',
-  'EVT_RET_HOME_001',
+  'EVT_RET_FAM_001',
   'EVT_RET_BODY_001',
   'EVT_RET_HIGH_001',
   'EVT_RET_LOW_001',
   'EVT_RET_ANNOUNCE_001',
-  'EVT_RET_LAST_001'
+  'EVT_RET_LASTMATCH_001'
 ];
 
 const TERMINAL_CONDITIONALS=[
   'CEVT_38_OFFER_AFTER_RETIREMENT_ANNOUNCED',
-  'CEVT_RET_RECONSIDER',
+  'CEVT_38_RETIREMENT_REVERSAL',
   'CEVT_RET_NO_LAST_MATCH',
   'CEVT_RET_STORYBOOK_LAST_GOAL'
 ];
@@ -87,7 +87,7 @@ test('existing A9 terminal rows are outside A8 factual accreditation',()=>{
   const state=createInitialState(8842002);
   state.age=40;
   state.phase='34_plus';
-  const event=EVENTS_34_PLUS.find(row=>row.id==='EVT_RET_HOME_001');
+  const event=EVENTS_34_PLUS.find(row=>row.id==='EVT_RET_FAM_001');
   assert.ok(event);
   assert.equal(a8CanonicalRuntimeEligible(state,event),true);
 });

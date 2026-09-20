@@ -5,7 +5,7 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
   let session=null, busy=false, paused=false, view='home', cinematic=false, message='', replacement=null, lastArt='stadium_bg';
   let savedRaw=null;
   const sessionOptions=events?{events}:{};
-  const store=createIndexedSaveStore({storage:localStorage,indexedDB:globalThis.indexedDB,key:KEY,validate:raw=>GameSession.fromSave(raw,sessionOptions)});
+  const store=createIndexedSaveStore({storage:localStorage,indexedDB:globalThis.indexedDB,key:KEY,validate:raw=>GameSession.migrateFromSave(raw,sessionOptions)});
   const doc=root.ownerDocument, win=doc.defaultView||globalThis, el=(tag,text,cls)=>{const n=doc.createElement(tag);if(text!==undefined)n.textContent=text;if(cls)n.className=cls;return n;};
   const style=el('style');style.textContent=css;root.append(style);
   const shell=el('div',undefined,'mh');root.append(shell);
@@ -38,7 +38,7 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
   }
   async function load(){
     if(busy)return;busy=true;message='';render();
-    try{const raw=await store.read();savedRaw=raw;if(raw){session=await GameSession.fromSave(raw,{...sessionOptions,commit});cinematic=['decision','result','offer'].includes(session.getView().screen);}else{replacement=null;session=await GameSession.create(424242,{...sessionOptions,commit});}prepareHistory(); if(await store.legacyChanged())message='Otra pestaña ha cambiado la copia antigua. Puedes descargarla en Tu partida para revisarla antes de importar.'; }
+    try{const raw=await store.read();savedRaw=raw;if(raw){session=await GameSession.migrateFromSave(raw,{...sessionOptions,commit});cinematic=['decision','result','offer'].includes(session.getView().screen);}else{replacement=null;session=await GameSession.create(424242,{...sessionOptions,commit});}prepareHistory(); if(await store.legacyChanged())message='Otra pestaña ha cambiado la copia antigua. Puedes descargarla en Tu partida para revisarla antes de importar.'; }
     catch(e){session=null;message='No se pudo abrir la partida. '+e.message+' La copia guardada se conserva.';view='save';}
     finally{busy=false;render();}
   }
@@ -89,7 +89,7 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
   function profile(v,main){main.append(el('span','EL PROTAGONISTA ERES TÚ','eyebrow'),el('h1','Tu perfil.'));const grid=el('div',undefined,'profile-grid');grid.append(hero(v));const p=panel('En este momento');for(const [label,value]of[['Edad',v.age+' años'],['Posición',position(v)],['Club',club(v)],['Partidos',v.appearances],['Salario mensual',money(v.salaryMonthly)],['Contrato restante',v.contractMonths+' meses']]){const r=el('div',undefined,'data-row');r.append(el('span',label),el('strong',String(value)));p.append(r);}p.append(stats(v));grid.append(p);main.append(grid);}
   async function download(){try{const raw=await store.readRaw();if(!raw)throw Error('No hay una partida guardada.');downloadText(raw,'multihistoria-partida.json');}catch(e){message=e.message;render();}}
   function downloadText(raw,filename){if(win.AndroidBridge?.saveTextFile){win.AndroidBridge.saveTextFile(filename,raw);return;}const url=URL.createObjectURL(new Blob([raw],{type:'application/json'}));const a=el('a');a.href=url;a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(url),1500);}
-  async function importFile(file){if(!file||busy)return;busy=true;message='';render();try{if(file.size>8*1024*1024)throw Error('La copia supera 8 MiB.');const raw=await file.text();const candidate=await GameSession.fromSave(raw,{...sessionOptions,commit});const previous=await store.readRaw();busy=false;render();confirmReplace('Recuperar esta copia',`Partida del ${date(candidate.getView().date)}, con ${decisionCount(candidate.getView().decisionsMade)}. Se conservará una copia de la partida actual.`,async()=>{
+  async function importFile(file){if(!file||busy)return;busy=true;message='';render();try{if(file.size>8*1024*1024)throw Error('La copia supera 8 MiB.');const raw=await file.text();const candidate=await GameSession.migrateFromSave(raw,{...sessionOptions,commit});const previous=await store.readRaw();busy=false;render();confirmReplace('Recuperar esta copia',`Partida del ${date(candidate.getView().date)}, con ${decisionCount(candidate.getView().decisionsMade)}. Se conservará una copia de la partida actual.`,async()=>{
       await store.write(candidate.exportSnapshot(),previous);savedRaw=JSON.stringify(candidate.exportSnapshot());session=candidate;view='home';cinematic=false;replaceRouteState();
     });}catch(e){message='No se pudo importar. '+e.message;busy=false;render();}}
   function confirmReplace(title,body,accept){const dialog=el('dialog',undefined,'dialog');dialog.append(el('h2',title),el('p',body));const actions=el('div',undefined,'dialog-actions');actions.append(button('Cancelar',()=>dialog.close()),button('Confirmar',async()=>{dialog.close();busy=true;message='';render();try{await accept();}catch(e){message=e.message;}finally{busy=false;render();}},'primary'));dialog.append(actions);shell.append(dialog);dialog.addEventListener('close',()=>dialog.remove());dialog.showModal();}
