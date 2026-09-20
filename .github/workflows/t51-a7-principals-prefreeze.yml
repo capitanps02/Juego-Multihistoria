@@ -3,7 +3,7 @@ name: T51 A7 PRINCIPALS PRE-FREEZE
 on:
   push:
     branches:
-      - 'a0/a7-prefreeze-after-610'
+      - 'a0/a7-prefreeze-after-611'
   workflow_dispatch:
 
 permissions:
