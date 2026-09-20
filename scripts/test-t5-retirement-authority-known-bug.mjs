@@ -73,17 +73,17 @@ test('T5-QA-016c/#61: no-market exhaustion is context only and never decides ret
 });
 
 
-test('T5-QA-016d: stratified QA recognizes only explicit player continue as playing deferral', () => {
+test('T5-QA-016d: stratified QA recognizes only explicit final-canon player continuation as playing deferral', () => {
   const state = veteran(61004);
   state.retirement.status = 'playing';
   state.history.push({
-    eventId: 'EVT_RET_HOME_001',
+    eventId: 'EVT_RET_FAM_001',
     date: '2044-07-01',
     season: state.season,
-    choiceId: 'KEEP',
-    outcomeId: 'KEEP',
+    choiceId: 'NO_DATE',
+    outcomeId: 'NO_DATE_OUT',
     club: state.club,
-    snapshot: { age: 36, phase: '34_plus', family: 'life' },
+    snapshot: { age: 36, phase: '34_plus', family: 'family' },
     salience: 80,
     visibility: 'private'
   });
@@ -93,14 +93,27 @@ test('T5-QA-016d: stratified QA recognizes only explicit player continue as play
     eventId: 'EVT_RET_LOW_001',
     date: '2044-08-01',
     season: state.season,
-    choiceId: 'LOW',
-    outcomeId: 'LOW',
+    choiceId: 'WAIT_PRESEASON',
+    outcomeId: 'WAIT_PRESEASON_OUT',
     club: state.club,
-    snapshot: { age: 36, phase: '34_plus', family: 'life' },
+    snapshot: { age: 36, phase: '34_plus', family: 'sport' },
     salience: 80,
     visibility: 'private'
   });
-  assert.equal(agencyDeferredRetirement(state), false, 'latest retirement decision is not a continue choice');
+  assert.equal(agencyDeferredRetirement(state), true, 'latest explicit final-canon continuation must count');
+
+  state.history.push({
+    eventId: 'EVT_RET_LOW_001',
+    date: '2044-09-01',
+    season: state.season,
+    choiceId: 'RETIRE',
+    outcomeId: 'RETIRE_OUT',
+    club: state.club,
+    snapshot: { age: 36, phase: '34_plus', family: 'sport' },
+    salience: 80,
+    visibility: 'private'
+  });
+  assert.equal(agencyDeferredRetirement(state), false, 'latest retirement decision is not a continuation');
 });
 
 test('T5-QA-016e: stratified QA remains fail-closed without exact retirement-agency evidence', () => {
