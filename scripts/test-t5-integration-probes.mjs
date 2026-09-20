@@ -6,6 +6,8 @@ import { conditionsPass } from '../dist/core/conditions.js';
 import { getPath, setPath } from '../dist/core/path.js';
 import { assertGameState } from '../dist/save/validation.js';
 import * as resolver from '../dist/narrative/resolver.js';
+import { offerBridgeSpec } from '../dist/narrative/offer-bridge.js';
+import { FORMAL_RENEWAL_REASON, proposeCareerChange } from '../dist/simulation/offers.js';
 
 async function optionalImport(path) {
   try {
@@ -47,6 +49,27 @@ function qaValueForCondition(state, condition) {
 function satisfyConditions(state, conditions = []) {
   for (const condition of conditions) setPath(state, condition.path, qaValueForCondition(state, condition));
   assert.equal(conditionsPass(state, conditions), true, `fixture QA no pudo satisfacer ${JSON.stringify(conditions)}`);
+}
+
+function installFormalQaOfferForBridge(state, event) {
+  if (!offerBridgeSpec(event)) return;
+
+  const clubCondition = (event.gates ?? []).find(condition => condition.path === 'market.pending.terms.club' && condition.op === 'eq');
+  const reasonCondition = (event.gates ?? []).find(condition => condition.path === 'market.pending.reason' && condition.op === 'eq');
+  const monthsCondition = (event.gates ?? []).find(condition => condition.path === 'market.pending.terms.months' && condition.op === 'eq');
+
+  const reason = reasonCondition?.value === FORMAL_RENEWAL_REASON
+    ? FORMAL_RENEWAL_REASON
+    : 'QA formal offer bridge';
+
+  const offer = proposeCareerChange(state, reason, draft => {
+    if (typeof clubCondition?.value === 'string') draft.club = clubCondition.value;
+    draft.contract.salaryMonthly += 1000;
+    if (typeof monthsCondition?.value === 'number') draft.contract.monthsRemaining = monthsCondition.value;
+  });
+
+  assert.ok(offer, `${event.id}: el fixture QA no pudo materializar una CareerOffer formal`);
+  assertGameState(state);
 }
 
 test('T5 integration/T5.2+T5.3: una resolución conserva simultáneamente lifecycle de seed y conocimiento NPC', async t => {
@@ -161,7 +184,14 @@ test('T5 integration/T5.1 30-34: cada elección reimplementada produce un GameSt
       state.phase = event.phase;
       state.runtime.daysSinceNarrative = 999;
       state.runtime.eventsThisSeason = 0;
-      satisfyConditions(state, event.gates ?? []);
+      installFormalQaOfferForBridge(state, event);
+      const nonOfferGates = (event.gates ?? []).filter(condition => !condition.path.startsWith('market.pending.'));
+      satisfyConditions(state, nonOfferGates);
+      assert.equal(
+        conditionsPass(state, event.gates ?? []),
+        true,
+        `${event.id}: la CareerOffer formal QA no satisface los gates del bridge`
+      );
 
       const firstOutcome = event.outcomes.find(outcome => choice.outcomeIds.includes(outcome.id));
       if (firstOutcome) satisfyConditions(state, firstOutcome.conditions ?? []);
