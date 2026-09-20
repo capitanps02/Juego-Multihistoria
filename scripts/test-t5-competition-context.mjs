@@ -281,3 +281,35 @@ test('competition calendar/12 horizon excludes a produced final outside the requ
   assert.equal(congestion.matchesNext7, seven.length);
   assert.equal(congestion.matchesNext14, fourteen.length);
 });
+
+
+test('competition calendar/13 away load is factual while geographic travel fails closed', () => {
+  const state = createInitialState(9624);
+  state.date = '2026-08-01';
+  state.runtime.day = 31;
+  state.runtime.seasonDay = 31;
+  const schedule = getCompetitionSchedule(state, 14);
+  const context = getFixtureCongestionContext(state);
+  assert.equal(context.awayMatchesNext14, schedule.filter(row => row.homeAway === 'away').length);
+  assert.equal(context.travelLoadKnown, false);
+  assert.equal(context.travelLoadReason, 'no_authoritative_locations');
+
+  state.employment = {
+    version: 1,
+    status: 'unattached',
+    since: state.date,
+    previous: {
+      club: state.club,
+      ownerClub: state.professional.ownerClub,
+      registrationClub: state.professional.registrationClub,
+      salaryMonthly: state.contract.salaryMonthly,
+      endedDate: state.date,
+      reason: 'contract_expired'
+    }
+  };
+  const unavailable = getFixtureCongestionContext(state);
+  assert.equal(unavailable.status, 'unavailable');
+  assert.equal(unavailable.awayMatchesNext14, 0);
+  assert.equal(unavailable.travelLoadKnown, false);
+  assert.equal(unavailable.travelLoadReason, 'no_authoritative_locations');
+});
