@@ -57,6 +57,13 @@ const sportAuthorityGates:Readonly<Record<string,readonly Condition[]>>={
 };
 
 const applySportAuthority=(event:EventDefinition):EventDefinition=>{
+  if(event.id==="EVT_30_FORM_001") {
+    return {
+      ...event,
+      gates:[{path:"facts.sport.recentSixMatchStats.goals",op:"gte",value:5}],
+      tags:[...new Set([...(event.tags??[]),"t51_sport_authority_required"])]
+    };
+  }
   const required=sportAuthorityGates[event.id];
   if(!required) return event;
   return {
