@@ -32,3 +32,16 @@ jobs:
           else
             echo "Exact fixture already present"
           fi
+      - name: Regenerate validation-only historical evidence
+        run: |
+          node scripts/generate-t51-post-legacy-registry.mjs
+          node scripts/generate-t51-offer-bridge-evidence.mjs
+          if ! git diff --quiet -- src/session/post-t51-legacy-registry.ts src/session/frozen-offer-bridge-evidence.ts; then
+            git config user.name "A10 QA"
+            git config user.email "actions@github.com"
+            git add src/session/post-t51-legacy-registry.ts src/session/frozen-offer-bridge-evidence.ts
+            git commit -m "qa(#161): regenerate frozen validation evidence"
+            git push origin HEAD:qa/161-freeze-fixture-732
+          else
+            echo "Validation evidence already current"
+          fi
