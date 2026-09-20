@@ -1,0 +1,23 @@
+name: QA final #161 captain closure
+on:
+  push:
+    branches:
+      - qa/final-161-captain-cert
+  pull_request:
+    branches:
+      - main
+jobs:
+  captain-final:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Permanent A10 #161 regression
+        run: node --test scripts/test-t5-captain-gap-known-bug.mjs scripts/test-t5-161-main-captain-final.mjs
+      - name: Emit exact active content identity
+        run: node --input-type=module -e "import { EVENTS } from './dist/content/events/index.js'; import { contentIdentity } from './dist/session/content-identity.js'; console.log('T5_161_TARGET_IDENTITY=' + await contentIdentity(EVENTS)); console.log('EVENTS=' + EVENTS.length)"
