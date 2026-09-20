@@ -1,0 +1,35 @@
+name: T51 A8 Wave A current pre-freeze
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  wave-a:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Focused A8 Wave A regression
+        run: node --test scripts/test-t51-a8-wavea-prefreeze.mjs
+      - name: Emit exact A8 Wave A successor identity
+        run: |
+          node --input-type=module <<'NODE'
+          import { EVENTS } from './dist/content/events/index.js';
+          import { contentIdentity } from './dist/session/content-identity.js';
+          const identity=await contentIdentity(EVENTS);
+          const unique=new Set(EVENTS.map(e=>e.id)).size;
+          const active=['EVT_35_FAM_001','EVT_35_BODY_001','EVT_35_IMG_001','EVT_36_MED_001'];
+          console.log('A8_WAVEA_IDENTITY='+identity);
+          console.log('A8_WAVEA_EVENTS='+EVENTS.length);
+          console.log('A8_WAVEA_UNIQUE='+unique);
+          console.log('A8_WAVEA_ACTIVE='+active.filter(id=>EVENTS.some(e=>e.id===id)).join(','));
+          console.log('A8_WAVEA_RETIRED_34_MKT='+!EVENTS.some(e=>e.id==='EVT_34_MKT_001'));
+          if(EVENTS.length!==388 || unique!==388 || active.some(id=>!EVENTS.some(e=>e.id===id)) || EVENTS.some(e=>e.id==='EVT_34_MKT_001')) process.exit(1);
+          NODE
