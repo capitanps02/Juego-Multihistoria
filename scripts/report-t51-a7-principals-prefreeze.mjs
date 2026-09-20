@@ -11,7 +11,38 @@ import { validateBuild } from '../dist/validation/build-validation.js';
 
 assert.equal(EVENTS.length, 388, 'A7 principal-only generation must preserve 388 active events');
 assert.equal(new Set(EVENTS.map(event => event.id)).size, 388, 'A7 principal-only generation must preserve unique IDs');
-assert.equal(CONDITIONAL_EVENTS_30_34.length, 23, 'legacy 30-34 callbacks stay active until canonical replacements exist');
+assert.deepEqual(
+  CONDITIONAL_EVENTS_30_34.map(event => event.id),
+  [
+  "CEVT_30_BODY_01",
+  "CEVT_30_PROJECT_01",
+  "CEVT_30_HOME_01",
+  "CEVT_30_NAT_01",
+  "CEVT_30_AGENT_01",
+  "CEVT_30_RIVAL_01",
+  "CEVT_30_FAN_01",
+  "CEVT_31_SURGERY_01",
+  "CEVT_31_SUCCESSOR_01",
+  "CEVT_31_COACH_01",
+  "CEVT_31_NTLOAD_01",
+  "CEVT_31_FINAL_01",
+  "CEVT_31_BUSINESS_01",
+  "CEVT_31_RIVAS_01",
+  "CEVT_32_RICH_01",
+  "CEVT_32_REPLACE_01",
+  "CEVT_32_HOME_01",
+  "CEVT_32_BOSMAN_01",
+  "CEVT_32_NT_01",
+  "CEVT_32_FAN_01",
+  "CEVT_33_RECOVERY_01",
+  "CEVT_33_RECORD_01",
+  "CEVT_33_RET_01",
+  "CEVT_33_HOME_01",
+  "CEVT_33_CONTRACT_01",
+  "CEVT_33_MARKET_01"
+],
+  'legacy 30-34 callback inventory stays byte-stable until canonical replacements exist'
+);
 
 for (const id of [
   'EVT_30_BRIDGE_001',
