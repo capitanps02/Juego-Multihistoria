@@ -68,11 +68,12 @@ const applySportAuthority=(event:EventDefinition):EventDefinition=>{
 
 const applyLeadershipAuthority=(event:EventDefinition):EventDefinition=>{
   if(event.id!=="EVT_33_CAP_001") return event;
+  const factualCaptainGate={path:"facts.playerClubLeadership.currentRole",op:"eq",value:"captain"} as const;
   return {
     ...event,
     gates:[
-      ...(event.gates??[]),
-      {path:"facts.playerClubLeadership.currentRole",op:"eq",value:"captain"}
+      ...(event.gates??[]).filter(gate=>!(gate.path===factualCaptainGate.path && gate.op===factualCaptainGate.op && gate.value===factualCaptainGate.value)),
+      factualCaptainGate
     ],
     tags:[...new Set([...(event.tags??[]),"t51_leadership_authority_required"])]
   };
@@ -170,7 +171,10 @@ const enforceCareerAuthority=(event:EventDefinition):EventDefinition=>{
   };
 };
 
-const supersededLegacyIds=new Set(["EVT_30_IDN_001","EVT_30_TEAM_001","EVT_32_MKT_001","EVT_32_TACT_001","EVT_33_END_001"]);
+const supersededLegacyIds=new Set([
+  "EVT_30_IDN_001","EVT_30_TEAM_001","EVT_32_MKT_001","EVT_32_TACT_001","EVT_33_END_001",
+  "EVT_30_AGT_001","EVT_33_NAT_001"
+]);
 
 const principal:EventDefinition[]=PRINCIPAL_EVENTS_30_34.filter(original=>!supersededLegacyIds.has(original.id)).map(original=>{
   const selected=overrides.get(original.id)??original;
@@ -203,6 +207,16 @@ const richOffer=enforceCareerAuthority({
   ])]
 });
 
-// Genuine canonical additions EVT_30_CCH_001 / EVT_30_JAN_001 stay staged until
-// A0 has an owner-approved retirement slot; do not grow the 388-event catalog here.
-export const EVENTS_30_34=[...principal,...serialShiftedAdditions,richOffer,...CONDITIONAL_EVENTS_30_34];
+const SERIAL_ADDITION_IDS=new Set(["EVT_30_CCH_001","EVT_30_JAN_001"]);
+const serialCanonicalAdditions=CANONICAL_ADDITIONS_30_34.filter(event=>SERIAL_ADDITION_IDS.has(event.id));
+if(serialCanonicalAdditions.length!==2) throw new Error("Missing one or more selected A7 canonical additions");
+
+// Two owner-classified engine-only principals are retired as unrelated technical rows.
+// No alias, seen/cooldown inheritance, pending rebind or history rewrite is implied.
+export const EVENTS_30_34=[
+  ...principal,
+  ...serialShiftedAdditions,
+  richOffer,
+  ...serialCanonicalAdditions,
+  ...CONDITIONAL_EVENTS_30_34
+];
