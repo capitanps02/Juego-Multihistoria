@@ -85,6 +85,17 @@ test('T5-QA-030/#161: EVT_33_CAP_001 fails closed without real main-club captain
   }
 });
 
+test('T5-QA-030a2/#161: factual current-club main-captain authority is sufficient without proxy gates', () => {
+  const state = age33September(161006);
+  certifyPlayerClubLeadershipInPlace(state, 'captain', 'QA_EXPLICIT_CAPTAIN_APPOINTMENT', 'ACCEPT');
+  const result = scheduled(state);
+  assert.ok(
+    result,
+    'explicit current-club main-captain authority must satisfy the captaincy premise without successionPressure, seeds, lockerPower or other proxy gates'
+  );
+  assert.equal(result.event.id, 'EVT_33_CAP_001');
+});
+
 test('T5-QA-030b/#161: final T5 requires at least one production main-captain writer callsite', () => {
   const callsites = productionCaptainWriterCallsites();
   assert.ok(
