@@ -31,7 +31,6 @@ import { getVeteranMarketApproaches, type VeteranMarketApproach } from "./vetera
 import { resolveNationalSelectionFacts, type NationalSelectionFacts } from "./national-team-authority.js";
 import { resolveInjuryEpisodeFacts, type InjuryEpisodeFacts } from "./injury-episode-authority.js";
 import { resolveAchievementHistoryFacts, type AchievementHistoryFacts } from "./sport-achievement-authority.js";
-import { resolveCurrentPlayerClubLeadership, type PlayerClubLeadershipRole } from "./player-leadership-authority.js";
 
 export { FORMAL_RENEWAL_REASON };
 export const CLUB_WANTS_RENEWAL_FACT = "facts.clubWantsRenewal" as const;
@@ -230,8 +229,6 @@ export interface NarrativeCausalFacts extends EarlyCareerSeedFacts {
   injuryEpisodes: InjuryEpisodeFacts;
   /** Exact persisted national preselection/final-squad facts; no aggregate proxies. */
   nationalSelection: NationalSelectionFacts;
-  /** Current-club player leadership only; stale/off-club certifications fail closed. */
-  playerClubLeadership: Readonly<{ currentRole: PlayerClubLeadershipRole | null }>;
   /** Authoritative/read-only sporting projection. Unavailable sporting facts are null. */
   sport: SportContext;
   /** Current match projection. Fails closed until a real match producer exists. */
@@ -261,7 +258,6 @@ export function narrativeCausalFacts(state: GameState): NarrativeCausalFacts {
     achievements: resolveAchievementHistoryFacts(state),
     injuryEpisodes: resolveInjuryEpisodeFacts(state),
     nationalSelection: resolveNationalSelectionFacts(state),
-    playerClubLeadership: { currentRole: resolveCurrentPlayerClubLeadership(state)?.role ?? null },
     sport: getSportContext(state),
     match: getCurrentMatchContext(state)
   };
