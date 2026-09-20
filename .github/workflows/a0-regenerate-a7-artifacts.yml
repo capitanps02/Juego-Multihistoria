@@ -1,3 +1,4 @@
+# trigger: regenerate A7 artifacts
 name: A0 regenerate A7 artifacts
 
 on:
