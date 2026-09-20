@@ -1,0 +1,35 @@
+name: Freeze A8 Wave A #686
+on:
+  push:
+    branches:
+      - a12/a8-wavea-clean-current-647
+permissions:
+  contents: write
+jobs:
+  freeze:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: a12/a8-wavea-clean-current-647
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Generate exact active source and registries
+        run: |
+          if [ ! -f "qa/fixtures/t5.1/post-t51-sources/3121c068b8f2ddea1f1f4b7d9b8a8b0f10bd73d40fc52173bec213fb244dca28.json" ]; then
+            node scripts/freeze-t51-active-source.mjs
+            node scripts/generate-t51-post-legacy-registry.mjs
+            node scripts/generate-t51-offer-bridge-evidence.mjs
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add qa/fixtures/t5.1/post-t51-sources/3121c068b8f2ddea1f1f4b7d9b8a8b0f10bd73d40fc52173bec213fb244dca28.json src/session/post-t51-legacy-registry.ts src/session/frozen-offer-bridge-evidence.ts
+            git commit -m "Freeze A8 Wave A 3121c068b8f2"
+            git push origin HEAD:a12/a8-wavea-clean-current-647
+          fi
