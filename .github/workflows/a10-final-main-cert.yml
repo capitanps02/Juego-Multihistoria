@@ -1,0 +1,51 @@
+name: A10 final main certification
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: a10-final-main-cert
+  cancel-in-progress: true
+
+jobs:
+  final:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Directed historical blocker regressions
+        run: |
+          node --test \
+            scripts/test-t5-contract-expiry-known-bug.mjs \
+            scripts/test-t5-match-model-known-bug.mjs \
+            scripts/test-t5-captain-gap-known-bug.mjs \
+            scripts/test-t5-offer-context-known-bug.mjs \
+            scripts/test-t5-npc-knowledge-save-known-bug.mjs \
+            scripts/test-t5-retirement-save-known-bug.mjs \
+            scripts/test-t5-retirement-authority-known-bug.mjs \
+            scripts/test-t5-lock23-captain-choice-guard.mjs
+      - name: Saves and migrations
+        run: npm run qa:t5:saves
+      - name: Cross-system integration
+        run: npm run qa:t5:integration
+      - name: Final A9 terminal regression matrix
+        run: |
+          node --test \
+            scripts/test-t536-canonical-accreditation.mjs \
+            scripts/test-t536-terminal-seeds.mjs \
+            scripts/test-t536-retirement-reversal.mjs \
+            scripts/test-t536-t537-retirement.mjs \
+            scripts/test-t536-status-writer-inventory.mjs \
+            scripts/test-t536-career-summary.mjs \
+            scripts/test-t536-no-last-match-authority.mjs
+      - name: Determinism and RNG isolation
+        run: node --test --test-name-pattern="T5 determinism" scripts/test-t5-regression.mjs
+      - name: Stratified finite long-career matrix
+        run: node scripts/qa-t5-sim.mjs
