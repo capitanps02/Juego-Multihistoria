@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createInitialState } from '../dist/content/initial-state.js';
+import { EVENTS } from '../dist/content/events/index.js';
 import { eventGatesPass } from '../dist/narrative/event-gates.js';
 import { narrativeCausalFacts } from '../dist/simulation/club-contract-intent.js';
 import { certifyPlayerClubLeadershipInPlace } from '../dist/simulation/player-leadership-authority.js';
@@ -8,6 +9,8 @@ import { CANONICAL_REIMPLEMENTATIONS_33A } from '../dist/content/events/30_34/ca
 
 const event = CANONICAL_REIMPLEMENTATIONS_33A.find(row => row.id === 'EVT_33_CAP_001');
 assert.ok(event);
+const activeEvent = EVENTS.find(row => row.id === 'EVT_33_CAP_001');
+assert.ok(activeEvent);
 
 function state33(seed) {
   const state = createInitialState(seed);
@@ -22,9 +25,18 @@ function state33(seed) {
 }
 
 test('A7 EVT_33_CAP_001 uses only factual current-club captain authority', () => {
-  assert.deepEqual(event.gates, [
-    { path: 'facts.playerClubLeadership.currentRole', op: 'eq', value: 'captain' }
-  ]);
+  const factualGate = { path: 'facts.playerClubLeadership.currentRole', op: 'eq', value: 'captain' };
+  assert.deepEqual(event.gates, [factualGate]);
+  assert.equal(activeEvent.gates?.some(gate => gate.path === 'professional.successionPressure'), false);
+  assert.equal(
+    activeEvent.gates?.filter(gate =>
+      gate.path === factualGate.path
+      && gate.op === factualGate.op
+      && gate.value === factualGate.value
+    ).length,
+    1,
+    'active EVT_33_CAP_001 must expose exactly one factual main-captain gate'
+  );
 
   const none = state33(733001);
   none.professional.successionPressure = 100;
