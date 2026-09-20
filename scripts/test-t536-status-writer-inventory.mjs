@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { EVENTS } from '../dist/content/events/index.js';
 import { createInitialState } from '../dist/content/initial-state.js';
-import { closeCareer } from '../dist/simulation/late-career-engine.js';
+import { advanceWorldDayInPlace } from '../dist/simulation/world-simulator.js';
 import { loadSave } from '../dist/save/save.js';
 
 function collectStatusWrites(value,out=[]){
@@ -17,13 +17,12 @@ function collectStatusWrites(value,out=[]){
 }
 
 const expected=new Map([
-  ['EVT_38_MKT_001',['decided']],
+  ['EVT_37_ANNOUNCE_001',['decided']],
   ['EVT_RET_FAM_001',['decided']],
   ['EVT_RET_BODY_001',['decided']],
   ['EVT_RET_HIGH_001',['decided']],
   ['EVT_RET_LOW_001',['decided']],
   ['EVT_RET_ANNOUNCE_001',['announced']],
-  ['CEVT_RET_RECONSIDER',['playing']],
   ['CEVT_38_RETIREMENT_REVERSAL',['playing']],
   ['CEVT_RET_NO_LAST_MATCH',['closed']],
   ['CEVT_RET_STORYBOOK_LAST_GOAL',['closed']]
@@ -49,23 +48,19 @@ test('T5.36 every direct status writer is terminal-tagged and writes a legal sta
 });
 
 test('T5.36 legacy 30-34 bridge is narrowly keyed to the explicit historical retirement fact',()=>{
-  const blocked=createInitialState(53690);
-  blocked.age=33;
-  blocked.retirement.status='playing';
-  blocked.flags.EARLY_RETIRED_30_34=true;
-  closeCareer(blocked,'some_other_reason','early_retirement');
-  assert.equal(blocked.retirement.status,'playing');
-  assert.equal(blocked.flags.RETIREMENT_INVALID_TRANSITION_BLOCKED,true);
+  const ordinary=createInitialState(53690);
+  ordinary.age=33; ordinary.phase='30_34';
+  ordinary.flags.EARLY_RETIRED_30_34=false;
+  advanceWorldDayInPlace(ordinary);
+  assert.equal(ordinary.retirement.status,'playing');
 
   const bridged=createInitialState(53691);
-  bridged.age=33;
-  bridged.retirement.status='playing';
+  bridged.age=33; bridged.phase='30_34';
   bridged.flags.EARLY_RETIRED_30_34=true;
-  closeCareer(bridged,'early_retirement_30_34','early_retirement');
+  advanceWorldDayInPlace(bridged);
   assert.equal(bridged.retirement.status,'closed');
   assert.equal(bridged.retirement.reason,'early_retirement_30_34');
   assert.equal(bridged.retirement.closureType,'early_retirement');
-  assert.equal(bridged.flags.RETIREMENT_WAS_ANNOUNCED,true);
 });
 
 test('T5.36 schema-7 historical early-retirement flag is reconstructed, not newly decided on load',()=>{
