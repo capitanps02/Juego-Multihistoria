@@ -558,3 +558,53 @@ test('A4 recent-six/4 is current-registration-club scoped and unattached fail-cl
   assert.equal(getSportContext(state).recentSixMatchStats, null);
   assert.equal(getSportContext(state).availability.recentSixMatchStats, 'unavailable');
 });
+
+
+test('A4 prior-two/1 excludes current-day bench row from the scoring window', () => {
+  const state = matchDayState(8890);
+  // Two prior factual matches.
+  state.date = '2026-07-22'; state.runtime.day = 21; state.runtime.seasonDay = 21;
+  const first = recordOfficialMatchInPlace(state, { appeared: true, debutOccurred: false, injuryUnavailable: false });
+  assert.ok(first?.stats);
+  state.date = '2026-07-29'; state.runtime.day = 28; state.runtime.seasonDay = 28;
+  const second = recordOfficialMatchInPlace(state, { appeared: true, debutOccurred: false, injuryUnavailable: false });
+  assert.ok(second?.stats);
+
+  // Current match/lineup fact must not be included in priorTwo.
+  state.date = '2026-08-05'; state.runtime.day = 35; state.runtime.seasonDay = 35;
+  const current = recordOfficialMatchInPlace(state, { appeared: false, debutOccurred: false, injuryUnavailable: false });
+  assert.ok(current);
+  const before = structuredClone(state);
+  const prior = priorClubPlayerMatchStats(state, 2);
+  assert.ok(prior);
+  assert.deepEqual(prior.fixtureIds, [first.id, second.id]);
+  assert.equal(prior.goals, first.stats.goals + second.stats.goals);
+  assert.equal(getSportContext(state).priorTwoMatchStats?.goals, prior.goals);
+  assert.equal(getCurrentMatchContext(state).fixtureId, current.id);
+  assert.equal(getCurrentMatchContext(state).playerOnBench, current.player.onBench);
+  assert.deepEqual(state, before);
+});
+
+test('A4 prior-two/2 fails closed for incomplete history, transfer and unattached state', () => {
+  const state = matchDayState(8891);
+  state.date = '2026-07-29'; state.runtime.day = 28; state.runtime.seasonDay = 28;
+  assert.ok(recordOfficialMatchInPlace(state, { appeared: true, debutOccurred: false, injuryUnavailable: false }));
+  state.date = '2026-08-05'; state.runtime.day = 35; state.runtime.seasonDay = 35;
+  assert.equal(priorClubPlayerMatchStats(state, 2), null);
+
+  state.date = '2026-08-12'; state.runtime.day = 42; state.runtime.seasonDay = 42;
+  assert.ok(recordOfficialMatchInPlace(state, { appeared: true, debutOccurred: false, injuryUnavailable: false }));
+  assert.ok(priorClubPlayerMatchStats(state, 2));
+
+  state.professional.registrationClub = 'NEW_CLUB'; state.club = 'NEW_CLUB';
+  assert.equal(priorClubPlayerMatchStats(state, 2), null);
+  state.employment = {
+    version: 1, status: 'unattached', since: state.date,
+    previous: {
+      club: 'NEW_CLUB', ownerClub: state.professional.ownerClub, registrationClub: 'NEW_CLUB',
+      salaryMonthly: state.contract.salaryMonthly, endedDate: state.date, reason: 'contract_expired'
+    }
+  };
+  assert.equal(getSportContext(state).priorTwoMatchStats, null);
+  assert.equal(getSportContext(state).availability.priorTwoMatchStats, 'unavailable');
+});
