@@ -1,0 +1,37 @@
+name: A13 freeze current A7 #720
+on:
+  push:
+    branches:
+      - a13/a7-next-prefreeze-after-shared
+permissions:
+  contents: write
+jobs:
+  freeze:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: a13/a7-next-prefreeze-after-shared
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Generate exact active source and registries
+        run: |
+          if [ -f "qa/fixtures/t5.1/post-t51-sources/4ac0ff3cb30f950f8241aee28cf47bfc092b7dc35fc7f8c703caf7602b127670.json" ]; then
+            echo "already frozen"
+            exit 0
+          fi
+          node scripts/freeze-t51-active-source.mjs
+          node scripts/generate-t51-post-legacy-registry.mjs
+          node scripts/generate-t51-offer-bridge-evidence.mjs
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add qa/fixtures/t5.1/post-t51-sources/4ac0ff3cb30f950f8241aee28cf47bfc092b7dc35fc7f8c703caf7602b127670.json src/session/post-t51-legacy-registry.ts src/session/frozen-offer-bridge-evidence.ts
+          git commit -m "A13 freeze: serialize next A7 identity 4ac0ff3cb30f"
+          git push origin HEAD:a13/a7-next-prefreeze-after-shared
