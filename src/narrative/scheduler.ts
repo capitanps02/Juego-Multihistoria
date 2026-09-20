@@ -8,6 +8,7 @@ import { eligibleChoices, eventWithEligibleChoices } from "./choice-eligibility.
 import { eventGatesPass } from "./event-gates.js";
 import { mandatoryTransitionPriorityActive } from "./transition-priority.js";
 import { employmentStatus } from "../simulation/employment.js";
+import { a8CanonicalRuntimeEligible } from "./a8-runtime-eligibility.js";
 
 export interface SchedulerOptions { qa?: boolean; currentTick?: number; ignoreRhythmGate?: boolean; }
 type Period = { key: string; cap: number };
@@ -84,6 +85,7 @@ function isEligible(state:GameState,event:EventDefinition,options:SchedulerOptio
   const employment = employmentStatus(state);
   if ((employment === "unattached" || employment === "expired_pending_resolution") && ["sport","team","captaincy"].includes(event.family)) return false;
   const maxAge=event.ageWindow[1]??Infinity; if(state.age<event.ageWindow[0]||state.age>maxAge||state.phase!==event.phase)return false;
+  if(!a8CanonicalRuntimeEligible(state,event)) return false;
   const mandatoryTransition=mandatoryTransitionPriorityActive(state,event);
   if(!mandatoryTransition && state.phase==="34_plus" && event.family!=="conditional" && !(event.tags??[]).includes("retirement_terminal")){
     if(ctx.finalPrincipalCount>=20)return false;
