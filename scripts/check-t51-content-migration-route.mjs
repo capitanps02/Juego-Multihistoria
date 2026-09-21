@@ -9,11 +9,19 @@ import {
   legacyContentSource
 } from '../dist/session/content-migration.js';
 import { PRE_T51_CONTENT_IDENTITY } from '../dist/session/pre-t51-legacy-registry.js';
+import { PRE_T41_CONTENT_IDENTITY } from '../dist/session/pre-t41-legacy-registry.js';
 import { migrationSourceCoverage } from './t51-migration-source-policy.mjs';
 
 const currentIdentity = await contentIdentity(EVENTS);
 const activeEvidence = await buildActiveEventEvidence(EVENTS, currentIdentity);
-const sourceIdentities = Object.keys(LEGACY_CONTENT_SOURCES);
+// Pre-T4.1 evidence validates retained decisions in already-migrated saves.
+// It does not authorize migration of a session whose active catalog is pre-T4.1.
+assert.equal(CONTENT_MIGRATION_ROUTES.some(route =>
+  route.sourceContentIdentity === PRE_T41_CONTENT_IDENTITY ||
+  route.targetContentIdentity === PRE_T41_CONTENT_IDENTITY
+), false, 'Provenance-only pre-T4.1 evidence must not become a migration endpoint');
+const sourceIdentities = Object.keys(LEGACY_CONTENT_SOURCES)
+  .filter(identity => identity !== PRE_T41_CONTENT_IDENTITY);
 
 if (currentIdentity === PRE_T51_CONTENT_IDENTITY) {
   console.log(JSON.stringify({

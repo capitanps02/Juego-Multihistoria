@@ -1,4 +1,5 @@
 import test from 'node:test';
+import './test-pre-t41-history-provenance.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { GameSession, SESSION_VERSION } from '../dist/session/game-session.js';
