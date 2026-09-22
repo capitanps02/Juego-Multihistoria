@@ -14,7 +14,7 @@ Canonical state wins. A17 does not rewrite narrative arcs. Where an active scene
 | EVT_18_PRS_001 | recent factual appearance <= 7 days | Body says "Tras el partido"; FIRST_TEAM_ATTENTION alone is insufficient. |
 | EVT_19_TEAM_001 | recent factual appearance <= 7 days | Body says "Tras un gran partido tuyo"; at least a factual appearance is required. |
 | CEVT_18_CCH_01 | recent certified coach change + previous coach identity NPC_CCH_01 | COACH_FIRED alone cannot prove that Montalbán was the coach who left. |
-| EVT_19_CCH_001 | factual current coach | Scene says the current second-year coach is known. |
+| EVT_19_CCH_001 | current coach must still be NPC_CCH_01 | Its current choices write Montalbán-specific relationship effects; a promoted/new coach must not inherit them. |
 | CEVT_19_INJ_01 | canonical active injury | LONG_INJURY/history must not keep an injury scene alive after clearance. |
 | EVT_19_JAN_001 | at least 2 real eligible CareerOffers | "Ves ofertas formales" cannot be produced from a January window alone. |\n| EVT_24_MKT_001 | at least 3 real eligible CareerOffers | The scene explicitly presents three offer profiles; one offer is insufficient. |\n| EVT_24_JAN_001 | real eligible transfer offer | marketHeat is interest, not an external formal offer. |\n| CEVT_28_MKT_01 | real eligible CareerOffer | marketHeat is interest, not a 48-hour offer. |
 | CEVT_32_RICH_01 | real eligible CareerOffer | marketHeat cannot prove an improved offer. |
@@ -33,7 +33,7 @@ Canonical state wins. A17 does not rewrite narrative arcs. Where an active scene
 These claims remain stronger than the currently persisted authority and should be rewritten or given a richer producer before re-enabling stronger wording:
 
 1. **EVT_19_TEAM_001** — A17 can prove a recent appearance, not that it was a "gran partido". Keep the guard; soften quality language unless a performance-quality fact is introduced.
-2. **CEVT_18_CCH_01** — the existing security-firing producer deliberately records coach-change chronology without inventing previous/new identities. With current authority, the scene remains blocked unless the previous coach identity is independently certified. A18 may rewrite the scene generically ("sale el entrenador") or another owner may enrich the producer from a real identity authority.
+2. **CEVT_18_CCH_01 / EVT_19_CCH_001** — the existing security-firing producer deliberately records coach-change chronology without inventing previous/new identities. The firing scene stays blocked unless the previous coach identity is independently certified. The second-year coach scene stays Montalbán-only because all current relationship effects target `NPC_CCH_01`; A18 should make those effects resolve the factual current coach before allowing promoted/replacement coaches.
 3. **CEVT_24_TOURN_01** — A17 can prove final selection, but not that entry happened *because of an injury*. Soften the causal phrase unless an injury-replacement selection fact is added.
 4. **CEVT_24_TOURN_02** — A17 can prove final omission, but not "por uno". Soften the margin/causal wording unless list-rank authority is added.
 5. **EVT_24_MED_001** — prose mixes "lesión muscular de bajo grado" with "señal compatible con riesgo". The current gate only proves final context; bodyLoad/risk is not an injury diagnosis. Split or soften the diagnosis wording rather than adding a false injury guard.
