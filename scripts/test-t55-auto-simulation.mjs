@@ -261,3 +261,32 @@ test('T14.16 manual advance cannot interleave with an active AUTO-SIM block', as
   );
   assert.deepEqual(session.exportSnapshot(), before);
 });
+
+
+test('T14.17 failed persistence rolls back the weekly unit and can be paused safely', async () => {
+  let fail = false;
+  const session = await GameSession.create(1, {
+    events: [],
+    microfeeds: false,
+    sessionId: 't14-17',
+    commit: async () => {
+      if (fail) throw new Error('write failed');
+    }
+  });
+  await session.dispatch(command(session, 'auto', { action: 'start' }));
+  const before = session.exportSnapshot();
+  assert.equal(before.state.runtime.day, 7);
+  assert.equal(session.getView().simulation.mode, 'auto_simulating');
+
+  fail = true;
+  await assert.rejects(
+    session.dispatch(command(session, 'auto', { action: 'step' })),
+    /write failed/
+  );
+  assert.deepEqual(session.exportSnapshot(), before);
+
+  fail = false;
+  await session.dispatch(command(session, 'auto', { action: 'pause' }));
+  assert.equal(session.getView().simulation.mode, 'paused');
+  assert.equal(session.exportSnapshot().state.runtime.day, 7);
+});
