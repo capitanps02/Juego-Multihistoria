@@ -115,7 +115,18 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
       closed:['Carrera finalizada','La etapa como futbolista ha terminado. Recorre tu carrera y el epílogo.']
     }[v.retirementStatus];
     if(!copy)return null;
-    const p=panel(copy[0]);p.classList.add('retirement-panel');p.append(el('p',copy[1],'muted'));return p;
+    const p=panel(copy[0]);p.classList.add('retirement-panel');p.append(el('p',copy[1],'muted'));
+    if(v.retirementStatus==='closed'){
+      const totals=v.careerSeasons.reduce((acc,row)=>{acc.matches+=row.appearances;acc.goals+=row.goals;acc.assists+=row.assists;return acc;},{matches:0,goals:0,assists:0});
+      const summary=el('div',undefined,'retirement-summary');
+      for(const [label,value] of [['Partidos',totals.matches],['Goles',totals.goals],['Asistencias',totals.assists]]){const item=el('div');item.append(el('span',label),el('strong',String(value)));summary.append(item);}
+      p.append(summary);
+      const actions=el('div',undefined,'dialog-actions');
+      if(view!=='career')actions.append(button('Ver carrera',()=>navigate('career'),'primary'));
+      actions.append(button('Empezar otra historia',()=>navigate('save')));
+      p.append(actions);
+    }
+    return p;
   }
   function interruptionText(type){return ({decision:'Ha aparecido una decisión que necesita tu respuesta.',offer:'Ha llegado una oferta que necesita tu respuesta.',important_injury:'Una lesión importante requiere atención.',season_transition:'Ha cambiado la temporada o una etapa de tu carrera.',retirement:'Tu carrera ha alcanzado su cierre.',max_auto_weeks:'El tramo automático ha llegado a su límite.'})[type]||'La simulación se ha detenido en un momento relevante.';}
   function simulationSummary(v){
