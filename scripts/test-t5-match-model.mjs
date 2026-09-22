@@ -1044,3 +1044,26 @@ test('T15 corrupted persisted performance context fails closed at save boundary'
   raw.world.sportMatchModel.fixtures[0].performanceContext.form = 999;
   assert.throws(() => loadSave(JSON.stringify(raw)), invalidSave);
 });
+
+
+test('T15/A17 closed retirement blocks sports mutation and match production', () => {
+  const state = weeklySportState(15999);
+  state.retirement.status = 'closed';
+  state.retirement.closedDate = state.date;
+  const before = {
+    appearances: state.sport.appearances,
+    form: state.sport.form,
+    roleScore: state.sport.roleScore,
+    fatigue: state.body.fatigue,
+    fitness: state.body.fitness,
+    rng: structuredClone(state.rngState.football)
+  };
+  advanceWorldDayInPlace(state);
+  assert.equal(state.sport.appearances, before.appearances);
+  assert.equal(state.sport.form, before.form);
+  assert.equal(state.sport.roleScore, before.roleScore);
+  assert.equal(state.body.fatigue, before.fatigue);
+  assert.equal(state.body.fitness, before.fitness);
+  assert.deepEqual(state.rngState.football, before.rng);
+  assert.equal(currentOfficialMatch(state), null);
+});
