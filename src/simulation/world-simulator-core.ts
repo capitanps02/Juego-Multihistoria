@@ -195,8 +195,11 @@ function footballWeek(state: GameState): void {
   }
 
   const month = Number(state.date.slice(5, 7));
+  const officialSeasonWeek = month >= 8 || month <= 5;
+  const suspendedForFixture = num(state.sport.suspensionMatches, 0) > 0;
+  const careerClosed = state.retirement.status === "closed";
   let debutFromAppearance = false;
-  if ((month >= 8 || month <= 5) && role > 24) {
+  if (officialSeasonWeek && role > 24) {
     const appearanceChance = clamp((role - 15) / 85, 0.08, 0.92);
     const appearanceRolled = rng.next() < appearanceChance;
     if (appearanceRolled) {
@@ -207,7 +210,9 @@ function footballWeek(state: GameState): void {
       const unavailable =
         state.body.acuteInjury === true ||
         state.flags.RECOVERING_INJURY === true ||
-        num(state.world.injuryWeeksRemaining, 0) > 0;
+        num(state.world.injuryWeeksRemaining, 0) > 0 ||
+        suspendedForFixture ||
+        careerClosed;
       if (!unavailable) {
         state.sport.appearances = num(state.sport.appearances) + 1;
         const minutes = clamp(num(state.sport.minutesShare) + (minutesRoll * 4 + role / 40), 0, 100);
@@ -224,6 +229,10 @@ function footballWeek(state: GameState): void {
         }
       }
     }
+  }
+
+  if (officialSeasonWeek && suspendedForFixture) {
+    state.sport.suspensionMatches = Math.max(0, Math.trunc(num(state.sport.suspensionMatches, 0)) - 1);
   }
 
   const market = clamp(num(state.reputation.marketHeat) * 0.82 + role * 0.10 + num(state.reputation.mediaHeat) * 0.08 + (rng.next() - 0.5) * 5);
