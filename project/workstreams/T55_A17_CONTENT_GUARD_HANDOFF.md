@@ -26,7 +26,7 @@ Canonical state wins. A17 does not rewrite narrative arcs. Where an active scene
 
 ## Canonical override note
 
-`CEVT_RET_RECONSIDER` is intentionally **not** guarded as an offer scene. T5.36 rewrites that legacy ID at runtime into the private `decided` reconsideration window; the canonical override no longer claims an offer exists. Guarding from the pre-override text would be a false dependency.
+`CEVT_RET_RECONSIDER` is intentionally **not** guarded as an active offer scene. The final 34+ catalogue does not register that legacy ID; `src/content/events/34_plus/index.ts` keeps it only as frozen historical evidence while canonical A9 terminal IDs own active retirement flow. Guarding from the unregistered legacy text would create a false runtime dependency.
 
 ## A18 text/canon follow-up
 
