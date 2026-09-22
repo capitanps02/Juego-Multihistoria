@@ -140,6 +140,27 @@ export async function assertSessionSnapshot(value: unknown, context: SessionVali
   }
   assertGameState(s.state);
   const state = s.state as SessionSnapshot["state"], receipts = list(s.receipts, "receipts"), journal = list(s.journal, "journal");
+  if (s.autoSimulation !== undefined) {
+    const flow = record(s.autoSimulation, "autoSimulation");
+    const mode = flow.mode as string;
+    const baseline = flow.baseline;
+    const summary = flow.summary;
+    const hasDecisionSurface = s.pendingDecision !== null || s.pendingResult !== null || Boolean(state.market?.pending);
+    if (mode === "idle") ensure(baseline === null, "autoSimulation.baseline", "IDLE no debe conservar un bloque activo");
+    else ensure(baseline !== null, "autoSimulation.baseline", "el flujo temporal activo necesita baseline");
+    if (mode === "auto_simulating" || mode === "paused") {
+      ensure(!hasDecisionSurface, "autoSimulation.mode", "estado temporal incompatible con una situación pendiente");
+    }
+    if (mode === "waiting_for_decision") {
+      ensure(hasDecisionSurface, "autoSimulation.mode", "WAITING_FOR_DECISION sin situación pendiente");
+    }
+    if (mode === "showing_summary" || mode === "season_transition") {
+      ensure(summary !== null && !hasDecisionSurface, "autoSimulation.mode", "resumen incompatible o ausente");
+    }
+    if (mode === "retirement") {
+      ensure(state.retirement.status === "closed" && !hasDecisionSurface, "autoSimulation.mode", "RETIREMENT debe ser terminal");
+    }
+  }
   ensure(receipts.length === s.revision, "receipts", "la revisión no coincide con los comandos confirmados");
 
   const commandOfferHistory: NonNullable<typeof state.market>["history"] = [];
