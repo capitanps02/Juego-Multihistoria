@@ -6,6 +6,7 @@ import {
   closeLeagueObjectiveInPlace,
   currentCareerMatchResult,
   currentOfficialMatch,
+  detailedSeasonPlayerStats,
   getSportMatchModelStore,
   inspectSportMatchModelStore,
   lastPlayerAppearance,
@@ -743,8 +744,9 @@ test('T15.12-T15.14 season aggregates are exact sums of persisted starts, minute
     }
   }
   const rows = getSportMatchModelStore(state).fixtures;
-  const stats = seasonPlayerStats(state);
-  assert.ok(stats);
+  const legacyStats = seasonPlayerStats(state);
+  const stats = detailedSeasonPlayerStats(state);
+  assert.ok(legacyStats && stats);
   assert.equal(stats.appearances, rows.filter(row => row.player.appeared).length);
   assert.equal(stats.starts, rows.filter(row => row.player.started).length);
   assert.equal(stats.minutes, rows.reduce((sum, row) => sum + row.player.minutes, 0));
