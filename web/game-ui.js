@@ -58,13 +58,50 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
     return button('Simular semana',()=>run('continue',{maxDays:7}),'primary',{blockedWhenPaused:true});
   }
   function hero(v){const h=el('article',undefined,'hero');h.append(photo('hero_player'));const c=el('div',undefined,'hero-copy');c.append(el('span','TU HISTORIA, POR ESCRIBIR','eyebrow'),el('h1','Una vida.\nMil decisiones.'),el('p',position(v)+' · '+v.age+' años'),el('p',club(v),'muted'));h.append(c);return h;}
-  function stats(v){const p=panel('Tu momento');for(const [label,value]of[['Forma',v.form],['Estado físico',v.fitness],['Fatiga',v.fatigue]]){const row=el('div',undefined,'meter');row.append(el('span',label),el('strong',Math.round(value)+' / 100'));const meter=el('progress');meter.max=100;meter.value=value;meter.setAttribute('aria-label',label);row.append(meter);p.append(row);}p.append(el('p',v.appearances+' partidos disputados','muted'));return p;}
-  function home(v,main){const grid=el('div',undefined,'home-grid');grid.append(hero(v));const next=panel(v.screen==='epilogue'?'El final de un capítulo':'Lo que viene ahora');next.classList.add('next');next.append(photo('stadium_bg','card-bg'));const content=el('div',undefined,'next-content');content.append(el('span',date(v.date),'eyebrow'),el('h2',v.offer?.reason||v.decision?.title||v.result?.title||(v.screen==='epilogue'?'Una carrera para recordar':'El siguiente paso.')),
+  function stats(v){
+    const p=panel('Tu momento');
+    const rows=[
+      ['Forma',v.form,'Rendimiento actual: refleja cómo estás compitiendo ahora.'],
+      ['Estado físico',v.fitness,'Condición corporal y disponibilidad física.'],
+      ['Fatiga',v.fatigue,'Desgaste acumulado: cuanto más alta, peor.']
+    ];
+    for(const [label,value,help] of rows){
+      const row=el('div',undefined,'meter');
+      const name=el('span',label);name.title=help;
+      row.append(name,el('strong',Math.round(value)+' / 100'));
+      const meter=el('progress');meter.max=100;meter.value=value;meter.setAttribute('aria-label',label+'. '+help);
+      row.append(meter,el('small',help,'meter-help'));p.append(row);
+    }
+    p.append(el('p',v.appearances+' partidos disputados','muted'));
+    return p;
+  }
+  function retirementPanel(v){
+    if(v.retirementStatus==='playing')return null;
+    const copy={
+      decided:['Considerando el futuro','Has decidido encarar el final de tu carrera. El juego conservará este estado hasta que la historia avance.'],
+      announced:['Retirada anunciada','Tu decisión ya es pública. La carrera continúa hasta su cierre según el estado del juego.'],
+      closed:['Carrera finalizada','La etapa como futbolista ha terminado. Recorre tu carrera y el epílogo.']
+    }[v.retirementStatus];
+    if(!copy)return null;
+    const p=panel(copy[0]);p.classList.add('retirement-panel');p.append(el('p',copy[1],'muted'));return p;
+  }
+  function home(v,main){
+    const grid=el('div',undefined,'home-grid');
+    grid.append(hero(v));
+    const next=panel(v.screen==='epilogue'?'El final de un capítulo':'Lo que viene ahora');next.classList.add('next');next.append(photo('stadium_bg','card-bg'));
+    const content=el('div',undefined,'next-content');content.append(el('span',date(v.date),'eyebrow'),el('h2',v.offer?.reason||v.decision?.title||v.result?.title||(v.screen==='epilogue'?'Una carrera para recordar':'El siguiente paso.')),
       el('p',v.offer?'Hay una propuesta de contrato que necesita tu respuesta.':v.decision?'Hay un momento que necesita tu respuesta.':v.result?'Tu decisión ya forma parte de esta historia.':v.screen==='epilogue'?'Mira atrás y recorre los momentos que te han traído hasta aquí.':'Entrenamientos, partidos y conversaciones. Avanza hasta que la vida te pida decidir.','muted'),mainAction(v));next.append(content);grid.append(next,stats(v));
     const recent=panel('El último capítulo');recent.classList.add('recent');recent.append(photo('hero_player','news-thumb'));const row=v.journal.at(-1);recent.append(el('h3',row?.title||'Todo empieza en Valdoria'),el('p',row?.messages[0]||'Una oportunidad de acercarte al primer equipo. Todavía queda todo por decidir.','muted'),button('Recorrer mi historia',()=>navigate('career')));grid.append(recent);
-    const tutorial=panel('Cómo se juega');tutorial.classList.add('tutorial');tutorial.append(el('p','Simula una semana para avanzar. Cuando aparezca un momento, lee lo que sabes, revisa lo que no está claro y elige una respuesta. Después podrás ver el resultado y continuar.','muted'));grid.append(tutorial);
+    const tutorial=panel('Cómo se juega');tutorial.classList.add('tutorial');
+    tutorial.append(el('p','Multihistoria es una novela y simulador narrativo de carrera futbolística: los partidos se resuelven automáticamente y tú intervienes cuando una decisión puede cambiar la trayectoria.','tutorial-lead'));
+    const rules=el('ul',undefined,'tutorial-rules');for(const text of ['Simula el tiempo: entrenamientos, partidos y mundo avanzan.','Decide cuando aparezca un momento importante.','Tus decisiones y relaciones dejan memoria en la carrera.'])rules.append(el('li',text));tutorial.append(rules);
+    const glossary=el('div',undefined,'tutorial-glossary');for(const [title,copy] of [['Forma','Rendimiento actual.'],['Estado físico','Condición corporal y disponibilidad.'],['Fatiga','Desgaste acumulado; valores altos son peores.']]){const item=el('div');item.append(el('strong',title),el('small',copy));glossary.append(item);}tutorial.append(glossary);grid.append(tutorial);
     const people=panel('Tu entorno');const contacts=v.contacts.filter(c=>['NPC_CCH_01','NPC_MED_01','NPC_FAM_01'].includes(c.id));for(const c of contacts){const r=el('div',undefined,'contact-row');r.append(photo(portrait(c.id),'avatar'));const info=el('div');info.append(el('strong',c.name),el('p',c.role,'muted'));r.append(info);people.append(r);}people.append(button('Ver relaciones',()=>navigate('relations')));grid.append(people);
-    const chapter=panel('Tu carrera');chapter.append(el('span',v.season.replace('-',' / 20'),'eyebrow'),el('div',String(v.decisionsMade),'big-number'),el('p',v.decisionsMade===1?'decisión que cuenta':'decisiones que cuentan','muted'),el('p','Tu recorrido se construye con lo que eliges.'),button('Ver recorrido',()=>navigate('career')));grid.append(chapter);main.append(grid);if(v.offerHistory.length){const h=v.offerHistory.at(-1),p=panel('Tu última respuesta de contrato');p.append(el('p',h.explanation));main.append(p);}}
+    const chapter=panel('Tu carrera');chapter.append(el('span',v.season.replace('-',' / 20'),'eyebrow'),el('div',String(v.decisionsMade),'big-number'),el('p',v.decisionsMade===1?'decisión que cuenta':'decisiones que cuentan','muted'),el('p','Tu recorrido se construye con lo que eliges y con lo que ocurre en el campo.'),button('Ver recorrido',()=>navigate('career')));grid.append(chapter);
+    main.append(grid);
+    const retirement=retirementPanel(v);if(retirement)main.append(retirement);
+    if(v.offerHistory.length){const h=v.offerHistory.at(-1),p=panel('Tu última respuesta de contrato');p.append(el('p',h.explanation));main.append(p);}
+  }
   function portrait(id){return ({NPC_CCH_01:'portrait_coach',NPC_MED_01:'portrait_doctor',NPC_FAM_01:'portrait_mother',NPC_FAM_02:'portrait_father',NPC_AGT_01:'portrait_agent',NPC_AGT_02:'portrait_agent'})[id]||null;}
   function renderDecision(v,main){if(v.screen==='offer'){renderOffer(v,main);return;}const d=v.decision, result=v.screen==='result';if(d)lastArt=['preseason','sport','team','captaincy','tactical'].includes(d.family)?'prematch_scene':'stadium_bg';
     main.classList.add('cinema');main.append(photo(lastArt,'cinema-bg'));const top=el('div',undefined,'cinema-top');top.append(button('Volver a Inicio',closeCinematic,'glass'),el('span',date(v.date)+' · '+club(v),'eyebrow'));main.append(top);
@@ -83,9 +120,51 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
     p.append(choices,button('Volver a Inicio',closeCinematic));main.append(p);
   }
   function offerHistory(v,main){for(const h of [...v.offerHistory].reverse()){const p=panel(h.offer.reason);p.append(el('time',date(h.offer.date),'eyebrow'),el('p',h.explanation),el('p',clubName(h.offer.terms.club)+' · '+money(h.offer.terms.salary)+' al mes · '+h.offer.terms.months+' meses','muted'));main.append(p);}}
-  function career(v,main){offerHistory(v,main);main.append(el('span','CADA DECISIÓN DEJA HUELLA','eyebrow'),el('h1','Tu carrera. Tu historia.'));if(v.ageMilestones.length){const milestones=panel('Hitos de edad');for(const m of v.ageMilestones)milestones.append(el('p',`${m.age} años · ${date(m.date)} · ${clubName(m.club)} · ${m.signature}`,'muted'));main.append(milestones);}const list=el('div',undefined,'timeline');if(!v.journal.length)list.append(el('p','El primer capítulo está a punto de empezar.','muted'));for(const row of [...v.journal].reverse()){const item=panel(row.title);item.prepend(el('time',date(row.date),'eyebrow'));item.append(el('p',row.choiceLabel,'chosen'));row.messages.forEach(m=>item.append(el('p',m,'muted')));list.append(item);}main.append(list);}
-  function world(v,main){main.append(el('span','MÁS ALLÁ DEL TERRENO DE JUEGO','eyebrow'),el('h1','El mundo sigue.'));const banner=el('article',undefined,'world-banner');banner.append(photo('stadium_bg'));banner.append(el('h2','El fútbol nunca se detiene.'));main.append(banner);const news=el('div',undefined,'news-grid');if(!v.news.length)news.append(el('p','Todavía no han llegado noticias a tu carrera. Las novedades aparecerán mientras avanzas.','muted'));for(const n of [...v.news].reverse().slice(0,30)){const p=panel(date(n.date));p.append(el('p',n.text));news.append(p);}main.append(news);}
-  function relations(v,main){main.append(el('span','NADIE LLEGA SOLO','eyebrow'),el('h1','Las personas de tu historia.'),el('p','Entrenadores, compañeros, familia. Lo que ocurra entre vosotros se recordará en tu recorrido.','muted'));const grid=el('div',undefined,'people-grid');for(const c of v.contacts){const p=panel(c.name);p.prepend(portrait(c.id)?photo(portrait(c.id),'person-portrait'):el('div',c.name.split(' ').map(x=>x[0]).slice(0,2).join(''),'initials'));p.append(el('p',c.role,'muted'));grid.append(p);}main.append(grid);}
+  function career(v,main){
+    main.append(el('span','HISTORIAL VIVO DE TU TRAYECTORIA','eyebrow'),el('h1','Tu carrera.'));
+    const retirement=retirementPanel(v);if(retirement)main.append(retirement);
+    if(!v.careerSeasons.length){
+      const empty=panel('Tu carrera empieza aquí');empty.classList.add('career-empty');
+      empty.append(el('p',v.age+' años · '+club(v)+' · Temporada '+v.season.replace('-',' / 20'),'career-start'));
+      empty.append(el('p',v.appearances===0?'Aún no has debutado. Los partidos, hitos y cambios importantes aparecerán aquí.':'Tu historial deportivo empezará a agruparse por temporada cuando existan registros oficiales.','muted'));
+      main.append(empty);
+    }else{
+      const seasons=el('div',undefined,'season-grid');
+      for(const s of [...v.careerSeasons].reverse()){
+        const p=panel('Temporada '+s.season.replace('-',' / 20'));
+        p.append(el('p',clubName(s.club),'season-club'));
+        for(const [label,value] of [['Partidos',s.appearances],['Titularidades',s.starts],['Minutos',s.minutes],['Goles',s.goals],['Asistencias',s.assists],['Valoración media',s.averageRating===null?'—':s.averageRating]]){const r=el('div',undefined,'data-row');r.append(el('span',label),el('strong',String(value)));p.append(r);}
+        if(s.appearances>0)p.append(el('p','Debut oficial registrado','career-milestone'));
+        seasons.append(p);
+      }
+      main.append(seasons);
+    }
+    if(v.latestMatch){
+      const m=v.latestMatch,p=panel('Último partido oficial');
+      p.append(el('p',clubName(m.club)+' · '+m.opponent,'season-club'));
+      for(const [label,value] of [['Competición',m.competition],['Titular',m.started?'Sí':'No'],['Minutos',m.minutes],['Goles',m.goals],['Asistencias',m.assists],['Valoración',m.rating===null?'—':m.rating]]){const r=el('div',undefined,'data-row');r.append(el('span',label),el('strong',String(value)));p.append(r);}
+      if(m.milestones.length)p.append(el('p','Hitos: '+m.milestones.map(x=>x==='debut'?'debut':x==='first_start'?'primera titularidad':x==='first_goal'?'primer gol':x==='first_assist'?'primera asistencia':x.replace('appearance_','partido nº ')).join(' · '),'career-milestone'));
+      main.append(p);
+    }
+    if(v.ageMilestones.length){const milestones=panel('Hitos de edad');for(const m of v.ageMilestones)milestones.append(el('p',`${m.age} años · ${date(m.date)} · ${clubName(m.club)} · ${m.signature}`,'muted'));main.append(milestones);}
+    offerHistory(v,main);
+    const history=panel('Decisiones y capítulos');const list=el('div',undefined,'timeline');if(!v.journal.length)list.append(el('p','Aún no hay decisiones registradas. Cuando llegue el primer capítulo, aparecerá aquí.','muted'));for(const row of [...v.journal].reverse()){const item=panel(row.title);item.prepend(el('time',date(row.date),'eyebrow'));item.append(el('p',row.choiceLabel,'chosen'));row.messages.forEach(m=>item.append(el('p',m,'muted')));list.append(item);}history.append(list);main.append(history);
+  }
+  function world(v,main){
+    main.append(el('span','MÁS ALLÁ DEL TERRENO DE JUEGO','eyebrow'),el('h1','El mundo sigue.'),el('p','Resultados, movimientos y noticias pueden avanzar aunque no exista una decisión narrativa esta semana.','muted'));
+    const banner=el('article',undefined,'world-banner');banner.append(photo('stadium_bg'));banner.append(el('h2','El fútbol nunca se detiene.'));main.append(banner);
+    const news=el('div',undefined,'news-grid');if(!v.news.length)news.append(el('p','No hay noticias destacadas esta semana. Sigue simulando para ver cómo evoluciona el mundo.','muted'));for(const n of [...v.news].reverse().slice(0,30)){const p=panel(date(n.date));p.append(el('p',n.text));news.append(p);}main.append(news);
+  }
+  function relations(v,main){
+    main.append(el('span','NADIE LLEGA SOLO','eyebrow'),el('h1','Las personas de tu historia.'),el('p','Entrenadores, compañeros y familia. Cada tarjeta identifica el vínculo que forma parte de tu recorrido; no muestra métricas internas del sistema.','muted'));
+    const grid=el('div',undefined,'people-grid');
+    if(!v.contacts.length)grid.append(el('p','Aún no has creado vínculos relevantes.','muted'));
+    for(const c of v.contacts){
+      const p=panel(c.name);p.prepend(portrait(c.id)?photo(portrait(c.id),'person-portrait'):el('div',c.name.split(' ').map(x=>x[0]).slice(0,2).join(''),'initials'));
+      p.append(el('span','Relación con '+c.name,'relationship-label'),el('p',c.role,'muted'));grid.append(p);
+    }
+    main.append(grid);
+  }
   function profile(v,main){main.append(el('span','EL PROTAGONISTA ERES TÚ','eyebrow'),el('h1','Tu perfil.'));const grid=el('div',undefined,'profile-grid');grid.append(hero(v));const p=panel('En este momento');for(const [label,value]of[['Edad',v.age+' años'],['Posición',position(v)],['Club',club(v)],['Partidos',v.appearances],['Salario mensual',money(v.salaryMonthly)],['Contrato restante',v.contractMonths+' meses']]){const r=el('div',undefined,'data-row');r.append(el('span',label),el('strong',String(value)));p.append(r);}p.append(stats(v));grid.append(p);main.append(grid);}
   async function download(){try{const raw=await store.readRaw();if(!raw)throw Error('No hay una partida guardada.');downloadText(raw,'multihistoria-partida.json');}catch(e){message=e.message;render();}}
   function downloadText(raw,filename){if(win.AndroidBridge?.saveTextFile){win.AndroidBridge.saveTextFile(filename,raw);return;}const url=URL.createObjectURL(new Blob([raw],{type:'application/json'}));const a=el('a');a.href=url;a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(url),1500);}
@@ -93,8 +172,20 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
       await store.write(candidate.exportSnapshot(),previous);savedRaw=JSON.stringify(candidate.exportSnapshot());session=candidate;view='home';cinematic=false;replaceRouteState();
     });}catch(e){message='No se pudo importar. '+e.message;busy=false;render();}}
   function confirmReplace(title,body,accept){const dialog=el('dialog',undefined,'dialog');dialog.append(el('h2',title),el('p',body));const actions=el('div',undefined,'dialog-actions');actions.append(button('Cancelar',()=>dialog.close()),button('Confirmar',async()=>{dialog.close();busy=true;message='';render();try{await accept();}catch(e){message=e.message;}finally{busy=false;render();}},'primary'));dialog.append(actions);shell.append(dialog);dialog.addEventListener('close',()=>dialog.remove());dialog.showModal();}
-  function saves(v,main){main.append(el('span','CONTINÚA DONDE LO DEJASTE','eyebrow'),el('h1','Tu partida.'));const p=panel('Guardada en este navegador');p.append(el('p',v?`${date(v.date)} · ${decisionCount(v.decisionsMade)}`:'Partida sin abrir','muted'),el('p','La partida local y PlayCanvas se guardan por separado. Descarga una copia aquí e impórtala en el otro navegador para continuar allí.'));const a=el('div',undefined,'save-actions');a.append(button('Descargar copia',download,'primary'),button('Recuperar partida guardada',load));const input=el('input');input.type='file';input.accept='.json,application/json';input.id='mh-import';input.setAttribute('aria-label','Importar copia de partida');input.addEventListener('change',()=>importFile(input.files[0]));const label=el('label','Importar copia de partida','file-label');label.append(input);a.append(label);p.append(a);p.append(el('p','Guardado transaccional · IndexedDB','muted'));a.append(button('Descargar copia antigua',()=>{try{const raw=store.legacyRaw();if(!raw)throw Error('No hay copia antigua.');downloadText(raw,'multihistoria-copia-antigua.json');}catch(e){message=e.message;render();}}));main.append(p);if(hasBackup()){const b=panel('Copia anterior');b.append(el('p','Último estado válido conservado antes de guardar un cambio.'),button('Recuperar copia anterior',async()=>{try{const raw=await store.previous();if(!raw)throw Error('No hay copia anterior.');await importFile(new File([raw],'anterior.json',{type:'application/json'}));}catch(e){message=e.message;render();}}));main.append(b);}const n=panel('Otra historia');n.append(el('p','Empieza de nuevo con otra semilla. Conservaremos una copia de tu carrera actual.','muted'));const seed=el('input');seed.type='number';seed.min='0';seed.max='4294967295';seed.value='424242';seed.setAttribute('aria-label','Semilla de la nueva carrera');n.append(seed,button('Empezar otra carrera',async()=>{const selected=Number(seed.value);if(!Number.isSafeInteger(selected)||selected<0||selected>4294967295){message='Introduce una semilla entre 0 y 4294967295.';render();return;}let old;try{old=await store.readRaw();}catch(e){message=e.message;render();return;}confirmReplace('Empezar otra carrera','La partida actual pasará a la copia anterior.',async()=>{replacement=old;session=await GameSession.create(selected,{...sessionOptions,commit});view='home';cinematic=false;replaceRouteState();});}));main.append(n);}
-  function render(focus=false){const v=session?.getView();shell.replaceChildren();shell.classList.toggle('immersive',cinematic&&!!v);const header=el('header',undefined,'topbar');const brand=el('div',undefined,'brand');brand.append(el('span','M','brand-mark'));const name=el('div');name.append(el('strong','Multihistoria'),el('small','Carrera de futbolista'));brand.append(name);const pause=v?button(paused?'Reanudar':'Pausar',pauseToggle,'secondary',{ariaLabel:paused?'Reanudar la partida':'Pausar la partida',pressed:paused}):null;if(pause)pause.classList.add('pause-button');header.append(brand,el('span',v?'Temporada '+v.season.replace('-',' / 20'):'Una vida. Mil decisiones.','chapter'),pause,button(v?date(v.date):'Tu partida',()=>navigate('save'),'date-button'));shell.append(header);
+  function saves(v,main){
+    main.append(el('span','CONTINÚA DONDE LO DEJASTE','eyebrow'),el('h1','Tu partida.'));
+    const p=panel('Partida actual');p.append(el('p',v?`${date(v.date)} · ${decisionCount(v.decisionsMade)}`:'Partida sin abrir','muted'),el('p','Es el último estado guardado de esta carrera. La partida local y PlayCanvas se guardan por separado; puedes descargar una copia e importarla en el otro navegador.'));
+    const a=el('div',undefined,'save-actions');a.append(button('Descargar copia',download,'primary'),button('Recuperar partida actual',load));
+    const input=el('input');input.type='file';input.accept='.json,application/json';input.id='mh-import';input.setAttribute('aria-label','Importar copia de partida');input.addEventListener('change',()=>importFile(input.files[0]));
+    const label=el('label','Importar copia de partida','file-label');label.append(input);a.append(label);p.append(a);
+    p.append(el('p','Guardado automático activo','muted'));
+    a.append(button('Descargar copia antigua',()=>{try{const raw=store.legacyRaw();if(!raw)throw Error('No hay copia antigua.');downloadText(raw,'multihistoria-copia-antigua.json');}catch(e){message=e.message;render();}}));main.append(p);
+    if(hasBackup()){const b=panel('Copia anterior');b.append(el('p','Estado anterior de recuperación. Si lo restauras, volverás a ese punto y la partida actual quedará protegida durante la sustitución.'),button('Recuperar copia anterior',async()=>{try{const raw=await store.previous();if(!raw)throw Error('No hay copia anterior.');await importFile(new File([raw],'anterior.json',{type:'application/json'}));}catch(e){message=e.message;render();}}));main.append(b);}
+    const n=panel('Otra historia');n.append(el('p','Empieza una carrera distinta usando un código de historia. El mismo código permite reproducir esta historia desde el inicio. Conservaremos una copia de tu carrera actual.','muted'));
+    const codeLabel=el('label','Código de historia','file-label');const seed=el('input');seed.type='number';seed.min='0';seed.max='4294967295';seed.value='424242';seed.setAttribute('aria-label','Código de historia de la nueva carrera');codeLabel.append(seed);n.append(codeLabel,button('Empezar otra carrera',async()=>{const selected=Number(seed.value);if(!Number.isSafeInteger(selected)||selected<0||selected>4294967295){message='Introduce un código de historia entre 0 y 4294967295.';render();return;}let old;try{old=await store.readRaw();}catch(e){message=e.message;render();return;}confirmReplace('Empezar otra carrera','La partida actual pasará a la copia anterior.',async()=>{replacement=old;session=await GameSession.create(selected,{...sessionOptions,commit});view='home';cinematic=false;replaceRouteState();});}));
+    main.append(n);
+  }
+  function render(focus=false){const v=session?.getView();shell.replaceChildren();shell.classList.toggle('immersive',cinematic&&!!v);const header=el('header',undefined,'topbar');const brand=el('div',undefined,'brand');brand.append(el('span','M','brand-mark'));const name=el('div');name.append(el('strong','Multihistoria'),el('small','Carrera de futbolista'));brand.append(name);const pause=v?button(paused?'Reanudar':'Pausar',pauseToggle,'secondary',{ariaLabel:paused?'Reanudar la partida':'Pausar la partida',pressed:paused}):null;if(pause)pause.classList.add('pause-button');header.append(brand,el('span',v?'Temporada '+v.season.replace('-',' / 20'):'Una vida. Mil decisiones.','chapter'),pause,button(v?date(v.date):'Tu partida',()=>navigate('save'),'date-button',{ariaLabel:v?'Abrir Tu partida y el contexto de guardado de '+date(v.date):'Abrir Tu partida'}));shell.append(header);
     const nav=el('nav',undefined,'navigation');nav.setAttribute('aria-label','Navegación principal');for(const [key,label]of[['home','Inicio'],['career','Carrera'],['world','Mundo'],['relations','Relaciones'],['profile','Perfil'],['save','Tu partida']]){const b=button(label,()=>navigate(key),'nav-button');b.prepend(icon(key));if(key===view){b.classList.add('active');b.setAttribute('aria-current','page');}nav.append(b);}const foot=el('div',undefined,'nav-foot');foot.append(el('span','Cada elección cuenta.'),el('small','Una carrera de principio a fin.'));nav.append(foot);shell.append(nav);
     const main=el('main');main.tabIndex=-1;main.setAttribute('aria-busy',String(busy));shell.append(main);
     if(v){if(cinematic&&['decision','result','offer'].includes(v.screen))renderDecision(v,main);else({home,career,world,relations,profile,save:saves})[view](v,main);}else if(view==='save')saves(null,main);else main.append(el('h1','Tu historia está a punto de empezar.'));
