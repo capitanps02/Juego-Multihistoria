@@ -26,6 +26,8 @@ test('A19 player-facing micro UX uses clear history, save and relationship langu
   assert.match(ui,/Permite reproducir esta historia|El mismo código permite reproducir esta historia/);
   assert.ok(!/Semilla/.test(ui),'technical seed terminology must not be player-facing');
   assert.match(ui,/Abrir Tu partida y el contexto de guardado/);
+  assert.match(ui,/No se ha podido cargar el juego/);
+  assert.match(ui,/Reintentar carga/);
 });
 
 test('A19 consumes factual A15 career records through PlayerView',async()=>{
