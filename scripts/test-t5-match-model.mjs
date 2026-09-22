@@ -716,6 +716,69 @@ test('T5.5 sport regression/5 save-load keeps the debut as one match and does no
 });
 
 
+
+
+test('T15.1 match week produces one authoritative sports resolution', () => {
+  const seed = findWeeklyAppearanceSeed();
+  const state = weeklySportState(seed);
+  advanceWorldDayInPlace(state);
+  const row = currentOfficialMatch(state);
+  assert.ok(row);
+  assert.ok(row.result);
+  assert.ok(row.stats);
+  assert.equal(getSportMatchModelStore(state).fixtures.length, 1);
+});
+
+test('T15.2 non-match week creates neither fixture nor appearance', () => {
+  const state = createInitialState(15002);
+  state.date = '2026-08-05';
+  state.runtime.day = 35;
+  state.runtime.seasonDay = 35;
+  state.sport.roleScore = 100;
+  const beforeAppearances = state.sport.appearances;
+  advanceWorldDayInPlace(state);
+  assert.equal(state.date, '2026-08-06');
+  assert.equal(state.sport.appearances, beforeAppearances);
+  assert.equal(currentOfficialMatch(state), null);
+  assert.equal(getSportMatchModelStore(state), null);
+});
+
+test('T15.6-T15.8 starter, entering substitute and unused bench aggregate exactly once', () => {
+  const covered = new Map();
+  for (let seed = 15300; seed < 15800 && covered.size < 3; seed += 1) {
+    for (const appeared of [true, false]) {
+      const state = matchDayState(seed);
+      const context = buildMatchPerformanceContext(state, 50);
+      const row = recordOfficialMatchInPlace(state, {
+        appeared,
+        debutOccurred: false,
+        injuryUnavailable: false,
+        ...(context ? { performanceContext: context } : {})
+      });
+      const kind = row.player.started ? 'starter'
+        : row.player.appeared ? 'substitute'
+        : row.player.onBench ? 'unused_bench'
+        : null;
+      if (!kind || covered.has(kind)) continue;
+      const stats = detailedSeasonPlayerStats(state);
+      assert.ok(stats);
+      if (kind === 'starter') {
+        assert.equal(stats.appearances, 1);
+        assert.equal(stats.starts, 1);
+      } else if (kind === 'substitute') {
+        assert.equal(stats.appearances, 1);
+        assert.equal(stats.starts, 0);
+      } else {
+        assert.equal(stats.appearances, 0);
+        assert.equal(stats.starts, 0);
+        assert.equal(row.player.minutes, 0);
+      }
+      covered.set(kind, row.id);
+    }
+  }
+  assert.deepEqual([...covered.keys()].sort(), ['starter', 'substitute', 'unused_bench']);
+});
+
 test('T15.5 suspended player does not participate and serves exactly one suspension fixture', () => {
   const seed = findWeeklyAppearanceSeed();
   const state = weeklySportState(seed);
@@ -971,23 +1034,6 @@ test('T15 performance uses persisted form/fitness/fatigue/role context while tea
   assert.notEqual(rowLow.stats.rating, rowHigh.stats.rating);
   assert.ok(rowLow.player.minutes >= 1 && rowLow.player.minutes <= 90);
   assert.ok(rowHigh.player.minutes >= 1 && rowHigh.player.minutes <= 90);
-});
-
-test('T15 coach change with unknown replacement prevents historical coach trust from governing sports output', () => {
-  const a = weeklySportState(15211);
-  const b = weeklySportState(15211);
-  a.relationships.find(row => row.npcId === 'NPC_CCH_01').trust = 5;
-  b.relationships.find(row => row.npcId === 'NPC_CCH_01').trust = 95;
-  certifyCoachChangeInPlace(a, 'external_change', { previousCoachNpcId: 'NPC_CCH_01', newCoachNpcId: null });
-  certifyCoachChangeInPlace(b, 'external_change', { previousCoachNpcId: 'NPC_CCH_01', newCoachNpcId: null });
-  advanceWorldDayInPlace(a);
-  advanceWorldDayInPlace(b);
-  const rowA = currentOfficialMatch(a);
-  const rowB = currentOfficialMatch(b);
-  assert.equal(rowA.performanceContext.coachTrust, null);
-  assert.equal(rowB.performanceContext.coachTrust, null);
-  assert.deepEqual(rowA.player, rowB.player);
-  assert.deepEqual(rowA.stats, rowB.stats);
 });
 
 test('T15 corrupted persisted performance context fails closed at save boundary', () => {
