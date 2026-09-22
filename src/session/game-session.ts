@@ -14,6 +14,8 @@ import {
 } from "../narrative/npc-knowledge-reconciliation.js";
 import { resolveChoiceInPlace } from "../narrative/resolver.js";
 import { advanceWorldDayInPlace } from "../simulation/world-simulator.js";
+import { getSportMatchModelStore } from "../simulation/match-model.js";
+import { getNationalSelectionAuthorityStore } from "../simulation/national-team-authority.js";
 import { maybeEmitMicroFeed } from "../simulation/microfeed.js";
 import { MICROFEEDS_26_30 } from "../content/microfeeds/26_30.js";
 import { MICROFEEDS_30_34 } from "../content/microfeeds/30_34.js";
@@ -563,6 +565,11 @@ export class GameSession {
         type: "decision", priority: 90, source: next.pendingDecision.event.id, requiresPlayerInput: true,
         payload: { eventId: next.pendingDecision.event.id }
       };
+    } else if (result.retirementChanged) {
+      interruption = {
+        type: "retirement", priority: 88, source: "retirement.status", requiresPlayerInput: false,
+        payload: { status: next.state.retirement.status }
+      };
     } else if (next.state.market?.pending) {
       interruption = {
         type: "offer", priority: 85, source: next.state.market.pending.id, requiresPlayerInput: true,
@@ -572,6 +579,23 @@ export class GameSession {
       interruption = {
         type: "important_injury", priority: 80, source: "world.injuryWeeksRemaining", requiresPlayerInput: false,
         payload: { weeks: Number(next.state.world.injuryWeeksRemaining ?? 0) }
+      };
+    } else if (result.nationalSelectionChanged) {
+      interruption = {
+        type: "national_selection", priority: 78, source: "world.nationalSelectionAuthority", requiresPlayerInput: false
+      };
+    } else if (result.roleChanged || result.clubChanged) {
+      interruption = {
+        type: result.clubChanged ? "career_change" : "role_change",
+        priority: 76,
+        source: result.clubChanged ? "club" : "role",
+        requiresPlayerInput: false,
+        payload: { club: next.state.club, role: next.state.role }
+      };
+    } else if (result.seasonCompleted) {
+      interruption = {
+        type: "season_complete", priority: 72, source: "world.sportMatchModel.objective", requiresPlayerInput: false,
+        payload: { season: next.state.season }
       };
     } else if (result.seasonChanged || result.ageChanged) {
       interruption = {
@@ -586,8 +610,8 @@ export class GameSession {
     flow.interruption = interruption;
     flow.summary = buildPeriodSummary(flow, next.state, interruption);
     if (interruption.type === "decision" || interruption.type === "offer") flow.mode = "waiting_for_decision";
-    else if (interruption.type === "retirement") flow.mode = "retirement";
-    else if (interruption.type === "season_transition") flow.mode = "season_transition";
+    else if (interruption.type === "retirement" && next.state.retirement.status === "closed") flow.mode = "retirement";
+    else if (interruption.type === "season_transition" || interruption.type === "season_complete") flow.mode = "season_transition";
     else flow.mode = "showing_summary";
   }
 
@@ -597,6 +621,11 @@ export class GameSession {
     let seasonChanged = false;
     let ageChanged = false;
     let importantInjuryStarted = false;
+    let nationalSelectionChanged = false;
+    let roleChanged = false;
+    let clubChanged = false;
+    let seasonCompleted = false;
+    let retirementChanged = false;
     const pendingOfferAtEntry = next.state.market?.pending?.id ?? null;
 
     const advanceOneDay = (): boolean => {
@@ -604,6 +633,11 @@ export class GameSession {
       const beforeAge = next.state.age;
       const beforeInjuryWeeks = Number(next.state.world.injuryWeeksRemaining ?? 0);
       const beforeLongInjury = next.state.flags.LONG_INJURY === true;
+      const beforeRole = next.state.role;
+      const beforeClub = next.state.club;
+      const beforeRetirement = next.state.retirement.status;
+      const beforeObjectiveStatus = getSportMatchModelStore(next.state)?.objective?.status ?? null;
+      const beforeNationalSelection = JSON.stringify(getNationalSelectionAuthorityStore(next.state));
       const beforeDay = next.state.runtime.day;
       this.#worldDay(next);
       const advanced = Math.max(0, next.state.runtime.day - beforeDay);
@@ -614,7 +648,16 @@ export class GameSession {
       const afterLongInjury = next.state.flags.LONG_INJURY === true;
       importantInjuryStarted ||= beforeInjuryWeeks <= 0 && afterInjuryWeeks >= 3
         || (!beforeLongInjury && afterLongInjury && afterInjuryWeeks > 0);
-      return stopAtRelevantBoundary && (seasonChanged || ageChanged || importantInjuryStarted || next.state.retirement.status === "closed");
+      roleChanged ||= next.state.role !== beforeRole;
+      clubChanged ||= next.state.club !== beforeClub;
+      retirementChanged ||= next.state.retirement.status !== beforeRetirement;
+      const afterObjectiveStatus = getSportMatchModelStore(next.state)?.objective?.status ?? null;
+      seasonCompleted ||= beforeObjectiveStatus !== "closed" && afterObjectiveStatus === "closed";
+      nationalSelectionChanged ||= JSON.stringify(getNationalSelectionAuthorityStore(next.state)) !== beforeNationalSelection;
+      return stopAtRelevantBoundary && (
+        seasonChanged || ageChanged || importantInjuryStarted || nationalSelectionChanged ||
+        roleChanged || clubChanged || seasonCompleted || retirementChanged
+      );
     };
 
     const result = (): WeekSimulationResult => ({
@@ -623,7 +666,12 @@ export class GameSession {
       daysAdvanced: days,
       seasonChanged,
       ageChanged,
-      importantInjuryStarted
+      importantInjuryStarted,
+      nationalSelectionChanged,
+      roleChanged,
+      clubChanged,
+      seasonCompleted,
+      retirementChanged
     });
 
     if (next.needsWorldAdvance) {
