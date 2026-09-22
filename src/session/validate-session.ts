@@ -111,22 +111,25 @@ export async function assertSessionSnapshot(value: unknown, context: SessionVali
     integer(flow.maxWeeks, "autoSimulation.maxWeeks", 1, 12);
     integer(flow.elapsedDays, "autoSimulation.elapsedDays", 0);
     ensure(flow.elapsedDays <= (flow.maxWeeks as number) * 7, "autoSimulation.elapsedDays", "el bloque temporal excede su límite");
+    let baseline: Record<string, unknown> | null = null;
     if (flow.baseline !== null) {
-      const b = record(flow.baseline, "autoSimulation.baseline");
-      date(b.date, "autoSimulation.baseline.date");
-      integer(b.runtimeDay, "autoSimulation.baseline.runtimeDay", 0);
-      integer(b.microfeedCount, "autoSimulation.baseline.microfeedCount", 0);
-      for (const key of ["appearances","form","fatigue","fitness"]) ensure(typeof b[key] === "number" && Number.isFinite(b[key]), `autoSimulation.baseline.${key}`, "valor no finito");
-      string(b.club, "autoSimulation.baseline.club");
-      string(b.role, "autoSimulation.baseline.role");
+      baseline = record(flow.baseline, "autoSimulation.baseline");
+      date(baseline.date, "autoSimulation.baseline.date");
+      integer(baseline.runtimeDay, "autoSimulation.baseline.runtimeDay", 0);
+      integer(baseline.microfeedCount, "autoSimulation.baseline.microfeedCount", 0);
+      for (const key of ["appearances","form","fatigue","fitness"]) ensure(typeof baseline[key] === "number" && Number.isFinite(baseline[key]), `autoSimulation.baseline.${key}`, "valor no finito");
+      string(baseline.club, "autoSimulation.baseline.club");
+      string(baseline.role, "autoSimulation.baseline.role");
     }
-    if (flow.interruption !== null) {
-      const it = record(flow.interruption, "autoSimulation.interruption");
-      oneOf(it.type, ["decision","offer","important_injury","season_transition","retirement","max_auto_weeks"], "autoSimulation.interruption.type");
-      integer(it.priority, "autoSimulation.interruption.priority", 0);
-      string(it.source, "autoSimulation.interruption.source");
-      boolean(it.requiresPlayerInput, "autoSimulation.interruption.requiresPlayerInput");
-    }
+    const validateInterrupt = (value: unknown, path: string): void => {
+      const it = record(value, path);
+      oneOf(it.type, ["decision","offer","important_injury","season_transition","retirement","max_auto_weeks"], `${path}.type`);
+      integer(it.priority, `${path}.priority`, 0);
+      string(it.source, `${path}.source`);
+      boolean(it.requiresPlayerInput, `${path}.requiresPlayerInput`);
+      if (it.payload !== undefined) record(it.payload, `${path}.payload`);
+    };
+    if (flow.interruption !== null) validateInterrupt(flow.interruption, "autoSimulation.interruption");
     if (flow.summary !== null) {
       const summary = record(flow.summary, "autoSimulation.summary");
       date(summary.fromDate, "autoSimulation.summary.fromDate");
@@ -135,8 +138,26 @@ export async function assertSessionSnapshot(value: unknown, context: SessionVali
       integer(summary.toWeek, "autoSimulation.summary.toWeek", 0);
       integer(summary.daysSimulated, "autoSimulation.summary.daysSimulated", 0);
       integer(summary.weeksSimulated, "autoSimulation.summary.weeksSimulated", 0);
+      ensure(summary.daysSimulated === flow.elapsedDays, "autoSimulation.summary.daysSimulated", "el resumen no coincide con los días simulados");
+      ensure(summary.weeksSimulated === Math.floor((summary.daysSimulated as number) / 7), "autoSimulation.summary.weeksSimulated", "el resumen semanal no coincide con los días simulados");
+      if (baseline) ensure(summary.fromDate === baseline.date, "autoSimulation.summary.fromDate", "el resumen no parte del baseline persistido");
+      const matches = record(summary.matches, "autoSimulation.summary.matches");
+      integer(matches.appearances, "autoSimulation.summary.matches.appearances", 0);
+      const changes = record(summary.playerChanges, "autoSimulation.summary.playerChanges");
+      for (const key of ["form","fatigue","fitness"]) ensure(typeof changes[key] === "number" && Number.isFinite(changes[key]), `autoSimulation.summary.playerChanges.${key}`, "valor no finito");
+      const career = record(summary.careerChanges, "autoSimulation.summary.careerChanges");
+      for (const key of ["clubFrom","clubTo","roleFrom","roleTo"]) string(career[key], `autoSimulation.summary.careerChanges.${key}`);
       list(summary.worldHighlights, "autoSimulation.summary.worldHighlights").forEach((x,i)=>string(x,`autoSimulation.summary.worldHighlights[${i}]`));
+      if (summary.interruption !== null) validateInterrupt(summary.interruption, "autoSimulation.summary.interruption");
     }
+    if (flow.mode === "idle") {
+      ensure(flow.elapsedDays === 0 && flow.baseline === null && flow.summary === null && flow.interruption === null, "autoSimulation", "el estado idle debe estar vacío");
+    } else {
+      ensure(flow.baseline !== null, "autoSimulation.baseline", "la simulación activa necesita baseline");
+    }
+    if (flow.mode === "auto_simulating") ensure(flow.summary === null && flow.interruption === null, "autoSimulation", "la simulación activa no puede tener un cierre pendiente");
+    if (flow.mode === "waiting_for_decision") ensure(flow.summary !== null && flow.interruption !== null, "autoSimulation", "la interrupción interactiva necesita resumen y causa");
+    if (["showing_summary","season_transition","retirement"].includes(flow.mode as string)) ensure(flow.summary !== null, "autoSimulation.summary", "el modo de cierre necesita resumen");
   }
   assertGameState(s.state);
   const state = s.state as SessionSnapshot["state"], receipts = list(s.receipts, "receipts"), journal = list(s.journal, "journal");
@@ -301,6 +322,7 @@ export async function assertSessionSnapshot(value: unknown, context: SessionVali
   if (last?.type === "choose") ensure(s.pendingResult !== null, "pendingResult", "falta resultado de la última elección");
   if (last?.type === "acknowledge") ensure(s.pendingDecision === null && s.pendingResult === null && s.needsWorldAdvance, "session", "lectura de resultado incoherente");
   if (last?.type === "continue") ensure(s.pendingResult === null && !s.needsWorldAdvance, "session", "avance incoherente");
+  if (last?.type === "auto") ensure(s.pendingResult === null && !s.needsWorldAdvance, "session", "simulación automática incoherente");
   if (!last) ensure(s.pendingDecision === null && s.pendingResult === null && !s.needsWorldAdvance && journal.length === 0, "session", "sesión inicial incoherente");
 }
 
