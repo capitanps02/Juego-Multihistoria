@@ -304,19 +304,14 @@ function deterministicPlayerStats(
   const yellowCards = (footballProducerRoll(state, fixture, "player-yellow") % 1000) < 180 ? 1 : 0;
   const redCards = (footballProducerRoll(state, fixture, "player-red") % 1000) < 25 ? 1 : 0;
   const outcomeBonus = result.outcome === "win" ? 0.25 : result.outcome === "loss" ? -0.2 : 0;
-  const formSignal = typeof state.sport.form === "number" ? (state.sport.form - 50) / 140 : 0;
-  const roleSignal = typeof state.sport.roleScore === "number" ? (state.sport.roleScore - 50) / 220 : 0;
-  const position = typeof state.sport.positionIdentity === "string" ? state.sport.positionIdentity : "";
-  const attackingSignal = /wing|forward|striker|attack/i.test(position) ? 0.08 : 0;
+  // Rating validation must remain stable when later career state (form/role/position) changes.
+  // Therefore historical rows depend only on persisted match facts + the fixture-owned football seed.
   const noise = ((footballProducerRoll(state, fixture, "player-rating") % 101) - 50) / 100;
-  const rawRating = 5.95
+  const rawRating = 6.0
     + (player.minutes / 90) * 0.35
     + goals * 0.8
     + assists * 0.5
     + outcomeBonus
-    + formSignal
-    + roleSignal
-    + attackingSignal
     - yellowCards * 0.15
     - redCards * 0.8
     + noise;
