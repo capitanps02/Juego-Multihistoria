@@ -123,6 +123,18 @@ test('A17/T17.6b coach-change prose needs certified chronology and identity, not
   assert.equal(narrativeGuardsPass(state, scene), true);
 });
 
+test('A17/T17.6c certified assistant promotion becomes current coach but blocks Montalban-specific scene', () => {
+  const state = createInitialState(170061);
+  certifyCoachChangeInPlace(state, 'canonical_change', {
+    previousCoachNpcId: 'NPC_CCH_01',
+    newCoachNpcId: 'NPC_CCH_02'
+  });
+  assert.equal(resolveCurrentCoach(state), 'NPC_CCH_02');
+
+  const montalbanScene = event('EVT_19_CCH_001');
+  assert.equal(narrativeGuardsPass(state, montalbanScene), false);
+});
+
 test('A17/T17.7-8 rejected loan/transfer offer cannot mutate current club or become a completed move', () => {
   const state = createInitialState(17007);
   const before = structuredClone(careerTerms(state));
