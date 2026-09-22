@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 
 import { createInitialState } from '../dist/content/initial-state.js';
+import { EVENTS_34_PLUS } from '../dist/content/events/34_plus/index.js';
 import {
   evaluateNarrativeGuard,
   narrativeGuardsPass
@@ -295,6 +296,41 @@ test('A17/T17.14 consumed event remains suppressed after save/load', () => {
   assert.equal(restored.flags['SEEN_' + consumed.id], true);
   assert.equal(restored.eventCooldowns[consumed.id], 999);
   assert.equal(scheduleEvent(restored, [consumed], { ignoreRhythmGate: true }), null);
+});
+
+test('A17/T17.14 reload preserves certified coach change and does not revive the old coach', () => {
+  const state = createInitialState(17014);
+  certifyCoachChangeInPlace(state, 'security_firing', {
+    previousCoachNpcId: 'NPC_CCH_01',
+    newCoachNpcId: null
+  });
+  assert.equal(resolveCurrentCoach(state), null);
+
+  const restored = loadSave(serializeSave(state));
+  assert.equal(resolveCurrentCoach(restored), null);
+  assert.equal(evaluateNarrativeGuard(restored, { id: 'requiresCurrentCoach', npcId: 'NPC_CCH_01' }).pass, false);
+});
+
+test('A17/T17.15 consumed non-repeatable event remains ineligible after save/load', () => {
+  const state = createInitialState(17015);
+  const scene = event('A17_CONSUMED');
+  state.flags.SEEN_A17_CONSUMED = true;
+  state.runtime.daysSinceNarrative = 999;
+  const restored = loadSave(serializeSave(state));
+  assert.equal(scheduleEvent(restored, [scene], { ignoreRhythmGate: true }), null);
+});
+
+test('A17/T17.16 late career exposes an explicit retirement-decision scene without fixed-age auto-retirement', () => {
+  const state = createInitialState(17016);
+  state.age = 34;
+  state.phase = '34_plus';
+  state.retirement.status = 'playing';
+  state.professional.retirementDistance = 35;
+  state.runtime.daysSinceNarrative = 999;
+  const familyScene = EVENTS_34_PLUS.find(row => row.id === 'EVT_RET_FAM_001');
+  assert.ok(familyScene, 'canonical final catalogue must contain the family retirement decision route');
+  assert.equal(scheduleEvent(state, [familyScene], { ignoreRhythmGate: true })?.event.id, 'EVT_RET_FAM_001');
+  assert.equal(state.retirement.status, 'playing', 'eligibility itself must never auto-retire the player');
 });
 
 test('A17/T17.17-18 retirement decision and announcement survive save/load', () => {
