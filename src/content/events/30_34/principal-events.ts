@@ -124,17 +124,17 @@ function specialEffects(r:Row,id:string):Effect[]{
   return out;
 }
 const defaultBodies: Partial<Record<EventFamily,string>> = {
- contract:"En el despacho del director deportivo, contrato, rol y horizonte de carrera aparecen en la misma conversación. El club quiere una respuesta y tú ya sabes que más años no siempre significan más seguridad.",
- market:"Tu agente te llama con una opción concreta mientras el club actual prepara su siguiente plantilla. A esta edad el mercado puede cerrarse rápido y cada llamada tiene un coste de oportunidad.",
- medical:"En la sala médica, el equipo compara tu historial, la recuperación entre partidos y lo que queda de calendario. La pregunta ya no es si puedes jugar hoy, sino qué quieres poder hacer dentro de seis meses.",
+ contract:"Tu horizonte contractual vuelve a exigir una decisión sobre duración, salario, rol y libertad futura. Distingues lo que está firmado, lo que se negocia y lo que todavía es solo una posibilidad.",
+ market:"Tu situación de mercado abre escenarios distintos, pero ninguno se trata como oferta hasta que existan condiciones formales. A esta edad esperar también tiene un coste de oportunidad.",
+ medical:"Tu planificación física tiene que equilibrar historial, recuperación entre partidos y calendario. No se presupone una lesión concreta: decides qué margen quieres conservar para los próximos meses.",
  team:"Después del entrenamiento, entrenador y vestuario hablan de jerarquía, relevo y utilidad. La conversación afecta a tu espacio real dentro del equipo, no solo a un símbolo.",
- captaincy:"En una reunión interna, tu liderazgo se mide contra un vestuario que también prepara el futuro. Lo que digas puede sostener tu influencia o acelerar el relevo.",
+ captaincy:"Tu peso en el vestuario entra en una decisión sobre liderazgo y relevo. Lo que hagas puede sostener tu influencia o facilitar que otros asuman más responsabilidad.",
  press:"En zona mixta, una pregunta sobre edad, rol o futuro obliga a decidir cuánto de tu situación quieres convertir en relato público.",
  image:"Tu equipo de comunicación te presenta una propuesta que quiere usar tu veteranía como historia. El dinero importa menos que el control sobre cómo se cuenta el final.",
  tactical:"El entrenador te enseña un rol distinto en la pizarra y explica por qué cree que puede alargar tu utilidad. Aceptarlo cambia tareas, números y jerarquía.",
  legacy:"Después de un partido, una conversación sobre récords, legado o regreso te obliga a decidir qué quieres proteger cuando ya no puedes maximizarlo todo.",
  family:"En casa, ciudad, mudanzas y tiempo pesan tanto como el siguiente contrato. La decisión deportiva ya no puede aislarse del resto de tu vida.",
- selection:"Una llamada de la selección plantea un papel más limitado y un calendario exigente. Debes decidir qué disponibilidad quieres mantener y qué coste aceptar.",
+ selection:"Tu situación con la selección entra en una fase distinta. Trabajas solo con la lista, el seguimiento o la comunicación que exista de verdad y decides qué disponibilidad quieres mantener.",
  sport:"Antes de un bloque importante, el cuerpo técnico concreta el papel que espera de ti y el desgaste que supone. Tu respuesta afecta minutos, cuerpo y percepción de tu momento.",
  agent:"Tu agente te enseña una negociación en la que sus incentivos y los tuyos ya no coinciden del todo. Antes de actuar quieres saber quién gana con cada opción.",
  money:"Una reunión con asesores convierte el patrimonio en una decisión sobre riesgo, tiempo y libertad futura.",
@@ -143,8 +143,8 @@ const defaultBodies: Partial<Record<EventFamily,string>> = {
 
 const defaultLabels: Partial<Record<EventFamily,[string,string,string,string]>> = {
  contract:["Pedir mejores condiciones antes de renovar","Aceptar un acuerdo corto si el rol queda claro","Exigir una cláusula que te devuelva margen de salida","Pedir dos escenarios cerrados y elegir después"],
- market:["Abrir la negociación mientras exista la ventana","Priorizar continuidad en el club actual","Pedir una condición concreta antes de cambiar","Escuchar el mercado y fijar una fecha para decidir"],
- medical:["Seguir compitiendo con el riesgo explicado","Reducir carga aunque pierdas presencia","Pedir un plan médico con límites concretos","Buscar otra opinión antes de decidir"],
+ market:["Pedir a tu agente que avance solo con contactos reales","Priorizar continuidad mientras no exista algo mejor","Esperar condiciones formales antes de aceptar un cambio","Escuchar el mercado y fijar una fecha para decidir"],
+ medical:["Mantener la carga actual y asumir su coste","Reducir carga aunque pierdas presencia","Pedir límites concretos de esfuerzo y recuperación","Buscar otra opinión antes de cambiar el plan"],
  team:["Hablar de frente sobre tu nuevo lugar en el equipo","Aceptar el reparto actual y pedir una revisión","Marcar el rol mínimo que necesitas para seguir","Proponer una transición temporal con fecha de revisión"],
  captaincy:["Defender tu postura delante del grupo","Escuchar primero a quienes asumirán más responsabilidad","Hablar en privado con entrenador y capitán","Acordar un reparto temporal de liderazgo"],
  press:["Responder con hechos y asumir la exposición","No responder hasta hablar con el club","Corregir solo el dato que consideras falso","Dar una respuesta breve y cerrar el tema"],
@@ -152,7 +152,7 @@ const defaultLabels: Partial<Record<EventFamily,[string,string,string,string]>> 
  tactical:["Aceptar la reconversión completa","Probar el rol solo en partidos concretos","Defender tu función habitual ante el técnico","Acordar una prueba con fecha de revisión"],
  legacy:["Elegir la opción que más se parece al legado que quieres","Proteger lo que ya has construido","Renunciar a una ventaja para conservar control","Esperar un hecho nuevo antes de decidir"],
  family:["Priorizar la estabilidad que pide tu entorno","Pedir tiempo hasta final de temporada","Buscar una solución que reparta el coste","Mantener abierta la opción sin prometer otra mudanza"],
- selection:["Aceptar el papel que te ofrecen","Pedir claridad sobre tu protagonismo","Limitar disponibilidad para proteger carga","Aceptar esta ventana y revisar la siguiente"],
+ selection:["Pedir claridad sobre tu situación actual","Aceptar lo que hoy esté confirmado sin exigir más","Limitar disponibilidad si vuelven a contar contigo","Esperar la siguiente lista antes de cambiar tu planificación"],
  sport:["Aceptar el plan competitivo del cuerpo técnico","Pedir una gestión más prudente del esfuerzo","Explicar qué condición necesitas para rendir mejor","Probar el plan y revisarlo tras el siguiente bloque"],
  agent:["Pedir toda la información y decidir tú el siguiente paso","Seguir su recomendación si explica sus incentivos","Limitar qué puede negociar sin consultarte","Pedir dos alternativas concretas antes de responder"],
  money:["Tomar la decisión con las cifras actuales","Mantener liquidez y esperar","Pedir asesoramiento independiente","Hacer un cambio limitado y revisarlo después"],
