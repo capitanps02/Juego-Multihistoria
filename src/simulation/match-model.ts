@@ -274,6 +274,33 @@ function fixtureProjection(state: GameState, date: string): ScheduledFixture {
   };
 }
 
+const bounded = (value: number, min: number, max: number): number => Math.min(max, Math.max(min, value));
+
+/**
+ * Snapshot the mutable sports inputs used by A15 before they can drift later in the career.
+ * Persisting this context lets save validation reproduce player performance without consulting
+ * future form/fitness/coach state.
+ */
+export function buildMatchPerformanceContext(state: GameState, coachTrust: number | null): MatchPerformanceContext | null {
+  if (!isOfficialMatchDay(state)) return null;
+  const fixture = fixtureProjection(state, state.date);
+  const leagueTier = Number.isFinite(state.professional.leagueTier) ? state.professional.leagueTier : 3;
+  const opponentVariation = (footballProducerRoll(state, fixture, "opponent-level") % 17) - 8;
+  const opponentLevel = bounded(46 + (4 - leagueTier) * 9 + opponentVariation, 20, 90);
+  return {
+    age: Math.max(0, Math.trunc(state.age)),
+    careerRole: typeof state.role === "string" ? state.role : "unknown",
+    roleScore: bounded(Number(state.sport.roleScore) || 0, 0, 100),
+    form: bounded(Number(state.sport.form) || 50, 0, 100),
+    fitness: bounded(Number(state.body.fitness) || 0, 0, 100),
+    fatigue: bounded(Number(state.body.fatigue) || 0, 0, 100),
+    coachTrust: coachTrust === null ? null : bounded(coachTrust, 0, 100),
+    leagueTier: Math.max(1, Math.min(9, Math.trunc(leagueTier))),
+    opponentLevel,
+    positionIdentity: typeof state.sport.positionIdentity === "string" ? state.sport.positionIdentity : null
+  };
+}
+
 /**
  * Stable producer roll tied to career seed + concrete fixture + channel.
  * This is a pure deterministic projection: it consumes zero RNG draws and, unlike the
@@ -315,41 +342,78 @@ function deterministicPlayerStats(
   state: GameState,
   fixture: ScheduledFixture,
   player: MatchPlayerFact,
-  result: MatchResultFact
+  result: MatchResultFact,
+  context?: MatchPerformanceContext
 ): MatchPlayerStats {
   if (!player.appeared) return { goals: 0, assists: 0, yellowCards: 0, redCards: 0 };
 
   const clubGoals = clubGoalsFromResult(fixture, result);
-  const goalRoll = footballProducerRoll(state, fixture, "player-goals") % 1000;
   let goals = 0;
-  if (clubGoals > 0) {
-    if (goalRoll < 90) goals = Math.min(2, clubGoals);
-    else if (goalRoll < 360) goals = 1;
-  }
-
-  const remainingGoals = Math.max(0, clubGoals - goals);
-  const assistRoll = footballProducerRoll(state, fixture, "player-assists") % 1000;
   let assists = 0;
-  if (remainingGoals > 0) {
-    if (assistRoll < 55) assists = Math.min(2, remainingGoals);
-    else if (assistRoll < 330) assists = 1;
+
+  if (context) {
+    const minutesShare = player.minutes / 90;
+    const position = context.positionIdentity?.toLowerCase() ?? "";
+    const attackingPosition = /wing|forward|striker|attack|delanter|extremo/.test(position) ? 0.11
+      : /mid|medio|10|playmaker/.test(position) ? 0.06 : 0.015;
+    const sportingQuality = bounded(
+      context.roleScore * 0.34
+      + context.form * 0.24
+      + context.fitness * 0.14
+      + (100 - context.fatigue) * 0.10
+      + (100 - context.opponentLevel) * 0.18,
+      0,
+      100
+    ) / 100;
+    const scorerShare = bounded(0.04 + minutesShare * 0.17 + sportingQuality * 0.16 + attackingPosition, 0.04, 0.48);
+    for (let goal = 0; goal < clubGoals; goal += 1) {
+      if ((footballProducerRoll(state, fixture, `player-goal-${goal}`) % 1000) < scorerShare * 1000) goals += 1;
+    }
+    goals = Math.min(3, goals);
+
+    const assistableGoals = Math.max(0, clubGoals - goals);
+    const assistShare = bounded(0.04 + minutesShare * 0.15 + sportingQuality * 0.12 + attackingPosition * 0.55, 0.03, 0.38);
+    for (let goal = 0; goal < assistableGoals; goal += 1) {
+      if ((footballProducerRoll(state, fixture, `player-assist-${goal}`) % 1000) < assistShare * 1000) assists += 1;
+    }
+    assists = Math.min(3, assists);
+  } else {
+    // Legacy/direct producer path retained for backwards-compatible factual authority tests.
+    const goalRoll = footballProducerRoll(state, fixture, "player-goals") % 1000;
+    if (clubGoals > 0) {
+      if (goalRoll < 90) goals = Math.min(2, clubGoals);
+      else if (goalRoll < 360) goals = 1;
+    }
+    const remainingGoals = Math.max(0, clubGoals - goals);
+    const assistRoll = footballProducerRoll(state, fixture, "player-assists") % 1000;
+    if (remainingGoals > 0) {
+      if (assistRoll < 55) assists = Math.min(2, remainingGoals);
+      else if (assistRoll < 330) assists = 1;
+    }
   }
 
-  const yellowCards = (footballProducerRoll(state, fixture, "player-yellow") % 1000) < 180 ? 1 : 0;
-  const redCards = (footballProducerRoll(state, fixture, "player-red") % 1000) < 25 ? 1 : 0;
+  const disciplineLoad = context ? context.fatigue / 500 : 0;
+  const yellowCards = (footballProducerRoll(state, fixture, "player-yellow") % 1000) < (180 + disciplineLoad * 1000) ? 1 : 0;
+  const redCards = (footballProducerRoll(state, fixture, "player-red") % 1000) < (25 + disciplineLoad * 120) ? 1 : 0;
   const outcomeBonus = result.outcome === "win" ? 0.25 : result.outcome === "loss" ? -0.2 : 0;
-  // Rating validation must remain stable when later career state (form/role/position) changes.
-  // Therefore historical rows depend only on persisted match facts + the fixture-owned football seed.
+  const contextSignal = context
+    ? (context.roleScore - 50) / 190
+      + (context.form - 50) / 150
+      + (context.fitness - 70) / 210
+      - context.fatigue / 300
+      - (context.opponentLevel - 50) / 240
+    : 0;
   const noise = ((footballProducerRoll(state, fixture, "player-rating") % 101) - 50) / 100;
   const rawRating = 6.0
     + (player.minutes / 90) * 0.35
     + goals * 0.8
     + assists * 0.5
     + outcomeBonus
+    + contextSignal
     - yellowCards * 0.15
     - redCards * 0.8
     + noise;
-  const rating = Math.round(Math.max(3.5, Math.min(10, rawRating)) * 10) / 10;
+  const rating = Math.round(bounded(rawRating, 3.5, 10) * 10) / 10;
   return { goals, assists, yellowCards, redCards, rating };
 }
 
