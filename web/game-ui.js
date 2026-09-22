@@ -16,6 +16,18 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
   const clubName=name=>name==='UDV'?'U. D. Valdoria':name==='BIG_CLUB'?'Gran club':name.startsWith('Foreign_')?'Club extranjero':name.startsWith('Loan_')?'Club de cesión':name;
   const club=v=>clubName(v.club);
   const position=v=>({winger:'Extremo',midfielder:'Centrocampista',striker:'Delantero',defender:'Defensa',goalkeeper:'Portero'})[v.position]||'Futbolista';
+  const bondType=role=>{
+    const r=String(role).toLocaleLowerCase('es-ES');
+    if(/madre|padre|hermana|hermano|familia/.test(r))return 'Familia';
+    if(/amigo/.test(r))return 'Amistad';
+    if(/agente/.test(r))return 'Representación';
+    if(/entrenador|técnico/.test(r))return 'Cuerpo técnico';
+    if(/fisioterapeuta|médic|fisio/.test(r))return 'Equipo médico';
+    if(/periodista|locutor|prensa/.test(r))return 'Prensa';
+    if(/jugador|portero|central|extremo|delantero|centrocampista|mediapunta|capitán|vicecapitán/.test(r))return 'Vestuario';
+    if(/president|director deportivo/.test(r))return 'Club';
+    return 'Entorno profesional';
+  };
   const svgPaths={home:'M3 10 12 3l9 7v11h-6v-7H9v7H3z',career:'M5 3h14v18H5z M8 8h8M8 12h8M8 16h5',world:'M3 12h18M12 3c-5 5-5 13 0 18 5-5 5-13 0-18 M12 3a9 9 0 1 0 0 18 9 9 0 1 0 0-18',relations:'M2 21c0-9 13-9 13 0M15 14c4-1 7 2 7 6 M8.5 3a4 4 0 1 0 0 8 4 4 0 1 0 0-8 M17 5a3 3 0 0 1 0 6',profile:'M4 21c0-10 16-10 16 0 M12 3a4 4 0 1 0 0 8 4 4 0 1 0 0-8',save:'M4 3h14l3 3v15H3V3h1 M7 3v7h10V3M7 21v-7h10v7',arrow:'M4 12h15M14 6l6 6-6 6'};
   function icon(name){const s=doc.createElementNS('http://www.w3.org/2000/svg','svg');s.setAttribute('viewBox','0 0 24 24');s.setAttribute('aria-hidden','true');const p=doc.createElementNS(s.namespaceURI,'path');p.setAttribute('d',svgPaths[name]||svgPaths.arrow);s.append(p);return s;}
   function button(text,fn,cls='secondary',options={}){const b=el('button',undefined,cls);b.type='button';b.append(el('span',text));b.disabled=busy||(paused&&options.blockedWhenPaused===true);if(options.ariaLabel)b.setAttribute('aria-label',options.ariaLabel);if(options.pressed!==undefined)b.setAttribute('aria-pressed',String(options.pressed));b.addEventListener('click',fn);return b;}
@@ -204,7 +216,7 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
     if(!v.contacts.length)grid.append(el('p','Aún no has creado vínculos relevantes.','muted'));
     for(const c of v.contacts){
       const p=panel(c.name);p.prepend(portrait(c.id)?photo(portrait(c.id),'person-portrait'):el('div',c.name.split(' ').map(x=>x[0]).slice(0,2).join(''),'initials'));
-      p.append(el('span','Relación con '+c.name,'relationship-label'),el('p',c.role,'muted'));grid.append(p);
+      p.append(el('span',bondType(c.role),'relationship-label'),el('p',c.role,'muted'));grid.append(p);
     }
     main.append(grid);
   }
@@ -228,7 +240,7 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
     const codeLabel=el('label','Código de historia','file-label');const seed=el('input');seed.type='number';seed.min='0';seed.max='4294967295';seed.value='424242';seed.setAttribute('aria-label','Código de historia de la nueva carrera');codeLabel.append(seed);n.append(codeLabel,button('Empezar otra carrera',async()=>{const selected=Number(seed.value);if(!Number.isSafeInteger(selected)||selected<0||selected>4294967295){message='Introduce un código de historia entre 0 y 4294967295.';render();return;}let old;try{old=await store.readRaw();}catch(e){message=e.message;render();return;}confirmReplace('Empezar otra carrera','La partida actual pasará a la copia anterior.',async()=>{replacement=old;session=await GameSession.create(selected,{...sessionOptions,commit});view='home';cinematic=false;replaceRouteState();});}));
     main.append(n);
   }
-  function render(focus=false){const v=session?.getView();shell.replaceChildren();shell.classList.toggle('immersive',cinematic&&!!v);const header=el('header',undefined,'topbar');const brand=el('div',undefined,'brand');brand.append(el('span','M','brand-mark'));const name=el('div');name.append(el('strong','Multihistoria'),el('small','Carrera de futbolista'));brand.append(name);const simMode=v?.simulation?.mode;const enginePaused=simMode==='paused';const pauseLabel=enginePaused||paused?'Reanudar':'Pausar';const pause=v?button(pauseLabel,pauseToggle,'secondary',{ariaLabel:(enginePaused||paused)?'Reanudar la partida':'Pausar la partida',pressed:enginePaused||paused}):null;if(pause)pause.classList.add('pause-button');header.append(brand,el('span',v?'Temporada '+v.season.replace('-',' / 20'):'Una vida. Mil decisiones.','chapter'),pause,button(v?date(v.date):'Tu partida',()=>navigate('save'),'date-button',{ariaLabel:v?'Abrir Tu partida y el contexto de guardado de '+date(v.date):'Abrir Tu partida'}));shell.append(header);
+  function render(focus=false){const v=session?.getView();shell.replaceChildren();shell.classList.toggle('immersive',cinematic&&!!v);const header=el('header',undefined,'topbar');const brand=el('div',undefined,'brand');brand.append(el('span','M','brand-mark'));const name=el('div');name.append(el('strong','Multihistoria'),el('small','Carrera de futbolista'));brand.append(name);const simMode=v?.simulation?.mode;const enginePaused=simMode==='paused';const pauseLabel=enginePaused||paused?'Reanudar':'Pausar';const pause=v?button(pauseLabel,pauseToggle,'secondary',{ariaLabel:(enginePaused||paused)?'Reanudar la partida':'Pausar la partida',pressed:enginePaused||paused}):null;if(pause)pause.classList.add('pause-button');header.append(brand,el('span',v?'Temporada '+v.season.replace('-',' / 20'):'Una vida. Mil decisiones.','chapter'),pause,button(v?date(v.date)+' · Partida':'Tu partida',()=>navigate('save'),'date-button',{ariaLabel:v?'Abrir Tu partida y el contexto de guardado de '+date(v.date):'Abrir Tu partida'}));shell.append(header);
     const nav=el('nav',undefined,'navigation');nav.setAttribute('aria-label','Navegación principal');for(const [key,label]of[['home','Inicio'],['career','Carrera'],['world','Mundo'],['relations','Relaciones'],['profile','Perfil'],['save','Tu partida']]){const b=button(label,()=>navigate(key),'nav-button');b.prepend(icon(key));if(key===view){b.classList.add('active');b.setAttribute('aria-current','page');}nav.append(b);}const foot=el('div',undefined,'nav-foot');foot.append(el('span','Cada elección cuenta.'),el('small','Una carrera de principio a fin.'));nav.append(foot);shell.append(nav);
     const main=el('main');main.tabIndex=-1;main.setAttribute('aria-busy',String(busy));shell.append(main);
     if(v){if(cinematic&&['decision','result','offer'].includes(v.screen))renderDecision(v,main);else({home,career,world,relations,profile,save:saves})[view](v,main);}else if(view==='save')saves(null,main);else main.append(el('h1','Tu historia está a punto de empezar.'));
