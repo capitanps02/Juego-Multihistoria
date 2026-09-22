@@ -126,7 +126,7 @@ function specialEffects(r:Row,id:string):Effect[]{
 const defaultBodies: Partial<Record<EventFamily,string>> = {
  contract:"Tu horizonte contractual vuelve a exigir una decisión sobre duración, salario, rol y libertad futura. Distingues lo que está firmado, lo que se negocia y lo que todavía es solo una posibilidad.",
  market:"Tu situación de mercado abre escenarios distintos, pero ninguno se trata como oferta hasta que existan condiciones formales. A esta edad esperar también tiene un coste de oportunidad.",
- medical:"Tu planificación física tiene que equilibrar historial, recuperación entre partidos y calendario. No se presupone una lesión concreta: decides qué margen quieres conservar para los próximos meses.",
+ medical:"En la planificación física repasáis historial, recuperación entre partidos y calendario. La conversación no nace necesariamente de una lesión nueva: trata de qué margen quieres conservar para los próximos meses.",
  team:"Después del entrenamiento, entrenador y vestuario hablan de jerarquía, relevo y utilidad. La conversación afecta a tu espacio real dentro del equipo, no solo a un símbolo.",
  captaincy:"Tu peso en el vestuario entra en una decisión sobre liderazgo y relevo. Lo que hagas puede sostener tu influencia o facilitar que otros asuman más responsabilidad.",
  press:"En zona mixta, una pregunta sobre edad, rol o futuro obliga a decidir cuánto de tu situación quieres convertir en relato público.",
