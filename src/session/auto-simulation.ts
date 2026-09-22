@@ -17,6 +17,10 @@ export type SimulationInterruptType =
   | "decision"
   | "offer"
   | "important_injury"
+  | "national_selection"
+  | "role_change"
+  | "career_change"
+  | "season_complete"
   | "season_transition"
   | "retirement"
   | "max_auto_weeks";
@@ -36,6 +40,11 @@ export interface WeekSimulationResult {
   seasonChanged: boolean;
   ageChanged: boolean;
   importantInjuryStarted: boolean;
+  nationalSelectionChanged: boolean;
+  roleChanged: boolean;
+  clubChanged: boolean;
+  seasonCompleted: boolean;
+  retirementChanged: boolean;
 }
 
 export interface PeriodSummary {
