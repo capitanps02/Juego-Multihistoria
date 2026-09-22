@@ -707,5 +707,6 @@ test('T5.5 sport regression/5 save-load keeps the debut as one match and does no
   advanceWorldDayInPlace(restored);
   assert.equal(restored.sport.appearances, 1);
   assert.equal(getSportMatchModelStore(restored).fixtures.length, 1);
-  assert.equal(currentOfficialMatch(restored)?.id, firstId);
+  assert.equal(getSportMatchModelStore(restored).fixtures[0]?.id, firstId);
+  assert.equal(currentOfficialMatch(restored), null);
 });
