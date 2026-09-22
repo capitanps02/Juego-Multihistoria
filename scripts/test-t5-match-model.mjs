@@ -851,3 +851,43 @@ test('T15 long-run seeds 1/42/777/424242 produce a real 18-to-19 football season
     assert.equal(new Set(seasonRows.map(row => row.id)).size, seasonRows.length);
   }
 });
+
+
+test('T15.15 weekly role progression persists exactly across save/load', () => {
+  const state = weeklySportState(1515);
+  state.sport.roleScore = 50;
+  state.sport.form = 72;
+  const beforeRole = state.sport.roleScore;
+  advanceWorldDayInPlace(state);
+  assert.notEqual(state.sport.roleScore, beforeRole);
+  const restored = loadSave(serializeSave(state));
+  assert.equal(restored.sport.roleScore, state.sport.roleScore);
+  assert.equal(restored.sport.form, state.sport.form);
+});
+
+test('T15.16 season transition preserves the prior-season persisted match ledger', () => {
+  const state = createInitialState(1516);
+  state.date = '2027-05-05';
+  state.runtime.day = 308;
+  state.runtime.seasonDay = 308;
+  state.season = '2026-27';
+  const row = recordOfficialMatchInPlace(state, {
+    appeared: true,
+    debutOccurred: true,
+    injuryUnavailable: false,
+    suspensionUnavailable: false
+  });
+  assert.ok(row);
+  const priorId = row.id;
+  state.date = '2027-06-30';
+  state.runtime.day = 364;
+  state.runtime.seasonDay = 364;
+  advanceWorldDayInPlace(state);
+  assert.equal(state.date, '2027-07-01');
+  assert.equal(state.season, '2027-28');
+  const store = getSportMatchModelStore(state);
+  assert.equal(store.fixtures[0].id, priorId);
+  assert.equal(store.fixtures[0].season, '2026-27');
+  const records = careerSeasonRecords(state);
+  assert.ok(records.some(record => record.season === '2026-27' && record.club === 'UDV'));
+});
