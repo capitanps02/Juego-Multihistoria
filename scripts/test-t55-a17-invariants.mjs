@@ -108,6 +108,19 @@ test('A17/T17.5-6 fired coach is not current even when historical NPC state rema
   assert.equal(resolveCurrentCoach(state), 'NPC_CCH_01');
 });
 
+test('A17/T17.6b coach-change prose needs certified chronology and identity, not COACH_FIRED alone', () => {
+  const state = createInitialState(17006);
+  state.flags.COACH_FIRED = true;
+  const scene = event('CEVT_18_CCH_01');
+  assert.equal(narrativeGuardsPass(state, scene), false, 'legacy firing flag alone cannot certify Montalban left');
+
+  certifyCoachChangeInPlace(state, 'security_firing');
+  assert.equal(narrativeGuardsPass(state, scene), false, 'generic chronology still cannot name a previous coach');
+
+  certifyCoachChangeInPlace(state, 'canonical_change', { previousCoachNpcId: 'NPC_CCH_01' });
+  assert.equal(narrativeGuardsPass(state, scene), true);
+});
+
 test('A17/T17.7-8 rejected loan/transfer offer cannot mutate current club or become a completed move', () => {
   const state = createInitialState(17007);
   const before = structuredClone(careerTerms(state));
@@ -140,6 +153,24 @@ test('A17/T17.9 completed transfer synchronizes club authority and narrative cur
   assert.equal(state.professional.ownerClub, 'A17 Destination');
   assert.equal(state.world.ownerClub, 'A17 Destination');
   assert.equal(evaluateNarrativeGuard(state, { id: 'requiresCurrentClub', club: 'A17 Destination' }).pass, true);
+});
+
+test('A17/T17.11b legacy offer prose cannot be scheduled from marketHeat alone', () => {
+  const state = createInitialState(17010);
+  state.age = 28;
+  state.phase = '26_30';
+  state.reputation.marketHeat = 100;
+  const scene = event('CEVT_28_MKT_01', { ageWindow: [28, 28], phase: '26_30', family: 'market' });
+  assert.equal(narrativeGuardsPass(state, scene), false);
+
+  const offer = proposeCareerChange(state, 'A17 real offer', draft => {
+    draft.club = 'A17 Offer Club';
+  });
+  assert.ok(offer);
+  assert.equal(narrativeGuardsPass(state, scene), true);
+
+  respondToOffer(state, offer.id, 'reject');
+  assert.equal(narrativeGuardsPass(state, scene), false);
 });
 
 test('A17/T17.11 transfer-offer guard requires a real eligible pending offer', () => {
