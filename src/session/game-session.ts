@@ -1,6 +1,6 @@
 import { careerTerms, marketState, respondToOffer, type CareerOffer, type OfferAction, type OfferDecision } from "../simulation/offers.js";
 import type { AgeMilestone } from "../simulation/age-milestones.js";
-import { careerSeasonRecords, currentCareerMatchResult, type CareerMatchResult, type CareerSeasonRecord } from "../simulation/match-model.js";
+import { careerSeasonRecords, careerSportMilestones, currentCareerMatchResult, type CareerMatchResult, type CareerSeasonRecord, type CareerSportMilestones } from "../simulation/match-model.js";
 import type { EventDefinition, GameState } from "../core/types.js";
 import { EVENTS } from "../content/events/index.js";
 import { createInitialState } from "../content/initial-state.js";
@@ -115,6 +115,7 @@ export interface PlayerView {
   offerHistory: PublicOfferDecision[];
   ageMilestones: AgeMilestone[];
   careerSeasons: CareerSeasonRecord[];
+  careerMilestones: CareerSportMilestones;
   latestMatch: CareerMatchResult | null;
   retirementStatus: GameState["retirement"]["status"];
   date: string;
@@ -338,7 +339,7 @@ export class GameSession {
       screen: result ? "result" : p ? "decision" : s.market?.pending ? "offer" : s.retirement.status === "closed" ? "epilogue" : "career",
       offer: s.market?.pending ? publicOffer(s.market.pending) : null, offerHistory: (s.market?.history ?? []).map(h=>({...h,offer:publicOffer(h.offer)})),
       ageMilestones: s.ageMilestones ? structuredClone(s.ageMilestones) : [],
-      careerSeasons: careerSeasonRecords(s), latestMatch: currentCareerMatchResult(s), retirementStatus: s.retirement.status,
+      careerSeasons: careerSeasonRecords(s), careerMilestones: careerSportMilestones(s), latestMatch: currentCareerMatchResult(s), retirementStatus: s.retirement.status,
       date: s.date, age: s.age, club: s.club, appearances: Number(s.sport.appearances ?? 0),
       salaryMonthly: Number(s.contract.salaryMonthly ?? 0), decisionsMade: s.history.length,
       season: s.season, position: String(s.sport.positionIdentity), fitness: Number(s.body.fitness),
