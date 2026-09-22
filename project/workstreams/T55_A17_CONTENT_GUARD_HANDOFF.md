@@ -16,7 +16,7 @@ Canonical state wins. A17 does not rewrite narrative arcs. Where an active scene
 | CEVT_18_CCH_01 | recent certified coach change + previous coach identity NPC_CCH_01 | COACH_FIRED alone cannot prove that Montalbán was the coach who left. |
 | EVT_19_CCH_001 | factual current coach | Scene says the current second-year coach is known. |
 | CEVT_19_INJ_01 | canonical active injury | LONG_INJURY/history must not keep an injury scene alive after clearance. |
-| CEVT_28_MKT_01 | real eligible CareerOffer | marketHeat is interest, not a 48-hour offer. |
+| EVT_19_JAN_001 | at least 2 real eligible CareerOffers | "Ves ofertas formales" cannot be produced from a January window alone. |\n| EVT_24_MKT_001 | at least 3 real eligible CareerOffers | The scene explicitly presents three offer profiles; one offer is insufficient. |\n| EVT_24_JAN_001 | real eligible transfer offer | marketHeat is interest, not an external formal offer. |\n| CEVT_28_MKT_01 | real eligible CareerOffer | marketHeat is interest, not a 48-hour offer. |
 | CEVT_32_RICH_01 | real eligible CareerOffer | marketHeat cannot prove an improved offer. |
 | CEVT_35_RICH_LAST | real eligible CareerOffer | moneyComfort cannot prove an offer exists. |
 | CEVT_RET_RECONSIDER | real eligible CareerOffer | Body explicitly says the offer exists. |
@@ -38,7 +38,7 @@ These claims remain stronger than the currently persisted authority and should b
 4. **CEVT_24_TOURN_02** — A17 can prove final omission, but not "por uno". Soften the margin/causal wording unless list-rank authority is added.
 5. **EVT_24_MED_001** — prose mixes "lesión muscular de bajo grado" with "señal compatible con riesgo". The current gate only proves final context; bodyLoad/risk is not an injury diagnosis. Split or soften the diagnosis wording rather than adding a false injury guard.
 6. **CEVT_28_NAT_01 / CEVT_30_NAT_01 / CEVT_29_NAT_02** — aggregate nationalStanding/role/caps do not prove a concrete current call-up, omission, match, or selector change. Keep generic career-standing language unless exact selection or staff authority is produced.
-7. **CEVT_33_MARKET_01 and legacy market principals whose title/body asserts an offer from marketHeat/veteranLeverage alone** — migrate to formal CareerOffer facts as their content batches are touched. Do not translate market interest into a completed/pending offer.
+7. **EVT_19_JAN_001 / EVT_24_MKT_001 / EVT_24_JAN_001** — A17 now blocks them unless the stated formal-offer facts exist, but their choices still predate the strict offerBridge contract. A18/market content ownership should align each selectable action with the exact live offer(s) rather than applying synthetic destination/salary effects.\n8. **CEVT_33_MARKET_01 and other legacy market principals whose title/body asserts an offer from marketHeat/veteranLeverage alone** — migrate to formal CareerOffer facts as their content batches are touched. Do not translate market interest into a completed/pending offer.
 
 ## Intentional non-changes
 
