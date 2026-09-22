@@ -622,7 +622,7 @@ export function currentCareerMatchResult(state: GameState): CareerMatchResult | 
   const row = currentOfficialMatch(state);
   const store = getSportMatchModelStore(state);
   if (!row || !store) return null;
-  const stats = row.stats ?? { goals: 0, assists: 0, yellowCards: 0, redCards: 0 };
+  const stats: MatchPlayerStats = row.stats ?? { goals: 0, assists: 0, yellowCards: 0, redCards: 0 };
   const appearanceOrdinal = row.player.appeared
     ? store.fixtures.filter(item => item.player.appeared && item.date <= row.date).length
     : 0;
