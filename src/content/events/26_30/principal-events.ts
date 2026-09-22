@@ -78,9 +78,9 @@ const familyFx:Partial<Record<EventFamily,[Effect[],Effect[],Effect[],Effect[]]>
 };
 
 const defaultBodies: Partial<Record<EventFamily,string>> = {
- market:"Tu agente te llama al salir del entrenamiento: hay interés concreto y el siguiente movimiento puede cambiar salario, nivel o ciudad. El club actual también tiene algo que decidir.",
- contract:"En las oficinas del club, dirección deportiva y representación comparan duración, dinero, rol y salida. A estas alturas firmar más no siempre significa controlar más.",
- medical:"En la sala médica, el equipo físico coloca delante de ti carga, recuperación y calendario. La discusión ya no es aguantar hoy, sino qué coste aceptas acumular.",
+ market:"Tu situación de mercado abre varios escenarios, pero no todos son ofertas. Tu agente separa contactos, interés y condiciones formales antes de que decidas si merece la pena moverte.",
+ contract:"Tu situación contractual obliga a comparar duración, dinero, rol y salida. A estas alturas firmar más no siempre significa controlar más, y no tratas una conversación como acuerdo cerrado.",
+ medical:"Carga, recuperación y calendario empiezan a exigir decisiones más finas. La discusión no presupone una lesión: trata de cuánto coste quieres acumular para sostener tu nivel.",
  team:"Después de la sesión, el vestuario habla de jerarquía y futuro. Un compañero, el capitán o el entrenador espera que definas qué papel quieres ocupar.",
  captaincy:"En una reunión interna, tu voz pesa lo suficiente como para afectar al grupo. Antes de hablar sabes que apoyar, frenar o mediar tendrá consecuencias.",
  press:"En zona mixta, una pregunta concreta amenaza con convertir una tensión deportiva en relato público. Club y entorno no esperan la misma respuesta.",
@@ -90,15 +90,15 @@ const defaultBodies: Partial<Record<EventFamily,string>> = {
  family:"En casa, una conversación sobre ciudad, tiempo o regreso compite directamente con la siguiente oportunidad deportiva. Nadie puede quedarse al margen del coste.",
  legacy:"Después de años acumulando minutos y reconocimiento, una conversación te obliga a decidir qué quieres proteger cuando ya no puedes maximizarlo todo.",
  agent:"Tu agente te enseña incentivos, llamadas y condiciones que no siempre apuntan en la misma dirección que tus prioridades. Toca decidir quién conduce el siguiente paso.",
- selection:"Durante una llamada o concentración, el cuerpo técnico te explica tu papel y el calendario. Debes decidir cuánto priorizas selección, club y recuperación.",
+ selection:"Tu relación con la selección vuelve a afectar la planificación. Solo cuentas con la información realmente disponible sobre listas, seguimiento o papel, y decides cuánto priorizas club, selección y recuperación.",
  sport:"Antes de un partido o bloque decisivo, el cuerpo técnico concreta el rol y el riesgo. Tu respuesta puede afectar rendimiento, minutos y cómo se interpreta tu pico.",
  life:"Fuera del campo, una decisión de rutina, ciudad o entorno empieza a tener el mismo peso que una ventaja deportiva."
 };
 
 const defaultLabels: Partial<Record<EventFamily,[string,string,string,string]>> = {
- market:["Pedir a tu agente que abra la negociación ya","Decir al club actual que quieres continuidad si mantiene tu rol","Usar el interés para exigir una condición concreta","Escuchar todas las partes y fijar una fecha para decidir"],
+ market:["Pedir a tu agente que avance solo con contactos reales","Decir al club actual qué necesitarías para continuar","Esperar una propuesta formal antes de exigir contrapartidas","Escuchar los escenarios abiertos y fijar una fecha para decidir"],
  contract:["Pedir mejores condiciones antes de firmar","Aceptar estabilidad si el rol queda claro","Exigir una cláusula que te devuelva margen de salida","Pedir una contrapropuesta con dos escenarios cerrados"],
- medical:["Seguir compitiendo con el riesgo que te han explicado","Aceptar una descarga aunque pierdas presencia","Pedir un plan común con límites concretos","Buscar otra opinión antes de comprometerte"],
+ medical:["Mantener la carga actual y asumir su coste","Reducir carga aunque pierdas presencia","Pedir límites concretos para esfuerzo y recuperación","Buscar otra opinión antes de cambiar el plan"],
  team:["Hablar de frente con quien compite por tu espacio","Aceptar el reparto actual y pedir una revisión posterior","Marcar qué rol mínimo necesitas para seguir cómodo","Proponer una convivencia temporal y revisarla en un mes"],
  captaincy:["Defender una postura delante del grupo","Escuchar primero a los jugadores afectados","Hablar en privado con entrenador y capitán","Proponer un acuerdo temporal y someterlo a revisión"],
  press:["Responder con hechos y asumir la exposición","No responder hasta hablar con el club","Corregir solo el dato que consideras falso","Dar una respuesta breve y cerrar el tema"],
@@ -108,7 +108,7 @@ const defaultLabels: Partial<Record<EventFamily,[string,string,string,string]>> 
  family:["Priorizar la estabilidad que pide tu entorno","Pedir tiempo hasta final de temporada","Buscar una solución que reparta el coste","Mantener abierta la opción sin comprometer una mudanza"],
  legacy:["Elegir la versión de carrera que más valoras ahora","Proteger lo que ya has construido","Renunciar a una ventaja para conservar control","Esperar un hecho nuevo antes de cerrar la decisión"],
  agent:["Pedir toda la información y decidir tú el siguiente paso","Seguir su recomendación si explica sus incentivos","Limitar qué puede negociar sin consultarte","Pedir dos alternativas concretas antes de responder"],
- selection:["Aceptar el papel que te ofrecen","Pedir claridad sobre tu protagonismo","Limitar disponibilidad para proteger carga","Aceptar esta ventana y revisar la siguiente"],
+ selection:["Pedir claridad sobre tu situación actual","Aceptar lo que hoy está confirmado sin exigir más","Limitar disponibilidad si vuelven a contar contigo","Esperar la siguiente lista antes de cambiar tu planificación"],
  sport:["Aceptar el plan competitivo del cuerpo técnico","Pedir una gestión más prudente del esfuerzo","Explicar qué condición necesitas para rendir mejor","Probar el plan y revisarlo tras el siguiente bloque"],
  life:["Cambiar la rutina para ganar estabilidad","Mantener lo que funciona aunque cueste más","Pedir ayuda para resolver el problema concreto","Probar un cambio pequeño y revisarlo después"]
 };
