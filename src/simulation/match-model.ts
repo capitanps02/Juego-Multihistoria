@@ -488,25 +488,61 @@ export function recordOfficialMatchInPlace(state: GameState, input: RecordOffici
   const appeared = input.appeared || input.debutOccurred;
   const injuryUnavailable = input.injuryUnavailable && !appeared;
   const suspensionUnavailable = input.suspensionUnavailable === true && !appeared;
+  const performance = input.performanceContext;
+  const lineupScore = performance
+    ? bounded(
+        performance.roleScore * 0.38
+        + performance.form * 0.18
+        + performance.fitness * 0.14
+        + (100 - performance.fatigue) * 0.10
+        + (performance.coachTrust ?? 50) * 0.20,
+        0,
+        100
+      )
+    : 50;
   const squadRoll = producerRoll(state, fixture, "squad") % 1000;
-  const calledUp = appeared || (!injuryUnavailable && !suspensionUnavailable && squadRoll < 300);
-  const startThreshold = input.debutOccurred ? 180 : 440;
+  const squadThreshold = performance ? Math.round(bounded(130 + lineupScore * 6.2, 180, 850)) : 300;
+  const calledUp = appeared || (!injuryUnavailable && !suspensionUnavailable && squadRoll < squadThreshold);
+  const startThreshold = performance
+    ? Math.round(input.debutOccurred
+        ? bounded(60 + lineupScore * 2.8, 100, 350)
+        : bounded(100 + lineupScore * 7.2, 180, 900))
+    : input.debutOccurred ? 180 : 440;
   const started = appeared && (producerRoll(state, fixture, "start") % 1000) < startThreshold;
   const onBench = calledUp && !started;
 
   let minutes = 0;
   let decisionContext: MatchDecisionContext | null = null;
   if (appeared && started) {
-    minutes = 65 + (producerRoll(state, fixture, "starter-minutes") % 26);
+    if (performance) {
+      const base = 60
+        + (producerRoll(state, fixture, "starter-minutes") % 31)
+        + (lineupScore - 50) / 12
+        - Math.max(0, performance.fatigue - 65) / 5;
+      minutes = Math.round(bounded(base, 45, 90));
+    } else {
+      minutes = 65 + (producerRoll(state, fixture, "starter-minutes") % 26);
+    }
   } else if (appeared) {
     const substitution = input.debutOccurred
       ? deterministicDebutContext(state, fixture)
-      : {
-          kind: "debut_substitution" as const,
-          minute: 55 + (producerRoll(state, fixture, "sub-minute") % 30),
-          scoreHome: 0,
-          scoreAway: 0
-        };
+      : performance
+        ? {
+            kind: "debut_substitution" as const,
+            minute: Math.round(bounded(
+              76 - (lineupScore - 50) / 5 + ((producerRoll(state, fixture, "sub-minute") % 15) - 7),
+              45,
+              89
+            )),
+            scoreHome: 0,
+            scoreAway: 0
+          }
+        : {
+            kind: "debut_substitution" as const,
+            minute: 55 + (producerRoll(state, fixture, "sub-minute") % 30),
+            scoreHome: 0,
+            scoreAway: 0
+          };
     minutes = 90 - substitution.minute;
     if (input.debutOccurred) decisionContext = substitution;
   }
@@ -524,13 +560,14 @@ export function recordOfficialMatchInPlace(state: GameState, input: RecordOffici
   if (suspensionUnavailable) player.suspensionUnavailable = true;
   const result = deterministicMatchResult(state, fixture);
   const firstGoalKnowable = store.fixtures.every(row => !row.player.appeared || row.stats !== undefined);
-  const stats = deterministicPlayerStats(state, fixture, player, result);
+  const stats = deterministicPlayerStats(state, fixture, player, result, performance);
   const record: OfficialMatchRecord = {
     ...fixture,
     player,
     decisionContext,
     result,
-    stats
+    stats,
+    ...(performance ? { performanceContext: structuredClone(performance) } : {})
   };
 
   store.fixtures.push(record);
