@@ -398,6 +398,7 @@ export class GameSession {
     requireThat(command.expectedRevision === this.#snapshot.revision, "STALE_REVISION", "La partida ha cambiado; vuelve a cargar la pantalla.");
     const next = structuredClone(this.#snapshot);
     if (command.type === "continue") {
+      requireThat(this.#autoFlow(next).mode === "idle", "AUTO_STATE", "El avance manual no puede mezclarse con un bloque automático activo.");
       requireThat(!next.pendingDecision && !next.pendingResult && (!next.state.market?.pending || Boolean(next.state.market.pending.validThrough)), "PENDING_SCREEN", "Resuelve la escena o continúa después del resultado.");
       requireThat(next.state.retirement.status !== "closed", "CAREER_CLOSED", "La carrera ya ha terminado.");
       this.#advance(next, command.maxDays ?? 90);
