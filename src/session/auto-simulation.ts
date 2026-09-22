@@ -84,6 +84,40 @@ export interface AutoSimulationState {
   interruption: SimulationInterrupt | null;
 }
 
+export interface PublicSimulationInterrupt {
+  type: SimulationInterruptType;
+  requiresPlayerInput: boolean;
+}
+
+export interface PublicPeriodSummary extends Omit<PeriodSummary, "interruption"> {
+  interruption: PublicSimulationInterrupt | null;
+}
+
+export interface PublicAutoSimulationState {
+  mode: AutoSimulationMode;
+  maxWeeks: number;
+  elapsedDays: number;
+  summary: PublicPeriodSummary | null;
+  interruption: PublicSimulationInterrupt | null;
+}
+
+function publicInterrupt(value: SimulationInterrupt | null): PublicSimulationInterrupt | null {
+  return value ? { type: value.type, requiresPlayerInput: value.requiresPlayerInput } : null;
+}
+
+export function publicAutoSimulationState(flow: AutoSimulationState): PublicAutoSimulationState {
+  return {
+    mode: flow.mode,
+    maxWeeks: flow.maxWeeks,
+    elapsedDays: flow.elapsedDays,
+    summary: flow.summary ? {
+      ...flow.summary,
+      interruption: publicInterrupt(flow.summary.interruption)
+    } : null,
+    interruption: publicInterrupt(flow.interruption)
+  };
+}
+
 const num = (value: unknown): number =>
   typeof value === "number" && Number.isFinite(value) ? value : 0;
 
