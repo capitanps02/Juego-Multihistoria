@@ -77,12 +77,80 @@ const familyFx:Partial<Record<EventFamily,[Effect[],Effect[],Effect[],Effect[]]>
  agent:[[n("professional.agentControl",-5),n("professional.contractPower",5)],[n("professional.agentControl",5),n("professional.careerControl",2)],[n("professional.agentControl",8),n("reputation.marketHeat",-2)],[n("professional.agentControl",2),n("professional.contractPower",3)]]
 };
 
+const defaultBodies: Partial<Record<EventFamily,string>> = {
+ market:"Tu agente te llama al salir del entrenamiento: hay interés concreto y el siguiente movimiento puede cambiar salario, nivel o ciudad. El club actual también tiene algo que decidir.",
+ contract:"En las oficinas del club, dirección deportiva y representación comparan duración, dinero, rol y salida. A estas alturas firmar más no siempre significa controlar más.",
+ medical:"En la sala médica, el equipo físico coloca delante de ti carga, recuperación y calendario. La discusión ya no es aguantar hoy, sino qué coste aceptas acumular.",
+ team:"Después de la sesión, el vestuario habla de jerarquía y futuro. Un compañero, el capitán o el entrenador espera que definas qué papel quieres ocupar.",
+ captaincy:"En una reunión interna, tu voz pesa lo suficiente como para afectar al grupo. Antes de hablar sabes que apoyar, frenar o mediar tendrá consecuencias.",
+ press:"En zona mixta, una pregunta concreta amenaza con convertir una tensión deportiva en relato público. Club y entorno no esperan la misma respuesta.",
+ image:"Tu equipo de comunicación te presenta una propuesta que mezcla dinero, exposición y control del relato. La marca quiere una decisión y también una versión de ti.",
+ tactical:"El entrenador te retiene ante la pizarra y propone un cambio de función. Puede alargar tu utilidad, pero también alterar números, mercado y jerarquía.",
+ money:"Con cifras mucho mayores que al empezar, una reunión con familia o asesores convierte una decisión económica en una cuestión de control y futuro.",
+ family:"En casa, una conversación sobre ciudad, tiempo o regreso compite directamente con la siguiente oportunidad deportiva. Nadie puede quedarse al margen del coste.",
+ legacy:"Después de años acumulando minutos y reconocimiento, una conversación te obliga a decidir qué quieres proteger cuando ya no puedes maximizarlo todo.",
+ agent:"Tu agente te enseña incentivos, llamadas y condiciones que no siempre apuntan en la misma dirección que tus prioridades. Toca decidir quién conduce el siguiente paso.",
+ selection:"Durante una llamada o concentración, el cuerpo técnico te explica tu papel y el calendario. Debes decidir cuánto priorizas selección, club y recuperación.",
+ sport:"Antes de un partido o bloque decisivo, el cuerpo técnico concreta el rol y el riesgo. Tu respuesta puede afectar rendimiento, minutos y cómo se interpreta tu pico.",
+ life:"Fuera del campo, una decisión de rutina, ciudad o entorno empieza a tener el mismo peso que una ventaja deportiva."
+};
+
+const defaultLabels: Partial<Record<EventFamily,[string,string,string,string]>> = {
+ market:["Pedir a tu agente que abra la negociación ya","Decir al club actual que quieres continuidad si mantiene tu rol","Usar el interés para exigir una condición concreta","Escuchar todas las partes y fijar una fecha para decidir"],
+ contract:["Pedir mejores condiciones antes de firmar","Aceptar estabilidad si el rol queda claro","Exigir una cláusula que te devuelva margen de salida","Pedir una contrapropuesta con dos escenarios cerrados"],
+ medical:["Seguir compitiendo con el riesgo que te han explicado","Aceptar una descarga aunque pierdas presencia","Pedir un plan común con límites concretos","Buscar otra opinión antes de comprometerte"],
+ team:["Hablar de frente con quien compite por tu espacio","Aceptar el reparto actual y pedir una revisión posterior","Marcar qué rol mínimo necesitas para seguir cómodo","Proponer una convivencia temporal y revisarla en un mes"],
+ captaincy:["Defender una postura delante del grupo","Escuchar primero a los jugadores afectados","Hablar en privado con entrenador y capitán","Proponer un acuerdo temporal y someterlo a revisión"],
+ press:["Responder con hechos y asumir la exposición","No responder hasta hablar con el club","Corregir solo el dato que consideras falso","Dar una respuesta breve y cerrar el tema"],
+ image:["Aceptar la campaña con el marco propuesto","Negociar el relato antes de firmar","Excluir vida privada y vestuario","Firmar una versión más corta y revisable"],
+ tactical:["Aceptar la reconversión completa","Probar el nuevo rol solo en partidos concretos","Defender tu función habitual ante el técnico","Acordar una prueba con fecha de revisión"],
+ money:["Tomar la decisión económica con las cifras actuales","Separar una parte y conservar liquidez","Pedir asesoramiento independiente antes de mover nada","Hacer un cambio limitado y revisarlo al final de temporada"],
+ family:["Priorizar la estabilidad que pide tu entorno","Pedir tiempo hasta final de temporada","Buscar una solución que reparta el coste","Mantener abierta la opción sin comprometer una mudanza"],
+ legacy:["Elegir la versión de carrera que más valoras ahora","Proteger lo que ya has construido","Renunciar a una ventaja para conservar control","Esperar un hecho nuevo antes de cerrar la decisión"],
+ agent:["Pedir toda la información y decidir tú el siguiente paso","Seguir su recomendación si explica sus incentivos","Limitar qué puede negociar sin consultarte","Pedir dos alternativas concretas antes de responder"],
+ selection:["Aceptar el papel que te ofrecen","Pedir claridad sobre tu protagonismo","Limitar disponibilidad para proteger carga","Aceptar esta ventana y revisar la siguiente"],
+ sport:["Aceptar el plan competitivo del cuerpo técnico","Pedir una gestión más prudente del esfuerzo","Explicar qué condición necesitas para rendir mejor","Probar el plan y revisarlo tras el siguiente bloque"],
+ life:["Cambiar la rutina para ganar estabilidad","Mantener lo que funciona aunque cueste más","Pedir ayuda para resolver el problema concreto","Probar un cambio pequeño y revisarlo después"]
+};
+
 function make(r:Row):EventDefinition{
  const fx=familyFx[r.family]??familyFx.legacy!;
- const labels=r.labels??["Apostar por el máximo techo","Proteger la posición actual","Ganar control aunque pierdas algo de techo","Mantener varias puertas abiertas"];
+ const labels=r.labels??defaultLabels[r.family]??[
+  "Pedir una conversación y plantear tu posición de frente",
+  "Aceptar la opción más estable con condiciones claras",
+  "Marcar un límite concreto para conservar control",
+  "Probar una solución temporal y revisarla después"
+ ];
  const choiceExtra=r.choiceEffects??[[],[],[],[]];
- const choices=labels.map((label,i)=>({id:String.fromCharCode(65+i),label,intentTags:[["ceiling"],["stability"],["control"],["balance"]][i]!,primaryMessage:["El movimiento funciona, pero eleva también las expectativas.","La estabilidad protege una parte de la carrera sin congelar el entorno.","Ganas margen de decisión a costa de otra ventaja inmediata.","El compromiso mantiene opciones abiertas, aunque nadie obtiene exactamente lo que quería."][i]!,secondaryMessage:["El techo prometido resulta menos controlable de lo esperado.","Mientras proteges estabilidad, el contexto cambia alrededor.","El control adicional tiene un coste deportivo o relacional.","La solución intermedia aplaza parte del conflicto en lugar de resolverlo."][i]!,immediateEffects:choiceExtra[i],primaryEffects:fx[i]!,secondaryEffects:[...fx[i]!,n("professional.environmentStability",i===1?1:-1)],primarySeedTransitions:r.seed&&(!r.seedChoices||r.seedChoices.includes(String.fromCharCode(65+i)))?[seedCreate(r.seed,55,{choice:String.fromCharCode(65+i)})]:undefined,secondarySeedTransitions:r.seed&&(!r.seedChoices||r.seedChoices.includes(String.fromCharCode(65+i)))?[seedCreate(r.seed,45,{choice:String.fromCharCode(65+i)})]:undefined}));
- return ambiguousEvent({id:r.id,ageWindow:[r.age,r.age],phase:"26_30",family:r.family,title:r.title,body:"En la cima o cerca de ella, prestigio, títulos, dinero, minutos y control ya no avanzan necesariamente juntos.",visible:["Conoces tu rol, contrato y contexto competitivo inmediato."],uncertain:["No conoces por completo las prioridades de club, mercado, selección o entorno."],choices,gates:r.gates,timeWindow:{months:r.months},weight:r.weight??13,cooldown:99999,seedsRead:r.read,seedsWrite:r.seed?[r.seed]:undefined,tags:[r.family,"peak",...(r.tags??[])],canonStatus:r.verified?"verified":"technical_adaptation"});
+ const choices=labels.map((label,i)=>({
+  id:String.fromCharCode(65+i),label,
+  intentTags:[["ceiling"],["stability"],["control"],["balance"]][i]!,
+  primaryMessage:[
+   "Tomas una decisión concreta y haces visible qué estás priorizando.",
+   "La estabilidad protege una parte de la carrera y reduce ruido inmediato.",
+   "Recuperas margen de decisión a cambio de renunciar a otra ventaja.",
+   "El compromiso conserva opciones y fija cuándo volver a evaluar."
+  ][i]!,
+  secondaryMessage:[
+   "La misma apuesta eleva expectativas y el coste aparece antes de lo previsto.",
+   "Mientras proteges estabilidad, el contexto sigue moviéndose.",
+   "El control adicional cambia una relación deportiva o profesional.",
+   "La solución intermedia aplaza parte del conflicto en lugar de resolverlo."
+  ][i]!,
+  immediateEffects:choiceExtra[i],
+  primaryEffects:fx[i]!,
+  secondaryEffects:[...fx[i]!,n("professional.environmentStability",i===1?1:-1)],
+  primarySeedTransitions:r.seed&&(!r.seedChoices||r.seedChoices.includes(String.fromCharCode(65+i)))?[seedCreate(r.seed,55,{choice:String.fromCharCode(65+i)})]:undefined,
+  secondarySeedTransitions:r.seed&&(!r.seedChoices||r.seedChoices.includes(String.fromCharCode(65+i)))?[seedCreate(r.seed,45,{choice:String.fromCharCode(65+i)})]:undefined
+ }));
+ return ambiguousEvent({
+  id:r.id,ageWindow:[r.age,r.age],phase:"26_30",family:r.family,title:r.title,
+  body:defaultBodies[r.family]??"Después del entrenamiento, las personas implicadas ponen una decisión concreta sobre la mesa y esperan que definas qué priorizas.",
+  visible:["Sabes quién participa, qué se ha ofrecido o pedido y qué decisión esperan de ti."],
+  uncertain:["No sabes cómo responderán los demás ni qué parte de la oportunidad seguirá abierta después."],
+  choices,gates:r.gates,timeWindow:{months:r.months},weight:r.weight??13,cooldown:99999,seedsRead:r.read,seedsWrite:r.seed?[r.seed]:undefined,
+  tags:[r.family,"peak",...(r.tags??[])],canonStatus:r.verified?"verified":"technical_adaptation"
+ });
 }
 
 export const PRINCIPAL_EVENTS_26_30:EventDefinition[]=rows.map(make);
