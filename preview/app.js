@@ -88,7 +88,18 @@ function render(focus = false) {
         story.append(el('p',`Carrera: ${s.careerChanges.clubFrom} → ${s.careerChanges.clubTo} · ${s.careerChanges.roleFrom} → ${s.careerChanges.roleTo}`,'body'));
       }
       s.worldHighlights.slice(-4).forEach(text=>story.append(el('p',text,'body')));
-      if (s.interruption) story.append(el('p',`La simulación se detuvo: ${s.interruption.type.replaceAll('_',' ')}.`,'body'));
+      if (s.interruption) story.append(el('p',`La simulación se detuvo: ${({
+        decision:'hay una decisión que necesita tu respuesta',
+        offer:'ha llegado una oferta',
+        important_injury:'una lesión importante requiere atención',
+        national_selection:'hay novedades de selección internacional',
+        role_change:'tu rol deportivo ha cambiado',
+        career_change:'tu situación de club ha cambiado',
+        season_complete:'la temporada deportiva ha terminado',
+        season_transition:'ha cambiado la temporada o una etapa de la carrera',
+        retirement:'la carrera ha llegado a su cierre',
+        max_auto_weeks:'el tramo automático ha llegado a su límite'
+      })[s.interruption.type] || 'ha ocurrido un momento relevante'}.`,'body'));
     }
     story.append(action('Continuar','auto',{action:'start'}));
   } else if (v.screen === 'epilogue') {
