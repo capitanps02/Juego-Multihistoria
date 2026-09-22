@@ -205,6 +205,14 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
       }
       main.append(seasons);
     }
+    if(v.careerMilestones?.historyComplete&&v.careerMilestones.appearances>0){
+      const m=v.careerMilestones,p=panel('Hitos deportivos');
+      const chips=el('div',undefined,'milestone-list');chips.append(el('span','Debut oficial','milestone-chip'));
+      for(const [flag,label] of [['appearance10','10 partidos'],['appearance50','50 partidos'],['appearance100','100 partidos'],['appearance500','500 partidos'],['appearance700','700 partidos']])if(m[flag]===true)chips.append(el('span',label,'milestone-chip'));
+      p.append(chips);
+      for(const [label,value] of [['Partidos',m.appearances],['Goles',m.goals],['Asistencias',m.assists]]){const r=el('div',undefined,'data-row');r.append(el('span',label),el('strong',String(value)));p.append(r);}
+      main.append(p);
+    }
     if(v.latestMatch){
       const m=v.latestMatch,p=panel('Último partido oficial');
       p.append(el('p',clubName(m.club)+' · '+m.opponent,'season-club'));
