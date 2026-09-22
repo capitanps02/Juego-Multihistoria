@@ -48,7 +48,6 @@ const LEGACY_EVENT_GUARDS: Readonly<Record<string, readonly NarrativeGuardSpec[]
   CEVT_28_MKT_01: [{ id: "requiresCareerOffer" }],
   CEVT_32_RICH_01: [{ id: "requiresCareerOffer" }],
   CEVT_35_RICH_LAST: [{ id: "requiresCareerOffer" }],
-  CEVT_RET_RECONSIDER: [{ id: "requiresCareerOffer" }],
   CEVT_24_TOURN_01: [{ id: "requiresInternationalCallup", stage: "final", membership: "selected" }],
   CEVT_24_TOURN_02: [{ id: "requiresInternationalCallup", stage: "final", membership: "omitted" }],
   CEVT_32_NT_01: [{ id: "requiresInternationalCallup", stage: "final", membership: "selected" }]
