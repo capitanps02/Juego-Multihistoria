@@ -78,12 +78,15 @@ export interface CareerSportMilestones {
 export interface SeasonPlayerStats extends MatchPlayerStats {
   season: string;
   appearances: number;
+}
+
+export interface DetailedSeasonPlayerStats extends SeasonPlayerStats {
   starts: number;
   minutes: number;
   averageRating: number | null;
 }
 
-export interface CareerSeasonRecord extends SeasonPlayerStats {
+export interface CareerSeasonRecord extends DetailedSeasonPlayerStats {
   club: string;
 }
 
@@ -420,9 +423,10 @@ export function recordOfficialMatchInPlace(state: GameState, input: RecordOffici
     appeared,
     minutes,
     debut: input.debutOccurred,
-    injuryUnavailable,
-    suspensionUnavailable
+    injuryUnavailable
   };
+  // Preserve the historical row shape unless suspension is an actual factual blocker.
+  if (suspensionUnavailable) player.suspensionUnavailable = true;
   const result = deterministicMatchResult(state, fixture);
   const firstGoalKnowable = store.fixtures.every(row => !row.player.appeared || row.stats !== undefined);
   const stats = deterministicPlayerStats(state, fixture, player, result);
@@ -548,35 +552,52 @@ export function seasonPlayerStats(state: GameState, season = state.season): Seas
   const aggregate: SeasonPlayerStats = {
     season,
     appearances: 0,
-    starts: 0,
-    minutes: 0,
     goals: 0,
     assists: 0,
     yellowCards: 0,
-    redCards: 0,
-    averageRating: null
+    redCards: 0
   };
-  let ratingTotal = 0;
-  let ratingCount = 0;
   for (const row of rows) {
     if (row.player.appeared) aggregate.appearances += 1;
-    if (row.player.started) aggregate.starts += 1;
-    aggregate.minutes += row.player.minutes;
     const stats = row.stats;
     if (!stats) continue;
     aggregate.goals += stats.goals;
     aggregate.assists += stats.assists;
     aggregate.yellowCards += stats.yellowCards;
     aggregate.redCards += stats.redCards;
-    if (row.player.appeared && typeof stats.rating === "number") {
-      ratingTotal += stats.rating;
+  }
+  return aggregate;
+}
+
+/**
+ * A15 detailed aggregate. The legacy seasonPlayerStats() shape stays unchanged because
+ * sport-context and narrative consumers already treat that object as a stable contract.
+ */
+export function detailedSeasonPlayerStats(state: GameState, season = state.season): DetailedSeasonPlayerStats | null {
+  const legacy = seasonPlayerStats(state, season);
+  const store = getSportMatchModelStore(state);
+  if (!legacy || !store) return null;
+  const rows = store.fixtures.filter(row => row.season === season);
+  let starts = 0;
+  let minutes = 0;
+  let ratingTotal = 0;
+  let ratingCount = 0;
+  for (const row of rows) {
+    if (row.player.started) starts += 1;
+    minutes += row.player.minutes;
+    if (row.player.appeared && typeof row.stats?.rating === "number") {
+      ratingTotal += row.stats.rating;
       ratingCount += 1;
     }
   }
-  aggregate.averageRating = ratingCount === aggregate.appearances && ratingCount > 0
-    ? Math.round((ratingTotal / ratingCount) * 100) / 100
-    : null;
-  return aggregate;
+  return {
+    ...legacy,
+    starts,
+    minutes,
+    averageRating: ratingCount === legacy.appearances && ratingCount > 0
+      ? Math.round((ratingTotal / ratingCount) * 100) / 100
+      : null
+  };
 }
 
 export function careerSeasonRecords(state: GameState): CareerSeasonRecord[] {
