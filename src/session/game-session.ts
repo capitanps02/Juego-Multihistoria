@@ -44,7 +44,6 @@ import {
   MIN_AUTO_WEEKS,
   buildPeriodSummary,
   idleAutoSimulationState,
-  resolvedInterruptMode,
   startAutoSimulationState,
   type AutoSimulationState,
   type SimulationInterrupt,
@@ -427,7 +426,7 @@ export class GameSession {
       respondToOffer(next.state,command.offerId,command.action);
       const flow = this.#autoFlow(next);
       if (flow.mode === "waiting_for_decision" && flow.interruption?.type === "offer") {
-        flow.mode = resolvedInterruptMode(flow);
+        flow.mode = "auto_simulating";
         flow.interruption = null;
       }
     } else if (command.type === "choose") {
@@ -504,7 +503,7 @@ export class GameSession {
       next.pendingResult = null;
       const flow = this.#autoFlow(next);
       if (flow.mode === "waiting_for_decision" && flow.interruption?.type === "decision") {
-        flow.mode = resolvedInterruptMode(flow);
+        flow.mode = "auto_simulating";
         flow.interruption = null;
       }
     }
