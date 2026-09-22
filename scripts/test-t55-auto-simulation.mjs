@@ -290,3 +290,19 @@ test('T14.17 failed persistence rolls back the weekly unit and can be paused saf
   assert.equal(session.getView().simulation.mode, 'paused');
   assert.equal(session.exportSnapshot().state.runtime.day, 7);
 });
+
+
+test('T14.18 public simulation view strips internal interruption provenance', async () => {
+  const session = await emptySession(1418, 't14-18');
+  const view = await autoBlock(session, 1);
+  const internal = session.exportSnapshot().autoSimulation;
+  assert.ok(internal?.interruption);
+  assert.equal(typeof internal.interruption.source, 'string');
+  assert.ok(!Object.hasOwn(view.simulation.interruption ?? {}, 'source'));
+  assert.ok(!Object.hasOwn(view.simulation.interruption ?? {}, 'payload'));
+  assert.ok(!Object.hasOwn(view.simulation, 'baseline'));
+  if (view.simulation.summary?.interruption) {
+    assert.ok(!Object.hasOwn(view.simulation.summary.interruption, 'source'));
+    assert.ok(!Object.hasOwn(view.simulation.summary.interruption, 'payload'));
+  }
+});
