@@ -122,7 +122,7 @@ export async function assertSessionSnapshot(value: unknown, context: SessionVali
     }
     if (flow.interruption !== null) {
       const it = record(flow.interruption, "autoSimulation.interruption");
-      oneOf(it.type, ["decision","offer","important_injury","season_transition","retirement","max_auto_weeks"], "autoSimulation.interruption.type");
+      oneOf(it.type, ["decision","offer","important_injury","national_selection","role_change","career_change","season_complete","season_transition","retirement","max_auto_weeks"], "autoSimulation.interruption.type");
       integer(it.priority, "autoSimulation.interruption.priority", 0);
       string(it.source, "autoSimulation.interruption.source");
       boolean(it.requiresPlayerInput, "autoSimulation.interruption.requiresPlayerInput");
