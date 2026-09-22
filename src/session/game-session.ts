@@ -13,6 +13,7 @@ import {
   type NpcKnowledgeLegacyCertification
 } from "../narrative/npc-knowledge-reconciliation.js";
 import { resolveChoiceInPlace } from "../narrative/resolver.js";
+import { buildDecisionConsequences, normalizeConsequenceFields, playerFacingMessages, type VisibleConsequence } from "../narrative/consequences.js";
 import { advanceWorldDayInPlace } from "../simulation/world-simulator.js";
 import { maybeEmitMicroFeed } from "../simulation/microfeed.js";
 import { MICROFEEDS_26_30 } from "../content/microfeeds/26_30.js";
@@ -66,8 +67,25 @@ export interface PendingResult {
   title: string;
   choiceLabel: string;
   messages: string[];
+  visibleEffects: VisibleConsequence[];
+  narrativeEffects: string[];
+  hiddenEffects: string[];
 }
 export interface JournalEntry { date: string; title: string; choiceLabel: string; messages: string[]; }
+
+function normalizePendingResult(result: PendingResult | null): PendingResult | null {
+  if (!result) return null;
+  return { ...result, ...normalizeConsequenceFields(result) };
+}
+
+function playerFacingPendingResult(result: PendingResult | null): PendingResult | null {
+  const normalized = normalizePendingResult(result);
+  return normalized ? { ...normalized, messages: playerFacingMessages(normalized.messages) } : null;
+}
+
+function playerFacingJournal(journal: readonly JournalEntry[]): JournalEntry[] {
+  return journal.map(row => ({ ...row, messages: playerFacingMessages(row.messages) }));
+}
 export interface SessionSnapshot {
   sessionVersion: number;
   build: string;
@@ -273,6 +291,7 @@ export class GameSession {
     requireThat(header.contentIdentity === activeContentIdentity, "CONTENT_CHANGED", "El contenido cambió; conserva la partida para migrarla antes de continuar.");
     await assertSessionSnapshot(snapshot, { events, activeContentIdentity, activeEvidence, contentSources });
     const next = upgradeToV3(snapshot as SessionSnapshot, activeContentIdentity, activeEvidence);
+    next.pendingResult = normalizePendingResult(next.pendingResult);
     reconcileKnowledge(next, activeEvidence, options.knowledgeLegacyCertifications);
     marketState(next.state);
     next.build=SESSION_BUILD; // Existing narrative and RNG are preserved; new offers require explicit consent.
@@ -304,6 +323,7 @@ export class GameSession {
 
     await assertSessionSnapshot(snapshot, { events, activeContentIdentity, activeEvidence, contentSources });
     const next = upgradeToV3(snapshot as SessionSnapshot, sourceContentIdentity, source.events);
+    next.pendingResult = normalizePendingResult(next.pendingResult);
     applyMigrationPathInPlace(next.state, path);
     reconcileKnowledge(next, activeEvidence, options.knowledgeLegacyCertifications);
     marketState(next.state);
@@ -327,6 +347,7 @@ export class GameSession {
 
   getView(): PlayerView {
     const { state: s, pendingDecision: p, pendingResult: result } = this.#snapshot;
+    const publicResult = playerFacingPendingResult(result);
     const lastEventId = s.history.at(-1)?.eventId;
     const lastEvent = lastEventId ? this.#index.events.find(e => e.id === lastEventId) : undefined;
     return structuredClone({
@@ -343,8 +364,8 @@ export class GameSession {
       decision: p ? { instanceId: p.instanceId, family: p.event.family, title: p.event.text.title, body: p.event.text.body,
         visible: p.event.intel.visible, uncertain: p.event.intel.uncertain,
         choices: eligibleChoices(s, p.event).map(c => ({ id: c.id, label: c.label })) } : null,
-      result, resultCategory: result ? (lastEvent?.family === "sport" ? "match" : "story") : null,
-      journal: this.#snapshot.journal
+      result: publicResult, resultCategory: result ? (lastEvent?.family === "sport" ? "match" : "story") : null,
+      journal: playerFacingJournal(this.#snapshot.journal)
     });
   }
 
@@ -389,6 +410,7 @@ export class GameSession {
       requireThat(choice && availableChoice, "INVALID_CHOICE", "La elección no pertenece a esta escena o no está disponible.");
       const beforeOfferTerms = bridgeDisposition ? careerTerms(next.state) : null;
       const beforeRepresentation = representationTerms ? structuredClone(next.state.world.representationAuthority) : null;
+      const consequenceBefore = structuredClone(next.state);
       if (bridgeDisposition) requireThat(next.state.market?.pending, "STALE_OFFER", "La oferta asociada a esta escena ya no está pendiente.");
       let result;
       try {
@@ -431,8 +453,26 @@ export class GameSession {
         });
         messages = [...result.messages, offerDecision.explanation];
       }
-      next.pendingResult = { title: pending.event.text.title, choiceLabel: choice.label, messages };
-      next.journal.push({ date: next.state.date, ...structuredClone(next.pendingResult) });
+      const consequences = buildDecisionConsequences(
+        consequenceBefore,
+        next.state,
+        pending.event,
+        choice.id,
+        result.outcomeId,
+        messages
+      );
+      next.pendingResult = {
+        title: pending.event.text.title,
+        choiceLabel: choice.label,
+        messages,
+        ...consequences
+      };
+      next.journal.push({
+        date: next.state.date,
+        title: next.pendingResult.title,
+        choiceLabel: next.pendingResult.choiceLabel,
+        messages: structuredClone(next.pendingResult.messages)
+      });
       next.decisionProvenance.push(structuredClone(pending.provenance));
       next.pendingDecision = null;
       next.needsWorldAdvance = true;
