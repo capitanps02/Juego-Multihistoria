@@ -17,6 +17,7 @@ import {
 } from '../dist/simulation/match-model.js';
 import { getCurrentMatchContext, getSportContext } from '../dist/simulation/sport-context.js';
 import { advanceWorldDayInPlace } from '../dist/simulation/world-simulator.js';
+import { respondToOffer } from '../dist/simulation/offers.js';
 import { advanceWorldDayInPlace as advanceCoreWorldDayInPlace } from '../dist/simulation/world-simulator-core.js';
 import { assertGameState } from '../dist/save/validation.js';
 import { loadSave, serializeSave } from '../dist/save/save.js';
@@ -824,7 +825,17 @@ test('T15 discipline: a fifth yellow creates a one-match suspension for the next
 test('T15 long-run seeds 1/42/777/424242 produce a real 18-to-19 football season with persisted variety', () => {
   for (const seed of [1, 42, 777, 424242]) {
     const state = createInitialState(seed);
-    for (let day = 0; day < 365; day += 1) advanceWorldDayInPlace(state);
+    let rejectedBlockingOffers = 0;
+    for (let day = 0; day < 365; day += 1) {
+      const blocking = state.market?.pending;
+      if (blocking && !blocking.validThrough) {
+        // Long-run A15 certification isolates sports progression from user-held market
+        // decisions without changing market semantics or auto-accepting a career move.
+        respondToOffer(state, blocking.id, 'reject');
+        rejectedBlockingOffers += 1;
+      }
+      advanceWorldDayInPlace(state);
+    }
     const store = getSportMatchModelStore(state);
     assert.ok(store);
     const seasonRows = store.fixtures.filter(row => row.season === '2026-27');
@@ -833,7 +844,7 @@ test('T15 long-run seeds 1/42/777/424242 produce a real 18-to-19 football season
     const minutes = appeared.reduce((sum, row) => sum + row.player.minutes, 0);
     const goals = appeared.reduce((sum, row) => sum + (row.stats?.goals ?? 0), 0);
     const assists = appeared.reduce((sum, row) => sum + (row.stats?.assists ?? 0), 0);
-    console.log(`A15_SEED seed=${seed} fixtures=${seasonRows.length} appearances=${appeared.length} starts=${starts.length} minutes=${minutes} goals=${goals} assists=${assists} role=${state.sport.roleScore} form=${state.sport.form}`);
+    console.log(`A15_SEED seed=${seed} fixtures=${seasonRows.length} appearances=${appeared.length} starts=${starts.length} minutes=${minutes} goals=${goals} assists=${assists} role=${state.sport.roleScore} form=${state.sport.form} rejectedBlockingOffers=${rejectedBlockingOffers}`);
     assert.ok(seasonRows.length >= 35, `seed ${seed} should have a real league calendar`);
     assert.ok(appeared.length >= 2, `seed ${seed} should not produce an absurdly empty normal season`);
     assert.ok(minutes > 0, `seed ${seed} appearances must carry minutes`);
