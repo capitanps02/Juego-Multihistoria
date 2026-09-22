@@ -23,6 +23,14 @@ function setBusy(value) {
   document.querySelectorAll('button').forEach(b => { b.disabled = value; });
 }
 const dateText = date => new Intl.DateTimeFormat('es-ES', { day:'numeric', month:'short', year:'numeric', timeZone:'UTC' }).format(new Date(date+'T00:00:00Z'));
+const interruptionText = type => ({
+  decision:'ha aparecido una decisión',
+  offer:'ha llegado una oferta',
+  important_injury:'una lesión importante requiere atención',
+  season_transition:'ha cambiado la temporada o una etapa de la carrera',
+  retirement:'la carrera ha llegado a su cierre',
+  max_auto_weeks:'el tramo automático ha llegado a su límite'
+})[type] || 'ha ocurrido un momento relevante';
 
 // The classic viewer shares the same transactional store as the new interface.
 async function commit(snapshot, previous) {
@@ -88,7 +96,7 @@ function render(focus = false) {
         story.append(el('p',`Carrera: ${s.careerChanges.clubFrom} → ${s.careerChanges.clubTo} · ${s.careerChanges.roleFrom} → ${s.careerChanges.roleTo}`,'body'));
       }
       s.worldHighlights.slice(-4).forEach(text=>story.append(el('p',text,'body')));
-      if (s.interruption) story.append(el('p',`La simulación se detuvo: ${s.interruption.type.replaceAll('_',' ')}.`,'body'));
+      if (s.interruption) story.append(el('p',`La simulación se detuvo porque ${interruptionText(s.interruption.type)}.`,'body'));
     }
     story.append(action('Continuar','auto',{action:'start'}));
   } else if (v.screen === 'epilogue') {
