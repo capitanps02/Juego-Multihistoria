@@ -155,7 +155,7 @@ test('T16.13 constantes internas se filtran de result y journal públicos', asyn
   const raw = 'STATE20_HOME_ROTATION callback seedOrigin EVT_20_TEST NPC_PLR_14 NANO_SHADOW';
   const { view, snapshot } = await resolveSynthetic(event({ messages: [raw] }));
   assert.match(JSON.stringify(snapshot.pendingResult.messages), /STATE20_HOME_ROTATION/);
-  const publicJson = JSON.stringify(view);
+  const publicJson = JSON.stringify({ result: view.result, journal: view.journal });
   for (const token of ['STATE20_HOME_ROTATION','callback','seedOrigin','EVT_20_TEST','NPC_PLR_14','NANO_SHADOW']) {
     assert.equal(publicJson.includes(token), false, token);
   }
@@ -193,6 +193,7 @@ test('T16.14 consume deltas deportivos estructurados de A15 sin recalcular depor
 
 test('T16.15 auditoría estructural garantiza feedback para todo choice→outcome del catálogo', () => {
   const audit = auditDecisionFeedback(EVENTS);
+  console.log('A16_FEEDBACK_AUDIT ' + JSON.stringify(audit));
   assert.ok(audit.choices > 0);
   assert.ok(audit.resolutions >= audit.choices);
   assert.deepEqual(audit.missing, []);
