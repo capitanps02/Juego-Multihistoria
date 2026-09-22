@@ -2,14 +2,17 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createInitialState } from '../dist/content/initial-state.js';
 import {
+  careerSeasonRecords,
   closeLeagueObjectiveInPlace,
+  currentCareerMatchResult,
   currentOfficialMatch,
   getSportMatchModelStore,
   inspectSportMatchModelStore,
   lastPlayerAppearance,
   priorClubPlayerMatchStats,
   recentClubPlayerMatchStats,
-  recordOfficialMatchInPlace
+  recordOfficialMatchInPlace,
+  seasonPlayerStats
 } from '../dist/simulation/match-model.js';
 import { getCurrentMatchContext, getSportContext } from '../dist/simulation/sport-context.js';
 import { advanceWorldDayInPlace } from '../dist/simulation/world-simulator.js';
@@ -54,10 +57,16 @@ test('match model/1 public simulator preserves core simulation and RNG apart fro
     advanceCoreWorldDayInPlace(core);
   }
   const withoutStores = structuredClone(wrapped);
+  const comparableCore = structuredClone(core);
   delete withoutStores.world.sportMatchModel;
   delete withoutStores.world.sportPenaltySetups;
   delete withoutStores.world.sportCompetitionMoments;
-  assert.deepEqual(withoutStores, core);
+  // A15 discipline counters are intentional wrapper-owned persisted sports facts.
+  delete withoutStores.sport.yellowCardAccumulation;
+  delete withoutStores.sport.suspensionMatches;
+  delete comparableCore.sport.yellowCardAccumulation;
+  delete comparableCore.sport.suspensionMatches;
+  assert.deepEqual(withoutStores, comparableCore);
   assert.deepEqual(wrapped.rngState, core.rngState);
   assert.ok(getSportMatchModelStore(wrapped)?.fixtures.length > 0);
 });
@@ -709,4 +718,112 @@ test('T5.5 sport regression/5 save-load keeps the debut as one match and does no
   assert.equal(getSportMatchModelStore(restored).fixtures.length, 1);
   assert.equal(getSportMatchModelStore(restored).fixtures[0]?.id, firstId);
   assert.equal(currentOfficialMatch(restored), null);
+});
+
+
+test('T15.5 suspended player does not participate and serves exactly one suspension fixture', () => {
+  const seed = findWeeklyAppearanceSeed();
+  const state = weeklySportState(seed);
+  state.sport.suspensionMatches = 1;
+  advanceWorldDayInPlace(state);
+  assert.equal(state.sport.appearances, 0);
+  assert.equal(state.sport.suspensionMatches, 0);
+  const row = currentOfficialMatch(state);
+  assert.ok(row);
+  assert.equal(row.player.appeared, false);
+  assert.equal(row.player.calledUp, false);
+  assert.equal(row.player.suspensionUnavailable, true);
+});
+
+test('T15.12-T15.14 season aggregates are exact sums of persisted starts, minutes, goals and assists', () => {
+  const state = matchDayState(15012);
+  for (let i = 0; i < 4; i += 1) {
+    recordOfficialMatchInPlace(state, {
+      appeared: i !== 2,
+      debutOccurred: i === 0,
+      injuryUnavailable: false,
+      suspensionUnavailable: false
+    });
+    if (i < 3) {
+      const d = new Date(state.date + 'T00:00:00Z');
+      d.setUTCDate(d.getUTCDate() + 7);
+      state.date = d.toISOString().slice(0, 10);
+      state.runtime.day += 7;
+      state.runtime.seasonDay += 7;
+    }
+  }
+  const rows = getSportMatchModelStore(state).fixtures;
+  const stats = seasonPlayerStats(state);
+  assert.ok(stats);
+  assert.equal(stats.appearances, rows.filter(row => row.player.appeared).length);
+  assert.equal(stats.starts, rows.filter(row => row.player.started).length);
+  assert.equal(stats.minutes, rows.reduce((sum, row) => sum + row.player.minutes, 0));
+  assert.equal(stats.goals, rows.reduce((sum, row) => sum + (row.stats?.goals ?? 0), 0));
+  assert.equal(stats.assists, rows.reduce((sum, row) => sum + (row.stats?.assists ?? 0), 0));
+  assert.ok(stats.averageRating === null || (stats.averageRating >= 3.5 && stats.averageRating <= 10));
+});
+
+test('T15 career history preserves prior club rows instead of rewriting them after a transfer', () => {
+  const state = matchDayState(15017);
+  recordOfficialMatchInPlace(state, { appeared: true, debutOccurred: true, injuryUnavailable: false });
+  const oldId = currentOfficialMatch(state).id;
+  const d = new Date(state.date + 'T00:00:00Z');
+  d.setUTCDate(d.getUTCDate() + 7);
+  state.date = d.toISOString().slice(0, 10);
+  state.runtime.day += 7;
+  state.runtime.seasonDay += 7;
+  state.professional.registrationClub = 'NEW_CLUB';
+  state.club = 'NEW_CLUB';
+  recordOfficialMatchInPlace(state, { appeared: true, debutOccurred: false, injuryUnavailable: false });
+  const records = careerSeasonRecords(state);
+  assert.equal(records.length, 2);
+  assert.equal(records[0].club, 'UDV');
+  assert.equal(records[1].club, 'NEW_CLUB');
+  assert.equal(getSportMatchModelStore(state).fixtures[0].id, oldId);
+  assert.equal(getSportMatchModelStore(state).fixtures[0].club, 'UDV');
+});
+
+test('T15 CareerMatchResult exposes structured weekly sports output and factual milestones', () => {
+  const state = matchDayState(15018);
+  const row = recordOfficialMatchInPlace(state, { appeared: true, debutOccurred: true, injuryUnavailable: false });
+  const result = currentCareerMatchResult(state);
+  assert.ok(row && result);
+  assert.equal(result.matchId, row.id);
+  assert.equal(result.selected, row.player.calledUp);
+  assert.equal(result.started, row.player.started);
+  assert.equal(result.minutes, row.player.minutes);
+  assert.equal(result.goals, row.stats.goals);
+  assert.equal(result.assists, row.stats.assists);
+  assert.equal(result.statDeltas.appearances, 1);
+  assert.ok(result.milestones.includes('debut'));
+  assert.ok(result.rating >= 3.5 && result.rating <= 10);
+});
+
+test('T15.18 same seed + same fixture + same observed appearance gives identical rating and survives later form changes', () => {
+  const a = matchDayState(15019);
+  const b = matchDayState(15019);
+  const input = { appeared: true, debutOccurred: false, injuryUnavailable: false, suspensionUnavailable: false };
+  const rowA = recordOfficialMatchInPlace(a, input);
+  const rowB = recordOfficialMatchInPlace(b, input);
+  assert.deepEqual(rowA, rowB);
+  a.sport.form = 1;
+  a.sport.roleScore = 99;
+  const restored = loadSave(serializeSave(a));
+  assert.deepEqual(getSportMatchModelStore(restored).fixtures[0], rowA);
+});
+
+test('T15 discipline: a fifth yellow creates a one-match suspension for the next official fixture', () => {
+  let found = false;
+  for (let seed = 15100; seed < 16100 && !found; seed += 1) {
+    const state = weeklySportState(seed);
+    state.sport.yellowCardAccumulation = 4;
+    advanceWorldDayInPlace(state);
+    const row = currentOfficialMatch(state);
+    if (row?.player.appeared && row.stats?.yellowCards === 1) {
+      found = true;
+      assert.equal(state.sport.yellowCardAccumulation, 0);
+      assert.ok(state.sport.suspensionMatches >= 1);
+    }
+  }
+  assert.equal(found, true);
 });
