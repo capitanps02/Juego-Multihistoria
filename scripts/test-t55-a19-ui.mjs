@@ -32,6 +32,8 @@ test('A19 player-facing micro UX uses clear history, save and relationship langu
   assert.match(ui,/date\(v\.date\)\+' · Partida'/);
   assert.match(ui,/No se ha podido cargar el juego/);
   assert.match(ui,/Reintentar carga/);
+  assert.match(ui,/Cargando tu historia/);
+  assert.match(ui,/Comprobando la copia/);
 });
 
 test('A19 consumes factual A15 career records through PlayerView',async()=>{
