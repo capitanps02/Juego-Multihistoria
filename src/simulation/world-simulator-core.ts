@@ -139,6 +139,7 @@ function updateContextFlags(state: GameState, rng: DeterministicRng, debutFromAp
   else state.world.marketWindowOpen = false;
 }
 function footballWeek(state: GameState): void {
+  if (state.retirement.status === "closed") return;
   const rng = new DeterministicRng(state.rngState.football);
   const priorMatch = previousOfficialMatch(state);
   const priorRating = priorMatch?.player.appeared === true && typeof priorMatch.stats?.rating === "number"
