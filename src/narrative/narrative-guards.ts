@@ -21,7 +21,7 @@ export type NarrativeGuardSpec =
   | { id: "requiresInjury" }
   | { id: "requiresCareerOffer" }
   | { id: "requiresTransferOffer" }
-  | { id: "requiresInternationalCallup"; stage?: "preliminary" | "final" }
+  | { id: "requiresInternationalCallup"; stage?: "preliminary" | "final"; membership?: "selected" | "omitted" | "withdrawn" }
   | { id: "requiresActiveCareer" };
 
 export interface NarrativeGuardResult {
@@ -48,7 +48,10 @@ const LEGACY_EVENT_GUARDS: Readonly<Record<string, readonly NarrativeGuardSpec[]
   CEVT_28_MKT_01: [{ id: "requiresCareerOffer" }],
   CEVT_32_RICH_01: [{ id: "requiresCareerOffer" }],
   CEVT_35_RICH_LAST: [{ id: "requiresCareerOffer" }],
-  CEVT_RET_RECONSIDER: [{ id: "requiresCareerOffer" }]
+  CEVT_RET_RECONSIDER: [{ id: "requiresCareerOffer" }],
+  CEVT_24_TOURN_01: [{ id: "requiresInternationalCallup", stage: "final", membership: "selected" }],
+  CEVT_24_TOURN_02: [{ id: "requiresInternationalCallup", stage: "final", membership: "omitted" }],
+  CEVT_32_NT_01: [{ id: "requiresInternationalCallup", stage: "final", membership: "selected" }]
 };
 
 function finite(value: unknown, fallback = 0): number {
@@ -177,10 +180,17 @@ export function evaluateNarrativeGuard(state: GameState, spec: NarrativeGuardSpe
         : { guard: spec.id, pass: false, reason: "no real eligible transfer offer is pending" };
     case "requiresInternationalCallup": {
       const facts = resolveNationalSelectionFacts(state);
-      const selected = spec.stage === "preliminary" ? facts.preselected30 : facts.selectedFinal26;
-      return selected
+      const stage = spec.stage ?? "final";
+      const actual = stage === "preliminary"
+        ? facts.preliminaryMembership
+        : facts.finalMembership;
+      const expected = spec.membership ?? "selected";
+      if (stage === "preliminary" && expected === "withdrawn") {
+        return { guard: spec.id, pass: false, reason: "preliminary authority cannot certify withdrawn membership" };
+      }
+      return actual === expected
         ? { guard: spec.id, pass: true }
-        : { guard: spec.id, pass: false, reason: "no factual published selection supports this scene" };
+        : { guard: spec.id, pass: false, reason: "published selection membership does not support this scene" };
     }
     case "requiresActiveCareer":
       return state.retirement.status !== "closed"
