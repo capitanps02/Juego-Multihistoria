@@ -43,7 +43,7 @@ const LEGACY_EVENT_GUARDS: Readonly<Record<string, readonly NarrativeGuardSpec[]
   EVT_18_PRS_001: [{ id: "requiresRecentMatch", maxDays: 7, minMinutes: 1 }],
   EVT_19_TEAM_001: [{ id: "requiresRecentMatch", maxDays: 7, minMinutes: 1 }],
   CEVT_18_CCH_01: [{ id: "requiresRecentCoachChange", maxDays: 90, previousCoachNpcId: "NPC_CCH_01" }],
-  EVT_19_CCH_001: [{ id: "requiresCurrentCoach" }],
+  EVT_19_CCH_001: [{ id: "requiresCurrentCoach", npcId: "NPC_CCH_01" }],
   CEVT_19_INJ_01: [{ id: "requiresInjury" }],
   EVT_19_JAN_001: [{ id: "requiresCareerOffer", minCount: 2 }],
   EVT_24_MKT_001: [{ id: "requiresCareerOffer", minCount: 3 }],
