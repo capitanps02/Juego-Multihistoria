@@ -64,9 +64,9 @@ const familyEffects: Record<string, [Effect[],Effect[],Effect[],Effect[]]> = {
 };
 
 const defaultBodies: Partial<Record<EventFamily,string>> = {
-  contract:"En una reunión en las oficinas del club, el director deportivo y tu agente ponen sobre la mesa duración, dinero y margen de salida. Te piden una postura antes de que el calendario decida por vosotros.",
-  market:"Al terminar el entrenamiento, tu agente te llama con un interés concreto de mercado. El club actual también quiere saber qué piensas antes de que la conversación avance.",
-  medical:"En la sala médica, el fisio y el médico repasan carga, molestias y calendario. Lo que decidas hoy puede cambiar tu disponibilidad y la confianza con la que te gestionan.",
+  contract:"Tu situación contractual exige decidir cuánto valoras duración, dinero, rol y margen de salida. Separas las condiciones que existen de verdad de lo que todavía tendría que negociarse.",
+  market:"El mercado vuelve a entrar en tu planificación. Tu agente separa los contactos reales, las señales informales y lo que todavía no es una oferta; tú decides cuánto quieres moverte.",
+  medical:"Tu gestión física entra en una decisión concreta de planificación. Carga, descanso y calendario no pesan igual, y debes decidir cuánto margen quieres reservar antes de que aparezca un problema mayor.",
   team:"Después del entrenamiento, una conversación en el vestuario te obliga a posicionarte delante de compañeros que también tienen algo que perder.",
   captaincy:"En una reunión corta del vestuario, los jugadores con más peso te piden que tomes postura sobre una decisión que afecta al grupo.",
   press:"A la salida del entrenamiento, varios periodistas esperan una respuesta y el club ya ha decidido qué versión quiere transmitir.",
@@ -78,14 +78,14 @@ const defaultBodies: Partial<Record<EventFamily,string>> = {
   money:"En casa, con las cifras del nuevo contrato delante, tu familia te pregunta qué parte del dinero debe cambiar vuestra vida y cuál no.",
   family:"Una llamada familiar después de cenar convierte el siguiente paso de tu carrera en una decisión que ya no afecta solo al vestuario.",
   life:"Fuera de la ciudad deportiva, una decisión cotidiana de vivienda, entorno o rutina empieza a competir de verdad con lo que exige el fútbol.",
-  selection:"Durante una concentración o una llamada de selección, te explican tu situación sin prometer minutos y esperan que decidas cómo responder.",
+  selection:"La selección vuelve a influir en tu planificación. Conoces la señal que ha llegado —seguimiento, ausencia o comunicación directa— y debes decidir cómo responder sin dar por hechos minutos ni convocatoria.",
   legacy:"Una conversación con alguien que conoce tu trayectoria te obliga a comparar lo que querías al empezar con lo que estás dispuesto a proteger ahora."
 };
 
 const defaultLabels: Partial<Record<EventFamily,[string,string,string,string]>> = {
   contract:["Pedir que mejoren las condiciones antes de responder","Aceptar la propuesta si aclaran tu rol","Exigir una salida o revisión que te devuelva margen","Pedir 48 horas y volver con una contrapropuesta concreta"],
-  market:["Pedir a tu agente que abra la negociación","Decir al club actual que prefieres quedarte","Usar el interés para pedir mejores condiciones donde estás","Escuchar a las dos partes antes de comprometerte"],
-  medical:["Decir que quieres jugar y asumir el riesgo explicado","Seguir el plan de recuperación aunque pierdas minutos","Pedir al médico y al fisio un plan común por escrito","Buscar una segunda opinión antes de decidir"],
+  market:["Pedir a tu agente que active solo los contactos reales","Decir al club actual qué necesitarías para seguir","No usar rumores como palanca y esperar condiciones formales","Escuchar el mercado sin comprometerte antes de tiempo"],
+  medical:["Mantener la carga actual aunque el calendario apriete","Reducir carga aunque pierdas minutos","Pedir un plan común con límites concretos","Buscar una segunda opinión antes de cambiar el plan"],
   team:["Hablar de frente con los compañeros implicados","Escuchar al vestuario antes de posicionarte","Decir qué límite no estás dispuesto a cruzar","Proponer una solución y revisarla después del próximo partido"],
   captaincy:["Defender una postura clara delante del grupo","Pedir escuchar primero a los afectados","Hablar en privado con el capitán antes de votar","Proponer un acuerdo temporal y revisarlo con el vestuario"],
   press:["Responder con tu versión y asumir la exposición","No responder hasta hablar con el club","Desmentir solo el dato que consideras falso","Dar una respuesta breve y cortar nuevas preguntas"],
@@ -97,7 +97,7 @@ const defaultLabels: Partial<Record<EventFamily,[string,string,string,string]>> 
   money:["Tomar una decisión económica ahora","Separar una parte y no cambiar la rutina todavía","Pedir asesoramiento antes de mover el dinero","Acordar una cantidad concreta y revisar el resto más adelante"],
   family:["Priorizar lo que necesita tu familia ahora","Pedir tiempo antes de alterar la carrera","Buscar una solución que reparta el coste entre todos","Mantener el plan actual hasta final de temporada"],
   life:["Cambiar la rutina para ganar estabilidad","Mantener lo que funciona aunque cueste más","Pedir ayuda para resolver el problema concreto","Probar un cambio pequeño antes de hacerlo definitivo"],
-  selection:["Aceptar el papel que te ofrecen","Preguntar qué necesitas para tener más protagonismo","Proteger tu carga y poner un límite a la disponibilidad","Aceptar esta ventana y revisar la siguiente"],
+  selection:["Pedir una explicación directa sobre tu situación","Aceptar la situación actual y centrarte en el club","Preguntar qué debes mejorar para cambiar tu papel","No mover nada y revisar la siguiente lista"],
   legacy:["Elegir el camino que más se parece a lo que quieres ser","Proteger lo que ya has construido","Renunciar a una ventaja para conservar control","Posponer la decisión hasta tener un hecho nuevo"]
 };
 
