@@ -978,6 +978,44 @@ function stringOrNull(value: unknown): value is string | null {
   return value === null || (typeof value === "string" && value.length > 0 && value.length <= 500);
 }
 
+function performanceContextIssue(value: unknown, path: string): MatchModelIssue | null {
+  if (!plainRecord(value) || !exactKeys(value, [
+    "age", "careerRole", "roleScore", "form", "fitness", "fatigue",
+    "coachTrust", "leagueTier", "opponentLevel", "positionIdentity"
+  ])) return { path, reason: "invalid performance context fields" };
+  if (!Number.isInteger(value.age) || Number(value.age) < 0 || Number(value.age) > 80) return { path: `${path}.age`, reason: "invalid age" };
+  if (typeof value.careerRole !== "string" || value.careerRole.length === 0 || value.careerRole.length > 120) {
+    return { path: `${path}.careerRole`, reason: "invalid career role" };
+  }
+  for (const key of ["roleScore", "form", "fitness", "fatigue", "opponentLevel"]) {
+    if (typeof value[key] !== "number" || !Number.isFinite(value[key]) || value[key] < 0 || value[key] > 100) {
+      return { path: `${path}.${key}`, reason: "sports context value outside 0-100" };
+    }
+  }
+  if (value.coachTrust !== null && (typeof value.coachTrust !== "number" || !Number.isFinite(value.coachTrust) || value.coachTrust < 0 || value.coachTrust > 100)) {
+    return { path: `${path}.coachTrust`, reason: "coach trust outside 0-100" };
+  }
+  if (!Number.isInteger(value.leagueTier) || Number(value.leagueTier) < 1 || Number(value.leagueTier) > 9) {
+    return { path: `${path}.leagueTier`, reason: "invalid league tier" };
+  }
+  if (value.positionIdentity !== null && (typeof value.positionIdentity !== "string" || value.positionIdentity.length > 120)) {
+    return { path: `${path}.positionIdentity`, reason: "invalid position identity" };
+  }
+  return null;
+}
+
+function effectsIssue(value: unknown, path: string): MatchModelIssue | null {
+  if (!plainRecord(value) || !exactKeys(value, ["formDelta", "fatigueDelta", "fitnessDelta", "coachTrustDelta", "roleScoreDelta"])) {
+    return { path, reason: "invalid sports effect fields" };
+  }
+  for (const key of ["formDelta", "fatigueDelta", "fitnessDelta", "coachTrustDelta", "roleScoreDelta"]) {
+    if (typeof value[key] !== "number" || !Number.isFinite(value[key]) || Math.abs(value[key]) > 100) {
+      return { path: `${path}.${key}`, reason: "invalid sports effect delta" };
+    }
+  }
+  return null;
+}
+
 function fixtureIssue(value: unknown, index: number, maxDate?: string, state?: GameState): MatchModelIssue | null {
   const path = `world.${STORE_KEY}.fixtures[${index}]`;
   if (!plainRecord(value)) return { path, reason: "fixture must be an object" };
@@ -985,7 +1023,17 @@ function fixtureIssue(value: unknown, index: number, maxDate?: string, state?: G
   const allowedKeys = [...legacyKeys];
   if (Object.prototype.hasOwnProperty.call(value, "result")) allowedKeys.push("result");
   if (Object.prototype.hasOwnProperty.call(value, "stats")) allowedKeys.push("stats");
+  if (Object.prototype.hasOwnProperty.call(value, "performanceContext")) allowedKeys.push("performanceContext");
+  if (Object.prototype.hasOwnProperty.call(value, "effects")) allowedKeys.push("effects");
   if (!exactKeys(value, allowedKeys)) return { path, reason: "fixture fields do not match match-model v1" };
+  if (Object.prototype.hasOwnProperty.call(value, "performanceContext")) {
+    const issue = performanceContextIssue(value.performanceContext, `${path}.performanceContext`);
+    if (issue) return issue;
+  }
+  if (Object.prototype.hasOwnProperty.call(value, "effects")) {
+    const issue = effectsIssue(value.effects, `${path}.effects`);
+    if (issue) return issue;
+  }
   if (Object.prototype.hasOwnProperty.call(value, "stats") && !Object.prototype.hasOwnProperty.call(value, "result")) {
     return { path: `${path}.stats`, reason: "player stats require an authoritative match result" };
   }
@@ -1109,7 +1157,10 @@ function fixtureIssue(value: unknown, index: number, maxDate?: string, state?: G
           state,
           value as unknown as ScheduledFixture,
           player as unknown as MatchPlayerFact,
-          result as unknown as MatchResultFact
+          result as unknown as MatchResultFact,
+          Object.prototype.hasOwnProperty.call(value, "performanceContext")
+            ? value.performanceContext as unknown as MatchPerformanceContext
+            : undefined
         );
         if (stats.goals !== expectedStats.goals
           || stats.assists !== expectedStats.assists
