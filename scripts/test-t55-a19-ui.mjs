@@ -41,6 +41,7 @@ test('A19 consumes factual A15 career records through PlayerView',async()=>{
   const session=await GameSession.create(424242,{sessionId:'a19-player-view'});
   const view=session.getView();
   assert.ok(Array.isArray(view.careerSeasons));
+  assert.equal(view.careerMilestones.historyComplete,false);
   assert.equal(view.latestMatch,null);
   assert.equal(view.retirementStatus,'playing');
   assert.equal(view.careerSeasons.length,0);
@@ -85,4 +86,11 @@ test('A19 retirement stays on the canonical narrative path and is player-visible
   assert.match(ui,/Considerando el futuro/);
   assert.match(ui,/Retirada anunciada/);
   assert.match(ui,/Carrera finalizada/);
+});
+
+test('A19 career renders only factual complete-ledger milestones',()=>{
+  assert.match(ui,/careerMilestones\?\.historyComplete/);
+  assert.match(ui,/Debut oficial/);
+  assert.match(ui,/appearance100/);
+  assert.match(css,/milestone-chip/);
 });
