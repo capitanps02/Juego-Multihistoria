@@ -809,8 +809,11 @@ export function currentCareerMatchResult(state: GameState): CareerMatchResult | 
     && stats.assists > 0
     && !store.fixtures.some(item => item.id !== row.id && item.date < row.date && (item.stats?.assists ?? 0) > 0);
   const milestones: string[] = [];
+  if (store.milestones.firstMatchSquadCall === row.id) milestones.push("first_call_up");
+  if (store.milestones.firstBench === row.id) milestones.push("first_bench");
   if (row.player.debut) milestones.push("debut");
   if (store.milestones.firstStart === row.id) milestones.push("first_start");
+  if (store.milestones.firstFullMatch === row.id) milestones.push("first_full_match");
   if (store.milestones.firstGoal === row.id) milestones.push("first_goal");
   if (firstAssist) milestones.push("first_assist");
   if ([10, 50, 100, 500, 700].includes(appearanceOrdinal)) milestones.push(`appearance_${appearanceOrdinal}`);
@@ -835,7 +838,7 @@ export function currentCareerMatchResult(state: GameState): CareerMatchResult | 
       goals: stats.goals,
       assists: stats.assists
     },
-    sportDeltas: row.effects ?? {
+    sportDeltas: row.effects ? { ...row.effects } : {
       formDelta: 0,
       fatigueDelta: 0,
       fitnessDelta: 0,
