@@ -7,7 +7,11 @@ const css = fs.readFileSync('web/game-ui.css', 'utf8');
 
 test('T4.6 ciclo de juego: tutorial, pantallas esenciales y resumen de partido', () => {
   for (const label of ['Inicio', 'Carrera', 'Mundo', 'Relaciones', 'Perfil', 'Tu partida']) assert.match(ui, new RegExp(`'${label}'`), `falta vista ${label}`);
-  assert.match(ui, /Simula una semana para avanzar/);
+  assert.match(ui, /Simula el tiempo para avanzar/);
+  assert.match(ui, /Pausar simulación/);
+  assert.match(ui, /Reanudar simulación/);
+  assert.match(ui, /Resumen del periodo/);
+  assert.match(ui, /run\('auto',\{action:'start'\}\)/);
   assert.match(ui, /lee lo que sabes, revisa lo que no está claro y elige una respuesta/);
   assert.match(ui, /Resumen del partido/);
   assert.match(ui, /Partidos disputados/);
