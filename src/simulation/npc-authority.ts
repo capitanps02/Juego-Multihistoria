@@ -84,15 +84,13 @@ export function clearActiveAgentInPlace(state: GameState): void {
  */
 export function resolveCurrentClubInstitutionalNpc(state: GameState): string | null {
   if (!hasActiveClubEmployment(state)) return null;
-  const club = currentEmploymentClub(state);
-  if (!club) return null;
   const assignment = CLUB_INSTITUTIONAL_ASSIGNMENTS.find(
-    candidate => candidate.club === club && candidate.phases.includes(state.phase)
+    candidate => candidate.club === state.club && candidate.phases.includes(state.phase)
   );
   if (!assignment) return null;
 
   const npc = state.npcs.find(candidate => candidate.id === assignment.npcId);
-  if (!npc || npc.careerState !== "active" || npc.club !== club) return null;
+  if (!npc || npc.careerState !== "active" || npc.club !== state.club) return null;
   return npc.id;
 }
 
