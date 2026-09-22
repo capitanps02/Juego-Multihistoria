@@ -55,10 +55,17 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
     if(busy||!session)return;
     if(type==='auto'&&extra.action==='pause')clearTimeout(autoTimer);
     const command={type,commandId:crypto.randomUUID(),expectedRevision:session.getView().revision,...extra};
+    let completed=false;
     busy=true;message='';render();
-    try{const wasCinematic=cinematic;await session.dispatch(command);cinematic=['decision','result','offer'].includes(session.getView().screen);view='home';if(cinematic&&!wasCinematic){if(historyReady)win.history.pushState(routeState(),'');else prepareHistory();}else if(!cinematic)replaceRouteState();}
-    catch(e){message=e.message+' Recupera la partida guardada antes de reintentar.';}
-    finally{busy=false;render(true);queueAutoStep();}
+    try{const wasCinematic=cinematic;await session.dispatch(command);completed=true;cinematic=['decision','result','offer'].includes(session.getView().screen);view='home';if(cinematic&&!wasCinematic){if(historyReady)win.history.pushState(routeState(),'');else prepareHistory();}else if(!cinematic)replaceRouteState();}
+    catch(e){
+      clearTimeout(autoTimer);
+      if(type==='auto'&&['start','step'].includes(extra.action)&&simulationMode()==='auto_simulating'){
+        try{await session.dispatch({type:'auto',action:'pause',commandId:crypto.randomUUID(),expectedRevision:session.getView().revision});}catch{}
+      }
+      message=e.message+' La simulación se ha detenido en el último estado válido; puedes reintentar desde Tu partida.';
+    }
+    finally{busy=false;render(true);if(completed)queueAutoStep();}
   }
   function mainAction(v){
     if(v.screen==='offer')return button('Revisar oferta',openCinematic,'primary',{blockedWhenPaused:true});
