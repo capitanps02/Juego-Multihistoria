@@ -5,6 +5,7 @@ import { GameSession } from '../dist/session/game-session.js';
 
 const ui=fs.readFileSync('web/game-ui.js','utf8');
 const css=fs.readFileSync('web/game-ui.css','utf8');
+const retirementEvents=fs.readFileSync('src/content/events/34_plus/principal-events.ts','utf8');
 
 test('A19 onboarding explains the simulated career loop and player variables',()=>{
   assert.match(ui,/novela y simulador narrativo de carrera futbolística/);
@@ -70,4 +71,16 @@ test('A19 consumes A14/A16 presentation contracts without remapping their logic'
   assert.match(ui,/v\.result\.narrativeEffects/);
   assert.match(ui,/v\.result\.hiddenEffects/);
   assert.match(ui,/Consecuencias/);
+});
+
+test('A19 retirement stays on the canonical narrative path and is player-visible',()=>{
+  assert.match(retirementEvents,/EVT_RET_HOME_001/);
+  assert.match(retirementEvents,/Creo que ha llegado/);
+  assert.match(retirementEvents,/EVT_RET_ANNOUNCE_001/);
+  assert.match(retirementEvents,/Anunciarlo/);
+  assert.match(ui,/d\.choices\.forEach/);
+  assert.match(ui,/c\.label/);
+  assert.match(ui,/Considerando el futuro/);
+  assert.match(ui,/Retirada anunciada/);
+  assert.match(ui,/Carrera finalizada/);
 });
