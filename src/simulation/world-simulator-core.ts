@@ -13,7 +13,7 @@ import { adaptState30ToMaturity } from "./maturity-adapter.js";
 import { maturityWeek, runMaturityPreseason } from "./ageing-engine.js";
 import { lateCareerPreseason, lateCareerWeek, closeCareer } from "./late-career-engine.js";
 import { recordAgeMilestone } from "./age-milestones.js";
-import { certifyCoachChangeInPlace } from "./coach-change-authority.js";
+import { certifyCoachChangeInPlace, resolveRecentCurrentClubCoachChange } from "./coach-change-authority.js";
 import { expireDueSeedsInPlace } from "../narrative/resolver.js";
 import { hasActiveClubEmployment, transitionNaturalExpiryInPlace } from "./employment.js";
 import { previousOfficialMatch } from "./match-model.js";
@@ -136,7 +136,13 @@ function footballWeek(state: GameState): void {
   // Match form is an inertial sports state: last week's factual rating nudges it,
   // while deterministic weekly variation prevents identical careers.
   const form = clamp(num(state.sport.form, 50) * 0.80 + performanceTarget * 0.20 + (rng.next() - 0.5) * 8);
-  const trust = state.relationships.find(r => r.npcId === "NPC_CCH_01")?.trust ?? 45;
+  const currentClubCoachChange = resolveRecentCurrentClubCoachChange(state, Number.MAX_SAFE_INTEGER);
+  const activeCoachNpcId = currentClubCoachChange ? currentClubCoachChange.newCoachNpcId : "NPC_CCH_01";
+  // A certified change with unknown replacement identity must fail neutral: the historical
+  // coach cannot keep governing sports decisions, and A15 must not invent a replacement NPC.
+  const trust = activeCoachNpcId
+    ? state.relationships.find(r => r.npcId === activeCoachNpcId)?.trust ?? 45
+    : 45;
   const currentRole = num(state.sport.roleScore, 18);
   const role = state.age >= 20 && state.professional.initializedAt20
     ? clamp(currentRole * 0.90 + (22 + form * 0.42 + state.professional.roleSecurity * 0.28 + Math.max(0, 4-state.professional.leagueTier)*2.2) * 0.10 + (rng.next()-0.5)*2.8)
@@ -209,8 +215,10 @@ function footballWeek(state: GameState): void {
   const suspendedForFixture = num(state.sport.suspensionMatches, 0) > 0;
   const careerClosed = state.retirement.status === "closed";
   let debutFromAppearance = false;
-  if (officialSeasonWeek && role > 24) {
-    const appearanceChance = clamp((role - 15) / 85, 0.08, 0.92);
+  if (officialSeasonWeek && !careerClosed) {
+    // Even a reserve/academy-call-up needs a small factual path to minutes; role then
+    // increases/decreases the chance continuously instead of acting as a hard gate.
+    const appearanceChance = clamp((role - 15) / 85, 0.12, 0.92);
     const appearanceRolled = rng.next() < appearanceChance;
     if (appearanceRolled) {
       // Consume the same follow-up draws as the legacy path even when injury blocks
