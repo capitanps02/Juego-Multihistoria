@@ -175,6 +175,28 @@ test('A17/T17.11b legacy offer prose cannot be scheduled from marketHeat alone',
   assert.equal(narrativeGuardsPass(state, scene), false);
 });
 
+test('A17/T17.11c multi-offer prose requires the factual number of live offers', () => {
+  const state = createInitialState(170111);
+  state.age = 24;
+  state.phase = '23_26';
+  const scene = event('EVT_24_MKT_001', { ageWindow: [24, 24], phase: '23_26', family: 'market' });
+
+  assert.equal(narrativeGuardsPass(state, scene), false);
+  for (let i = 1; i <= 2; i += 1) {
+    const offer = proposeCareerChange(state, 'A17 multi ' + i, draft => {
+      draft.club = 'A17 Multi Club ' + i;
+    });
+    assert.ok(offer);
+    assert.equal(narrativeGuardsPass(state, scene), false, 'fewer than three offers must fail closed');
+  }
+
+  const third = proposeCareerChange(state, 'A17 multi 3', draft => {
+    draft.club = 'A17 Multi Club 3';
+  });
+  assert.ok(third);
+  assert.equal(narrativeGuardsPass(state, scene), true);
+});
+
 test('A17/T17.11 transfer-offer guard requires a real eligible pending offer', () => {
   const state = createInitialState(17011);
   assert.equal(evaluateNarrativeGuard(state, { id: 'requiresTransferOffer' }).pass, false);
