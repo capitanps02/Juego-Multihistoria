@@ -35,6 +35,8 @@ test('A19 consumes factual A15 career records through PlayerView',async()=>{
   assert.equal(view.latestMatch,null);
   assert.equal(view.retirementStatus,'playing');
   assert.equal(view.careerSeasons.length,0);
+  assert.equal(view.contacts.length,5);
+  assert.deepEqual(view.contacts.map(contact=>contact.id),['NPC_PLR_14','NPC_FAM_01','NPC_FAM_02','NPC_FAM_03','NPC_SOC_01']);
 });
 
 test('A19 exposes real retirement states without inventing another state machine',()=>{
@@ -46,7 +48,9 @@ test('A19 exposes real retirement states without inventing another state machine
 test('A19 has explicit responsive treatment for phone, tablet and desktop constraints',()=>{
   assert.match(css,/@media\(max-width:390px\)/);
   assert.match(css,/@media\(max-width:820px\)/);
+  assert.match(css,/@media\(min-width:1200px\) and \(max-width:1599px\)/);
   assert.match(css,/@media\(min-width:1600px\)/);
+  assert.match(css,/max-width:1280px/);
   assert.match(css,/season-grid/);
   assert.match(css,/grid-template-columns:1fr/);
 });
