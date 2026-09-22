@@ -24,6 +24,10 @@ Canonical state wins. A17 does not rewrite narrative arcs. Where an active scene
 | CEVT_24_TOURN_02 | published final national selection = omitted | A factual omission is required before saying the player was left out. |
 | CEVT_32_NT_01 | published final national selection = selected | "La lista sale y tu nombre..." requires an actual published final list. |
 
+## Canonical override note
+
+`CEVT_RET_RECONSIDER` is intentionally **not** guarded as an offer scene. T5.36 rewrites that legacy ID at runtime into the private `decided` reconsideration window; the canonical override no longer claims an offer exists. Guarding from the pre-override text would be a false dependency.
+
 ## A18 text/canon follow-up
 
 These claims remain stronger than the currently persisted authority and should be rewritten or given a richer producer before re-enabling stronger wording:
