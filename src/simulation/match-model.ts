@@ -29,6 +29,8 @@ export interface MatchPlayerFact {
   minutes: number;
   debut: boolean;
   injuryUnavailable: boolean;
+  /** Optional for backwards compatibility with historical match-model v1 rows. */
+  suspensionUnavailable?: boolean;
 }
 
 export interface MatchDecisionContext {
@@ -52,6 +54,8 @@ export interface MatchPlayerStats {
   assists: number;
   yellowCards: number;
   redCards: number;
+  /** 3.5-10.0 deterministic performance rating; absent on historical rows. */
+  rating?: number;
 }
 
 export interface CareerSportMilestones {
@@ -62,6 +66,9 @@ export interface CareerSportMilestones {
   assists: number | null;
   yellowCards: number | null;
   redCards: number | null;
+  appearance10: boolean | null;
+  appearance50: boolean | null;
+  appearance100: boolean | null;
   appearance500: boolean | null;
   appearance700: boolean | null;
   /** Exact ordinal only when the career ledger is complete; it does not guarantee another appearance. */
@@ -71,6 +78,37 @@ export interface CareerSportMilestones {
 export interface SeasonPlayerStats extends MatchPlayerStats {
   season: string;
   appearances: number;
+  starts: number;
+  minutes: number;
+  averageRating: number | null;
+}
+
+export interface CareerSeasonRecord extends SeasonPlayerStats {
+  club: string;
+}
+
+export interface CareerMatchResult {
+  matchId: string;
+  season: string;
+  club: string;
+  competition: MatchCompetition;
+  opponent: string;
+  available: boolean;
+  selected: boolean;
+  started: boolean;
+  minutes: number;
+  rating: number | null;
+  goals: number;
+  assists: number;
+  cards: { yellow: number; red: number };
+  statDeltas: {
+    appearances: number;
+    starts: number;
+    minutes: number;
+    goals: number;
+    assists: number;
+  };
+  milestones: string[];
 }
 
 export interface RecentPlayerMatchStats extends MatchPlayerStats {
@@ -131,6 +169,7 @@ export interface RecordOfficialMatchInput {
   appeared: boolean;
   debutOccurred: boolean;
   injuryUnavailable: boolean;
+  suspensionUnavailable?: boolean;
 }
 
 const emptyMilestones = (): MatchMilestones => ({
@@ -264,7 +303,25 @@ function deterministicPlayerStats(
 
   const yellowCards = (footballProducerRoll(state, fixture, "player-yellow") % 1000) < 180 ? 1 : 0;
   const redCards = (footballProducerRoll(state, fixture, "player-red") % 1000) < 25 ? 1 : 0;
-  return { goals, assists, yellowCards, redCards };
+  const outcomeBonus = result.outcome === "win" ? 0.25 : result.outcome === "loss" ? -0.2 : 0;
+  const formSignal = typeof state.sport.form === "number" ? (state.sport.form - 50) / 140 : 0;
+  const roleSignal = typeof state.sport.roleScore === "number" ? (state.sport.roleScore - 50) / 220 : 0;
+  const position = typeof state.sport.positionIdentity === "string" ? state.sport.positionIdentity : "";
+  const attackingSignal = /wing|forward|striker|attack/i.test(position) ? 0.08 : 0;
+  const noise = ((footballProducerRoll(state, fixture, "player-rating") % 101) - 50) / 100;
+  const rawRating = 5.95
+    + (player.minutes / 90) * 0.35
+    + goals * 0.8
+    + assists * 0.5
+    + outcomeBonus
+    + formSignal
+    + roleSignal
+    + attackingSignal
+    - yellowCards * 0.15
+    - redCards * 0.8
+    + noise;
+  const rating = Math.round(Math.max(3.5, Math.min(10, rawRating)) * 10) / 10;
+  return { goals, assists, yellowCards, redCards, rating };
 }
 
 function deterministicDebutContext(state: GameState, fixture: ScheduledFixture): MatchDecisionContext {
@@ -337,8 +394,9 @@ export function recordOfficialMatchInPlace(state: GameState, input: RecordOffici
 
   const appeared = input.appeared || input.debutOccurred;
   const injuryUnavailable = input.injuryUnavailable && !appeared;
+  const suspensionUnavailable = input.suspensionUnavailable === true && !appeared;
   const squadRoll = producerRoll(state, fixture, "squad") % 1000;
-  const calledUp = appeared || (!injuryUnavailable && squadRoll < 300);
+  const calledUp = appeared || (!injuryUnavailable && !suspensionUnavailable && squadRoll < 300);
   const startThreshold = input.debutOccurred ? 180 : 440;
   const started = appeared && (producerRoll(state, fixture, "start") % 1000) < startThreshold;
   const onBench = calledUp && !started;
@@ -367,7 +425,8 @@ export function recordOfficialMatchInPlace(state: GameState, input: RecordOffici
     appeared,
     minutes,
     debut: input.debutOccurred,
-    injuryUnavailable
+    injuryUnavailable,
+    suspensionUnavailable
   };
   const result = deterministicMatchResult(state, fixture);
   const firstGoalKnowable = store.fixtures.every(row => !row.player.appeared || row.stats !== undefined);
@@ -441,6 +500,9 @@ export function careerSportMilestones(state: GameState): CareerSportMilestones {
     assists: null,
     yellowCards: null,
     redCards: null,
+    appearance10: null,
+    appearance50: null,
+    appearance100: null,
     appearance500: null,
     appearance700: null,
     nextAppearanceOrdinal: null
@@ -467,6 +529,9 @@ export function careerSportMilestones(state: GameState): CareerSportMilestones {
     historyComplete: true,
     appearances: appeared.length,
     ...totals,
+    appearance10: appeared.length >= 10,
+    appearance50: appeared.length >= 50,
+    appearance100: appeared.length >= 100,
     appearance500: appeared.length >= 500,
     appearance700: appeared.length >= 700,
     nextAppearanceOrdinal: appeared.length + 1
@@ -488,21 +553,116 @@ export function seasonPlayerStats(state: GameState, season = state.season): Seas
   const aggregate: SeasonPlayerStats = {
     season,
     appearances: 0,
+    starts: 0,
+    minutes: 0,
     goals: 0,
     assists: 0,
     yellowCards: 0,
-    redCards: 0
+    redCards: 0,
+    averageRating: null
   };
+  let ratingTotal = 0;
+  let ratingCount = 0;
   for (const row of rows) {
     if (row.player.appeared) aggregate.appearances += 1;
+    if (row.player.started) aggregate.starts += 1;
+    aggregate.minutes += row.player.minutes;
     const stats = row.stats;
     if (!stats) continue;
     aggregate.goals += stats.goals;
     aggregate.assists += stats.assists;
     aggregate.yellowCards += stats.yellowCards;
     aggregate.redCards += stats.redCards;
+    if (row.player.appeared && typeof stats.rating === "number") {
+      ratingTotal += stats.rating;
+      ratingCount += 1;
+    }
   }
+  aggregate.averageRating = ratingCount === aggregate.appearances && ratingCount > 0
+    ? Math.round((ratingTotal / ratingCount) * 100) / 100
+    : null;
   return aggregate;
+}
+
+export function careerSeasonRecords(state: GameState): CareerSeasonRecord[] {
+  const store = getSportMatchModelStore(state);
+  if (!store) return [];
+  const keys: Array<{ season: string; club: string }> = [];
+  const seen = new Set<string>();
+  for (const row of store.fixtures) {
+    const key = `${row.season}|${row.club}`;
+    if (!seen.has(key)) {
+      seen.add(key);
+      keys.push({ season: row.season, club: row.club });
+    }
+  }
+  return keys.map(({ season, club }) => {
+    const rows = store.fixtures.filter(row => row.season === season && row.club === club);
+    let appearances = 0, starts = 0, minutes = 0, goals = 0, assists = 0, yellowCards = 0, redCards = 0;
+    let ratingTotal = 0, ratingCount = 0;
+    for (const row of rows) {
+      if (row.player.appeared) appearances += 1;
+      if (row.player.started) starts += 1;
+      minutes += row.player.minutes;
+      if (!row.stats) continue;
+      goals += row.stats.goals;
+      assists += row.stats.assists;
+      yellowCards += row.stats.yellowCards;
+      redCards += row.stats.redCards;
+      if (row.player.appeared && typeof row.stats.rating === "number") {
+        ratingTotal += row.stats.rating;
+        ratingCount += 1;
+      }
+    }
+    return {
+      season, club, appearances, starts, minutes, goals, assists, yellowCards, redCards,
+      averageRating: ratingCount === appearances && ratingCount > 0
+        ? Math.round((ratingTotal / ratingCount) * 100) / 100
+        : null
+    };
+  });
+}
+
+export function currentCareerMatchResult(state: GameState): CareerMatchResult | null {
+  const row = currentOfficialMatch(state);
+  const store = getSportMatchModelStore(state);
+  if (!row || !store) return null;
+  const stats = row.stats ?? { goals: 0, assists: 0, yellowCards: 0, redCards: 0 };
+  const appearanceOrdinal = row.player.appeared
+    ? store.fixtures.filter(item => item.player.appeared && item.date <= row.date).length
+    : 0;
+  const firstAssist = row.player.appeared
+    && stats.assists > 0
+    && !store.fixtures.some(item => item.id !== row.id && item.date < row.date && (item.stats?.assists ?? 0) > 0);
+  const milestones: string[] = [];
+  if (row.player.debut) milestones.push("debut");
+  if (store.milestones.firstStart === row.id) milestones.push("first_start");
+  if (store.milestones.firstGoal === row.id) milestones.push("first_goal");
+  if (firstAssist) milestones.push("first_assist");
+  if ([10, 50, 100, 500, 700].includes(appearanceOrdinal)) milestones.push(`appearance_${appearanceOrdinal}`);
+  return {
+    matchId: row.id,
+    season: row.season,
+    club: row.club,
+    competition: row.competition,
+    opponent: row.opponent,
+    available: !row.player.injuryUnavailable && row.player.suspensionUnavailable !== true,
+    selected: row.player.calledUp,
+    started: row.player.started,
+    minutes: row.player.minutes,
+    rating: typeof stats.rating === "number" ? stats.rating : null,
+    goals: stats.goals,
+    assists: stats.assists,
+    cards: { yellow: stats.yellowCards, red: stats.redCards },
+    statDeltas: {
+      appearances: row.player.appeared ? 1 : 0,
+      starts: row.player.started ? 1 : 0,
+      minutes: row.player.minutes,
+      goals: stats.goals,
+      assists: stats.assists
+    },
+    milestones
+  };
 }
 
 /**
@@ -691,7 +851,9 @@ function fixtureIssue(value: unknown, index: number, maxDate?: string, state?: G
   if (value.homeAway !== "home" && value.homeAway !== "away") return { path: `${path}.homeAway`, reason: "invalid home/away value" };
 
   const player = value.player;
-  if (!plainRecord(player) || !exactKeys(player, ["calledUp", "onBench", "started", "appeared", "minutes", "debut", "injuryUnavailable"])) {
+  const playerKeys = ["calledUp", "onBench", "started", "appeared", "minutes", "debut", "injuryUnavailable"];
+  if (plainRecord(player) && Object.prototype.hasOwnProperty.call(player, "suspensionUnavailable")) playerKeys.push("suspensionUnavailable");
+  if (!plainRecord(player) || !exactKeys(player, playerKeys)) {
     return { path: `${path}.player`, reason: "player fact fields do not match match-model v1" };
   }
   for (const key of ["calledUp", "onBench", "started", "appeared", "debut", "injuryUnavailable"]) {
@@ -709,6 +871,10 @@ function fixtureIssue(value: unknown, index: number, maxDate?: string, state?: G
   if (!player.appeared && player.minutes !== 0) return { path: `${path}.player.minutes`, reason: "non-appearance must have zero minutes" };
   if (player.debut && !player.appeared) return { path: `${path}.player.debut`, reason: "debut requires appearance" };
   if (player.injuryUnavailable && player.calledUp) return { path: `${path}.player.injuryUnavailable`, reason: "injury-unavailable player cannot be called up" };
+  if (Object.prototype.hasOwnProperty.call(player, "suspensionUnavailable")) {
+    if (typeof player.suspensionUnavailable !== "boolean") return { path: `${path}.player.suspensionUnavailable`, reason: "expected boolean" };
+    if (player.suspensionUnavailable && player.calledUp) return { path: `${path}.player.suspensionUnavailable`, reason: "suspended player cannot be called up" };
+  }
 
   if (value.decisionContext !== null) {
     const context = value.decisionContext;
@@ -761,7 +927,9 @@ function fixtureIssue(value: unknown, index: number, maxDate?: string, state?: G
 
     if (Object.prototype.hasOwnProperty.call(value, "stats")) {
       const stats = value.stats;
-      if (!plainRecord(stats) || !exactKeys(stats, ["goals", "assists", "yellowCards", "redCards"])) {
+      const statKeys = ["goals", "assists", "yellowCards", "redCards"];
+      if (plainRecord(stats) && Object.prototype.hasOwnProperty.call(stats, "rating")) statKeys.push("rating");
+      if (!plainRecord(stats) || !exactKeys(stats, statKeys)) {
         return { path: `${path}.stats`, reason: "invalid player match stat fields" };
       }
       for (const key of ["goals", "assists", "yellowCards", "redCards"]) {
@@ -772,6 +940,12 @@ function fixtureIssue(value: unknown, index: number, maxDate?: string, state?: G
       if ((stats.goals as number) > 9 || (stats.assists as number) > 9
         || (stats.yellowCards as number) > 2 || (stats.redCards as number) > 1) {
         return { path: `${path}.stats`, reason: "player match stats exceed supported bounds" };
+      }
+      if (Object.prototype.hasOwnProperty.call(stats, "rating")) {
+        if (typeof stats.rating !== "number" || !Number.isFinite(stats.rating) || stats.rating < 3.5 || stats.rating > 10) {
+          return { path: `${path}.stats.rating`, reason: "player rating outside 3.5-10" };
+        }
+        if (!player.appeared) return { path: `${path}.stats.rating`, reason: "non-appearance cannot have a rating" };
       }
       if (!player.appeared && ((stats.goals as number) !== 0 || (stats.assists as number) !== 0
         || (stats.yellowCards as number) !== 0 || (stats.redCards as number) !== 0)) {
@@ -792,7 +966,8 @@ function fixtureIssue(value: unknown, index: number, maxDate?: string, state?: G
         if (stats.goals !== expectedStats.goals
           || stats.assists !== expectedStats.assists
           || stats.yellowCards !== expectedStats.yellowCards
-          || stats.redCards !== expectedStats.redCards) {
+          || stats.redCards !== expectedStats.redCards
+          || (Object.prototype.hasOwnProperty.call(stats, "rating") && stats.rating !== expectedStats.rating)) {
           return { path: `${path}.stats`, reason: "player stats contradict authoritative football producer" };
         }
       }
