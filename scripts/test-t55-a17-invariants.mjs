@@ -7,11 +7,8 @@ import {
   narrativeGuardsPass
 } from '../dist/narrative/narrative-guards.js';
 import { scheduleEvent } from '../dist/narrative/scheduler.js';
-import {
-  certifyCurrentCoachInPlace,
-  clearCurrentCoachInPlace,
-  resolveCurrentCoach
-} from '../dist/simulation/npc-authority.js';
+import { resolveCurrentCoach } from '../dist/simulation/npc-authority.js';
+import { certifyCoachChangeInPlace } from '../dist/simulation/coach-change-authority.js';
 import {
   careerTerms,
   proposeCareerChange,
@@ -99,12 +96,15 @@ test('A17/T17.5-6 fired coach is not current even when historical NPC state rema
   assert.equal(resolveCurrentCoach(state), 'NPC_CCH_01');
   assert.equal(evaluateNarrativeGuard(state, { id: 'requiresCurrentCoach', npcId: 'NPC_CCH_01' }).pass, true);
 
-  clearCurrentCoachInPlace(state);
-  assert.equal(state.npcs.find(npc => npc.id === 'NPC_CCH_01')?.careerState, 'active', 'history remains intact');
+  certifyCoachChangeInPlace(state, 'security_firing', {
+    previousCoachNpcId: 'NPC_CCH_01',
+    newCoachNpcId: null
+  });
+  assert.equal(state.npcs.find(npc => npc.id === 'NPC_CCH_01')?.careerState, 'active', 'historical NPC state remains intact');
   assert.equal(resolveCurrentCoach(state), null);
   assert.equal(evaluateNarrativeGuard(state, { id: 'requiresCurrentCoach', npcId: 'NPC_CCH_01' }).pass, false);
 
-  certifyCurrentCoachInPlace(state, 'NPC_CCH_01');
+  certifyCoachChangeInPlace(state, 'canonical_change', { newCoachNpcId: 'NPC_CCH_01' });
   assert.equal(resolveCurrentCoach(state), 'NPC_CCH_01');
 });
 
