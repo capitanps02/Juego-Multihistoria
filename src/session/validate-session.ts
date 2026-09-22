@@ -105,6 +105,39 @@ export async function assertSessionSnapshot(value: unknown, context: SessionVali
   string(s.contentIdentity, "contentIdentity"); ensure(/^[a-f0-9]{64}$/.test(s.contentIdentity), "contentIdentity", "identidad incorrecta");
   string(s.sessionId, "sessionId"); ensure(s.sessionId.length <= 200, "sessionId", "identificador demasiado largo");
   integer(s.revision, "revision"); boolean(s.microfeeds, "microfeeds"); boolean(s.needsWorldAdvance, "needsWorldAdvance");
+  if (s.autoSimulation !== undefined) {
+    const flow = record(s.autoSimulation, "autoSimulation");
+    oneOf(flow.mode, ["idle","auto_simulating","paused","waiting_for_decision","showing_summary","season_transition","retirement"], "autoSimulation.mode");
+    integer(flow.maxWeeks, "autoSimulation.maxWeeks", 1, 12);
+    integer(flow.elapsedDays, "autoSimulation.elapsedDays", 0);
+    ensure(flow.elapsedDays <= (flow.maxWeeks as number) * 7, "autoSimulation.elapsedDays", "el bloque temporal excede su límite");
+    if (flow.baseline !== null) {
+      const b = record(flow.baseline, "autoSimulation.baseline");
+      date(b.date, "autoSimulation.baseline.date");
+      integer(b.runtimeDay, "autoSimulation.baseline.runtimeDay", 0);
+      integer(b.microfeedCount, "autoSimulation.baseline.microfeedCount", 0);
+      for (const key of ["appearances","form","fatigue","fitness"]) ensure(typeof b[key] === "number" && Number.isFinite(b[key]), `autoSimulation.baseline.${key}`, "valor no finito");
+      string(b.club, "autoSimulation.baseline.club");
+      string(b.role, "autoSimulation.baseline.role");
+    }
+    if (flow.interruption !== null) {
+      const it = record(flow.interruption, "autoSimulation.interruption");
+      oneOf(it.type, ["decision","offer","important_injury","season_transition","retirement","max_auto_weeks"], "autoSimulation.interruption.type");
+      integer(it.priority, "autoSimulation.interruption.priority", 0);
+      string(it.source, "autoSimulation.interruption.source");
+      boolean(it.requiresPlayerInput, "autoSimulation.interruption.requiresPlayerInput");
+    }
+    if (flow.summary !== null) {
+      const summary = record(flow.summary, "autoSimulation.summary");
+      date(summary.fromDate, "autoSimulation.summary.fromDate");
+      date(summary.toDate, "autoSimulation.summary.toDate");
+      integer(summary.fromWeek, "autoSimulation.summary.fromWeek", 0);
+      integer(summary.toWeek, "autoSimulation.summary.toWeek", 0);
+      integer(summary.daysSimulated, "autoSimulation.summary.daysSimulated", 0);
+      integer(summary.weeksSimulated, "autoSimulation.summary.weeksSimulated", 0);
+      list(summary.worldHighlights, "autoSimulation.summary.worldHighlights").forEach((x,i)=>string(x,`autoSimulation.summary.worldHighlights[${i}]`));
+    }
+  }
   assertGameState(s.state);
   const state = s.state as SessionSnapshot["state"], receipts = list(s.receipts, "receipts"), journal = list(s.journal, "journal");
   ensure(receipts.length === s.revision, "receipts", "la revisión no coincide con los comandos confirmados");
@@ -138,17 +171,23 @@ export async function assertSessionSnapshot(value: unknown, context: SessionVali
     const r = record(x, `receipts[${i}]`), path = `receipts[${i}]`;
     string(r.commandId, `${path}.commandId`); ensure(r.commandId.length <= 200 && !ids.has(r.commandId), path, "identificador excesivo o duplicado"); ids.add(r.commandId);
     integer(r.revision, `${path}.revision`, 1); ensure(r.revision === i + 1, `${path}.revision`, "orden de revisiones incorrecto");
-    oneOf(r.type, ["continue", "choose", "acknowledge", "offer"], `${path}.type`); string(r.fingerprint, `${path}.fingerprint`);
+    oneOf(r.type, ["continue", "auto", "choose", "acknowledge", "offer"], `${path}.type`); string(r.fingerprint, `${path}.fingerprint`);
     const f = list(parseSaveJson(r.fingerprint), `${path}.fingerprint`);
     ensure(f[0] === r.type && f[1] === i, `${path}.fingerprint`, "comando y revisión no coinciden");
     if (r.type === "continue") {
       ensure(previousType !== "choose", path, "avance sin leer el resultado anterior");
       ensure(f.length === 3, path, "comando incorrecto"); integer(f[2], `${path}.maxDays`, 1, 366);
     }
+    if (r.type === "auto") {
+      ensure(f.length === 4, path, "comando automático incorrecto");
+      oneOf(f[2], ["start","step","pause","resume"], `${path}.action`);
+      if (f[2] === "start") integer(f[3], `${path}.maxWeeks`, 1, 12);
+      else ensure(f[3] === null, `${path}.maxWeeks`, "sólo start puede definir semanas");
+    }
     if (r.type === "choose") {
       ensure(f.length === 4, path, "comando incorrecto"); string(f[2], `${path}.instanceId`); string(f[3], `${path}.choiceId`);
       ensure(f[2].length <= 200 && f[3].length <= 200, path, "identificador excesivo");
-      ensure(previousType === "continue" && f[2] === `${s.sessionId}:${i}`, path, "elección sin escena de la revisión anterior");
+      ensure((previousType === "continue" || previousType === "auto") && f[2] === `${s.sessionId}:${i}`, path, "elección sin escena de la revisión anterior");
       ensure(state.history[choiceIndex]?.choiceId === f[3], path, "elección distinta de la registrada en el historial");
       const narrativeOffer = narrativeOfferHistory.get(choiceIndex);
       if (narrativeOffer) ensure(narrativeOffer.source?.choiceId === f[3], path, "la oferta narrativa no corresponde a este recibo de elección");
@@ -232,7 +271,7 @@ export async function assertSessionSnapshot(value: unknown, context: SessionVali
     const p = record(s.pendingDecision, "pendingDecision"), e = record(p.event, "pendingDecision.event");
     string(p.instanceId, "pendingDecision.instanceId");
     ensure(p.instanceId === `${s.sessionId}:${s.revision}`, "pendingDecision.instanceId", "la escena pertenece a otra revisión");
-    ensure(state.retirement.status !== "closed" && !s.needsWorldAdvance && last?.type === "continue", "pendingDecision", "escena incompatible con estado o comando");
+    ensure(state.retirement.status !== "closed" && !s.needsWorldAdvance && (last?.type === "continue" || last?.type === "auto"), "pendingDecision", "escena incompatible con estado o comando");
     string(e.id, "pendingDecision.event.id");
     let sourceIdentity = s.contentIdentity as string;
     let expectedFingerprint: string | undefined;
