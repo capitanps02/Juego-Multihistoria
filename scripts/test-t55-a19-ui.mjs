@@ -52,6 +52,8 @@ test('A19 exposes real retirement states without inventing another state machine
   for(const status of ['decided','announced','closed'])assert.match(ui,new RegExp(status+':\\['));
   assert.match(ui,/v\.retirementStatus==='playing'/);
   assert.match(ui,/v\.screen==='epilogue'.*Ver mi carrera/);
+  assert.match(ui,/Empezar otra historia/);
+  assert.match(ui,/retirement-summary/);
 });
 
 test('A19 has explicit responsive treatment for phone, tablet and desktop constraints',()=>{
