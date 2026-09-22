@@ -23,7 +23,7 @@ import { generateEpilogue } from "../epilogue/generator.js";
 import { ENGINE_BUILD } from "../core/build.js";
 import { assertGameState, parseSaveJson, record, validateData } from "../save/validation.js";
 import { assertSessionSnapshot } from "./validate-session.js";
-import { NPC_CATALOG } from "../catalog/npcs.js";
+import { knownPlayerContacts } from "../core/player-contacts.js";
 import { contentIdentity } from "./content-identity.js";
 import {
   applyMigrationPathInPlace,
@@ -344,7 +344,7 @@ export class GameSession {
       season: s.season, position: String(s.sport.positionIdentity), fitness: Number(s.body.fitness),
       fatigue: Number(s.body.fatigue), form: Number(s.sport.form), contractMonths: Number(s.contract.monthsRemaining),
       news: s.microfeeds.map(n => ({ date: n.date, text: n.text })),
-      contacts: NPC_CATALOG.map(n => ({ id: n.id, name: n.name, role: n.role })),
+      contacts: knownPlayerContacts(s, this.#snapshot.decisionProvenance),
       decision: p ? { instanceId: p.instanceId, family: p.event.family, title: p.event.text.title, body: p.event.text.body,
         visible: p.event.intel.visible, uncertain: p.event.intel.uncertain,
         choices: eligibleChoices(s, p.event).map(c => ({ id: c.id, label: c.label })) } : null,
