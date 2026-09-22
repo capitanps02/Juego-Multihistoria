@@ -74,7 +74,16 @@ function render(focus = false) {
     for(const [response,label] of [['accept','Aceptar oferta'],['reject','Rechazar oferta'],['delegate','Delegar esta oferta']])story.append(action(label,'offer',{offerId:o.id,action:response}));
   } else if (v.screen === 'result') {
     story.append(el('span','DESPUÉS DE TU DECISIÓN','eyebrow'),el('h1',v.result.title),el('p',v.result.choiceLabel,'chosen'));
-    v.result.messages.forEach(m=>story.append(el('p',m,'body')));
+    const visible=v.result.visibleEffects??[], narrative=v.result.narrativeEffects??[], hidden=v.result.hiddenEffects??[];
+    if(visible.length||narrative.length||hidden.length) story.append(el('span','CONSECUENCIAS','eyebrow'));
+    visible.forEach(effect=>{
+      const sign=effect.delta>0?'+':'';
+      story.append(el('p',`${effect.label} ${sign}${effect.delta}`,'body'));
+    });
+    narrative.forEach(message=>story.append(el('p',message,'body')));
+    const narrated=new Set(narrative);
+    (v.result.messages??[]).filter(message=>!narrated.has(message)).forEach(message=>story.append(el('p',message,'body')));
+    hidden.forEach(message=>story.append(el('p',message,'body')));
     story.append(action('Continuar','acknowledge'));
   } else if (v.screen === 'epilogue') {
     story.append(el('span','CIERRE DE CARRERA','eyebrow'),el('h1','Así se escribió tu historia.'),el('p',`Tu carrera termina a los ${v.age} años, después de ${v.decisionsMade} decisiones. Puedes volver sobre ellas en «Tu recorrido» o comenzar otra historia.`,'body'));
