@@ -433,6 +433,19 @@ function professionalWeek(state: GameState, rng: DeterministicRng): void {
 }
 
 export function advanceWorldDayInPlace(next: GameState): GameState {
+  // Closed retirement is a terminal career state. A stale no-deadline offer must not
+  // freeze the calendar, and no contract/club/age/preseason/sport authority may mutate
+  // the player's finished career after closure.
+  if (next.retirement.status === "closed") {
+    next.date = addDays(next.date, 1);
+    next.runtime.day += 1;
+    next.runtime.seasonDay += 1;
+    next.runtime.daysSinceNarrative += 1;
+    expireDueSeedsInPlace(next);
+    for (const id of Object.keys(next.eventCooldowns)) next.eventCooldowns[id] = Math.max(0, next.eventCooldowns[id]! - 1);
+    return next;
+  }
+
   const pending = next.market?.pending;
   if (pending && !pending.validThrough) return next;
   expireCareerOfferInPlace(next);
