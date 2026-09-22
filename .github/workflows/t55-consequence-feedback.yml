@@ -1,0 +1,33 @@
+name: T5.5 A16 Consequence Feedback
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/narrative/consequences.ts'
+      - 'src/session/game-session.ts'
+      - 'src/session/validate-session.ts'
+      - 'preview/app.js'
+      - 'scripts/test-t55-consequences.mjs'
+      - 'package.json'
+      - '.github/workflows/t55-consequence-feedback.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  consequence-feedback:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: A16 structured consequence contract
+        run: npm run test:t55:consequences
+      - name: Session and save regressions
+        run: node --test scripts/test-session.mjs scripts/test-saves.mjs
