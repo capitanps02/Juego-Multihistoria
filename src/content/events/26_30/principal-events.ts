@@ -80,7 +80,7 @@ const familyFx:Partial<Record<EventFamily,[Effect[],Effect[],Effect[],Effect[]]>
 const defaultBodies: Partial<Record<EventFamily,string>> = {
  market:"Tu situación de mercado abre varios escenarios, pero no todos son ofertas. Tu agente separa contactos, interés y condiciones formales antes de que decidas si merece la pena moverte.",
  contract:"Tu situación contractual obliga a comparar duración, dinero, rol y salida. A estas alturas firmar más no siempre significa controlar más, y no tratas una conversación como acuerdo cerrado.",
- medical:"Carga, recuperación y calendario empiezan a exigir decisiones más finas. La discusión no presupone una lesión: trata de cuánto coste quieres acumular para sostener tu nivel.",
+ medical:"En una sesión de planificación, carga, recuperación y calendario ya no encajan solos. Aunque no haya una lesión nueva, debes decidir cuánto desgaste estás dispuesto a acumular para sostener tu nivel.",
  team:"Después de la sesión, el vestuario habla de jerarquía y futuro. Un compañero, el capitán o el entrenador espera que definas qué papel quieres ocupar.",
  captaincy:"En una reunión interna, tu voz pesa lo suficiente como para afectar al grupo. Antes de hablar sabes que apoyar, frenar o mediar tendrá consecuencias.",
  press:"En zona mixta, una pregunta concreta amenaza con convertir una tensión deportiva en relato público. Club y entorno no esperan la misma respuesta.",
