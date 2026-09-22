@@ -134,7 +134,6 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
         const p=panel('Temporada '+s.season.replace('-',' / 20'));
         p.append(el('p',clubName(s.club),'season-club'));
         for(const [label,value] of [['Partidos',s.appearances],['Titularidades',s.starts],['Minutos',s.minutes],['Goles',s.goals],['Asistencias',s.assists],['Valoración media',s.averageRating===null?'—':s.averageRating]]){const r=el('div',undefined,'data-row');r.append(el('span',label),el('strong',String(value)));p.append(r);}
-        if(s.appearances>0)p.append(el('p','Debut oficial registrado','career-milestone'));
         seasons.append(p);
       }
       main.append(seasons);
