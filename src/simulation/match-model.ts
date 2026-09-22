@@ -58,6 +58,27 @@ export interface MatchPlayerStats {
   rating?: number;
 }
 
+export interface MatchPerformanceContext {
+  age: number;
+  careerRole: string;
+  roleScore: number;
+  form: number;
+  fitness: number;
+  fatigue: number;
+  coachTrust: number | null;
+  leagueTier: number;
+  opponentLevel: number;
+  positionIdentity: string | null;
+}
+
+export interface MatchSportEffects {
+  formDelta: number;
+  fatigueDelta: number;
+  fitnessDelta: number;
+  coachTrustDelta: number;
+  roleScoreDelta: number;
+}
+
 export interface CareerSportMilestones {
   /** True only when every aggregate career appearance is represented by a persisted appeared fixture with stats. */
   historyComplete: boolean;
@@ -88,6 +109,9 @@ export interface DetailedSeasonPlayerStats extends SeasonPlayerStats {
 
 export interface CareerSeasonRecord extends DetailedSeasonPlayerStats {
   club: string;
+  age: number | null;
+  role: string | null;
+  roleScore: number | null;
 }
 
 export interface CareerMatchResult {
@@ -111,6 +135,7 @@ export interface CareerMatchResult {
     goals: number;
     assists: number;
   };
+  sportDeltas: MatchSportEffects;
   milestones: string[];
 }
 
@@ -128,6 +153,10 @@ export interface RecentPlayerMatchStats extends MatchPlayerStats {
 export interface OfficialMatchRecord extends ScheduledFixture {
   player: MatchPlayerFact;
   decisionContext: MatchDecisionContext | null;
+  /** Optional A15 producer snapshot; historical v1 rows omit it. */
+  performanceContext?: MatchPerformanceContext;
+  /** Optional structured consequences for A16; historical v1 rows omit it. */
+  effects?: MatchSportEffects;
   /**
    * Absent only on historical v1 rows created before the result authority existed.
    * Historical rows are never backfilled from present-day state.
@@ -173,6 +202,8 @@ export interface RecordOfficialMatchInput {
   debutOccurred: boolean;
   injuryUnavailable: boolean;
   suspensionUnavailable?: boolean;
+  /** Supplied only by the continuous sports producer; direct legacy callers may omit it. */
+  performanceContext?: MatchPerformanceContext;
 }
 
 const emptyMilestones = (): MatchMilestones => ({
