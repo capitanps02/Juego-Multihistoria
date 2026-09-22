@@ -133,16 +133,25 @@ function queueAutoStep() {
 async function run(command) {
   if (busy || !session) return;
   if (command.type === 'auto' && command.action === 'pause') clearTimeout(autoTimer);
+  let completed = false;
   setBusy(true); error('');
   try {
     await session.dispatch(command);
+    completed = true;
     render(true);
   } catch (e) {
+    clearTimeout(autoTimer);
+    if (command.type === 'auto' && ['start','step'].includes(command.action) && session?.getView().simulation.mode === 'auto_simulating') {
+      try {
+        const v=session.getView();
+        await session.dispatch({type:'auto',action:'pause',commandId:crypto.randomUUID(),expectedRevision:v.revision});
+      } catch {}
+    }
     if (session) render();
-    error(`No se pudo completar el paso. ${e.message}`);
+    error(`No se pudo completar el paso. La simulación se detuvo en el último estado válido. ${e.message}`);
   } finally {
     setBusy(false);
-    queueAutoStep();
+    if (completed) queueAutoStep();
   }
 }
 
