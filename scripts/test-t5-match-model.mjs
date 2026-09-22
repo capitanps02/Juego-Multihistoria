@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createInitialState } from '../dist/content/initial-state.js';
 import {
+  buildMatchPerformanceContext,
   careerSeasonRecords,
   closeLeagueObjectiveInPlace,
   currentCareerMatchResult,
@@ -23,6 +24,7 @@ import { certifyCoachChangeInPlace } from '../dist/simulation/coach-change-autho
 import { assertGameState } from '../dist/save/validation.js';
 import { loadSave, serializeSave } from '../dist/save/save.js';
 import { GameSession } from '../dist/session/game-session.js';
+import { certifyCoachChangeInPlace } from '../dist/simulation/coach-change-authority.js';
 
 const invalidSave = error => error?.code === 'INVALID_SAVE';
 
@@ -914,4 +916,85 @@ test('T15/A17 certified coach change with unknown replacement neutralizes histor
 
   assert.equal(highOldTrust.sport.roleScore, lowOldTrust.sport.roleScore);
   assert.equal(highOldTrust.sport.form, lowOldTrust.sport.form);
+});
+
+
+test('T15 A16 handoff persists performance context, season age/role and structured sports deltas', () => {
+  const seed = findWeeklyAppearanceSeed();
+  const state = weeklySportState(seed);
+  const before = {
+    form: state.sport.form,
+    fatigue: state.body.fatigue,
+    fitness: state.body.fitness,
+    role: state.sport.roleScore
+  };
+  advanceWorldDayInPlace(state);
+  const row = currentOfficialMatch(state);
+  const result = currentCareerMatchResult(state);
+  assert.ok(row?.performanceContext);
+  assert.ok(row?.effects);
+  assert.ok(result);
+  assert.deepEqual(result.sportDeltas, row.effects);
+  assert.equal(result.sportDeltas.formDelta, Math.round((state.sport.form - before.form) * 1000) / 1000);
+  assert.equal(result.sportDeltas.fatigueDelta, Math.round((state.body.fatigue - before.fatigue) * 1000) / 1000);
+  assert.equal(result.sportDeltas.fitnessDelta, Math.round((state.body.fitness - before.fitness) * 1000) / 1000);
+  assert.equal(result.sportDeltas.roleScoreDelta, Math.round((state.sport.roleScore - before.role) * 1000) / 1000);
+
+  const record = careerSeasonRecords(state)[0];
+  assert.equal(record.age, 18);
+  assert.equal(record.role, 'academy_callup');
+  assert.equal(typeof record.roleScore, 'number');
+
+  const restored = loadSave(serializeSave(state));
+  assert.deepEqual(currentOfficialMatch(restored), row);
+  assert.deepEqual(currentCareerMatchResult(restored), result);
+});
+
+test('T15 performance uses persisted form/fitness/fatigue/role context while team result stays fixture-owned', () => {
+  const low = matchDayState(15210);
+  const high = matchDayState(15210);
+  Object.assign(low.sport, { roleScore: 12, form: 25, positionIdentity: 'winger' });
+  Object.assign(low.body, { fitness: 48, fatigue: 78 });
+  Object.assign(high.sport, { roleScore: 88, form: 86, positionIdentity: 'winger' });
+  Object.assign(high.body, { fitness: 94, fatigue: 12 });
+
+  const lowContext = buildMatchPerformanceContext(low, 20);
+  const highContext = buildMatchPerformanceContext(high, 82);
+  assert.ok(lowContext && highContext);
+  const rowLow = recordOfficialMatchInPlace(low, {
+    appeared: true, debutOccurred: false, injuryUnavailable: false, performanceContext: lowContext
+  });
+  const rowHigh = recordOfficialMatchInPlace(high, {
+    appeared: true, debutOccurred: false, injuryUnavailable: false, performanceContext: highContext
+  });
+  assert.deepEqual(rowLow.result, rowHigh.result);
+  assert.notEqual(rowLow.stats.rating, rowHigh.stats.rating);
+  assert.ok(rowLow.player.minutes >= 1 && rowLow.player.minutes <= 90);
+  assert.ok(rowHigh.player.minutes >= 1 && rowHigh.player.minutes <= 90);
+});
+
+test('T15 coach change with unknown replacement prevents historical coach trust from governing sports output', () => {
+  const a = weeklySportState(15211);
+  const b = weeklySportState(15211);
+  a.relationships.find(row => row.npcId === 'NPC_CCH_01').trust = 5;
+  b.relationships.find(row => row.npcId === 'NPC_CCH_01').trust = 95;
+  certifyCoachChangeInPlace(a, 'external_change', { previousCoachNpcId: 'NPC_CCH_01', newCoachNpcId: null });
+  certifyCoachChangeInPlace(b, 'external_change', { previousCoachNpcId: 'NPC_CCH_01', newCoachNpcId: null });
+  advanceWorldDayInPlace(a);
+  advanceWorldDayInPlace(b);
+  const rowA = currentOfficialMatch(a);
+  const rowB = currentOfficialMatch(b);
+  assert.equal(rowA.performanceContext.coachTrust, null);
+  assert.equal(rowB.performanceContext.coachTrust, null);
+  assert.deepEqual(rowA.player, rowB.player);
+  assert.deepEqual(rowA.stats, rowB.stats);
+});
+
+test('T15 corrupted persisted performance context fails closed at save boundary', () => {
+  const seed = findWeeklyAppearanceSeed();
+  const state = weeklySportState(seed);
+  advanceWorldDayInPlace(state);
+  const raw = JSON.parse(serializeSave(state));
+  raw.world.sportMatchModel.fixtures[0].performanceContext.form = 999;
+  assert.throws(() => loadSave(JSON.stringify(raw)), invalidSave);
 });
