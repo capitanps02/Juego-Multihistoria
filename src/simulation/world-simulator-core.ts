@@ -498,7 +498,7 @@ export function advanceWorldDayInPlace(next: GameState): GameState {
     } else if(next.age>34 && next.retirement.status!=="closed") lateCareerPreseason(next);
   }
 
-  if (next.runtime.day % 7 === 0) {
+  if (next.runtime.day % 7 === 0 && next.retirement.status !== "closed") {
     if (hasActiveClubEmployment(next)) footballWeek(next);
     const rng = new DeterministicRng(next.rngState.football);
     professionalWeek(next, rng);
