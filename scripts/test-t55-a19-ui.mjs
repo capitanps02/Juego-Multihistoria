@@ -19,13 +19,17 @@ test('A19 player-facing micro UX uses clear history, save and relationship langu
   assert.match(ui,/Tu carrera empieza aquí/);
   assert.match(ui,/Aún no has debutado/);
   assert.match(ui,/No hay noticias destacadas esta semana/);
-  assert.match(ui,/Relación con /);
+  assert.match(ui,/bondType/);
+  assert.match(ui,/Familia/);
+  assert.match(ui,/Amistad/);
+  assert.match(ui,/Vestuario/);
   assert.match(ui,/Partida actual/);
   assert.match(ui,/Copia anterior/);
   assert.match(ui,/Código de historia/);
   assert.match(ui,/Permite reproducir esta historia|El mismo código permite reproducir esta historia/);
   assert.ok(!/Semilla/.test(ui),'technical seed terminology must not be player-facing');
   assert.match(ui,/Abrir Tu partida y el contexto de guardado/);
+  assert.match(ui,/date\(v\.date\)\+' · Partida'/);
   assert.match(ui,/No se ha podido cargar el juego/);
   assert.match(ui,/Reintentar carga/);
 });
