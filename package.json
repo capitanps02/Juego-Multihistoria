@@ -8,7 +8,7 @@
     "build:playcanvas": "npm run build && node scripts/build-playcanvas.mjs",
     "play": "npm run build:playcanvas && node scripts/serve-preview.mjs",
     "test:playcanvas": "npm run build:playcanvas && node --test scripts/test-session.mjs scripts/test-saves.mjs scripts/test-t5-retirement-save-known-bug.mjs scripts/test-playcanvas.mjs",
-    "test:session": "npm run build && node --test scripts/test-session.mjs",
+    "test:session": "npm run build && node --test scripts/test-session.mjs scripts/test-t55-auto-simulation.mjs",
     "test:saves": "npm run build && node --test scripts/test-session.mjs scripts/test-saves.mjs scripts/test-t5-retirement-save-known-bug.mjs",
     "validate": "npm run build && node scripts/final-gate-v08.mjs",
     "demo": "npm run build && node scripts/final-gate-v08.mjs",
@@ -20,7 +20,7 @@
     "qa:t5:content": "npm run build && node scripts/qa-t5-content.mjs && node scripts/generate-t51-post-legacy-registry.mjs --check && node scripts/generate-t51-offer-bridge-evidence.mjs --check && node scripts/freeze-t51-active-source.mjs --check && node scripts/check-t51-content-migration-route.mjs",
     "qa:t5:freeze": "npm run build && node --test scripts/test-t51-freeze-transition.mjs scripts/test-t51-migration-source-policy.mjs && node scripts/freeze-t51-baseline.mjs --check && node scripts/freeze-t51-active-source.mjs --check",
     "qa:t5:saves": "npm run build && node scripts/generate-t51-offer-bridge-evidence.mjs --check && node --test scripts/test-saves.mjs scripts/test-t5-retirement-save-known-bug.mjs scripts/test-t5-save-compat.mjs scripts/test-t51-content-migration.mjs scripts/test-t51-content-lineage.mjs scripts/test-t51-offer-bridge.mjs scripts/test-t51-offer-bridge-provenance.mjs scripts/test-t51-t510-23-26.mjs scripts/test-t51-t511-23-26.mjs scripts/test-t51-prs-23-26.mjs scripts/test-t51-t511b-eur.mjs scripts/test-t52-seed-origin-migration.mjs scripts/test-t53-reconciliation.mjs",
-    "qa:t5:integration": "npm run build && node --test scripts/test-t5-integration-probes.mjs",
+    "qa:t5:integration": "npm run build && node --test scripts/test-t5-integration-probes.mjs scripts/test-t55-auto-simulation.mjs",
     "qa:t5:simulation": "npm run build && node scripts/qa-t5-sim.mjs",
     "qa:t5:known-bugs": "npm run build && node --test scripts/test-t5-known-bugs.mjs",
     "qa:t5:expensive": "npm run build && T5_RUNS_PER_PROFILE=25 node scripts/qa-t5-sim.mjs",
@@ -56,7 +56,8 @@
     "test:t51:renewal-intent": "npm run build && node --test scripts/test-t51-renewal-intent.mjs",
     "test:t51:prs": "npm run build && node --test scripts/test-t51-prs-23-26.mjs",
     "test:t51:t511b": "npm run build && node --test scripts/test-t51-t511b-eur.mjs",
-    "test:t51:role-expectation": "npm run build && node --test scripts/test-t51-role-expectation.mjs"
+    "test:t51:role-expectation": "npm run build && node --test scripts/test-t51-role-expectation.mjs",
+    "test:t55:a14": "npm run build && node --test scripts/test-t55-auto-simulation.mjs"
   },
   "devDependencies": {
     "typescript": "5.8.3"
