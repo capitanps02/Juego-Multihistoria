@@ -261,18 +261,35 @@ test('A17/T17.13 injury guard reads the same canonical availability inputs as sp
   assert.equal(evaluateNarrativeGuard(state, { id: 'requiresInjury' }).pass, true);
 });
 
-test('A17/T17.19-20 closed retirement blocks weekly player simulation and active narrative', () => {
+test('A17/T17.19-20 closed retirement blocks sport, contracts and active narrative without freezing the calendar', () => {
   const state = createInitialState(17019);
+  state.date = '2026-06-25';
+  const staleOffer = proposeCareerChange(state, 'A17 stale pre-retirement offer', draft => {
+    draft.club = 'A17 Stale Club';
+  });
+  assert.ok(staleOffer);
+
   state.retirement.status = 'closed';
   state.retirement.closedDate = state.date;
   state.retirement.reason = 'a17-test';
   state.retirement.closureType = 'a17-test';
   state.flags.RETIRED = true;
+  const beforeDate = state.date;
+  const beforeAge = state.age;
+  const beforeTerms = structuredClone(careerTerms(state));
   const beforeAppearances = state.sport.appearances;
   const beforeMatchStore = structuredClone(state.world.sportMatchModel ?? null);
 
+  assert.throws(
+    () => respondToOffer(state, staleOffer.id, 'accept'),
+    /carrera está cerrada/i
+  );
+
   for (let i = 0; i < 14; i += 1) advanceWorldDayInPlace(state);
 
+  assert.notEqual(state.date, beforeDate, 'a stale offer must not freeze a closed-career calendar');
+  assert.equal(state.age, beforeAge, 'post-career calendar must not run career-age adapters');
+  assert.deepEqual(careerTerms(state), beforeTerms, 'closed career must not mutate player contract/club terms');
   assert.equal(state.sport.appearances, beforeAppearances);
   assert.deepEqual(state.world.sportMatchModel ?? null, beforeMatchStore);
 
