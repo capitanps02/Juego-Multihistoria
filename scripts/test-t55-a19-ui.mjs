@@ -54,3 +54,12 @@ test('A19 has explicit responsive treatment for phone, tablet and desktop constr
   assert.match(css,/season-grid/);
   assert.match(css,/grid-template-columns:1fr/);
 });
+
+test('A19 consumes A14/A16 presentation contracts without remapping their logic',()=>{
+  assert.match(ui,/simulation\?\.summary/);
+  assert.match(ui,/Resumen del periodo/);
+  assert.match(ui,/v\.result\.visibleEffects/);
+  assert.match(ui,/v\.result\.narrativeEffects/);
+  assert.match(ui,/v\.result\.hiddenEffects/);
+  assert.match(ui,/Consecuencias/);
+});
