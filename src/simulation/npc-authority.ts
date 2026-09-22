@@ -117,6 +117,11 @@ export function resolveCurrentCoach(state: GameState): string | null {
       : null;
   }
 
+  // Legacy saves can carry COACH_FIRED without the later chronology authority.
+  // That flag proves enough to distrust the old named coach, but not enough to
+  // manufacture a replacement identity.
+  if (state.flags.COACH_FIRED === true) return null;
+
   const candidates = state.npcs.filter(candidate =>
     candidate.careerState === "active" &&
     candidate.club === club &&
