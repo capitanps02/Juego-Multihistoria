@@ -16,6 +16,7 @@ import { recordAgeMilestone } from "./age-milestones.js";
 import { certifyCoachChangeInPlace } from "./coach-change-authority.js";
 import { expireDueSeedsInPlace } from "../narrative/resolver.js";
 import { hasActiveClubEmployment, transitionNaturalExpiryInPlace } from "./employment.js";
+import { previousOfficialMatch } from "./match-model.js";
 
 const clamp = (x: number, min = 0, max = 100) => Math.min(max, Math.max(min, x));
 const num = (x: unknown, fallback = 0) => typeof x === "number" ? x : fallback;
@@ -125,7 +126,16 @@ function updateContextFlags(state: GameState, rng: DeterministicRng, debutFromAp
 }
 function footballWeek(state: GameState): void {
   const rng = new DeterministicRng(state.rngState.football);
-  const form = clamp(num(state.sport.form, 50) * 0.82 + 50 * 0.18 + (rng.next() - 0.5) * 11);
+  const priorMatch = previousOfficialMatch(state);
+  const priorRating = priorMatch?.player.appeared === true && typeof priorMatch.stats?.rating === "number"
+    ? priorMatch.stats.rating
+    : null;
+  const performanceTarget = priorRating === null
+    ? 50
+    : clamp(50 + (priorRating - 6.5) * 15 + (priorMatch!.player.minutes - 45) / 18, 30, 82);
+  // Match form is an inertial sports state: last week's factual rating nudges it,
+  // while deterministic weekly variation prevents identical careers.
+  const form = clamp(num(state.sport.form, 50) * 0.80 + performanceTarget * 0.20 + (rng.next() - 0.5) * 8);
   const trust = state.relationships.find(r => r.npcId === "NPC_CCH_01")?.trust ?? 45;
   const currentRole = num(state.sport.roleScore, 18);
   const role = state.age >= 20 && state.professional.initializedAt20
