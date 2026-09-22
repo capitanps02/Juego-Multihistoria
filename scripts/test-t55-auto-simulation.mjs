@@ -248,3 +248,16 @@ test('T14.15 save/load cannot duplicate a simulated week', async () => {
   await reference.dispatch(command(reference, 'auto', { action: 'step' }));
   assert.deepEqual(session.exportSnapshot().state, reference.exportSnapshot().state);
 });
+
+
+test('T14.16 manual advance cannot interleave with an active AUTO-SIM block', async () => {
+  const session = await emptySession(1, 't14-16');
+  await session.dispatch(command(session, 'auto', { action: 'start' }));
+  assert.equal(session.getView().simulation.mode, 'auto_simulating');
+  const before = session.exportSnapshot();
+  await assert.rejects(
+    session.dispatch(command(session, 'continue', { maxDays: 7 })),
+    error => error?.code === 'AUTO_STATE'
+  );
+  assert.deepEqual(session.exportSnapshot(), before);
+});
