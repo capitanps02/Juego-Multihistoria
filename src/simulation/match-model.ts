@@ -762,13 +762,39 @@ export function careerSeasonRecords(state: GameState): CareerSeasonRecord[] {
         ratingCount += 1;
       }
     }
+    const contexts = rows
+      .map(row => row.performanceContext)
+      .filter((context): context is MatchPerformanceContext => context !== undefined);
+    const latestContext = contexts.at(-1) ?? null;
     return {
       season, club, appearances, starts, minutes, goals, assists, yellowCards, redCards,
       averageRating: ratingCount === appearances && ratingCount > 0
         ? Math.round((ratingTotal / ratingCount) * 100) / 100
-        : null
+        : null,
+      age: contexts[0]?.age ?? null,
+      role: latestContext?.careerRole ?? null,
+      roleScore: latestContext?.roleScore ?? null
     };
   });
+}
+
+export function setOfficialMatchEffectsInPlace(
+  state: GameState,
+  matchId: string,
+  effects: MatchSportEffects
+): OfficialMatchRecord | null {
+  const store = getSportMatchModelStore(state);
+  const row = store?.fixtures.find(item => item.id === matchId) ?? null;
+  if (!row || row.effects) return row;
+  const clean = (value: number): number => Math.round(bounded(Number.isFinite(value) ? value : 0, -100, 100) * 1000) / 1000;
+  row.effects = {
+    formDelta: clean(effects.formDelta),
+    fatigueDelta: clean(effects.fatigueDelta),
+    fitnessDelta: clean(effects.fitnessDelta),
+    coachTrustDelta: clean(effects.coachTrustDelta),
+    roleScoreDelta: clean(effects.roleScoreDelta)
+  };
+  return row;
 }
 
 export function currentCareerMatchResult(state: GameState): CareerMatchResult | null {
@@ -808,6 +834,13 @@ export function currentCareerMatchResult(state: GameState): CareerMatchResult | 
       minutes: row.player.minutes,
       goals: stats.goals,
       assists: stats.assists
+    },
+    sportDeltas: row.effects ?? {
+      formDelta: 0,
+      fatigueDelta: 0,
+      fitnessDelta: 0,
+      coachTrustDelta: 0,
+      roleScoreDelta: 0
     },
     milestones
   };
