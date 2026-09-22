@@ -214,6 +214,33 @@ test('A17/T17.12 international-callup guard requires published selection authori
   });
   assert.ok(final);
   assert.equal(evaluateNarrativeGuard(state, { id: 'requiresInternationalCallup' }).pass, true);
+  assert.equal(evaluateNarrativeGuard(state, { id: 'requiresInternationalCallup', stage: 'final', membership: 'omitted' }).pass, false);
+
+  const omitted = createInitialState(170120);
+  omitted.flags.NATIONAL_TOURNAMENT_CYCLE = true;
+  recordNationalPreselectionInPlace(omitted, {
+    cycleId: 'a17-omitted',
+    tournamentId: 'a17-tournament',
+    membership: 'selected',
+    source
+  });
+  recordNationalFinalSquadInPlace(omitted, {
+    cycleId: 'a17-omitted',
+    membership: 'omitted',
+    source
+  });
+  assert.equal(evaluateNarrativeGuard(omitted, { id: 'requiresInternationalCallup', stage: 'final', membership: 'omitted' }).pass, true);
+  assert.equal(evaluateNarrativeGuard(omitted, { id: 'requiresInternationalCallup' }).pass, false);
+});
+
+test('A17/T17.10 active-contract guard follows canonical contract status', () => {
+  const state = createInitialState(17010);
+  state.contract.monthsRemaining = 7;
+  assert.equal(evaluateNarrativeGuard(state, { id: 'requiresActiveContract' }).pass, true);
+  state.contract.monthsRemaining = 6;
+  assert.equal(evaluateNarrativeGuard(state, { id: 'requiresActiveContract' }).pass, true);
+  state.contract.monthsRemaining = 0;
+  assert.equal(evaluateNarrativeGuard(state, { id: 'requiresActiveContract' }).pass, false);
 });
 
 test('A17/T17.13 injury guard reads the same canonical availability inputs as sports-core', () => {
