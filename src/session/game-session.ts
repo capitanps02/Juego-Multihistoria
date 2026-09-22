@@ -42,9 +42,11 @@ import {
   MIN_AUTO_WEEKS,
   buildPeriodSummary,
   idleAutoSimulationState,
+  publicAutoSimulationState,
   resolvedInterruptMode,
   startAutoSimulationState,
   type AutoSimulationState,
+  type PublicAutoSimulationState,
   type SimulationInterrupt,
   type WeekSimulationResult
 } from "./auto-simulation.js";
@@ -147,7 +149,7 @@ export interface PlayerView {
   /** Presentation-only category for the current result; keeps event families out of the player-facing contract. */
   resultCategory: "match" | "story" | null;
   journal: SessionSnapshot["journal"];
-  simulation: AutoSimulationState;
+  simulation: PublicAutoSimulationState;
 }
 export class SessionError extends Error {
   constructor(public readonly code: string, message: string) { super(message); this.name = "SessionError"; }
@@ -357,7 +359,8 @@ export class GameSession {
     const { state: s, pendingDecision: p, pendingResult: result } = this.#snapshot;
     const lastEventId = s.history.at(-1)?.eventId;
     const lastEvent = lastEventId ? this.#index.events.find(e => e.id === lastEventId) : undefined;
-    const simulation = this.#snapshot.autoSimulation ?? idleAutoSimulationState();
+    const simulationState = this.#snapshot.autoSimulation ?? idleAutoSimulationState();
+    const simulation = publicAutoSimulationState(simulationState);
     const summaryScreen = simulation.mode === "showing_summary" || simulation.mode === "season_transition";
     return structuredClone({
       sessionId: this.#snapshot.sessionId, revision: this.#snapshot.revision,
