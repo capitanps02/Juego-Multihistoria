@@ -1,4 +1,5 @@
 import type { DataValue, GameState, NarrativePhase } from "../core/types.js";
+import { resolveLatestCoachChange } from "./coach-change-authority.js";
 import { currentEmploymentClub, hasActiveClubEmployment } from "./employment.js";
 
 export type ActiveAgentNpcId = "NPC_AGT_01" | "NPC_AGT_02";
@@ -98,25 +99,25 @@ export function resolveCurrentClubInstitutionalNpc(state: GameState): string | n
 /**
  * Resolve the factual current head coach for the player's live registration club.
  *
- * New states may persist an explicit `currentCoachNpcId` in the existing NPC authority
- * store. Historical states are projected only when exactly one active NPC has the exact
- * head-coach role at the current club. A missing, stale, fired or ambiguous coach fails
- * closed; relationship/trust values never manufacture coach identity.
+ * Coach-change chronology is owned by coach-change-authority. If the latest certified
+ * change belongs to the current club, its replacement identity (when certified) is the
+ * only admissible named coach; a certified firing/change with unknown replacement fails
+ * closed. Only states with no certified change may project the unique active head coach
+ * already attached to the current club.
  */
 export function resolveCurrentCoach(state: GameState): string | null {
   const club = currentEmploymentClub(state);
   if (!club) return null;
 
-  const authority = record(state.world.npcAuthority);
-  const explicit = authority?.currentCoachNpcId;
-  if (explicit === null) return null;
-  if (typeof explicit === "string") {
-    const npc = state.npcs.find(candidate => candidate.id === explicit);
+  const latestChange = resolveLatestCoachChange(state);
+  if (latestChange?.clubId === club) {
+    const npcId = latestChange.newCoachNpcId;
+    if (!npcId) return null;
+    const npc = state.npcs.find(candidate => candidate.id === npcId);
     return npc && npc.careerState === "active" && npc.club === club && npc.role === "Entrenador"
       ? npc.id
       : null;
   }
-  if (explicit !== undefined) return null;
 
   const candidates = state.npcs.filter(candidate =>
     candidate.careerState === "active" &&
@@ -124,28 +125,4 @@ export function resolveCurrentCoach(state: GameState): string | null {
     candidate.role === "Entrenador"
   );
   return candidates.length === 1 ? candidates[0]!.id : null;
-}
-
-/**
- * Persist a canonical head-coach appointment. This is an authority boundary, not a
- * narrative convenience: callers must already know that the appointment happened.
- */
-export function certifyCurrentCoachInPlace(state: GameState, npcId: string): void {
-  const club = currentEmploymentClub(state);
-  if (!club) throw new Error("Cannot certify a coach without active club employment.");
-  const npc = state.npcs.find(candidate => candidate.id === npcId);
-  if (!npc || npc.careerState !== "active" || npc.club !== club || npc.role !== "Entrenador") {
-    throw new Error("Cannot certify non-current head coach: " + npcId);
-  }
-  const current = record(state.world.npcAuthority) ?? {};
-  state.world.npcAuthority = { ...current, currentCoachNpcId: npcId };
-}
-
-/**
- * Persist an explicit vacancy/firing. Historical NPC records may remain, but they can no
- * longer be resolved as the current coach until a new appointment is certified.
- */
-export function clearCurrentCoachInPlace(state: GameState): void {
-  const current = record(state.world.npcAuthority) ?? {};
-  state.world.npcAuthority = { ...current, currentCoachNpcId: null };
 }
