@@ -45,7 +45,7 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
   async function load(){
     if(busy)return;busy=true;message='';render();
     try{const raw=await store.read();savedRaw=raw;if(raw){session=await GameSession.migrateFromSave(raw,{...sessionOptions,commit});cinematic=['decision','result','offer'].includes(session.getView().screen);}else{replacement=null;session=await GameSession.create(424242,{...sessionOptions,commit});}prepareHistory(); if(await store.legacyChanged())message='Otra pestaña ha cambiado la copia antigua. Puedes descargarla en Tu partida para revisarla antes de importar.'; }
-    catch(e){session=null;message='No se pudo abrir la partida. '+e.message+' La copia guardada se conserva.';view='save';}
+    catch(e){console.error('Multihistoria load failed',e);session=null;message='No se ha podido cargar el juego. Comprueba tu conexión o almacenamiento e inténtalo de nuevo. Tu copia guardada se conserva.';view='save';}
     finally{busy=false;render();queueAutoStep();}
   }
   function queueAutoStep(){
@@ -218,7 +218,7 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
   function saves(v,main){
     main.append(el('span','CONTINÚA DONDE LO DEJASTE','eyebrow'),el('h1','Tu partida.'));
     const p=panel('Partida actual');p.append(el('p',v?`${date(v.date)} · ${decisionCount(v.decisionsMade)}`:'Partida sin abrir','muted'),el('p','Es el último estado guardado de esta carrera. La partida local y PlayCanvas se guardan por separado; puedes descargar una copia e importarla en el otro navegador.'));
-    const a=el('div',undefined,'save-actions');a.append(button('Descargar copia',download,'primary'),button('Recuperar partida actual',load));
+    const a=el('div',undefined,'save-actions');a.append(button('Descargar copia',download,'primary'),button(v?'Recuperar partida actual':'Reintentar carga',load));
     const input=el('input');input.type='file';input.accept='.json,application/json';input.id='mh-import';input.setAttribute('aria-label','Importar copia de partida');input.addEventListener('change',()=>importFile(input.files[0]));
     const label=el('label','Importar copia de partida','file-label');label.append(input);a.append(label);p.append(a);
     p.append(el('p','Guardado automático activo','muted'));
