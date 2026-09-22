@@ -284,16 +284,18 @@ const bounded = (value: number, min: number, max: number): number => Math.min(ma
 export function buildMatchPerformanceContext(state: GameState, coachTrust: number | null): MatchPerformanceContext | null {
   if (!isOfficialMatchDay(state)) return null;
   const fixture = fixtureProjection(state, state.date);
-  const leagueTier = Number.isFinite(state.professional.leagueTier) ? state.professional.leagueTier : 3;
+  const finite = (value: unknown, fallback: number): number =>
+    typeof value === "number" && Number.isFinite(value) ? value : fallback;
+  const leagueTier = finite(state.professional.leagueTier, 3);
   const opponentVariation = (footballProducerRoll(state, fixture, "opponent-level") % 17) - 8;
   const opponentLevel = bounded(46 + (4 - leagueTier) * 9 + opponentVariation, 20, 90);
   return {
     age: Math.max(0, Math.trunc(state.age)),
     careerRole: typeof state.role === "string" ? state.role : "unknown",
-    roleScore: bounded(Number(state.sport.roleScore) || 0, 0, 100),
-    form: bounded(Number(state.sport.form) || 50, 0, 100),
-    fitness: bounded(Number(state.body.fitness) || 0, 0, 100),
-    fatigue: bounded(Number(state.body.fatigue) || 0, 0, 100),
+    roleScore: bounded(finite(state.sport.roleScore, 0), 0, 100),
+    form: bounded(finite(state.sport.form, 50), 0, 100),
+    fitness: bounded(finite(state.body.fitness, 0), 0, 100),
+    fatigue: bounded(finite(state.body.fatigue, 0), 0, 100),
     coachTrust: coachTrust === null ? null : bounded(coachTrust, 0, 100),
     leagueTier: Math.max(1, Math.min(9, Math.trunc(leagueTier))),
     opponentLevel,
