@@ -11,6 +11,20 @@ import { publishNationalSelectionFactsInPlace } from "./national-selection-produ
 const num = (value: unknown, fallback = 0): number =>
   typeof value === "number" && Number.isFinite(value) ? value : fallback;
 
+function applyMatchDisciplineInPlace(state: GameState, match: ReturnType<typeof recordOfficialMatchInPlace>): void {
+  if (!match?.player.appeared || !match.stats) return;
+  let yellowAccumulation = Math.max(0, Math.trunc(num(state.sport.yellowCardAccumulation, 0)));
+  yellowAccumulation += match.stats.yellowCards;
+  let suspensionMatches = Math.max(0, Math.trunc(num(state.sport.suspensionMatches, 0)));
+  if (match.stats.redCards > 0) suspensionMatches = Math.max(suspensionMatches, 1);
+  while (yellowAccumulation >= 5) {
+    yellowAccumulation -= 5;
+    suspensionMatches = Math.max(suspensionMatches, 1);
+  }
+  state.sport.yellowCardAccumulation = yellowAccumulation;
+  state.sport.suspensionMatches = suspensionMatches;
+}
+
 /**
  * Public world-simulation boundary.
  * The established simulator stays single-sourced in world-simulator-core.ts;
@@ -24,6 +38,7 @@ export function advanceWorldDayInPlace(next: GameState): GameState {
   const beforeFinalContext = next.flags.FINAL_CONTEXT === true;
   const beforeInjuryWeeks = num(next.world.injuryWeeksRemaining, 0);
   const beforeRecovering = next.flags.RECOVERING_INJURY === true;
+  const beforeSuspensionMatches = Math.max(0, Math.trunc(num(next.sport.suspensionMatches, 0)));
   const beforeNationalTournamentCycle = next.flags.NATIONAL_TOURNAMENT_CYCLE === true;
 
   advanceCoreWorldDayInPlace(next);
@@ -46,15 +61,17 @@ export function advanceWorldDayInPlace(next: GameState): GameState {
     recordCoreFinalCompetitionMomentInPlace(next);
   }
 
-  if (next.runtime.day % 7 === 0 && hasActiveClubEmployment(next)) {
+  if (next.runtime.day % 7 === 0 && hasActiveClubEmployment(next) && next.retirement.status !== "closed") {
     const appeared = num(next.sport.appearances) > beforeAppearances;
     const match = recordOfficialMatchInPlace(next, {
       appeared,
       debutOccurred: !beforeDebut && next.flags.OFFICIAL_DEBUT === true,
-      injuryUnavailable: next.body.acuteInjury === true && !appeared
+      injuryUnavailable: next.body.acuteInjury === true && !appeared,
+      suspensionUnavailable: beforeSuspensionMatches > 0 && !appeared
     });
 
     if (match) {
+      applyMatchDisciplineInPlace(next, match);
       recordPenaltyDecisionSetupInPlace(next, match);
       linkFirstPostReturnAppearanceInPlace(next, match);
     }
