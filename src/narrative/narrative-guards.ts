@@ -19,8 +19,8 @@ export type NarrativeGuardSpec =
   | { id: "requiresCurrentClub"; club?: string }
   | { id: "requiresActiveContract" }
   | { id: "requiresInjury" }
-  | { id: "requiresCareerOffer" }
-  | { id: "requiresTransferOffer" }
+  | { id: "requiresCareerOffer"; minCount?: number }
+  | { id: "requiresTransferOffer"; minCount?: number }
   | { id: "requiresInternationalCallup"; stage?: "preliminary" | "final"; membership?: "selected" | "omitted" | "withdrawn" }
   | { id: "requiresActiveCareer" };
 
@@ -45,6 +45,9 @@ const LEGACY_EVENT_GUARDS: Readonly<Record<string, readonly NarrativeGuardSpec[]
   CEVT_18_CCH_01: [{ id: "requiresRecentCoachChange", maxDays: 90, previousCoachNpcId: "NPC_CCH_01" }],
   EVT_19_CCH_001: [{ id: "requiresCurrentCoach" }],
   CEVT_19_INJ_01: [{ id: "requiresInjury" }],
+  EVT_19_JAN_001: [{ id: "requiresCareerOffer", minCount: 2 }],
+  EVT_24_MKT_001: [{ id: "requiresCareerOffer", minCount: 3 }],
+  EVT_24_JAN_001: [{ id: "requiresTransferOffer" }],
   CEVT_28_MKT_01: [{ id: "requiresCareerOffer" }],
   CEVT_32_RICH_01: [{ id: "requiresCareerOffer" }],
   CEVT_35_RICH_LAST: [{ id: "requiresCareerOffer" }],
@@ -169,14 +172,20 @@ export function evaluateNarrativeGuard(state: GameState, spec: NarrativeGuardSpe
       return canonicalInjuryActive(state)
         ? { guard: spec.id, pass: true }
         : { guard: spec.id, pass: false, reason: "canonical injury state is inactive" };
-    case "requiresCareerOffer":
-      return getEligibleCareerOffers(state).length > 0
+    case "requiresCareerOffer": {
+      const required = Math.max(1, Math.trunc(spec.minCount ?? 1));
+      const actual = getEligibleCareerOffers(state).length;
+      return actual >= required
         ? { guard: spec.id, pass: true }
-        : { guard: spec.id, pass: false, reason: "no real eligible career offer is pending" };
-    case "requiresTransferOffer":
-      return getEligibleTransferOffers(state).length > 0
+        : { guard: spec.id, pass: false, reason: `requires ${required} real eligible career offer(s); found ${actual}` };
+    }
+    case "requiresTransferOffer": {
+      const required = Math.max(1, Math.trunc(spec.minCount ?? 1));
+      const actual = getEligibleTransferOffers(state).length;
+      return actual >= required
         ? { guard: spec.id, pass: true }
-        : { guard: spec.id, pass: false, reason: "no real eligible transfer offer is pending" };
+        : { guard: spec.id, pass: false, reason: `requires ${required} real eligible transfer offer(s); found ${actual}` };
+    }
     case "requiresInternationalCallup": {
       const facts = resolveNationalSelectionFacts(state);
       const stage = spec.stage ?? "final";
