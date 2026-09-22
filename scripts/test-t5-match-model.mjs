@@ -19,6 +19,7 @@ import { getCurrentMatchContext, getSportContext } from '../dist/simulation/spor
 import { advanceWorldDayInPlace } from '../dist/simulation/world-simulator.js';
 import { respondToOffer } from '../dist/simulation/offers.js';
 import { advanceWorldDayInPlace as advanceCoreWorldDayInPlace } from '../dist/simulation/world-simulator-core.js';
+import { certifyCoachChangeInPlace } from '../dist/simulation/coach-change-authority.js';
 import { assertGameState } from '../dist/save/validation.js';
 import { loadSave, serializeSave } from '../dist/save/save.js';
 import { GameSession } from '../dist/session/game-session.js';
@@ -890,4 +891,27 @@ test('T15.16 season transition preserves the prior-season persisted match ledger
   assert.equal(store.fixtures[0].season, '2026-27');
   const records = careerSeasonRecords(state);
   assert.ok(records.some(record => record.season === '2026-27' && record.club === 'UDV'));
+});
+
+
+test('T15/A17 certified coach change with unknown replacement neutralizes historical coach trust', () => {
+  const highOldTrust = weeklySportState(1517);
+  const lowOldTrust = weeklySportState(1517);
+  for (const state of [highOldTrust, lowOldTrust]) {
+    state.sport.roleScore = 30;
+    state.sport.form = 50;
+  }
+  const highRelationship = highOldTrust.relationships.find(row => row.npcId === 'NPC_CCH_01');
+  const lowRelationship = lowOldTrust.relationships.find(row => row.npcId === 'NPC_CCH_01');
+  assert.ok(highRelationship && lowRelationship);
+  highRelationship.trust = 100;
+  lowRelationship.trust = 0;
+  certifyCoachChangeInPlace(highOldTrust, 'external_change');
+  certifyCoachChangeInPlace(lowOldTrust, 'external_change');
+
+  advanceWorldDayInPlace(highOldTrust);
+  advanceWorldDayInPlace(lowOldTrust);
+
+  assert.equal(highOldTrust.sport.roleScore, lowOldTrust.sport.roleScore);
+  assert.equal(highOldTrust.sport.form, lowOldTrust.sport.form);
 });
