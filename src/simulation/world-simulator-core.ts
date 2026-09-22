@@ -209,8 +209,10 @@ function footballWeek(state: GameState): void {
   const suspendedForFixture = num(state.sport.suspensionMatches, 0) > 0;
   const careerClosed = state.retirement.status === "closed";
   let debutFromAppearance = false;
-  if (officialSeasonWeek && role > 24) {
-    const appearanceChance = clamp((role - 15) / 85, 0.08, 0.92);
+  if (officialSeasonWeek && !careerClosed) {
+    // Even a reserve/academy-call-up needs a small factual path to minutes; role then
+    // increases/decreases the chance continuously instead of acting as a hard gate.
+    const appearanceChance = clamp((role - 15) / 85, 0.12, 0.92);
     const appearanceRolled = rng.next() < appearanceChance;
     if (appearanceRolled) {
       // Consume the same follow-up draws as the legacy path even when injury blocks
