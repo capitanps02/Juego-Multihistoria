@@ -113,6 +113,7 @@ test('A17/T17.6b coach-change prose needs certified chronology and identity, not
   const state = createInitialState(17006);
   state.flags.COACH_FIRED = true;
   const scene = event('CEVT_18_CCH_01');
+  assert.equal(resolveCurrentCoach(state), null, 'legacy firing flag must not resurrect the old named coach');
   assert.equal(narrativeGuardsPass(state, scene), false, 'legacy firing flag alone cannot certify Montalban left');
 
   certifyCoachChangeInPlace(state, 'security_firing');
