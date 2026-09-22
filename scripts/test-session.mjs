@@ -257,3 +257,92 @@ test('existing catalog validates; updated headless offer policy is reproducible'
   assert.ok(now.market.history.length>0);
   assert.deepEqual(now,simulateCareer({seed:424242,untilRetirement:true,maxAge:55}).state);
 });
+
+
+async function runningAutoSession() {
+  for (let seed = 1200; seed < 1300; seed += 1) {
+    const s = await GameSession.create(seed, { events: [], microfeeds: false, sessionId: `t55-auto-${seed}` });
+    await s.dispatch({ type:'auto', action:'start', maxWeeks:2, commandId:'auto-start', expectedRevision:0 });
+    if (s.getView().simulation.mode === 'auto_simulating') return s;
+  }
+  throw new Error('No deterministic seed kept auto-simulation running after its first week');
+}
+
+async function completeAutoBlock(seed, sessionId) {
+  const s = await GameSession.create(seed, { events: [], microfeeds:false, sessionId });
+  let step = 0;
+  await s.dispatch({ type:'auto', action:'start', maxWeeks:3, commandId:'auto-0', expectedRevision:0 });
+  while (s.getView().simulation.mode === 'auto_simulating' && step < 8) {
+    step++;
+    await s.dispatch({ type:'auto', action:'step', commandId:`auto-${step}`, expectedRevision:s.getView().revision });
+  }
+  assert.notEqual(s.getView().simulation.mode, 'auto_simulating');
+  return s;
+}
+
+test('T5.5 auto-simulation/1 pause, resume and save round-trip preserve a bounded temporal block', async () => {
+  let s = await runningAutoSession();
+  const running = s.exportSnapshot();
+  const beforePauseDay = running.state.runtime.day;
+  await s.dispatch(command(s,'auto',{action:'pause'}));
+  assert.equal(s.getView().simulation.mode,'paused');
+  assert.equal(s.exportSnapshot().state.runtime.day,beforePauseDay);
+
+  const persisted = JSON.parse(JSON.stringify(s.exportSnapshot()));
+  s = await GameSession.resume(persisted,{events:[]});
+  assert.equal(s.getView().simulation.mode,'paused');
+  assert.deepEqual(s.exportSnapshot(),persisted);
+
+  await s.dispatch(command(s,'auto',{action:'resume'}));
+  assert.equal(s.getView().simulation.mode,'auto_simulating');
+  for(let i=0;i<4 && s.getView().simulation.mode==='auto_simulating';i++) {
+    await s.dispatch(command(s,'auto',{action:'step'}));
+  }
+  assert.notEqual(s.getView().simulation.mode,'auto_simulating');
+  assert.ok(s.getView().simulation.summary);
+  assert.ok(s.getView().simulation.summary.daysSimulated > 0);
+  assert.ok(s.getView().simulation.summary.daysSimulated <= 14);
+});
+
+test('T5.5 auto-simulation/2 identical command sequence is deterministic and respects MAX_AUTO_WEEKS', async () => {
+  const a = await completeAutoBlock(1311,'t55-auto-deterministic');
+  const b = await completeAutoBlock(1311,'t55-auto-deterministic');
+  assert.deepEqual(a.exportSnapshot(),b.exportSnapshot());
+  const summary = a.getView().simulation.summary;
+  assert.ok(summary);
+  assert.ok(summary.daysSimulated <= 21);
+  assert.ok(['showing_summary','season_transition','waiting_for_decision','retirement'].includes(a.getView().simulation.mode));
+});
+
+test('T5.5 auto-simulation/3 player view hides interruption source/payload and auto never resolves a decision for the player', async () => {
+  const s = await GameSession.create(424242,{microfeeds:false,sessionId:'t55-auto-interrupt'});
+  await s.dispatch(command(s,'auto',{action:'start',maxWeeks:6}));
+  for(let i=0;i<8 && s.getView().simulation.mode==='auto_simulating';i++) {
+    await s.dispatch(command(s,'auto',{action:'step'}));
+  }
+  const view = s.getView();
+  const publicSimulation = JSON.stringify(view.simulation);
+  assert.ok(!publicSimulation.includes('"source"'));
+  assert.ok(!publicSimulation.includes('"payload"'));
+  assert.ok(!/EVT_|CEVT_|offer:|SEED_/.test(publicSimulation));
+  if (view.screen === 'decision') {
+    assert.equal(s.exportSnapshot().state.history.length,0);
+    assert.equal(view.simulation.mode,'waiting_for_decision');
+  }
+});
+
+test('T5.5 auto-simulation/4 invalid limits and tampered summaries fail without mutating valid state', async () => {
+  const s = await GameSession.create(1322,{events:[],microfeeds:false,sessionId:'t55-auto-validation'});
+  const before = s.exportSnapshot();
+  await assert.rejects(s.dispatch(command(s,'auto',{action:'start',maxWeeks:13})),errorCode('INVALID_COMMAND'));
+  assert.deepEqual(s.exportSnapshot(),before);
+
+  await s.dispatch(command(s,'auto',{action:'start',maxWeeks:1}));
+  const valid = JSON.parse(JSON.stringify(s.exportSnapshot()));
+  assert.ok(valid.autoSimulation.summary);
+  const broken = structuredClone(valid);
+  broken.autoSimulation.summary.matches.appearances = -1;
+  await assert.rejects(GameSession.resume(broken,{events:[]}),errorCode('INVALID_SAVE'));
+  const restored = await GameSession.resume(valid,{events:[]});
+  assert.deepEqual(restored.exportSnapshot(),valid);
+});
