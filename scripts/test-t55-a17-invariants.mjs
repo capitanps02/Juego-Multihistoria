@@ -153,6 +153,7 @@ test('A17/T17.9 completed transfer synchronizes club authority and narrative cur
   assert.equal(state.professional.ownerClub, 'A17 Destination');
   assert.equal(state.world.ownerClub, 'A17 Destination');
   assert.equal(evaluateNarrativeGuard(state, { id: 'requiresCurrentClub', club: 'A17 Destination' }).pass, true);
+  assert.equal(evaluateNarrativeGuard(state, { id: 'requiresCurrentClub', club: 'UDV' }).pass, false, 'old-club narrative must not remain current');
 });
 
 test('A17/T17.11b legacy offer prose cannot be scheduled from marketHeat alone', () => {
@@ -279,6 +280,21 @@ test('A17/T17.19-20 closed retirement blocks weekly player simulation and active
 
   const postCareer = event('A17_POST_CAREER', { tags: ['post_career'] });
   assert.equal(scheduleEvent(state, [postCareer], { ignoreRhythmGate: true })?.event.id, 'A17_POST_CAREER');
+});
+
+test('A17/T17.14 consumed event remains suppressed after save/load', () => {
+  const state = createInitialState(17014);
+  const consumed = event('A17_CONSUMED_EVENT');
+  state.flags['SEEN_' + consumed.id] = true;
+  state.eventCooldowns[consumed.id] = 999;
+  state.runtime.daysSinceNarrative = 999;
+
+  const restored = loadSave(serializeSave(state));
+  restored.runtime.daysSinceNarrative = 999;
+
+  assert.equal(restored.flags['SEEN_' + consumed.id], true);
+  assert.equal(restored.eventCooldowns[consumed.id], 999);
+  assert.equal(scheduleEvent(restored, [consumed], { ignoreRhythmGate: true }), null);
 });
 
 test('A17/T17.17-18 retirement decision and announcement survive save/load', () => {
