@@ -69,7 +69,7 @@ const defaultBodies: Partial<Record<EventFamily,string>> = {
  market:"El mercado vuelve a pesar en tu siguiente decisión. Tu agente separa el interés real, las conversaciones abiertas y lo que aún no es una oferta; tú decides cuánto quieres mover ahora.",
  contract:"Tu situación contractual entra en una fase de negociación: duración, salario, rol y margen de salida no pesan igual. Decides qué condición necesitas antes de comprometerte.",
  agent:"Tu agente te pide una reunión privada porque una llamada o un incentivo puede cambiar quién controla la siguiente negociación. Esta vez quieres entender qué se ha dicho en tu nombre.",
- medical:"La planificación física obliga a repartir carga, disponibilidad y descanso durante la temporada. Debes decidir qué margen quieres conservar sin fingir una lesión que no existe.",
+ medical:"En una sesión de planificación física, repasáis carga, disponibilidad y descanso para las próximas semanas. No hay una lesión nueva sobre la mesa: la decisión es cuánto margen quieres reservar antes de que el calendario apriete.",
  money:"Con ingresos y compromisos mayores, una reunión con familia o asesores convierte el dinero en una decisión sobre control, responsabilidad y futuro.",
  family:"Una conversación con tu familia conecta una decisión deportiva con casa, ciudad y estabilidad. Todos entienden que la próxima elección tendrá un coste fuera del campo.",
  sport:"Antes de un partido de alta exposición, el entrenador te explica el rol, el riesgo y lo que espera de ti. Tu respuesta puede afectar minutos, mercado y confianza.",
