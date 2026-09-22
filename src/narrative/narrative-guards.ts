@@ -1,4 +1,5 @@
 import type { EventDefinition, GameState } from "../core/types.js";
+import { resolveRecentCurrentClubCoachChange } from "../simulation/coach-change-authority.js";
 import { currentEmploymentClub } from "../simulation/employment.js";
 import { resolveCurrentCoach } from "../simulation/npc-authority.js";
 import {
@@ -14,6 +15,7 @@ export type NarrativeGuardSpec =
   | { id: "requiresRecentStart"; maxDays?: number; minMinutes?: number }
   | { id: "requiresRecentGoal"; maxDays?: number }
   | { id: "requiresCurrentCoach"; npcId?: string }
+  | { id: "requiresRecentCoachChange"; maxDays?: number; previousCoachNpcId?: string; newCoachNpcId?: string }
   | { id: "requiresCurrentClub"; club?: string }
   | { id: "requiresActiveContract" }
   | { id: "requiresInjury" }
@@ -38,7 +40,15 @@ export type EventWithNarrativeGuards = EventDefinition & {
  * or rewritten content; keep this registry intentionally small and evidence-based.
  */
 const LEGACY_EVENT_GUARDS: Readonly<Record<string, readonly NarrativeGuardSpec[]>> = {
-  EVT_18_PRS_001: [{ id: "requiresRecentMatch", maxDays: 7, minMinutes: 1 }]
+  EVT_18_PRS_001: [{ id: "requiresRecentMatch", maxDays: 7, minMinutes: 1 }],
+  EVT_19_TEAM_001: [{ id: "requiresRecentMatch", maxDays: 7, minMinutes: 1 }],
+  CEVT_18_CCH_01: [{ id: "requiresRecentCoachChange", maxDays: 90, previousCoachNpcId: "NPC_CCH_01" }],
+  EVT_19_CCH_001: [{ id: "requiresCurrentCoach" }],
+  CEVT_19_INJ_01: [{ id: "requiresInjury" }],
+  CEVT_28_MKT_01: [{ id: "requiresCareerOffer" }],
+  CEVT_32_RICH_01: [{ id: "requiresCareerOffer" }],
+  CEVT_35_RICH_LAST: [{ id: "requiresCareerOffer" }],
+  CEVT_RET_RECONSIDER: [{ id: "requiresCareerOffer" }]
 };
 
 function finite(value: unknown, fallback = 0): number {
@@ -125,6 +135,17 @@ export function evaluateNarrativeGuard(state: GameState, spec: NarrativeGuardSpe
       if (!coach) return { guard: spec.id, pass: false, reason: "current coach is unknown or vacant" };
       if (spec.npcId !== undefined && coach !== spec.npcId) {
         return { guard: spec.id, pass: false, reason: "named coach is not the current coach" };
+      }
+      return { guard: spec.id, pass: true };
+    }
+    case "requiresRecentCoachChange": {
+      const change = resolveRecentCurrentClubCoachChange(state, spec.maxDays ?? 90);
+      if (!change) return { guard: spec.id, pass: false, reason: "no factual recent current-club coach change" };
+      if (spec.previousCoachNpcId !== undefined && change.previousCoachNpcId !== spec.previousCoachNpcId) {
+        return { guard: spec.id, pass: false, reason: "previous coach identity is not factually certified" };
+      }
+      if (spec.newCoachNpcId !== undefined && change.newCoachNpcId !== spec.newCoachNpcId) {
+        return { guard: spec.id, pass: false, reason: "replacement coach identity is not factually certified" };
       }
       return { guard: spec.id, pass: true };
     }
