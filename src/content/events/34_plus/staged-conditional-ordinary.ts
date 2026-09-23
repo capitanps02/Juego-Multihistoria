@@ -686,6 +686,13 @@ const MEMORY_COMPLETED_IDS=new Set(["CEVT_34_FAMILY_CLUB_BUYIN","CEVT_34_CLARA_E
 const SPECS=ALL_SPECS.filter(spec=>!MEMORY_COMPLETED_IDS.has(spec.id));
 
 function toConditional(spec:typeof ALL_SPECS[number]):EventDefinition{
+  const isNano=spec.id==="CEVT_34_NANO_DIRECTOR";
+  const nanoMessages:Readonly<Record<string,string>>={
+    HEAR_NANO:"Escuchas a Nano hasta el final y le pides que te explique qué necesita el club de ti.",
+    ASK_OTHER_CONTACT:"Le pides que otro directivo formalice cualquier propuesta para separar amistad y negociación.",
+    SEPARATE_FRIENDSHIP:"Le dices que vuestra amistad no puede decidir tus condiciones y seguís hablando solo de fútbol.",
+    DECLINE_NETWORK:"Agradeces la llamada, pero prefieres no convertir vuestra historia en una vía de contratación."
+  };
   const choices=spec.choices.map(([id,label])=>({
     id,label,intentTags:["conditional","canonical_34plus"],
     outcomeIds:[`${spec.id}__${id}__PRIMARY`]
@@ -694,10 +701,22 @@ function toConditional(spec:typeof ALL_SPECS[number]):EventDefinition{
     id:`${spec.id}__${id}__PRIMARY`,
     baseWeight:1,
     effects:localConditionalEffects(spec.id,id),
-    messages:[`${label}. La consecuencia se registra solo cuando el trigger factual canónico está acreditado.`],
+    messages:[isNano?(nanoMessages[id]??label):`${label}. La otra parte tendrá que responder antes de que sepas qué cambia de verdad.`],
     historyTags:["canonical_34plus_conditional",`choice_${id}`]
   }));
   const rawAge=Number(spec.id.split("_")[1]);
+  const title=isNano
+    ?"Nano llama desde el otro lado de la mesa"
+    :spec.premise.split(".")[0].replace(/[.:;]+$/,"");
+  const body=isNano
+    ?"Años después de pedirte que no movieras su carrera por él, Nano te llama desde un club que valora incorporarte. Esta vez es él quien puede abrir una puerta, pero deja claro que la decisión y las condiciones serán tuyas."
+    :spec.premise;
+  const visible=isNano
+    ?["Nano participa en la conversación desde una posición profesional propia y cualquier propuesta tendrá que formalizarla el club."]
+    :["La situación ya está sobre la mesa y conoces quién participa en ella."];
+  const uncertain=isNano
+    ?["No sabes cuánto del interés nace de vuestra relación y cuánto de lo que el club quiere realmente de ti."]
+    :["No sabes cómo responderá la otra parte ni qué cambiará después de tu decisión."];
   return {
     id:spec.id,
     ageWindow:[Number.isFinite(rawAge)?rawAge:34,null],
@@ -705,9 +724,10 @@ function toConditional(spec:typeof ALL_SPECS[number]):EventDefinition{
     family:"conditional",
     gates:[{path:"flags.__A8_EXTERNAL_CONDITIONAL_FACT_NEVER_SYNTHESIZE",op:"eq",value:true}],
     cooldown:99999,repeatable:false,weight:1,
-    text:{title:spec.id,body:spec.premise},
-    intel:{visible:[spec.trigger],uncertain:[spec.meaning]},
+    text:{title,body},
+    intel:{visible,uncertain},
     choices,outcomes,
+    npcRefs:isNano?["NPC_PLR_14"]:undefined,
     seedsRead:[...conditionalSeedReads(spec.id)],
     tags:["canonical_34plus","conditional","staged_not_registered","awaiting_external_fact","no_generic_shell"],
     canonStatus:"verified"
