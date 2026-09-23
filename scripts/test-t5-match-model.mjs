@@ -610,3 +610,103 @@ test('A4 prior-two/2 fails closed for incomplete history, transfer and unattache
   assert.equal(getSportContext(state).priorTwoMatchStats, null);
   assert.equal(getSportContext(state).availability.priorTwoMatchStats, 'unavailable');
 });
+
+
+function weeklySportState(seed) {
+  const state = createInitialState(seed);
+  state.date = '2026-08-04';
+  state.runtime.day = 6;
+  state.runtime.seasonDay = 6;
+  state.sport.roleScore = 100;
+  state.sport.form = 70;
+  state.body.risk = 0;
+  state.body.acuteInjury = false;
+  state.flags.RECOVERING_INJURY = false;
+  state.flags.LONG_INJURY = false;
+  state.world.injuryWeeksRemaining = 0;
+  state.sport.appearances = 0;
+  state.flags.OFFICIAL_DEBUT = false;
+  return state;
+}
+
+function findWeeklyAppearanceSeed() {
+  for (let seed = 9100; seed < 9400; seed += 1) {
+    const state = weeklySportState(seed);
+    advanceWorldDayInPlace(state);
+    if (state.sport.appearances === 1) return seed;
+  }
+  throw new Error('No deterministic weekly appearance seed found');
+}
+
+test('T5.5 sport regression/1 injured player cannot appear and the official row records unavailability', () => {
+  const seed = findWeeklyAppearanceSeed();
+  const state = weeklySportState(seed);
+  state.world.injuryWeeksRemaining = 3;
+  state.body.acuteInjury = true;
+  state.flags.RECOVERING_INJURY = true;
+  advanceWorldDayInPlace(state);
+  assert.equal(state.sport.appearances, 0);
+  assert.equal(state.flags.OFFICIAL_DEBUT, false);
+  const row = currentOfficialMatch(state);
+  assert.ok(row);
+  assert.equal(row.player.appeared, false);
+  assert.equal(row.player.injuryUnavailable, true);
+});
+
+test('T5.5 sport regression/2 clearance restores eligibility on the week the injury reaches zero', () => {
+  const seed = findWeeklyAppearanceSeed();
+  const state = weeklySportState(seed);
+  state.world.injuryWeeksRemaining = 1;
+  state.body.acuteInjury = true;
+  state.flags.RECOVERING_INJURY = true;
+  advanceWorldDayInPlace(state);
+  assert.equal(state.world.injuryWeeksRemaining, 0);
+  assert.equal(state.body.acuteInjury, false);
+  assert.equal(state.flags.RECOVERING_INJURY, false);
+  assert.equal(state.sport.appearances, 1);
+  assert.equal(currentOfficialMatch(state)?.player.injuryUnavailable, false);
+});
+
+test('T5.5 sport regression/3 first real appearance creates exactly one career appearance and one debut', () => {
+  const seed = findWeeklyAppearanceSeed();
+  const state = weeklySportState(seed);
+  advanceWorldDayInPlace(state);
+  assert.equal(state.sport.appearances, 1);
+  assert.equal(state.flags.OFFICIAL_DEBUT, true);
+  const row = currentOfficialMatch(state);
+  assert.ok(row);
+  assert.equal(row.player.appeared, true);
+  assert.equal(row.player.debut, true);
+  assert.equal(getSportMatchModelStore(state).fixtures.length, 1);
+});
+
+test('T5.5 sport regression/4 no weekly appearance can ever manufacture a debut flag', () => {
+  let checkedAbsence = false;
+  for (let seed = 9400; seed < 9700; seed += 1) {
+    const state = weeklySportState(seed);
+    state.sport.roleScore = 25;
+    advanceWorldDayInPlace(state);
+    if (state.sport.appearances === 0) {
+      checkedAbsence = true;
+      assert.equal(state.flags.OFFICIAL_DEBUT, false);
+    }
+  }
+  assert.equal(checkedAbsence, true);
+});
+
+test('T5.5 sport regression/5 save-load keeps the debut as one match and does not duplicate it on a non-match day', () => {
+  const seed = findWeeklyAppearanceSeed();
+  const state = weeklySportState(seed);
+  advanceWorldDayInPlace(state);
+  const firstId = currentOfficialMatch(state)?.id;
+  assert.ok(firstId);
+  const restored = loadSave(serializeSave(state));
+  assert.equal(restored.sport.appearances, 1);
+  assert.equal(getSportMatchModelStore(restored).fixtures.length, 1);
+  assert.equal(currentOfficialMatch(restored)?.id, firstId);
+  advanceWorldDayInPlace(restored);
+  assert.equal(restored.sport.appearances, 1);
+  assert.equal(getSportMatchModelStore(restored).fixtures.length, 1);
+  assert.equal(getSportMatchModelStore(restored).fixtures[0]?.id, firstId);
+  assert.equal(currentOfficialMatch(restored), null);
+});
