@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "status": "AWAITING_PHYSICAL_EVIDENCE",
+  "rule": "Ninguna fila puede pasar a PASS sin ejecución en hardware físico identificado y evidencia adjunta.",
+  "categories": [
+    {
+      "id": "LOW",
+      "class": "gama-baja",
+      "device": null,
+      "androidVersion": null,
+      "ramGb": null,
+      "resolution": null,
+      "aspectRatio": null,
+      "refreshRateHz": null,
+      "freeStorageMb": null,
+      "webViewVersion": null,
+      "status": "AWAITING_PHYSICAL_EVIDENCE"
+    },
+    {
+      "id": "MID",
+      "class": "gama-media",
+      "device": null,
+      "androidVersion": null,
+      "ramGb": null,
+      "resolution": null,
+      "aspectRatio": null,
+      "refreshRateHz": null,
+      "freeStorageMb": null,
+      "webViewVersion": null,
+      "status": "AWAITING_PHYSICAL_EVIDENCE"
+    },
+    {
+      "id": "HIGH",
+      "class": "gama-alta",
+      "device": null,
+      "androidVersion": null,
+      "ramGb": null,
+      "resolution": null,
+      "aspectRatio": null,
+      "refreshRateHz": null,
+      "freeStorageMb": null,
+      "webViewVersion": null,
+      "status": "AWAITING_PHYSICAL_EVIDENCE"
+    }
+  ],
+  "checksPerDevice": [
+    "cold-start",
+    "time-to-first-interaction",
+    "resume-from-background",
+    "process-restart",
+    "airplane-mode",
+    "Android-Back",
+    "orientation-policy",
+    "incoming-call-or-system-interruption",
+    "battery-saver",
+    "process-kill-and-reopen",
+    "export-save",
+    "import-save",
+    "corrupt-import-rejection",
+    "upgrade-A-to-B-with-data-preserved",
+    "IndexedDB-persistence",
+    "safe-area-and-scroll",
+    "large-text-accessibility",
+    "runtime-diagnostics-export"
+  ]
+}

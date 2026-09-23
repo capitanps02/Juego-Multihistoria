@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Probar que una actualización Android A→B conserva la carrera y que la migración es explícita, reproducible y no equivale a reinstalar.",
+  "automatedEvidenceState": "PENDING_CI",
+  "physicalEvidenceState": "AWAITING_PHYSICAL_EVIDENCE",
+  "globalInvariants": [
+    "package/applicationId permanece com.multihistoria",
+    "la app se instala como actualización, no mediante uninstall/reinstall",
+    "IndexedDB conserva el registro activo y la copia anterior válida",
+    "GameSession.fromSave/migrateFromSave acepta o rechaza explícitamente el snapshot",
+    "history, seeds, RNG, NPC, contrato, pending y retirement se comparan antes/después",
+    "una lectura de diagnóstico no consume RNG ni modifica el save",
+    "el versionCode de B debe ser mayor que el instalado A"
+  ],
+  "scenarios": [
+    {"id":"A","name":"Instalación limpia","fixture":"fresh","automated":"COVERED_BY_SESSION_AND_PERSISTENCE_TESTS","device":"AWAITING_PHYSICAL_EVIDENCE"},
+    {"id":"B","name":"Actualización con carrera temprana","fixture":"early-career","automated":"REQUIRES_GENERATED_CHECKPOINT","device":"AWAITING_PHYSICAL_EVIDENCE"},
+    {"id":"C","name":"Actualización con carrera media","fixture":"mid-career","automated":"REQUIRES_GENERATED_CHECKPOINT","device":"AWAITING_PHYSICAL_EVIDENCE"},
+    {"id":"D","name":"Actualización con carrera veterana","fixture":"veteran-career","automated":"REQUIRES_GENERATED_CHECKPOINT","device":"AWAITING_PHYSICAL_EVIDENCE"},
+    {"id":"E","name":"Actualización con pending event","fixture":"pending-decision","automated":"COVERED_BY_SESSION_SAVE_TESTS","device":"AWAITING_PHYSICAL_EVIDENCE"},
+    {"id":"F","name":"Actualización durante decisión/oferta","fixture":"pending-offer-or-decision","automated":"COVERED_BY_SESSION_AND_OFFER_BRIDGE_TESTS","device":"AWAITING_PHYSICAL_EVIDENCE"},
+    {"id":"G","name":"Actualización con save legacy","fixture":"legacy-schema-content","automated":"COVERED_BY_SAVE_AND_CONTENT_MIGRATION_TESTS","device":"AWAITING_PHYSICAL_EVIDENCE"},
+    {"id":"H","name":"Actualización con retirada en curso","fixture":"retirement-in-progress","automated":"REQUIRES_GENERATED_CHECKPOINT","device":"AWAITING_PHYSICAL_EVIDENCE"}
+  ],
+  "physicalProtocol": [
+    "registrar SHA/versionCode/versionName de A y B",
+    "instalar A y crear/importar el checkpoint indicado",
+    "cerrar completamente la app y registrar diagnostics A",
+    "instalar B encima de A sin borrar datos",
+    "abrir B y registrar diagnostics B antes de tomar nuevas decisiones",
+    "comparar session/save schema, contentIdentity/migration, revision, history length, last/pending event, retirement y hashes/posiciones RNG",
+    "reanudar y completar al menos una transición de juego",
+    "reiniciar proceso y dispositivo; comprobar persistencia otra vez",
+    "exportar save solo como evidencia separada y únicamente con consentimiento del tester"
+  ]
+}

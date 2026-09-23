@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "owner": "release/beta-readiness",
+  "targetOwner": "presentation/android-playcanvas",
+  "status": "HANDOFF_REQUIRED",
+  "reason": "La lógica de diagnóstico pertenece a release; la interacción visible y exportación desde UI pertenecen al Agente 9.",
+  "availableCoreApi": {
+    "source": "src/release/diagnostics.ts",
+    "compiled": "dist/release/diagnostics.js",
+    "function": "createReleaseDiagnostics(buildIdentity, sessionSnapshot, runtimeInfo, migrationInfo)",
+    "properties": [
+      "pure/read-only",
+      "zero gameplay RNG",
+      "no raw save payload",
+      "no journal text",
+      "no sessionId",
+      "RNG stream draw positions only; no raw seed/state and no derived fingerprint"
+    ]
+  },
+  "androidBuildIdentity": {
+    "pathInsideAssets": "release/build-manifest.json",
+    "offlineManifestPointer": "offline-manifest.json -> release.manifest",
+    "note": "El release pipeline incrusta el manifest exacto del candidato antes de bundleRelease/assembleRelease."
+  },
+  "presentationTasks": [
+    "añadir acción visible Exportar diagnóstico en una superficie de soporte/ajustes",
+    "leer el build-manifest empaquetado sin red",
+    "obtener snapshot mediante la API pública de GameSession sin modificarlo",
+    "pasar runtime Android/WebView disponible sin identificadores innecesarios",
+    "serializar el resultado de createReleaseDiagnostics como multihistoria-diagnostics.json",
+    "usar el mecanismo de exportación de archivo existente; no mezclar la partida completa salvo acción separada y explícita",
+    "mostrar la política de privacidad desde la UI antes de T8"
+  ],
+  "acceptance": [
+    "exportar diagnóstico no cambia revision, RNG, pending ni save",
+    "el JSON exportado contiene manifestIdentity/gitSha/contentIdentity/versionCode",
+    "el JSON no contiene la partida, journal, sessionId, RNG seed/state ni secretos",
+    "funciona en modo avión",
+    "la exportación de save sigue siendo una acción diferente"
+  ]
+}
