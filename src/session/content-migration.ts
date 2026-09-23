@@ -102,6 +102,7 @@ export const T51_A8_WAVE_A_CONTENT_IDENTITY = "b360a1ef1e0d0c19f4600f174bf9d3b26
 export const T51_T5_161_CAPTAIN_CONTENT_IDENTITY = "56b9ca09b872ac6dc8fc78ec9459bf15fb7ab21c20707f354af06c99ee00d0f4";
 export const T51_A8_ORDINARY_FINAL_CONTENT_IDENTITY = "ab7c3e62f7ca6d90973e657f2eb0a9cec0a745fe12369ac9df770bcf6614e658";
 export const T51_A9_TERMINAL_FINAL_CONTENT_IDENTITY = "d0fee1ceef2c3bdb7d8cd933ce773341a3c375b39deedcc21cd801a8c3f67770";
+export const T55_A18_NARRATIVE_CLEANUP_CONTENT_IDENTITY = "39945e3250c1238cad979e3957004a2b78bcedff7a727a16d70ef63e1d7269b0";
 
 /**
  * Explicit identity-bound edges. Successive canonical batches extend this as a
@@ -406,7 +407,14 @@ export const CONTENT_MIGRATION_ROUTES: readonly ContentMigrationRoute[] = [
       { kind: "distinct_scene", legacyEventId: "CEVT_RET_STORYBOOK_LAST_GOAL", canonicalEventId: "CEVT_RET_STORYBOOK_LAST_GOAL", clearCanonicalSeen: true, clearCanonicalCooldown: true }
     ],
     seedOriginMappings: []
+  },
+  {
+    sourceContentIdentity: T51_A9_TERMINAL_FINAL_CONTENT_IDENTITY,
+    targetContentIdentity: T55_A18_NARRATIVE_CLEANUP_CONTENT_IDENTITY,
+    schedulerMappings: [],
+    seedOriginMappings: []
   }
+
 ];
 
 const activeEvidenceCache = new Map<string, Readonly<Record<string, LegacyEventEvidence>>>();
