@@ -112,7 +112,9 @@ export function resolveCurrentCoach(state: GameState): string | null {
     const npcId = latestChange.newCoachNpcId;
     if (!npcId) return null;
     const npc = state.npcs.find(candidate => candidate.id === npcId);
-    // A certified replacement may have a historical catalog role such as "Segundo entrenador";\n    // the coach-change record itself is the authority that promoted them to head coach.\n    return npc && npc.careerState === "active" && npc.club === club ? npc.id : null;
+    // A certified replacement may have a historical catalog role such as "Segundo entrenador";
+    // the coach-change record itself is the authority that promoted them to head coach.
+    return npc && npc.careerState === "active" && npc.club === club ? npc.id : null;
   }
 
   // Legacy saves can carry COACH_FIRED without the later chronology authority.
