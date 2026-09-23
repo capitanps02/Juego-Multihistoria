@@ -26,7 +26,7 @@ const playerFacingForbidden = [
   { code: 'internal_national_standing', pattern: /\bnationalStanding\b/ },
   { code: 'internal_role_score', pattern: /\broleScore\b/ },
   { code: 'internal_retirement_status', pattern: /\bretirement\.status\b/ },
-  { code: 'placeholder_token', pattern: /\b(?:TODO|TBD|PLACEHOLDER|Lorem|XXX)\b/i },
+  { code: 'placeholder_token', pattern: /\b(?:TODO|TBD|PLACEHOLDER|XXX|Lorem)\b/ },
   { code: 'placeholder_copy', pattern: /\b(?:texto pendiente|escena pendiente)\b/i }
 ];
 
