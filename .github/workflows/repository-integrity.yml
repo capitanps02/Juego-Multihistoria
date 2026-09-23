@@ -71,7 +71,7 @@ jobs:
         run: node scripts/qa-t5-content.mjs
 
       - name: T5 cross-workstream integration probes
-        run: node --test scripts/test-t5-integration-probes.mjs
+        run: node --test scripts/test-t5-integration-probes.mjs scripts/test-t55-a17-invariants.mjs
 
       - name: T5 stratified simulation
         run: node scripts/qa-t5-sim.mjs

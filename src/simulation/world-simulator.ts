@@ -90,6 +90,11 @@ export function advanceWorldDayInPlace(next: GameState): GameState {
   advanceCoreWorldDayInPlace(next);
   if (next.date === beforeDate) return next;
 
+  // Retirement closure is terminal for the player's active career. The calendar may
+  // advance for persistence/UI purposes, but no new match, call-up or market fact may
+  // be materialized after the terminal state.
+  if (next.retirement.status === "closed") return next;
+
   publishNationalSelectionFactsInPlace(next, beforeNationalTournamentCycle);
 
   const afterInjuryWeeks = num(next.world.injuryWeeksRemaining, 0);

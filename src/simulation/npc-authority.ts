@@ -1,5 +1,6 @@
 import type { DataValue, GameState, NarrativePhase } from "../core/types.js";
-import { hasActiveClubEmployment } from "./employment.js";
+import { resolveLatestCoachChange } from "./coach-change-authority.js";
+import { currentEmploymentClub, hasActiveClubEmployment } from "./employment.js";
 
 export type ActiveAgentNpcId = "NPC_AGT_01" | "NPC_AGT_02";
 
@@ -91,4 +92,38 @@ export function resolveCurrentClubInstitutionalNpc(state: GameState): string | n
   const npc = state.npcs.find(candidate => candidate.id === assignment.npcId);
   if (!npc || npc.careerState !== "active" || npc.club !== state.club) return null;
   return npc.id;
+}
+
+/**
+ * Resolve the factual current head coach for the player's live registration club.
+ *
+ * Coach-change chronology is owned by coach-change-authority. If the latest certified
+ * change belongs to the current club, its replacement identity (when certified) is the
+ * only admissible named coach; a certified firing/change with unknown replacement fails
+ * closed. Only states with no certified change may project the unique active head coach
+ * already attached to the current club.
+ */
+export function resolveCurrentCoach(state: GameState): string | null {
+  const club = currentEmploymentClub(state);
+  if (!club) return null;
+
+  const latestChange = resolveLatestCoachChange(state);
+  if (latestChange?.clubId === club) {
+    const npcId = latestChange.newCoachNpcId;
+    if (!npcId) return null;
+    const npc = state.npcs.find(candidate => candidate.id === npcId);
+    // A certified replacement may have a historical catalog role such as "Segundo entrenador";\n    // the coach-change record itself is the authority that promoted them to head coach.\n    return npc && npc.careerState === "active" && npc.club === club ? npc.id : null;
+  }
+
+  // Legacy saves can carry COACH_FIRED without the later chronology authority.
+  // That flag proves enough to distrust the old named coach, but not enough to
+  // manufacture a replacement identity.
+  if (state.flags.COACH_FIRED === true) return null;
+
+  const candidates = state.npcs.filter(candidate =>
+    candidate.careerState === "active" &&
+    candidate.club === club &&
+    candidate.role === "Entrenador"
+  );
+  return candidates.length === 1 ? candidates[0]!.id : null;
 }
