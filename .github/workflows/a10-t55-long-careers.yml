@@ -1,0 +1,24 @@
+name: A10 T5.5 Four Seed Long Careers
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  long-careers:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Seeds 1 42 777 424242 through 30 34 retirement
+        run: node --test scripts/test-a10-t55-long-careers.mjs
