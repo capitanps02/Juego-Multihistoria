@@ -1,0 +1,32 @@
+name: T5.5 A19 UX
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'web/game-ui.js'
+      - 'web/game-ui.css'
+      - 'src/session/game-session.ts'
+      - 'scripts/test-t55-a19-ui.mjs'
+      - 'scripts/test-playcanvas.mjs'
+      - 'package.json'
+      - '.github/workflows/t55-a19-ui.yml'
+  workflow_dispatch:
+
+jobs:
+  a19-ux:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Parse production UI
+        run: node --check web/game-ui.js
+      - name: Build engine
+        run: npm run build
+      - name: A19 directed UX regression
+        run: node --test scripts/test-t55-a19-ui.mjs
