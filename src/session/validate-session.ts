@@ -40,6 +40,32 @@ function offerBridgeEvidenceSource(
   return legacyContentSource(contentIdentity, contentSources)?.offerBridges;
 }
 
+const PLAYER_FACING_INTERNAL_JARGON = /(?:\bcallback\b|\bauthority\b|\bseedOrigin\b|\bSEED_[A-Z0-9_]+\b|\bHAS_SEED_[A-Z0-9_]+\b|\b(?:C?EVT)_[A-Z0-9_]+\b|\bNPC_[A-Z0-9_]+\b|\bSTATE(?:20|23|26|30|34)?_[A-Z0-9_]+\b|\bNANO_SHADOW\b|\bOLD_NETWORK_FAVOR\b)/i;
+
+function playerFacingString(value: unknown, path: string): void {
+  string(value, path);
+  ensure(!PLAYER_FACING_INTERNAL_JARGON.test(value as string), path, "el feedback expone un identificador interno");
+}
+
+function validatePendingResultConsequences(raw: Record<string, unknown>, path: string): void {
+  if (raw.visibleEffects !== undefined) {
+    const effects = list(raw.visibleEffects, `${path}.visibleEffects`);
+    effects.forEach((value, index) => {
+      const effect = record(value, `${path}.visibleEffects[${index}]`);
+      oneOf(effect.category, ["sport","body","relationship","reputation","career","finance"], `${path}.visibleEffects[${index}].category`);
+      playerFacingString(effect.label, `${path}.visibleEffects[${index}].label`);
+      ensure(typeof effect.delta === "number" && Number.isFinite(effect.delta), `${path}.visibleEffects[${index}].delta`, "delta inválido");
+      oneOf(effect.direction, ["up","down"], `${path}.visibleEffects[${index}].direction`);
+      ensure(effect.favorable === null || typeof effect.favorable === "boolean", `${path}.visibleEffects[${index}].favorable`, "semántica inválida");
+    });
+  }
+  for (const key of ["narrativeEffects","hiddenEffects"] as const) {
+    if (raw[key] === undefined) continue;
+    const values = list(raw[key], `${path}.${key}`);
+    values.forEach((value, index) => playerFacingString(value, `${path}.${key}[${index}]`));
+  }
+}
+
 function provenance(value: unknown, path: string): DecisionContentProvenance {
   const p = record(value, path);
   string(p.sourceContentIdentity, `${path}.sourceContentIdentity`);
@@ -317,6 +343,7 @@ export async function assertSessionSnapshot(value: unknown, context: SessionVali
     const r = record(s.pendingResult, "pendingResult"), tail = record(journal.at(-1), "journal.last");
     ensure(last?.type === "choose" && s.needsWorldAdvance, "pendingResult", "resultado sin decisión pendiente de lectura");
     ensure(r.title === tail.title && r.choiceLabel === tail.choiceLabel && JSON.stringify(r.messages) === JSON.stringify(tail.messages), "pendingResult", "resultado distinto al registrado");
+    validatePendingResultConsequences(r, "pendingResult");
     ensure(!state.market?.pending, "pendingResult", "la oferta narrativa debe quedar consumida al resolver la elección");
   }
   if (last?.type === "choose") ensure(s.pendingResult !== null, "pendingResult", "falta resultado de la última elección");
