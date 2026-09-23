@@ -82,7 +82,7 @@ const EVT_20_BRIDGE_001 = ambiguousEvent({
   body: "Dos días después de cumplir 20, el club quiere ordenar tu plan. Si tienes representante puede participar, pero contrato, rol, minutos, categoría y cualquier oferta formal siguen siendo hechos separados que puedes contrastar.",
   visible: [
     "Ves tu contrato actual, rol, minutos y categoría.",
-    "Si existe una CareerOffer compatible, puedes verla como oferta formal; la reunión no crea una por sí misma."
+    "Si existe una oferta formal compatible, puedes verla con sus condiciones; la reunión no crea una por sí misma."
   ],
   uncertain: [
     "Club y representante pueden describir tu techo inmediato de forma distinta.",
@@ -283,7 +283,7 @@ const EVT_21_PRS_002 = ambiguousEvent({
   phase: "20_23",
   family: "press",
   title: "La llamada que llega por Clara",
-  body: "Clara te avisa de que un director deportivo preguntó por ti y pide confirmar tu situación contractual antes de decirte el nombre. Es una información periodística útil; no es una CareerOffer.",
+  body: "Clara te avisa de que un director deportivo preguntó por ti y pide confirmar tu situación contractual antes de decirte el nombre. Es información periodística útil; todavía no existe una oferta formal.",
   visible: [
     "El canal con Clara está vivo y ella tiene un dato que puede ser útil.",
     "La duración de tu contrato procede de tu estado contractual real."

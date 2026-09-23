@@ -29,9 +29,31 @@ const rows:Row[]=[
   {id:"CEVT_33_CONTRACT_01",title:"Tu salario bloquea la salida",age:33,months:[7,8,9,10,11,12,1,2,3,4,5],gates:[{"path": "flags.CONTRACT_TRAP_30", "op": "eq", "value": true}, {"path": "contract.monthsRemaining", "op": "gte", "value": 12}]},
   {id:"CEVT_33_MARKET_01",title:"La oferta desaparece por otro fichaje",age:33,months:[7,8,9,10,11,12,1,2,3,4,5],gates:[{"path": "professional.veteranLeverage", "op": "lt", "value": 55}]}
 ];
-function make(r:Row):EventDefinition{return ambiguousEvent({id:r.id,ageWindow:[r.age,r.age],phase:"30_34",family:"conditional",title:r.title,body:"Una consecuencia previa reaparece, pero el pasado solo cambia probabilidades: no dicta el desenlace.",visible:["La situación actual es real."],uncertain:["Su origen puede interpretarse de varias formas."],choices:[
-{id:"A",label:"Intervenir ahora",intentTags:["act"],primaryMessage:"Intervienes y recuperas iniciativa.",secondaryMessage:"La intervención expone un coste que estaba oculto.",primaryEffects:[n("professional.careerControl",3)],secondaryEffects:[n("professional.publicPolarization",2)]},
-{id:"B",label:"Aceptar el cambio de contexto",intentTags:["adapt"],primaryMessage:"Aceptas que el equilibrio ya es distinto.",secondaryMessage:"La adaptación protege una parte de la carrera y cede otra.",primaryEffects:[n("professional.roleAdaptability",3)],secondaryEffects:[n("professional.statusInertia",-1)]},
-{id:"C",label:"Ganar tiempo",intentTags:["wait"],primaryMessage:"Esperas y recoges más información.",secondaryMessage:"Otro actor aprovecha el hueco.",primaryEffects:[n("professional.environmentStability",2)],secondaryEffects:[n("professional.veteranLeverage",-2)]}
-],gates:r.gates,timeWindow:{months:r.months},weight:8,cooldown:99999,tags:["conditional","maturity_callback"],canonStatus:"technical_adaptation"});}
+function make(r:Row):EventDefinition{
+ const paula=r.id==="CEVT_30_BODY_01";
+ const body=paula
+  ?"Paula te escribe después de años sin formar parte de tu equipo médico. No tiene tus datos actuales y no intenta diagnosticarte: te pregunta cómo te trata ahora el cuerpo cuando el calendario aprieta."
+  :"Una consecuencia previa reaparece, pero el pasado solo cambia probabilidades: no dicta el desenlace.";
+ const visible=paula
+  ?["Paula deja claro que ya no lleva tu recuperación y que habla desde lo que vivisteis años atrás.","La conversación vuelve sobre una tensión que formó parte de vuestra etapa juntos: competir al máximo sin convertir cada semana en una prueba de resistencia."]
+  :["La situación actual es real."];
+ const uncertain=paula
+  ?["No sabes si aquella lección sigue encajando con tu cuerpo actual ni si escucharla cambiará tu siguiente decisión."]
+  :["Su origen puede interpretarse de varias formas."];
+ const choices=paula?[
+  {id:"A",label:"Contarle qué límites has aprendido a poner desde entonces",intentTags:["act"],primaryMessage:"Conviertes la llamada en una conversación sobre lo que has cambiado, no en una consulta médica a distancia.",secondaryMessage:"Hablar del pasado también te obliga a reconocer las veces que todavía ignoras tus propios límites.",primaryEffects:[n("professional.careerControl",3)],secondaryEffects:[n("professional.publicPolarization",2)]},
+  {id:"B",label:"Agradecerle que se acuerde y mantener separados el pasado y tu situación actual",intentTags:["adapt"],primaryMessage:"Cierras la conversación con afecto y dejas tus decisiones médicas en manos del equipo que te trata ahora.",secondaryMessage:"Mantener la distancia protege los límites profesionales, aunque deja parte de vuestra historia sin revisar.",primaryEffects:[n("professional.roleAdaptability",3)],secondaryEffects:[n("professional.statusInertia",-1)]},
+  {id:"C",label:"Preguntarle qué consejo te daría hoy sin ver tus datos",intentTags:["wait"],primaryMessage:"Paula responde desde la experiencia que compartisteis y tú decides qué valor darle hoy.",secondaryMessage:"La respuesta sirve como memoria, no como diagnóstico de tu estado actual.",primaryEffects:[n("professional.environmentStability",2)],secondaryEffects:[n("professional.veteranLeverage",-2)]}
+ ]:[
+  {id:"A",label:"Intervenir ahora",intentTags:["act"],primaryMessage:"Intervienes y recuperas iniciativa.",secondaryMessage:"La intervención expone un coste que estaba oculto.",primaryEffects:[n("professional.careerControl",3)],secondaryEffects:[n("professional.publicPolarization",2)]},
+  {id:"B",label:"Aceptar el cambio de contexto",intentTags:["adapt"],primaryMessage:"Aceptas que el equilibrio ya es distinto.",secondaryMessage:"La adaptación protege una parte de la carrera y cede otra.",primaryEffects:[n("professional.roleAdaptability",3)],secondaryEffects:[n("professional.statusInertia",-1)]},
+  {id:"C",label:"Ganar tiempo",intentTags:["wait"],primaryMessage:"Esperas y recoges más información.",secondaryMessage:"Otro actor aprovecha el hueco.",primaryEffects:[n("professional.environmentStability",2)],secondaryEffects:[n("professional.veteranLeverage",-2)]}
+ ];
+ return ambiguousEvent({
+  id:r.id,ageWindow:[r.age,r.age],phase:"30_34",family:"conditional",title:paula?"Paula llama años después":r.title,
+  body,visible,uncertain,choices,gates:r.gates,timeWindow:{months:r.months},weight:8,cooldown:99999,
+  npcRefs:paula?["NPC_MED_01"]:undefined,
+  tags:["conditional","maturity_callback"],canonStatus:"technical_adaptation"
+ });
+}
 export const CONDITIONAL_EVENTS_30_34:EventDefinition[]=rows.map(make);

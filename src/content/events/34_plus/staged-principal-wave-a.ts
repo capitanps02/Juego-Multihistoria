@@ -84,7 +84,7 @@ const EVT_35_IMG_001 = ambiguousEvent({
   id:"EVT_35_IMG_001", ageWindow:[35,null], phase:"34_plus", family:"image",
   title:"Te ofrecen un último gran patrocinio",
   body:"Una marca plantea una campaña grande y quiere venderla como el cierre de una época. La propuesta comercial existe en esta escena; aceptar ese marco no equivale a anunciar una retirada deportiva.",
-  visible:["La campaña y su marco público son explícitos.","No existe una CareerOffer de fútbol dentro de esta decisión."],
+  visible:["La campaña y su marco público son explícitos.","No hay ninguna oferta deportiva escondida dentro de esta decisión comercial."],
   uncertain:["No sabes si una campaña de despedida condicionará cómo se interpreta tu futuro.","Tampoco sabes si reformularla alrededor de longevidad reducirá su valor."],
   gates:[{path:"retirement.status",op:"eq",value:"playing"}], timeWindow:{months:[8,9,10,11,12,1,2]}, weight:10,
   choices:[

@@ -39,8 +39,8 @@ export const A5_MARKET_EXTERNAL_REQUIREMENTS = Object.freeze({
 const EVT_20_MKT_001 = ambiguousEvent({
   id: "EVT_20_MKT_001", ageWindow: [20, 20], phase: "20_23", family: "market",
   title: "Titular aquí, promesa allí",
-  body: "Una propuesta formal puede ofrecer un salto de nivel mientras tu situación actual sí te da minutos. Salario, duración y categoría son hechos; el rol prometido y el plan de desarrollo solo cuentan cuando A3 los acredita.",
-  visible: ["Si existe una CareerOffer compatible, puedes leer sus términos formales.", "Tu rol y minutos actuales siguen siendo hechos separados."],
+  body: "Una propuesta formal puede ofrecer un salto de nivel mientras tu situación actual sí te da minutos. Salario, duración y categoría son hechos; el rol prometido y el plan de desarrollo solo cuentan cuando aparecen respaldados por condiciones formales.",
+  visible: ["Si existe una oferta formal compatible, puedes leer sus términos exactos.", "Tu rol y minutos actuales siguen siendo hechos separados."],
   uncertain: ["Una frase como «vas a jugar» no es una garantía contractual.", "No sabes si un salto acelerará tu desarrollo o te congelará."],
   gates: [{ path: "facts.pendingCareerOffer", op: "exists" }],
   weight: 12,
@@ -66,11 +66,11 @@ const EVT_20_JAN_001 = ambiguousEvent({
   id: "EVT_20_JAN_001", ageWindow: [20,20], phase: "20_23", family: "market",
   title: "Enero: la compra que depende de otro",
   body: "Un club te tiene en su lista, pero su movimiento depende de vender antes a otro jugador. No existe una oferta firme hasta que esa venta ocurra; tu decisión es cómo gestionar una ventana condicional.",
-  visible: ["Sabes que el interés todavía no equivale a una CareerOffer.", "Cualquier renovación o tercer destino signable debe existir formalmente antes de elegirlo."],
+  visible: ["Sabes que el interés todavía no equivale a una oferta formal.", "Cualquier renovación o tercer destino signable debe existir formalmente antes de elegirlo."],
   uncertain: ["Tu agente puede creer que la venta está avanzada y otra fuente dudarlo.", "Cada día cambia el poder contractual real."],
   timeWindow: { months:[1] }, weight: 11,
   choices: [
-    { id:"RENEW_NOW", label:"Renovar ahora", intentTags:["renewal","stability"], primaryMessage:"Aceptas seguridad solo si A3 ha materializado una renovación real.", secondaryMessage:"La seguridad puede cerrar una ventana externa que nunca llegó a ser oferta firme.", primaryEffects:[n("professional.environmentStability",4)], secondaryEffects:[n("control.career",-2)] },
+    { id:"RENEW_NOW", label:"Renovar ahora", intentTags:["renewal","stability"], primaryMessage:"Aceptas seguridad solo si existe una renovación formal real.", secondaryMessage:"La seguridad puede cerrar una ventana externa que nunca llegó a ser oferta firme.", primaryEffects:[n("professional.environmentStability",4)], secondaryEffects:[n("control.career",-2)] },
     { id:"WAIT_LATE", label:"Esperar hasta el último tramo", intentTags:["wait","risk"], primaryMessage:"Conservas la posibilidad condicionada sin fingir que ya existe una oferta.", secondaryMessage:"La venta ajena puede no ocurrir y la espera reduce otras opciones.", primaryEffects:[n("control.career",3)], secondaryEffects:[n("professional.contractPower",-2)] },
     { id:"RENEW_EXIT", label:"Renovar solo con una salida pactada o cláusula razonable", intentTags:["counter","control"], primaryMessage:"Intentas comprar seguridad sin perder toda movilidad; los términos deben llegar como propuesta formal.", secondaryMessage:"La condición puede ser rechazada y mantener abierta la incertidumbre.", primaryEffects:[n("control.career",5),n("professional.contractPower",2)], secondaryEffects:[n("professional.institutionalTrust",-2)] },
     { id:"THIRD_DESTINATION", label:"Buscar un tercer destino menos atractivo pero inmediato", intentTags:["market","certainty"], primaryMessage:"Solo puedes elegirlo si existe una tercera propuesta real; el interés condicional no fabrica destino.", secondaryMessage:"La certeza puede resolver enero a costa de techo deportivo.", primaryEffects:[n("control.career",4)], secondaryEffects:[n("professional.environmentStability",-2)] }
@@ -82,7 +82,7 @@ const EVT_21_MKT_001 = ambiguousEvent({
   id:"EVT_21_MKT_001",ageWindow:[21,21],phase:"20_23",family:"market",
   title:"El club que te quiere… cedido",
   body:"Un gran club plantea comprarte para cederte. El precio y el contrato pueden ser formales; el destino de cesión y el calendario de regreso solo son hechos si aparecen en la propuesta acreditada.",
-  visible:["La CareerOffer de compra, si existe, tiene identidad y términos exactos.","El plan de cesión no puede deducirse del prestigio del comprador."],
+  visible:["La oferta de compra, si existe, tiene destino y términos exactos.","El plan de cesión no puede deducirse del prestigio del comprador."],
   uncertain:["«Te queremos para el futuro» no fija una fecha.","El destino puede seguir abierto hasta después de la compra."],
   gates:[{path:"facts.pendingCareerOfferKind",op:"eq",value:"transfer"}],weight:11,
   choices:[
@@ -114,11 +114,11 @@ const EVT_22_MKT_001 = ambiguousEvent({
   id:"EVT_22_MKT_001",ageWindow:[22,22],phase:"20_23",family:"market",
   title:"La oferta de tu rival deportivo",
   body:"Un rival deportivo presenta una propuesta formal. El coste reputacional es real, pero no convierte el fichaje en una prohibición moral ni permite inventar un proyecto deportivo que no esté en los términos.",
-  visible:["Contrato y comprador proceden de una CareerOffer real.","El rol proyectado requiere evidencia propia."],
+  visible:["Contrato y comprador proceden de una oferta formal real.","El rol proyectado requiere evidencia propia."],
   uncertain:["No sabes cuánto durará el rechazo público ni si el proyecto cumplirá su parte deportiva."],
   gates:[{path:"facts.pendingCareerOfferKind",op:"eq",value:"transfer"}],weight:11,
   choices:[
-    {id:"ACCEPT",label:"Aceptar",intentTags:["accept","rival"],primaryMessage:"La firma, si se ejecuta, aplicará exactamente la CareerOffer seleccionada.",secondaryMessage:"El salto puede ser bueno deportivamente y costoso en identidad pública.",primaryEffects:[n("control.career",2),n("reputation.mediaHeat",4)],secondaryEffects:[n("professional.publicPolarization",6)]},
+    {id:"ACCEPT",label:"Aceptar",intentTags:["accept","rival"],primaryMessage:"La firma, si se ejecuta, aplicará exactamente la oferta seleccionada.",secondaryMessage:"El salto puede ser bueno deportivamente y costoso en identidad pública.",primaryEffects:[n("control.career",2),n("reputation.mediaHeat",4)],secondaryEffects:[n("professional.publicPolarization",6)]},
     {id:"REJECT_PERSONAL",label:"Rechazar por coste personal",intentTags:["reject","identity"],primaryMessage:"Rechazas una opción real por un coste que para ti pesa más que sus condiciones.",secondaryMessage:"La decisión protege vínculo e identidad, sin garantizar que aparezca otra oferta.",primaryEffects:[n("professional.environmentStability",4)],secondaryEffects:[n("reputation.marketHeat",-2)]},
     {id:"SECRET_UNTIL_CLOSE",label:"Pedir que no haya filtraciones hasta cerrar",intentTags:["privacy","negotiation"],primaryMessage:"Intentas separar la negociación de la reacción pública antes de que exista una firma.",secondaryMessage:"La discreción puede funcionar o hacer más explosiva una filtración posterior.",primaryEffects:[n("control.career",4),n("reputation.mediaHeat",-1)],secondaryEffects:[n("reputation.mediaHeat",4)]},
     {id:"LEVERAGE_RENEW",label:"Usar la oferta para renovar donde estás",intentTags:["leverage","renewal"],primaryMessage:"La oferta aporta palanca, pero una renovación actual debe ser otra propuesta formal.",secondaryMessage:"La maniobra puede mejorar poder o quemar simultáneamente ambas vías.",primaryEffects:[n("professional.contractPower",5)],secondaryEffects:[n("professional.institutionalTrust",-5),n("reputation.mediaHeat",3)],primaryModifiers:[{id:"PUBLIC_CONTRACT_MEMORY",conditions:[{path:"facts.publicContractChoice",op:"exists"}],add:4,reason:"La postura contractual pública previa condiciona la credibilidad de la palanca."}]}
@@ -129,8 +129,8 @@ const EVT_22_MKT_001 = ambiguousEvent({
 const EVT_22_DDL_001 = ambiguousEvent({
   id:"EVT_22_DDL_001",ageWindow:[22,22],phase:"20_23",family:"market",
   title:"Último día, 17:40",
-  body:"Quedan horas y hay una oferta formal viva. El reloj es un hecho del mercado, no el mes del calendario; comprador, contrato y tiempo restante deben venir de A3.",
-  visible:["Conoces el contrato del comprador y el tiempo real que queda cuando A3 lo acredita.","No necesitas adivinar por qué cambió la postura del club para decidir."],
+  body:"Quedan horas y hay una oferta formal viva. El reloj es un hecho del mercado, no el mes del calendario; conoces comprador, contrato y tiempo restante antes de decidir.",
+  visible:["Conoces el contrato del comprador y el tiempo real que queda para responder.","No necesitas adivinar por qué cambió la postura del club para decidir."],
   uncertain:["No sabes si habrá otra oferta en verano.","Negociar puede mejorar términos o hacer que el comprador pase a otra opción."],
   gates:[{path:"facts.pendingCareerOffer",op:"exists"}],weight:14,
   choices:[
