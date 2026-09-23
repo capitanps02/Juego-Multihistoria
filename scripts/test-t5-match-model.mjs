@@ -2,18 +2,25 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createInitialState } from '../dist/content/initial-state.js';
 import {
+  buildMatchPerformanceContext,
+  careerSeasonRecords,
   closeLeagueObjectiveInPlace,
+  currentCareerMatchResult,
   currentOfficialMatch,
+  detailedSeasonPlayerStats,
   getSportMatchModelStore,
   inspectSportMatchModelStore,
   lastPlayerAppearance,
   priorClubPlayerMatchStats,
   recentClubPlayerMatchStats,
-  recordOfficialMatchInPlace
+  recordOfficialMatchInPlace,
+  seasonPlayerStats
 } from '../dist/simulation/match-model.js';
 import { getCurrentMatchContext, getSportContext } from '../dist/simulation/sport-context.js';
 import { advanceWorldDayInPlace } from '../dist/simulation/world-simulator.js';
+import { respondToOffer } from '../dist/simulation/offers.js';
 import { advanceWorldDayInPlace as advanceCoreWorldDayInPlace } from '../dist/simulation/world-simulator-core.js';
+import { certifyCoachChangeInPlace } from '../dist/simulation/coach-change-authority.js';
 import { assertGameState } from '../dist/save/validation.js';
 import { loadSave, serializeSave } from '../dist/save/save.js';
 import { GameSession } from '../dist/session/game-session.js';
@@ -46,22 +53,18 @@ function canonicalDebutState() {
   throw new Error('No deterministic canonical debut context found in directed seed range');
 }
 
-test('match model/1 public simulator preserves core simulation and RNG apart from additive sporting fact stores', () => {
-  const wrapped = createInitialState(8811);
-  const core = createInitialState(8811);
+test('match model/1 public simulator is deterministic while factual sports feedback persists through the wrapper', () => {
+  const a = createInitialState(8811);
+  const b = createInitialState(8811);
   for (let day = 0; day < 70; day += 1) {
-    advanceWorldDayInPlace(wrapped);
-    advanceCoreWorldDayInPlace(core);
+    advanceWorldDayInPlace(a);
+    advanceWorldDayInPlace(b);
   }
-  const withoutStores = structuredClone(wrapped);
-  delete withoutStores.world.sportMatchModel;
-  delete withoutStores.world.sportPenaltySetups;
-  delete withoutStores.world.sportCompetitionMoments;
-  assert.deepEqual(withoutStores, core);
-  assert.deepEqual(wrapped.rngState, core.rngState);
-  assert.ok(getSportMatchModelStore(wrapped)?.fixtures.length > 0);
+  assert.deepEqual(a, b);
+  assert.ok(getSportMatchModelStore(a)?.fixtures.length > 0);
+  assert.equal(a.date, b.date);
+  assert.equal(a.runtime.day, b.runtime.day);
 });
-
 test('match model/2 one weekly fixture is persisted idempotently without consuming RNG', () => {
   const state = matchDayState(8812);
   const beforeRng = structuredClone(state.rngState);
@@ -709,4 +712,357 @@ test('T5.5 sport regression/5 save-load keeps the debut as one match and does no
   assert.equal(getSportMatchModelStore(restored).fixtures.length, 1);
   assert.equal(getSportMatchModelStore(restored).fixtures[0]?.id, firstId);
   assert.equal(currentOfficialMatch(restored), null);
+});
+
+
+
+
+test('T15.1 match week produces one authoritative sports resolution', () => {
+  const seed = findWeeklyAppearanceSeed();
+  const state = weeklySportState(seed);
+  advanceWorldDayInPlace(state);
+  const row = currentOfficialMatch(state);
+  assert.ok(row);
+  assert.ok(row.result);
+  assert.ok(row.stats);
+  assert.equal(getSportMatchModelStore(state).fixtures.length, 1);
+});
+
+test('T15.2 non-match week creates neither fixture nor appearance', () => {
+  const state = createInitialState(15002);
+  state.date = '2026-08-05';
+  state.runtime.day = 35;
+  state.runtime.seasonDay = 35;
+  state.sport.roleScore = 100;
+  const beforeAppearances = state.sport.appearances;
+  advanceWorldDayInPlace(state);
+  assert.equal(state.date, '2026-08-06');
+  assert.equal(state.sport.appearances, beforeAppearances);
+  assert.equal(currentOfficialMatch(state), null);
+  assert.equal(getSportMatchModelStore(state), null);
+});
+
+test('T15.6-T15.8 starter, entering substitute and unused bench aggregate exactly once', () => {
+  const covered = new Map();
+  for (let seed = 15300; seed < 15800 && covered.size < 3; seed += 1) {
+    for (const appeared of [true, false]) {
+      const state = matchDayState(seed);
+      const context = buildMatchPerformanceContext(state, 50);
+      const row = recordOfficialMatchInPlace(state, {
+        appeared,
+        debutOccurred: false,
+        injuryUnavailable: false,
+        ...(context ? { performanceContext: context } : {})
+      });
+      const kind = row.player.started ? 'starter'
+        : row.player.appeared ? 'substitute'
+        : row.player.onBench ? 'unused_bench'
+        : null;
+      if (!kind || covered.has(kind)) continue;
+      const stats = detailedSeasonPlayerStats(state);
+      assert.ok(stats);
+      if (kind === 'starter') {
+        assert.equal(stats.appearances, 1);
+        assert.equal(stats.starts, 1);
+      } else if (kind === 'substitute') {
+        assert.equal(stats.appearances, 1);
+        assert.equal(stats.starts, 0);
+      } else {
+        assert.equal(stats.appearances, 0);
+        assert.equal(stats.starts, 0);
+        assert.equal(row.player.minutes, 0);
+      }
+      covered.set(kind, row.id);
+    }
+  }
+  assert.deepEqual([...covered.keys()].sort(), ['starter', 'substitute', 'unused_bench']);
+});
+
+test('T15.5 suspended player does not participate and serves exactly one suspension fixture', () => {
+  const seed = findWeeklyAppearanceSeed();
+  const state = weeklySportState(seed);
+  state.sport.suspensionMatches = 1;
+  advanceWorldDayInPlace(state);
+  assert.equal(state.sport.appearances, 0);
+  assert.equal(state.sport.suspensionMatches, 0);
+  const row = currentOfficialMatch(state);
+  assert.ok(row);
+  assert.equal(row.player.appeared, false);
+  assert.equal(row.player.calledUp, false);
+  assert.equal(row.player.suspensionUnavailable, true);
+});
+
+test('T15.12-T15.14 season aggregates are exact sums of persisted starts, minutes, goals and assists', () => {
+  const state = matchDayState(15012);
+  for (let i = 0; i < 4; i += 1) {
+    recordOfficialMatchInPlace(state, {
+      appeared: i !== 2,
+      debutOccurred: i === 0,
+      injuryUnavailable: false,
+      suspensionUnavailable: false
+    });
+    if (i < 3) {
+      const d = new Date(state.date + 'T00:00:00Z');
+      d.setUTCDate(d.getUTCDate() + 7);
+      state.date = d.toISOString().slice(0, 10);
+      state.runtime.day += 7;
+      state.runtime.seasonDay += 7;
+    }
+  }
+  const rows = getSportMatchModelStore(state).fixtures;
+  const legacyStats = seasonPlayerStats(state);
+  const stats = detailedSeasonPlayerStats(state);
+  assert.ok(legacyStats && stats);
+  assert.equal(stats.appearances, rows.filter(row => row.player.appeared).length);
+  assert.equal(stats.starts, rows.filter(row => row.player.started).length);
+  assert.equal(stats.minutes, rows.reduce((sum, row) => sum + row.player.minutes, 0));
+  assert.equal(stats.goals, rows.reduce((sum, row) => sum + (row.stats?.goals ?? 0), 0));
+  assert.equal(stats.assists, rows.reduce((sum, row) => sum + (row.stats?.assists ?? 0), 0));
+  assert.ok(stats.averageRating === null || (stats.averageRating >= 3.5 && stats.averageRating <= 10));
+});
+
+test('T15 career history preserves prior club rows instead of rewriting them after a transfer', () => {
+  const state = matchDayState(15017);
+  recordOfficialMatchInPlace(state, { appeared: true, debutOccurred: true, injuryUnavailable: false });
+  const oldId = currentOfficialMatch(state).id;
+  const d = new Date(state.date + 'T00:00:00Z');
+  d.setUTCDate(d.getUTCDate() + 7);
+  state.date = d.toISOString().slice(0, 10);
+  state.runtime.day += 7;
+  state.runtime.seasonDay += 7;
+  state.professional.registrationClub = 'NEW_CLUB';
+  state.club = 'NEW_CLUB';
+  recordOfficialMatchInPlace(state, { appeared: true, debutOccurred: false, injuryUnavailable: false });
+  const records = careerSeasonRecords(state);
+  assert.equal(records.length, 2);
+  assert.equal(records[0].club, 'UDV');
+  assert.equal(records[1].club, 'NEW_CLUB');
+  assert.equal(getSportMatchModelStore(state).fixtures[0].id, oldId);
+  assert.equal(getSportMatchModelStore(state).fixtures[0].club, 'UDV');
+});
+
+test('T15 CareerMatchResult exposes structured weekly sports output and factual milestones', () => {
+  const state = matchDayState(15018);
+  const row = recordOfficialMatchInPlace(state, { appeared: true, debutOccurred: true, injuryUnavailable: false });
+  const result = currentCareerMatchResult(state);
+  assert.ok(row && result);
+  assert.equal(result.matchId, row.id);
+  assert.equal(result.selected, row.player.calledUp);
+  assert.equal(result.started, row.player.started);
+  assert.equal(result.minutes, row.player.minutes);
+  assert.equal(result.goals, row.stats.goals);
+  assert.equal(result.assists, row.stats.assists);
+  assert.equal(result.statDeltas.appearances, 1);
+  assert.ok(result.milestones.includes('debut'));
+  assert.ok(result.rating >= 3.5 && result.rating <= 10);
+});
+
+test('T15.18 same seed + same fixture + same observed appearance gives identical rating and survives later form changes', () => {
+  const a = matchDayState(15019);
+  const b = matchDayState(15019);
+  const input = { appeared: true, debutOccurred: false, injuryUnavailable: false, suspensionUnavailable: false };
+  const rowA = recordOfficialMatchInPlace(a, input);
+  const rowB = recordOfficialMatchInPlace(b, input);
+  assert.deepEqual(rowA, rowB);
+  a.sport.form = 1;
+  a.sport.roleScore = 99;
+  const restored = loadSave(serializeSave(a));
+  assert.deepEqual(getSportMatchModelStore(restored).fixtures[0], rowA);
+});
+
+test('T15 discipline: a fifth yellow creates a one-match suspension for the next official fixture', () => {
+  let found = false;
+  for (let seed = 15100; seed < 16100 && !found; seed += 1) {
+    const state = weeklySportState(seed);
+    state.sport.yellowCardAccumulation = 4;
+    advanceWorldDayInPlace(state);
+    const row = currentOfficialMatch(state);
+    if (row?.player.appeared && row.stats?.yellowCards === 1) {
+      found = true;
+      assert.equal(state.sport.yellowCardAccumulation, 0);
+      assert.ok(state.sport.suspensionMatches >= 1);
+    }
+  }
+  assert.equal(found, true);
+});
+
+
+test('T15 long-run seeds 1/42/777/424242 produce a real 18-to-19 football season with persisted variety', () => {
+  for (const seed of [1, 42, 777, 424242]) {
+    const state = createInitialState(seed);
+    let rejectedBlockingOffers = 0;
+    for (let day = 0; day < 365; day += 1) {
+      const blocking = state.market?.pending;
+      if (blocking && !blocking.validThrough) {
+        // Long-run A15 certification isolates sports progression from user-held market
+        // decisions without changing market semantics or auto-accepting a career move.
+        respondToOffer(state, blocking.id, 'reject');
+        rejectedBlockingOffers += 1;
+      }
+      advanceWorldDayInPlace(state);
+    }
+    const store = getSportMatchModelStore(state);
+    assert.ok(store);
+    const seasonRows = store.fixtures.filter(row => row.season === '2026-27');
+    const appeared = seasonRows.filter(row => row.player.appeared);
+    const starts = appeared.filter(row => row.player.started);
+    const minutes = appeared.reduce((sum, row) => sum + row.player.minutes, 0);
+    const goals = appeared.reduce((sum, row) => sum + (row.stats?.goals ?? 0), 0);
+    const assists = appeared.reduce((sum, row) => sum + (row.stats?.assists ?? 0), 0);
+    console.log(`A15_SEED seed=${seed} fixtures=${seasonRows.length} appearances=${appeared.length} starts=${starts.length} minutes=${minutes} goals=${goals} assists=${assists} role=${state.sport.roleScore} form=${state.sport.form} rejectedBlockingOffers=${rejectedBlockingOffers}`);
+    assert.ok(seasonRows.length >= 35, `seed ${seed} should have a real league calendar`);
+    assert.ok(appeared.length >= 2, `seed ${seed} should not produce an absurdly empty normal season`);
+    assert.ok(minutes > 0, `seed ${seed} appearances must carry minutes`);
+    assert.equal(new Set(seasonRows.map(row => row.id)).size, seasonRows.length);
+  }
+});
+
+
+test('T15.15 weekly role progression persists exactly across save/load', () => {
+  const state = weeklySportState(1515);
+  state.sport.roleScore = 50;
+  state.sport.form = 72;
+  const beforeRole = state.sport.roleScore;
+  advanceWorldDayInPlace(state);
+  assert.notEqual(state.sport.roleScore, beforeRole);
+  const restored = loadSave(serializeSave(state));
+  assert.equal(restored.sport.roleScore, state.sport.roleScore);
+  assert.equal(restored.sport.form, state.sport.form);
+});
+
+test('T15.16 season transition preserves the prior-season persisted match ledger', () => {
+  const state = createInitialState(1516);
+  state.date = '2027-05-05';
+  state.runtime.day = 308;
+  state.runtime.seasonDay = 308;
+  state.season = '2026-27';
+  const row = recordOfficialMatchInPlace(state, {
+    appeared: true,
+    debutOccurred: true,
+    injuryUnavailable: false,
+    suspensionUnavailable: false
+  });
+  assert.ok(row);
+  const priorId = row.id;
+  state.date = '2027-06-30';
+  state.runtime.day = 364;
+  state.runtime.seasonDay = 364;
+  advanceWorldDayInPlace(state);
+  assert.equal(state.date, '2027-07-01');
+  assert.equal(state.season, '2027-28');
+  const store = getSportMatchModelStore(state);
+  assert.equal(store.fixtures[0].id, priorId);
+  assert.equal(store.fixtures[0].season, '2026-27');
+  const records = careerSeasonRecords(state);
+  assert.ok(records.some(record => record.season === '2026-27' && record.club === 'UDV'));
+});
+
+
+test('T15/A17 certified coach change with unknown replacement neutralizes historical coach trust', () => {
+  const highOldTrust = weeklySportState(1517);
+  const lowOldTrust = weeklySportState(1517);
+  for (const state of [highOldTrust, lowOldTrust]) {
+    state.sport.roleScore = 30;
+    state.sport.form = 50;
+  }
+  const highRelationship = highOldTrust.relationships.find(row => row.npcId === 'NPC_CCH_01');
+  const lowRelationship = lowOldTrust.relationships.find(row => row.npcId === 'NPC_CCH_01');
+  assert.ok(highRelationship && lowRelationship);
+  highRelationship.trust = 100;
+  lowRelationship.trust = 0;
+  certifyCoachChangeInPlace(highOldTrust, 'external_change');
+  certifyCoachChangeInPlace(lowOldTrust, 'external_change');
+
+  advanceWorldDayInPlace(highOldTrust);
+  advanceWorldDayInPlace(lowOldTrust);
+
+  assert.equal(highOldTrust.sport.roleScore, lowOldTrust.sport.roleScore);
+  assert.equal(highOldTrust.sport.form, lowOldTrust.sport.form);
+});
+
+
+test('T15 A16 handoff persists performance context, season age/role and structured sports deltas', () => {
+  const seed = findWeeklyAppearanceSeed();
+  const state = weeklySportState(seed);
+  const before = {
+    form: state.sport.form,
+    fatigue: state.body.fatigue,
+    fitness: state.body.fitness,
+    role: state.sport.roleScore
+  };
+  advanceWorldDayInPlace(state);
+  const row = currentOfficialMatch(state);
+  const result = currentCareerMatchResult(state);
+  assert.ok(row?.performanceContext);
+  assert.ok(row?.effects);
+  assert.ok(result);
+  assert.deepEqual(result.sportDeltas, row.effects);
+  assert.equal(result.sportDeltas.formDelta, Math.round((state.sport.form - before.form) * 1000) / 1000);
+  assert.equal(result.sportDeltas.fatigueDelta, Math.round((state.body.fatigue - before.fatigue) * 1000) / 1000);
+  assert.equal(result.sportDeltas.fitnessDelta, Math.round((state.body.fitness - before.fitness) * 1000) / 1000);
+  assert.equal(result.sportDeltas.roleScoreDelta, Math.round((state.sport.roleScore - before.role) * 1000) / 1000);
+
+  const record = careerSeasonRecords(state)[0];
+  assert.equal(record.age, 18);
+  assert.equal(record.role, 'academy_callup');
+  assert.equal(typeof record.roleScore, 'number');
+
+  const restored = loadSave(serializeSave(state));
+  assert.deepEqual(currentOfficialMatch(restored), row);
+  assert.deepEqual(currentCareerMatchResult(restored), result);
+});
+
+test('T15 performance uses persisted form/fitness/fatigue/role context while team result stays fixture-owned', () => {
+  const low = matchDayState(15210);
+  const high = matchDayState(15210);
+  Object.assign(low.sport, { roleScore: 12, form: 25, positionIdentity: 'winger' });
+  Object.assign(low.body, { fitness: 48, fatigue: 78 });
+  Object.assign(high.sport, { roleScore: 88, form: 86, positionIdentity: 'winger' });
+  Object.assign(high.body, { fitness: 94, fatigue: 12 });
+
+  const lowContext = buildMatchPerformanceContext(low, 20);
+  const highContext = buildMatchPerformanceContext(high, 82);
+  assert.ok(lowContext && highContext);
+  const rowLow = recordOfficialMatchInPlace(low, {
+    appeared: true, debutOccurred: false, injuryUnavailable: false, performanceContext: lowContext
+  });
+  const rowHigh = recordOfficialMatchInPlace(high, {
+    appeared: true, debutOccurred: false, injuryUnavailable: false, performanceContext: highContext
+  });
+  assert.deepEqual(rowLow.result, rowHigh.result);
+  assert.notEqual(rowLow.stats.rating, rowHigh.stats.rating);
+  assert.ok(rowLow.player.minutes >= 1 && rowLow.player.minutes <= 90);
+  assert.ok(rowHigh.player.minutes >= 1 && rowHigh.player.minutes <= 90);
+});
+
+test('T15 corrupted persisted performance context fails closed at save boundary', () => {
+  const seed = findWeeklyAppearanceSeed();
+  const state = weeklySportState(seed);
+  advanceWorldDayInPlace(state);
+  const raw = JSON.parse(serializeSave(state));
+  raw.world.sportMatchModel.fixtures[0].performanceContext.form = 999;
+  assert.throws(() => loadSave(JSON.stringify(raw)), invalidSave);
+});
+
+
+test('T15/A17 closed retirement blocks sports mutation and match production', () => {
+  const state = weeklySportState(15999);
+  state.retirement.status = 'closed';
+  state.retirement.closedDate = state.date;
+  const before = {
+    appearances: state.sport.appearances,
+    form: state.sport.form,
+    roleScore: state.sport.roleScore,
+    fatigue: state.body.fatigue,
+    fitness: state.body.fitness,
+    rng: structuredClone(state.rngState.football)
+  };
+  advanceWorldDayInPlace(state);
+  assert.equal(state.sport.appearances, before.appearances);
+  assert.equal(state.sport.form, before.form);
+  assert.equal(state.sport.roleScore, before.roleScore);
+  assert.equal(state.body.fatigue, before.fatigue);
+  assert.equal(state.body.fitness, before.fitness);
+  assert.deepEqual(state.rngState.football, before.rng);
+  assert.equal(currentOfficialMatch(state), null);
 });
