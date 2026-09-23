@@ -5,6 +5,7 @@ import { createInitialState } from '../dist/content/initial-state.js';
 import { setPath } from '../dist/core/path.js';
 import { resolveChoiceInPlace } from '../dist/narrative/resolver.js';
 import { scheduleEvent } from '../dist/narrative/scheduler.js';
+import { certifyCoachChangeInPlace } from '../dist/simulation/coach-change-authority.js';
 
 const ids = [
   'CEVT_18_EARLY_01', 'CEVT_18_NODEBUT_01', 'CEVT_18_BRUNO_01',
@@ -35,6 +36,18 @@ function satisfyGates(state, event) {
   state.runtime.day = age === 18 ? 30 : 395;
   state.runtime.seasonDay = 30;
   state.runtime.daysSinceNarrative = 999;
+
+  if (event.id === 'CEVT_18_CCH_01') {
+    certifyCoachChangeInPlace(state, 'security_firing', {
+      previousCoachNpcId: 'NPC_CCH_01',
+      newCoachNpcId: null
+    });
+  }
+  if (event.id === 'CEVT_19_INJ_01') {
+    state.body.acuteInjury = true;
+    state.flags.RECOVERING_INJURY = true;
+    state.world.injuryWeeksRemaining = 8;
+  }
 }
 
 test('T4.3 lote 18–20 2: doce callbacks con gates y consecuencias específicas', () => {
