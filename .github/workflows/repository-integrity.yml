@@ -68,7 +68,9 @@ jobs:
         run: node --test --test-name-pattern="T5 long careers" scripts/test-t5-regression.mjs
 
       - name: T5 content lifecycle audit
-        run: node scripts/qa-t5-content.mjs
+        run: |
+          node scripts/qa-t5-content.mjs
+          node scripts/test-t55-a18-template-copy.mjs
 
       - name: T5 cross-workstream integration probes
         run: node --test scripts/test-t5-integration-probes.mjs scripts/test-t55-a17-invariants.mjs
