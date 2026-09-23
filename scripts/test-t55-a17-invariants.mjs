@@ -1,0 +1,455 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+
+import { createInitialState } from '../dist/content/initial-state.js';
+import { EVENTS_34_PLUS } from '../dist/content/events/34_plus/index.js';
+import {
+  evaluateNarrativeGuard,
+  narrativeGuardsPass
+} from '../dist/narrative/narrative-guards.js';
+import { scheduleEvent } from '../dist/narrative/scheduler.js';
+import { retirementDecisionAvailable } from '../dist/narrative/retirement-decision.js';
+import { resolveCurrentCoach } from '../dist/simulation/npc-authority.js';
+import { certifyCoachChangeInPlace } from '../dist/simulation/coach-change-authority.js';
+import {
+  careerTerms,
+  proposeCareerChange,
+  respondToOffer
+} from '../dist/simulation/offers.js';
+import {
+  recordNationalFinalSquadInPlace,
+  recordNationalPreselectionInPlace
+} from '../dist/simulation/national-team-authority.js';
+import { recordOfficialMatchInPlace } from '../dist/simulation/match-model.js';
+import { advanceWorldDayInPlace } from '../dist/simulation/world-simulator.js';
+import { closeCareer } from '../dist/simulation/late-career-engine.js';
+import { loadSave, serializeSave } from '../dist/save/save.js';
+
+function event(id, overrides = {}) {
+  return {
+    id,
+    ageWindow: [18, 18],
+    phase: '18_20',
+    family: 'press',
+    gates: [],
+    cooldown: 0,
+    repeatable: false,
+    weight: 100,
+    text: { title: id, body: 'A17 fixture' },
+    intel: { visible: [], uncertain: [] },
+    choices: [{ id: 'OK', label: 'Seguir', intentTags: [], outcomeIds: ['OK_OUT'] }],
+    outcomes: [{ id: 'OK_OUT', baseWeight: 1, effects: [], messages: ['ok'] }],
+    ...overrides
+  };
+}
+
+function matchDayState(seed = 17001) {
+  const state = createInitialState(seed);
+  state.date = '2026-08-05';
+  state.runtime.day = 35;
+  state.runtime.seasonDay = 35;
+  return state;
+}
+
+function appearedMatchState(predicate = () => true) {
+  for (let seed = 17000; seed < 19000; seed += 1) {
+    const state = matchDayState(seed);
+    const row = recordOfficialMatchInPlace(state, {
+      appeared: true,
+      debutOccurred: false,
+      injuryUnavailable: false
+    });
+    if (row && predicate(row)) return { state, row };
+  }
+  throw new Error('No deterministic A17 match fixture found');
+}
+
+test('A17/T17.1-2 legacy post-match scene fails closed without a factual appearance and opens with one', () => {
+  const noMatch = createInitialState(17001);
+  const scene = event('EVT_18_PRS_001');
+  assert.equal(narrativeGuardsPass(noMatch, scene), false);
+
+  const { state, row } = appearedMatchState();
+  assert.equal(row.player.appeared, true);
+  assert.equal(narrativeGuardsPass(state, scene), true);
+
+  state.date = '2026-08-13';
+  assert.equal(narrativeGuardsPass(state, scene), false, 'appearance older than seven days must not satisfy post-match prose');
+});
+
+test('A17/T17.3 recent-start guard requires a factual start, not merely an appearance', () => {
+  const substitute = appearedMatchState(row => !row.player.started);
+  const starter = appearedMatchState(row => row.player.started);
+
+  assert.equal(evaluateNarrativeGuard(substitute.state, { id: 'requiresRecentStart' }).pass, false);
+  assert.equal(evaluateNarrativeGuard(starter.state, { id: 'requiresRecentStart' }).pass, true);
+});
+
+test('A17/T17.4 recent-goal guard requires a factual goal in persisted player stats', () => {
+  const noGoal = appearedMatchState(row => (row.stats?.goals ?? 0) === 0);
+  const scorer = appearedMatchState(row => (row.stats?.goals ?? 0) > 0);
+
+  assert.equal(evaluateNarrativeGuard(noGoal.state, { id: 'requiresRecentGoal' }).pass, false);
+  assert.equal(evaluateNarrativeGuard(scorer.state, { id: 'requiresRecentGoal' }).pass, true);
+});
+
+test('A17/T17.5-6 fired coach is not current even when historical NPC state remains present', () => {
+  const state = createInitialState(17005);
+  assert.equal(resolveCurrentCoach(state), 'NPC_CCH_01');
+  assert.equal(evaluateNarrativeGuard(state, { id: 'requiresCurrentCoach', npcId: 'NPC_CCH_01' }).pass, true);
+
+  certifyCoachChangeInPlace(state, 'security_firing', {
+    previousCoachNpcId: 'NPC_CCH_01',
+    newCoachNpcId: null
+  });
+  assert.equal(state.npcs.find(npc => npc.id === 'NPC_CCH_01')?.careerState, 'active', 'historical NPC state remains intact');
+  assert.equal(resolveCurrentCoach(state), null);
+  assert.equal(evaluateNarrativeGuard(state, { id: 'requiresCurrentCoach', npcId: 'NPC_CCH_01' }).pass, false);
+
+  certifyCoachChangeInPlace(state, 'canonical_change', { newCoachNpcId: 'NPC_CCH_01' });
+  assert.equal(resolveCurrentCoach(state), 'NPC_CCH_01');
+});
+
+test('A17/T17.6b coach-change prose needs certified chronology and identity, not COACH_FIRED alone', () => {
+  const state = createInitialState(17006);
+  state.flags.COACH_FIRED = true;
+  const scene = event('CEVT_18_CCH_01');
+  assert.equal(resolveCurrentCoach(state), null, 'legacy firing flag must not resurrect the old named coach');
+  assert.equal(narrativeGuardsPass(state, scene), false, 'legacy firing flag alone cannot certify Montalban left');
+
+  certifyCoachChangeInPlace(state, 'security_firing');
+  assert.equal(narrativeGuardsPass(state, scene), false, 'generic chronology still cannot name a previous coach');
+
+  certifyCoachChangeInPlace(state, 'canonical_change', { previousCoachNpcId: 'NPC_CCH_01' });
+  assert.equal(narrativeGuardsPass(state, scene), true);
+});
+
+test('A17/T17.6c certified assistant promotion becomes current coach but blocks Montalban-specific scene', () => {
+  const state = createInitialState(170061);
+  certifyCoachChangeInPlace(state, 'canonical_change', {
+    previousCoachNpcId: 'NPC_CCH_01',
+    newCoachNpcId: 'NPC_CCH_02'
+  });
+  assert.equal(resolveCurrentCoach(state), 'NPC_CCH_02');
+
+  const montalbanScene = event('EVT_19_CCH_001');
+  assert.equal(narrativeGuardsPass(state, montalbanScene), false);
+});
+
+test('A17/T17.7-8 rejected loan/transfer offer cannot mutate current club or become a completed move', () => {
+  const state = createInitialState(17007);
+  const before = structuredClone(careerTerms(state));
+  const offer = proposeCareerChange(state, 'A17 loan-style offer', draft => {
+    draft.club = 'A17 Destination';
+    draft.professional.registrationClub = 'A17 Destination';
+    draft.professional.ownerClub = before.ownerClub;
+    draft.flags.LOAN_ACTIVE = true;
+  });
+  assert.ok(offer);
+  assert.equal(state.club, before.club, 'creating an offer must not move the player');
+
+  const decision = respondToOffer(state, offer.id, 'reject');
+  assert.equal(decision.accepted, false);
+  assert.deepEqual(careerTerms(state), before);
+  assert.equal(state.market.history.at(-1)?.accepted, false);
+});
+
+test('A17/T17.9 completed transfer synchronizes club authority and narrative current-club guard', () => {
+  const state = createInitialState(17009);
+  const offer = proposeCareerChange(state, 'A17 transfer', draft => {
+    draft.club = 'A17 Destination';
+    draft.contract.salaryMonthly += 1000;
+  });
+  assert.ok(offer);
+
+  respondToOffer(state, offer.id, 'accept');
+  assert.equal(state.club, 'A17 Destination');
+  assert.equal(state.professional.registrationClub, 'A17 Destination');
+  assert.equal(state.professional.ownerClub, 'A17 Destination');
+  assert.equal(state.world.ownerClub, 'A17 Destination');
+  assert.equal(evaluateNarrativeGuard(state, { id: 'requiresCurrentClub', club: 'A17 Destination' }).pass, true);
+  assert.equal(evaluateNarrativeGuard(state, { id: 'requiresCurrentClub', club: 'UDV' }).pass, false, 'old-club narrative must not remain current');
+});
+
+test('A17/T17.11b legacy offer prose cannot be scheduled from marketHeat alone', () => {
+  const state = createInitialState(17010);
+  state.age = 28;
+  state.phase = '26_30';
+  state.reputation.marketHeat = 100;
+  const scene = event('CEVT_28_MKT_01', { ageWindow: [28, 28], phase: '26_30', family: 'market' });
+  assert.equal(narrativeGuardsPass(state, scene), false);
+
+  const offer = proposeCareerChange(state, 'A17 real offer', draft => {
+    draft.club = 'A17 Offer Club';
+  });
+  assert.ok(offer);
+  assert.equal(narrativeGuardsPass(state, scene), true);
+
+  respondToOffer(state, offer.id, 'reject');
+  assert.equal(narrativeGuardsPass(state, scene), false);
+});
+
+test('A17/T17.11c multi-offer prose requires the factual number of live offers', () => {
+  const state = createInitialState(170111);
+  state.age = 24;
+  state.phase = '23_26';
+  const scene = event('EVT_24_MKT_001', { ageWindow: [24, 24], phase: '23_26', family: 'market' });
+
+  assert.equal(narrativeGuardsPass(state, scene), false);
+  for (let i = 1; i <= 2; i += 1) {
+    const offer = proposeCareerChange(state, 'A17 multi ' + i, draft => {
+      draft.club = 'A17 Multi Club ' + i;
+    });
+    assert.ok(offer);
+    assert.equal(narrativeGuardsPass(state, scene), false, 'fewer than three offers must fail closed');
+  }
+
+  const third = proposeCareerChange(state, 'A17 multi 3', draft => {
+    draft.club = 'A17 Multi Club 3';
+  });
+  assert.ok(third);
+  assert.equal(narrativeGuardsPass(state, scene), true);
+});
+
+test('A17/T17.11 transfer-offer guard requires a real eligible pending offer', () => {
+  const state = createInitialState(17011);
+  assert.equal(evaluateNarrativeGuard(state, { id: 'requiresTransferOffer' }).pass, false);
+
+  const offer = proposeCareerChange(state, 'A17 factual transfer', draft => {
+    draft.club = 'A17 Transfer Club';
+  });
+  assert.ok(offer);
+  assert.equal(evaluateNarrativeGuard(state, { id: 'requiresTransferOffer' }).pass, true);
+
+  respondToOffer(state, offer.id, 'reject');
+  assert.equal(evaluateNarrativeGuard(state, { id: 'requiresTransferOffer' }).pass, false);
+});
+
+test('A17/T17.12 international-callup guard requires published selection authority, not reputation', () => {
+  const state = createInitialState(17012);
+  state.professional.nationalStanding = 100;
+  state.professional.nationalCaps = 80;
+  state.flags.NATIONAL_CALLED = true;
+  assert.equal(evaluateNarrativeGuard(state, { id: 'requiresInternationalCallup' }).pass, false);
+
+  state.flags.NATIONAL_TOURNAMENT_CYCLE = true;
+  const source = { kind: 'simulation_publication', producerId: 'a17-test' };
+  const preliminary = recordNationalPreselectionInPlace(state, {
+    cycleId: 'a17-cycle',
+    tournamentId: 'a17-tournament',
+    membership: 'selected',
+    source
+  });
+  assert.ok(preliminary);
+  assert.equal(evaluateNarrativeGuard(state, { id: 'requiresInternationalCallup', stage: 'preliminary' }).pass, true);
+  assert.equal(evaluateNarrativeGuard(state, { id: 'requiresInternationalCallup' }).pass, false);
+
+  const final = recordNationalFinalSquadInPlace(state, {
+    cycleId: 'a17-cycle',
+    membership: 'selected',
+    role: 'rotation',
+    source
+  });
+  assert.ok(final);
+  assert.equal(evaluateNarrativeGuard(state, { id: 'requiresInternationalCallup' }).pass, true);
+  assert.equal(evaluateNarrativeGuard(state, { id: 'requiresInternationalCallup', stage: 'final', membership: 'omitted' }).pass, false);
+
+  const omitted = createInitialState(170120);
+  omitted.flags.NATIONAL_TOURNAMENT_CYCLE = true;
+  recordNationalPreselectionInPlace(omitted, {
+    cycleId: 'a17-omitted',
+    tournamentId: 'a17-tournament',
+    membership: 'selected',
+    source
+  });
+  recordNationalFinalSquadInPlace(omitted, {
+    cycleId: 'a17-omitted',
+    membership: 'omitted',
+    source
+  });
+  assert.equal(evaluateNarrativeGuard(omitted, { id: 'requiresInternationalCallup', stage: 'final', membership: 'omitted' }).pass, true);
+  assert.equal(evaluateNarrativeGuard(omitted, { id: 'requiresInternationalCallup' }).pass, false);
+});
+
+test('A17/T17.10 active-contract guard follows canonical contract status', () => {
+  const state = createInitialState(17010);
+  state.contract.monthsRemaining = 7;
+  assert.equal(evaluateNarrativeGuard(state, { id: 'requiresActiveContract' }).pass, true);
+  state.contract.monthsRemaining = 6;
+  assert.equal(evaluateNarrativeGuard(state, { id: 'requiresActiveContract' }).pass, true);
+  state.contract.monthsRemaining = 0;
+  assert.equal(evaluateNarrativeGuard(state, { id: 'requiresActiveContract' }).pass, false);
+});
+
+test('A17/T17.13 injury guard reads the same canonical availability inputs as sports-core', () => {
+  const state = createInitialState(17013);
+  assert.equal(evaluateNarrativeGuard(state, { id: 'requiresInjury' }).pass, false);
+
+  state.body.acuteInjury = true;
+  assert.equal(evaluateNarrativeGuard(state, { id: 'requiresInjury' }).pass, true);
+  state.body.acuteInjury = false;
+
+  state.flags.RECOVERING_INJURY = true;
+  assert.equal(evaluateNarrativeGuard(state, { id: 'requiresInjury' }).pass, true);
+  state.flags.RECOVERING_INJURY = false;
+
+  state.world.injuryWeeksRemaining = 2;
+  assert.equal(evaluateNarrativeGuard(state, { id: 'requiresInjury' }).pass, true);
+});
+
+test('A17/T17.19-20 closed retirement blocks sport, contracts and active narrative without freezing the calendar', () => {
+  const state = createInitialState(17019);
+  state.date = '2026-06-25';
+  const staleOffer = proposeCareerChange(state, 'A17 stale pre-retirement offer', draft => {
+    draft.club = 'A17 Stale Club';
+  });
+  assert.ok(staleOffer);
+
+  state.retirement.status = 'closed';
+  state.retirement.closedDate = state.date;
+  state.retirement.reason = 'a17-test';
+  state.retirement.closureType = 'a17-test';
+  state.flags.RETIRED = true;
+  const beforeDate = state.date;
+  const beforeAge = state.age;
+  const beforeTerms = structuredClone(careerTerms(state));
+  const beforeAppearances = state.sport.appearances;
+  const beforeMatchStore = structuredClone(state.world.sportMatchModel ?? null);
+
+  assert.throws(
+    () => respondToOffer(state, staleOffer.id, 'accept'),
+    /carrera está cerrada/i
+  );
+
+  for (let i = 0; i < 14; i += 1) advanceWorldDayInPlace(state);
+
+  assert.notEqual(state.date, beforeDate, 'a stale offer must not freeze a closed-career calendar');
+  assert.equal(state.age, beforeAge, 'post-career calendar must not run career-age adapters');
+  assert.deepEqual(careerTerms(state), beforeTerms, 'closed career must not mutate player contract/club terms');
+  assert.equal(state.sport.appearances, beforeAppearances);
+  assert.deepEqual(state.world.sportMatchModel ?? null, beforeMatchStore);
+
+  state.runtime.daysSinceNarrative = 999;
+  assert.equal(scheduleEvent(state, [event('A17_ACTIVE_SCENE')], { ignoreRhythmGate: true }), null);
+
+  const postCareer = event('A17_POST_CAREER', { tags: ['post_career'] });
+  assert.equal(scheduleEvent(state, [postCareer], { ignoreRhythmGate: true })?.event.id, 'A17_POST_CAREER');
+});
+
+test('A17/T17.14 consumed event remains suppressed after save/load', () => {
+  const state = createInitialState(17014);
+  const consumed = event('A17_CONSUMED_EVENT');
+  state.flags['SEEN_' + consumed.id] = true;
+  state.eventCooldowns[consumed.id] = 999;
+  state.runtime.daysSinceNarrative = 999;
+
+  const restored = loadSave(serializeSave(state));
+  restored.runtime.daysSinceNarrative = 999;
+
+  assert.equal(restored.flags['SEEN_' + consumed.id], true);
+  assert.equal(restored.eventCooldowns[consumed.id], 999);
+  assert.equal(scheduleEvent(restored, [consumed], { ignoreRhythmGate: true }), null);
+});
+
+test('A17/T17.14 reload preserves certified coach change and does not revive the old coach', () => {
+  const state = createInitialState(17014);
+  certifyCoachChangeInPlace(state, 'security_firing', {
+    previousCoachNpcId: 'NPC_CCH_01',
+    newCoachNpcId: null
+  });
+  assert.equal(resolveCurrentCoach(state), null);
+
+  const restored = loadSave(serializeSave(state));
+  assert.equal(resolveCurrentCoach(restored), null);
+  assert.equal(evaluateNarrativeGuard(restored, { id: 'requiresCurrentCoach', npcId: 'NPC_CCH_01' }).pass, false);
+});
+
+test('A17/T17.15 consumed non-repeatable event remains ineligible after save/load', () => {
+  const state = createInitialState(17015);
+  const scene = event('A17_CONSUMED');
+  state.flags.SEEN_A17_CONSUMED = true;
+  state.runtime.daysSinceNarrative = 999;
+  const restored = loadSave(serializeSave(state));
+  assert.equal(scheduleEvent(restored, [scene], { ignoreRhythmGate: true }), null);
+});
+
+test('A17/T17.16 late career exposes an explicit retirement-decision scene without fixed-age auto-retirement', () => {
+  const state = createInitialState(17016);
+  state.age = 34;
+  state.phase = '34_plus';
+  state.retirement.status = 'playing';
+  state.professional.retirementDistance = 35;
+  state.runtime.daysSinceNarrative = 999;
+  const familyScene = EVENTS_34_PLUS.find(row => row.id === 'EVT_RET_FAM_001');
+  assert.ok(familyScene, 'canonical final catalogue must contain the family retirement decision route');
+  assert.equal(scheduleEvent(state, [familyScene], { ignoreRhythmGate: true })?.event.id, 'EVT_RET_FAM_001');
+  assert.equal(state.retirement.status, 'playing', 'eligibility itself must never auto-retire the player');
+});
+
+test('A17/T17.16b player-initiated retirement eligibility is canonical, read-only and RNG-free', () => {
+  const state = createInitialState(170162);
+  state.age = 34;
+  state.phase = '34_plus';
+  state.retirement.status = 'playing';
+  state.professional.retirementDistance = 30;
+
+  const before = structuredClone(state);
+  assert.equal(retirementDecisionAvailable(state), true);
+  assert.deepEqual(state, before, 'eligibility must not mutate state or RNG');
+
+  state.professional.retirementDistance = 29.9;
+  assert.equal(retirementDecisionAvailable(state), false, 'canonical scene distance gate must be respected');
+
+  state.professional.retirementDistance = 35;
+  state.retirement.status = 'decided';
+  assert.equal(retirementDecisionAvailable(state), false, 'only playing careers can open the canonical decision scene');
+
+  state.retirement.status = 'playing';
+  state.eventCooldowns.EVT_RET_FAM_001 = 1;
+  assert.equal(retirementDecisionAvailable(state), false, 'canonical scene cooldown remains authoritative');
+
+  state.eventCooldowns.EVT_RET_FAM_001 = 0;
+  state.age = 33;
+  state.phase = '30_34';
+  assert.equal(retirementDecisionAvailable(state), false, 'the action cannot bypass the canonical age/phase boundary');
+});
+
+test('A17/T17.17-18 retirement decision and announcement survive save/load', () => {
+  const decided = createInitialState(17017);
+  decided.retirement.status = 'decided';
+  decided.retirement.decidedDate = decided.date;
+  decided.retirement.decisionAge = decided.age;
+  decided.retirement.reason = 'a17-consider';
+  decided.flags.RETIREMENT_DECISION_CONTEXT = true;
+  const decidedReloaded = loadSave(serializeSave(decided));
+  assert.equal(decidedReloaded.retirement.status, 'decided');
+  assert.equal(decidedReloaded.retirement.decidedDate, decided.date);
+
+  decided.retirement.status = 'announced';
+  decided.retirement.announcedDate = decided.date;
+  decided.flags.RETIREMENT_DECISION_CONTEXT = false;
+  decided.flags.RETIREMENT_ANNOUNCED = true;
+  decided.flags.RETIREMENT_WAS_ANNOUNCED = true;
+  const announcedReloaded = loadSave(serializeSave(decided));
+  assert.equal(announcedReloaded.retirement.status, 'announced');
+  assert.equal(announcedReloaded.retirement.announcedDate, decided.date);
+});
+
+test('A17/T17.21 announced retirement can close into a terminal state with reachable epilogue', () => {
+  const state = createInitialState(17021);
+  state.age = 35;
+  state.phase = '34_plus';
+  state.retirement.status = 'announced';
+  state.retirement.decidedDate = state.date;
+  state.retirement.announcedDate = state.date;
+  state.retirement.decisionAge = state.age;
+  state.retirement.reason = 'voluntary';
+  state.flags.RETIREMENT_ANNOUNCED = true;
+  state.flags.RETIREMENT_WAS_ANNOUNCED = true;
+
+  closeCareer(state, 'voluntary', 'planned_last_match');
+
+  assert.equal(state.retirement.status, 'closed');
+  assert.equal(state.flags.RETIRED, true);
+  assert.equal(state.epilogue.generated, true);
+});

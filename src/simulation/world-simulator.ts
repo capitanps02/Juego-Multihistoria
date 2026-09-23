@@ -90,6 +90,11 @@ export function advanceWorldDayInPlace(next: GameState): GameState {
   advanceCoreWorldDayInPlace(next);
   if (next.date === beforeDate) return next;
 
+  // Retirement closure is terminal for the player's active career. The calendar may
+  // advance for persistence/UI purposes, but no new match, call-up or market fact may
+  // be materialized after the terminal state.
+  if (next.retirement.status === "closed") return next;
+
   publishNationalSelectionFactsInPlace(next, beforeNationalTournamentCycle);
 
   const afterInjuryWeeks = num(next.world.injuryWeeksRemaining, 0);
@@ -107,7 +112,7 @@ export function advanceWorldDayInPlace(next: GameState): GameState {
     recordCoreFinalCompetitionMomentInPlace(next);
   }
 
-  if (next.runtime.day % 7 === 0 && hasActiveClubEmployment(next) && next.retirement.status !== "closed") {
+  if (next.runtime.day % 7 === 0 && hasActiveClubEmployment(next)) {
     const appeared = num(next.sport.appearances) > beforeAppearances;
     const performanceContext = buildMatchPerformanceContext(next, coachTrustAtKickoff);
     const match = recordOfficialMatchInPlace(next, {

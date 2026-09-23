@@ -338,6 +338,9 @@ export function offerLifecycleStatus(s:GameState,id:string):"open"|"accepted"|"r
 export function respondToOffer(
   s:GameState,id:string,disposition:OfferDisposition,source?:Omit<NarrativeOfferSource,"disposition">
 ):OfferDecision{
+  if(s.retirement.status==="closed"&&disposition!=="reject"){
+    throw Error("La carrera está cerrada; no se pueden negociar ni aceptar contratos de jugador.");
+  }
   const market=marketState(s),offer=liveOffers(market).find(row=>row.id===id);
   if(!offer)throw Error("Esta oferta ya no está pendiente.");
   if(!["accept","reject","delegate","counter","defer"].includes(disposition))throw Error("Respuesta de oferta no válida.");
