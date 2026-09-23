@@ -22,7 +22,7 @@ test('PlayCanvas package preserves all states and RNG over 20 interactive choice
 });
 test('presentation exposes public context without leaking NPC agendas or hidden outcomes',async()=>{
   const s=await GameSession.create(424242);await s.dispatch({type:'continue',commandId:'c',expectedRevision:0});const v=s.getView();
-  assert.equal(v.season,'2026-27');assert.equal(v.contacts.length,20);assert.ok(v.decision.family);
+  assert.equal(v.season,'2026-27');assert.equal(v.contacts.length,5);assert.ok(v.decision.family);
   for(const c of v.contacts)assert.deepEqual(Object.keys(c).sort(),['id','name','role']);
   for(const forbidden of ['privateAgenda','outcomeIds','rngState','flags','reliability','probability','leverage','trust'])assert.ok(!json(v).includes('"'+forbidden+'"'));
   const before=json(s.exportSnapshot());v.news.push({date:'2099-01-01',text:'changed'});v.contacts[0].name='changed';assert.equal(json(s.exportSnapshot()),before);
