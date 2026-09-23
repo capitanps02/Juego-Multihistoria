@@ -10,7 +10,7 @@ const DIRECT_RECRUIT = ambiguousEvent({
   body: "Un entrenador prestigioso te explica personalmente cómo te usaría. Habla de posición, responsabilidades y encaje, pero no existe una oferta formal y su propio puesto depende de una decisión interna del club.",
   visible: [
     "Conoces el plan táctico que te describe y la situación pública del entrenador.",
-    "La llamada es interés concreto, no una CareerOffer."
+    "La llamada demuestra interés concreto, pero todavía no es una oferta formal."
   ],
   uncertain: [
     "No sabes si el entrenador seguirá cuando cierre el mercado ni si la dirección comparte su prioridad por ficharte."

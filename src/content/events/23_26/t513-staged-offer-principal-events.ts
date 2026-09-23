@@ -34,7 +34,7 @@ const MKT23 = formalOfferEvent(ambiguousEvent({
   title: "El club que te quiere para competir",
   body: "Hay una oferta formal de un club claramente superior. El contrato mejora la escala de tu carrera, pero nadie promete titularidad: te ofrecen una oportunidad real de competir por el puesto.",
   visible: [
-    "La propuesta formal contiene club, salario, duración y condiciones registradas en la CareerOffer pendiente.",
+    "La propuesta formal contiene club, salario, duración y todas las condiciones que tienes pendientes de aceptar.",
     "La plantilla y las competiciones del destino son conocidas; no existe una garantía contractual de titularidad."
   ],
   uncertain: [
@@ -68,7 +68,7 @@ const MKT23 = formalOfferEvent(ambiguousEvent({
       id: "COUNTER_EXIT",
       label: "Pedir cláusula de cesión o salida si no alcanzas ciertos minutos",
       intentTags: ["formal_offer", "counter", "role_protection"],
-      primaryMessage: "Planteas una contraoferta sobre protección futura. No se añade ninguna cláusula por narrativa: la propuesta actual se cierra y cualquier condición nueva necesitará otra CareerOffer formal.",
+      primaryMessage: "Planteas una contraoferta sobre protección futura. La propuesta actual se cierra y cualquier condición nueva tendrá que aparecer en una nueva oferta formal.",
       secondaryMessage: "El club entiende el riesgo que quieres limitar, pero no queda obligado a responder con una nueva propuesta.",
       primaryEffects: [n("professional.careerControl", 4), n("professional.contractPower", 2)],
       secondaryEffects: [n("professional.careerControl", 2), n("reputation.marketHeat", -1)],
@@ -79,7 +79,7 @@ const MKT23 = formalOfferEvent(ambiguousEvent({
       id: "DEFER_COMPETITOR",
       label: "Esperar a que salga el competidor antes de firmar",
       intentTags: ["formal_offer", "defer", "squad_uncertainty"],
-      primaryMessage: "Aplazas la firma para pedir una señal de plantilla. La CareerOffer actual se cierra sin aplicar términos.",
+      primaryMessage: "Aplazas la firma para pedir una señal de plantilla. La oferta actual se cierra sin aplicar sus términos.",
       secondaryMessage: "Esperar puede aclarar la jerarquía, pero el destino también puede cubrir su necesidad con otro jugador.",
       primaryEffects: [n("professional.careerControl", 3)],
       secondaryEffects: [n("reputation.marketHeat", -2), n("professional.careerControl", 1)],
@@ -109,7 +109,7 @@ const CON23 = formalOfferEvent(ambiguousEvent({
   title: "Cuatro años y una puerta",
   body: "Tu club presenta una renovación formal: mejora fuerte, horizonte largo y una cláusula de salida alta. La propuesta existe de verdad; las alternativas que pidas todavía no.",
   visible: [
-    "La CareerOffer pendiente fija club, salario, duración y cláusula de salida.",
+    "La oferta pendiente fija club, salario, duración y cláusula de salida.",
     "La propuesta es del mismo club y tu contrato vigente sigue intacto hasta que aceptes."
   ],
   uncertain: [
@@ -120,7 +120,7 @@ const CON23 = formalOfferEvent(ambiguousEvent({
       id: "SIGN_SECURITY",
       label: "Firmar por seguridad",
       intentTags: ["renewal", "security"],
-      primaryMessage: "Aceptas exactamente la renovación formal que tienes delante; la firma la ejecuta la autoridad de CareerOffer.",
+      primaryMessage: "Aceptas exactamente la renovación formal que tienes delante; la firma se tramita con esas mismas condiciones.",
       secondaryMessage: "La seguridad contractual aumenta, aunque una salida futura puede resultar más cara o compleja.",
       primaryEffects: [n("professional.environmentStability", 3)],
       secondaryEffects: [n("professional.careerControl", -2)],
@@ -142,7 +142,7 @@ const CON23 = formalOfferEvent(ambiguousEvent({
       id: "COUNTER_DURATION",
       label: "Pedir duración menor con salario parecido",
       intentTags: ["renewal", "counter", "shorter_term"],
-      primaryMessage: "Pides menos años manteniendo una escala salarial parecida. La CareerOffer actual se cierra como contraoferta, no como contrato editado.",
+      primaryMessage: "Pides menos años manteniendo una escala salarial parecida. La oferta actual se cierra como contraoferta, no como un contrato ya modificado.",
       secondaryMessage: "Aumentas opcionalidad futura, pero también asumes más riesgo de tener que negociar antes.",
       primaryEffects: [n("professional.contractPower", 3), n("professional.careerControl", 4)],
       secondaryEffects: [n("professional.environmentStability", -1)],
@@ -187,7 +187,7 @@ const CON25 = formalOfferEvent(ambiguousEvent({
   title: "Renovar antes del verano internacional",
   body: "Tu club quiere renovar antes de un verano que puede cambiar tu mercado. La oferta es formal y completa; el torneo, tu papel y tu estado físico futuro siguen siendo inciertos.",
   visible: [
-    "Conoces todos los términos de la CareerOffer de renovación y los meses que quedan de tu contrato actual."
+    "Conoces todos los términos de la oferta de renovación y los meses que quedan de tu contrato actual."
   ],
   uncertain: [
     "No sabes si entrarás en el torneo, cuánto jugarás, cómo rendirás ni si llegarás sano.",
@@ -220,7 +220,7 @@ const CON25 = formalOfferEvent(ambiguousEvent({
       id: "COUNTER_EXIT",
       label: "Firmar solo si añaden una salida razonable",
       intentTags: ["renewal", "counter", "exit_optionality"],
-      primaryMessage: "Pides una nueva estructura con salida razonable. No se añade ninguna cláusula hasta que exista una nueva CareerOffer que la contenga.",
+      primaryMessage: "Pides una nueva estructura con una salida razonable. No se añade ninguna cláusula hasta que exista una nueva oferta formal que la contenga.",
       secondaryMessage: "La contraoferta protege tu intención, pero puede enfriar una propuesta que ya era concreta.",
       primaryEffects: [n("professional.contractPower", 3), n("professional.careerControl", 3)],
       secondaryEffects: [n("professional.institutionalTrust", -1)],

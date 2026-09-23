@@ -28,9 +28,31 @@ const rows:Row[]=[
  {id:"CEVT_29_PROJECT_02",title:"El proyecto gira hacia otro",age:29,months:[7,8,9,10],gates:[{path:"flags.HAS_SEED_PROJECT_FACE",op:"eq",value:true},{path:"flags.CLUB_OWNER_CHANGE",op:"eq",value:true}],read:["SEED_PROJECT_FACE"],verified:true},
  {id:"CEVT_29_WEALTH_01",title:"El gran contrato empieza a aislarte",age:29,months:[10,11,12,1],gates:[{path:"flags.HAS_SEED_WEALTHY_PEAK_EXIT",op:"eq",value:true}],read:["SEED_WEALTHY_PEAK_EXIT"]}
 ];
-function make(r:Row):EventDefinition{return ambiguousEvent({id:r.id,ageWindow:[r.age,r.age],phase:"26_30",family:"conditional",title:r.title,body:"Una consecuencia del contexto previo reaparece sin convertir el pasado en un destino obligatorio.",visible:["El hecho actual es visible."],uncertain:["Su importancia futura sigue siendo incierta."],choices:[
- {id:"A",label:"Intervenir",intentTags:["act"],primaryMessage:"Intervienes y desplazas el equilibrio.",secondaryMessage:"La intervención produce una reacción distinta a la prevista.",primaryEffects:[n("professional.careerControl",3)],secondaryEffects:[n("professional.publicPolarization",2)]},
- {id:"B",label:"Esperar",intentTags:["wait"],primaryMessage:"Esperas y obtienes algo más de información.",secondaryMessage:"La espera permite que otro actor se adelante.",primaryEffects:[n("professional.environmentStability",2)],secondaryEffects:[n("professional.careerControl",-1)]},
- {id:"C",label:"Proteger tu posición",intentTags:["protect"],primaryMessage:"Proteges tu posición inmediata.",secondaryMessage:"La protección tiene un coste en otra relación.",primaryEffects:[n("professional.roleSecurity",3)],secondaryEffects:[n("professional.institutionalTrust",-2)]}
- ],gates:r.gates,timeWindow:{months:r.months},weight:9,cooldown:99999,seedsRead:r.read,tags:["conditional","peak_callback"],canonStatus:r.verified?"verified":"technical_adaptation"});}
+function make(r:Row):EventDefinition{
+ const nano=r.id==="CEVT_27_NANO_01";
+ const body=nano
+  ?"Nano te escribe después de una negociación que se ha complicado. Antes de contarte los detalles te pide que no llames a nadie por él: esta vez quiere tomar la decisión y asumir sus consecuencias."
+  :"Algo que ocurrió antes vuelve a condicionar una decisión actual. Conoces el hecho que ha cambiado la situación, pero todavía no sabes cómo reaccionarán los demás.";
+ const visible=nano
+  ?["Nano te está contando el problema porque confía en ti, no porque quiera que le consigas una salida."]
+  :["Conoces el hecho actual que ha abierto esta decisión."];
+ const uncertain=nano
+  ?["No sabes si limitarte a escuchar protegerá la amistad o si él esperaba un consejo que no se atreve a pedir."]
+  :["No sabes qué hará la otra parte después de tu respuesta."];
+ const choices=nano?[
+  {id:"A",label:"Preguntarle qué quiere hacer y limitarte a escuchar",intentTags:["act"],primaryMessage:"Nano ordena sus opciones en voz alta y mantiene el control de su propia carrera.",secondaryMessage:"La conversación ayuda, aunque no resuelve la negociación que tiene delante.",primaryEffects:[n("professional.careerControl",3)],secondaryEffects:[n("professional.publicPolarization",2)]},
+  {id:"B",label:"Decirle que estarás disponible solo si te pide algo concreto",intentTags:["wait"],primaryMessage:"Dejas la puerta abierta sin adelantarte a una petición que Nano no ha hecho.",secondaryMessage:"La prudencia evita otro choque, pero la distancia entre vuestras carreras sigue ahí.",primaryEffects:[n("professional.environmentStability",2)],secondaryEffects:[n("professional.careerControl",-1)]},
+  {id:"C",label:"Llamar de todos modos a un contacto antes de que se cierre la oportunidad",intentTags:["protect"],primaryMessage:"Intentas proteger una salida que puede desaparecer en horas.",secondaryMessage:"Nano descubre que has vuelto a intervenir después de pedirte expresamente que no lo hicieras.",primaryEffects:[n("professional.roleSecurity",3)],secondaryEffects:[n("professional.institutionalTrust",-2)]}
+ ]:[
+  {id:"A",label:"Pedir una conversación ahora para saber qué cambia para ti",intentTags:["act"],primaryMessage:"Tomas la iniciativa y obligas a concretar la situación.",secondaryMessage:"La intervención provoca una reacción distinta a la que esperabas.",primaryEffects:[n("professional.careerControl",3)],secondaryEffects:[n("professional.publicPolarization",2)]},
+  {id:"B",label:"Esperar a que la otra parte haga el siguiente movimiento",intentTags:["wait"],primaryMessage:"Ganas tiempo y aparece información que antes no tenías.",secondaryMessage:"Mientras esperas, otra persona aprovecha la ventana.",primaryEffects:[n("professional.environmentStability",2)],secondaryEffects:[n("professional.careerControl",-1)]},
+  {id:"C",label:"Pedir que te expliquen por escrito qué cambia antes de aceptar nada",intentTags:["protect"],primaryMessage:"Aseguras una referencia concreta antes de comprometerte.",secondaryMessage:"Exigir claridad protege tu posición, pero desgasta la confianza de la otra parte.",primaryEffects:[n("professional.roleSecurity",3)],secondaryEffects:[n("professional.institutionalTrust",-2)]}
+ ];
+ return ambiguousEvent({
+  id:r.id,ageWindow:[r.age,r.age],phase:"26_30",family:"conditional",title:r.title,body,visible,uncertain,choices,
+  gates:r.gates,timeWindow:{months:r.months},weight:9,cooldown:99999,seedsRead:r.read,
+  npcRefs:nano?["NPC_PLR_14"]:undefined,
+  tags:["conditional","peak_callback"],canonStatus:r.verified?"verified":"technical_adaptation"
+ });
+}
 export const CONDITIONAL_EVENTS_26_30:EventDefinition[]=rows.map(make);
