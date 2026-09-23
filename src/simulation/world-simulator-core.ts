@@ -508,17 +508,17 @@ export function advanceWorldDayInPlace(next: GameState): GameState {
       recordAgeMilestone(next, 34, c34.tags, c34.signature);
       runMaturityPreseason(next);
       lateCareerPreseason(next);
-    } else if(next.age>34 && next.retirement.status!=="closed") lateCareerPreseason(next);
+    } else if(next.age>34) lateCareerPreseason(next);
   }
 
-  if (next.runtime.day % 7 === 0 && next.retirement.status !== "closed") {
+  if (next.runtime.day % 7 === 0) {
     if (hasActiveClubEmployment(next)) footballWeek(next);
     const rng = new DeterministicRng(next.rngState.football);
     professionalWeek(next, rng);
     maturityWeek(next);
     lateCareerWeek(next);
   }
-  if(next.flags.EARLY_RETIRED_30_34 && next.retirement.status!=="closed") closeCareer(next,"early_retirement_30_34","early_retirement");
+  if(next.flags.EARLY_RETIRED_30_34) closeCareer(next,"early_retirement_30_34","early_retirement");
   return next;
 }
 
