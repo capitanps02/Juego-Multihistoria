@@ -224,9 +224,8 @@ function footballWeek(state: GameState): void {
   const month = Number(state.date.slice(5, 7));
   const officialSeasonWeek = month >= 8 || month <= 5;
   const suspendedForFixture = num(state.sport.suspensionMatches, 0) > 0;
-  const careerClosed = state.retirement.status === "closed";
   let debutFromAppearance = false;
-  if (officialSeasonWeek && !careerClosed) {
+  if (officialSeasonWeek) {
     // Selection is state-led with deterministic variation: role remains the strongest
     // signal, while form, fitness, fatigue and current-coach trust provide progression.
     const selectionScore = clamp(
@@ -247,8 +246,7 @@ function footballWeek(state: GameState): void {
         state.body.acuteInjury === true ||
         state.flags.RECOVERING_INJURY === true ||
         num(state.world.injuryWeeksRemaining, 0) > 0 ||
-        suspendedForFixture ||
-        careerClosed;
+        suspendedForFixture;
       if (!unavailable) {
         state.sport.appearances = num(state.sport.appearances) + 1;
         const minutes = clamp(num(state.sport.minutesShare) + (minutesRoll * 4 + role / 40), 0, 100);
