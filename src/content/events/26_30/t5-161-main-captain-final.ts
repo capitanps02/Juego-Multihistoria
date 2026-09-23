@@ -68,7 +68,7 @@ export const T5_161_MAIN_CAPTAIN_APPOINTMENT: EventDefinition = {
       id: "DEFER_MAIN_CAPTAIN_OUT",
       baseWeight: 1,
       effects: [],
-      messages: ["No aceptas todavía. El nombramiento queda sin certificar hasta que exista una decisión factual posterior."]
+      messages: ["No aceptas todavía. El nombramiento queda pendiente hasta que des una respuesta definitiva."]
     }
   ],
   npcRefs: [],

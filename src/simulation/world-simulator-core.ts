@@ -13,12 +13,27 @@ import { adaptState30ToMaturity } from "./maturity-adapter.js";
 import { maturityWeek, runMaturityPreseason } from "./ageing-engine.js";
 import { lateCareerPreseason, lateCareerWeek, closeCareer } from "./late-career-engine.js";
 import { recordAgeMilestone } from "./age-milestones.js";
-import { certifyCoachChangeInPlace } from "./coach-change-authority.js";
+import { certifyCoachChangeInPlace, resolveRecentCurrentClubCoachChange } from "./coach-change-authority.js";
 import { expireDueSeedsInPlace } from "../narrative/resolver.js";
 import { hasActiveClubEmployment, transitionNaturalExpiryInPlace } from "./employment.js";
+import { previousOfficialMatch } from "./match-model.js";
 
 const clamp = (x: number, min = 0, max = 100) => Math.min(max, Math.max(min, x));
 const num = (x: unknown, fallback = 0) => typeof x === "number" ? x : fallback;
+
+export function currentSportsCoachNpcId(state: GameState): string | null {
+  const currentClubChange = resolveRecentCurrentClubCoachChange(state, Number.MAX_SAFE_INTEGER);
+  if (currentClubChange) return currentClubChange.newCoachNpcId;
+  if (state.professional.registrationClub === "UDV" && state.flags.COACH_FIRED !== true) return "NPC_CCH_01";
+  return null;
+}
+
+export function currentSportsCoachTrust(state: GameState): number | null {
+  const coachId = currentSportsCoachNpcId(state);
+  if (!coachId) return null;
+  const relation = state.relationships.find(row => row.npcId === coachId);
+  return relation ? clamp(relation.trust) : null;
+}
 
 function addDays(iso: string, days: number): string {
   const d = new Date(`${iso}T00:00:00Z`);
@@ -124,9 +139,21 @@ function updateContextFlags(state: GameState, rng: DeterministicRng, debutFromAp
   else state.world.marketWindowOpen = false;
 }
 function footballWeek(state: GameState): void {
+  if (state.retirement.status === "closed") return;
   const rng = new DeterministicRng(state.rngState.football);
-  const form = clamp(num(state.sport.form, 50) * 0.82 + 50 * 0.18 + (rng.next() - 0.5) * 11);
-  const trust = state.relationships.find(r => r.npcId === "NPC_CCH_01")?.trust ?? 45;
+  const priorMatch = previousOfficialMatch(state);
+  const priorRating = priorMatch?.player.appeared === true && typeof priorMatch.stats?.rating === "number"
+    ? priorMatch.stats.rating
+    : null;
+  const performanceTarget = priorRating === null
+    ? 50
+    : clamp(50 + (priorRating - 6.5) * 15 + (priorMatch!.player.minutes - 45) / 18, 30, 82);
+  // Match form is an inertial sports state: last week's factual rating nudges it,
+  // while deterministic weekly variation prevents identical careers.
+  const form = clamp(num(state.sport.form, 50) * 0.80 + performanceTarget * 0.20 + (rng.next() - 0.5) * 8);
+  // Unknown/current-unmodelled coaches fail neutral; historical UDV coach trust never leaks
+  // across a certified change or transfer.
+  const trust = currentSportsCoachTrust(state) ?? 50;
   const currentRole = num(state.sport.roleScore, 18);
   const role = state.age >= 20 && state.professional.initializedAt20
     ? clamp(currentRole * 0.90 + (22 + form * 0.42 + state.professional.roleSecurity * 0.28 + Math.max(0, 4-state.professional.leagueTier)*2.2) * 0.10 + (rng.next()-0.5)*2.8)
@@ -195,9 +222,20 @@ function footballWeek(state: GameState): void {
   }
 
   const month = Number(state.date.slice(5, 7));
+  const officialSeasonWeek = month >= 8 || month <= 5;
+  const suspendedForFixture = num(state.sport.suspensionMatches, 0) > 0;
   let debutFromAppearance = false;
-  if ((month >= 8 || month <= 5) && role > 24) {
-    const appearanceChance = clamp((role - 15) / 85, 0.08, 0.92);
+  if (officialSeasonWeek) {
+    // Selection is state-led with deterministic variation: role remains the strongest
+    // signal, while form, fitness, fatigue and current-coach trust provide progression.
+    const selectionScore = clamp(
+      role * 0.42
+      + form * 0.18
+      + fitness * 0.14
+      + (100 - fatigue) * 0.10
+      + trust * 0.16
+    );
+    const appearanceChance = clamp(0.05 + selectionScore / 135, 0.12, 0.92);
     const appearanceRolled = rng.next() < appearanceChance;
     if (appearanceRolled) {
       // Consume the same follow-up draws as the legacy path even when injury blocks
@@ -207,7 +245,8 @@ function footballWeek(state: GameState): void {
       const unavailable =
         state.body.acuteInjury === true ||
         state.flags.RECOVERING_INJURY === true ||
-        num(state.world.injuryWeeksRemaining, 0) > 0;
+        num(state.world.injuryWeeksRemaining, 0) > 0 ||
+        suspendedForFixture;
       if (!unavailable) {
         state.sport.appearances = num(state.sport.appearances) + 1;
         const minutes = clamp(num(state.sport.minutesShare) + (minutesRoll * 4 + role / 40), 0, 100);
@@ -224,6 +263,10 @@ function footballWeek(state: GameState): void {
         }
       }
     }
+  }
+
+  if (officialSeasonWeek && suspendedForFixture) {
+    state.sport.suspensionMatches = Math.max(0, Math.trunc(num(state.sport.suspensionMatches, 0)) - 1);
   }
 
   const market = clamp(num(state.reputation.marketHeat) * 0.82 + role * 0.10 + num(state.reputation.mediaHeat) * 0.08 + (rng.next() - 0.5) * 5);
@@ -433,6 +476,19 @@ function professionalWeek(state: GameState, rng: DeterministicRng): void {
 }
 
 export function advanceWorldDayInPlace(next: GameState): GameState {
+  // Closed retirement is a terminal career state. A stale no-deadline offer must not
+  // freeze the calendar, and no contract/club/age/preseason/sport authority may mutate
+  // the player's finished career after closure.
+  if (next.retirement.status === "closed") {
+    next.date = addDays(next.date, 1);
+    next.runtime.day += 1;
+    next.runtime.seasonDay += 1;
+    next.runtime.daysSinceNarrative += 1;
+    expireDueSeedsInPlace(next);
+    for (const id of Object.keys(next.eventCooldowns)) next.eventCooldowns[id] = Math.max(0, next.eventCooldowns[id]! - 1);
+    return next;
+  }
+
   const pending = next.market?.pending;
   if (pending && !pending.validThrough) return next;
   expireCareerOfferInPlace(next);
@@ -495,7 +551,7 @@ export function advanceWorldDayInPlace(next: GameState): GameState {
       recordAgeMilestone(next, 34, c34.tags, c34.signature);
       runMaturityPreseason(next);
       lateCareerPreseason(next);
-    } else if(next.age>34 && next.retirement.status!=="closed") lateCareerPreseason(next);
+    } else if(next.age>34) lateCareerPreseason(next);
   }
 
   if (next.runtime.day % 7 === 0) {
@@ -505,7 +561,7 @@ export function advanceWorldDayInPlace(next: GameState): GameState {
     maturityWeek(next);
     lateCareerWeek(next);
   }
-  if(next.flags.EARLY_RETIRED_30_34 && next.retirement.status!=="closed") closeCareer(next,"early_retirement_30_34","early_retirement");
+  if(next.flags.EARLY_RETIRED_30_34) closeCareer(next,"early_retirement_30_34","early_retirement");
   return next;
 }
 

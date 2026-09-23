@@ -9,6 +9,7 @@ import { eventGatesPass } from "./event-gates.js";
 import { mandatoryTransitionPriorityActive } from "./transition-priority.js";
 import { employmentStatus } from "../simulation/employment.js";
 import { a8CanonicalRuntimeEligible } from "./a8-runtime-eligibility.js";
+import { narrativeGuardsPass } from "./narrative-guards.js";
 
 export interface SchedulerOptions { qa?: boolean; currentTick?: number; ignoreRhythmGate?: boolean; }
 type Period = { key: string; cap: number };
@@ -82,6 +83,9 @@ function rhythmPass(state:GameState,event:EventDefinition,options:SchedulerOptio
   const sameHeavy=ctx.recent3.filter(h=>h.snapshot.family===event.family).length; if((event.family==="medical"||event.family==="contract")&&sameHeavy>=2)return false; return true;
 }
 function isEligible(state:GameState,event:EventDefinition,options:SchedulerOptions,ctx:TickContext):boolean {
+  // Closed retirement is terminal for active-career scheduling. Post-career content must
+  // opt in explicitly instead of leaking through ordinary age/family gates.
+  if(state.retirement.status==="closed" && !(event.tags??[]).includes("post_career")) return false;
   const employment = employmentStatus(state);
   if ((employment === "unattached" || employment === "expired_pending_resolution") && ["sport","team","captaincy"].includes(event.family)) return false;
   const maxAge=event.ageWindow[1]??Infinity; if(state.age<event.ageWindow[0]||state.age>maxAge||state.phase!==event.phase)return false;
@@ -104,7 +108,7 @@ function isEligible(state:GameState,event:EventDefinition,options:SchedulerOptio
   if(!mandatoryTransition&&event.family==="conditional"&&ctx.conditionalCount>=ctx.conditionalCap)return false;
   const budgetExempt=(event.tags??[]).includes("hard_deadline")||["EVT_19_FIN_001","EVT_18_SUM_001","EVT_22_END_001","EVT_22_DDL_001","EVT_25_END_001","EVT_23_JAN_001","EVT_29_FIN_001","EVT_30_FINAL_001","EVT_31_RETURN_001","EVT_31_FINAL_001","EVT_32_BOS_001","EVT_33_RET_001","EVT_33_END_001"].includes(event.id);
   if(!mandatoryTransition&&event.family!=="conditional"&&!budgetExempt&&ctx.periodCount>=ctx.currentPeriod.cap)return false;
-  if(!inTimeWindow(state,event,ctx)||!eventGatesPass(state,event)||!knowledgePass(state,event))return false;
+  if(!inTimeWindow(state,event,ctx)||!eventGatesPass(state,event)||!narrativeGuardsPass(state,event)||!knowledgePass(state,event))return false;
   if(event.exclusions&&event.exclusions.some(c=>conditionsPass(state,[c])))return false;
   if(eligibleChoices(state,event).length===0)return false;
   return mandatoryTransition||rhythmPass(state,event,options,ctx);

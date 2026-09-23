@@ -8,6 +8,7 @@ const $ = selector => document.querySelector(selector);
 let session = null;
 let busy = false;
 let replacement = null;
+let autoTimer = null;
 
 function el(tag, text, className) {
   const node = document.createElement(tag);
@@ -74,13 +75,49 @@ function render(focus = false) {
     for(const [response,label] of [['accept','Aceptar oferta'],['reject','Rechazar oferta'],['delegate','Delegar esta oferta']])story.append(action(label,'offer',{offerId:o.id,action:response}));
   } else if (v.screen === 'result') {
     story.append(el('span','DESPUÉS DE TU DECISIÓN','eyebrow'),el('h1',v.result.title),el('p',v.result.choiceLabel,'chosen'));
-    v.result.messages.forEach(m=>story.append(el('p',m,'body')));
+    const visible=v.result.visibleEffects??[], narrative=v.result.narrativeEffects??[], hidden=v.result.hiddenEffects??[];
+    if(visible.length||narrative.length||hidden.length) story.append(el('span','CONSECUENCIAS','eyebrow'));
+    visible.forEach(effect=>{
+      const sign=effect.delta>0?'+':'';
+      story.append(el('p',`${effect.label} ${sign}${effect.delta}`,'body'));
+    });
+    narrative.forEach(message=>story.append(el('p',message,'body')));
+    const narrated=new Set(narrative);
+    (v.result.messages??[]).filter(message=>!narrated.has(message)).forEach(message=>story.append(el('p',message,'body')));
+    hidden.forEach(message=>story.append(el('p',message,'body')));
     story.append(action('Continuar','acknowledge'));
+  } else if (v.screen === 'summary') {
+    const s = v.simulation.summary;
+    story.append(el('span','RESUMEN DEL PERIODO','eyebrow'),el('h1',s ? `${s.daysSimulated} días después` : 'Periodo completado'));
+    if (s) {
+      story.append(
+        el('p',`Apariciones: +${s.matches.appearances} · Forma ${s.playerChanges.form >= 0 ? '+' : ''}${s.playerChanges.form} · Fatiga ${s.playerChanges.fatigue >= 0 ? '+' : ''}${s.playerChanges.fatigue} · Estado físico ${s.playerChanges.fitness >= 0 ? '+' : ''}${s.playerChanges.fitness}`,'body')
+      );
+      if (s.careerChanges.clubFrom !== s.careerChanges.clubTo || s.careerChanges.roleFrom !== s.careerChanges.roleTo) {
+        story.append(el('p',`Carrera: ${s.careerChanges.clubFrom} → ${s.careerChanges.clubTo} · ${s.careerChanges.roleFrom} → ${s.careerChanges.roleTo}`,'body'));
+      }
+      s.worldHighlights.slice(-4).forEach(text=>story.append(el('p',text,'body')));
+      if (s.interruption) story.append(el('p',`La simulación se detuvo: ${({
+        decision:'hay una decisión que necesita tu respuesta',
+        offer:'ha llegado una oferta',
+        important_injury:'una lesión importante requiere atención',
+        national_selection:'hay novedades de selección internacional',
+        role_change:'tu rol deportivo ha cambiado',
+        career_change:'tu situación de club ha cambiado',
+        season_complete:'la temporada deportiva ha terminado',
+        season_transition:'ha cambiado la temporada o una etapa de la carrera',
+        retirement:'la carrera ha llegado a su cierre',
+        max_auto_weeks:'el tramo automático ha llegado a su límite'
+      })[s.interruption.type] || 'ha ocurrido un momento relevante'}.`,'body'));
+    }
+    story.append(action('Continuar','auto',{action:'start'}));
   } else if (v.screen === 'epilogue') {
     story.append(el('span','CIERRE DE CARRERA','eyebrow'),el('h1','Así se escribió tu historia.'),el('p',`Tu carrera termina a los ${v.age} años, después de ${v.decisionsMade} decisiones. Puedes volver sobre ellas en «Tu recorrido» o comenzar otra historia.`,'body'));
   } else {
-    story.append(el('span','TU CARRERA SIGUE','eyebrow'),el('h1',v.decisionsMade ? 'El siguiente paso.' : 'Todo empieza en Valdoria.'),el('p',v.decisionsMade ? 'Los entrenamientos, las conversaciones y el mercado siguen su curso. Avanza hasta el próximo momento de tu carrera.' : 'Tienes 18 años y una oportunidad de acercarte al primer equipo. Todavía queda todo por decidir.','body'));
-    story.append(action('Avanzar la carrera','continue'));
+    story.append(el('span','TU CARRERA SIGUE','eyebrow'),el('h1',v.decisionsMade ? 'El siguiente paso.' : 'Todo empieza en Valdoria.'),el('p',v.decisionsMade ? 'Los entrenamientos, las conversaciones y el mercado siguen su curso. Simula el tiempo hasta la próxima situación importante.' : 'Tienes 18 años y una oportunidad de acercarte al primer equipo. Todavía queda todo por decidir.','body'));
+    if (v.simulation.mode === 'auto_simulating') story.append(action('Pausar','auto',{action:'pause'}));
+    else if (v.simulation.mode === 'paused') story.append(action('Reanudar','auto',{action:'resume'}));
+    else story.append(action('Simular','auto',{action:'start'}));
   }
   if(v.offerHistory.length)story.append(el('p',v.offerHistory.at(-1).explanation,'body'));
   const history = $('#history');
@@ -102,21 +139,40 @@ function render(focus = false) {
   }
 }
 
+function queueAutoStep() {
+  clearTimeout(autoTimer);
+  if (!session || session.getView().simulation.mode !== 'auto_simulating') return;
+  autoTimer = setTimeout(() => {
+    if (!busy && session?.getView().simulation.mode === 'auto_simulating') {
+      const v = session.getView();
+      run({type:'auto',action:'step',commandId:crypto.randomUUID(),expectedRevision:v.revision});
+    }
+  }, 120);
+}
+
 async function run(command) {
   if (busy || !session) return;
+  if (command.type === 'auto' && command.action === 'pause') clearTimeout(autoTimer);
+  let completed = false;
   setBusy(true); error('');
   try {
     await session.dispatch(command);
-    // Acknowledgment is persisted separately. Advance then stops at the next
-    // decision (or a bounded calendar interval), never selects a choice.
-    if (command.type === 'acknowledge' && session.getView().screen === 'career') {
-      await session.dispatch({ type:'continue',commandId:crypto.randomUUID(),expectedRevision:session.getView().revision });
-    }
+    completed = true;
     render(true);
   } catch (e) {
+    clearTimeout(autoTimer);
+    if (command.type === 'auto' && ['start','step'].includes(command.action) && session?.getView().simulation.mode === 'auto_simulating') {
+      try {
+        const v=session.getView();
+        await session.dispatch({type:'auto',action:'pause',commandId:crypto.randomUUID(),expectedRevision:v.revision});
+      } catch {}
+    }
     if (session) render();
-    error(`No se pudo completar el paso. ${e.message}`);
-  } finally { setBusy(false); }
+    error(`No se pudo completar el paso. La simulación se detuvo en el último estado válido. ${e.message}`);
+  } finally {
+    setBusy(false);
+    if (completed) queueAutoStep();
+  }
 }
 
 async function create(seed, expectedRaw) {

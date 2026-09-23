@@ -1745,7 +1745,7 @@ function toEvent(spec: typeof ALL_SPECS[number]): EventDefinition {
     id:`${spec.id}__${choice.id}__READY`,
     baseWeight:1,
     effects:[],
-    messages:[`Decisión preparada; la autoridad externa debe validar y ejecutar el hecho factual antes de activar ${spec.id}.`],
+    messages:[`La decisión queda pendiente hasta que se confirme lo que ocurra fuera de esta conversación.`],
     seedTransitions:seedTransitions(spec.seeds,choice.id),
     historyTags:["canonical_34plus","awaiting_external_fact",`choice_${choice.id}`]
   }));

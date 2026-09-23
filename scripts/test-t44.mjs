@@ -5,6 +5,7 @@ import { createInitialState } from '../dist/content/initial-state.js';
 import { setPath } from '../dist/core/path.js';
 import { resolveChoiceInPlace } from '../dist/narrative/resolver.js';
 import { scheduleEvent } from '../dist/narrative/scheduler.js';
+import { recordOfficialMatchInPlace } from '../dist/simulation/match-model.js';
 
 const ids = [
   'EVT_18_PRE_001', 'EVT_18_PRE_002', 'EVT_18_PRE_003', 'EVT_18_AGT_001',
@@ -30,6 +31,14 @@ function satisfyGates(state, event) {
   state.runtime.day = state.age === 18 ? 30 : 395;
   state.runtime.seasonDay = event.timeWindow?.minSeasonDay ?? 30;
   state.runtime.daysSinceNarrative = 999;
+  if (event.id === 'EVT_18_PRS_001') {
+    const row = recordOfficialMatchInPlace(state, {
+      appeared: true,
+      debutOccurred: true,
+      injuryUnavailable: false
+    });
+    assert.ok(row, 'EVT_18_PRS_001 fixture requires a factual recent appearance');
+  }
 }
 
 function blockGates(state, event) {

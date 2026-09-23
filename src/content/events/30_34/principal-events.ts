@@ -123,17 +123,90 @@ function specialEffects(r:Row,id:string):Effect[]{
   if(r.id==="EVT_33_NAT_001"&&id==="B") out.push(flag("NATIONAL_RETIRED",true),n("professional.recoveryDebt",-5),n("professional.motivationReserve",3));
   return out;
 }
-function normalChoices(r:Row){ const seed=(id:string)=>r.seed?[seedCreate(r.seed,id==="B"?48:id==="C"?55:60,{choice:id})]:[]; return [
- {id:"A",label:"Proteger el nivel competitivo",intentTags:["competition"],immediateEffects:specialEffects(r,"A"),primaryMessage:"Priorizas competir ahora; el coste puede aparecer después.",secondaryMessage:"La apuesta sostiene estatus, pero consume margen.",primaryEffects:[n("professional.veteranLeverage",3),n("professional.motivationReserve",2)],secondaryEffects:[n("professional.recoveryDebt",3)],primarySeedTransitions:seed("A"),secondarySeedTransitions:seed("A")},
- {id:"B",label:"Proteger cuerpo y estabilidad",intentTags:["stability"],immediateEffects:specialEffects(r,"B"),primaryMessage:"Compras margen físico y previsibilidad.",secondaryMessage:"El descanso protege el cuerpo, pero alguien ocupa parte de tu espacio.",primaryEffects:[n("professional.matchSelectivity",5),n("professional.recoveryDebt",-4)],secondaryEffects:[n("professional.statusInertia",-2)],primarySeedTransitions:seed("B"),secondarySeedTransitions:seed("B")},
- {id:"C",label:"Adaptar rol y condiciones",intentTags:["adapt"],immediateEffects:specialEffects(r,"C"),primaryMessage:"Redefines utilidad en vez de defender una versión antigua.",secondaryMessage:"La adaptación abre un nicho, aunque no garantiza jerarquía.",primaryEffects:[n("professional.roleAdaptability",4),n("professional.tacticalReading",3)],secondaryEffects:[n("professional.careerControl",2)],primarySeedTransitions:seed("C"),secondarySeedTransitions:seed("C")},
- {id:"D",label:"Esperar más información",intentTags:["wait"],immediateEffects:specialEffects(r,"D"),primaryMessage:"Evitas cerrar una puerta demasiado pronto.",secondaryMessage:"Mientras esperas, el mercado y el club también se mueven.",primaryEffects:[n("professional.careerControl",1)],secondaryEffects:[n("professional.veteranLeverage",-2)],primarySeedTransitions:seed("D"),secondarySeedTransitions:seed("D")}
- ];}
+const defaultBodies: Partial<Record<EventFamily,string>> = {
+ contract:"Tu horizonte contractual vuelve a exigir una decisión sobre duración, salario, rol y libertad futura. Distingues lo que está firmado, lo que se negocia y lo que todavía es solo una posibilidad.",
+ market:"Tu situación de mercado abre escenarios distintos, pero ninguno se trata como oferta hasta que existan condiciones formales. A esta edad esperar también tiene un coste de oportunidad.",
+ medical:"En la planificación física repasáis historial, recuperación entre partidos y calendario. La conversación no nace necesariamente de una lesión nueva: trata de qué margen quieres conservar para los próximos meses.",
+ team:"Después del entrenamiento, entrenador y vestuario hablan de jerarquía, relevo y utilidad. La conversación afecta a tu espacio real dentro del equipo, no solo a un símbolo.",
+ captaincy:"Tu peso en el vestuario entra en una decisión sobre liderazgo y relevo. Lo que hagas puede sostener tu influencia o facilitar que otros asuman más responsabilidad.",
+ press:"En zona mixta, una pregunta sobre edad, rol o futuro obliga a decidir cuánto de tu situación quieres convertir en relato público.",
+ image:"Tu equipo de comunicación te presenta una propuesta que quiere usar tu veteranía como historia. El dinero importa menos que el control sobre cómo se cuenta el final.",
+ tactical:"El entrenador te enseña un rol distinto en la pizarra y explica por qué cree que puede alargar tu utilidad. Aceptarlo cambia tareas, números y jerarquía.",
+ legacy:"Después de un partido, una conversación sobre récords, legado o regreso te obliga a decidir qué quieres proteger cuando ya no puedes maximizarlo todo.",
+ family:"En casa, ciudad, mudanzas y tiempo pesan tanto como el siguiente contrato. La decisión deportiva ya no puede aislarse del resto de tu vida.",
+ selection:"Tu situación con la selección entra en una fase distinta. Trabajas solo con la lista, el seguimiento o la comunicación que exista de verdad y decides qué disponibilidad quieres mantener.",
+ sport:"Antes de un bloque importante, el cuerpo técnico concreta el papel que espera de ti y el desgaste que supone. Tu respuesta afecta minutos, cuerpo y percepción de tu momento.",
+ agent:"Tu agente te enseña una negociación en la que sus incentivos y los tuyos ya no coinciden del todo. Antes de actuar quieres saber quién gana con cada opción.",
+ money:"Una reunión con asesores convierte el patrimonio en una decisión sobre riesgo, tiempo y libertad futura.",
+ life:"Fuera del campo, una decisión sobre rutina, ciudad o futuro empieza a pesar más que una ventaja deportiva inmediata."
+};
+
+const defaultLabels: Partial<Record<EventFamily,[string,string,string,string]>> = {
+ contract:["Pedir mejores condiciones antes de renovar","Aceptar un acuerdo corto si el rol queda claro","Exigir una cláusula que te devuelva margen de salida","Pedir dos escenarios cerrados y elegir después"],
+ market:["Pedir a tu agente que avance solo con contactos reales","Priorizar continuidad mientras no exista algo mejor","Esperar condiciones formales antes de aceptar un cambio","Escuchar el mercado y fijar una fecha para decidir"],
+ medical:["Mantener la carga actual y asumir su coste","Reducir carga aunque pierdas presencia","Pedir límites concretos de esfuerzo y recuperación","Buscar otra opinión antes de cambiar el plan"],
+ team:["Hablar de frente sobre tu nuevo lugar en el equipo","Aceptar el reparto actual y pedir una revisión","Marcar el rol mínimo que necesitas para seguir","Proponer una transición temporal con fecha de revisión"],
+ captaincy:["Defender tu postura delante del grupo","Escuchar primero a quienes asumirán más responsabilidad","Hablar en privado con entrenador y capitán","Acordar un reparto temporal de liderazgo"],
+ press:["Responder con hechos y asumir la exposición","No responder hasta hablar con el club","Corregir solo el dato que consideras falso","Dar una respuesta breve y cerrar el tema"],
+ image:["Aceptar la propuesta con el marco actual","Negociar el relato antes de firmar","Excluir vida privada y vestuario","Firmar una versión más corta y revisable"],
+ tactical:["Aceptar la reconversión completa","Probar el rol solo en partidos concretos","Defender tu función habitual ante el técnico","Acordar una prueba con fecha de revisión"],
+ legacy:["Elegir la opción que más se parece al legado que quieres","Proteger lo que ya has construido","Renunciar a una ventaja para conservar control","Esperar un hecho nuevo antes de decidir"],
+ family:["Priorizar la estabilidad que pide tu entorno","Pedir tiempo hasta final de temporada","Buscar una solución que reparta el coste","Mantener abierta la opción sin prometer otra mudanza"],
+ selection:["Pedir claridad sobre tu situación actual","Aceptar lo que hoy esté confirmado sin exigir más","Limitar disponibilidad si vuelven a contar contigo","Esperar la siguiente lista antes de cambiar tu planificación"],
+ sport:["Aceptar el plan competitivo del cuerpo técnico","Pedir una gestión más prudente del esfuerzo","Explicar qué condición necesitas para rendir mejor","Probar el plan y revisarlo tras el siguiente bloque"],
+ agent:["Pedir toda la información y decidir tú el siguiente paso","Seguir su recomendación si explica sus incentivos","Limitar qué puede negociar sin consultarte","Pedir dos alternativas concretas antes de responder"],
+ money:["Tomar la decisión con las cifras actuales","Mantener liquidez y esperar","Pedir asesoramiento independiente","Hacer un cambio limitado y revisarlo después"],
+ life:["Cambiar la rutina para ganar estabilidad","Mantener lo que funciona aunque cueste más","Pedir ayuda para resolver el problema concreto","Probar un cambio pequeño y revisarlo después"]
+};
+
+function normalChoices(r:Row){
+ const seed=(id:string)=>r.seed?[seedCreate(r.seed,id==="B"?48:id==="C"?55:60,{choice:id})]:[];
+ const labels=defaultLabels[r.family]??[
+  "Pedir una conversación y plantear tu posición de frente",
+  "Aceptar la opción más estable con condiciones claras",
+  "Marcar un límite concreto para conservar control",
+  "Esperar un hecho nuevo y fijar cuándo volver a decidir"
+ ];
+ return labels.map((label,index)=>{
+  const id=String.fromCharCode(65+index);
+  return {
+   id,label,
+   intentTags:[["competition"],["stability"],["adapt"],["wait"]][index]!,
+   immediateEffects:specialEffects(r,id),
+   primaryMessage:[
+    "Tomas una postura concreta y haces visible qué quieres proteger.",
+    "Compras margen físico y previsibilidad sin fingir que el contexto se detiene.",
+    "Redefines tu utilidad o tus condiciones en vez de defender una versión antigua.",
+    "Mantienes la decisión abierta hasta disponer de un hecho nuevo."
+   ][index]!,
+   secondaryMessage:[
+    "La apuesta sostiene tu posición, pero consume margen en otra parte de la carrera.",
+    "La estabilidad protege una parte y deja espacio para que otros avancen.",
+    "La adaptación abre un camino útil, aunque no garantiza jerarquía.",
+    "Mientras esperas, club y mercado también toman decisiones."
+   ][index]!,
+   primaryEffects:[
+    [n("professional.veteranLeverage",3),n("professional.motivationReserve",2)],
+    [n("professional.matchSelectivity",5),n("professional.recoveryDebt",-4)],
+    [n("professional.roleAdaptability",4),n("professional.tacticalReading",3)],
+    [n("professional.careerControl",1)]
+   ][index]!,
+   secondaryEffects:[
+    [n("professional.recoveryDebt",3)],
+    [n("professional.statusInertia",-2)],
+    [n("professional.careerControl",2)],
+    [n("professional.veteranLeverage",-2)]
+   ][index]!,
+   primarySeedTransitions:seed(id),
+   secondarySeedTransitions:seed(id)
+  };
+ });
+}
 function retirementEvent(r:Row):EventDefinition{return ambiguousEvent({id:r.id,ageWindow:[33,33],phase:"30_34",family:"life",title:r.title,body:"Por primera vez, detenerte ahora es una opción real sin que el fútbol te haya expulsado todavía.",visible:["Tu cuerpo, motivación, contrato y mercado ya no apuntan en la misma dirección."],uncertain:["Seguir puede reconstruir el deseo o consumir el margen que queda."],choices:[
  {id:"A",label:"Cerrar la carrera al final de temporada",intentTags:["retire"],immediateEffects:[flag("EARLY_RETIRED_30_34",true),set("world.retirementReason","voluntary_30_34")],primaryMessage:"Decides controlar el cierre.",secondaryMessage:"El anuncio llega antes de lo que muchos esperaban, pero sigue siendo tu decisión.",primaryEffects:[n("professional.retirementDistance",10)],secondaryEffects:[n("professional.legacyCapital",3)]},
  {id:"B",label:"Buscar un año más con límites",intentTags:["continue"],primaryMessage:"Continuarás solo si el proyecto respeta tus límites.",secondaryMessage:"El mercado acepta parte de tus condiciones, no todas.",primaryEffects:[n("professional.matchSelectivity",6),n("professional.motivationReserve",4)],secondaryEffects:[n("professional.careerControl",2)]},
  {id:"C",label:"Esperar al mercado antes de decidir",intentTags:["wait"],primaryMessage:"Dejas que las oportunidades respondan primero.",secondaryMessage:"Algunas desaparecen y la decisión se vuelve menos voluntaria.",primaryEffects:[n("professional.veteranLeverage",2)],secondaryEffects:[n("professional.retirementDistance",3)]},
  {id:"D",label:"No hablar todavía de retirada",intentTags:["resist"],primaryMessage:"Apartas la conversación y vuelves a competir.",secondaryMessage:"La pregunta seguirá ahí aunque no la respondas hoy.",primaryEffects:[n("professional.motivationReserve",2)],secondaryEffects:[n("professional.recoveryDebt",2)]}
  ],gates:r.gates,timeWindow:{months:r.months},weight:5,cooldown:99999,tags:r.tags,canonStatus:"technical_adaptation"});}
-function make(r:Row):EventDefinition{if(r.id==="EVT_33_RET_001")return retirementEvent(r); const stable=stableCanonicalEvent(r); if(stable)return stable; return ambiguousEvent({id:r.id,ageWindow:[r.age,r.age],phase:"30_34",family:r.family,title:r.title,body:"La madurez separa reputación, minutos, cuerpo, contrato y deseo. Ninguna opción protege todo a la vez.",visible:["Conoces tu situación deportiva y contractual actual."],uncertain:["No sabes cuánto durarán mercado, cuerpo ni paciencia institucional."],choices:normalChoices(r),gates:r.gates,timeWindow:{months:r.months},weight:r.id==="EVT_33_END_001"?18:10,cooldown:99999,seedsWrite:r.seed?[r.seed]:undefined,tags:r.tags,canonStatus:r.verified?"verified":"technical_adaptation"});}
+function make(r:Row):EventDefinition{if(r.id==="EVT_33_RET_001")return retirementEvent(r); const stable=stableCanonicalEvent(r); if(stable)return stable; return ambiguousEvent({id:r.id,ageWindow:[r.age,r.age],phase:"30_34",family:r.family,title:r.title,body:defaultBodies[r.family]??"Después del entrenamiento, las personas implicadas ponen una decisión concreta sobre la mesa y esperan que definas qué quieres proteger.",visible:["Sabes quién participa, qué se ha propuesto y qué decisión esperan de ti."],uncertain:["No sabes cómo responderán los demás ni cuánto tiempo seguirá abierta esta opción."],choices:normalChoices(r),gates:r.gates,timeWindow:{months:r.months},weight:r.id==="EVT_33_END_001"?18:10,cooldown:99999,seedsWrite:r.seed?[r.seed]:undefined,tags:r.tags,canonStatus:r.verified?"verified":"technical_adaptation"});}
 export const PRINCIPAL_EVENTS_30_34:EventDefinition[]=rows.map(make);

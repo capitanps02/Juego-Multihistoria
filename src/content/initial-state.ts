@@ -30,7 +30,7 @@ export function createInitialState(saveSeed = 20260910): GameState {
     selection: { level: "none" },
     reputation: { prestige: 8, mediaHeat: 3, marketHeat: 5 },
     control: { career: 8, agentDependency: 0 },
-    sport: { roleScore: 18, minutesShare: 0, form: 50, positionIdentity: "winger", appearances: 0 },
+    sport: { roleScore: 18, minutesShare: 0, form: 50, positionIdentity: "winger", appearances: 0, yellowCardAccumulation: 0, suspensionMatches: 0 },
     world: { udvCashGap: 1100000, clubPressure: 42, coachSecurity: 48, marketWindowOpen: false, ownerClub: "UDV", nextCyclePriority: null, udvSeasonResolved: false },
     personality: { reserve: 50, impulsivity: 50, ambition: 55, professionalism: 55 },
     relationships: instantiateRelationships(),
