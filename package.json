@@ -7,7 +7,7 @@
     "build": "node scripts/build.mjs",
     "build:playcanvas": "npm run build && node scripts/build-playcanvas.mjs",
     "play": "npm run build:playcanvas && node scripts/serve-preview.mjs",
-    "test:playcanvas": "npm run build:playcanvas && node --test scripts/test-session.mjs scripts/test-saves.mjs scripts/test-t5-retirement-save-known-bug.mjs scripts/test-playcanvas.mjs",
+    "test:playcanvas": "npm run build:playcanvas && node --test scripts/test-session.mjs scripts/test-saves.mjs scripts/test-t5-retirement-save-known-bug.mjs scripts/test-playcanvas.mjs scripts/test-t55-a19-ui.mjs",
     "test:session": "npm run build && node --test scripts/test-session.mjs scripts/test-t55-auto-simulation.mjs",
     "test:saves": "npm run build && node --test scripts/test-session.mjs scripts/test-saves.mjs scripts/test-t5-retirement-save-known-bug.mjs",
     "validate": "npm run build && node scripts/final-gate-v08.mjs",
@@ -58,7 +58,8 @@
     "test:t51:t511b": "npm run build && node --test scripts/test-t51-t511b-eur.mjs",
     "test:t51:role-expectation": "npm run build && node --test scripts/test-t51-role-expectation.mjs",
     "test:t55:a14": "npm run build && node --test scripts/test-t55-auto-simulation.mjs",
-    "test:t55:consequences": "npm run build && node --test scripts/test-t55-consequences.mjs"
+    "test:t55:consequences": "npm run build && node --test scripts/test-t55-consequences.mjs",
+    "test:t55:a19": "npm run build && node --test scripts/test-t55-a19-ui.mjs"
   },
   "devDependencies": {
     "typescript": "5.8.3"
