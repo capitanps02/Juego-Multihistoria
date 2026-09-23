@@ -15,7 +15,7 @@ import {
 import { resolveChoiceInPlace } from "../narrative/resolver.js";
 import { buildDecisionConsequences, normalizeConsequenceFields, playerFacingMessages, type VisibleConsequence } from "../narrative/consequences.js";
 import { advanceWorldDayInPlace } from "../simulation/world-simulator.js";
-import { getSportMatchModelStore } from "../simulation/match-model.js";
+import { careerSeasonRecords, careerSportMilestones, currentCareerMatchResult, getSportMatchModelStore, type CareerMatchResult, type CareerSeasonRecord, type CareerSportMilestones } from "../simulation/match-model.js";
 import { getNationalSelectionAuthorityStore } from "../simulation/national-team-authority.js";
 import { maybeEmitMicroFeed } from "../simulation/microfeed.js";
 import { MICROFEEDS_26_30 } from "../content/microfeeds/26_30.js";
@@ -25,7 +25,7 @@ import { generateEpilogue } from "../epilogue/generator.js";
 import { ENGINE_BUILD } from "../core/build.js";
 import { assertGameState, parseSaveJson, record, validateData } from "../save/validation.js";
 import { assertSessionSnapshot } from "./validate-session.js";
-import { NPC_CATALOG } from "../catalog/npcs.js";
+import { knownPlayerContacts } from "../core/player-contacts.js";
 import { contentIdentity } from "./content-identity.js";
 import {
   applyMigrationPathInPlace,
@@ -150,6 +150,10 @@ export interface PlayerView {
   offer: PublicOffer | null;
   offerHistory: PublicOfferDecision[];
   ageMilestones: AgeMilestone[];
+  careerSeasons: CareerSeasonRecord[];
+  careerMilestones: CareerSportMilestones;
+  latestMatch: CareerMatchResult | null;
+  retirementStatus: GameState["retirement"]["status"];
   date: string;
   age: number;
   club: string;
@@ -390,12 +394,13 @@ export class GameSession {
       screen: result ? "result" : p ? "decision" : s.market?.pending ? "offer" : summaryScreen ? "summary" : s.retirement.status === "closed" ? "epilogue" : "career",
       offer: s.market?.pending ? publicOffer(s.market.pending) : null, offerHistory: (s.market?.history ?? []).map(h=>({...h,offer:publicOffer(h.offer)})),
       ageMilestones: s.ageMilestones ? structuredClone(s.ageMilestones) : [],
+      careerSeasons: careerSeasonRecords(s), careerMilestones: careerSportMilestones(s), latestMatch: currentCareerMatchResult(s), retirementStatus: s.retirement.status,
       date: s.date, age: s.age, club: s.club, appearances: Number(s.sport.appearances ?? 0),
       salaryMonthly: Number(s.contract.salaryMonthly ?? 0), decisionsMade: s.history.length,
       season: s.season, position: String(s.sport.positionIdentity), fitness: Number(s.body.fitness),
       fatigue: Number(s.body.fatigue), form: Number(s.sport.form), contractMonths: Number(s.contract.monthsRemaining),
       news: s.microfeeds.map(n => ({ date: n.date, text: n.text })),
-      contacts: NPC_CATALOG.map(n => ({ id: n.id, name: n.name, role: n.role })),
+      contacts: knownPlayerContacts(s, this.#snapshot.decisionProvenance),
       decision: p ? { instanceId: p.instanceId, family: p.event.family, title: p.event.text.title, body: p.event.text.body,
         visible: p.event.intel.visible, uncertain: p.event.intel.uncertain,
         choices: eligibleChoices(s, p.event).map(c => ({ id: c.id, label: c.label })) } : null,
