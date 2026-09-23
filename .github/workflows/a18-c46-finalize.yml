@@ -1,0 +1,62 @@
+name: A18 C4 C6 Finalize
+
+on:
+  push:
+    branches:
+      - content/a18-3-restack-after-747
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: content/a18-3-restack-after-747
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Template copy regression
+        run: node --test scripts/test-t55-a18-template-copy.mjs
+      - name: Player-facing content audit
+        run: node scripts/qa-t5-content.mjs
+      - name: T5.3 epistemic NPC audit
+        run: node scripts/audit-t53.mjs --check
+      - name: Freeze exact active source
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! node scripts/freeze-t51-active-source.mjs --check; then
+            node scripts/freeze-t51-active-source.mjs
+          fi
+      - name: Regenerate lineage
+        run: |
+          node scripts/generate-t51-post-legacy-registry.mjs
+          node scripts/generate-t51-offer-bridge-evidence.mjs
+      - name: Verify generated artifacts
+        run: |
+          node scripts/freeze-t51-active-source.mjs --check
+          node scripts/generate-t51-post-legacy-registry.mjs --check
+          node scripts/generate-t51-offer-bridge-evidence.mjs --check
+      - name: Commit generated artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add qa/fixtures/t5.1/post-t51-sources src/session/post-t51-legacy-registry.ts src/session/frozen-offer-bridge-evidence.ts
+          if git diff --cached --quiet; then
+            echo "Generated artifacts already current"
+            exit 0
+          fi
+          git config user.name "a18-content-bot"
+          git config user.email "a18-content-bot@users.noreply.github.com"
+          git commit -m "A18 C4/C6: freeze final content lineage"
+          git reset --hard HEAD
+          git pull --rebase origin content/a18-3-restack-after-747
+          git push origin HEAD:content/a18-3-restack-after-747
