@@ -1,3 +1,4 @@
+// A0 stacked A14+A15 certification trigger.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { GameSession } from '../dist/session/game-session.js';
