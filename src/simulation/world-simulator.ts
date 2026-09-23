@@ -112,7 +112,7 @@ export function advanceWorldDayInPlace(next: GameState): GameState {
     recordCoreFinalCompetitionMomentInPlace(next);
   }
 
-  if (next.runtime.day % 7 === 0 && hasActiveClubEmployment(next) && next.retirement.status !== "closed") {
+  if (next.runtime.day % 7 === 0 && hasActiveClubEmployment(next)) {
     const appeared = num(next.sport.appearances) > beforeAppearances;
     const performanceContext = buildMatchPerformanceContext(next, coachTrustAtKickoff);
     const match = recordOfficialMatchInPlace(next, {
