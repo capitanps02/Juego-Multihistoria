@@ -14,6 +14,8 @@ import {
 } from "../narrative/npc-knowledge-reconciliation.js";
 import { resolveChoiceInPlace } from "../narrative/resolver.js";
 import { advanceWorldDayInPlace } from "../simulation/world-simulator.js";
+import { getSportMatchModelStore } from "../simulation/match-model.js";
+import { getNationalSelectionAuthorityStore } from "../simulation/national-team-authority.js";
 import { maybeEmitMicroFeed } from "../simulation/microfeed.js";
 import { MICROFEEDS_26_30 } from "../content/microfeeds/26_30.js";
 import { MICROFEEDS_30_34 } from "../content/microfeeds/30_34.js";
@@ -36,6 +38,19 @@ import {
   type ContentMigrationRoute
 } from "./content-migration.js";
 import type { LegacyEventEvidence } from "./pre-t51-legacy-registry.js";
+import {
+  DEFAULT_MAX_AUTO_WEEKS,
+  MAX_CONFIGURABLE_AUTO_WEEKS,
+  MIN_AUTO_WEEKS,
+  buildPeriodSummary,
+  idleAutoSimulationState,
+  publicAutoSimulationState,
+  startAutoSimulationState,
+  type AutoSimulationState,
+  type PublicAutoSimulationState,
+  type SimulationInterrupt,
+  type WeekSimulationResult
+} from "./auto-simulation.js";
 
 export const SESSION_VERSION = 3;
 export const SESSION_BUILD = ENGINE_BUILD;
@@ -43,6 +58,7 @@ export const SESSION_BUILD = ENGINE_BUILD;
 interface CommandBase { commandId: string; expectedRevision: number; }
 export type SessionCommand =
   | (CommandBase & { type: "continue"; maxDays?: number })
+  | (CommandBase & { type: "auto"; action: "start" | "step" | "pause" | "resume"; maxWeeks?: number })
   | (CommandBase & { type: "choose"; pendingInstanceId: string; choiceId: string })
   | (CommandBase & { type: "acknowledge" })
   | (CommandBase & { type: "offer"; offerId: string; action: OfferAction });
@@ -86,6 +102,8 @@ export interface SessionSnapshot {
   decisionProvenance: DecisionContentProvenance[];
   /** Match the existing simulator's advance after resolving a decision. */
   needsWorldAdvance: boolean;
+  /** T5.5 A14 temporal-flow state. Optional only for backward-compatible session loads. */
+  autoSimulation?: AutoSimulationState;
 }
 export interface CommitExpectation { sessionId: string; revision: number; }
 /** Must either persist the complete snapshot or reject without confirming it. */
@@ -109,7 +127,7 @@ function publicOffer(o: CareerOffer): PublicOffer {
 export interface PlayerView {
   sessionId: string;
   revision: number;
-  screen: "career" | "decision" | "result" | "epilogue" | "offer";
+  screen: "career" | "decision" | "result" | "epilogue" | "offer" | "summary";
   offer: PublicOffer | null;
   offerHistory: PublicOfferDecision[];
   ageMilestones: AgeMilestone[];
@@ -132,6 +150,7 @@ export interface PlayerView {
   /** Presentation-only category for the current result; keeps event families out of the player-facing contract. */
   resultCategory: "match" | "story" | null;
   journal: SessionSnapshot["journal"];
+  simulation: PublicAutoSimulationState;
 }
 export class SessionError extends Error {
   constructor(public readonly code: string, message: string) { super(message); this.name = "SessionError"; }
@@ -148,6 +167,15 @@ function commandFingerprint(c: SessionCommand): string {
     const days = c.maxDays ?? 90;
     requireThat(Number.isInteger(days) && days >= 1 && days <= 366, "INVALID_COMMAND", "El avance debe ser de 1 a 366 días como máximo.");
     return JSON.stringify([c.type, c.expectedRevision, days]);
+  }
+  if (c.type === "auto") {
+    requireThat(["start","step","pause","resume"].includes(c.action), "INVALID_COMMAND", "Acción de simulación no válida.");
+    const maxWeeks = c.action === "start" ? (c.maxWeeks ?? DEFAULT_MAX_AUTO_WEEKS) : null;
+    if (c.action === "start") {
+      requireThat(Number.isInteger(maxWeeks) && Number(maxWeeks) >= MIN_AUTO_WEEKS && Number(maxWeeks) <= MAX_CONFIGURABLE_AUTO_WEEKS,
+        "INVALID_COMMAND", `El bloque automático debe durar entre ${MIN_AUTO_WEEKS} y ${MAX_CONFIGURABLE_AUTO_WEEKS} semanas.`);
+    }
+    return JSON.stringify([c.type, c.expectedRevision, c.action, maxWeeks]);
   }
   if (c.type === "offer") {
     requireThat(validId(c.offerId) && ["accept","reject","delegate"].includes(c.action), "INVALID_COMMAND", "Oferta o respuesta no válida.");
@@ -245,7 +273,8 @@ export class GameSession {
     const snapshot: SessionSnapshot = {
       sessionVersion: SESSION_VERSION, build: SESSION_BUILD, contentIdentity: activeContentIdentity,
       sessionId, revision: 0, microfeeds: options.microfeeds ?? true, state: createInitialState(seed),
-      pendingDecision: null, pendingResult: null, receipts: [], journal: [], decisionProvenance: [], needsWorldAdvance: false
+      pendingDecision: null, pendingResult: null, receipts: [], journal: [], decisionProvenance: [], needsWorldAdvance: false,
+      autoSimulation: idleAutoSimulationState()
     };
     marketState(snapshot.state);
     const session = new GameSession(
@@ -273,6 +302,7 @@ export class GameSession {
     requireThat(header.contentIdentity === activeContentIdentity, "CONTENT_CHANGED", "El contenido cambió; conserva la partida para migrarla antes de continuar.");
     await assertSessionSnapshot(snapshot, { events, activeContentIdentity, activeEvidence, contentSources });
     const next = upgradeToV3(snapshot as SessionSnapshot, activeContentIdentity, activeEvidence);
+    next.autoSimulation ??= idleAutoSimulationState();
     reconcileKnowledge(next, activeEvidence, options.knowledgeLegacyCertifications);
     marketState(next.state);
     next.build=SESSION_BUILD; // Existing narrative and RNG are preserved; new offers require explicit consent.
@@ -304,6 +334,7 @@ export class GameSession {
 
     await assertSessionSnapshot(snapshot, { events, activeContentIdentity, activeEvidence, contentSources });
     const next = upgradeToV3(snapshot as SessionSnapshot, sourceContentIdentity, source.events);
+    next.autoSimulation ??= idleAutoSimulationState();
     applyMigrationPathInPlace(next.state, path);
     reconcileKnowledge(next, activeEvidence, options.knowledgeLegacyCertifications);
     marketState(next.state);
@@ -329,9 +360,12 @@ export class GameSession {
     const { state: s, pendingDecision: p, pendingResult: result } = this.#snapshot;
     const lastEventId = s.history.at(-1)?.eventId;
     const lastEvent = lastEventId ? this.#index.events.find(e => e.id === lastEventId) : undefined;
+    const simulationState = this.#snapshot.autoSimulation ?? idleAutoSimulationState();
+    const simulation = publicAutoSimulationState(simulationState);
+    const summaryScreen = simulation.mode === "showing_summary" || simulation.mode === "season_transition";
     return structuredClone({
       sessionId: this.#snapshot.sessionId, revision: this.#snapshot.revision,
-      screen: result ? "result" : p ? "decision" : s.market?.pending ? "offer" : s.retirement.status === "closed" ? "epilogue" : "career",
+      screen: result ? "result" : p ? "decision" : s.market?.pending ? "offer" : summaryScreen ? "summary" : s.retirement.status === "closed" ? "epilogue" : "career",
       offer: s.market?.pending ? publicOffer(s.market.pending) : null, offerHistory: (s.market?.history ?? []).map(h=>({...h,offer:publicOffer(h.offer)})),
       ageMilestones: s.ageMilestones ? structuredClone(s.ageMilestones) : [],
       date: s.date, age: s.age, club: s.club, appearances: Number(s.sport.appearances ?? 0),
@@ -344,7 +378,8 @@ export class GameSession {
         visible: p.event.intel.visible, uncertain: p.event.intel.uncertain,
         choices: eligibleChoices(s, p.event).map(c => ({ id: c.id, label: c.label })) } : null,
       result, resultCategory: result ? (lastEvent?.family === "sport" ? "match" : "story") : null,
-      journal: this.#snapshot.journal
+      journal: this.#snapshot.journal,
+      simulation
     });
   }
 
@@ -366,13 +401,38 @@ export class GameSession {
     requireThat(command.expectedRevision === this.#snapshot.revision, "STALE_REVISION", "La partida ha cambiado; vuelve a cargar la pantalla.");
     const next = structuredClone(this.#snapshot);
     if (command.type === "continue") {
+      requireThat(this.#autoFlow(next).mode === "idle", "AUTO_STATE", "El avance manual no puede mezclarse con un bloque automático activo.");
       requireThat(!next.pendingDecision && !next.pendingResult && (!next.state.market?.pending || Boolean(next.state.market.pending.validThrough)), "PENDING_SCREEN", "Resuelve la escena o continúa después del resultado.");
       requireThat(next.state.retirement.status !== "closed", "CAREER_CLOSED", "La carrera ya ha terminado.");
       this.#advance(next, command.maxDays ?? 90);
+    } else if (command.type === "auto") {
+      requireThat(!next.pendingDecision && !next.pendingResult && !next.state.market?.pending, "PENDING_SCREEN", "Resuelve la situación pendiente antes de controlar la simulación.");
+      requireThat(next.state.retirement.status !== "closed", "CAREER_CLOSED", "La carrera ya ha terminado.");
+      const flow = this.#autoFlow(next);
+      if (command.action === "start") {
+        requireThat(["idle","showing_summary","season_transition"].includes(flow.mode), "AUTO_STATE", "Este bloque automático ya está en curso.");
+        next.autoSimulation = startAutoSimulationState(next.state, command.maxWeeks ?? DEFAULT_MAX_AUTO_WEEKS);
+        this.#runAutoStep(next);
+      } else if (command.action === "step") {
+        requireThat(flow.mode === "auto_simulating", "AUTO_STATE", "La simulación automática no está activa.");
+        this.#runAutoStep(next);
+      } else if (command.action === "pause") {
+        requireThat(flow.mode === "auto_simulating", "AUTO_STATE", "Sólo se puede pausar una simulación activa.");
+        flow.mode = "paused";
+      } else {
+        requireThat(flow.mode === "paused", "AUTO_STATE", "La simulación no está pausada.");
+        flow.mode = "auto_simulating";
+        flow.interruption = null;
+      }
     } else if (command.type === "offer") {
       requireThat(!next.pendingDecision && !next.pendingResult, "PENDING_SCREEN", "Resuelve primero la escena pendiente.");
       requireThat(next.state.market?.pending?.id===command.offerId, "STALE_OFFER", "Esta oferta ya no está pendiente.");
       respondToOffer(next.state,command.offerId,command.action);
+      const flow = this.#autoFlow(next);
+      if (flow.mode === "waiting_for_decision" && flow.interruption?.type === "offer") {
+        flow.mode = "auto_simulating";
+        flow.interruption = null;
+      }
     } else if (command.type === "choose") {
       const pending = next.pendingDecision;
       requireThat(pending && pending.instanceId === command.pendingInstanceId, "STALE_DECISION", "Esta escena ya no está pendiente.");
@@ -445,6 +505,11 @@ export class GameSession {
     } else {
       requireThat(next.pendingResult, "NO_RESULT", "No hay resultado pendiente.");
       next.pendingResult = null;
+      const flow = this.#autoFlow(next);
+      if (flow.mode === "waiting_for_decision" && flow.interruption?.type === "decision") {
+        flow.mode = "auto_simulating";
+        flow.interruption = null;
+      }
     }
     next.revision++;
     const receipt: CommandReceipt = { commandId: command.commandId, fingerprint, revision: next.revision, type: command.type };
@@ -474,41 +539,172 @@ export class GameSession {
     };
   }
 
-  #advance(next: SessionSnapshot, maxDays: number): void {
-    let days = 0;
-    const pendingOfferAtEntry = next.state.market?.pending?.id ?? null;
-    if (next.needsWorldAdvance) {
-      this.#worldDay(next);
-      next.needsWorldAdvance = false;
-      days++;
+  #autoFlow(next: SessionSnapshot): AutoSimulationState {
+    return next.autoSimulation ?? (next.autoSimulation = idleAutoSimulationState());
+  }
+
+  #runAutoStep(next: SessionSnapshot): void {
+    const flow = this.#autoFlow(next);
+    requireThat(flow.mode === "auto_simulating", "AUTO_STATE", "La simulación automática no está activa.");
+    const remainingDays = Math.max(0, flow.maxWeeks * 7 - flow.elapsedDays);
+    if (remainingDays === 0) {
+      const interruption: SimulationInterrupt = {
+        type: "max_auto_weeks", priority: 10, source: "a14.max_auto_weeks", requiresPlayerInput: false
+      };
+      flow.interruption = interruption;
+      flow.summary = buildPeriodSummary(flow, next.state, interruption);
+      flow.mode = "showing_summary";
+      return;
     }
-    // No unbounded autoplay. If no event appears, commit progress and let the UI yield.
+
+    const result = this.#advance(next, Math.min(7, remainingDays), true);
+    flow.elapsedDays += result.daysAdvanced;
+
+    let interruption: SimulationInterrupt | null = null;
+    if (next.state.retirement.status === "closed") {
+      interruption = { type: "retirement", priority: 100, source: "retirement.status", requiresPlayerInput: false };
+    } else if (next.pendingDecision) {
+      interruption = {
+        type: "decision", priority: 90, source: next.pendingDecision.event.id, requiresPlayerInput: true,
+        payload: { eventId: next.pendingDecision.event.id }
+      };
+    } else if (result.retirementChanged) {
+      interruption = {
+        type: "retirement", priority: 88, source: "retirement.status", requiresPlayerInput: false,
+        payload: { status: next.state.retirement.status }
+      };
+    } else if (next.state.market?.pending) {
+      interruption = {
+        type: "offer", priority: 85, source: next.state.market.pending.id, requiresPlayerInput: true,
+        payload: { offerId: next.state.market.pending.id }
+      };
+    } else if (result.importantInjuryStarted) {
+      interruption = {
+        type: "important_injury", priority: 80, source: "world.injuryWeeksRemaining", requiresPlayerInput: false,
+        payload: { weeks: Number(next.state.world.injuryWeeksRemaining ?? 0) }
+      };
+    } else if (result.nationalSelectionChanged) {
+      interruption = {
+        type: "national_selection", priority: 78, source: "world.nationalSelectionAuthority", requiresPlayerInput: false
+      };
+    } else if (result.roleChanged || result.clubChanged) {
+      interruption = {
+        type: result.clubChanged ? "career_change" : "role_change",
+        priority: 76,
+        source: result.clubChanged ? "club" : "role",
+        requiresPlayerInput: false,
+        payload: { club: next.state.club, role: next.state.role }
+      };
+    } else if (result.seasonCompleted) {
+      interruption = {
+        type: "season_complete", priority: 72, source: "world.sportMatchModel.objective", requiresPlayerInput: false,
+        payload: { season: next.state.season }
+      };
+    } else if (result.seasonChanged || result.ageChanged) {
+      interruption = {
+        type: "season_transition", priority: 70, source: result.ageChanged ? "age" : "season", requiresPlayerInput: false,
+        payload: { season: next.state.season, age: next.state.age }
+      };
+    } else if (flow.elapsedDays >= flow.maxWeeks * 7) {
+      interruption = { type: "max_auto_weeks", priority: 10, source: "a14.max_auto_weeks", requiresPlayerInput: false };
+    }
+
+    if (!interruption) return;
+    flow.interruption = interruption;
+    flow.summary = buildPeriodSummary(flow, next.state, interruption);
+    if (interruption.type === "decision" || interruption.type === "offer") flow.mode = "waiting_for_decision";
+    else if (interruption.type === "retirement" && next.state.retirement.status === "closed") flow.mode = "retirement";
+    else if (interruption.type === "season_transition" || interruption.type === "season_complete") flow.mode = "season_transition";
+    else flow.mode = "showing_summary";
+  }
+
+  #advance(next: SessionSnapshot, maxDays: number, stopAtRelevantBoundary = false): WeekSimulationResult {
+    let days = 0;
+    const fromDate = next.state.date;
+    let seasonChanged = false;
+    let ageChanged = false;
+    let importantInjuryStarted = false;
+    let nationalSelectionChanged = false;
+    let roleChanged = false;
+    let clubChanged = false;
+    let seasonCompleted = false;
+    let retirementChanged = false;
+    const pendingOfferAtEntry = next.state.market?.pending?.id ?? null;
+
+    const advanceOneDay = (): boolean => {
+      const beforeSeason = next.state.season;
+      const beforeAge = next.state.age;
+      const beforeInjuryWeeks = Number(next.state.world.injuryWeeksRemaining ?? 0);
+      const beforeLongInjury = next.state.flags.LONG_INJURY === true;
+      const beforeRole = next.state.role;
+      const beforeClub = next.state.club;
+      const beforeRetirement = next.state.retirement.status;
+      const beforeObjectiveStatus = getSportMatchModelStore(next.state)?.objective?.status ?? null;
+      const beforeNationalSelection = JSON.stringify(getNationalSelectionAuthorityStore(next.state));
+      const beforeDay = next.state.runtime.day;
+      this.#worldDay(next);
+      const advanced = Math.max(0, next.state.runtime.day - beforeDay);
+      days += advanced || (next.state.date !== fromDate ? 1 : 0);
+      seasonChanged ||= next.state.season !== beforeSeason;
+      ageChanged ||= next.state.age !== beforeAge;
+      const afterInjuryWeeks = Number(next.state.world.injuryWeeksRemaining ?? 0);
+      const afterLongInjury = next.state.flags.LONG_INJURY === true;
+      importantInjuryStarted ||= beforeInjuryWeeks <= 0 && afterInjuryWeeks >= 3
+        || (!beforeLongInjury && afterLongInjury && afterInjuryWeeks > 0);
+      roleChanged ||= next.state.role !== beforeRole;
+      clubChanged ||= next.state.club !== beforeClub;
+      retirementChanged ||= next.state.retirement.status !== beforeRetirement;
+      const afterObjectiveStatus = getSportMatchModelStore(next.state)?.objective?.status ?? null;
+      seasonCompleted ||= beforeObjectiveStatus !== "closed" && afterObjectiveStatus === "closed";
+      nationalSelectionChanged ||= JSON.stringify(getNationalSelectionAuthorityStore(next.state)) !== beforeNationalSelection;
+      return stopAtRelevantBoundary && (
+        seasonChanged || ageChanged || importantInjuryStarted || nationalSelectionChanged ||
+        roleChanged || clubChanged || seasonCompleted || retirementChanged
+      );
+    };
+
+    const result = (): WeekSimulationResult => ({
+      fromDate,
+      toDate: next.state.date,
+      daysAdvanced: days,
+      seasonChanged,
+      ageChanged,
+      importantInjuryStarted,
+      nationalSelectionChanged,
+      roleChanged,
+      clubChanged,
+      seasonCompleted,
+      retirementChanged
+    });
+
+    if (next.needsWorldAdvance) {
+      const stop = advanceOneDay();
+      next.needsWorldAdvance = false;
+      if (stop) return result();
+    }
+
+    // Both legacy continue and A14 auto-simulation reuse this canonical daily loop.
     while (next.state.retirement.status !== "closed") {
       if (next.state.market?.pending) {
         const bridge = selectOfferBridgeEvent(next.state, this.#index.events);
         if (bridge) {
           this.#presentEvent(next, bridge.id);
-          return;
+          return result();
         }
-        // A deadline offer that was already on-screen when the player explicitly
-        // continued may advance toward expiry. A new offer produced during this
-        // advance must yield immediately so interactive and headless policies see
-        // the same formal proposal before another world day is simulated.
         if (!next.state.market.pending.validThrough
           || next.state.market.pending.id !== pendingOfferAtEntry
-          || days >= maxDays) return;
-        this.#worldDay(next);
-        days++;
+          || days >= maxDays) return result();
+        if (advanceOneDay()) return result();
         continue;
       }
       const scheduled = scheduleEvent(next.state, this.#index);
       if (scheduled) {
         this.#presentEvent(next, scheduled.event.id);
-        return;
+        return result();
       }
-      if (days >= maxDays) return;
-      this.#worldDay(next);
-      days++;
+      if (days >= maxDays) return result();
+      if (advanceOneDay()) return result();
     }
+    return result();
   }
 }
