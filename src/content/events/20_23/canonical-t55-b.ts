@@ -153,7 +153,7 @@ const EVT_22_CON_001 = ambiguousEvent({
   body: "Tu contrato entra en una zona nueva: quedan entre doce y veinticuatro meses. Aún no hay ninguna firma que resolver en esta escena. La decisión es estratégica: cuándo abrir la negociación y qué poder quieres conservar antes de que una oferta formal tenga autoridad contractual.",
   visible: [
     "Conoces los meses restantes, tu salario actual y las condiciones vigentes de tu contrato.",
-    "Cualquier renovación real tendrá que llegar como CareerOffer; esta conversación solo fija tu disposición y tu estrategia."
+    "Cualquier renovación real tendrá que llegar con una oferta formal; esta conversación solo fija tu disposición y tu estrategia."
   ],
   uncertain: [
     "No sabes si esperar aumentará tu poder o si una lesión, un cambio de rol o un mercado frío reducirá tus opciones.",

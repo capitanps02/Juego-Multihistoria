@@ -1,0 +1,34 @@
+name: T5.5 A18 Content
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/content/**'
+      - 'src/session/content-migration.ts'
+      - 'src/session/frozen-offer-bridge-evidence.ts'
+      - 'src/session/post-t51-legacy-registry.ts'
+      - 'scripts/qa-t5-content.mjs'
+      - 'scripts/test-t55-a18-template-copy.mjs'
+      - 'qa/fixtures/t5.1/post-t51-sources/**'
+      - 'package.json'
+      - '.github/workflows/t55-a18-content.yml'
+  workflow_dispatch:
+
+jobs:
+  a18-content:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Build engine
+        run: npm run build
+      - name: A18 content lifecycle audit
+        run: node scripts/qa-t5-content.mjs
+      - name: A18 template copy regression
+        run: node scripts/test-t55-a18-template-copy.mjs
