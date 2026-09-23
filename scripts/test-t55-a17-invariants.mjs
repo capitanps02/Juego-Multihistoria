@@ -8,6 +8,7 @@ import {
   narrativeGuardsPass
 } from '../dist/narrative/narrative-guards.js';
 import { scheduleEvent } from '../dist/narrative/scheduler.js';
+import { retirementDecisionAvailable } from '../dist/narrative/retirement-decision.js';
 import { resolveCurrentCoach } from '../dist/simulation/npc-authority.js';
 import { certifyCoachChangeInPlace } from '../dist/simulation/coach-change-authority.js';
 import {
@@ -383,6 +384,34 @@ test('A17/T17.16 late career exposes an explicit retirement-decision scene witho
   assert.ok(familyScene, 'canonical final catalogue must contain the family retirement decision route');
   assert.equal(scheduleEvent(state, [familyScene], { ignoreRhythmGate: true })?.event.id, 'EVT_RET_FAM_001');
   assert.equal(state.retirement.status, 'playing', 'eligibility itself must never auto-retire the player');
+});
+
+test('A17/T17.16b player-initiated retirement eligibility is canonical, read-only and RNG-free', () => {
+  const state = createInitialState(170162);
+  state.age = 34;
+  state.phase = '34_plus';
+  state.retirement.status = 'playing';
+  state.professional.retirementDistance = 30;
+
+  const before = structuredClone(state);
+  assert.equal(retirementDecisionAvailable(state), true);
+  assert.deepEqual(state, before, 'eligibility must not mutate state or RNG');
+
+  state.professional.retirementDistance = 29.9;
+  assert.equal(retirementDecisionAvailable(state), false, 'canonical scene distance gate must be respected');
+
+  state.professional.retirementDistance = 35;
+  state.retirement.status = 'decided';
+  assert.equal(retirementDecisionAvailable(state), false, 'only playing careers can open the canonical decision scene');
+
+  state.retirement.status = 'playing';
+  state.eventCooldowns.EVT_RET_FAM_001 = 1;
+  assert.equal(retirementDecisionAvailable(state), false, 'canonical scene cooldown remains authoritative');
+
+  state.eventCooldowns.EVT_RET_FAM_001 = 0;
+  state.age = 33;
+  state.phase = '30_34';
+  assert.equal(retirementDecisionAvailable(state), false, 'the action cannot bypass the canonical age/phase boundary');
 });
 
 test('A17/T17.17-18 retirement decision and announcement survive save/load', () => {
