@@ -44,7 +44,7 @@ function monthlyContractTick(state: GameState, oldDate: string): void {
   transitionNaturalExpiryInPlace(state, months);
 }
 
-function updateContextFlags(state: GameState, rng: DeterministicRng): void {
+function updateContextFlags(state: GameState, rng: DeterministicRng, debutFromAppearance = false): void {
   const month = Number(state.date.slice(5, 7));
   const role = num(state.sport.roleScore, 0);
   const media = num(state.reputation.mediaHeat, 0);
@@ -66,12 +66,11 @@ function updateContextFlags(state: GameState, rng: DeterministicRng): void {
   }
 
   const seasonMonths = month >= 8 || month <= 5;
-  if (seasonMonths && hasActiveClubEmployment(state) && !state.flags.OFFICIAL_DEBUT && role >= 22 && rng.next() < 0.18) {
-    state.flags.OFFICIAL_DEBUT = true;
-    state.flags.FIRST_TEAM_ATTENTION = true;
-    state.flags.WIN_DEBUT = false;
-    state.sport.appearances = num(state.sport.appearances) + 1;
-    state.reputation.mediaHeat = clamp(media + 5);
+  // Preserve the legacy football RNG stream, but never manufacture a debut without
+  // a real appearance. On the first real appearance, the caller sets the debut and
+  // this consumes the draw that the old synthetic-debut branch would have consumed.
+  if (seasonMonths && hasActiveClubEmployment(state) && role >= 22 && (debutFromAppearance || !state.flags.OFFICIAL_DEBUT)) {
+    rng.next();
   }
 
   if (state.age === 18 && state.flags.OFFICIAL_DEBUT && state.runtime.seasonDay < 150 && form >= 60 && num(state.reputation.mediaHeat) >= 9) {
@@ -196,19 +195,40 @@ function footballWeek(state: GameState): void {
   }
 
   const month = Number(state.date.slice(5, 7));
+  let debutFromAppearance = false;
   if ((month >= 8 || month <= 5) && role > 24) {
     const appearanceChance = clamp((role - 15) / 85, 0.08, 0.92);
-    if (rng.next() < appearanceChance) {
-      state.sport.appearances = num(state.sport.appearances) + 1;
-      const minutes = clamp(num(state.sport.minutesShare) + (rng.next() * 4 + role / 40), 0, 100);
-      state.sport.minutesShare = Math.round(minutes * 10) / 10;
-      if (form > 64 && rng.next() < 0.22) state.reputation.mediaHeat = clamp(num(state.reputation.mediaHeat) + 2);
+    const appearanceRolled = rng.next() < appearanceChance;
+    if (appearanceRolled) {
+      // Consume the same follow-up draws as the legacy path even when injury blocks
+      // participation, so a bug fix does not reshuffle the deterministic RNG stream.
+      const minutesRoll = rng.next();
+      const mediaRoll = form > 64 ? rng.next() : null;
+      const unavailable =
+        state.body.acuteInjury === true ||
+        state.flags.RECOVERING_INJURY === true ||
+        num(state.world.injuryWeeksRemaining, 0) > 0;
+      if (!unavailable) {
+        state.sport.appearances = num(state.sport.appearances) + 1;
+        const minutes = clamp(num(state.sport.minutesShare) + (minutesRoll * 4 + role / 40), 0, 100);
+        state.sport.minutesShare = Math.round(minutes * 10) / 10;
+        if (form > 64 && mediaRoll !== null && mediaRoll < 0.22) {
+          state.reputation.mediaHeat = clamp(num(state.reputation.mediaHeat) + 2);
+        }
+        if (!state.flags.OFFICIAL_DEBUT) {
+          state.flags.OFFICIAL_DEBUT = true;
+          state.flags.FIRST_TEAM_ATTENTION = true;
+          state.flags.WIN_DEBUT = false;
+          state.reputation.mediaHeat = clamp(num(state.reputation.mediaHeat) + 5);
+          debutFromAppearance = true;
+        }
+      }
     }
   }
 
   const market = clamp(num(state.reputation.marketHeat) * 0.82 + role * 0.10 + num(state.reputation.mediaHeat) * 0.08 + (rng.next() - 0.5) * 5);
   state.reputation.marketHeat = Math.round(market * 10) / 10;
-  updateContextFlags(state, rng);
+  updateContextFlags(state, rng, debutFromAppearance);
 }
 
 
