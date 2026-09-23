@@ -24,7 +24,6 @@ import { certifyCoachChangeInPlace } from '../dist/simulation/coach-change-autho
 import { assertGameState } from '../dist/save/validation.js';
 import { loadSave, serializeSave } from '../dist/save/save.js';
 import { GameSession } from '../dist/session/game-session.js';
-import { certifyCoachChangeInPlace } from '../dist/simulation/coach-change-authority.js';
 
 const invalidSave = error => error?.code === 'INVALID_SAVE';
 
