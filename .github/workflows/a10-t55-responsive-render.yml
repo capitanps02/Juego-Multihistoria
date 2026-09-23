@@ -1,0 +1,41 @@
+name: A10 T5.5 Responsive Render QA
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  responsive-render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Install headless browser for QA
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Start real local game
+        run: |
+          node scripts/serve-preview.mjs > /tmp/mh-preview.log 2>&1 &
+          echo $! > /tmp/mh-preview.pid
+          for i in {1..30}; do
+            if curl -fsS http://127.0.0.1:4173/ >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/mh-preview.log
+          exit 1
+      - name: Render 390 768 1440
+        run: node scripts/test-t55-a19-responsive-render.mjs
+      - name: Preview log on failure
+        if: failure()
+        run: cat /tmp/mh-preview.log || true
