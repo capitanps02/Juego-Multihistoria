@@ -103,6 +103,7 @@ export const T51_T5_161_CAPTAIN_CONTENT_IDENTITY = "56b9ca09b872ac6dc8fc78ec9459
 export const T51_A8_ORDINARY_FINAL_CONTENT_IDENTITY = "ab7c3e62f7ca6d90973e657f2eb0a9cec0a745fe12369ac9df770bcf6614e658";
 export const T51_A9_TERMINAL_FINAL_CONTENT_IDENTITY = "d0fee1ceef2c3bdb7d8cd933ce773341a3c375b39deedcc21cd801a8c3f67770";
 export const T55_A18_NARRATIVE_CLEANUP_CONTENT_IDENTITY = "39945e3250c1238cad979e3957004a2b78bcedff7a727a16d70ef63e1d7269b0";
+export const T55_A18_C46_TEMPLATE_CLEANUP_CONTENT_IDENTITY = "54f3f03a68b4d7f00f1e8486ee593a6f65bb7ba4d059a1a67fa3da17dc87dfe0";
 
 /**
  * Explicit identity-bound edges. Successive canonical batches extend this as a
@@ -411,6 +412,12 @@ export const CONTENT_MIGRATION_ROUTES: readonly ContentMigrationRoute[] = [
   {
     sourceContentIdentity: T51_A9_TERMINAL_FINAL_CONTENT_IDENTITY,
     targetContentIdentity: T55_A18_NARRATIVE_CLEANUP_CONTENT_IDENTITY,
+    schedulerMappings: [],
+    seedOriginMappings: []
+  },
+  {
+    sourceContentIdentity: T55_A18_NARRATIVE_CLEANUP_CONTENT_IDENTITY,
+    targetContentIdentity: T55_A18_C46_TEMPLATE_CLEANUP_CONTENT_IDENTITY,
     schedulerMappings: [],
     seedOriginMappings: []
   }
