@@ -94,3 +94,10 @@ test('A19 career renders only factual complete-ledger milestones',()=>{
   assert.match(ui,/appearance100/);
   assert.match(css,/milestone-chip/);
 });
+
+
+test('A19 primary simulation CTA advances exactly one week',()=>{
+  assert.match(ui,/Simular semana/);
+  assert.match(ui,/action:'start',maxWeeks:1/);
+  assert.match(ui,/Simular otra semana/);
+});
