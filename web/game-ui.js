@@ -97,10 +97,10 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
     if(v.screen==='result')return button('Volver a tu decisión',openCinematic,'primary',{blockedWhenPaused:true});
     if(v.screen==='epilogue')return button('Ver mi carrera',()=>navigate('career'),'primary');
     if(v.simulation){
-      if(v.screen==='summary')return button('Seguir simulando',()=>run('auto',{action:'start'}),'primary',{blockedWhenPaused:true});
+      if(v.screen==='summary')return button('Simular otra semana',()=>run('auto',{action:'start',maxWeeks:1}),'primary',{blockedWhenPaused:true});
       if(v.simulation.mode==='auto_simulating')return button('Pausar simulación',()=>run('auto',{action:'pause'}),'primary',{blockedWhenPaused:true});
       if(v.simulation.mode==='paused')return button('Reanudar simulación',()=>run('auto',{action:'resume'}),'primary',{blockedWhenPaused:true});
-      return button('Simular',()=>run('auto',{action:'start'}),'primary',{blockedWhenPaused:true});
+      return button('Simular semana',()=>run('auto',{action:'start',maxWeeks:1}),'primary',{blockedWhenPaused:true});
     }
     return button('Simular semana',()=>run('continue',{maxDays:7}),'primary',{blockedWhenPaused:true});
   }
