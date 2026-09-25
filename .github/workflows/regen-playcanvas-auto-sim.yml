@@ -1,0 +1,35 @@
+name: Regenerate PlayCanvas bundle
+
+on:
+  push:
+    branches:
+      - fix/playcanvas-auto-sim-sync-20260925
+
+permissions:
+  contents: write
+
+jobs:
+  regenerate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/playcanvas-auto-sim-sync-20260925
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build:playcanvas
+      - name: Commit regenerated PlayCanvas package
+        run: |
+          if git diff --quiet -- playcanvas/multihistoria.js playcanvas/manifest.json web/assets.json; then
+            echo "PlayCanvas package already current."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add playcanvas/multihistoria.js playcanvas/manifest.json web/assets.json
+          git commit -m "build: refresh PlayCanvas bundle for auto simulation"
+          git push
