@@ -7,6 +7,9 @@ on:
       - 'web/game-ui.js'
       - 'web/game-ui.css'
       - 'src/session/game-session.ts'
+      - 'src/simulation/match-model.ts'
+      - 'src/narrative/consequences.ts'
+      - 'scripts/test-posttest-feedback.mjs'
       - 'scripts/test-t55-a19-ui.mjs'
       - 'scripts/test-playcanvas.mjs'
       - 'package.json'
@@ -29,4 +32,4 @@ jobs:
       - name: Build engine
         run: npm run build
       - name: A19 directed UX regression
-        run: node --test scripts/test-t55-a19-ui.mjs
+        run: node --test scripts/test-t55-a19-ui.mjs scripts/test-posttest-feedback.mjs

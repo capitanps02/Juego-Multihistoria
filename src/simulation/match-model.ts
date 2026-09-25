@@ -116,6 +116,9 @@ export interface CareerSeasonRecord extends DetailedSeasonPlayerStats {
 
 export interface CareerMatchResult {
   matchId: string;
+  date: string;
+  homeAway: MatchHomeAway;
+  result: MatchResultFact | null;
   season: string;
   club: string;
   competition: MatchCompetition;
@@ -800,7 +803,18 @@ export function setOfficialMatchEffectsInPlace(
 }
 
 export function currentCareerMatchResult(state: GameState): CareerMatchResult | null {
-  const row = currentOfficialMatch(state);
+  return careerMatchResult(state, currentOfficialMatch(state));
+}
+
+/** Presentation history survives non-match days; currentOfficialMatch keeps its simulation semantics. */
+export function latestCareerMatchResult(state: GameState): CareerMatchResult | null {
+  const fixtures = getSportMatchModelStore(state)?.fixtures ?? [];
+  const row = fixtures.filter(item => item.date <= state.date)
+    .reduce<(typeof fixtures)[number] | null>((latest, item) => !latest || item.date >= latest.date ? item : latest, null);
+  return careerMatchResult(state, row);
+}
+
+function careerMatchResult(state: GameState, row: ReturnType<typeof currentOfficialMatch>): CareerMatchResult | null {
   const store = getSportMatchModelStore(state);
   if (!row || !store) return null;
   const stats: MatchPlayerStats = row.stats ?? { goals: 0, assists: 0, yellowCards: 0, redCards: 0 };
@@ -821,6 +835,9 @@ export function currentCareerMatchResult(state: GameState): CareerMatchResult | 
   if ([10, 50, 100, 500, 700].includes(appearanceOrdinal)) milestones.push(`appearance_${appearanceOrdinal}`);
   return {
     matchId: row.id,
+    date: row.date,
+    homeAway: row.homeAway,
+    result: row.result ? { ...row.result } : null,
     season: row.season,
     club: row.club,
     competition: row.competition,
