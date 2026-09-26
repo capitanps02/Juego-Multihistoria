@@ -1,0 +1,6 @@
+{"variant":"base38","profile":"rotation","seeds":100,"seasons":5,"withMarketOffer":15,"mean":0.15,"median":0,"p90":1,"max":1}
+{"variant":"base38","profile":"regular","seeds":100,"seasons":5,"withMarketOffer":11,"mean":0.13,"median":0,"p90":1,"max":2}
+{"variant":"base38","profile":"adversity","seeds":100,"seasons":5,"withMarketOffer":18,"mean":0.18,"median":0,"p90":1,"max":1}
+{"variant":"candidate30","profile":"rotation","seeds":100,"seasons":5,"withMarketOffer":27,"mean":0.33,"median":0,"p90":1,"max":3}
+{"variant":"candidate30","profile":"regular","seeds":100,"seasons":5,"withMarketOffer":27,"mean":0.3,"median":0,"p90":1,"max":2}
+{"variant":"candidate30","profile":"adversity","seeds":100,"seasons":5,"withMarketOffer":29,"mean":0.36,"median":0,"p90":1,"max":2}

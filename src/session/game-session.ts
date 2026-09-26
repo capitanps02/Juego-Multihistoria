@@ -15,7 +15,7 @@ import {
 import { resolveChoiceInPlace } from "../narrative/resolver.js";
 import { buildDecisionConsequences, normalizeConsequenceFields, playerFacingMessages, type VisibleConsequence } from "../narrative/consequences.js";
 import { advanceWorldDayInPlace } from "../simulation/world-simulator.js";
-import { careerSeasonRecords, careerSportMilestones, currentCareerMatchResult, getSportMatchModelStore, type CareerMatchResult, type CareerSeasonRecord, type CareerSportMilestones } from "../simulation/match-model.js";
+import { careerSeasonRecords, careerSportMilestones, latestCareerMatchResult, getSportMatchModelStore, type CareerMatchResult, type CareerSeasonRecord, type CareerSportMilestones } from "../simulation/match-model.js";
 import { getNationalSelectionAuthorityStore } from "../simulation/national-team-authority.js";
 import { maybeEmitMicroFeed } from "../simulation/microfeed.js";
 import { MICROFEEDS_26_30 } from "../content/microfeeds/26_30.js";
@@ -387,14 +387,14 @@ export class GameSession {
     const lastEventId = s.history.at(-1)?.eventId;
     const lastEvent = lastEventId ? this.#index.events.find(e => e.id === lastEventId) : undefined;
     const simulationState = this.#snapshot.autoSimulation ?? idleAutoSimulationState();
-    const simulation = publicAutoSimulationState(simulationState);
+    const simulation = publicAutoSimulationState(simulationState, s);
     const summaryScreen = simulation.mode === "showing_summary" || simulation.mode === "season_transition";
     return structuredClone({
       sessionId: this.#snapshot.sessionId, revision: this.#snapshot.revision,
       screen: result ? "result" : p ? "decision" : s.market?.pending ? "offer" : summaryScreen ? "summary" : s.retirement.status === "closed" ? "epilogue" : "career",
       offer: s.market?.pending ? publicOffer(s.market.pending) : null, offerHistory: (s.market?.history ?? []).map(h=>({...h,offer:publicOffer(h.offer)})),
       ageMilestones: s.ageMilestones ? structuredClone(s.ageMilestones) : [],
-      careerSeasons: careerSeasonRecords(s), careerMilestones: careerSportMilestones(s), latestMatch: currentCareerMatchResult(s), retirementStatus: s.retirement.status,
+      careerSeasons: careerSeasonRecords(s), careerMilestones: careerSportMilestones(s), latestMatch: latestCareerMatchResult(s), retirementStatus: s.retirement.status,
       date: s.date, age: s.age, club: s.club, appearances: Number(s.sport.appearances ?? 0),
       salaryMonthly: Number(s.contract.salaryMonthly ?? 0), decisionsMade: s.history.length,
       season: s.season, position: String(s.sport.positionIdentity), fitness: Number(s.body.fitness),

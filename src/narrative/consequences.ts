@@ -64,7 +64,14 @@ const PATH_META: Readonly<Record<string, ConsequenceMeta>> = {
   "professional.contractPower": { category: "career", label: "Poder de negociación", higherIsBetter: true },
   "professional.lockerPower": { category: "career", label: "Peso en el vestuario", higherIsBetter: true },
   "professional.moneyComfort": { category: "finance", label: "Comodidad financiera", higherIsBetter: true },
-  "finances.cash": { category: "finance", label: "Dinero disponible", higherIsBetter: true }
+  "finances.cash": { category: "finance", label: "Dinero disponible", higherIsBetter: true },
+  "professional.recoveryDebt": { category: "body", label: "Recuperación pendiente", higherIsBetter: false },
+  "professional.recoveryMargin": { category: "body", label: "Margen de recuperación", higherIsBetter: true },
+  "professional.motivationReserve": { category: "career", label: "Motivación", higherIsBetter: true },
+  "professional.legacyCapital": { category: "career", label: "Legado", higherIsBetter: true },
+  "professional.successionPressure": { category: "career", label: "Competencia por el puesto", higherIsBetter: false },
+  "professional.foreignAdaptation": { category: "career", label: "Adaptación al extranjero", higherIsBetter: true },
+  "professional.retirementDistance": { category: "career", label: "Cercanía a la retirada", higherIsBetter: null }
 };
 
 const REL_AXIS_META: Readonly<Record<string, { label: string; higherIsBetter: boolean | null }>> = {
@@ -172,9 +179,8 @@ export function buildDecisionConsequences(
     });
 
   const hiddenEffects: string[] = [];
-  if (visibleEffects.length === 0 && narrativeEffects.length === 0) {
-    hiddenEffects.push(hasHiddenEffect ? DEFERRED_CONSEQUENCE_MESSAGE : NO_IMMEDIATE_CHANGE_MESSAGE);
-  }
+  if (hasHiddenEffect) hiddenEffects.push(DEFERRED_CONSEQUENCE_MESSAGE);
+  else if (visibleEffects.length === 0 && narrativeEffects.length === 0) hiddenEffects.push(NO_IMMEDIATE_CHANGE_MESSAGE);
 
   return { visibleEffects, narrativeEffects, hiddenEffects };
 }
