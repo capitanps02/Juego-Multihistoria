@@ -11,3 +11,5 @@
 .period-fixture p{margin:6px 0}
 
 .period-summary{margin-bottom:12px}
+
+.decision-memory{padding:12px 0;border-top:1px solid #ffffff20;overflow-wrap:anywhere}.decision-memory h3{margin:8px 0}.timeline [data-journal-index]:focus{outline:2px solid #d6b86a;outline-offset:3px}
