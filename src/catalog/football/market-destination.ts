@@ -46,6 +46,30 @@ for (const division of FOOTBALL_DIVISIONS) {
   }
 }
 
+const FOREIGN_COUNTRY_CODES = Object.freeze([...new Set(
+  FOOTBALL_DIVISIONS
+    .filter(division => division.countryCode !== "ESP")
+    .map(division => division.countryCode)
+)]);
+
+const FOREIGN_COUNTRIES_BY_TIER = new Map<number, readonly FootballCountryCode[]>();
+for (let requestedTier = 1; requestedTier <= 9; requestedTier += 1) {
+  const contexts = FOREIGN_COUNTRY_CODES
+    .map(countryCode => ({ countryCode, division: nearestDivisionForCountry(countryCode, requestedTier) }))
+    .filter((row): row is { countryCode: FootballCountryCode; division: NonNullable<typeof row.division> } => row.division !== null);
+  if (contexts.length === 0) {
+    FOREIGN_COUNTRIES_BY_TIER.set(requestedTier, Object.freeze([]));
+    continue;
+  }
+  const minimumDistance = Math.min(...contexts.map(row => Math.abs(row.division.tier - requestedTier)));
+  FOREIGN_COUNTRIES_BY_TIER.set(
+    requestedTier,
+    Object.freeze(contexts
+      .filter(row => Math.abs(row.division.tier - requestedTier) === minimumDistance)
+      .map(row => row.countryCode))
+  );
+}
+
 /**
  * Deterministic identity selector for formal market opportunities.
  * It chooses a club from the nearest represented division but does not alter the
@@ -94,25 +118,11 @@ export function selectForeignMarketDestination(request: ForeignMarketDestination
   const requestedTier = Number.isFinite(request.leagueTier)
     ? Math.max(1, Math.min(9, Math.trunc(request.leagueTier)))
     : 3;
-  const countryCodes = [...new Set(
-    FOOTBALL_DIVISIONS
-      .filter(division => division.countryCode !== "ESP")
-      .map(division => division.countryCode)
-  )];
+  const candidates = FOREIGN_COUNTRIES_BY_TIER.get(requestedTier) ?? [];
+  if (candidates.length === 0) throw new Error("Football catalog has no foreign market destinations.");
 
-  const contexts = countryCodes
-    .map(countryCode => ({
-      countryCode,
-      division: nearestDivisionForCountry(countryCode, requestedTier)
-    }))
-    .filter((row): row is { countryCode: FootballCountryCode; division: NonNullable<typeof row.division> } => row.division !== null);
-
-  if (contexts.length === 0) throw new Error("Football catalog has no foreign market destinations.");
-
-  const minimumDistance = Math.min(...contexts.map(row => Math.abs(row.division.tier - requestedTier)));
-  const candidates = contexts.filter(row => Math.abs(row.division.tier - requestedTier) === minimumDistance);
   const countryRoll = mix32(request.roll ^ 0x9e3779b9);
-  const selectedCountry = candidates[countryRoll % candidates.length]!.countryCode;
+  const selectedCountry = candidates[countryRoll % candidates.length]!;
 
   return selectMarketDestination({
     countryCode: selectedCountry,
