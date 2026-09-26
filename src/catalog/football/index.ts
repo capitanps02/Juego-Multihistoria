@@ -12,6 +12,8 @@ import type { FootballCountryCode, FootballClub, FootballDivision } from "./type
 
 const CLUB_BY_ID = new Map(FOOTBALL_CLUBS.map(club => [club.id, club] as const));
 const DIVISION_BY_ID = new Map(FOOTBALL_DIVISIONS.map(division => [division.id, division] as const));
+const EMPTY_CLUBS: readonly FootballClub[] = Object.freeze([]);
+const EMPTY_DIVISIONS: readonly FootballDivision[] = Object.freeze([]);
 
 function freezeGrouped<K, V>(rows: readonly V[], keyOf: (row: V) => K): Map<K, readonly V[]> {
   const mutable = new Map<K, V[]>();
@@ -51,15 +53,15 @@ export function clubById(id: string): FootballClub | null {
 }
 
 export function clubsForDivision(divisionId: string): readonly FootballClub[] {
-  return CLUBS_BY_DIVISION.get(divisionId) ?? Object.freeze([]);
+  return CLUBS_BY_DIVISION.get(divisionId) ?? EMPTY_CLUBS;
 }
 
 export function clubsForCountry(countryCode: FootballCountryCode): readonly FootballClub[] {
-  return CLUBS_BY_COUNTRY.get(countryCode) ?? Object.freeze([]);
+  return CLUBS_BY_COUNTRY.get(countryCode) ?? EMPTY_CLUBS;
 }
 
 export function divisionsForCountry(countryCode: FootballCountryCode): readonly FootballDivision[] {
-  return DIVISIONS_BY_COUNTRY.get(countryCode) ?? Object.freeze([]);
+  return DIVISIONS_BY_COUNTRY.get(countryCode) ?? EMPTY_DIVISIONS;
 }
 
 export function nearestDivisionForCountry(countryCode: FootballCountryCode, leagueTier: number): FootballDivision | null {
