@@ -1,4 +1,5 @@
 import {
+  FOOTBALL_DIVISIONS,
   clubsForDivision,
   nearestDivisionForCountry
 } from "./index.js";
@@ -53,4 +54,60 @@ export function selectMarketDestination(request: MarketDestinationRequest): Foot
     : Math.max(6, Math.ceil(ranked.length * 0.6));
   const shortlist = ranked.slice(0, shortlistSize);
   return shortlist[(request.roll >>> 0) % shortlist.length]!;
+}
+
+
+export interface ForeignMarketDestinationRequest {
+  leagueTier: number;
+  roll: number;
+  profile: MarketDestinationProfile;
+  excludeClubIds?: readonly string[];
+}
+
+function mix32(value: number): number {
+  let x = value >>> 0;
+  x ^= x >>> 16;
+  x = Math.imul(x, 0x7feb352d);
+  x ^= x >>> 15;
+  x = Math.imul(x, 0x846ca68b);
+  x ^= x >>> 16;
+  return x >>> 0;
+}
+
+/**
+ * Select a foreign destination without any extra RNG draw.
+ * Countries with an exact represented tier are preferred. If no foreign league
+ * represents that tier, the closest represented depth is used.
+ */
+export function selectForeignMarketDestination(request: ForeignMarketDestinationRequest): FootballClub {
+  const requestedTier = Number.isFinite(request.leagueTier)
+    ? Math.max(1, Math.min(9, Math.trunc(request.leagueTier)))
+    : 3;
+  const countryCodes = [...new Set(
+    FOOTBALL_DIVISIONS
+      .filter(division => division.countryCode !== "ESP")
+      .map(division => division.countryCode)
+  )];
+
+  const contexts = countryCodes
+    .map(countryCode => ({
+      countryCode,
+      division: nearestDivisionForCountry(countryCode, requestedTier)
+    }))
+    .filter((row): row is { countryCode: FootballCountryCode; division: NonNullable<typeof row.division> } => row.division !== null);
+
+  if (contexts.length === 0) throw new Error("Football catalog has no foreign market destinations.");
+
+  const minimumDistance = Math.min(...contexts.map(row => Math.abs(row.division.tier - requestedTier)));
+  const candidates = contexts.filter(row => Math.abs(row.division.tier - requestedTier) === minimumDistance);
+  const countryRoll = mix32(request.roll ^ 0x9e3779b9);
+  const selectedCountry = candidates[countryRoll % candidates.length]!.countryCode;
+
+  return selectMarketDestination({
+    countryCode: selectedCountry,
+    leagueTier: requestedTier,
+    roll: mix32(request.roll ^ 0x85ebca6b),
+    profile: request.profile,
+    excludeClubIds: request.excludeClubIds
+  });
 }
