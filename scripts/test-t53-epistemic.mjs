@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { EVENTS } from '../dist/content/events/index.js';
 import { createInitialState } from '../dist/content/initial-state.js';
+import { clubById } from '../dist/catalog/football/index.js';
 import { getNpcKnowledgeRecord, npcKnows } from '../dist/core/npc-knowledge.js';
 import { resolveChoiceInPlace } from '../dist/narrative/resolver.js';
 import { serializeSave } from '../dist/save/save.js';
@@ -63,7 +64,10 @@ test('T5.3 explicit discoveries create NPC knowledge only on the revealing outco
 
 test('T5.3 una memoria de transferencia conserva el club donde se aprendió el hecho', () => {
   const state = stateForOutcome('EVT_19_JAN_001', 'FORCE_EXIT', 'FORCE_EXIT__SECONDARY');
-  assert.equal(state.club, 'NEW_CLUB');
+  const destination = clubById(state.club);
+  assert.ok(destination, state.club);
+  assert.equal(destination.countryCode, 'ESP');
+  assert.notEqual(state.club, 'UDV');
   const record = getNpcKnowledgeRecord(state, 'NPC_DIR_02', 'EVT_19_JAN_001');
   assert.ok(record);
   assert.equal(record.club, 'UDV');
