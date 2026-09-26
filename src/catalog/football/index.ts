@@ -13,30 +13,58 @@ import type { FootballCountryCode, FootballClub, FootballDivision } from "./type
 const CLUB_BY_ID = new Map(FOOTBALL_CLUBS.map(club => [club.id, club] as const));
 const DIVISION_BY_ID = new Map(FOOTBALL_DIVISIONS.map(division => [division.id, division] as const));
 
+function freezeGrouped<K, V>(rows: readonly V[], keyOf: (row: V) => K): Map<K, readonly V[]> {
+  const mutable = new Map<K, V[]>();
+  for (const row of rows) {
+    const key = keyOf(row);
+    const bucket = mutable.get(key);
+    if (bucket) bucket.push(row);
+    else mutable.set(key, [row]);
+  }
+  const indexed = new Map<K, readonly V[]>();
+  for (const [key, bucket] of mutable) indexed.set(key, Object.freeze(bucket.slice()));
+  return indexed;
+}
+
+const CLUBS_BY_DIVISION = freezeGrouped(FOOTBALL_CLUBS, club => club.divisionId);
+const CLUBS_BY_COUNTRY = freezeGrouped(FOOTBALL_CLUBS, club => club.countryCode);
+const DIVISIONS_BY_COUNTRY = freezeGrouped(FOOTBALL_DIVISIONS, division => division.countryCode);
+
+const NEAREST_DIVISION = new Map<string, FootballDivision>();
+for (const [countryCode, divisions] of DIVISIONS_BY_COUNTRY) {
+  for (let requested = 1; requested <= 9; requested += 1) {
+    let selected: FootballDivision | null = null;
+    for (const division of divisions) {
+      if (!selected) {
+        selected = division;
+        continue;
+      }
+      const distance = Math.abs(division.tier - requested) - Math.abs(selected.tier - requested);
+      if (distance < 0 || (distance === 0 && division.tier > selected.tier)) selected = division;
+    }
+    if (selected) NEAREST_DIVISION.set(`${countryCode}:${requested}`, selected);
+  }
+}
+
 export function clubById(id: string): FootballClub | null {
   return CLUB_BY_ID.get(id) ?? null;
 }
 
 export function clubsForDivision(divisionId: string): readonly FootballClub[] {
-  return FOOTBALL_CLUBS.filter(club => club.divisionId === divisionId);
+  return CLUBS_BY_DIVISION.get(divisionId) ?? Object.freeze([]);
 }
 
 export function clubsForCountry(countryCode: FootballCountryCode): readonly FootballClub[] {
-  return FOOTBALL_CLUBS.filter(club => club.countryCode === countryCode);
+  return CLUBS_BY_COUNTRY.get(countryCode) ?? Object.freeze([]);
 }
 
 export function divisionsForCountry(countryCode: FootballCountryCode): readonly FootballDivision[] {
-  return FOOTBALL_DIVISIONS.filter(division => division.countryCode === countryCode);
+  return DIVISIONS_BY_COUNTRY.get(countryCode) ?? Object.freeze([]);
 }
 
 export function nearestDivisionForCountry(countryCode: FootballCountryCode, leagueTier: number): FootballDivision | null {
-  const divisions = divisionsForCountry(countryCode);
-  if (divisions.length === 0) return null;
   const requested = Number.isFinite(leagueTier) ? Math.max(1, Math.min(9, Math.trunc(leagueTier))) : 3;
-  return [...divisions].sort((a, b) => {
-    const distance = Math.abs(a.tier - requested) - Math.abs(b.tier - requested);
-    return distance !== 0 ? distance : b.tier - a.tier;
-  })[0] ?? null;
+  return NEAREST_DIVISION.get(`${countryCode}:${requested}`) ?? null;
 }
 
 export function divisionById(id: string): FootballDivision | null {
