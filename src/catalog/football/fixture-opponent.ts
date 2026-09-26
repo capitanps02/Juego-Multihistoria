@@ -3,7 +3,8 @@ import {
   FOOTBALL_DIVISIONS,
   clubById,
   clubsForDivision,
-  divisionById
+  divisionsForCountry,
+  nearestDivisionForCountry
 } from "./index.js";
 import type { FootballCountryCode } from "./types.js";
 
@@ -41,20 +42,6 @@ function normalizedTier(value: number): number {
   return Math.max(1, Math.min(9, Math.trunc(value)));
 }
 
-function divisionsForCountry(countryCode: FootballCountryCode) {
-  return FOOTBALL_DIVISIONS.filter(division => division.countryCode === countryCode);
-}
-
-function nearestDivision(countryCode: FootballCountryCode, leagueTier: number) {
-  const divisions = divisionsForCountry(countryCode);
-  if (divisions.length === 0) return null;
-  const requested = normalizedTier(leagueTier);
-  return [...divisions].sort((a, b) => {
-    const distance = Math.abs(a.tier - requested) - Math.abs(b.tier - requested);
-    return distance !== 0 ? distance : b.tier - a.tier;
-  })[0] ?? null;
-}
-
 function foreignCountryForSyntheticClub(registrationClub: string, leagueTier: number): FootballCountryCode {
   const requested = normalizedTier(leagueTier);
   const exact = FOREIGN_COUNTRIES.filter(countryCode =>
@@ -83,13 +70,17 @@ export function resolveFixtureDivision(
   abroad: boolean
 ) {
   const catalogClub = clubById(registrationClub);
-  if (catalogClub) return divisionById(catalogClub.divisionId);
+  if (catalogClub) {
+    return catalogClub.tier === normalizedTier(leagueTier)
+      ? FOOTBALL_DIVISIONS.find(division => division.id === catalogClub.divisionId) ?? null
+      : nearestDivisionForCountry(catalogClub.countryCode, leagueTier);
+  }
 
   const foreign = abroad || route === "abroad" || /^Foreign_/i.test(registrationClub);
   const countryCode = foreign
     ? foreignCountryForSyntheticClub(registrationClub, leagueTier)
     : "ESP";
-  return nearestDivision(countryCode, leagueTier);
+  return nearestDivisionForCountry(countryCode, leagueTier);
 }
 
 /**
