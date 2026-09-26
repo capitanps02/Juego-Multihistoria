@@ -1,19 +1,19 @@
 import type { ClubArchetype, EuropeanCountryCode, FootballClub, FootballDivision } from "./types.js";
 
 const COUNTRY_CONFIGS = {
-  "ES": {
+  "ESP": {
     "country": "España",
     "divisions": [
       [
-        "Primera Nacional Española",
+        "Liga Superior Española",
         20
       ],
       [
-        "Segunda Nacional Española",
+        "Liga Nacional Española",
         22
       ],
       [
-        "Liga Federal Española",
+        "Liga Profesional III Española",
         20
       ]
     ],
@@ -96,19 +96,19 @@ const COUNTRY_CONFIGS = {
       "Mirador"
     ]
   },
-  "GB": {
+  "ENG": {
     "country": "Inglaterra",
     "divisions": [
       [
-        "Liga Mayor Inglesa",
+        "Liga Superior Inglesa",
         20
       ],
       [
-        "Campeonato Nacional Inglés",
+        "Liga Nacional Inglesa",
         24
       ],
       [
-        "Liga Uno Inglesa",
+        "Liga Profesional III Inglesa",
         24
       ]
     ],
@@ -197,15 +197,15 @@ const COUNTRY_CONFIGS = {
       "Beacon"
     ]
   },
-  "IT": {
+  "ITA": {
     "country": "Italia",
     "divisions": [
       [
-        "Lega Nazionale",
+        "Liga Superior Italiana",
         20
       ],
       [
-        "Lega Due",
+        "Liga Nacional Italiana",
         20
       ]
     ],
@@ -266,11 +266,11 @@ const COUNTRY_CONFIGS = {
       "Ponte"
     ]
   },
-  "DE": {
+  "DEU": {
     "country": "Alemania",
     "divisions": [
       [
-        "Liga Mayor Alemana",
+        "Liga Superior Alemana",
         18
       ],
       [
@@ -331,11 +331,11 @@ const COUNTRY_CONFIGS = {
       "Rhein"
     ]
   },
-  "FR": {
+  "FRA": {
     "country": "Francia",
     "divisions": [
       [
-        "Liga Mayor Francesa",
+        "Liga Superior Francesa",
         18
       ],
       [
@@ -396,11 +396,11 @@ const COUNTRY_CONFIGS = {
       "Prairie"
     ]
   },
-  "PT": {
+  "PRT": {
     "country": "Portugal",
     "divisions": [
       [
-        "Liga Maior Portuguesa",
+        "Liga Superior Portuguesa",
         18
       ],
       [
@@ -461,11 +461,11 @@ const COUNTRY_CONFIGS = {
       "Aurora"
     ]
   },
-  "NL": {
+  "NLD": {
     "country": "Países Bajos",
     "divisions": [
       [
-        "Liga Mayor Neerlandesa",
+        "Liga Superior Neerlandesa",
         18
       ],
       [
@@ -528,11 +528,11 @@ const COUNTRY_CONFIGS = {
       "Dijk"
     ]
   },
-  "BE": {
+  "BEL": {
     "country": "Bélgica",
     "divisions": [
       [
-        "Liga Mayor Belga",
+        "Liga Superior Belga",
         16
       ],
       [
@@ -591,6 +591,8 @@ const COUNTRY_CONFIGS = {
   }
 } as const;
 
+const MAX_SHORT_NAME_LENGTH = 22;
+
 function hashString(value: string): number {
   let hash = 2166136261;
   for (let i = 0; i < value.length; i += 1) {
@@ -604,22 +606,44 @@ function clamp(value: number, min = 0, max = 100): number {
   return Math.min(max, Math.max(min, Math.round(value)));
 }
 
-function score(code: string, tier: number, index: number, channel: string): number {
-  const roll = hashString(`${code}|${tier}|${index}|${channel}`) % 21;
+function asciiToken(value: string): string {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toUpperCase()
+    .replace(/[^A-Z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+}
+
+function clubId(countryCode: EuropeanCountryCode, city: string): string {
+  return `${countryCode}_${asciiToken(city)}`;
+}
+
+function score(id: string, tier: number, channel: string): number {
+  const roll = hashString(`${id}|${tier}|${channel}`) % 21;
   const base = tier === 1 ? 72 : tier === 2 ? 50 : 34;
   const spread = tier === 1 ? 18 : tier === 2 ? 20 : 18;
   return clamp(base + Math.round((roll / 20) * spread));
 }
 
-function archetypesFor(tier: number, prestige: number, seed: number): ClubArchetype[] {
-  const pool: ClubArchetype[] = ["development","selling","historic","high_pressure","community","technical","physical"];
-  const first = prestige >= 84 && tier === 1 ? "continental" : pool[seed % pool.length]!;
-  const second = pool[(seed + 3) % pool.length]!;
-  return first === second ? [first] : [first, second];
+function shortName(city: string, modifier: string): string {
+  const full = `${city} ${modifier}`;
+  if (full.length <= MAX_SHORT_NAME_LENGTH) return full;
+  const modifierLength = Math.min(5, modifier.length);
+  const cityLength = Math.max(4, MAX_SHORT_NAME_LENGTH - modifierLength - 1);
+  return `${city.slice(0, cityLength).trim()} ${modifier.slice(0, modifierLength)}`.slice(0, MAX_SHORT_NAME_LENGTH).trim();
 }
 
-export const EUROPEAN_DIVISIONS: FootballDivision[] = [];
-export const EUROPEAN_CLUBS: FootballClub[] = [];
+function archetypesFor(tier: number, prestige: number, seed: number): readonly ClubArchetype[] {
+  const pool: ClubArchetype[] = ["development","selling","historic","high_pressure","community","technical","physical"];
+  const first: ClubArchetype = prestige >= 84 && tier === 1 ? "continental" : pool[seed % pool.length]!;
+  const second = pool[(seed + 3) % pool.length]!;
+  return Object.freeze(first === second ? [first] : [first, second]);
+}
+
+const divisions: FootballDivision[] = [];
+const clubs: FootballClub[] = [];
+const seenClubIds = new Set<string>();
 
 for (const [rawCode, config] of Object.entries(COUNTRY_CONFIGS)) {
   const countryCode = rawCode as EuropeanCountryCode;
@@ -632,35 +656,43 @@ for (const [rawCode, config] of Object.entries(COUNTRY_CONFIGS)) {
   config.divisions.forEach(([name, clubCount], divisionIndex) => {
     const tier = divisionIndex + 1;
     const divisionId = `${countryCode}_D${tier}`;
-    EUROPEAN_DIVISIONS.push({ id: divisionId, countryCode, country: config.country, name, tier, clubCount });
+    divisions.push(Object.freeze({ id: divisionId, countryCode, country: config.country, name, tier, clubCount }));
 
     for (let index = 0; index < clubCount; index += 1) {
       const city = config.cities[cityOffset + index]!;
-      const modifier = config.mods[(index + divisionIndex * 5) % config.mods.length]!;
-      const clubName = `${city} ${modifier}`;
-      const prestige = score(countryCode, tier, index, "prestige");
-      const seed = hashString(`${divisionId}|${city}|${modifier}`);
-      EUROPEAN_CLUBS.push({
-        id: `${countryCode}_D${tier}_${String(index + 1).padStart(2, "0")}`,
-        name: clubName,
-        shortName: clubName.length <= 22 ? clubName : `${city} ${modifier.slice(0, 4)}`,
+      const id = clubId(countryCode, city);
+      if (seenClubIds.has(id)) {
+        throw new Error(`Football catalog duplicate stable club id: ${id}. Add an explicit club identity before allowing multiple clubs in one city.`);
+      }
+      seenClubIds.add(id);
+
+      const identitySeed = hashString(`${countryCode}|${city}|identity`);
+      const modifier = config.mods[identitySeed % config.mods.length]!;
+      const nameValue = `${city} ${modifier}`;
+      const prestige = score(id, tier, "prestige");
+      clubs.push(Object.freeze({
+        id,
+        name: nameValue,
+        shortName: shortName(city, modifier),
         city,
         countryCode,
         country: config.country,
         divisionId,
         tier,
         prestige,
-        financialPower: score(countryCode, tier, index, "finance"),
-        youthQuality: score(countryCode, tier, index, "youth"),
-        developmentBias: score(countryCode, tier, index, "development"),
-        pressure: score(countryCode, tier, index, "pressure"),
-        internationalAttraction: clamp(prestige + (tier === 1 ? 4 : -8) + (seed % 9) - 4),
-        archetypes: archetypesFor(tier, prestige, seed),
+        financialPower: score(id, tier, "finance"),
+        youthQuality: score(id, tier, "youth"),
+        developmentBias: score(id, tier, "development"),
+        pressure: score(id, tier, "pressure"),
+        internationalAttraction: clamp(prestige + (tier === 1 ? 4 : -8) + (identitySeed % 9) - 4),
+        archetypes: archetypesFor(tier, prestige, identitySeed),
         clearanceStatus: "working_name_unchecked"
-      });
+      }));
     }
     cityOffset += clubCount;
   });
 }
 
+export const EUROPEAN_DIVISIONS: readonly FootballDivision[] = Object.freeze(divisions);
+export const EUROPEAN_CLUBS: readonly FootballClub[] = Object.freeze(clubs);
 export const EUROPEAN_FOOTBALL_CATALOG_VERSION = "europe-v1-2026-09-26";
