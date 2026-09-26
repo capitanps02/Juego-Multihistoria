@@ -18,9 +18,18 @@ import { certifyCoachChangeInPlace, resolveRecentCurrentClubCoachChange } from "
 import { expireDueSeedsInPlace } from "../narrative/resolver.js";
 import { hasActiveClubEmployment, transitionNaturalExpiryInPlace } from "./employment.js";
 import { previousOfficialMatch } from "./match-model.js";
+import { clubById } from "../catalog/football/index.js";
+import { selectForeignMarketDestination, selectMarketDestination } from "../catalog/football/market-destination.js";
 
 const clamp = (x: number, min = 0, max = 100) => Math.min(max, Math.max(min, x));
 const num = (x: unknown, fallback = 0) => typeof x === "number" ? x : fallback;
+const drawToRoll = (draw: number): number => Math.floor(draw * 4294967296) >>> 0;
+
+function isForeignCareerClub(clubId: string): boolean {
+  const catalog = clubById(clubId);
+  if (catalog) return catalog.countryCode !== "ESP";
+  return /^Foreign_/i.test(clubId);
+}
 
 export function currentSportsCoachNpcId(state: GameState): string | null {
   const currentClubChange = resolveRecentCurrentClubCoachChange(state, Number.MAX_SAFE_INTEGER);
@@ -341,13 +350,15 @@ function professionalWeek(state: GameState, rng: DeterministicRng): void {
     if (rng.next() < buyP) {
       p.ownerClub = p.registrationClub;
       state.world.ownerClub = p.ownerClub;
-      p.route = p.registrationClub.includes("Foreign") ? "abroad" : "domestic";
+      p.route = isForeignCareerClub(p.registrationClub) ? "abroad" : "domestic";
+      state.flags.ABROAD_ROUTE = p.route === "abroad";
       state.flags.LOAN_ACTIVE = false;
     } else if (rng.next() < 0.55) {
       p.registrationClub = p.ownerClub;
       state.club = p.ownerClub;
       state.flags.LOAN_ACTIVE = false;
-      p.route = p.ownerClub === "UDV" ? "home" : "domestic";
+      p.route = p.ownerClub === "UDV" ? "home" : isForeignCareerClub(p.ownerClub) ? "abroad" : "domestic";
+      state.flags.ABROAD_ROUTE = p.route === "abroad";
     } else {
       state.flags.LOAN_ACTIVE = true;
     }
@@ -372,7 +383,13 @@ function professionalWeek(state: GameState, rng: DeterministicRng): void {
     }
     if (abroad) {
       p.route = "abroad";
-      const destination = `Foreign_${p.leagueTier}_${Math.floor(rng.next()*20)}`;
+      const destinationDraw = rng.next();
+      const destination = selectForeignMarketDestination({
+        leagueTier: p.leagueTier,
+        roll: drawToRoll(destinationDraw),
+        profile: upward ? "ambitious" : "balanced",
+        excludeClubIds: [state.club, p.ownerClub, p.registrationClub]
+      }).id;
       p.registrationClub = destination;
       state.club = destination;
       p.foreignAdaptation = Math.max(p.foreignAdaptation, 20);
@@ -388,7 +405,14 @@ function professionalWeek(state: GameState, rng: DeterministicRng): void {
     } else if (rng.next() < 0.32 && p.clubPrestigeTier >= 4 && role < 55) {
       // Cesión desde propietario prestigioso a un entorno con más minutos.
       p.ownerClub = state.club;
-      p.registrationClub = `Loan_${Math.max(1, p.leagueTier)}_${Math.floor(rng.next()*20)}`;
+      const destinationDraw = rng.next();
+      p.registrationClub = selectMarketDestination({
+        countryCode: "ESP",
+        leagueTier: Math.max(1, p.leagueTier),
+        roll: drawToRoll(destinationDraw),
+        profile: "development",
+        excludeClubIds: [state.club, p.ownerClub]
+      }).id;
       state.club = p.registrationClub;
       p.route = "loan";
       p.environmentStability = clamp(42 + rng.next() * 24);
