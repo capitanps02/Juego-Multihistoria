@@ -32,6 +32,20 @@ function shortlistScore(club: FootballClub, profile: MarketDestinationProfile): 
     + club.youthQuality * 0.20;
 }
 
+const MARKET_PROFILES: readonly MarketDestinationProfile[] = Object.freeze(["development", "balanced", "ambitious"]);
+const RANKED_DIVISION_POOLS = new Map<string, readonly FootballClub[]>();
+
+for (const division of FOOTBALL_DIVISIONS) {
+  const divisionClubs = clubsForDivision(division.id);
+  for (const profile of MARKET_PROFILES) {
+    const ranked = [...divisionClubs].sort((a, b) => {
+      const delta = shortlistScore(b, profile) - shortlistScore(a, profile);
+      return delta !== 0 ? delta : a.id.localeCompare(b.id);
+    });
+    RANKED_DIVISION_POOLS.set(`${division.id}|${profile}`, Object.freeze(ranked));
+  }
+}
+
 /**
  * Deterministic identity selector for formal market opportunities.
  * It chooses a club from the nearest represented division but does not alter the
@@ -42,13 +56,10 @@ export function selectMarketDestination(request: MarketDestinationRequest): Foot
   if (!division) throw new Error(`No football-catalog division for ${request.countryCode}.`);
 
   const excluded = new Set(request.excludeClubIds ?? []);
-  const pool = clubsForDivision(division.id).filter(club => !excluded.has(club.id));
-  if (pool.length === 0) throw new Error(`No football-catalog market destination for ${division.id}.`);
+  const preRanked = RANKED_DIVISION_POOLS.get(`${division.id}|${request.profile}`) ?? [];
+  const ranked = preRanked.filter(club => !excluded.has(club.id));
+  if (ranked.length === 0) throw new Error(`No football-catalog market destination for ${division.id}.`);
 
-  const ranked = [...pool].sort((a, b) => {
-    const delta = shortlistScore(b, request.profile) - shortlistScore(a, request.profile);
-    return delta !== 0 ? delta : a.id.localeCompare(b.id);
-  });
   const shortlistSize = request.profile === "balanced"
     ? ranked.length
     : Math.max(6, Math.ceil(ranked.length * 0.6));
