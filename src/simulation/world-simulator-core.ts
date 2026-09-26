@@ -370,16 +370,20 @@ function professionalWeek(state: GameState, rng: DeterministicRng): void {
   // Ventana de verano: movimientos plausibles y separados entre nivel y prestigio.
   if ([7, 8].includes(month) && state.runtime.day % 14 === 0 && market >= SUMMER_MARKET_MIN_INTEREST && rng.next() < 0.09) {
     const upward = market >= 62 && role >= 48 && rng.next() < 0.52;
-    const abroad = rng.next() < 0.24;
+    const abroadDraw = rng.next();
+    const abroad = abroadDraw < 0.24;
+    let levelChanged = false;
     if (upward) {
       p.leagueTier = Math.max(1, p.leagueTier - (rng.next() < 0.45 ? 1 : 0));
       p.clubPrestigeTier = Math.min(5, p.clubPrestigeTier + 1);
       p.clubPrestigeScore = clamp(p.clubPrestigeScore + 12 + rng.next() * 12);
+      levelChanged = true;
       if (p.clubPrestigeTier >= 5) state.flags.BIG_CLUB = true;
     } else if (role < 42 && p.clubPrestigeTier >= 4 && rng.next() < 0.45) {
       p.leagueTier = Math.min(4, p.leagueTier + 1);
       p.clubPrestigeTier = Math.max(2, p.clubPrestigeTier - 1);
       p.clubPrestigeScore = clamp(p.clubPrestigeScore - 10);
+      levelChanged = true;
     }
     if (abroad) {
       p.route = "abroad";
@@ -402,21 +406,43 @@ function professionalWeek(state: GameState, rng: DeterministicRng): void {
       } else {
         state.flags.LOAN_ACTIVE = true;
       }
-    } else if (rng.next() < 0.32 && p.clubPrestigeTier >= 4 && role < 55) {
-      // Cesión desde propietario prestigioso a un entorno con más minutos.
-      p.ownerClub = state.club;
-      const destinationDraw = rng.next();
-      p.registrationClub = selectMarketDestination({
-        countryCode: "ESP",
-        leagueTier: Math.max(1, p.leagueTier),
-        roll: drawToRoll(destinationDraw),
-        profile: "development",
-        excludeClubIds: [state.club, p.ownerClub]
-      }).id;
-      state.club = p.registrationClub;
-      p.route = "loan";
-      p.environmentStability = clamp(42 + rng.next() * 24);
-      state.flags.LOAN_ACTIVE = true;
+    } else {
+      // Preserve the old unconditional non-abroad market draw exactly.
+      const loanChanceDraw = rng.next();
+      if (loanChanceDraw < 0.32 && p.clubPrestigeTier >= 4 && role < 55) {
+        // Cesión desde propietario prestigioso a un entorno con más minutos.
+        p.ownerClub = state.club;
+        const destinationDraw = rng.next();
+        p.registrationClub = selectMarketDestination({
+          countryCode: "ESP",
+          leagueTier: Math.max(1, p.leagueTier),
+          roll: drawToRoll(destinationDraw),
+          profile: "development",
+          excludeClubIds: [state.club, p.ownerClub]
+        }).id;
+        state.club = p.registrationClub;
+        p.route = "loan";
+        p.environmentStability = clamp(42 + rng.next() * 24);
+        state.flags.LOAN_ACTIVE = true;
+        state.flags.ABROAD_ROUTE = false;
+      } else if (levelChanged) {
+        // The old producer changed level/prestige without naming a destination and
+        // offer normalization invented "Club X · Y". Reuse existing draws instead.
+        const destination = selectMarketDestination({
+          countryCode: "ESP",
+          leagueTier: Math.max(1, p.leagueTier),
+          roll: drawToRoll(abroadDraw) ^ drawToRoll(loanChanceDraw),
+          profile: upward ? "ambitious" : "balanced",
+          excludeClubIds: [state.club, p.ownerClub, p.registrationClub]
+        }).id;
+        p.ownerClub = destination;
+        p.registrationClub = destination;
+        state.world.ownerClub = destination;
+        state.club = destination;
+        p.route = "domestic";
+        state.flags.LOAN_ACTIVE = false;
+        state.flags.ABROAD_ROUTE = false;
+      }
     }
     state.tier = p.leagueTier;
   }
