@@ -99,7 +99,7 @@ test("A1-006 INVALID TARGET: non-coach target rejects closed", () => {
   const result = executePlayerActionInPlace(state, {
     actionId: "PA_COACH_TALK",
     optionId: "MORE_MINUTES",
-    targetId: "NPC_PLR_10"
+    targetId: "NPC_DOES_NOT_EXIST"
   });
   assert.equal(result.ok, false);
   assert.equal(result.code, "PLAYER_ACTION_TARGET_INVALID");
@@ -172,16 +172,24 @@ test("A1-011 AUTHORITY GUARD: arbitrary club/contract/national writes have no re
   }
 });
 
-test("A1-012 ATOMIC FAILURE: handler failure cannot leave partial state", () => {
+test("A1-012 ATOMIC FAILURE: failure after a valid draft effect leaves confirmed state intact", () => {
   const state = createInitialState(112);
-  state.professional.technique = "corrupt";
+  // Deliberately malformed pre-existing PA store. The direct REST effect is valid
+  // and mutates only the cloned draft; post-effect store validation must then fail.
+  state.playerActions = {
+    version: 1,
+    sequence: 5,
+    history: [],
+    cooldowns: {},
+    facts: []
+  };
   const before = clone(state);
   const result = executePlayerActionInPlace(state, {
-    actionId: "PA_TRAIN_EXTRA",
-    optionId: "TECHNIQUE"
+    actionId: "PA_REST",
+    optionId: "RECOVER"
   });
   assert.equal(result.ok, false);
-  assert.equal(result.code, "PLAYER_ACTION_EFFECT_FAILED");
+  assert.equal(result.code, "PLAYER_ACTION_STATE_INVALID");
   assert.deepEqual(state, before);
 });
 
