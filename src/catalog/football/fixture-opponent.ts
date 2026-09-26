@@ -6,7 +6,7 @@ import {
   divisionsForCountry,
   nearestDivisionForCountry
 } from "./index.js";
-import type { FootballCountryCode } from "./types.js";
+import type { FootballClub, FootballCountryCode } from "./types.js";
 
 export interface FixtureOpponentContext {
   registrationClub: string;
@@ -28,6 +28,25 @@ const FOREIGN_COUNTRIES: readonly FootballCountryCode[] = Object.freeze([
   "USA", "MEX", "ARG", "JPN", "CHN", "MAR", "ZAF"
 ]);
 
+const FOREIGN_COUNTRIES_BY_TIER = new Map<number, readonly FootballCountryCode[]>();
+for (let tier = 1; tier <= 9; tier += 1) {
+  const exact = FOREIGN_COUNTRIES.filter(countryCode =>
+    divisionsForCountry(countryCode).some(division => division.tier === tier)
+  );
+  const fallback = exact.length > 0
+    ? exact
+    : FOREIGN_COUNTRIES.filter(countryCode => divisionsForCountry(countryCode).length > 0);
+  FOREIGN_COUNTRIES_BY_TIER.set(tier, Object.freeze(fallback));
+}
+
+const OPPONENTS_BY_CLUB = new Map<string, readonly FootballClub[]>();
+for (const club of FOOTBALL_CLUBS) {
+  OPPONENTS_BY_CLUB.set(
+    club.id,
+    Object.freeze(clubsForDivision(club.divisionId).filter(candidate => candidate.id !== club.id))
+  );
+}
+
 function hashString(value: string): number {
   let hash = 2166136261;
   for (let i = 0; i < value.length; i += 1) {
@@ -44,12 +63,7 @@ function normalizedTier(value: number): number {
 
 function foreignCountryForSyntheticClub(registrationClub: string, leagueTier: number): FootballCountryCode {
   const requested = normalizedTier(leagueTier);
-  const exact = FOREIGN_COUNTRIES.filter(countryCode =>
-    divisionsForCountry(countryCode).some(division => division.tier === requested)
-  );
-  const candidates = exact.length > 0
-    ? exact
-    : FOREIGN_COUNTRIES.filter(countryCode => divisionsForCountry(countryCode).length > 0);
+  const candidates = FOREIGN_COUNTRIES_BY_TIER.get(requested) ?? FOREIGN_COUNTRIES;
   if (candidates.length === 0) return "ENG";
   return candidates[hashString(`fixture-country|${registrationClub}`) % candidates.length]!;
 }
@@ -99,7 +113,7 @@ export function selectFixtureOpponent(context: FixtureOpponentContext): FixtureO
 
   let pool = clubsForDivision(division.id);
   if (currentClub?.divisionId === division.id) {
-    pool = pool.filter(candidate => candidate.id !== currentClub.id);
+    pool = OPPONENTS_BY_CLUB.get(currentClub.id) ?? pool;
   }
   if (pool.length === 0) {
     pool = FOOTBALL_CLUBS.filter(candidate => candidate.id !== currentClub?.id);
