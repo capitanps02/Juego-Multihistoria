@@ -25,6 +25,20 @@ export function clubsForCountry(countryCode: FootballCountryCode): readonly Foot
   return FOOTBALL_CLUBS.filter(club => club.countryCode === countryCode);
 }
 
+export function divisionsForCountry(countryCode: FootballCountryCode): readonly FootballDivision[] {
+  return FOOTBALL_DIVISIONS.filter(division => division.countryCode === countryCode);
+}
+
+export function nearestDivisionForCountry(countryCode: FootballCountryCode, leagueTier: number): FootballDivision | null {
+  const divisions = divisionsForCountry(countryCode);
+  if (divisions.length === 0) return null;
+  const requested = Number.isFinite(leagueTier) ? Math.max(1, Math.min(9, Math.trunc(leagueTier))) : 3;
+  return [...divisions].sort((a, b) => {
+    const distance = Math.abs(a.tier - requested) - Math.abs(b.tier - requested);
+    return distance !== 0 ? distance : b.tier - a.tier;
+  })[0] ?? null;
+}
+
 export function divisionById(id: string): FootballDivision | null {
   return DIVISION_BY_ID.get(id) ?? null;
 }
