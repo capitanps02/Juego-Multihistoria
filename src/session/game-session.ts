@@ -387,7 +387,7 @@ export class GameSession {
     const lastEventId = s.history.at(-1)?.eventId;
     const lastEvent = lastEventId ? this.#index.events.find(e => e.id === lastEventId) : undefined;
     const simulationState = this.#snapshot.autoSimulation ?? idleAutoSimulationState();
-    const simulation = publicAutoSimulationState(simulationState);
+    const simulation = publicAutoSimulationState(simulationState, s);
     const summaryScreen = simulation.mode === "showing_summary" || simulation.mode === "season_transition";
     return structuredClone({
       sessionId: this.#snapshot.sessionId, revision: this.#snapshot.revision,

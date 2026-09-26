@@ -1,3 +1,4 @@
+import { formatClubName } from './club-names.js';
 import { createIndexedSaveStore } from './indexed-save-store.js';
 // UI reads PlayerView only. All career mutations go through GameSession commands.
 export function mountGame({root, GameSession, assets, css, storageKey='historia-jugador.preview.session.v1', events}) {
@@ -8,18 +9,12 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
   const store=createIndexedSaveStore({storage:localStorage,indexedDB:globalThis.indexedDB,key:KEY,validate:raw=>GameSession.migrateFromSave(raw,sessionOptions)});
   const doc=root.ownerDocument, win=doc.defaultView||globalThis, el=(tag,text,cls)=>{const n=doc.createElement(tag);if(text!==undefined)n.textContent=text;if(cls)n.className=cls;return n;};
   const style=el('style');style.textContent=css;root.append(style);
-  const shell=el('div',undefined,'mh');root.append(shell);
+  const shell=el('div',undefined,'mh');shell.dataset.release='2026-09-26-periodos';root.append(shell);
   const date=s=>new Intl.DateTimeFormat('es-ES',{day:'numeric',month:'short',year:'numeric',timeZone:'UTC'}).format(new Date(s+'T00:00:00Z'));
   const decisionCount=n=>`${n} ${n===1?'decisión':'decisiones'}`;
   const hasBackup=()=>store.hasPrevious();
   const money=n=>new Intl.NumberFormat('es-ES',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(n);
-  const clubName=name=>{
-    if(name==='UDV')return 'U. D. Valdoria';
-    if(name==='BIG_CLUB')return 'Gran club';
-    const generated=/^(Development|Foreign|Loan|Domestic)_(\d+)_(\d+)$/.exec(name);
-    if(generated)return ({Development:'Club de desarrollo',Foreign:'Club extranjero',Loan:'Club de cesión',Domestic:'Club nacional'})[generated[1]]+' '+generated[3]+' · categoría '+generated[2];
-    return name;
-  };
+  const clubName=formatClubName;
   const decimal=n=>new Intl.NumberFormat('es-ES',{maximumFractionDigits:1}).format(n);
   const deltaText=n=>{const rounded=Math.round(n*10)/10;return rounded===0&&n!==0?(n>0?'+':'−')+'<0,1':(rounded>0?'+':'')+decimal(rounded);};
   const club=v=>clubName(v.club);
@@ -127,7 +122,7 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
       const meter=el('progress');meter.max=100;meter.value=value;meter.setAttribute('aria-label',label+'. '+help);
       row.append(meter,el('small',help,'meter-help'));p.append(row);
     }
-    p.append(el('p',v.appearances+' partidos disputados','muted'));
+    p.append(el('p',v.appearances+(v.appearances===1?' partido disputado':' partidos disputados'),'muted'));
     return p;
   }
   function retirementPanel(v){
@@ -160,6 +155,16 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
     for(const [label,value] of rows){const row=el('div',undefined,'data-row');row.append(el('span',label),el('strong',value));p.append(row);}
     if(s.careerChanges.clubFrom!==s.careerChanges.clubTo||s.careerChanges.roleFrom!==s.careerChanges.roleTo)p.append(el('p',`Carrera: ${clubName(s.careerChanges.clubFrom)} → ${clubName(s.careerChanges.clubTo)} · ${s.careerChanges.roleFrom} → ${s.careerChanges.roleTo}`,'muted'));
     for(const text of s.worldHighlights.slice(-3))p.append(el('p',text,'muted'));
+    for(const line of s.report?.context??[])p.append(el('p',line,'story-text'));
+    if(s.report?.fixtures.length){
+      const matches=el('details',undefined,'period-fixtures');matches.append(el('summary','Partidos del periodo · '+s.report.fixtures.length));
+      for(const m of s.report.fixtures){
+        const row=el('article',undefined,'period-fixture');
+        const home=m.homeAway==='home'?clubName(m.club):clubName(m.opponent),away=m.homeAway==='home'?clubName(m.opponent):clubName(m.club);
+        row.append(el('time',date(m.date),'eyebrow'),el('p',m.homeGoals===null?`${home} · ${away}`:`${home} ${m.homeGoals} – ${m.awayGoals} ${away}`),el('p',`${m.participation} · ${m.minutes} min`+(m.rating===null?'':' · Nota '+decimal(m.rating)),'muted'));matches.append(row);
+      }
+      p.append(matches,button('Ver historial deportivo',()=>navigate('career')));
+    }
     if(s.interruption)p.append(el('p',interruptionText(s.interruption.type),'period-interruption'));
     return p;
   }
@@ -176,9 +181,9 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
     const glossary=el('div',undefined,'tutorial-glossary');for(const [title,copy] of [['Forma','Rendimiento actual.'],['Estado físico','Condición corporal y disponibilidad.'],['Fatiga','Desgaste acumulado; valores altos son peores.']]){const item=el('div');item.append(el('strong',title),el('small',copy));glossary.append(item);}tutorial.append(glossary);grid.append(tutorial);
     const people=panel('Tu entorno');const contacts=v.contacts.slice(0,3);for(const c of contacts){const r=el('div',undefined,'contact-row');r.append(photo(portrait(c.id),'avatar'));const info=el('div');info.append(el('strong',c.name),el('p',c.role,'muted'));r.append(info);people.append(r);}people.append(button('Ver relaciones',()=>navigate('relations')));grid.append(people);
     const chapter=panel('Tu carrera');chapter.append(el('span',v.season.replace('-',' / 20'),'eyebrow'),el('div',String(v.decisionsMade),'big-number'),el('p',v.decisionsMade===1?'decisión que cuenta':'decisiones que cuentan','muted'),el('p','Tu recorrido se construye con lo que eliges y con lo que ocurre en el campo.'),button('Ver recorrido',()=>navigate('career')));grid.append(chapter);
+    const sim=simulationSummary(v);if(sim)main.append(sim);
     const sport=latestMatchPanel(v);if(sport)grid.append(sport);
     const clock=panel('Tu contrato');clock.append(el('p',v.contractMonths>0?Math.ceil(v.contractMonths)+' meses restantes':'Sin meses de contrato restantes'),el('p',v.contractMonths>0&&v.contractMonths<=6?'El contrato entra en su tramo final. Revisa las propuestas cuando lleguen.':'Las propuestas de contrato requieren tu respuesta.','muted'));grid.append(clock);
-    const sim=simulationSummary(v);if(sim)grid.append(sim);
     main.append(grid);
     const retirement=retirementPanel(v);if(retirement)main.append(retirement);
     if(v.offerHistory.length){const h=v.offerHistory.at(-1),p=panel('Tu última respuesta de contrato');p.append(el('p',h.explanation));main.append(p);}
@@ -228,6 +233,7 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
   function career(v,main){
     main.append(el('span','HISTORIAL VIVO DE TU TRAYECTORIA','eyebrow'),el('h1','Tu carrera.'));
     const retirement=retirementPanel(v);if(retirement)main.append(retirement);
+    const recentPeriod=simulationSummary(v);if(recentPeriod)main.append(recentPeriod);
     if(!v.careerSeasons.length){
       const empty=panel('Tu carrera empieza aquí');empty.classList.add('career-empty');
       empty.append(el('p',v.age+' años · '+club(v)+' · Temporada '+v.season.replace('-',' / 20'),'career-start'));

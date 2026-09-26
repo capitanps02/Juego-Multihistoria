@@ -202,3 +202,8 @@ Deduplicar por temporada y tipo; priorizar frente a relleno, pero respetar decis
 Orden: 0 → 1 → 2 → 3 → 4 → 5, con 6 en cada entrega. Revisar el equilibrio al terminar 2 y 3 antes de ampliar sistemas.
 
 La primera entrega implementa 1A–1D y prepara el paquete. Las fases restantes son trabajo pendiente explícito; no se ha programado ejecución automática en segundo plano. Los detalles de pruebas, artefactos y publicación se registran en `estado-implementacion.md`.
+
+
+## Avance del 26 de septiembre
+
+Implementados los resúmenes deportivos y el contexto factual de fase 2; calibración inicial 38→30, nombres ficticios y regresiones de rechazo de fase 3. Ver `validacion-posttest-2026-09-26.md` para resultados y límites. Los estados «pendiente» anteriores describen el plan inicial; esta actualización distingue lo entregado de la economía y profundidad narrativa aún pendientes.

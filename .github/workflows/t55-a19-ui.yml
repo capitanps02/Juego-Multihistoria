@@ -5,11 +5,19 @@ on:
     branches: [main]
     paths:
       - 'web/game-ui.js'
+      - 'web/club-names.js'
       - 'web/game-ui.css'
       - 'src/session/game-session.ts'
       - 'src/simulation/match-model.ts'
+      - 'src/simulation/market-tuning.ts'
+      - 'src/simulation/world-simulator-core.ts'
+      - 'scripts/test-market-posttest.mjs'
+      - 'scripts/test-club-names.mjs'
       - 'src/narrative/consequences.ts'
       - 'scripts/test-posttest-feedback.mjs'
+      - 'scripts/test-period-report.mjs'
+      - 'src/session/period-report.ts'
+      - 'src/session/auto-simulation.ts'
       - 'scripts/test-t55-a19-ui.mjs'
       - 'scripts/test-playcanvas.mjs'
       - 'package.json'
@@ -32,4 +40,4 @@ jobs:
       - name: Build engine
         run: npm run build
       - name: A19 directed UX regression
-        run: node --test scripts/test-t55-a19-ui.mjs scripts/test-posttest-feedback.mjs
+        run: node --test scripts/test-t55-a19-ui.mjs scripts/test-posttest-feedback.mjs scripts/test-period-report.mjs scripts/test-market-posttest.mjs scripts/test-club-names.mjs

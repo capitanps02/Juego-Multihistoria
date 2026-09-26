@@ -1,3 +1,4 @@
+import { SUMMER_MARKET_MIN_INTEREST } from "./market-tuning.js";
 import { activateFutureCareerAgreementsInPlace, expireCareerOfferInPlace, proposeCareerChange } from "./offers.js";
 import { DeterministicRng } from "../core/rng.js";
 import type { GameState, NarrativePhase } from "../core/types.js";
@@ -356,7 +357,7 @@ function professionalWeek(state: GameState, rng: DeterministicRng): void {
   if (state.age < 34) proposeCareerChange(state, "Propuesta de mercado", state => {
     const p=state.professional;
   // Ventana de verano: movimientos plausibles y separados entre nivel y prestigio.
-  if ([7, 8].includes(month) && state.runtime.day % 14 === 0 && market >= 38 && rng.next() < 0.09) {
+  if ([7, 8].includes(month) && state.runtime.day % 14 === 0 && market >= SUMMER_MARKET_MIN_INTEREST && rng.next() < 0.09) {
     const upward = market >= 62 && role >= 48 && rng.next() < 0.52;
     const abroad = rng.next() < 0.24;
     if (upward) {

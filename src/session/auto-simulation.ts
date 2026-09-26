@@ -1,4 +1,5 @@
 import type { GameState } from "../core/types.js";
+import { buildPeriodReport, type PeriodReport } from "./period-report.js";
 
 export const DEFAULT_MAX_AUTO_WEEKS = 6;
 export const MIN_AUTO_WEEKS = 1;
@@ -103,6 +104,7 @@ export interface PublicSimulationInterrupt {
 }
 
 export interface PublicPeriodSummary extends Omit<PeriodSummary, "interruption"> {
+  report?: PeriodReport;
   interruption: PublicSimulationInterrupt | null;
 }
 
@@ -118,13 +120,14 @@ function publicInterrupt(value: SimulationInterrupt | null): PublicSimulationInt
   return value ? { type: value.type, requiresPlayerInput: value.requiresPlayerInput } : null;
 }
 
-export function publicAutoSimulationState(flow: AutoSimulationState): PublicAutoSimulationState {
+export function publicAutoSimulationState(flow: AutoSimulationState, state?: GameState): PublicAutoSimulationState {
   return {
     mode: flow.mode,
     maxWeeks: flow.maxWeeks,
     elapsedDays: flow.elapsedDays,
     summary: flow.summary ? {
       ...flow.summary,
+      ...(state ? { report: buildPeriodReport(state, flow.summary.fromDate, flow.summary.toDate) } : {}),
       interruption: publicInterrupt(flow.summary.interruption)
     } : null,
     interruption: publicInterrupt(flow.interruption)
