@@ -5,6 +5,8 @@ on:
     paths:
       - 'src/catalog/football/**'
       - 'scripts/test-football-catalog.mjs'
+      - 'scripts/test-catalog-fixture-opponents.mjs'
+      - 'src/simulation/match-model.ts'
       - 'package.json'
       - 'package-lock.json'
       - '.github/workflows/football-catalog.yml'
@@ -23,5 +25,5 @@ jobs:
       - run: npm ci
       - name: Build engine
         run: npm run build
-      - name: Validate fictional world football catalog
-        run: node --test scripts/test-football-catalog.mjs
+      - name: Validate fictional world football catalog and fixture opponents
+        run: node --test scripts/test-football-catalog.mjs scripts/test-catalog-fixture-opponents.mjs
