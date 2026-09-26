@@ -2,20 +2,23 @@ export type { ClubArchetype, EuropeanCountryCode, FootballClub, FootballDivision
 export { EUROPEAN_CLUBS, EUROPEAN_DIVISIONS, EUROPEAN_FOOTBALL_CATALOG_VERSION } from "./europe.js";
 
 import { EUROPEAN_CLUBS, EUROPEAN_DIVISIONS } from "./europe.js";
-import type { EuropeanCountryCode, FootballClub } from "./types.js";
+import type { EuropeanCountryCode, FootballClub, FootballDivision } from "./types.js";
+
+const CLUB_BY_ID = new Map(EUROPEAN_CLUBS.map(club => [club.id, club] as const));
+const DIVISION_BY_ID = new Map(EUROPEAN_DIVISIONS.map(division => [division.id, division] as const));
 
 export function clubById(id: string): FootballClub | null {
-  return EUROPEAN_CLUBS.find(club => club.id === id) ?? null;
+  return CLUB_BY_ID.get(id) ?? null;
 }
 
-export function clubsForDivision(divisionId: string): FootballClub[] {
+export function clubsForDivision(divisionId: string): readonly FootballClub[] {
   return EUROPEAN_CLUBS.filter(club => club.divisionId === divisionId);
 }
 
-export function clubsForCountry(countryCode: EuropeanCountryCode): FootballClub[] {
+export function clubsForCountry(countryCode: EuropeanCountryCode): readonly FootballClub[] {
   return EUROPEAN_CLUBS.filter(club => club.countryCode === countryCode);
 }
 
-export function divisionById(id: string) {
-  return EUROPEAN_DIVISIONS.find(division => division.id === id) ?? null;
+export function divisionById(id: string): FootballDivision | null {
+  return DIVISION_BY_ID.get(id) ?? null;
 }
