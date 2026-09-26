@@ -115,7 +115,7 @@ test("working names avoid obvious official club identities", () => {
     "juventus","inter milan","ac milan","bayern munich","borussia dortmund","paris saint-germain",
     "benfica","sporting clube","ajax",
     "inter miami","la galaxy","new york city fc",
-    "club america","chivas","monterrey",
+    "club america","chivas de guadalajara","cf monterrey","club de futbol monterrey",
     "boca juniors","river plate","racing club",
     "urawa reds","kashima antlers","vissel kobe",
     "beijing guoan","shanghai port",
