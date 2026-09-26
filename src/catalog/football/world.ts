@@ -13,7 +13,7 @@ const COUNTRY_CONFIGS = {
         22
       ],
       [
-        "Liga Profesional III Española",
+        "Categoría Nacional III Española",
         20
       ]
     ],
