@@ -16,6 +16,11 @@ on:
       - 'scripts/test-t5-age18-market-authority.mjs'
       - 'scripts/test-catalog-market-destinations.mjs'
       - 'scripts/test-catalog-world-market-routes.mjs'
+      - 'scripts/test-catalog-narrative-club-aliases.mjs'
+      - 'scripts/test-catalog-offer-fallbacks.mjs'
+      - 'src/simulation/offers.ts'
+      - 'src/simulation/professional-adapter.ts'
+      - 'src/narrative/resolver.ts'
       - 'src/simulation/world-simulator-core.ts'
       - 'package.json'
       - 'package-lock.json'
@@ -38,6 +43,6 @@ jobs:
       - name: Verify generated catalog presentation names
         run: node scripts/generate-club-catalog-names.mjs --check
       - name: Validate catalog, fixtures, market and presentation
-        run: node --test scripts/test-football-catalog.mjs scripts/test-catalog-fixture-opponents.mjs scripts/test-catalog-market-destinations.mjs scripts/test-catalog-world-market-routes.mjs scripts/test-t5-age18-market-authority.mjs scripts/test-club-names.mjs
+        run: node --test scripts/test-football-catalog.mjs scripts/test-catalog-fixture-opponents.mjs scripts/test-catalog-market-destinations.mjs scripts/test-catalog-world-market-routes.mjs scripts/test-catalog-narrative-club-aliases.mjs scripts/test-catalog-offer-fallbacks.mjs scripts/test-t5-age18-market-authority.mjs scripts/test-club-names.mjs
       - name: Build PlayCanvas bundle with catalog names
         run: node scripts/build-playcanvas.mjs
