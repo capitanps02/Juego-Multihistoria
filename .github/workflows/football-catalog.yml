@@ -1,0 +1,48 @@
+name: Football catalog
+
+on:
+  pull_request:
+    paths:
+      - 'src/catalog/football/**'
+      - 'scripts/test-football-catalog.mjs'
+      - 'scripts/test-catalog-fixture-opponents.mjs'
+      - 'src/simulation/match-model.ts'
+      - 'scripts/build-playcanvas.mjs'
+      - 'web/club-names.js'
+      - 'web/club-catalog-names.js'
+      - 'src/simulation/early-career-market.ts'
+      - 'scripts/generate-club-catalog-names.mjs'
+      - 'scripts/test-club-names.mjs'
+      - 'scripts/test-t5-age18-market-authority.mjs'
+      - 'scripts/test-catalog-market-destinations.mjs'
+      - 'scripts/test-catalog-world-market-routes.mjs'
+      - 'scripts/test-catalog-narrative-club-aliases.mjs'
+      - 'scripts/test-catalog-offer-fallbacks.mjs'
+      - 'src/simulation/offers.ts'
+      - 'src/simulation/professional-adapter.ts'
+      - 'src/narrative/resolver.ts'
+      - 'src/simulation/world-simulator-core.ts'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/football-catalog.yml'
+  workflow_dispatch:
+
+jobs:
+  football-catalog:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Build engine
+        run: npm run build
+      - name: Verify generated catalog presentation names
+        run: node scripts/generate-club-catalog-names.mjs --check
+      - name: Validate catalog, fixtures, market and presentation
+        run: node --test scripts/test-football-catalog.mjs scripts/test-catalog-fixture-opponents.mjs scripts/test-catalog-market-destinations.mjs scripts/test-catalog-world-market-routes.mjs scripts/test-catalog-narrative-club-aliases.mjs scripts/test-catalog-offer-fallbacks.mjs scripts/test-t5-age18-market-authority.mjs scripts/test-club-names.mjs
+      - name: Build PlayCanvas bundle with catalog names
+        run: node scripts/build-playcanvas.mjs
