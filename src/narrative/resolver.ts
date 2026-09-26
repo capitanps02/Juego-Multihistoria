@@ -10,6 +10,7 @@ import type { ChoiceDefinition, Effect, EventDefinition, GameState, OutcomeDefin
 import { narrativeConditionRoot } from "../simulation/club-contract-intent.js";
 import { syncRetirementState } from "../simulation/late-career-engine.js";
 import { currentEmploymentClub } from "../simulation/employment.js";
+import { isNarrativeClubAlias, materializeNarrativeClubAlias } from "../catalog/football/narrative-club-alias.js";
 import { certifyPlayerClubLeadershipInPlace } from "../simulation/player-leadership-authority.js";
 import {
   captureNpcKnowledgeTargetContext,
@@ -39,8 +40,55 @@ const EMPLOYMENT_TERM_PATHS = new Set([
   "contract.salaryMonthly",
   "contract.releaseClause"
 ]);
+const CLUB_ALIAS_PATHS = new Set([
+  "club",
+  "professional.ownerClub",
+  "professional.registrationClub",
+  "world.ownerClub"
+]);
 
-function applyEffect(state: GameState, effect: Effect): void {
+interface EffectApplicationContext {
+  eventId: string;
+  choiceId: string;
+  targetTier: number | null;
+  clubAliases: Map<string, string>;
+}
+
+function targetTierFromEffects(state: GameState, effects: readonly Effect[]): number | null {
+  for (let index = effects.length - 1; index >= 0; index -= 1) {
+    const effect = effects[index]!;
+    if (effect.kind !== "set") continue;
+    if ((effect.path === "tier" || effect.path === "professional.leagueTier")
+      && typeof effect.value === "number"
+      && Number.isFinite(effect.value)) {
+      return effect.value;
+    }
+  }
+  return Number.isFinite(state.tier) ? state.tier : null;
+}
+
+function materializeClubAliasEffect(
+  state: GameState,
+  effect: Effect,
+  context: EffectApplicationContext | undefined
+): Effect {
+  if (!context || effect.kind !== "set" || !CLUB_ALIAS_PATHS.has(effect.path) || !isNarrativeClubAlias(effect.value)) {
+    return effect;
+  }
+  let clubId = context.clubAliases.get(effect.value);
+  if (!clubId) {
+    clubId = materializeNarrativeClubAlias(state, effect.value, {
+      eventId: context.eventId,
+      choiceId: context.choiceId,
+      targetTier: context.targetTier
+    });
+    context.clubAliases.set(effect.value, clubId);
+  }
+  return { ...effect, value: clubId };
+}
+
+function applyEffect(state: GameState, rawEffect: Effect, context?: EffectApplicationContext): void {
+  const effect = materializeClubAliasEffect(state, rawEffect, context);
   if (effect.kind === "flag") {
     if (currentEmploymentClub(state) === null && ["LOAN_ACTIVE","ABROAD_ROUTE","BIG_CLUB"].includes(effect.flag) && effect.value === true) {
       throw new Error("Narrative effect cannot create club-employment flags while unattached.");
@@ -258,7 +306,15 @@ function resolveChoiceCore(next: GameState, event: EventDefinition, choiceId: st
   const choice: ChoiceDefinition | undefined = event.choices.find(c => c.id === choiceId);
   if (!choice) throw new Error(`Unknown choice ${choiceId} for ${event.id}`);
 
-  for (const e of choice.immediateEffects ?? []) applyEffect(next, e);
+  const clubAliases = new Map<string, string>();
+  const immediateEffects = choice.immediateEffects ?? [];
+  const immediateContext: EffectApplicationContext = {
+    eventId: event.id,
+    choiceId,
+    targetTier: targetTierFromEffects(next, immediateEffects),
+    clubAliases
+  };
+  for (const e of immediateEffects) applyEffect(next, e, immediateContext);
 
   // All declarative Condition surfaces resolve against the same read-only causal
   // fact projection. Compute it after immediate effects so existing ordering is
@@ -276,8 +332,21 @@ function resolveChoiceCore(next: GameState, event: EventDefinition, choiceId: st
   const picked = rng.pickWeighted(possible.map(x => ({ item: x, weight: x.weight })));
   const selected = picked.item.outcome;
 
-  for (const e of selected.effects) applyEffect(next, e);
-  for (const e of choice.hiddenCosts ?? []) applyEffect(next, e);
+  const selectedContext: EffectApplicationContext = {
+    eventId: event.id,
+    choiceId,
+    targetTier: targetTierFromEffects(next, selected.effects),
+    clubAliases
+  };
+  for (const e of selected.effects) applyEffect(next, e, selectedContext);
+  const hiddenCosts = choice.hiddenCosts ?? [];
+  const hiddenContext: EffectApplicationContext = {
+    eventId: event.id,
+    choiceId,
+    targetTier: targetTierFromEffects(next, hiddenCosts),
+    clubAliases
+  };
+  for (const e of hiddenCosts) applyEffect(next, e, hiddenContext);
   for (const t of selected.seedTransitions ?? []) applySeedTransition(next, t, event);
 
   // #161: only explicit acceptance of the formal main-club appointment certifies captaincy.
