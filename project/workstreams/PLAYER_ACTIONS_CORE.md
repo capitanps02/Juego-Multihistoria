@@ -438,13 +438,13 @@ Casos:
 - A1-003 EXECUTION
 - A1-004 INVALID ACTION
 - A1-005 INVALID OPTION
-- A1-006 INVALID TARGET
+- A1-006 INVALID TARGET inexistente
 - A1-007 COOLDOWN
 - A1-008 COOLDOWN EXPIRY
 - A1-009 NARRATIVE RNG
 - A1-010 HISTORY SEPARATION
 - A1-011 AUTHORITY GUARD
-- A1-012 ATOMIC FAILURE
+- A1-012 ATOMIC FAILURE tras mutación válida del draft
 - A1-013 DETERMINISM
 - A1-014 OPTIONALITY
 - A0 PA-014 FACT EXPIRY READ
@@ -454,7 +454,7 @@ Casos:
 - `test:player-actions-core`
 - la suite al principio de `npm test`, de modo que el workflow `Repository integrity` la ejecuta en PR.
 
-**Resultado final:** PASS en el HEAD de código `926bcd01329341ce9928e44930035ec87c094163` mediante `Repository integrity` run #2894.
+**Resultado final:** PASS sobre el source/test SHA `a6f09ec8ca79c3c9b73f66d329d5ed3150ce21b0`. Los commits posteriores de cierre son exclusivamente documentales y no cambian código ni tests.
 
 - La suite A1 contiene 15 tests y `npm test` terminó PASS, por lo que los 15/15 casos A1 quedaron verdes.
 - El mismo step ejecutó `npm run build` antes de la suite completa.
@@ -660,7 +660,7 @@ Reglas:
 
 ## 23. Resultado de gates
 
-Evidencia sobre el HEAD de código `926bcd01329341ce9928e44930035ec87c094163`:
+Evidencia sobre el HEAD de código `a6f09ec8ca79c3c9b73f66d329d5ed3150ce21b0`:
 
 - `npm run build`: **PASS**
 - `scripts/test-player-actions-core.mjs`: **15/15 PASS** dentro de `npm test`
@@ -671,4 +671,4 @@ Evidencia sobre el HEAD de código `926bcd01329341ce9928e44930035ec87c094163`:
 - T5 authoritative sport model: **PASS**
 - T5 pre-content freeze sentinel: **PASS**
 - Otros workflows específicos disparados por el PR: **PASS**
-- Repository integrity general: continuaba con QA largos posteriores sin ningún fallo conocido al producir este handoff; los gates exigidos por A0/A1 ya habían finalizado en verde.
+- Repository integrity general: los gates A0/A1 requeridos ya habían finalizado en verde; los QA globales posteriores no sustituyen ni ocultan esa evidencia.
