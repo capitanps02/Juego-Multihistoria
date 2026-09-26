@@ -9,7 +9,7 @@ import { DeterministicRng } from "../core/rng.js";
 import type { ChoiceDefinition, Effect, EventDefinition, GameState, OutcomeDefinition, ResolutionResult, SeedInstance, SeedTransition } from "../core/types.js";
 import { narrativeConditionRoot } from "../simulation/club-contract-intent.js";
 import { syncRetirementState } from "../simulation/late-career-engine.js";
-import { currentEmploymentClub } from "../simulation/employment.js";
+import { currentEmploymentClub, syncEmploymentAfterNarrativeClubChangeInPlace } from "../simulation/employment.js";
 import { isNarrativeClubAlias, materializeNarrativeClubAlias } from "../catalog/football/narrative-club-alias.js";
 import { certifyPlayerClubLeadershipInPlace } from "../simulation/player-leadership-authority.js";
 import {
@@ -361,6 +361,7 @@ function resolveChoiceCore(next: GameState, event: EventDefinition, choiceId: st
     p.ownerClub=next.flags.LOAN_ACTIVE ? String(next.world.ownerClub ?? previousClub) : next.club;
     next.world.ownerClub=p.ownerClub;
     p.route=next.flags.ABROAD_ROUTE?"abroad":next.flags.LOAN_ACTIVE?"loan":next.club==="UDV"?"home":"domestic";
+    syncEmploymentAfterNarrativeClubChangeInPlace(next);
     expireDueSeedsInPlace(next);
   }
 
