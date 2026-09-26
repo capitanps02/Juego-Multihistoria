@@ -59,7 +59,8 @@
     "test:t51:role-expectation": "npm run build && node --test scripts/test-t51-role-expectation.mjs",
     "test:t55:a14": "npm run build && node --test scripts/test-t55-auto-simulation.mjs",
     "test:t55:consequences": "npm run build && node --test scripts/test-t55-consequences.mjs",
-    "test:t55:a19": "npm run build && node --test scripts/test-t55-a19-ui.mjs"
+    "test:t55:a19": "npm run build && node --test scripts/test-t55-a19-ui.mjs",
+    "test:football-catalog": "npm run build && node --test scripts/test-football-catalog.mjs"
   },
   "devDependencies": {
     "typescript": "5.8.3"
