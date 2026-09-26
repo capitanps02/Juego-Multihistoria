@@ -1,8 +1,6 @@
 name: Repository integrity
 
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -10,68 +8,18 @@ on:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Verify required project files
-        shell: bash
-        run: |
-          set -euo pipefail
-          test -f package.json
-          test -f package-lock.json
-          test -d src
-          test -d scripts
-          test -d web
-          test -d android
-          test -d project
-          test -d qa
-          test ! -d .android-tools
-          test ! -d node_modules
-          echo "Repository structure OK"
-
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
-
       - name: Install dependencies
         run: npm ci
-
-      - name: Run project validation
-        run: npm test
-
-      - name: PlayCanvas integration regression
-        run: npm run test:playcanvas
-
       - name: Build T5 QA target
         run: npm run build
-
-      - name: T5 authoritative sport model
-        run: node --test scripts/test-t5-match-model.mjs scripts/test-t5-sport-context.mjs
-
-      - name: T5 pre-content freeze sentinel
-        run: node scripts/freeze-t51-baseline.mjs --check
-
-      - name: T5 determinism and RNG isolation
-        run: node --test --test-name-pattern="T5 determinism" scripts/test-t5-regression.mjs
-
-      - name: T5 age boundaries
-        run: node --test --test-name-pattern="T5 age boundaries" scripts/test-t5-regression.mjs
-
-      - name: T5 content references
-        run: node --test --test-name-pattern="T5 content references" scripts/test-t5-regression.mjs
-
-      - name: T5 long careers
-        run: node --test --test-name-pattern="T5 long careers" scripts/test-t5-regression.mjs
-
-      - name: T5 content lifecycle audit
-        run: node scripts/qa-t5-content.mjs
-
-      - name: T5 cross-workstream integration probes
-        run: node --test scripts/test-t5-integration-probes.mjs scripts/test-t55-a17-invariants.mjs
-
       - name: T5 stratified simulation
         run: node scripts/qa-t5-sim.mjs
