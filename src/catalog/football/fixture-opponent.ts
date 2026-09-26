@@ -1,8 +1,8 @@
 import {
   FOOTBALL_CLUBS,
-  FOOTBALL_DIVISIONS,
   clubById,
   clubsForDivision,
+  divisionById,
   divisionsForCountry,
   nearestDivisionForCountry
 } from "./index.js";
@@ -72,7 +72,7 @@ export function resolveFixtureDivision(
   const catalogClub = clubById(registrationClub);
   if (catalogClub) {
     return catalogClub.tier === normalizedTier(leagueTier)
-      ? FOOTBALL_DIVISIONS.find(division => division.id === catalogClub.divisionId) ?? null
+      ? divisionById(catalogClub.divisionId)
       : nearestDivisionForCountry(catalogClub.countryCode, leagueTier);
   }
 
