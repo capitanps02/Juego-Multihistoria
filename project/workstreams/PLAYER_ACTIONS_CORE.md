@@ -454,7 +454,13 @@ Casos:
 - `test:player-actions-core`
 - la suite al principio de `npm test`, de modo que el workflow `Repository integrity` la ejecuta en PR.
 
-**Resultado final:** pendiente de CI en el momento de escribir esta sección; actualizar antes de declarar A1 COMPLETE.
+**Resultado final:** PASS en el HEAD de código `926bcd01329341ce9928e44930035ec87c094163` mediante `Repository integrity` run #2894.
+
+- La suite A1 contiene 15 tests y `npm test` terminó PASS, por lo que los 15/15 casos A1 quedaron verdes.
+- El mismo step ejecutó `npm run build` antes de la suite completa.
+- `npm run test:playcanvas` terminó PASS; este script incluye `scripts/test-session.mjs`, `scripts/test-saves.mjs`, el regression conocido de retirement save, PlayCanvas y A19 UI.
+- Los steps posteriores `Build T5 QA target`, `T5 authoritative sport model` y `T5 pre-content freeze sentinel` también terminaron PASS.
+- Los QA largos restantes de Repository Integrity son gates generales del repositorio y no cambian el alcance A1; no había ningún fallo conocido al cerrar A1.
 
 ## 19. Limitaciones
 
@@ -654,9 +660,15 @@ Reglas:
 
 ## 23. Resultado de gates
 
-Actualizar tras CI antes de mergear.
+Evidencia sobre el HEAD de código `926bcd01329341ce9928e44930035ec87c094163`:
 
-- `npm run build`: PENDING
-- `node --test scripts/test-player-actions-core.mjs`: PENDING
-- `npm test`: PENDING
-- Repository integrity: PENDING
+- `npm run build`: **PASS**
+- `scripts/test-player-actions-core.mjs`: **15/15 PASS** dentro de `npm test`
+- `npm test`: **PASS**
+- `npm run test:playcanvas`: **PASS**
+- `scripts/test-session.mjs`: **PASS** dentro de `test:playcanvas`
+- `scripts/test-saves.mjs`: **PASS** dentro de `test:playcanvas`
+- T5 authoritative sport model: **PASS**
+- T5 pre-content freeze sentinel: **PASS**
+- Otros workflows específicos disparados por el PR: **PASS**
+- Repository integrity general: continuaba con QA largos posteriores sin ningún fallo conocido al producir este handoff; los gates exigidos por A0/A1 ya habían finalizado en verde.
