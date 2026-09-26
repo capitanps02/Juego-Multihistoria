@@ -7,6 +7,14 @@ on:
       - 'scripts/test-football-catalog.mjs'
       - 'scripts/test-catalog-fixture-opponents.mjs'
       - 'src/simulation/match-model.ts'
+      - 'scripts/build-playcanvas.mjs'
+      - 'web/club-names.js'
+      - 'web/club-catalog-names.js'
+      - 'src/simulation/early-career-market.ts'
+      - 'scripts/generate-club-catalog-names.mjs'
+      - 'scripts/test-club-names.mjs'
+      - 'scripts/test-t5-age18-market-authority.mjs'
+      - 'scripts/test-catalog-market-destinations.mjs'
       - 'package.json'
       - 'package-lock.json'
       - '.github/workflows/football-catalog.yml'
@@ -25,5 +33,9 @@ jobs:
       - run: npm ci
       - name: Build engine
         run: npm run build
-      - name: Validate fictional world football catalog and fixture opponents
-        run: node --test scripts/test-football-catalog.mjs scripts/test-catalog-fixture-opponents.mjs
+      - name: Verify generated catalog presentation names
+        run: node scripts/generate-club-catalog-names.mjs --check
+      - name: Validate catalog, fixtures, market and presentation
+        run: node --test scripts/test-football-catalog.mjs scripts/test-catalog-fixture-opponents.mjs scripts/test-catalog-market-destinations.mjs scripts/test-t5-age18-market-authority.mjs scripts/test-club-names.mjs
+      - name: Build PlayCanvas bundle with catalog names
+        run: node scripts/build-playcanvas.mjs
