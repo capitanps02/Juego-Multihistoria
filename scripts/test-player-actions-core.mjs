@@ -148,7 +148,7 @@ test("A1-010 HISTORY SEPARATION: Player Action never appends state.history", () 
 });
 
 test("A1-011 AUTHORITY GUARD: arbitrary club/contract/national writes have no registered effect", () => {
-  for (const effectKey of ["set_club", "set_contract_salary", "set_national_role"]) {
+  for (const effectKey of ["club", "contract.salaryMonthly", "professional.nationalRole"]) {
     const state = createInitialState(111);
     const before = clone(state);
     const malicious = [{
