@@ -1,4 +1,8 @@
-export type EuropeanCountryCode = "ESP" | "ENG" | "ITA" | "DEU" | "FRA" | "PRT" | "NLD" | "BEL";
+export type FootballCountryCode =
+  | "ESP" | "ENG" | "ITA" | "DEU" | "FRA" | "PRT" | "NLD" | "BEL"
+  | "USA" | "MEX" | "ARG" | "JPN" | "CHN" | "TUR" | "NOR" | "MAR" | "ZAF";
+
+export type FootballConfederation = "UEFA" | "CONCACAF" | "CONMEBOL" | "AFC" | "CAF";
 
 export type ClubArchetype =
   | "continental"
@@ -12,11 +16,14 @@ export type ClubArchetype =
 
 export interface FootballDivision {
   readonly id: string;
-  readonly countryCode: EuropeanCountryCode;
+  readonly countryCode: FootballCountryCode;
   readonly country: string;
+  readonly confederation: FootballConfederation;
   readonly name: string;
   readonly tier: number;
   readonly clubCount: number;
+  /** Game-design coefficient, 0..100. It is not an official federation ranking. */
+  readonly strength: number;
 }
 
 export interface FootballClub {
@@ -25,8 +32,9 @@ export interface FootballClub {
   readonly name: string;
   readonly shortName: string;
   readonly city: string;
-  readonly countryCode: EuropeanCountryCode;
+  readonly countryCode: FootballCountryCode;
   readonly country: string;
+  readonly confederation: FootballConfederation;
   readonly divisionId: string;
   readonly tier: number;
   readonly prestige: number;
