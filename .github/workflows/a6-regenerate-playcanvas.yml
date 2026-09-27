@@ -46,3 +46,5 @@ jobs:
           git add playcanvas/multihistoria.js playcanvas/manifest.json web/assets.json
           git commit -m "build(A6): regenerate integrated PlayCanvas package"
           git push origin HEAD:a6/player-actions-integrated-qa
+
+# trigger: regenerate integrated package
