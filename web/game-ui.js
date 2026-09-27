@@ -16,6 +16,7 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
   const hasBackup=()=>store.hasPrevious();
   const money=n=>new Intl.NumberFormat('es-ES',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(n);
   const clubName=formatClubName;
+  const clubShortName=value=>formatClubName(value,{compact:true});
   const decimal=n=>new Intl.NumberFormat('es-ES',{maximumFractionDigits:1}).format(n);
   const deltaText=n=>{const rounded=Math.round(n*10)/10;return rounded===0&&n!==0?(n>0?'+':'−')+'<0,1':(rounded>0?'+':'')+decimal(rounded);};
   const club=v=>clubName(v.club);
@@ -272,7 +273,7 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
       const matches=el('details',undefined,'period-fixtures');matches.append(el('summary','Partidos del periodo · '+s.report.fixtures.length));
       for(const m of s.report.fixtures){
         const row=el('article',undefined,'period-fixture');
-        const home=m.homeAway==='home'?clubName(m.club):clubName(m.opponent),away=m.homeAway==='home'?clubName(m.opponent):clubName(m.club);
+        const home=m.homeAway==='home'?clubShortName(m.club):clubShortName(m.opponent),away=m.homeAway==='home'?clubShortName(m.opponent):clubShortName(m.club);
         row.append(el('time',date(m.date),'eyebrow'),el('p',m.homeGoals===null?`${home} · ${away}`:`${home} ${m.homeGoals} – ${m.awayGoals} ${away}`),el('p',`${m.participation} · ${m.minutes} min`+(m.rating===null?'':' · Nota '+decimal(m.rating)),'muted'));matches.append(row);
       }
       p.append(matches,button('Ver historial deportivo',()=>navigate('career')));
