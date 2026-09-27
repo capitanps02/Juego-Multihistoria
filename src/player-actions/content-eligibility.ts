@@ -8,6 +8,7 @@ export type PlayerActionEligibilityPredicate =
   | { kind: "live_transfer_request"; required: boolean }
   | { kind: "fatigue_min"; value: number }
   | { kind: "fatigue_max"; value: number }
+  | { kind: "risk_min"; value: number }
   | { kind: "risk_max"; value: number }
   | { kind: "current_teammate" }
   | { kind: "teammate_profile"; profile: "veteran" | "young" }
@@ -93,7 +94,7 @@ export const PLAYER_ACTION_ELIGIBILITY_SPECS: readonly PlayerActionEligibilitySp
     all: [
       { kind: "active_career" },
       { kind: "age_range", min: 18 },
-      { kind: "fatigue_min", value: 28 }
+      { kind: "risk_min", value: 28 }
     ]
   },
   {
