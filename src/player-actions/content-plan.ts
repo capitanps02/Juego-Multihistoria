@@ -181,7 +181,7 @@ export const PLAYER_ACTION_CONTENT_PLAN: readonly PlayerActionContentPlanRow[] =
     blockedBy: "A1 contextual eligibility + relationship handler"
   },
   {
-    id: "PA_VETERAN_ADVICE",
+    id: "PA_LEADER_ADVICE",
     classification: "CONTEXTUAL",
     category: "relationships",
     ageRange: [18, 23],
@@ -192,7 +192,7 @@ export const PLAYER_ACTION_CONTENT_PLAN: readonly PlayerActionContentPlanRow[] =
     blockedBy: "A1 veteran predicate + relationship handler"
   },
   {
-    id: "PA_MENTOR_YOUNG",
+    id: "PA_MENTOR_TEAMMATE",
     classification: "LATE_CAREER",
     category: "relationships",
     ageRange: [30, null],
