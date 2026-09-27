@@ -2,8 +2,8 @@
   "integration": "T3.2",
   "targetScene": 2593315,
   "moduleCount": 161,
-  "bundleBytes": 17536831,
-  "bundleSha256": "c59b79313f976038205847c9553890413d02f04d16aaa2a4c2cedff71f5b8e39",
+  "bundleBytes": 17536811,
+  "bundleSha256": "50dc06e51289898b638b7cf0c5157ce1e212f7762a4a922b22ce3a0cd9603d21",
   "inputs": {
     "src/session/game-session.ts": "f1ea7e99e013031e3d814c51e8d4edf7e8fd05382db5117a43ddfd187359e210",
     "src/session/decision-memories.ts": "188545abfbeb2384ab8cdb29b5eaf947a24f033c9171b490c73dc5dbdf300d22",
@@ -166,7 +166,7 @@
     "src/core/player-contacts.ts": "45e69763b7e7ff70f2831714dba2ff3f1e7d1a4a0298af5f3f19df99e6d0c127",
     "src/session/auto-simulation.ts": "57d688c71da9ee81eab39b09074321795bd036a622c59716c39ecd9972df20b0",
     "src/session/period-report.ts": "b802e59ef84208ecadca896ec67de8f5964dc353bb1bb56a36c934c81d6dc126",
-    "web/game-ui.js": "c6d633f85ea29e8884fdde9fd15897c97e6b1db414811fa96c7a7adadbf17d85",
+    "web/game-ui.js": "cc9e80b24a975e7aadee265e1fdd1a07beb48ac3ab9c19edbfddc8030b312fa3",
     "web/club-names.js": "31ea92412020dfb2b5e08c7be6ceef144607ed78731150ad6ce66c67390acf91",
     "web/game-ui.css": "ebcc83edaa576f6ddab38ffc0511ff2be6d601bc9cb3e57710538df481470007",
     "web/indexed-save-store.js": "0a124e36954dcebeffe7761913eb1333e57a8fd8053cc07d89f0ed4409f5668d"
