@@ -1,4 +1,9 @@
-import type { PlayerActionDefinition } from "./types.js";
+import { PLAYER_ACTION_ELIGIBILITY_SPECS } from "./content-eligibility.js";
+import type { PlayerActionDefinition, PlayerActionEligibilityPredicate } from "./types.js";
+
+function eligibilityFor(actionId: string): readonly PlayerActionEligibilityPredicate[] {
+  return PLAYER_ACTION_ELIGIBILITY_SPECS.find(row => row.actionId === actionId)?.all ?? [];
+}
 
 export const PLAYER_ACTION_CATALOG: readonly PlayerActionDefinition[] = [
   {
@@ -9,6 +14,7 @@ export const PLAYER_ACTION_CATALOG: readonly PlayerActionDefinition[] = [
     targetKind: "none",
     cooldown: { scope: "action", days: 35 },
     eligibilityKey: "active_career",
+    eligibility: eligibilityFor("PA_TRAIN_EXTRA"),
     options: [
       {
         id: "TECHNIQUE",
@@ -20,12 +26,13 @@ export const PLAYER_ACTION_CATALOG: readonly PlayerActionDefinition[] = [
   },
   {
     id: "PA_REST",
-    category: "life",
+    category: "health",
     label: "Descansar",
     description: "Prioriza recuperación ligera sin alterar lesiones ni decisiones médicas.",
     targetKind: "none",
     cooldown: { scope: "action", days: 21 },
     eligibilityKey: "active_career",
+    eligibility: eligibilityFor("PA_REST"),
     options: [
       {
         id: "RECOVER",
@@ -43,6 +50,7 @@ export const PLAYER_ACTION_CATALOG: readonly PlayerActionDefinition[] = [
     targetKind: "coach",
     cooldown: { scope: "action_target", days: 31 },
     eligibilityKey: "active_career",
+    eligibility: eligibilityFor("PA_COACH_TALK"),
     options: [
       {
         id: "MORE_MINUTES",
@@ -72,6 +80,7 @@ export const PLAYER_ACTION_CATALOG: readonly PlayerActionDefinition[] = [
     targetKind: "none",
     cooldown: { scope: "action", days: 121 },
     eligibilityKey: "active_career",
+    eligibility: eligibilityFor("PA_REQUEST_TRANSFER"),
     options: [
       {
         id: "REQUEST",
@@ -89,6 +98,7 @@ export const PLAYER_ACTION_CATALOG: readonly PlayerActionDefinition[] = [
     targetKind: "none",
     cooldown: { scope: "action", days: 91 },
     eligibilityKey: "active_career",
+    eligibility: eligibilityFor("PA_REQUEST_RENEWAL"),
     options: [
       {
         id: "REQUEST",
@@ -106,6 +116,7 @@ export const PLAYER_ACTION_CATALOG: readonly PlayerActionDefinition[] = [
     targetKind: "agent",
     cooldown: { scope: "action_target", days: 31 },
     eligibilityKey: "active_career",
+    eligibility: eligibilityFor("PA_AGENT_MARKET"),
     options: [
       {
         id: "ASK",
