@@ -1278,3 +1278,58 @@ test("A5-070 SHARED AGENT FAMILY BLOCKS CROSS-ACTION CYCLING", () => {
   assert.equal(second.code, "PLAYER_ACTION_COOLDOWN");
   assert.deepEqual(state, before);
 });
+
+
+test("A5-071 DATA-DRIVEN RUNTIME SURFACE MATCHES REGISTERED EFFECTS", () => {
+  const registered = new Set(PLAYER_ACTION_EFFECT_KEYS);
+  const expectedIds = PLAYER_ACTION_CONTENT_PLAN
+    .filter(plan =>
+      PLAYER_ACTION_EFFECT_PLAN.some(row =>
+        row.actionId === plan.id && registered.has(row.desiredEffectKey)
+      )
+    )
+    .map(plan => plan.id);
+
+  assert.deepEqual(
+    PLAYER_ACTION_CATALOG.map(action => action.id),
+    expectedIds
+  );
+});
+
+test("A5-072 RUNTIME OPTIONS ARE EXACT REGISTERED CONTENT SUBSET", () => {
+  const registered = new Set(PLAYER_ACTION_EFFECT_KEYS);
+
+  for (const action of PLAYER_ACTION_CATALOG) {
+    const spec = PLAYER_ACTION_CONTENT_SPECS.find(row => row.id === action.id);
+    assert.ok(spec);
+
+    const routeByOption = new Map(
+      PLAYER_ACTION_EFFECT_PLAN
+        .filter(row => row.actionId === action.id)
+        .map(row => [row.optionId, row.desiredEffectKey])
+    );
+
+    const expected = spec.options
+      .map(option => ({
+        id: option.id,
+        label: option.label,
+        effectKey: routeByOption.get(option.id),
+        publicResult: option.publicResult
+      }))
+      .filter(option => option.effectKey && registered.has(option.effectKey));
+
+    assert.deepEqual(action.options, expected, `${action.id} executable option subset drift`);
+  }
+});
+
+test("A5-073 PLAN STATUS MATCHES CURRENT RUNTIME ACTION SURFACE", () => {
+  const runtimeIds = new Set(PLAYER_ACTION_CATALOG.map(action => action.id));
+
+  for (const plan of PLAYER_ACTION_CONTENT_PLAN) {
+    assert.equal(
+      plan.status === "implemented",
+      runtimeIds.has(plan.id),
+      `${plan.id} plan status does not match closed effect registry surface`
+    );
+  }
+});
