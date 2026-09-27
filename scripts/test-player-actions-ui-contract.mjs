@@ -191,6 +191,8 @@ test('A4-016 TARGET FLOW: public coach target can be selected and dispatched end
   assert.ok(cooled.cooldownUntil);
   assert.match(preview,/targetId:selectedTarget\.id/);
   assert.match(web,/targetId:selectedTarget\.id/);
+  assert.match(preview,/actionView\.targets\?\.find\(target=>target\.cooldownUntil\)/);
+  assert.match(web,/a\.targets\?\.find\(target=>target\.cooldownUntil\)/);
 });
 
 test('A4-017 HISTORY: Player Actions are projected into Tu recorrido without reading GameState',async()=>{
