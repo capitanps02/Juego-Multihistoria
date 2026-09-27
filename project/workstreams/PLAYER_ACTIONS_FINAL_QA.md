@@ -22,7 +22,7 @@ A6 confirma que la arquitectura base de Player Actions es segura, determinista y
 - El adapter público de targets ya está implementado en **A2 follow-up #806**.
 - A4 ya implementa selector público de target, exact `targetId`, history saneado y UI target-aware.
 - A4 está **CERTIFIED upstream** en run **36316821115 — SUCCESS**: **46/46 PASS** en A2 session + A4 contract, **11/11 PASS** en PlayCanvas+A19 y bundle target-aware versionado (154 módulos, 17,484,526 bytes, SHA-256 `55649e9af9dd64711400fb0d3adddc51ee66f7d55dc0b1b29348e8a304a62bb6`).
-- A5 reporta **94% owner-side** y ya tiene contratos V1 20/20 para plan, copy, balance, eligibility, cooldown groups y routing effect/fact.
+- A5 reporta **98% owner-side** y ya tiene contratos V1 20/20 para plan, copy, balance, eligibility, cooldown groups y routing effect/fact.
 - A5 ya incluye una mitigación de anti-grind por frecuencia:
   - training 35 días;
   - rest 21 días;
@@ -36,7 +36,7 @@ A6 confirma que la arquitectura base de Player Actions es segura, determinista y
 3. **A1 renewal window:** `PA_REQUEST_RENEWAL` debe usar el horizonte canónico de **24 meses**.
 4. **A1 catalog contract:** faltan health, age/context, handlers cerrados adicionales y target predicates veteran/young.
 5. **A3 minimal extension:** sólo quedan tres nuevos facts persistentes legítimos: `request_position_change`, `withdraw_transfer_request` y `career_priority`.
-6. **A5 manifest coherence:** `content-effect-plan.ts` declara veteran/mentor `direct_only`, pero `content-plan.ts` conserva dos `blockedBy` A3 obsoletos; A6-015A lo rechaza hasta que A5 lo alinee.
+6. **A5 manifest coherence:** RESOLVED. Veteran/mentor ya están alineados como `direct_only` locales y `content-plan.ts` elimina dependencias A3 innecesarias.
 7. **Anti-grind / browser E2E integrado:** los fixes existen, pero la pasada exacta sobre el candidato integrado sigue pendiente por cola de GitHub Actions.
 
 No se certificará por inferencia ni por “fix implementado”: los fixes pasan a PASS sólo después del retest exacto.
@@ -51,7 +51,7 @@ No se certificará por inferencia ni por “fix implementado”: los fixes pasan
 | A2 public adapter | IMPLEMENTED / pending final integration retest | PR #806, HEAD `4eafe285...`. Targets autoritativos + history pública saneada + stale/invalid fail-closed. |
 | A3 | COMPLETE para slice actual | PR #803, HEAD `75be938...`. Scopes, bridge, consumers y 0 extra RNG. |
 | A4 | COMPLETE / CERTIFIED | PR #804, HEAD `1296cbb...`. Run 36316821115 SUCCESS; 46/46 A2+A4, 11/11 PlayCanvas+A19, bundle target-aware versionado. Sin blocker A4 restante. |
-| A5 | PARTIAL / BLOCKED — 94% owner-side | PR #802, HEAD `1a7f388...`. 20/20 plan + public spec + balance + eligibility + cooldown groups + effect/fact routing; runtime aún 6/20 por blockers A1/A3. |
+| A5 | PARTIAL / BLOCKED — 98% owner-side | PR #802, HEAD `1fe4fd8...`. 20/20 plan + public spec + balance + eligibility + cooldown groups + effect/fact routing; 31/31 opciones y only-3-A3 contract tests; runtime aún 6/20 por blockers A1/A3. |
 | A6 | IN PROGRESS | PR #805. Gates cross-version, stress, public target, anti-grind, mobile E2E y candidatos integrados. |
 
 ## 3. ZERO_ACTION_EQUIVALENCE
@@ -508,7 +508,7 @@ A6 ya no depende únicamente de ramas aisladas.
 Existen candidatos temporales:
 
 - `a6/player-actions-integrated-candidate`;
-- `a6/player-actions-integrated-qa`.
+- `a6/player-actions-integrated-qa` — candidato canónico actual pinneado en **`b02a5dd80b8e2c022419d897f8a0a88213b4762b`**.
 
 Se usan sólo para QA, no para saltarse ownership ni mergear producto.
 
@@ -520,7 +520,7 @@ El candidato integrado actual combina:
 - A4 target UI + bundle final certificado;
 - A5 six-action production slice;
 - latest persistence regression;
-- A5 plan/spec/balance/eligibility/cooldown/effect-routing manifests y tests.
+- A5 plan/spec/balance/eligibility/cooldown/effect-routing manifests y tests al estado 98% owner-side.
 
 No convierte las 14 acciones bloqueadas en runtime ficticio.
 
@@ -591,12 +591,11 @@ Runtime = 6/20.
 
 ### PA-A6-008 — manifest coherence veteran/mentor
 
-**Severity:** P2 OPEN  
-**Owner:** RETURN_TO_A5
+**Severity:** P2 histórico  
+**Estado:** CLOSED / RESOLVED IN A5  
+**Owner:** A5
 
-`content-effect-plan.ts` + A5-052 declaran `PA_VETERAN_ADVICE` y `PA_MENTOR_YOUNG` como `direct_only` sin A3 fact, pero `content-plan.ts` conserva blockers `A3 advice intent` / `A3 mentorship intent`.
-
-**Acceptance:** A6-015A PASS; los dos `blockedBy` deben alinearse con el routing final.
+A5 alinea `content-plan.ts`, `content-effect-plan.ts` y A5-052: veteran/mentor son `direct_only`, relationship-local y sin facts A3. A5-060 certifica que sólo tres acciones V1 dependen de nuevos contratos A3.
 
 ## 19. Gates actuales
 
@@ -649,10 +648,9 @@ El release está bloqueado principalmente por:
 
 Cerrar en este orden:
 
-1. A5 corregir los dos `blockedBy` veteran/mentor obsoletos;
-2. A1 active-employment + renewal-window + ejecución de manifests cerrados;
-3. A3 implementar únicamente los 3 facts nuevos del V1;
-4. A5 materializar las 14 acciones bloqueadas;
+1. A1 active-employment + renewal-window + ejecución de manifests cerrados;
+2. A3 implementar únicamente los 3 facts nuevos del V1;
+3. A5 materializar las 14 acciones bloqueadas;
 5. A6-015 content PASS;
 6. annual anti-grind PASS;
 7. A6-016..021 PASS;
@@ -662,3 +660,23 @@ Cerrar en este orden:
 11. report final CERTIFIED o NOT_CERTIFIED.
 
 Estimación A6 residual después de que A1/A3 desbloqueen runtime: **~4–7 horas-agente equivalentes**.
+
+
+## 23. Candidate freeze
+
+Para evitar evidencia no reproducible, A6 deja de seguir el nombre móvil de la rama integrada.
+
+Candidato exacto pinneado para el siguiente run:
+
+`b02a5dd80b8e2c022419d897f8a0a88213b4762b`
+
+Contiene:
+
+- A2 session + public target adapter;
+- A3 slice certificado;
+- A4 final certificado, incluido bundle PlayCanvas versionado;
+- A5 98% owner-side manifests/tests;
+- six-action runtime actual;
+- latest persistence regression.
+
+El workflow A6 usa este SHA exacto mediante `INTEGRATED_REF`. Cualquier cambio upstream posterior requerirá construir un nuevo candidate SHA y una nueva corrida; no se reinterpretará un run antiguo contra una rama móvil.
