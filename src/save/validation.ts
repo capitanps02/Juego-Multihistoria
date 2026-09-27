@@ -6,6 +6,8 @@ import { inspectPenaltySetupStore } from "../simulation/match-penalty-context.js
 import * as legacy from "./validation-legacy.js";
 import type { EmploymentStatus } from "../simulation/employment.js";
 import { isVeteranMarketApproach } from "../simulation/veteran-market.js";
+import { isSupportedFootballCatalogVersion } from "./football-catalog-version.js";
+import { inspectFootballCatalogSaveReferences } from "./football-catalog-reference-validation.js";
 import { classifyFootballClubReference, clubById } from "../catalog/football/index.js";
 import { isSupportedFootballCatalogVersion } from "./football-catalog-version.js";
 
@@ -116,6 +118,19 @@ function assertFootballReferences(value: unknown): void {
 
 const EMPLOYMENT_STATUSES: EmploymentStatus[] = ["contracted","loaned","unattached","expired_pending_resolution"];
 
+function assertFootballCatalogReferences(value: unknown): void {
+  const state = legacy.record(value, "state");
+  if (state.footballCatalogVersion !== undefined) {
+    legacy.ensure(
+      isSupportedFootballCatalogVersion(state.footballCatalogVersion),
+      "footballCatalogVersion",
+      "versión de catálogo no compatible"
+    );
+  }
+  const issue = inspectFootballCatalogSaveReferences(value);
+  if (issue) legacy.ensure(false, issue.path, issue.reason);
+}
+
 function assertVeteranMarketFacts(value: unknown): void {
   const state = legacy.record(value, "state");
   const world = legacy.record(state.world, "world");
@@ -180,6 +195,7 @@ export function validateGameSave(value: unknown, version: number): void {
   assertPenaltySetups(value);
   assertEmployment(value);
   assertVeteranMarketFacts(value);
+  assertFootballCatalogReferences(value);
   const state = value as GameState;
   if (state.playerActions !== undefined) assertPlayerActionState(state.playerActions, state.date);
 }
@@ -194,6 +210,7 @@ export function assertGameState(value: unknown): asserts value is GameState {
   assertPenaltySetups(value);
   assertEmployment(value);
   assertVeteranMarketFacts(value);
+  assertFootballCatalogReferences(value);
   const state = value as GameState;
   if (state.playerActions !== undefined) assertPlayerActionState(state.playerActions, state.date);
 }
