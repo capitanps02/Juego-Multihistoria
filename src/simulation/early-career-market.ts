@@ -1,4 +1,5 @@
 import type { GameState } from "../core/types.js";
+import { transferRequestExternalMarketThreshold } from "../player-actions/bridge.js";
 import {
   FORMAL_RENEWAL_REASON,
   careerOfferKind,
@@ -112,7 +113,8 @@ function materializeSummer(state: GameState): CareerOfferKind | null {
 
   const market = num(state.reputation.marketHeat, 5);
   const externalPlausible = market >= 34 && (state.flags.OFFICIAL_DEBUT === true || num(state.sport.appearances) >= 3);
-  const external = externalPlausible && producerRoll(state, "age18:summer:kind") % 100 < 38;
+  const externalThreshold = transferRequestExternalMarketThreshold(state, 38);
+  const external = externalPlausible && producerRoll(state, "age18:summer:kind") % 100 < externalThreshold;
 
   if (external) {
     const tier = market >= 58 ? Math.max(2, state.professional.leagueTier - 1) : Math.max(2, state.professional.leagueTier);
