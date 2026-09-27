@@ -11,7 +11,7 @@ export type PlayerActionEligibilityPredicate =
   | { kind: "risk_min"; value: number }
   | { kind: "risk_max"; value: number }
   | { kind: "current_teammate" }
-  | { kind: "teammate_profile"; profile: "veteran" | "young" }
+  | { kind: "teammate_profile"; profile: "locker_leader" }
   | { kind: "visible_teammate_tension" };
 
 export interface PlayerActionEligibilitySpec {
@@ -156,7 +156,7 @@ export const PLAYER_ACTION_ELIGIBILITY_SPECS: readonly PlayerActionEligibilitySp
       { kind: "active_club_employment" },
       { kind: "age_range", min: 18, max: 23 },
       { kind: "current_teammate" },
-      { kind: "teammate_profile", profile: "veteran" }
+      { kind: "teammate_profile", profile: "locker_leader" }
     ]
   },
   {
@@ -165,8 +165,7 @@ export const PLAYER_ACTION_ELIGIBILITY_SPECS: readonly PlayerActionEligibilitySp
       { kind: "active_career" },
       { kind: "active_club_employment" },
       { kind: "age_range", min: 30 },
-      { kind: "current_teammate" },
-      { kind: "teammate_profile", profile: "young" }
+      { kind: "current_teammate" }
     ]
   },
   {
