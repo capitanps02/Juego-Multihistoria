@@ -484,7 +484,7 @@ Archivo:
 
 `scripts/test-player-actions-content.mjs`
 
-Casos implementados en la suite (18):
+Casos implementados en la suite (21):
 
 1. A5-001 UNIQUE IDS
 2. A5-002 VALID CATEGORIES
@@ -504,6 +504,9 @@ Casos implementados en la suite (18):
 16. A5-016 REST FREQUENCY CEILING — <=18 usos/año
 17. A5-017 INTENT COOLDOWN >= FACT LIFECYCLE
 18. A5-018 IMPLEMENTED PLAN/RUNTIME SYNC
+19. A5-019 CONTENT PLAN DISTRIBUTION — 9/8/2/1 y categorías 5/2/2/3/4/2/2
+20. A5-020 NO DUPLICATE RUNTIME SEMANTICS
+21. A5-021 PUBLIC COPY DOES NOT LEAK INTERNALS
 
 npm:
 
@@ -669,7 +672,7 @@ A3 documenta que withdraw-transfer no existe en V1 actual y request_transfer exp
 
 ```text
 [A5 STATUS]
-Progreso: 72%
+Progreso: 75%
 BASE_SHA: 75be938bbe4a6f7a01ef45a5078a6bfa6d77262d
 HEAD actual: consultar PR #802
 CATÁLOGO
@@ -682,6 +685,9 @@ COMPLETADO
 - cooldowns A5 del slice
 - authority review
 - copy budgets
+- distribución de contenido
+- duplicate runtime semantics guard
+- public-copy internal leak guard
 - suite A5 creada
 EN CURSO
 - CI del slice
@@ -699,7 +705,7 @@ BALANCE
 - training/rest: cooldown remediation implementada; handler/context tuning A1 sigue pendiente
 - causal intent overlap eliminado por configuración
 TESTS
-- 18 checks authored
+- 21 checks authored
 - 0 TODO en la suite de diseño/contrato
 - stress anual de 80 carreras añadido
 - runtime health/age siguen bloqueados explícitamente
