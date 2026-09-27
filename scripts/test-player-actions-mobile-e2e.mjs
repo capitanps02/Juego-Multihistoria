@@ -4,7 +4,7 @@ import { GameSession } from "../dist/session/game-session.js";
 
 const baseUrl = process.argv[2] ?? "http://127.0.0.1:4173";
 const STORAGE_KEY = "historia-jugador.preview.session.v1";
-const fixture = await GameSession.create(424242, { events: [], microfeeds: false, sessionId: "a6-mobile-e2e" });
+const fixture = await GameSession.create(424242, { microfeeds: false, sessionId: "a6-mobile-e2e" });
 const fixtureRaw = JSON.stringify(fixture.exportSnapshot());
 const viewports = [
   { width: 360, height: 800 },
@@ -86,10 +86,20 @@ try {
     }, { key: STORAGE_KEY, value: fixtureRaw });
     await page.goto(baseUrl, { waitUntil: "networkidle" });
 
-    await page.waitForFunction(() => {
+    await page.waitForFunction(() => Boolean(document.querySelector("#game")?.shadowRoot));
+    const initialReady = await page.waitForFunction(() => {
       const root = document.querySelector("#game")?.shadowRoot;
       return Boolean(root && [...root.querySelectorAll("button")].some(button => button.textContent?.trim() === "Gestionar mi carrera"));
-    });
+    }, undefined, { timeout: 10000 }).then(() => true).catch(() => false);
+    if (!initialReady) {
+      const diagnostic = await page.evaluate(() => ({
+        body: document.body.innerText,
+        shadow: document.querySelector("#game")?.shadowRoot?.textContent ?? "",
+        buttons: [...(document.querySelector("#game")?.shadowRoot?.querySelectorAll("button") ?? [])]
+          .map(button => button.textContent?.trim())
+      }));
+      throw new Error(`initial career surface missing: ${JSON.stringify(diagnostic)}`);
+    }
 
     let text = await shadowText(page);
     assert.match(text, /Simular/, "SIMULAR must remain visible on initial career surface");
