@@ -11,6 +11,7 @@ import { PLAYER_ACTION_BALANCE_SPECS } from "../dist/player-actions/content-bala
 import { PLAYER_ACTION_ELIGIBILITY_SPECS } from "../dist/player-actions/content-eligibility.js";
 import { PLAYER_ACTION_COOLDOWN_GROUP_SPECS } from "../dist/player-actions/content-cooldown-groups.js";
 import { PLAYER_ACTION_EFFECT_PLAN } from "../dist/player-actions/content-effect-plan.js";
+import { PLAYER_ACTION_TARGET_PROFILES } from "../dist/player-actions/content-target-profiles.js";
 import { CLUB_RENEWAL_INTENT_MAX_MONTHS } from "../dist/simulation/club-contract-intent.js";
 import {
   PLAYER_ACTION_CATALOG,
@@ -815,26 +816,26 @@ test("A5-046 TRANSFER REQUEST AND WITHDRAWAL ARE MUTUALLY EXCLUSIVE CONTEXTS", (
 });
 
 test("A5-047 AGE-SPECIALIZED TEAMMATE ACTIONS MATCH V1 WINDOWS", () => {
-  const veteran = PLAYER_ACTION_ELIGIBILITY_SPECS.find(row => row.actionId === "PA_LEADER_ADVICE");
+  const leader = PLAYER_ACTION_ELIGIBILITY_SPECS.find(row => row.actionId === "PA_LEADER_ADVICE");
   const mentor = PLAYER_ACTION_ELIGIBILITY_SPECS.find(row => row.actionId === "PA_MENTOR_TEAMMATE");
-  assert.ok(veteran && mentor);
+  assert.ok(leader && mentor);
 
   assert.deepEqual(
-    veteran.all.find(predicate => predicate.kind === "age_range"),
+    leader.all.find(predicate => predicate.kind === "age_range"),
     { kind: "age_range", min: 18, max: 23 }
   );
   assert.deepEqual(
-    veteran.all.find(predicate => predicate.kind === "teammate_profile"),
-    { kind: "teammate_profile", profile: "veteran" }
+    leader.all.find(predicate => predicate.kind === "teammate_profile"),
+    { kind: "teammate_profile", profile: "locker_leader" }
   );
 
   assert.deepEqual(
     mentor.all.find(predicate => predicate.kind === "age_range"),
     { kind: "age_range", min: 30 }
   );
-  assert.deepEqual(
-    mentor.all.find(predicate => predicate.kind === "teammate_profile"),
-    { kind: "teammate_profile", profile: "young" }
+  assert.equal(
+    mentor.all.some(predicate => predicate.kind === "teammate_profile"),
+    false
   );
 });
 
@@ -1108,4 +1109,39 @@ test("A5-060 ONLY THREE V1 ACTIONS DEPEND ON NEW A3 CONTRACTS", () => {
     assert.ok(row);
     assert.equal(/A3/i.test(row.blockedBy ?? ""), false, `${actionId} has unnecessary A3 dependency`);
   }
+});
+
+
+test("A5-061 LOCKER LEADER PROFILE IS PUBLIC, CLOSED AND CURRENT-TEAMMATE SCOPED", () => {
+  assert.deepEqual(
+    [...PLAYER_ACTION_TARGET_PROFILES.locker_leader].sort(),
+    ["NPC_PLR_10", "NPC_PLR_11"].sort()
+  );
+  assert.equal(new Set(PLAYER_ACTION_TARGET_PROFILES.locker_leader).size, 2);
+  assert.ok(PLAYER_ACTION_TARGET_PROFILES.locker_leader.every(id => id.startsWith("NPC_PLR_")));
+
+  const leader = PLAYER_ACTION_ELIGIBILITY_SPECS.find(row => row.actionId === "PA_LEADER_ADVICE");
+  assert.ok(leader);
+  assert.ok(leader.all.some(predicate => predicate.kind === "current_teammate"));
+  assert.deepEqual(
+    leader.all.find(predicate => predicate.kind === "teammate_profile"),
+    { kind: "teammate_profile", profile: "locker_leader" }
+  );
+});
+
+test("A5-062 LATE MENTORING DOES NOT REQUIRE NPC AGE METADATA", () => {
+  const mentor = PLAYER_ACTION_ELIGIBILITY_SPECS.find(row => row.actionId === "PA_MENTOR_TEAMMATE");
+  assert.ok(mentor);
+  assert.ok(mentor.all.some(predicate => predicate.kind === "current_teammate"));
+  assert.deepEqual(
+    mentor.all.find(predicate => predicate.kind === "age_range"),
+    { kind: "age_range", min: 30 }
+  );
+  assert.equal(mentor.all.some(predicate => predicate.kind === "teammate_profile"), false);
+});
+
+test("A5-063 NO UNSUPPORTED VETERAN/YOUNG NPC PROFILE IN ELIGIBILITY", () => {
+  const serialized = JSON.stringify(PLAYER_ACTION_ELIGIBILITY_SPECS).toLowerCase();
+  assert.equal(serialized.includes('"profile":"veteran"'), false);
+  assert.equal(serialized.includes('"profile":"young"'), false);
 });
