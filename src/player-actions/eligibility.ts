@@ -114,6 +114,10 @@ function predicatePass(
       const fatigue = finiteNumber(state.body.fatigue);
       return fatigue !== null && fatigue <= predicate.value;
     }
+    case "risk_min": {
+      const risk = finiteNumber(state.body.risk);
+      return risk !== null && risk >= predicate.value;
+    }
     case "risk_max": {
       const risk = finiteNumber(state.body.risk);
       return risk !== null && risk <= predicate.value;
@@ -139,6 +143,7 @@ function eligibilityFailureReason(predicate: PlayerActionEligibilityPredicate): 
       return "Esta acción no está disponible en esta fase del contrato.";
     case "fatigue_min":
     case "fatigue_max":
+    case "risk_min":
     case "risk_max":
       return "Tu estado físico actual no permite esta acción.";
     case "current_coach":
