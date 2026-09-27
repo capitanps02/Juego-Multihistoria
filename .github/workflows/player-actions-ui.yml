@@ -21,7 +21,7 @@ on:
   workflow_dispatch:
 
 
-# Final target-aware certification trigger.
+# Final target-aware certification trigger — A4-019.
 permissions:
   contents: write
 
