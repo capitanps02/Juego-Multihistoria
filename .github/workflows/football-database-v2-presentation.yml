@@ -17,6 +17,7 @@ on:
       - 'scripts/test-android-offline.mjs'
       - 'scripts/test-player-actions-ui-contract.mjs'
       - 'package.json'
+      - 'docs/football-database-v2-a5-presentation.md'
       - '.github/workflows/football-database-v2-presentation.yml'
   workflow_dispatch:
 
