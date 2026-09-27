@@ -26,9 +26,9 @@ export const PLAYER_ACTION_EFFECT_PLAN: readonly PlayerActionOptionEffectPlan[] 
   { actionId: "PA_COACH_TALK", optionId: "COMFORTABLE_ROLE", mode: "fact_only", desiredEffectKey: "coach_acknowledge_role", desiredFactKind: "coach_role_acknowledged", implemented: true },
 
   { actionId: "PA_ROLE_CHECK", optionId: "ASK_ROLE", mode: "informational", desiredEffectKey: "query_role_status", implemented: false },
-  { actionId: "PA_POSITION_CHANGE", optionId: "EXPLORE", mode: "fact_only", desiredEffectKey: "request_position_change", desiredFactKind: "request_position_change", implemented: false },
+  { actionId: "PA_POSITION_CHANGE", optionId: "EXPLORE", mode: "fact_only", desiredEffectKey: "request_position_change", desiredFactKind: "request_position_change", implemented: true },
   { actionId: "PA_REQUEST_TRANSFER", optionId: "REQUEST", mode: "fact_only", desiredEffectKey: "request_transfer", desiredFactKind: "request_transfer", implemented: true },
-  { actionId: "PA_WITHDRAW_TRANSFER", optionId: "WITHDRAW", mode: "fact_only", desiredEffectKey: "withdraw_transfer_request", desiredFactKind: "withdraw_transfer_request", implemented: false },
+  { actionId: "PA_WITHDRAW_TRANSFER", optionId: "WITHDRAW", mode: "fact_only", desiredEffectKey: "withdraw_transfer_request", desiredFactKind: "withdraw_transfer_request", implemented: true },
 
   { actionId: "PA_TRAIN_EXTRA", optionId: "TECHNIQUE", mode: "direct_and_fact", desiredEffectKey: "train_extra", desiredFactKind: "training_extra_completed", implemented: true },
   { actionId: "PA_TRAIN_EXTRA", optionId: "PHYSICAL", mode: "direct_and_fact", desiredEffectKey: "train_extra_physical", desiredFactKind: "training_extra_completed", implemented: false },
@@ -40,10 +40,10 @@ export const PLAYER_ACTION_EFFECT_PLAN: readonly PlayerActionOptionEffectPlan[] 
 
   { actionId: "PA_AGENT_MARKET", optionId: "ASK", mode: "fact_only", desiredEffectKey: "ask_agent_market", desiredFactKind: "ask_agent_market", implemented: true },
   { actionId: "PA_REQUEST_RENEWAL", optionId: "REQUEST", mode: "fact_only", desiredEffectKey: "request_renewal", desiredFactKind: "request_renewal", implemented: true },
-  { actionId: "PA_DISCUSS_FUTURE", optionId: "MINUTES", mode: "fact_only", desiredEffectKey: "career_priority_minutes", desiredFactKind: "career_priority", implemented: false },
-  { actionId: "PA_DISCUSS_FUTURE", optionId: "SALARY", mode: "fact_only", desiredEffectKey: "career_priority_salary", desiredFactKind: "career_priority", implemented: false },
-  { actionId: "PA_DISCUSS_FUTURE", optionId: "STABILITY", mode: "fact_only", desiredEffectKey: "career_priority_stability", desiredFactKind: "career_priority", implemented: false },
-  { actionId: "PA_DISCUSS_FUTURE", optionId: "CLUB_LEVEL", mode: "fact_only", desiredEffectKey: "career_priority_club_level", desiredFactKind: "career_priority", implemented: false },
+  { actionId: "PA_DISCUSS_FUTURE", optionId: "MINUTES", mode: "fact_only", desiredEffectKey: "career_priority_minutes", desiredFactKind: "career_priority", implemented: true },
+  { actionId: "PA_DISCUSS_FUTURE", optionId: "SALARY", mode: "fact_only", desiredEffectKey: "career_priority_salary", desiredFactKind: "career_priority", implemented: true },
+  { actionId: "PA_DISCUSS_FUTURE", optionId: "STABILITY", mode: "fact_only", desiredEffectKey: "career_priority_stability", desiredFactKind: "career_priority", implemented: true },
+  { actionId: "PA_DISCUSS_FUTURE", optionId: "CLUB_LEVEL", mode: "fact_only", desiredEffectKey: "career_priority_club_level", desiredFactKind: "career_priority", implemented: true },
 
   { actionId: "PA_TALK_TEAMMATE", optionId: "CONNECT", mode: "direct_only", desiredEffectKey: "teammate_connect", implemented: false },
   { actionId: "PA_CLEAR_AIR", optionId: "TALK", mode: "direct_only", desiredEffectKey: "teammate_clear_air", implemented: false },
