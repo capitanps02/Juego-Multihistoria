@@ -37,7 +37,6 @@ export const PLAYER_ACTION_CONTENT_PLAN: readonly PlayerActionContentPlanRow[] =
     targetKind: "coach",
     status: "implemented",
     requiredContext: "current coach + active club employment",
-    blockedBy: "A1 active-employment contextual eligibility still generic"
   },
   {
     id: "PA_ROLE_CHECK",
@@ -124,7 +123,6 @@ export const PLAYER_ACTION_CONTENT_PLAN: readonly PlayerActionContentPlanRow[] =
     targetKind: "none",
     status: "implemented",
     requiredContext: "active career",
-    blockedBy: "runtime uses life until A1 adds health"
   },
   {
     id: "PA_AGENT_MARKET",
@@ -145,7 +143,6 @@ export const PLAYER_ACTION_CONTENT_PLAN: readonly PlayerActionContentPlanRow[] =
     targetKind: "none",
     status: "implemented",
     requiredContext: "current club employment + renewal window",
-    blockedBy: "A1 active-employment + contract-window contextual eligibility still generic"
   },
   {
     id: "PA_DISCUSS_FUTURE",
