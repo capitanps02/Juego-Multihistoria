@@ -1,7 +1,7 @@
 # PLAYER_ACTIONS_FINAL_QA — A6
 
-**Estado:** NOT_CERTIFIED — únicamente pendiente del stress full-career de §44  
-**Recomendación técnica actual:** HOLD_FINAL_MERGE hasta cerrar el stress full-career  
+**Estado:** CERTIFIED  
+**Recomendación técnica actual:** MERGE  
 **Repositorio:** `capitanps02/Juego-Multihistoria`  
 **BASE_SHA pre-feature:** `2cc068cb705214ba827677ab02d8d1668e8677ec`  
 **Release candidate A6:** `a6/player-actions-release-qa@3963b6197884009e56552d3625e84960efda22fb`  
@@ -10,7 +10,7 @@
 **A6 QA PR:** #805 — QA-only, no auto-merge  
 **Fecha:** 2026-09-27
 
-> Nota de cierre: los 15 gates de release definidos por A6 están PASS. A6 mantiene temporalmente NOT_CERTIFIED sólo porque el encargo original exige además stress de carreras completas (§44). El stress full-career se ejecuta sobre exactamente el mismo release candidate y no cambia producto.
+> Cierre A6: los 15 gates de release están PASS y el stress full-career de §44 también está cerrado con 24/24 carreras completas, 0 crashes y las seis políticas cubiertas sobre el mismo release candidate.
 
 ## 1. Resumen ejecutivo
 
@@ -556,60 +556,105 @@ QA harness-only false reds corrected:
 
 No product regression was hidden as a harness failure.
 
-## 23. Full-career stress — pending supplemental closure
+## 23. Full-career stress — PASS
 
-Section 44 requires several complete careers.
+QA-only sharded stress final:
 
-Current test is pinned to product release candidate:
+- PR #823;
+- workflow `Player Actions long-career stress parallel`;
+- run `36329871587`;
+- product base exacta: `a6/player-actions-release-qa@3963b6197884009e56552d3625e84960efda22fb`;
+- el delta QA sólo añade harness/workflow de stress.
 
-`a6/player-actions-release-qa@3963b6197884009e56552d3625e84960efda22fb`
+Cobertura:
 
-Policies:
+- **24 unique seeds**;
+- **24/24 carreras llegaron a epílogo**;
+- **0 crashes**;
+- 6 políticas;
+- 4 carreras por política;
+- cadencia de resiliencia full-career: bloques de 28 días;
+- el stress agresivo semanal separado ya está cubierto por PA-GATE-11.
 
-- none;
-- training-heavy;
-- career-aggressive;
-- rest-heavy;
-- mixed;
-- random-valid-action.
+Políticas y resultados:
 
-Target:
+| Política | Carreras | Acciones totales | Media acciones | Max save | Max history | Max facts | Max cooldowns |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| none | 4 | 0 | 0 | 417,698 B | 0 | 0 | 0 |
+| training-heavy | 4 | 320 | 80.00 | 486,197 B | 108 | 43 | 3 |
+| career-aggressive | 4 | 185 | 46.25 | 449,881 B | 51 | 51 | 7 |
+| rest-heavy | 4 | 325 | 81.25 | 384,210 B | 85 | 45 | 5 |
+| mixed | 4 | 1,637 | 409.25 | **572,697 B** | **424** | **158** | 13 |
+| random-valid-action | 4 | 1,479 | 369.75 | 543,483 B | 376 | 101 | **25** |
 
-- 24 unique seeds;
-- all reach epilogue;
-- 0 crashes;
-- record action counts/history/facts/cooldowns/save bytes.
+Consolidado:
 
-Two QA-only executions exist:
+- carreras completas: **24**
+- unique seeds: **24**
+- Player Actions ejecutadas: **3,946**
+- crashes: **0**
+- max save: **572,697 bytes**
+- max history entries: **424**
+- max fact entries: **158**
+- max cooldown entries: **25**
+- runtime medio aproximado: **7,489 días/carrera**
+- save medio aproximado: **438,970 bytes/carrera**
 
-- #820 monolithic weekly stress;
-- #823 sharded monthly full-career resilience stress.
+Conclusión:
 
-Neither changes product code.
+- ninguna política impide llegar a retirement/epilogue;
+- no aparecen invalid states;
+- el crecimiento de save sigue siendo lineal y acotado en esta muestra;
+- el máximo observado (~0.57 MB) no justifica compactación pre-release;
+- el sistema resiste uso repetido durante carreras de ~20 años.
 
-Until one completes with 24/24, A6 keeps the document status NOT_CERTIFIED under the strict interpretation of §44, despite all 15 release gates being PASS.
+**§44 LONG CAREER STRESS = PASS**
 
 ## 24. Residual risks
 
-No P0/P1/P2 release blocker is open.
+No quedan P0/P1/P2 release blockers.
 
-Residual observation:
+Riesgos residuales no bloqueantes:
 
-- Player Action history/facts grow linearly with actual action count.
-- One-year final candidate remains small (~108 KB max in mixed stress).
-- Full-career stress will determine whether this remains merely informational or warrants future compaction.
+1. history/facts crecen linealmente con acciones; el peor full-career observado es ~0.57 MB, aceptable para V1;
+2. el harness original semanal monolítico #820 puede seguir ejecutándose como evidencia extra, pero ya no es necesario para certificación porque #823 cubre 24 full careers sobre el mismo producto base;
+3. warnings de deprecación Node/Actions observados pertenecen a tooling, no a Player Actions runtime.
+
+No se recomienda compactación ni refactor preventivo antes de disponer de evidencia de un problema real.
 
 ## 25. Technical recommendation
 
-**HOLD_FINAL_MERGE only until full-career stress closes.**
+**MERGE**
 
-All required release gates are already green.
+Condiciones cumplidas:
 
-When §44 completes 24/24 with 0 crashes:
+- 15/15 PA gates PASS;
+- 24/24 full careers PASS;
+- P0 = 0;
+- P1 = 0;
+- P2 injustificados = 0;
+- ZERO_ACTION = 0 diferencias;
+- RNG = PASS;
+- rollback/replay/concurrency = PASS;
+- legacy/malformed saves = PASS;
+- authority/scope = PASS;
+- auto-sim = PASS;
+- content 20/20 + 31/31 = PASS;
+- anti-grind = PASS;
+- Preview/PlayCanvas/mobile = PASS;
+- optionality UX = PASS;
+- documentación A6 completa.
 
-- Status → CERTIFIED;
-- recommendation → MERGE;
-- Progress → 100%;
-- no further A0–A6 product work expected.
+### A6 closure
 
-QA-only PRs (#817/#820/#823 etc.) must not be merged. Merge only the actual release integration path targeting main.
+**Estado final: CERTIFIED / RELEASE-READY**
+
+Progreso A6: **100%**
+
+Trabajo restante A6:
+
+- **0 tareas**
+- **~0 horas-agente equivalentes**
+
+No mergear PRs QA-only (#817, #820, #823).  
+Mergear únicamente la ruta de integración/release real que incorpore el release candidate certificado hacia `main`.
