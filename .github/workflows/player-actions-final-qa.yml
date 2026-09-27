@@ -191,6 +191,9 @@ jobs:
       - name: Run 20-seed A5 slice stress
         run: node qa/scripts/stress-player-actions-backend.mjs candidate
 
+      - name: Enforce A5 anti-grind release budget
+        run: node qa/scripts/test-player-actions-balance-release.mjs candidate
+
 
   a5_market_exploit:
     runs-on: ubuntu-latest
