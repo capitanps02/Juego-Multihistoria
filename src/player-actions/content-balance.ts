@@ -155,8 +155,7 @@ export const PLAYER_ACTION_BALANCE_SPECS: readonly PlayerActionBalanceSpec[] = [
     options: [{
       optionId: "TALK",
       directDeltas: [
-        { metric: "relationship.resentment", delta: -1 },
-        { metric: "relationship.trust", delta: 0.5 }
+        { metric: "relationship.resentment", delta: -1 }
       ]
     }]
   },
