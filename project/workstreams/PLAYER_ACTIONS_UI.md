@@ -364,28 +364,42 @@ Evidencia verificable en código/tests:
 - preview y web consumen categorías dinámicas;
 - no existe branch UI por edad;
 - `player_action` se envía mediante GameSession;
+- targets se consumen sólo desde `PlayerView.actions[].targets`;
+- el `targetId` enviado es exactamente el proyectado;
+- target cooldown se presenta de forma humanizada;
 - fecha no cambia en pruebas de ejecución;
 - dos acciones compatibles se pueden ejecutar el mismo día;
-- cooldown se vuelve disabled;
 - stale revision tiene recovery copy;
 - auto pause/stop no abre gestión;
+- `actions.history` se integra en “Tu recorrido” sin leer GameState;
 - PlayCanvas se genera desde la misma UI web.
 
-No se adjunta screenshot automatizado en esta entrega porque el entorno de certificación no incorpora un navegador gráfico. La suite cubre contrato + runtime y el gate PlayCanvas reconstruye el bundle.
+No se adjunta screenshot automatizado en esta entrega porque el entorno de certificación no incorpora navegador gráfico del repositorio privado. La suite cubre contrato + runtime y el gate PlayCanvas reconstruye el bundle.
 
-### Evidencia CI A4
+### Evidencia histórica — slice targetless
 
 GitHub Actions `Player Actions A4 UI`, run `36312610515`:
 
 - Parse UI sources: PASS.
 - Build PlayCanvas package: PASS.
-- Bundle generado: 154 módulos, 17,478,669 bytes.
-- SHA-256: `50ddba3b95eee93f14f2c21a02d0dda85861ecab1c39558e3be64d04047e30a5`.
-- A2 + A4: 39/39 PASS (23 A2 + 15 criterios A4 + 1 diagnóstico de dependencia).
+- A2 + A4 antiguo: 39/39 PASS.
 - PlayCanvas + A19 regression: 11/11 PASS.
-- Failures: 0.
+- Bundle histórico: 154 módulos, 17,478,669 bytes.
+- SHA-256 histórico: `50ddba3b95eee93f14f2c21a02d0dda85861ecab1c39558e3be64d04047e30a5`.
 
-El bundle generado fue posteriormente versionado en `playcanvas/multihistoria.js` y su `playcanvas/manifest.json` quedó actualizado con el mismo SHA-256.
+Ese run **no certifica** el nuevo target flow; se conserva únicamente como regresión histórica del slice targetless.
+
+### Evidencia final requerida — target-aware
+
+El HEAD final debe certificar:
+
+- A2 session incluyendo A2-024..027;
+- A4-001..018;
+- A6 independent public-target contract;
+- PlayCanvas + A19;
+- regeneración/versionado de `playcanvas/multihistoria.js` y `playcanvas/manifest.json`.
+
+Hasta que ese run termine, el estado correcto es `INTEGRATION CANDIDATE`, no COMPLETE.
 
 ## 16. HANDOFF A5 — CONTENT
 
@@ -496,13 +510,13 @@ Stress:
 
 ### Puntos frágiles
 
-1. falta target projection A2;
-2. future catalog con muchas categorías;
-3. copy excesivamente largo;
-4. interacción stop → action inmediatamente tras receipt;
-5. target que deja de ser válido entre render y dispatch;
-6. historial unificado pendiente de proyección pública;
-7. regresión de bundle PlayCanvas desactualizado.
+1. future catalog con muchas categorías/targets;
+2. copy excesivamente largo;
+3. interacción stop → action inmediatamente tras receipt;
+4. target que deja de ser válido entre render y dispatch;
+5. múltiples targets con cooldowns diferentes;
+6. orden de presentación de varias acciones/decisiones en la misma fecha;
+7. regresión de bundle PlayCanvas desactualizado respecto a las fuentes target-aware.
 
 ### Stress manual requerido
 
