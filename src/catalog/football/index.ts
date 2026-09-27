@@ -2,6 +2,7 @@ export type {
   ClubArchetype,
   FootballCatalogIssue,
   FootballClubReferenceClassification,
+  FootballClubReferenceContext,
   FootballClubReferenceKind,
   FootballConfederation,
   FootballCountryCode,
@@ -9,11 +10,29 @@ export type {
   FootballDivision
 } from "./types.js";
 export { FOOTBALL_CLUBS, FOOTBALL_DIVISIONS, FOOTBALL_CATALOG_VERSION } from "./world.js";
+export {
+  FOOTBALL_CATALOG_CLUB_ID_PATTERN,
+  catalogMultiClubIdentityKey,
+  defaultCatalogClubId,
+  stableCatalogClubId
+} from "./identity.js";
+export {
+  FOOTBALL_CLEARANCE_STATUSES,
+  FOOTBALL_CLUB_ARCHETYPES,
+  FOOTBALL_CONFEDERATIONS,
+  FOOTBALL_COUNTRY_CODES,
+  assertFootballCatalogData,
+  footballCatalogStructuralFingerprint,
+  inspectFootballCatalogData
+} from "./integrity.js";
 
 import { FOOTBALL_CLUBS, FOOTBALL_DIVISIONS } from "./world.js";
+import { inspectFootballCatalogData } from "./integrity.js";
 import type {
   FootballCatalogIssue,
   FootballClubReferenceClassification,
+  FootballClubReferenceContext,
+  FootballClubReferenceKind,
   FootballCountryCode,
   FootballClub,
   FootballDivision
@@ -43,6 +62,13 @@ const LEGACY_PATTERNS: readonly RegExp[] = Object.freeze([
   /^(?:Development|Domestic|Summer|Foreign|Loan)_\d+_\d+$/i,
   /^Club \d+ · \d+$/
 ]);
+
+const ALLOWED_REFERENCE_KINDS: Readonly<Record<FootballClubReferenceContext, ReadonlySet<FootballClubReferenceKind>>> =
+  Object.freeze({
+    new_production: new Set<FootballClubReferenceKind>(["catalog", "canonical_special"]),
+    historical_read: new Set<FootballClubReferenceKind>(["catalog", "canonical_special", "legacy_compat"]),
+    canonical_content: new Set<FootballClubReferenceKind>(["catalog", "canonical_special", "narrative_alias"])
+  });
 
 function freezeGrouped<K, V>(rows: readonly V[], keyOf: (row: V) => K): Map<K, readonly V[]> {
   const mutable = new Map<K, V[]>();
@@ -138,82 +164,75 @@ export function classifyFootballClubReference(value: unknown): FootballClubRefer
   return Object.freeze({ value, kind: "invalid", club: null, reason: "unknown football club identity" });
 }
 
+export function isCatalogClubId(value: unknown): value is string {
+  return classifyFootballClubReference(value).kind === "catalog";
+}
+
+export function isCanonicalSpecialClubId(value: unknown): value is string {
+  return classifyFootballClubReference(value).kind === "canonical_special";
+}
+
+export function isNarrativeClubAlias(value: unknown): value is string {
+  return classifyFootballClubReference(value).kind === "narrative_alias";
+}
+
+export function isLegacyClubReference(value: unknown): value is string {
+  return classifyFootballClubReference(value).kind === "legacy_compat";
+}
+
+export function isFootballClubReferenceAllowed(
+  value: unknown,
+  context: FootballClubReferenceContext
+): value is string {
+  const kind = classifyFootballClubReference(value).kind;
+  return ALLOWED_REFERENCE_KINDS[context].has(kind);
+}
+
+export function assertFootballClubReferenceForContext(
+  value: unknown,
+  context: FootballClubReferenceContext,
+  path = "club"
+): asserts value is string {
+  const classification = classifyFootballClubReference(value);
+  if (!ALLOWED_REFERENCE_KINDS[context].has(classification.kind)) {
+    throw new Error(
+      `${path}: football club reference ${classification.value} classified as ${classification.kind} is not allowed in ${context}`
+    );
+  }
+}
+
 export function isLoadableFootballClubReference(value: unknown): value is string {
-  return classifyFootballClubReference(value).kind !== "invalid";
+  return isFootballClubReferenceAllowed(value, "historical_read");
 }
 
 export function isNewFootballClubReference(value: unknown): value is string {
-  const kind = classifyFootballClubReference(value).kind;
-  return kind === "catalog" || kind === "canonical_special";
+  return isFootballClubReferenceAllowed(value, "new_production");
 }
 
 export function assertLoadableFootballClubReference(value: unknown, path = "club"): asserts value is string {
-  const classification = classifyFootballClubReference(value);
-  if (classification.kind === "invalid") {
-    throw new Error(`${path}: ${classification.reason}: ${classification.value}`);
-  }
+  assertFootballClubReferenceForContext(value, "historical_read", path);
 }
 
 export function assertNewFootballClubReference(value: unknown, path = "club"): asserts value is string {
-  const classification = classifyFootballClubReference(value);
-  if (classification.kind !== "catalog" && classification.kind !== "canonical_special") {
-    throw new Error(`${path}: new V2 production requires catalog/canonical identity, got ${classification.kind}: ${classification.value}`);
-  }
+  assertFootballClubReferenceForContext(value, "new_production", path);
 }
 
 export function inspectFootballCatalog(): readonly FootballCatalogIssue[] {
-  const issues: FootballCatalogIssue[] = [];
-  const divisionIds = new Set<string>();
-  const clubIds = new Set<string>();
-  const clubNames = new Set<string>();
-
-  for (const [index, division] of FOOTBALL_DIVISIONS.entries()) {
-    const path = `FOOTBALL_DIVISIONS[${index}]`;
-    if (divisionIds.has(division.id)) issues.push({ path: `${path}.id`, reason: "duplicate division id" });
-    divisionIds.add(division.id);
-    if (!Number.isInteger(division.tier) || division.tier < 1) issues.push({ path: `${path}.tier`, reason: "invalid tier" });
-    if (!Number.isInteger(division.clubCount) || division.clubCount < 1) issues.push({ path: `${path}.clubCount`, reason: "invalid clubCount" });
-    if (!Number.isInteger(division.strength) || division.strength < 0 || division.strength > 100) {
-      issues.push({ path: `${path}.strength`, reason: "strength must be integer 0..100" });
-    }
-  }
+  const issues = [...inspectFootballCatalogData(FOOTBALL_CLUBS, FOOTBALL_DIVISIONS)];
 
   for (const [index, club] of FOOTBALL_CLUBS.entries()) {
-    const path = `FOOTBALL_CLUBS[${index}]`;
-    if (clubIds.has(club.id)) issues.push({ path: `${path}.id`, reason: "duplicate club id" });
-    clubIds.add(club.id);
-    if (clubNames.has(club.name)) issues.push({ path: `${path}.name`, reason: "duplicate working club name" });
-    clubNames.add(club.name);
-    const division = DIVISION_BY_ID.get(club.divisionId);
-    if (!division) {
-      issues.push({ path: `${path}.divisionId`, reason: "unknown division" });
-      continue;
-    }
-    if (club.countryCode !== division.countryCode) issues.push({ path: `${path}.countryCode`, reason: "country mismatch" });
-    if (club.country !== division.country) issues.push({ path: `${path}.country`, reason: "country label mismatch" });
-    if (club.confederation !== division.confederation) issues.push({ path: `${path}.confederation`, reason: "confederation mismatch" });
-    if (club.tier !== division.tier) issues.push({ path: `${path}.tier`, reason: "division tier mismatch" });
-    if (club.shortName.length > 22 || club.shortName.length === 0) issues.push({ path: `${path}.shortName`, reason: "shortName must be 1..22 characters" });
-    for (const field of ["prestige","financialPower","youthQuality","developmentBias","pressure","internationalAttraction"] as const) {
-      const value = club[field];
-      if (!Number.isInteger(value) || value < 0 || value > 100) {
-        issues.push({ path: `${path}.${field}`, reason: "club coefficient must be integer 0..100" });
-      }
-    }
+    if (!Object.isFrozen(club)) issues.push({ path: `FOOTBALL_CLUBS[${index}]`, reason: "club object must be frozen" });
+    if (!Object.isFrozen(club.archetypes)) issues.push({ path: `FOOTBALL_CLUBS[${index}].archetypes`, reason: "archetypes must be frozen" });
   }
-
-  for (const division of FOOTBALL_DIVISIONS) {
-    if (clubsForDivision(division.id).length !== division.clubCount) {
-      issues.push({ path: `division:${division.id}.clubCount`, reason: "clubCount does not match indexed clubs" });
-    }
+  for (const [index, division] of FOOTBALL_DIVISIONS.entries()) {
+    if (!Object.isFrozen(division)) issues.push({ path: `FOOTBALL_DIVISIONS[${index}]`, reason: "division object must be frozen" });
   }
+  if (!Object.isFrozen(FOOTBALL_CLUBS)) issues.push({ path: "FOOTBALL_CLUBS", reason: "catalog array must be frozen" });
+  if (!Object.isFrozen(FOOTBALL_DIVISIONS)) issues.push({ path: "FOOTBALL_DIVISIONS", reason: "division array must be frozen" });
 
   for (const value of [...CANONICAL_SPECIAL_CLUB_IDS, ...NARRATIVE_CLUB_ALIASES, ...LEGACY_NAMED_CLUB_IDS]) {
     if (CLUB_BY_ID.has(value)) issues.push({ path: `identity:${value}`, reason: "compatibility identity collides with catalog id" });
   }
 
-  if (!Object.isFrozen(FOOTBALL_CLUBS)) issues.push({ path: "FOOTBALL_CLUBS", reason: "catalog array must be frozen" });
-  if (!Object.isFrozen(FOOTBALL_DIVISIONS)) issues.push({ path: "FOOTBALL_DIVISIONS", reason: "division array must be frozen" });
-
-  return Object.freeze(issues.map(issue => Object.freeze(issue)));
+  return Object.freeze(issues.map(item => Object.freeze(item)));
 }
