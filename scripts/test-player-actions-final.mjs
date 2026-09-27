@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import { GameSession } from "../dist/session/game-session.js";
+import { EVENTS } from "../dist/content/events/index.js";
 import {
   PLAYER_ACTION_CATALOG,
   addPlayerActionDays,
@@ -331,4 +332,104 @@ test("A6-015 CONTENT RELEASE READINESS: final catalog must be broad, category-co
   for (const action of PLAYER_ACTION_CATALOG) {
     assert.ok(action.cooldown.days > 0, `release action has non-productive cooldown: ${action.id}`);
   }
+});
+
+
+test("A6-016 DECISION COLLISION: action rendered before a decision loses on stale revision", async () => {
+  const event = clone(EVENTS.find(row => row.id === "EVT_18_PRE_001"));
+  assert.ok(event);
+  const session = await GameSession.create(42, {
+    events: [event],
+    microfeeds: false,
+    sessionId: "a6-decision-collision"
+  });
+  const rendered = session.getView();
+  const staleAction = {
+    type: "player_action",
+    commandId: "a6-stale-after-decision",
+    expectedRevision: rendered.revision,
+    actionId: "PA_REST",
+    optionId: "RECOVER"
+  };
+  await session.dispatch({
+    type: "continue",
+    commandId: "a6-create-decision",
+    expectedRevision: rendered.revision
+  });
+  assert.equal(session.getView().screen, "decision");
+  const before = session.exportSnapshot();
+  await assert.rejects(
+    session.dispatch(staleAction),
+    error => error?.code === "STALE_REVISION"
+  );
+  assert.deepEqual(session.exportSnapshot(), before);
+});
+
+test("A6-017 OFFER COLLISION: offer created after render makes old action stale", async () => {
+  let proven = false;
+  for (let seed = 1; seed <= 80 && !proven; seed += 1) {
+    const base = await emptySession(seed, `a6-offer-collision-${seed}`);
+    const snapshot = base.exportSnapshot();
+    snapshot.state.date = "2027-01-07";
+    snapshot.state.runtime.day = 190;
+    snapshot.state.runtime.seasonDay = 190;
+    snapshot.state.runtime.daysSinceNarrative = 190;
+    snapshot.state.sport.roleScore = 18;
+    snapshot.state.sport.appearances = 0;
+    snapshot.state.flags.OFFICIAL_DEBUT = false;
+    snapshot.state.body.risk = 18;
+    const session = await GameSession.resume(snapshot, { events: [] });
+    const rendered = session.getView();
+    const staleAction = {
+      type: "player_action",
+      commandId: `a6-stale-after-offer-${seed}`,
+      expectedRevision: rendered.revision,
+      actionId: "PA_REST",
+      optionId: "RECOVER"
+    };
+    await session.dispatch({
+      type: "auto",
+      commandId: `a6-offer-auto-${seed}`,
+      expectedRevision: rendered.revision,
+      action: "start",
+      maxWeeks: 2
+    });
+    if (session.getView().screen !== "offer") continue;
+    const before = session.exportSnapshot();
+    await assert.rejects(
+      session.dispatch(staleAction),
+      error => error?.code === "STALE_REVISION"
+    );
+    assert.deepEqual(session.exportSnapshot(), before);
+    proven = true;
+  }
+  assert.equal(proven, true, "no deterministic offer collision seed found");
+});
+
+test("A6-018 RETIREMENT COLLISION: career closure after render makes old action stale", async () => {
+  const source = await emptySession(6018, "a6-retirement-collision");
+  const rendered = source.getView();
+  const staleAction = {
+    type: "player_action",
+    commandId: "a6-stale-after-retirement",
+    expectedRevision: rendered.revision,
+    actionId: "PA_REST",
+    optionId: "RECOVER"
+  };
+  const closed = source.exportSnapshot();
+  closed.revision = rendered.revision + 1;
+  closed.state.retirement.status = "closed";
+  closed.state.retirement.decidedDate = closed.state.date;
+  closed.state.retirement.announcedDate = closed.state.date;
+  closed.state.retirement.closedDate = closed.state.date;
+  closed.state.retirement.decisionAge = closed.state.age;
+  closed.state.retirement.reason = "a6_collision";
+  closed.state.retirement.closureType = "a6_collision";
+  const session = await GameSession.resume(closed, { events: [] });
+  const before = session.exportSnapshot();
+  await assert.rejects(
+    session.dispatch(staleAction),
+    error => error?.code === "STALE_REVISION"
+  );
+  assert.deepEqual(session.exportSnapshot(), before);
 });
