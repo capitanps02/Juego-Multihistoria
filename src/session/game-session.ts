@@ -1,3 +1,4 @@
+import { decisionMemories, type DecisionMemory } from "./decision-memories.js";
 import { careerTerms, marketState, respondToOffer, type CareerOffer, type OfferAction, type OfferDecision } from "../simulation/offers.js";
 import type { AgeMilestone } from "../simulation/age-milestones.js";
 import type { EventDefinition, GameState } from "../core/types.js";
@@ -168,7 +169,7 @@ export interface PlayerView {
   contractMonths: number;
   news: Array<{ date: string; text: string }>;
   contacts: Array<{ id: string; name: string; role: string }>;
-  decision: { instanceId: string; family: string; title: string; body: string; visible: string[]; uncertain: string[]; choices: Array<{ id: string; label: string }> } | null;
+  decision: { memories: DecisionMemory[]; instanceId: string; family: string; title: string; body: string; visible: string[]; uncertain: string[]; choices: Array<{ id: string; label: string }> } | null;
   result: PendingResult | null;
   /** Presentation-only category for the current result; keeps event families out of the player-facing contract. */
   resultCategory: "match" | "story" | null;
@@ -401,7 +402,7 @@ export class GameSession {
       fatigue: Number(s.body.fatigue), form: Number(s.sport.form), contractMonths: Number(s.contract.monthsRemaining),
       news: s.microfeeds.map(n => ({ date: n.date, text: n.text })),
       contacts: knownPlayerContacts(s, this.#snapshot.decisionProvenance),
-      decision: p ? { instanceId: p.instanceId, family: p.event.family, title: p.event.text.title, body: p.event.text.body,
+      decision: p ? { memories: decisionMemories(s, p.event, this.#snapshot.journal), instanceId: p.instanceId, family: p.event.family, title: p.event.text.title, body: p.event.text.body,
         visible: p.event.intel.visible, uncertain: p.event.intel.uncertain,
         choices: eligibleChoices(s, p.event).map(c => ({ id: c.id, label: c.label })) } : null,
       result: publicResult, resultCategory: result ? (lastEvent?.family === "sport" ? "match" : "story") : null,

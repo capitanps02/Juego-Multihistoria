@@ -16,6 +16,8 @@ on:
       - 'src/narrative/consequences.ts'
       - 'scripts/test-posttest-feedback.mjs'
       - 'scripts/test-period-report.mjs'
+      - 'src/session/decision-memories.ts'
+      - 'scripts/test-decision-memories.mjs'
       - 'src/session/period-report.ts'
       - 'src/session/auto-simulation.ts'
       - 'scripts/test-t55-a19-ui.mjs'
@@ -40,4 +42,4 @@ jobs:
       - name: Build engine
         run: npm run build
       - name: A19 directed UX regression
-        run: node --test scripts/test-t55-a19-ui.mjs scripts/test-posttest-feedback.mjs scripts/test-period-report.mjs scripts/test-market-posttest.mjs scripts/test-club-names.mjs
+        run: node --test scripts/test-decision-memories.mjs scripts/test-t55-a19-ui.mjs scripts/test-posttest-feedback.mjs scripts/test-period-report.mjs scripts/test-market-posttest.mjs scripts/test-club-names.mjs
