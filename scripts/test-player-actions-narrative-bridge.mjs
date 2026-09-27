@@ -52,6 +52,41 @@ const FIXTURE_ACTIONS = [
     cooldown: { scope: "action_target", days: 0 },
     eligibilityKey: "active_career",
     options: [{ id: "ASK", label: "Preguntar", effectKey: "ask_agent_market", publicResult: "Preguntas por el mercado." }]
+  },
+  {
+    id: "PA_POSITION_CHANGE",
+    category: "career",
+    label: "Explorar posición",
+    description: "Test fixture",
+    targetKind: "coach",
+    cooldown: { scope: "action_target", days: 0 },
+    eligibilityKey: "active_career",
+    options: [{ id: "EXPLORE", label: "Explorar", effectKey: "request_position_change", publicResult: "Planteas una adaptación." }]
+  },
+  {
+    id: "PA_WITHDRAW_TRANSFER",
+    category: "career",
+    label: "Retirar salida",
+    description: "Test fixture",
+    targetKind: "none",
+    cooldown: { scope: "action", days: 0 },
+    eligibilityKey: "active_career",
+    options: [{ id: "WITHDRAW", label: "Retirar", effectKey: "withdraw_transfer_request", publicResult: "Retiras la petición." }]
+  },
+  {
+    id: "PA_DISCUSS_FUTURE",
+    category: "representative",
+    label: "Hablar futuro",
+    description: "Test fixture",
+    targetKind: "agent",
+    cooldown: { scope: "action_target", days: 0 },
+    eligibilityKey: "active_career",
+    options: [
+      { id: "MINUTES", label: "Minutos", effectKey: "career_priority_minutes", publicResult: "Priorizas minutos." },
+      { id: "SALARY", label: "Salario", effectKey: "career_priority_salary", publicResult: "Priorizas salario." },
+      { id: "STABILITY", label: "Estabilidad", effectKey: "career_priority_stability", publicResult: "Priorizas estabilidad." },
+      { id: "CLUB_LEVEL", label: "Nivel", effectKey: "career_priority_club_level", publicResult: "Priorizas nivel." }
+    ]
   }
 ];
 
@@ -105,6 +140,36 @@ function askAgentMarket(state) {
   const result = executePlayerActionInPlace(
     state,
     { actionId: "PA_ASK_AGENT_MARKET", optionId: "ASK", targetId: AGENT },
+    FIXTURE_ACTIONS
+  );
+  assert.equal(result.ok, true);
+  return result;
+}
+
+function requestPositionChange(state) {
+  const result = executePlayerActionInPlace(
+    state,
+    { actionId: "PA_POSITION_CHANGE", optionId: "EXPLORE", targetId: COACH },
+    FIXTURE_ACTIONS
+  );
+  assert.equal(result.ok, true);
+  return result;
+}
+
+function withdrawTransfer(state) {
+  const result = executePlayerActionInPlace(
+    state,
+    { actionId: "PA_WITHDRAW_TRANSFER", optionId: "WITHDRAW" },
+    FIXTURE_ACTIONS
+  );
+  assert.equal(result.ok, true);
+  return result;
+}
+
+function setCareerPriority(state, optionId = "MINUTES") {
+  const result = executePlayerActionInPlace(
+    state,
+    { actionId: "PA_DISCUSS_FUTURE", optionId, targetId: AGENT },
     FIXTURE_ACTIONS
   );
   assert.equal(result.ok, true);
@@ -307,4 +372,114 @@ test("A3-015 NO PROXY: market heat/interest and agent query are still not a form
   assert.equal(facts.pendingCareerOffer, null);
   assert.equal(facts.pendingCareerOfferKind, null);
   assert.equal(state.market?.pending ?? null, null);
+});
+
+
+test("A3-016 POSITION CHANGE: fact is coach/club scoped and never changes sporting position", () => {
+  const state = createInitialState(316);
+  const professionalBefore = clone(state.professional);
+  const bodyBefore = clone(state.body);
+  requestPositionChange(state);
+
+  assert.deepEqual(state.professional, professionalBefore);
+  assert.deepEqual(state.body, bodyBefore);
+
+  let facts = playerActionFacts(state);
+  assert.equal(facts.requestedPositionChange.historicalExists, true);
+  assert.equal(facts.requestedPositionChange.currentlyRelevant, true);
+  assert.equal(facts.requestedPositionChange.club, "UDV");
+  assert.equal(facts.requestedPositionChange.coachNpcId, COACH);
+  assert.equal(facts.lastCoachConversation?.stance, "position_change");
+
+  certifyCoachChangeInPlace(state, "canonical_change", {
+    previousCoachNpcId: COACH,
+    newCoachNpcId: null
+  });
+  facts = playerActionFacts(state);
+  assert.equal(facts.requestedPositionChange.historicalExists, true);
+  assert.equal(facts.requestedPositionChange.currentlyRelevant, false);
+});
+
+test("A3-017 WITHDRAW TRANSFER: withdrawal closes live request without erasing its history", () => {
+  const state = createInitialState(317);
+  requestTransfer(state);
+  assert.equal(playerActionFacts(state).requestedTransfer.currentlyRelevant, true);
+
+  const marketBefore = clone(state.market);
+  withdrawTransfer(state);
+  assert.deepEqual(state.market, marketBefore);
+
+  let facts = playerActionFacts(state);
+  assert.equal(facts.requestedTransfer.historicalExists, true);
+  assert.equal(facts.requestedTransfer.count, 1);
+  assert.equal(facts.requestedTransfer.currentlyRelevant, false);
+  assert.equal(facts.transferRequestWithdrawn.historicalExists, true);
+  assert.equal(facts.transferRequestWithdrawn.currentlyRelevant, true);
+  assert.equal(facts.transferRequestWithdrawn.club, "UDV");
+
+  requestTransfer(state);
+  facts = playerActionFacts(state);
+  assert.equal(facts.requestedTransfer.count, 2);
+  assert.equal(facts.requestedTransfer.currentlyRelevant, true);
+  assert.equal(facts.transferRequestWithdrawn.currentlyRelevant, false);
+});
+
+test("A3-018 CAREER PRIORITY: priority is representative-scoped and creates no offer or contract mutation", () => {
+  const state = createInitialState(318);
+  certifyAgent(state);
+  const marketBefore = clone(state.market);
+  const contractBefore = clone(state.contract);
+
+  setCareerPriority(state, "SALARY");
+
+  assert.deepEqual(state.market, marketBefore);
+  assert.deepEqual(state.contract, contractBefore);
+  let facts = playerActionFacts(state);
+  assert.equal(facts.careerPriority.historicalExists, true);
+  assert.equal(facts.careerPriority.currentlyRelevant, true);
+  assert.equal(facts.careerPriority.agentNpcId, AGENT);
+  assert.equal(facts.careerPriority.priority, "salary");
+
+  state.date = addDays(state.date, 21);
+  facts = playerActionFacts(state);
+  assert.equal(facts.careerPriority.historicalExists, true);
+  assert.equal(facts.careerPriority.currentlyRelevant, false);
+  assert.equal(facts.careerPriority.priority, null);
+});
+
+test("A3-019 NEW FACTS: narrative gates can consume position/withdraw/priority without hidden authority", () => {
+  const state = createInitialState(319);
+  certifyAgent(state);
+
+  requestPositionChange(state);
+  setCareerPriority(state, "CLUB_LEVEL");
+  const root = narrativeConditionRoot(state);
+
+  assert.equal(root.facts.playerActions.requestedPositionChange.currentlyRelevant, true);
+  assert.equal(root.facts.playerActions.careerPriority.currentlyRelevant, true);
+  assert.equal(root.facts.playerActions.careerPriority.priority, "club_level");
+
+  requestTransfer(state);
+  withdrawTransfer(state);
+  const after = narrativeConditionRoot(state);
+  assert.equal(after.facts.playerActions.requestedTransfer.currentlyRelevant, false);
+  assert.equal(after.facts.playerActions.transferRequestWithdrawn.currentlyRelevant, true);
+});
+
+test("A3-020 NEW FACTS NO RNG: writes/projection consume no narrative RNG and no synthetic world outcome", () => {
+  const state = createInitialState(320);
+  certifyAgent(state);
+  const rngBefore = clone(state.rngState);
+  const worldBefore = clone(state.world);
+  const offersBefore = clone(state.market);
+
+  requestPositionChange(state);
+  setCareerPriority(state, "STABILITY");
+  requestTransfer(state);
+  withdrawTransfer(state);
+  for (let index = 0; index < 100; index += 1) playerActionFacts(state);
+
+  assert.deepEqual(state.rngState, rngBefore);
+  assert.deepEqual(state.world, worldBefore);
+  assert.deepEqual(state.market, offersBefore);
 });
