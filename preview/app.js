@@ -1,5 +1,6 @@
 import { GameSession } from '/dist/session/game-session.js';
 import { createIndexedSaveStore } from '/web/indexed-save-store.js';
+import { formatClubName } from '/web/club-names.js';
 
 const KEY = 'historia-jugador.preview.session.v1';
 const store = createIndexedSaveStore({storage:localStorage,indexedDB,key:KEY,validate:raw=>GameSession.fromSave(raw)});
@@ -215,7 +216,7 @@ function render(focus = false) {
   $('#launch-help').hidden = true;
   const strip = $('#career-strip');
   strip.replaceChildren();
-  for (const [name, value] of [['Temporada', dateText(v.date)], ['Edad',`${v.age} años`], ['Club', v.club === 'UDV' ? 'U. D. Valdoria' : v.club], ['Decisiones', String(v.decisionsMade)]]) {
+  for (const [name, value] of [['Temporada', dateText(v.date)], ['Edad',`${v.age} años`], ['Club', formatClubName(v.club,{compact:true})], ['Decisiones', String(v.decisionsMade)]]) {
     const stat = el('div');
     stat.append(el('span', name, 'stat-label'), el('span', value, 'stat-value'));
     strip.append(stat);
@@ -242,7 +243,7 @@ function render(focus = false) {
     });
     story.append(choices);
   } else if(v.screen === 'offer') {
-    const o=v.offer;story.append(el('h1',o.reason),el('p',`${o.before.club} → ${o.terms.club} · ${o.terms.salary} €/mes · ${o.terms.months} meses · categoría ${o.terms.leagueTier}`,'body'),el('p','Delegar esta oferta: aceptar solo sin bajar salario ni categoría y con al menos 12 meses.'));
+    const o=v.offer;story.append(el('h1',o.reason),el('p',`${formatClubName(o.before.club)} → ${formatClubName(o.terms.club)} · ${o.terms.salary} €/mes · ${o.terms.months} meses · categoría ${o.terms.leagueTier}`,'body'),el('p','Delegar esta oferta: aceptar solo sin bajar salario ni categoría y con al menos 12 meses.'));
     for(const [response,label] of [['accept','Aceptar oferta'],['reject','Rechazar oferta'],['delegate','Delegar esta oferta']])story.append(action(label,'offer',{offerId:o.id,action:response}));
   } else if (v.screen === 'result') {
     story.append(el('span','DESPUÉS DE TU DECISIÓN','eyebrow'),el('h1',v.result.title),el('p',v.result.choiceLabel,'chosen'));
@@ -265,7 +266,7 @@ function render(focus = false) {
         el('p',`Apariciones: +${s.matches.appearances} · Forma ${s.playerChanges.form >= 0 ? '+' : ''}${s.playerChanges.form} · Fatiga ${s.playerChanges.fatigue >= 0 ? '+' : ''}${s.playerChanges.fatigue} · Estado físico ${s.playerChanges.fitness >= 0 ? '+' : ''}${s.playerChanges.fitness}`,'body')
       );
       if (s.careerChanges.clubFrom !== s.careerChanges.clubTo || s.careerChanges.roleFrom !== s.careerChanges.roleTo) {
-        story.append(el('p',`Carrera: ${s.careerChanges.clubFrom} → ${s.careerChanges.clubTo} · ${s.careerChanges.roleFrom} → ${s.careerChanges.roleTo}`,'body'));
+        story.append(el('p',`Carrera: ${formatClubName(s.careerChanges.clubFrom)} → ${formatClubName(s.careerChanges.clubTo)} · ${s.careerChanges.roleFrom} → ${s.careerChanges.roleTo}`,'body'));
       }
       s.worldHighlights.slice(-4).forEach(text=>story.append(el('p',text,'body')));
       if (s.interruption) story.append(el('p',`La simulación se detuvo: ${({
