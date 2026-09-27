@@ -269,6 +269,13 @@ El workflow específico A4 terminó **SUCCESS**:
 
 A6 no marcará PA-GATE-13/14 como PASS final hasta corregir el target contract y repetir E2E sobre el HEAD integrado, pero la implementación aislada de A4 está verde.
 
+Importante: `test-player-actions-ui-contract.mjs` mezcla runtime assertions con inspección estática de fuentes. En concreto:
+- A4-014 MOBILE comprueba media queries/grid/overflow por regex; **no** renderiza 360x800, 390x844 ni 430x932.
+- A4-015 ACCESSIBILITY comprueba presencia de button/aria-busy/focus/back paths; **no** ejecuta navegación por teclado real.
+- `test-playcanvas.mjs` valida el paquete PlayCanvas y equivalencia de estado/RNG, pero no simula clicks Player Actions category → action → option → result dentro de un viewport PlayCanvas.
+
+Por ello esos checks son evidencia positiva, no sustituyen los gates E2E A6.
+
 ## 15. Mobile / accessibility
 
 A4 CSS sí contiene protecciones estáticas útiles:
