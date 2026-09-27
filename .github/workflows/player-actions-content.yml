@@ -24,5 +24,11 @@ jobs:
       - name: Content contract
         run: npm run test:player-actions-content
 
+      - name: A1 core integration regression
+        run: node --test scripts/test-player-actions-core.mjs
+
+      - name: A3 bridge integration regression
+        run: node --test scripts/test-player-actions-narrative-bridge.mjs
+
       - name: One-year anti-grind stress
         run: npm run test:player-actions-balance
