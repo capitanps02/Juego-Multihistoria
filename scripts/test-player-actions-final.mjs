@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 
 import { GameSession } from "../dist/session/game-session.js";
 import { EVENTS } from "../dist/content/events/index.js";
+import { CLUB_RENEWAL_INTENT_MAX_MONTHS } from "../dist/simulation/club-contract-intent.js";
 import {
   PLAYER_ACTION_CATALOG,
   addPlayerActionDays,
@@ -584,5 +585,26 @@ test("A6-020 ACTIVE EMPLOYMENT: club-scoped actions fail at eligibility while un
     projectedCoach.available,
     false,
     "coach conversation must fail closed when no active club employment exists"
+  );
+});
+
+
+test("A6-021 RENEWAL WINDOW: renewal request is hidden outside the canonical 24-month horizon", async () => {
+  const session = await emptySession(6021, "a6-renewal-window");
+  const state = session.exportSnapshot().state;
+  const renewal = definition("PA_REQUEST_RENEWAL");
+
+  state.contract.monthsRemaining = CLUB_RENEWAL_INTENT_MAX_MONTHS + 1;
+  assert.equal(
+    evaluatePlayerAction(state, renewal).available,
+    false,
+    "renewal request must be unavailable outside canonical renewal horizon"
+  );
+
+  state.contract.monthsRemaining = CLUB_RENEWAL_INTENT_MAX_MONTHS;
+  assert.equal(
+    evaluatePlayerAction(state, renewal).available,
+    true,
+    "renewal request should become eligible at canonical renewal horizon when active employment exists"
   );
 });
