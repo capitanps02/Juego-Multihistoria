@@ -7,7 +7,7 @@ export const PLAYER_ACTION_CATALOG: readonly PlayerActionDefinition[] = [
     label: "Entrenamiento extra",
     description: "Añade una sesión corta de trabajo técnico fuera de la simulación normal.",
     targetKind: "none",
-    cooldown: { scope: "action", days: 7 },
+    cooldown: { scope: "action", days: 35 },
     eligibilityKey: "active_career",
     options: [
       {
@@ -24,7 +24,7 @@ export const PLAYER_ACTION_CATALOG: readonly PlayerActionDefinition[] = [
     label: "Descansar",
     description: "Prioriza recuperación ligera sin alterar lesiones ni decisiones médicas.",
     targetKind: "none",
-    cooldown: { scope: "action", days: 1 },
+    cooldown: { scope: "action", days: 21 },
     eligibilityKey: "active_career",
     options: [
       {
@@ -38,29 +38,80 @@ export const PLAYER_ACTION_CATALOG: readonly PlayerActionDefinition[] = [
   {
     id: "PA_COACH_TALK",
     category: "career",
-    label: "Hablar con el entrenador",
-    description: "Mantén una conversación voluntaria con el entrenador actual sin cambiar tu rol por decreto.",
+    label: "Hablar con entrenador",
+    description: "Habla con el entrenador actual para expresar una postura sin cambiar tu rol por decreto.",
     targetKind: "coach",
-    cooldown: { scope: "action_target", days: 14 },
+    cooldown: { scope: "action_target", days: 21 },
     eligibilityKey: "active_career",
     options: [
       {
         id: "MORE_MINUTES",
         label: "Quiero más minutos",
         effectKey: "coach_request_more_minutes",
-        publicResult: "Trasladas al entrenador que quieres competir por más minutos."
+        publicResult: "Has dejado claro que quieres competir por más minutos."
       },
       {
         id: "WHAT_TO_IMPROVE",
         label: "¿Qué debo mejorar?",
         effectKey: "coach_request_feedback",
-        publicResult: "Pides una referencia concreta sobre qué debes mejorar."
+        publicResult: "Has pedido una referencia concreta sobre qué debes mejorar."
       },
       {
         id: "COMFORTABLE_ROLE",
-        label: "Estoy cómodo con mi rol",
+        label: "Acepto mi rol",
         effectKey: "coach_acknowledge_role",
-        publicResult: "Comunicas que aceptas el rol actual y sigues trabajando."
+        publicResult: "Has comunicado que aceptas el rol actual y sigues trabajando."
+      }
+    ]
+  },
+  {
+    id: "PA_REQUEST_TRANSFER",
+    category: "career",
+    label: "Solicitar salida",
+    description: "Comunica que quieres explorar una salida del club sin crear ofertas ni cambiar de equipo.",
+    targetKind: "none",
+    cooldown: { scope: "action", days: 90 },
+    eligibilityKey: "active_career",
+    options: [
+      {
+        id: "REQUEST",
+        label: "Pedir salir",
+        effectKey: "request_transfer",
+        publicResult: "Has comunicado que quieres explorar una salida."
+      }
+    ]
+  },
+  {
+    id: "PA_REQUEST_RENEWAL",
+    category: "representative",
+    label: "Pedir renovación",
+    description: "Expresa que quieres abrir una conversación de renovación sin modificar tu contrato.",
+    targetKind: "none",
+    cooldown: { scope: "action", days: 60 },
+    eligibilityKey: "active_career",
+    options: [
+      {
+        id: "REQUEST",
+        label: "Abrir conversación",
+        effectKey: "request_renewal",
+        publicResult: "Has expresado que quieres abrir una conversación de renovación."
+      }
+    ]
+  },
+  {
+    id: "PA_AGENT_MARKET",
+    category: "representative",
+    label: "Preguntar por mercado",
+    description: "Pide a tu representante una lectura del mercado sin fabricar interés ni ofertas.",
+    targetKind: "agent",
+    cooldown: { scope: "action_target", days: 18 },
+    eligibilityKey: "active_career",
+    options: [
+      {
+        id: "ASK",
+        label: "Consultar mercado",
+        effectKey: "ask_agent_market",
+        publicResult: "Has pedido a tu representante una lectura del mercado."
       }
     ]
   }
