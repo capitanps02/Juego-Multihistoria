@@ -223,3 +223,24 @@ test("DB-A4 long career remains current-catalog and survives terminal save/load"
   assert.deepEqual(restored.retirement, state.retirement);
   assert.deepEqual(restored.epilogue, state.epilogue);
 });
+
+test("DB-A4 failed explicit manifest is atomic", () => {
+  const state = createInitialState(9411);
+  const first = FOOTBALL_CLUBS[0].id;
+  const second = FOOTBALL_CLUBS[1].id;
+  const replacement = FOOTBALL_CLUBS[2].id;
+  state.club = first;
+  state.professional.registrationClub = first;
+  state.professional.ownerClub = second;
+  state.world.ownerClub = second;
+  const before = structuredClone(state);
+
+  assert.throws(
+    () => migrateFootballStateReferencesExplicitlyInPlace(state, {
+      [first]: replacement,
+      [second]: null
+    }),
+    /tombstoned/
+  );
+  assert.deepEqual(state, before, "failed migration must not leak partial replacements");
+});
