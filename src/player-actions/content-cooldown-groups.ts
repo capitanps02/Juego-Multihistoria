@@ -30,8 +30,8 @@ export const PLAYER_ACTION_COOLDOWN_GROUP_SPECS: readonly PlayerActionCooldownGr
 
   { actionId: "PA_TALK_TEAMMATE", groupId: "teammate_interaction", groupDays: 7 },
   { actionId: "PA_CLEAR_AIR", groupId: "teammate_interaction", groupDays: 7 },
-  { actionId: "PA_VETERAN_ADVICE", groupId: "teammate_interaction", groupDays: 7 },
-  { actionId: "PA_MENTOR_YOUNG", groupId: "teammate_interaction", groupDays: 7 },
+  { actionId: "PA_LEADER_ADVICE", groupId: "teammate_interaction", groupDays: 7 },
+  { actionId: "PA_MENTOR_TEAMMATE", groupId: "teammate_interaction", groupDays: 7 },
 
   { actionId: "PA_INTERVIEW", groupId: "public_image", groupDays: 7 },
   { actionId: "PA_SOCIAL_POST", groupId: "public_image", groupDays: 7 },
