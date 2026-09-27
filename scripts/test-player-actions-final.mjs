@@ -4,6 +4,11 @@ import assert from "node:assert/strict";
 import { GameSession } from "../dist/session/game-session.js";
 import { EVENTS } from "../dist/content/events/index.js";
 import { CLUB_RENEWAL_INTENT_MAX_MONTHS } from "../dist/simulation/club-contract-intent.js";
+import { PLAYER_ACTION_CONTENT_PLAN } from "../dist/player-actions/content-plan.js";
+import { PLAYER_ACTION_CONTENT_SPECS } from "../dist/player-actions/content-spec.js";
+import { PLAYER_ACTION_BALANCE_SPECS } from "../dist/player-actions/content-balance.js";
+import { PLAYER_ACTION_ELIGIBILITY_SPECS } from "../dist/player-actions/content-eligibility.js";
+import { PLAYER_ACTION_COOLDOWN_GROUP_SPECS } from "../dist/player-actions/content-cooldown-groups.js";
 import {
   PLAYER_ACTION_CATALOG,
   addPlayerActionDays,
@@ -607,4 +612,47 @@ test("A6-021 RENEWAL WINDOW: renewal request is hidden outside the canonical 24-
     true,
     "renewal request should become eligible at canonical renewal horizon when active employment exists"
   );
+});
+
+
+test("A6-015A DESIGN CONTRACT: V1 plan/spec/balance/eligibility/cooldown manifests are 20/20 and ID-aligned", () => {
+  const manifests = [
+    ["plan", PLAYER_ACTION_CONTENT_PLAN.map(row => row.id)],
+    ["spec", PLAYER_ACTION_CONTENT_SPECS.map(row => row.id)],
+    ["balance", PLAYER_ACTION_BALANCE_SPECS.map(row => row.actionId)],
+    ["eligibility", PLAYER_ACTION_ELIGIBILITY_SPECS.map(row => row.actionId)],
+    ["cooldownGroups", PLAYER_ACTION_COOLDOWN_GROUP_SPECS.map(row => row.actionId)]
+  ];
+
+  const expected = [...manifests[0][1]].sort();
+  assert.equal(expected.length, 20);
+  assert.equal(new Set(expected).size, 20);
+
+  for (const [label, ids] of manifests) {
+    assert.equal(ids.length, 20, `${label} must cover all 20 V1 actions`);
+    assert.equal(new Set(ids).size, 20, `${label} contains duplicate action IDs`);
+    assert.deepEqual([...ids].sort(), expected, `${label} action IDs drift from V1 plan`);
+  }
+
+  const categories = new Set(PLAYER_ACTION_CONTENT_PLAN.map(row => row.category));
+  for (const category of ["career","training","health","representative","relationships","image","life"]) {
+    assert.equal(categories.has(category), true, `V1 design missing category ${category}`);
+  }
+
+  const renewal = PLAYER_ACTION_ELIGIBILITY_SPECS.find(row => row.actionId === "PA_REQUEST_RENEWAL");
+  assert.ok(renewal);
+  assert.deepEqual(
+    renewal.all.find(predicate => predicate.kind === "contract_months"),
+    { kind: "contract_months", min: 1, max: CLUB_RENEWAL_INTENT_MAX_MONTHS }
+  );
+
+  for (const actionId of ["PA_COACH_TALK","PA_REQUEST_TRANSFER","PA_REQUEST_RENEWAL"]) {
+    const row = PLAYER_ACTION_ELIGIBILITY_SPECS.find(item => item.actionId === actionId);
+    assert.ok(row);
+    assert.equal(
+      row.all.some(predicate => predicate.kind === "active_club_employment"),
+      true,
+      `${actionId} design contract must require active club employment`
+    );
+  }
 });
