@@ -1,0 +1,40 @@
+name: Player Actions A5 Content
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  content:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Content contract
+        run: npm run test:player-actions-content
+
+      - name: A1 core integration regression
+        run: node --test scripts/test-player-actions-core.mjs
+
+      - name: A1 V1 effect registry regression
+        run: node --test scripts/test-player-actions-v1-effects.mjs
+
+      - name: A2 session integration regression
+        run: node --test scripts/test-player-actions-session.mjs
+
+      - name: A3 bridge integration regression
+        run: node --test scripts/test-player-actions-narrative-bridge.mjs
+
+      - name: One-year anti-grind stress
+        run: npm run test:player-actions-balance
