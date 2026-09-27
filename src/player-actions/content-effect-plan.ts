@@ -47,8 +47,8 @@ export const PLAYER_ACTION_EFFECT_PLAN: readonly PlayerActionOptionEffectPlan[] 
 
   { actionId: "PA_TALK_TEAMMATE", optionId: "CONNECT", mode: "direct_only", desiredEffectKey: "teammate_connect", implemented: false },
   { actionId: "PA_CLEAR_AIR", optionId: "TALK", mode: "direct_only", desiredEffectKey: "teammate_clear_air", implemented: false },
-  { actionId: "PA_LEADER_ADVICE", optionId: "ASK_ADVICE", mode: "direct_only", desiredEffectKey: "veteran_advice", implemented: false },
-  { actionId: "PA_MENTOR_TEAMMATE", optionId: "MENTOR", mode: "direct_only", desiredEffectKey: "mentor_young", implemented: false },
+  { actionId: "PA_LEADER_ADVICE", optionId: "ASK_ADVICE", mode: "direct_only", desiredEffectKey: "leader_advice", implemented: false },
+  { actionId: "PA_MENTOR_TEAMMATE", optionId: "MENTOR", mode: "direct_only", desiredEffectKey: "mentor_teammate", implemented: false },
 
   { actionId: "PA_INTERVIEW", optionId: "HUMBLE", mode: "direct_only", desiredEffectKey: "interview_humble", implemented: false },
   { actionId: "PA_INTERVIEW", optionId: "AMBITIOUS", mode: "direct_only", desiredEffectKey: "interview_ambitious", implemented: false },
