@@ -959,3 +959,77 @@ test("A5-053 REST AND RECOVERY HAVE DISTINCT HEALTH NICHES", () => {
   assert.ok(recoveryPlan);
   assert.ok(recoveryPlan.cooldownDays >= 14);
 });
+
+
+test("A5-054 TEAMMATE GUIDANCE DOES NOT GRANT GLOBAL PROGRESSION", () => {
+  for (const actionId of ["PA_VETERAN_ADVICE", "PA_MENTOR_YOUNG"]) {
+    const balance = PLAYER_ACTION_BALANCE_SPECS.find(row => row.actionId === actionId);
+    assert.ok(balance);
+    for (const option of balance.options) {
+      assert.ok(option.directDeltas.length > 0);
+      assert.ok(
+        option.directDeltas.every(delta => delta.metric.startsWith("relationship.")),
+        `${actionId}/${option.optionId} must remain relationship-local`
+      );
+    }
+  }
+});
+
+test("A5-055 SOCIAL POSTS ARE OPTIONAL FLAVOR WITHOUT STAT REWARD", () => {
+  const balance = PLAYER_ACTION_BALANCE_SPECS.find(row => row.actionId === "PA_SOCIAL_POST");
+  const effects = PLAYER_ACTION_EFFECT_PLAN.filter(row => row.actionId === "PA_SOCIAL_POST");
+  assert.ok(balance);
+  assert.ok(balance.options.every(option => option.directDeltas.length === 0));
+  assert.ok(effects.length === 2);
+  assert.ok(effects.every(row => row.mode === "informational"));
+  assert.ok(effects.every(row => row.desiredFactKind === undefined));
+});
+
+test("A5-056 LIFE ACTIONS ARE CONTEXTUAL AND NON-WEEKLY", () => {
+  const planById = new Map(PLAYER_ACTION_CONTENT_PLAN.map(row => [row.id, row]));
+  const eligibilityById = new Map(PLAYER_ACTION_ELIGIBILITY_SPECS.map(row => [row.actionId, row]));
+  const balanceById = new Map(PLAYER_ACTION_BALANCE_SPECS.map(row => [row.actionId, row]));
+  const groupById = new Map(PLAYER_ACTION_COOLDOWN_GROUP_SPECS.map(row => [row.actionId, row]));
+
+  const personal = planById.get("PA_PERSONAL_TIME");
+  const disconnect = planById.get("PA_DISCONNECT");
+  assert.ok(personal && disconnect);
+  assert.ok(personal.cooldownDays >= 30);
+  assert.ok(disconnect.cooldownDays >= 45);
+
+  for (const actionId of ["PA_PERSONAL_TIME", "PA_DISCONNECT"]) {
+    const eligibility = eligibilityById.get(actionId);
+    const balance = balanceById.get(actionId);
+    const group = groupById.get(actionId);
+    assert.ok(eligibility && balance && group);
+    assert.ok(eligibility.all.some(predicate => predicate.kind === "fatigue_min"));
+    assert.ok(group.groupDays >= 14);
+
+    for (const option of balance.options) {
+      for (const delta of option.directDeltas) {
+        if (delta.metric === "professional.motivationReserve") assert.ok(Math.abs(delta.delta) <= 0.5);
+        if (delta.metric === "body.fatigue") assert.ok(Math.abs(delta.delta) <= 1);
+      }
+    }
+  }
+});
+
+test("A5-057 INTERVIEW OPTIONS HAVE EXPLICIT TRADEOFFS", () => {
+  const interview = PLAYER_ACTION_BALANCE_SPECS.find(row => row.actionId === "PA_INTERVIEW");
+  assert.ok(interview);
+
+  const byOption = new Map(interview.options.map(option => [option.optionId, option.directDeltas]));
+  const humble = byOption.get("HUMBLE");
+  const ambitious = byOption.get("AMBITIOUS");
+  const teamFirst = byOption.get("TEAM_FIRST");
+  assert.ok(humble && ambitious && teamFirst);
+
+  assert.ok(humble.some(delta => delta.metric === "professional.institutionalTrust" && delta.delta > 0));
+  assert.ok(humble.some(delta => delta.metric === "professional.commercialPower" && delta.delta < 0));
+
+  assert.ok(ambitious.some(delta => delta.metric === "professional.commercialPower" && delta.delta > 0));
+  assert.ok(ambitious.some(delta => delta.metric === "professional.publicPolarization" && delta.delta > 0));
+
+  assert.ok(teamFirst.some(delta => delta.metric === "professional.institutionalTrust" && delta.delta > 0));
+  assert.ok(teamFirst.some(delta => delta.metric === "professional.commercialPower" && delta.delta < 0));
+});
