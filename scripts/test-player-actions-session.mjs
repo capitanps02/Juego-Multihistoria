@@ -13,7 +13,18 @@ const command = (session, type, extra = {}) => ({
 });
 
 async function emptySession(seed, sessionId = `a2-${seed}-${crypto.randomUUID()}`, extra = {}) {
-  return GameSession.create(seed, { events: [], microfeeds: false, sessionId, ...extra });
+  const base = await GameSession.create(seed, { events: [], microfeeds: false, sessionId, ...extra });
+  const snapshot = base.exportSnapshot();
+  // Integration fixture: keep both REST and TRAINING legitimately eligible
+  // under the final A5 contextual body gates.
+  snapshot.state.body.fatigue = 30;
+  snapshot.state.body.risk = 20;
+  return GameSession.resume(snapshot, {
+    events: [],
+    ...(extra.commit ? { commit: extra.commit } : {}),
+    ...(extra.migrationRoutes ? { migrationRoutes: extra.migrationRoutes } : {}),
+    ...(extra.contentSources ? { contentSources: extra.contentSources } : {})
+  });
 }
 
 async function sessionFromMutatedState(seed, mutate, sessionId) {
