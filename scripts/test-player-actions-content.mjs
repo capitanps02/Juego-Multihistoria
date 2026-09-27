@@ -12,6 +12,8 @@ import {
   addPlayerActionDays,
   evaluatePlayerAction,
   executePlayerActionInPlace,
+  getPlayerActionFacts,
+  isPlayerActionAvailable,
   listPlayerActions,
   playerActionFacts
 } from "../dist/player-actions/index.js";
@@ -26,6 +28,12 @@ const CURRENT_CATEGORIES = new Set([
 ]);
 
 const clone = value => structuredClone(value);
+
+function addDays(iso, days) {
+  const date = new Date(`${iso}T00:00:00Z`);
+  date.setUTCDate(date.getUTCDate() + days);
+  return date.toISOString().slice(0, 10);
+}
 
 test("A5-001 UNIQUE IDS", () => {
   const runtimeIds = PLAYER_ACTION_CATALOG.map(action => action.id);
@@ -441,4 +449,30 @@ test("A5-026 IMPLEMENTED CONTEXT GAPS ARE EXPLICIT", () => {
   assert.ok(agentMarket);
   assert.equal(coachTalk.blockedBy, undefined, "coach target validation already fails closed");
   assert.equal(agentMarket.blockedBy, undefined, "A2 public-target blocker is resolved by #806");
+});
+
+
+test("A5-026 CAUSAL FACT EXPIRES BEFORE ACTION REOPENS", () => {
+  const state = createInitialState(8526);
+  const definition = PLAYER_ACTION_CATALOG.find(row => row.id === "PA_REQUEST_TRANSFER");
+  assert.ok(definition);
+
+  const result = executePlayerActionInPlace(state, {
+    actionId: "PA_REQUEST_TRANSFER",
+    optionId: "REQUEST"
+  });
+  assert.equal(result.ok, true);
+  assert.ok(result.cooldownUntil);
+
+  const fact = getPlayerActionFacts(state, { kind: "request_transfer" }).at(-1);
+  assert.ok(fact?.expiresAfter);
+  assert.equal(result.cooldownUntil, addDays(fact.expiresAfter, 1));
+
+  state.date = fact.expiresAfter;
+  assert.equal(getPlayerActionFacts(state, { activeOnly: true, kind: "request_transfer" }).length, 1);
+  assert.equal(isPlayerActionAvailable(state, definition), false);
+
+  state.date = result.cooldownUntil;
+  assert.equal(getPlayerActionFacts(state, { activeOnly: true, kind: "request_transfer" }).length, 0);
+  assert.equal(isPlayerActionAvailable(state, definition), true);
 });
