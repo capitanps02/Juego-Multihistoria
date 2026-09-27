@@ -98,6 +98,11 @@ try {
     const text = document.querySelector("#history")?.textContent ?? "";
     return /Hablar con entrenador|más minutos|Acción/i.test(text);
   }, null, { timeout: 5000 });
+  const historyPanel = page.locator(".history-panel");
+  if (!(await historyPanel.getAttribute("open"))) {
+    await page.locator("#history-title").click();
+  }
+  await page.locator("#history").waitFor({ state: "visible" });
   const timelineText = await page.locator("#history").innerText();
   assert.match(timelineText, /Hablar con entrenador|más minutos|Acción/i);
 
