@@ -1,0 +1,32 @@
+name: Player Actions long-career stress
+
+on:
+  pull_request:
+    branches:
+      - a6/player-actions-qa-base
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  long-career:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout long-stress candidate
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Build
+        run: |
+          npm ci
+          npm run build
+
+      - name: Run 24-seed full-career stress
+        run: node scripts/stress-player-actions-long-careers.mjs
