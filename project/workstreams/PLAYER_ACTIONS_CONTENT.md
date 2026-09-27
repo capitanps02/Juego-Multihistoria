@@ -736,6 +736,7 @@ CATÁLOGO
 COMPLETADO
 - análisis A0-A4/A6
 - catálogo completo diseñado y codificado en content-plan.ts
+- copy/opciones 20/20 codificadas en content-spec.ts
 - primer slice A3 cableado
 - cooldowns A5 del slice
 - authority review
