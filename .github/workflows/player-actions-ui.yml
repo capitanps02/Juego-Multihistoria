@@ -1,5 +1,8 @@
 name: Player Actions A4 UI
 
+permissions:
+  contents: write
+
 on:
   pull_request:
     branches:
@@ -25,6 +28,8 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -40,3 +45,13 @@ jobs:
         run: node --test scripts/test-player-actions-session.mjs scripts/test-player-actions-ui-contract.mjs
       - name: PlayCanvas regression
         run: node --test scripts/test-playcanvas.mjs scripts/test-t55-a19-ui.mjs
+      - name: Commit regenerated PlayCanvas package
+        if: github.event_name == 'pull_request' && github.head_ref == 'a4/player-actions-ui'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add playcanvas/multihistoria.js playcanvas/manifest.json web/assets.json
+          if ! git diff --cached --quiet; then
+            git commit -m "A4: regenerate PlayCanvas package"
+            git push origin HEAD:${{ github.head_ref }}
+          fi
