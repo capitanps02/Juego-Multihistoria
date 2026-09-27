@@ -109,11 +109,11 @@ export const PLAYER_ACTION_CONTENT_PLAN: readonly PlayerActionContentPlanRow[] =
     classification: "CORE",
     category: "health",
     ageRange: [18, null],
-    cooldownDays: 7,
+    cooldownDays: 14,
     targetKind: "none",
     status: "blocked",
-    requiredContext: "active career",
-    blockedBy: "A1 health category + recovery handler"
+    requiredContext: "elevated physical risk",
+    blockedBy: "A1 health category + risk eligibility + recovery handler"
   },
   {
     id: "PA_REST",
