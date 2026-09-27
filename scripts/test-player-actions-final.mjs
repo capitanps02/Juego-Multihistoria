@@ -476,7 +476,7 @@ test("A6-019 NARRATIVE RNG FUTURE: local action does not shift future narrative 
 });
 
 
-test("A6-020 SAVE LOAD CONTINUATION: resumed path remains exact after further commands", async () => {
+test("A6-022 SAVE LOAD CONTINUATION: resumed path remains exact after further commands", async () => {
   const left = await emptySession(6020, "a6-save-continuation");
   const right = await emptySession(6020, "a6-save-continuation");
 
@@ -514,7 +514,7 @@ test("A6-020 SAVE LOAD CONTINUATION: resumed path remains exact after further co
 });
 
 
-test("A6-020 CAUSAL COOLDOWN STRICT: cooldown must outlive inclusive fact relevance", () => {
+test("A6-023 CAUSAL COOLDOWN STRICT: cooldown must outlive inclusive fact relevance", () => {
   const lifecycles = new Map([
     ["PA_COACH_TALK", 30],
     ["PA_REQUEST_TRANSFER", 120],
