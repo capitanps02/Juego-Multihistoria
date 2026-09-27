@@ -1,0 +1,235 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import { createInitialState } from "../dist/content/initial-state.js";
+import { EVENTS_18_20 } from "../dist/content/events/index.js";
+import { clubById } from "../dist/catalog/football/index.js";
+import { materializeNarrativeClubAlias } from "../dist/catalog/football/narrative-club-alias.js";
+import { selectMarketDestination } from "../dist/catalog/football/market-destination.js";
+import {
+  recordOfficialMatchInPlace,
+  scheduledLeagueFixtures
+} from "../dist/simulation/match-model.js";
+import { materializeAge18MarketOfferInPlace } from "../dist/simulation/early-career-market.js";
+import { advanceWorldDayInPlace } from "../dist/simulation/world-simulator.js";
+import { adaptState20ToProfessional } from "../dist/simulation/professional-adapter.js";
+import { careerTerms, proposeCareerChange } from "../dist/simulation/offers.js";
+import { resolveChoice } from "../dist/narrative/resolver.js";
+import { assertGameState } from "../dist/save/validation.js";
+
+function matchDayState(seed = 19001) {
+  const state = createInitialState(seed);
+  state.date = "2026-08-05";
+  state.runtime.day = 35;
+  state.runtime.seasonDay = 35;
+  return state;
+}
+
+function eventById(id) {
+  const event = EVENTS_18_20.find(row => row.id === id);
+  assert.ok(event, id);
+  return event;
+}
+
+test("V2 fixtures use catalog opponents without consuming GameState RNG", () => {
+  const state = matchDayState();
+  const beforeRng = structuredClone(state.rngState);
+  const row = recordOfficialMatchInPlace(state, {
+    appeared: true,
+    debutOccurred: false,
+    injuryUnavailable: false
+  });
+  assert.ok(row?.opponentClubId);
+  const opponent = clubById(row.opponentClubId);
+  assert.ok(opponent);
+  assert.equal(row.opponent, opponent.name);
+  assert.doesNotMatch(row.opponent, /^SIM_OPP_/);
+  assert.deepEqual(state.rngState, beforeRng);
+  assertGameState(state);
+});
+
+test("scheduled fixture projection is read-only and exposes only catalog opponents", () => {
+  const state = createInitialState(19004);
+  const before = structuredClone(state);
+  const fixtures = scheduledLeagueFixtures(state, 70);
+  assert.ok(fixtures.length > 0);
+  for (const fixture of fixtures) {
+    assert.ok(fixture.opponentClubId);
+    assert.ok(clubById(fixture.opponentClubId));
+    assert.doesNotMatch(fixture.opponent, /^SIM_OPP_/);
+  }
+  assert.deepEqual(state, before);
+});
+
+test("market selector is pure, deterministic and honors exclusions", () => {
+  const request = { countryCode: "ESP", leagueTier: 3, roll: 123456789, profile: "balanced" };
+  const first = selectMarketDestination(request);
+  const replay = selectMarketDestination(request);
+  assert.equal(first.id, replay.id);
+  const alternate = selectMarketDestination({ ...request, excludeClubIds: [first.id] });
+  assert.notEqual(alternate.id, first.id);
+  assert.ok(clubById(first.id));
+  assert.ok(clubById(alternate.id));
+});
+
+test("age-18 January producer keeps offer authority detached and emits catalog destinations", () => {
+  let materialized = 0;
+  for (let seed = 1; seed <= 128; seed += 1) {
+    const state = createInitialState(seed);
+    state.date = "2027-01-08";
+    state.age = 18;
+    state.professional.ownerClub = "UDV";
+    state.professional.registrationClub = "UDV";
+    state.sport.roleScore = 35;
+    state.sport.appearances = 3;
+    state.flags.OFFICIAL_DEBUT = true;
+    state.reputation.marketHeat = 55;
+    const beforeTerms = careerTerms(state);
+    const beforeRng = structuredClone(state.rngState);
+    materializeAge18MarketOfferInPlace(state);
+    assert.deepEqual(state.rngState, beforeRng, `seed ${seed}`);
+    if (!state.market?.pending) continue;
+    materialized += 1;
+    const terms = state.market.pending.terms;
+    assert.ok(clubById(terms.club), `${seed}: ${terms.club}`);
+    assert.doesNotMatch(terms.club, /^(Development_|Domestic_|Summer_|Foreign_|Loan_|Club \d)/);
+    assert.deepEqual(careerTerms(state), beforeTerms, `seed ${seed} offer must remain detached`);
+  }
+  assert.ok(materialized >= 40, `expected broad offer coverage, got ${materialized}`);
+});
+
+test("continuous market proposals use catalog identities and replay deterministically", () => {
+  let proposals = 0;
+  for (let seed = 1; seed <= 900; seed += 1) {
+    const state = createInitialState(seed);
+    state.age = 21;
+    state.phase = "20_23";
+    state.professional.initializedAt20 = true;
+    state.date = "2029-07-01";
+    state.runtime.day = 13;
+    state.runtime.seasonDay = 0;
+    state.contract.monthsRemaining = 24;
+    state.reputation.marketHeat = 90;
+    state.sport.roleScore = seed % 2 === 0 ? 70 : 40;
+    state.professional.clubPrestigeTier = seed % 2 === 0 ? 2 : 4;
+    state.professional.clubPrestigeScore = seed % 2 === 0 ? 42 : 78;
+    state.professional.ownerClub = "UDV";
+    state.professional.registrationClub = "UDV";
+    state.professional.route = "home";
+    state.world.ownerClub = "UDV";
+    state.flags.LOAN_ACTIVE = false;
+    state.flags.ABROAD_ROUTE = false;
+    state.market.pending = null;
+    state.market.openOffers = [];
+
+    const replay = structuredClone(state);
+    advanceWorldDayInPlace(state);
+    advanceWorldDayInPlace(replay);
+    assert.deepEqual(state.rngState.football, replay.rngState.football, `seed ${seed} RNG replay`);
+    assert.deepEqual(state.market.pending, replay.market.pending, `seed ${seed} offer replay`);
+
+    const offer = state.market.pending;
+    if (offer?.reason !== "Propuesta de mercado") continue;
+    proposals += 1;
+    assert.ok(clubById(offer.terms.club), `${seed}: ${offer.terms.club}`);
+    assert.doesNotMatch(offer.terms.club, /^(Foreign_|Loan_|Domestic_|Development_|Summer_|Club \d)/);
+  }
+  assert.ok(proposals >= 10, `expected continuous-market coverage, got ${proposals}`);
+});
+
+test("all active narrative aliases project deterministically to catalog identities", () => {
+  const state = createInitialState(91001);
+  state.age = 19;
+  state.date = "2027-01-15";
+  const aliases = [
+    "NEW_CLUB",
+    "DEVELOPMENT_CLUB",
+    "DEVELOPMENT_CLUB_2",
+    "HIGHER_CLUB",
+    "BIG_CLUB",
+    "FOREIGN_DEV_CLUB"
+  ];
+  for (const alias of aliases) {
+    const a = materializeNarrativeClubAlias(state, alias, {
+      eventId: "QA_ALIAS_EVENT",
+      choiceId: "QA",
+      targetTier: alias === "BIG_CLUB" ? 1 : 3
+    });
+    const b = materializeNarrativeClubAlias(state, alias, {
+      eventId: "QA_ALIAS_EVENT",
+      choiceId: "QA",
+      targetTier: alias === "BIG_CLUB" ? 1 : 3
+    });
+    assert.equal(a, b, alias);
+    const club = clubById(a);
+    assert.ok(club, `${alias}: ${a}`);
+    if (alias === "FOREIGN_DEV_CLUB") assert.notEqual(club.countryCode, "ESP");
+    else assert.equal(club.countryCode, "ESP");
+  }
+});
+
+test("DEVELOPMENT_CLUB_2 resolves inside canonical content without rewriting the event", () => {
+  const event = eventById("CEVT_19_RETURN_01");
+  assert.match(JSON.stringify(event), /DEVELOPMENT_CLUB_2/);
+  const state = createInitialState(91042);
+  state.age = 19;
+  state.phase = "18_20";
+  state.date = "2027-07-10";
+  state.flags.LOAN_RETURN = true;
+  const beforeFootball = structuredClone(state.rngState.football);
+  const next = resolveChoice(state, event, "NEW_LOAN").state;
+  assert.ok(clubById(next.club), next.club);
+  assert.doesNotMatch(next.club, /DEVELOPMENT_CLUB_2/);
+  assert.equal(next.professional.registrationClub, next.club);
+  assert.equal(next.flags.LOAN_ACTIVE, true);
+  assert.deepEqual(next.rngState.football, beforeFootball);
+  assertGameState(next);
+});
+
+test("generic offer fallback uses a catalog club and does not mutate current employment before acceptance", () => {
+  const state = createInitialState(92001);
+  const before = careerTerms(state);
+  const beforeRng = structuredClone(state.rngState);
+  const offer = proposeCareerChange(state, "QA level change", draft => {
+    draft.tier = 2;
+    draft.professional.leagueTier = 2;
+    draft.professional.clubPrestigeTier = 4;
+    draft.professional.clubPrestigeScore = 78;
+  });
+  assert.ok(offer);
+  assert.ok(clubById(offer.terms.club), offer.terms.club);
+  assert.doesNotMatch(offer.terms.club, /^Club \d/);
+  assert.deepEqual(careerTerms(state), before);
+  assert.deepEqual(state.rngState, beforeRng);
+});
+
+test("STATE20_BIG_RESERVE no longer produces Aurora CF", () => {
+  const state = createInitialState(93001);
+  state.age = 20;
+  state.phase = "20_23";
+  state.professional.initializedAt20 = false;
+  const beforeRng = structuredClone(state.rngState);
+  adaptState20ToProfessional(state, ["STATE20_BIG_RESERVE"]);
+  assert.ok(state.market?.pending);
+  const destination = state.market.pending.terms.club;
+  assert.ok(clubById(destination), destination);
+  assert.notEqual(destination, "Aurora CF");
+  assert.deepEqual(state.rngState, beforeRng);
+});
+
+test("runtime source sentinel forbids new synthetic identity producers and preserves Player Actions bridge", () => {
+  const match = fs.readFileSync("src/simulation/match-model.ts", "utf8");
+  const early = fs.readFileSync("src/simulation/early-career-market.ts", "utf8");
+  const world = fs.readFileSync("src/simulation/world-simulator-core.ts", "utf8");
+  const offers = fs.readFileSync("src/simulation/offers.ts", "utf8");
+  const adapter = fs.readFileSync("src/simulation/professional-adapter.ts", "utf8");
+
+  assert.doesNotMatch(match, /const opponent = `SIM_OPP_/);
+  assert.doesNotMatch(early, /function destinationId\(/);
+  assert.doesNotMatch(early, /`(?:Development|Domestic|Summer)_/);
+  assert.doesNotMatch(world, /`Foreign_\$\{/);
+  assert.doesNotMatch(world, /`Loan_\$\{/);
+  assert.doesNotMatch(offers, /terms\.club=`Club /);
+  assert.doesNotMatch(adapter, /state\.club\s*=\s*"Aurora CF"/);
+  assert.match(early, /transferRequestExternalMarketThreshold\(state, 38\)/);
+});
