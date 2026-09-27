@@ -85,12 +85,12 @@ Expected post-A2 averages from the exact deterministic model:
 
 | band | clubs | prestige | finance | youth | development | pressure | attraction |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| elite | 17 | 91.06 | 89.12 | 82.82 | 73.24 | 90.59 | 92.53 |
-| continental | 25 | 84.92 | 83.16 | 82.56 | 77.04 | 86.08 | 88.32 |
-| upper | 88 | 77.65 | 75.63 | 80.89 | 78.09 | 78.42 | 80.92 |
-| mid | 168 | 71.86 | 72.48 | 77.92 | 77.34 | 74.05 | 75.98 |
-| lower | 138 | 63.38 | 66.30 | 73.49 | 77.21 | 66.18 | 68.57 |
-| development | 92 | 70.21 | 69.92 | 83.07 | 84.53 | 66.75 | 73.51 |
+| elite | 17 | 91.06 | 89.59 | 82.29 | 73.88 | 90.59 | 92.82 |
+| continental | 25 | 84.92 | 83.68 | 83.12 | 77.60 | 86.08 | 88.28 |
+| upper | 88 | 77.65 | 75.28 | 80.82 | 78.26 | 78.42 | 81.14 |
+| mid | 168 | 71.86 | 72.52 | 77.85 | 77.31 | 74.05 | 75.80 |
+| lower | 138 | 63.38 | 65.97 | 73.36 | 77.65 | 66.18 | 68.69 |
+| development | 92 | 70.21 | 70.17 | 83.16 | 84.72 | 66.75 | 73.61 |
 
 Expected prestige by tier:
 - tier 1: 73.99
@@ -103,7 +103,7 @@ Expected top-tier prestige by league group:
 - C: 69.01
 - D: 62.58
 
-The severe pre-A2 prestige ceiling is reduced from 99 to 97 and, more importantly, high values are now explained by an explicit competitive band rather than ±7 raw flavour.
+The pre-A2 prestige range of 48..99 becomes 53..97. More importantly, high values are now explained by an explicit competitive band rather than ±7 raw flavour. The global prestige mean remains effectively stable (71.55 -> 71.56), so the recalibration changes hierarchy shape rather than inflating the whole world.
 
 ## Pass 4 — selector/profile contract
 
@@ -118,11 +118,11 @@ Derived profiles:
 
 Expected profile population:
 - elite: 17
-- ambitious: 83
-- balanced: 319
-- development: 94
+- ambitious: 82
+- balanced: 315
+- development: 96
 - lower_pressure: 10
-- financial: 5
+- financial: 8
 
 ### BIG_CLUB
 
