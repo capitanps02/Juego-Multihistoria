@@ -190,3 +190,33 @@ jobs:
 
       - name: Run 20-seed A5 slice stress
         run: node qa/scripts/stress-player-actions-backend.mjs candidate
+
+
+  a5_market_exploit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout A6 QA harness
+        uses: actions/checkout@v4
+        with:
+          path: qa
+
+      - name: Checkout A5 candidate
+        uses: actions/checkout@v4
+        with:
+          ref: a5/player-actions-content
+          path: candidate
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Build A5 candidate
+        working-directory: candidate
+        run: |
+          npm ci
+          npm run build
+
+      - name: Run transfer-request market exploit probe
+        run: node qa/scripts/stress-player-actions-market.mjs candidate
