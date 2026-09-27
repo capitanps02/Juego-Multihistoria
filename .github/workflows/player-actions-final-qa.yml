@@ -324,7 +324,7 @@ jobs:
       - name: Checkout latest A4 candidate
         uses: actions/checkout@v4
         with:
-          ref: a4/player-actions-ui
+          ref: a6/player-actions-integrated-qa
           path: candidate
 
       - name: Set up Node.js
@@ -481,3 +481,69 @@ jobs:
 
       - name: Cross-check A6 anti-grind probe
         run: node qa/scripts/test-player-actions-balance-release.mjs candidate
+
+
+  integrated_candidate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout A6 QA harness
+        uses: actions/checkout@v4
+        with:
+          path: qa
+
+      - name: Checkout integrated candidate
+        uses: actions/checkout@v4
+        with:
+          ref: a6/player-actions-integrated-qa
+          path: candidate
+
+      - name: Checkout pre-feature baseline
+        uses: actions/checkout@v4
+        with:
+          ref: 2cc068cb705214ba827677ab02d8d1668e8677ec
+          path: baseline
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install and build candidate
+        working-directory: candidate
+        run: |
+          npm ci
+          npm run build
+
+      - name: Run integrated Player Actions suites
+        working-directory: candidate
+        run: |
+          node --test             scripts/test-player-actions-core.mjs             scripts/test-player-actions-session.mjs             scripts/test-player-actions-narrative-bridge.mjs             scripts/test-player-actions-content.mjs             scripts/test-player-actions-ui-contract.mjs
+          node --test scripts/test-persistence.mjs
+
+      - name: Run A6 public target gate
+        run: node qa/scripts/test-player-actions-public-target-contract.mjs candidate
+
+      - name: Build baseline
+        working-directory: baseline
+        run: |
+          npm ci
+          npm run build
+
+      - name: Run integrated zero-action equivalence
+        run: node qa/scripts/test-player-actions-zero-equivalence.mjs baseline candidate
+
+      - name: Run integrated stress
+        run: node qa/scripts/stress-player-actions-backend.mjs candidate
+
+      - name: Run integrated anti-grind gate
+        run: node qa/scripts/test-player-actions-balance-release.mjs candidate
+
+      - name: Run integrated market exploit probe
+        run: node qa/scripts/stress-player-actions-market.mjs candidate
+
+      - name: Build and test PlayCanvas
+        working-directory: candidate
+        run: |
+          npm run build:playcanvas
+          node --test scripts/test-playcanvas.mjs scripts/test-t55-a19-ui.mjs
