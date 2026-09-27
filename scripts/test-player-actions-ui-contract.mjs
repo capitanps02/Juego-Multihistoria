@@ -137,7 +137,9 @@ test('A4-011 MULTIPLE ACTIONS: compatible actions can run in the same game date'
 
 test('A4-012 DOUBLE CLICK: UI blocks re-entry while a command is executing',()=>{
   assert.match(preview,/if \(busy \|\| !session\) return/);
-  assert.match(preview,/document\.querySelectorAll\('button'\).*disabled = value/s);
+  assert.match(preview,/button\.dataset\.busyDisabled = 'true'/);
+  assert.match(preview,/button\[data-busy-disabled="true"\]/);
+  assert.doesNotMatch(preview,/document\.querySelectorAll\('button'\)\.forEach\(b => \{ b\.disabled = value; \}\)/);
   assert.match(web,/if\(busy\|\|!session\)return/);
   assert.match(web,/b\.disabled=busy\|\|options\.disabled===true/);
 });
@@ -156,6 +158,8 @@ test('A4-013 STALE: stale revision is safe and has player-facing recovery copy',
 test('A4-014 MOBILE: Player Actions use one-column mobile layout without fixed horizontal canvas',()=>{
   assert.match(webCss,/@media\(max-width:430px\)/);
   assert.match(webCss,/player-action-grid.*grid-template-columns:minmax\(0,1fr\)/s);
+  assert.match(webCss,/player-action-targets\{display:grid;gap:12px;margin:18px 0\}/);
+  assert.match(webCss,/@media\(max-width:430px\).*player-action-targets\{gap:10px\}/s);
   assert.match(previewCss,/@media\(max-width:430px\)/);
   assert.match(webCss,/overflow-wrap:anywhere/);
 });
