@@ -23,6 +23,24 @@ test('local ESM graph validator fails closed on a future missing relative module
   }
 });
 
+
+test('browser UI dependency graph resolves presentation and catalog modules',()=>{
+  const modules=collectRelativeModuleGraph(root,['web/game-ui.js']);
+  for(const required of [
+    'web/game-ui.js',
+    'web/indexed-save-store.js',
+    'web/club-names.js',
+    'dist/catalog/football/index.js'
+  ])assert.ok(modules.includes(required),required);
+});
+
+test('compact match surfaces use explicit catalog short names',()=>{
+  const source=fs.readFileSync(path.join(root,'web','game-ui.js'),'utf8');
+  assert.match(source,/clubShortName=value=>formatClubName\(value,\{compact:true\}\)/);
+  const uses=(source.match(/clubShortName\(m\.(?:club|opponent)\)/g)??[]).length;
+  assert.ok(uses>=4,'expected short names on period and latest-match home/away labels');
+});
+
 test('PlayCanvas bundle declares the authoritative football presentation source',()=>{
   const source=fs.readFileSync(path.join(root,'playcanvas','multihistoria.js'),'utf8');
   const manifest=JSON.parse(fs.readFileSync(path.join(root,'playcanvas','manifest.json'),'utf8'));
