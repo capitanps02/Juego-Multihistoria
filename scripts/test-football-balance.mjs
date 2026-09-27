@@ -167,10 +167,14 @@ test("DB-A2 deterministic profile stress has no accidental sampler monopoly", ()
     assert.ok(candidates.length > 0, profile);
 
     const hits = new Map(candidates.map(club => [club.id, 0]));
+    const countryHits = new Map();
+    const tierHits = new Map();
     const samples = 12000;
     for (let i = 0; i < samples; i += 1) {
       const selected = candidates[hashString(`${profile}|${i}`) % candidates.length];
       hits.set(selected.id, hits.get(selected.id) + 1);
+      countryHits.set(selected.countryCode, (countryHits.get(selected.countryCode) ?? 0) + 1);
+      tierHits.set(selected.tier, (tierHits.get(selected.tier) ?? 0) + 1);
     }
 
     const expected = 1 / candidates.length;
@@ -179,6 +183,54 @@ test("DB-A2 deterministic profile stress has no accidental sampler monopoly", ()
     assert.ok(
       maxShare <= expected + tolerance,
       `${profile} sampler monopoly: max=${maxShare.toFixed(4)} expected=${expected.toFixed(4)}`
+    );
+
+    const countryCounts = new Map();
+    const tierCounts = new Map();
+    for (const club of candidates) {
+      countryCounts.set(club.countryCode, (countryCounts.get(club.countryCode) ?? 0) + 1);
+      tierCounts.set(club.tier, (tierCounts.get(club.tier) ?? 0) + 1);
+    }
+    for (const [country, count] of countryCounts) {
+      const expectedShare = count / candidates.length;
+      const observedShare = (countryHits.get(country) ?? 0) / samples;
+      assert.ok(
+        Math.abs(observedShare - expectedShare) <= 0.03,
+        `${profile} country skew ${country}: observed=${observedShare.toFixed(4)} expected=${expectedShare.toFixed(4)}`
+      );
+    }
+    for (const [tier, count] of tierCounts) {
+      const expectedShare = count / candidates.length;
+      const observedShare = (tierHits.get(tier) ?? 0) / samples;
+      assert.ok(
+        Math.abs(observedShare - expectedShare) <= 0.03,
+        `${profile} tier skew ${tier}: observed=${observedShare.toFixed(4)} expected=${expectedShare.toFixed(4)}`
+      );
+    }
+  }
+});
+
+
+test("DB-A2 country stress covers every represented football market", () => {
+  const countries = [...new Set(FOOTBALL_CLUBS.map(club => club.countryCode))];
+  assert.equal(countries.length, 17);
+
+  for (const country of countries) {
+    const candidates = FOOTBALL_CLUBS.filter(club => club.countryCode === country);
+    assert.ok(candidates.length >= 16, country);
+
+    const hits = new Map(candidates.map(club => [club.id, 0]));
+    const samples = 6000;
+    for (let i = 0; i < samples; i += 1) {
+      const selected = candidates[hashString(`country|${country}|${i}`) % candidates.length];
+      hits.set(selected.id, hits.get(selected.id) + 1);
+    }
+
+    const expected = 1 / candidates.length;
+    const maxShare = Math.max(...hits.values()) / samples;
+    assert.ok(
+      maxShare <= expected + 0.03,
+      `${country} sampler monopoly: max=${maxShare.toFixed(4)} expected=${expected.toFixed(4)}`
     );
   }
 });
