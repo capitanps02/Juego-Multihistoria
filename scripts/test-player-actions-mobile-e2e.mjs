@@ -8,16 +8,16 @@ const viewports = [
   { width: 430, height: 932 }
 ];
 
-async function clickShadow(page, predicate, label) {
-  const clicked = await page.evaluate(({ predicateSource, label }) => {
+async function clickShadow(page, label) {
+  const clicked = await page.evaluate(labelText => {
     const root = document.querySelector("#game")?.shadowRoot;
     if (!root) return { ok: false, reason: "shadow root missing" };
-    const predicate = new Function("node", `return (${predicateSource})(node)`);
-    const node = [...root.querySelectorAll("button")].find(predicate);
-    if (!node) return { ok: false, reason: `button not found: ${label}` };
+    const node = [...root.querySelectorAll("button")]
+      .find(button => button.textContent?.trim() === labelText);
+    if (!node) return { ok: false, reason: `button not found: ${labelText}` };
     node.click();
     return { ok: true };
-  }, { predicateSource: predicate.toString(), label });
+  }, label);
   assert.equal(clicked.ok, true, clicked.reason);
 }
 
@@ -68,11 +68,7 @@ try {
     assert.match(text, /Simular/, "SIMULAR must remain visible on initial career surface");
     await assertNoHorizontalOverflow(page, "career", viewport.width);
 
-    await clickShadow(
-      page,
-      node => node.textContent?.trim() === "Gestionar mi carrera",
-      "Gestionar mi carrera"
-    );
+    await clickShadow(page, "Gestionar mi carrera");
     await page.waitForFunction(() => document.querySelector("#game")?.shadowRoot?.textContent?.includes("¿Qué quieres hacer?"));
     text = await shadowText(page);
     assert.match(text, /Estas acciones son opcionales/, "optionality copy missing");
@@ -106,19 +102,11 @@ try {
     assert.match(text, /Quiero más minutos/, "coach option missing");
     await assertNoHorizontalOverflow(page, "coach_detail", viewport.width);
 
-    await clickShadow(
-      page,
-      node => node.textContent?.trim() === "Quiero más minutos",
-      "Quiero más minutos"
-    );
+    await clickShadow(page, "Quiero más minutos");
     await page.waitForFunction(() => document.querySelector("#game")?.shadowRoot?.textContent?.includes("ACCIÓN COMPLETADA"));
     await assertNoHorizontalOverflow(page, "action_result", viewport.width);
 
-    await clickShadow(
-      page,
-      node => node.textContent?.trim() === "Volver a carrera",
-      "Volver a carrera"
-    );
+    await clickShadow(page, "Volver a carrera");
     await page.waitForFunction(() => {
       const root = document.querySelector("#game")?.shadowRoot;
       return Boolean(root && [...root.querySelectorAll("button")].some(button => button.textContent?.trim() === "Simular"));
