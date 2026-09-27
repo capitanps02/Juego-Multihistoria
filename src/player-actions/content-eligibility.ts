@@ -131,8 +131,7 @@ export const PLAYER_ACTION_ELIGIBILITY_SPECS: readonly PlayerActionEligibilitySp
       { kind: "active_career" },
       { kind: "active_club_employment" },
       { kind: "age_range", min: 18 },
-      { kind: "current_teammate" },
-      { kind: "visible_teammate_tension" }
+      { kind: "current_teammate" }
     ]
   },
   {
