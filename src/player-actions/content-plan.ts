@@ -173,8 +173,8 @@ export const PLAYER_ACTION_CONTENT_PLAN: readonly PlayerActionContentPlanRow[] =
     cooldownDays: 21,
     targetKind: "teammate",
     status: "blocked",
-    requiredContext: "eligible teammate with safe visible tension context",
-    blockedBy: "A1 contextual eligibility + relationship handler"
+    requiredContext: "current teammate",
+    blockedBy: "A1 relationship handler + shared cooldown support"
   },
   {
     id: "PA_LEADER_ADVICE",
@@ -184,8 +184,8 @@ export const PLAYER_ACTION_CONTENT_PLAN: readonly PlayerActionContentPlanRow[] =
     cooldownDays: 21,
     targetKind: "teammate",
     status: "blocked",
-    requiredContext: "current locker-leader teammate",
-    blockedBy: "A1 content target-profile support + relationship handler"
+    requiredContext: "current teammate",
+    blockedBy: "A1 relationship handler + shared cooldown support"
   },
   {
     id: "PA_MENTOR_TEAMMATE",
