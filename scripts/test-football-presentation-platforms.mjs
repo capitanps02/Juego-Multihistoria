@@ -41,6 +41,17 @@ test('compact match surfaces use explicit catalog short names',()=>{
   assert.ok(uses>=4,'expected short names on period and latest-match home/away labels');
 });
 
+test('classic browser preview formats structured club identities',()=>{
+  const source=fs.readFileSync(path.join(root,'preview','app.js'),'utf8');
+  assert.match(source,/import \{ formatClubName \} from '\/web\/club-names\.js';/);
+  assert.match(source,/formatClubName\(v\.club,\{compact:true\}\)/);
+  assert.match(source,/formatClubName\(o\.before\.club\)/);
+  assert.match(source,/formatClubName\(o\.terms\.club\)/);
+  assert.match(source,/formatClubName\(s\.careerChanges\.clubFrom\)/);
+  assert.match(source,/formatClubName\(s\.careerChanges\.clubTo\)/);
+  assert.doesNotMatch(source,/v\.club === 'UDV'/);
+});
+
 test('PlayCanvas bundle declares the authoritative football presentation source',()=>{
   const source=fs.readFileSync(path.join(root,'playcanvas','multihistoria.js'),'utf8');
   const manifest=JSON.parse(fs.readFileSync(path.join(root,'playcanvas','manifest.json'),'utf8'));
