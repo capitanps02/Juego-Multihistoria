@@ -160,25 +160,25 @@ Clasificación:
 | Action ID | Estado runtime | Class | Category final | Edad | Contexto requerido | Bloqueado por | Cooldown | Efecto directo / intent | Target |
 |---|---|---|---|---|---|---|---:|---|---|
 | PA_COACH_TALK | IMPLEMENTED | CORE | career | 18+ | coach + empleo activo | A1 employment eligibility | 31d | feedback / more minutes / accept role facts | coach |
-| PA_ROLE_CHECK | BLOCKED | CONTEXTUAL | career | 18+ | coach actual | A1/A3 role-query contract | 21d | informational role query, no roleScore write | coach |
+| PA_ROLE_CHECK | BLOCKED | CORE | career | 18+ | coach actual | A1 informational handler + coach eligibility | 21d | informational role query, no roleScore write | coach |
 | PA_POSITION_CHANGE | BLOCKED | CONTEXTUAL | career | 18+ | coach actual | A1 eligibility + A3 intent | 45d | REQUEST_POSITION_CHANGE | coach |
 | PA_REQUEST_TRANSFER | IMPLEMENTED | CORE | career | 18+ | empleo actual | A1 employment eligibility | 121d | request_transfer | none |
 | PA_WITHDRAW_TRANSFER | BLOCKED | CONTEXTUAL | career | 18+ | request activo | A3 lifecycle | 14d | WITHDRAW_TRANSFER_REQUEST | none |
 | PA_TRAIN_EXTRA | IMPLEMENTED | CORE | training | 18+ | carrera activa | falta variantes A1 | 35d | technique +0.5, fatigue +3 | none |
 | PA_VIDEO_STUDY | BLOCKED | CONTEXTUAL | training | 18+ | carrera activa | A1 effect registry | 14d | tacticalReading pequeño | none |
-| PA_RECOVERY_SESSION | BLOCKED | CORE | health | 18+ | carrera activa | A1 health/effect | 6d | fatigue/fitness/risk pequeño | none |
+| PA_RECOVERY_SESSION | BLOCKED | CORE | health | 18+ | riesgo físico elevado | A1 health/risk eligibility/recovery handler | 14d | fatigue/fitness/risk pequeño | none |
 | PA_REST | IMPLEMENTED COMPAT | CORE | health final / life actual | 18+ | carrera activa | A1 health category | 21d | fatigue -5, fitness +2 | none |
 | PA_AGENT_MARKET | IMPLEMENTED | CORE | representative | 18+ | representante certificado | none | 31d | ask_agent_market | agent |
 | PA_REQUEST_RENEWAL | IMPLEMENTED | CORE | representative | 18+ | empleo + ventana renovación | A1 employment/contract eligibility | 91d | request_renewal | none |
 | PA_DISCUSS_FUTURE | BLOCKED | CONTEXTUAL | representative | 20+ | representante | A3 CAREER_PRIORITY | 21d | preference fact | agent |
-| PA_TALK_TEAMMATE | BLOCKED | CONTEXTUAL | relationships | 18+ | teammate válido | A1 effect + A2 target | 10d | affinity/respect pequeño | teammate |
+| PA_TALK_TEAMMATE | BLOCKED | CONTEXTUAL | relationships | 18+ | teammate válido | A1 relationship handler + shared cooldown | 10d | affinity/respect pequeño | teammate |
 | PA_CLEAR_AIR | BLOCKED | CONTEXTUAL | relationships | 18+ | tensión visible | A1 eligibility/effect | 21d | resentment/trust pequeño | teammate |
-| PA_VETERAN_ADVICE | BLOCKED | CONTEXTUAL | relationships | 18–23 | veterano elegible | target predicate + A3 intent | 21d | tacticalReading + relation | teammate |
-| PA_MENTOR_YOUNG | BLOCKED | LATE_CAREER | relationships | 30+ | joven elegible | target predicate + A3 intent | 21d | relation/leadership pequeño | teammate |
+| PA_VETERAN_ADVICE | BLOCKED | CONTEXTUAL | relationships | 18–23 | veterano elegible | A1 veteran predicate + relationship handler | 21d | relation local | teammate |
+| PA_MENTOR_YOUNG | BLOCKED | LATE_CAREER | relationships | 30+ | joven elegible | A1 young-player predicate + relationship handler | 21d | relation local | teammate |
 | PA_INTERVIEW | BLOCKED | CORE | image | 18+ | carrera activa | A1 effect registry | 28d | image/polarization pequeño | none |
-| PA_SOCIAL_POST | BLOCKED | OPTIONAL_FLAVOR | image | 18+ | carrera activa | A1 effect registry | 21d | image pequeño | none |
-| PA_PERSONAL_TIME | BLOCKED | CONTEXTUAL | life | 18+ | carrera activa | A1 effect registry | 7d | fatigue/motivation pequeño | none |
-| PA_DISCONNECT | BLOCKED | LATE_CAREER | life | 28+ | carrera activa | A1 age/effect | 14d | fatigue/motivation pequeño | none |
+| PA_SOCIAL_POST | BLOCKED | OPTIONAL_FLAVOR | image | 18+ | carrera activa | A1 informational handler | 21d | sin stat reward | none |
+| PA_PERSONAL_TIME | BLOCKED | CONTEXTUAL | life | 18+ | fatiga significativa | A1 life handler + fatigue eligibility | 30d | fatigue/motivation muy pequeño | none |
+| PA_DISCONNECT | BLOCKED | LATE_CAREER | life | 28+ | fatiga alta | A1 age/fatigue eligibility + life handler | 45d | fatigue/motivation pequeño | none |
 
 ### Decisión de redundancia
 
@@ -224,7 +224,7 @@ El gain +2 fitness semanal requiere stress A6; puede ser demasiado fuerte.
 - no cambia roleScore;
 - no promete titularidad.
 
-Runtime válido; flujo UI bloqueado hasta resolver targets públicos A2.
+Runtime válido; target público resuelto upstream por #806/#804, pendiente sólo de integración final A6.
 
 ### PA_REQUEST_TRANSFER
 
@@ -245,23 +245,23 @@ Balance sensible: A6 debe medir si threshold 38→50 convierte la acción en dom
 - no crea oferta;
 - A3 resuelve relevancia tras una renovación formal aceptada.
 
-Pendiente: esconder/bloquear cuando contrato tenga demasiados meses restantes.
+Contrato final A5: disponible sólo con empleo activo y contrato entre 1 y 24 meses; falta soporte A1.
 
 ### PA_AGENT_MARKET
 
 - targetKind: agent;
-- cooldown: 30d por target;
+- cooldown: 31d por target;
 - effectKey: `ask_agent_market`;
 - no crea interés ni oferta;
 - requiere representante certificado.
 
-Runtime válido; UI bloqueada por target projection.
+Runtime válido; target público resuelto upstream por #806/#804.
 
 ---
 
 ## 7. Cooldowns
 
-Rango diseñado V1: 6–90 días.
+Rango individual diseñado V1: 10–121 días.
 
 Slice actual tras anti-grind A6:
 
@@ -533,7 +533,7 @@ Archivo:
 
 `scripts/test-player-actions-content.mjs`
 
-Casos implementados en la suite (52):
+Casos implementados en la suite (60):
 
 1. A5-001 UNIQUE IDS
 2. A5-002 VALID CATEGORIES
@@ -647,23 +647,18 @@ No añadir:
 
 ---
 
-## 17. REQUEST_TO_A2 / A4
+## 17. A2 / A4 — resuelto upstream
 
-Resolver PA-A6-001:
+PA-A6-001 tiene implementación en #806 + #804:
 
-- PlayerView debe proyectar targets autorizados;
-- target debe incluir ID público suficiente para comando;
-- UI selecciona target sin inferir secretos;
-- stale target/revision falla cerrado;
-- no exponer NPCs fuera de scope.
+- PlayerView proyecta targets authority-backed;
+- targetId público exacto;
+- disponibilidad/cooldown por target;
+- stale target/revision fail-closed;
+- historial público saneado;
+- UI no infiere autoridad desde GameState/contacts.
 
-Sin esto:
-
-- PA_COACH_TALK;
-- PA_AGENT_MARKET;
-- futuras relationships
-
-no son jugables desde UI aunque el dominio sea correcto.
+A5 no mantiene ningún blocker A2. Resta únicamente integración/certificación A6.
 
 ---
 
@@ -678,13 +673,13 @@ Ya cerrado:
 - renewal;
 - market query.
 
-Pendiente sólo si se mantienen en V1:
+Pendiente en V1:
 
 - position change;
 - withdraw transfer;
-- career priority;
-- veteran advice;
-- mentor young.
+- career priority.
+
+Veteran advice y mentor young ya no requieren A3: quedan como efectos locales direct_only sin facts persistentes.
 
 A3 documenta que withdraw-transfer no existe en V1 actual y request_transfer expira/cierra por cambio de club o 120d.
 
@@ -703,11 +698,11 @@ A3 documenta que withdraw-transfer no existe en V1 actual y request_transfer exp
 
 ### Sensibles a balance
 
-- PA_TRAIN_EXTRA — gain técnico actual alto.
-- PA_REST — recuperación semanal potencialmente dominante.
+- PA_TRAIN_EXTRA — runtime legacy +0.5 sigue alto; final target A5 = +0.15 con contexto.
+- PA_REST — frecuencia ya reducida a 21d; final target A5 = -2 fatigue/+0.25 fitness y fatigue>=24.
 - PA_REQUEST_TRANSFER — consumer de threshold de mercado.
-- PA_REQUEST_RENEWAL — falta eligibility por meses.
-- PA_COACH_TALK / PA_AGENT_MARKET — public-target blocker resuelto upstream por #806/#804; resta integración final A6.
+- PA_REQUEST_RENEWAL — contrato final A5 definido en 1–24 meses; implementación pendiente A1.
+- PA_COACH_TALK / PA_AGENT_MARKET — target público resuelto; resta eligibility/core final e integración A6.
 
 ### Tests prioritarios
 
@@ -727,7 +722,7 @@ A3 documenta que withdraw-transfer no existe en V1 actual y request_transfer exp
 
 ```text
 [A5 STATUS]
-Progreso: 96% owner-side
+Progreso: 98% owner-side
 BASE_SHA: 75be938bbe4a6f7a01ef45a5078a6bfa6d77262d
 HEAD actual: consultar PR #802
 CATÁLOGO
@@ -767,7 +762,7 @@ BALANCE
 - 1000 seeds de mercado para REQUEST_TRANSFER
 - autoridad de coach/agent validada en catálogo A5
 TESTS
-- 52 checks authored
+- 60 checks authored
 - 0 TODO en la suite de diseño/contrato
 - stress anual de 80 carreras añadido
 - runtime health/age siguen bloqueados explícitamente
@@ -777,8 +772,8 @@ BLOQUEOS
 - BLOCKED_BY_A3_INTENT_CONTRACT sólo para acciones V1 opcionales aún no soportadas
 Trabajo restante estimado:
 - 14 acciones/runtime decisions
-- 5 bloques de balance/QA
-- ~3–5 horas-agente equivalentes tras desbloqueo A1
+- 1 bloque de integración/retest A5 tras upstream
+- ~2–4 horas-agente equivalentes tras desbloqueo A1/A3
 ```
 
 
@@ -802,7 +797,7 @@ Predicates previstos:
 - contract_months;
 - live_transfer_request;
 - fatigue_min / fatigue_max;
-- risk_max;
+- risk_min / risk_max;
 - current_teammate;
 - teammate_profile veteran/young;
 - visible_teammate_tension.
@@ -813,7 +808,7 @@ Casos importantes:
 - PA_WITHDRAW_TRANSFER: requiere request live;
 - PA_TRAIN_EXTRA: fatigue <=55 y risk <=40;
 - PA_REST: fatigue >=24;
-- PA_RECOVERY_SESSION: fatigue >=28;
+- PA_RECOVERY_SESSION: risk >=28;
 - PA_VETERAN_ADVICE: jugador 18–23 + target veterano;
 - PA_MENTOR_YOUNG: jugador 30+ + target joven.
 
@@ -860,3 +855,27 @@ Se elimina la dependencia A3 para:
 - mentor young.
 
 Ambas quedan como acciones direct_only con target teammate validado y efectos locales pequeños.
+
+
+## Anti-checklist final V1
+
+Objetivo: el jugador debe poder pulsar SIMULAR sin sentir que está dejando buffs gratuitos sobre la mesa.
+
+Medidas A5:
+- social post: informational/flavor, cero stat reward;
+- veteran advice / mentor young: sólo relación local, sin skill/locker global;
+- personal time: cooldown 30d + fatigue>=20 + deltas <=0.5 fatigue / 0.25 motivation;
+- disconnect: cooldown 45d + age>=28 + fatigue>=30 + deltas <=1 fatigue / 0.5 motivation;
+- interview:
+  - humble: institutionalTrust +0.25 / commercialPower -0.25;
+  - ambitious: commercialPower +0.5 / publicPolarization +0.5;
+  - team-first: institutionalTrust +0.5 / commercialPower -0.25;
+- recovery y rest tienen nichos separados:
+  - rest por fatiga;
+  - recovery por riesgo.
+
+A5-058 calcula techo anual bruto ignorando incluso eligibility/shared cooldown:
+- skill metrics <=5 puntos/año;
+- cualquier métrica professional positiva <=8 puntos/año.
+
+A5-059 obliga a que Relationships no escriba progreso profesional global.
