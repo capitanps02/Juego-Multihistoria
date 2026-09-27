@@ -175,8 +175,9 @@ console.log(JSON.stringify({
     previousCoachNpcId: oldTarget.id,
     newCoachNpcId: "NPC_CCH_02"
   });
-  changed.revision = rendered.revision + 1;
-
+  // External authoritative world mutations do not fabricate a SessionCommand
+  // receipt. Keep the snapshot revision unchanged so resume validation remains
+  // truthful; revision staleness is tested after a real committed command below.
   const afterChange = await GameSession.resume(changed);
   const changedView = afterChange.getView();
   const newCoachAction = actionById(changedView, "PA_COACH_TALK");
@@ -198,18 +199,27 @@ console.log(JSON.stringify({
   );
   assert.deepEqual(afterChange.exportSnapshot(), beforeOldTarget);
 
+  await afterChange.dispatch({
+    type: "player_action",
+    commandId: "a6-coach-change-revision-advance",
+    expectedRevision: changedView.revision,
+    actionId: "PA_TRAIN_EXTRA",
+    optionId: "TECHNIQUE"
+  });
+  const afterRealCommit = afterChange.exportSnapshot();
+
   await assert.rejects(
     afterChange.dispatch({
       type: "player_action",
       commandId: "a6-old-coach-stale-revision",
-      expectedRevision: rendered.revision,
+      expectedRevision: changedView.revision,
       actionId: "PA_COACH_TALK",
       optionId: "MORE_MINUTES",
       targetId: oldTarget.id
     }),
     error => error?.code === "STALE_REVISION"
   );
-  assert.deepEqual(afterChange.exportSnapshot(), beforeOldTarget);
+  assert.deepEqual(afterChange.exportSnapshot(), afterRealCommit);
 
   console.log(JSON.stringify({
     gate: "A6_TARGET_AUTHORITY_CHANGE",
