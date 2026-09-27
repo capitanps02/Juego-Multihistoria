@@ -250,32 +250,21 @@ PlayCanvas no contiene una segunda lógica: `scripts/build-playcanvas.mjs` incor
 
 La certificación se hace con `npm run test:playcanvas`, que reconstruye el paquete antes de ejecutar tests.
 
-## 13. BLOCKED_BY_A2_PUBLIC_VIEW
+## 13. A2 PUBLIC VIEW — RESUELTO EN FOLLOW-UP #806
 
-### 13.1 Targets públicos — bloqueo funcional
+El bloqueo original `BLOCKED_BY_A2_PUBLIC_VIEW` fue reproducido por A4 y A6: A2 exponía `targetKind` pero no IDs de target autorizados, por lo que `PA_COACH_TALK` no era ejecutable desde UI sin duplicar autoridad.
 
-A2 documenta que A4 debe “seleccionar un objetivo público válido” para `targetKind !== "none"`, pero el contrato real de `PublicPlayerActionView` sólo expone:
+El follow-up A2 PR **#806** lo resuelve en la capa de sesión pública.
 
-```ts
-targetKind: "none" | "coach" | "agent" | "teammate"
-```
+### 13.1 Targets públicos
 
-No expone targets.
-
-Además, `publicPlayerActionsView()` evalúa actualmente `listPlayerActions(state, catalog)` sin `targetByAction`. Como consecuencia, `PA_COACH_TALK` llega a UI como:
-
-- `targetKind === "coach"`;
-- `available === false`;
-- motivo equivalente a “Debes elegir un objetivo válido.”
-
-A4 **no** infiere que un `PlayerView.contacts[]` concreto es el entrenador vigente, porque eso duplicaría reglas de eligibility/authority.
-
-Campo público requerido de A2, de forma target-aware:
+Cada acción target-required expone ahora:
 
 ```ts
-targets?: Array<{
+targets: Array<{
   id: string;
   label: string;
+  role: string;
   available: boolean;
   unavailableReason: string | null;
   cooldownUntil: string | null;
@@ -289,21 +278,23 @@ targets?: Array<{
 }>
 ```
 
-Para autoridades con un único target también sería válida una proyección equivalente `target`, siempre que venga resuelta por A2 y no por la UI.
+A2 no confía en `contacts[]`. Enumera candidatos del estado y sólo proyecta un NPC si la autoridad existente `validatePlayerActionTarget()` certifica el target exacto.
 
-A2 debe calcular disponibilidad/cooldown para el target público; A4 sólo debe renderizar y enviar `targetId`.
+A4:
 
-Hasta entonces:
+1. renderiza exclusivamente `action.targets`;
+2. permite elegir target cuando hay varios;
+3. auto-resuelve presentación cuando sólo existe uno;
+4. usa las `options` target-specific;
+5. envía exactamente el `targetId` proyectado;
+6. nunca calcula quién es entrenador, representante o compañero;
+7. deja que dispatch falle cerrado si el target queda stale.
 
-**BLOCKED_BY_A2_PUBLIC_VIEW: target-required Player Actions no pueden declararse funcionales en A4.**
+La proyección pública no incluye agenda, knowledge, facts, payloads, effect keys, eligibility keys, RNG ni consumer state.
 
-### 13.2 Historial público — bloqueo de “Tu recorrido”
+### 13.2 Historial público y “Tu recorrido”
 
-A2 expone únicamente `actions.lastResult`.
-
-A4 no puede mezclar Player Action history con `journal` porque el historial persistido vive en GameState y está fuera del contrato UI.
-
-Proyección pública recomendada:
+#806 añade:
 
 ```ts
 actions.history: Array<{
@@ -316,9 +307,19 @@ actions.history: Array<{
 }>
 ```
 
-Sin facts, payloads, targets privados, effects ni provenance interna.
+A4 mezcla esta proyección con `journal` únicamente a nivel de presentación.
 
-Hasta que exista esta proyección, A4 mantiene “Tu recorrido” narrativo sin inventar Player Action entries.
+- Preview muestra decisiones narrativas + acciones voluntarias.
+- Web/PlayCanvas muestra “Decisiones y acciones”.
+- Las entradas narrativas conservan `data-journal-index` para la navegación de memorias.
+- No se lee `GameState.playerActions` desde UI.
+- No se inventa orden causal oculto entre entradas del mismo día.
+
+### 13.3 Estado de certificación
+
+El contrato está implementado en #806 y consumido por #804.
+
+La aceptación final de A4 exige que el gate conjunto A2+A4 compile y pase los casos target/history antes de marcar COMPLETE.
 
 ## 14. Tests
 
@@ -344,7 +345,13 @@ Casos:
 - A4-014 MOBILE
 - A4-015 ACCESSIBILITY
 
-Existe además un diagnóstico explícito del bloqueo target-required.
+Extensiones de integración añadidas:
+
+- A4-016 TARGET FLOW
+- A4-017 HISTORY
+- A4-018 TARGET PRIVACY
+
+El antiguo diagnóstico que esperaba que las acciones target-required estuvieran bloqueadas fue eliminado.
 
 `test:player-actions-ui` ejecuta la suite con build previo.
 
@@ -509,6 +516,31 @@ Stress:
 
 ## 18. Estado A4
 
-La implementación es funcional para acciones `targetKind:"none"` y conserva optionality, sesión, auto-sim y PlayCanvas shared-source.
+Estado de implementación: **INTEGRATION CANDIDATE**.
 
-No puede declararse COMPLETE mientras el contrato A2 no entregue targets públicos ejecutables para acciones target-required y, para el requisito de timeline combinado, un historial público sanitizado.
+Completado en código:
+
+- acciones targetless;
+- selector público de coach/agent/teammate;
+- envío de `targetId` exacto;
+- cooldown/unavailable por target;
+- historial público combinado en “Tu recorrido”;
+- optionality;
+- auto-sim / pause / stop;
+- preview;
+- shared web UI;
+- PlayCanvas generado desde la misma fuente;
+- protección busy/double click/stale revision;
+- mobile/accessibility contract.
+
+Dependencia:
+
+- A2 follow-up #806 debe permanecer verde y mergeable.
+
+Criterio para COMPLETE:
+
+1. build conjunto A2+A4 PASS;
+2. A2 session + A4 UI contract PASS incluyendo A4-016..018;
+3. PlayCanvas regression PASS;
+4. bundle PlayCanvas regenerado/versionado sobre el HEAD final;
+5. A6 deja de reportar PA-A6-001.
