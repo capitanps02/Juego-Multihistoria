@@ -154,3 +154,70 @@ console.log(JSON.stringify({
   readPurityIterations: 1000,
   result: "PASS"
 }, null, 2));
+
+
+{
+  const { certifyCoachChangeInPlace } = await import(
+    pathToFileURL(path.join(candidateRoot, "dist/simulation/coach-change-authority.js")).href
+  );
+  const source = await GameSession.create(424243, {
+    microfeeds: false,
+    sessionId: "a6-public-target-coach-change"
+  });
+  const rendered = source.getView();
+  const oldCoachAction = actionById(rendered, "PA_COACH_TALK");
+  const oldTarget = oldCoachAction.targets.find(candidate => candidate.available);
+  assert.ok(oldTarget);
+  assert.equal(oldTarget.id, "NPC_CCH_01");
+
+  const changed = source.exportSnapshot();
+  certifyCoachChangeInPlace(changed.state, "canonical_change", {
+    previousCoachNpcId: oldTarget.id,
+    newCoachNpcId: "NPC_CCH_02"
+  });
+  changed.revision = rendered.revision + 1;
+
+  const afterChange = await GameSession.resume(changed);
+  const changedView = afterChange.getView();
+  const newCoachAction = actionById(changedView, "PA_COACH_TALK");
+  assert.equal(newCoachAction.targets.length, 1);
+  assert.equal(newCoachAction.targets[0].id, "NPC_CCH_02");
+  assert.equal(newCoachAction.targets[0].available, true);
+
+  const beforeOldTarget = afterChange.exportSnapshot();
+  await assert.rejects(
+    afterChange.dispatch({
+      type: "player_action",
+      commandId: "a6-old-coach-current-revision",
+      expectedRevision: changedView.revision,
+      actionId: "PA_COACH_TALK",
+      optionId: "MORE_MINUTES",
+      targetId: oldTarget.id
+    }),
+    error => error?.code === "PLAYER_ACTION_TARGET_INVALID"
+  );
+  assert.deepEqual(afterChange.exportSnapshot(), beforeOldTarget);
+
+  await assert.rejects(
+    afterChange.dispatch({
+      type: "player_action",
+      commandId: "a6-old-coach-stale-revision",
+      expectedRevision: rendered.revision,
+      actionId: "PA_COACH_TALK",
+      optionId: "MORE_MINUTES",
+      targetId: oldTarget.id
+    }),
+    error => error?.code === "STALE_REVISION"
+  );
+  assert.deepEqual(afterChange.exportSnapshot(), beforeOldTarget);
+
+  console.log(JSON.stringify({
+    gate: "A6_TARGET_AUTHORITY_CHANGE",
+    previousCoach: oldTarget.id,
+    currentCoach: newCoachAction.targets[0].id,
+    currentRevision: changedView.revision,
+    oldTargetCurrentRevision: "PLAYER_ACTION_TARGET_INVALID",
+    oldTargetStaleRevision: "STALE_REVISION",
+    result: "PASS"
+  }, null, 2));
+}
