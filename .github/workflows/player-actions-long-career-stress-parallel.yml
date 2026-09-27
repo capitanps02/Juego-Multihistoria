@@ -1,0 +1,51 @@
+name: Player Actions long-career stress parallel
+
+on:
+  pull_request:
+    branches:
+      - a6/player-actions-qa-base
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  long-career-shard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - policy: none
+            seeds: "1,777,31,610"
+          - policy: training-heavy
+            seeds: "2,2026,55,987"
+          - policy: career-aggressive
+            seeds: "7,424242,88,1597"
+          - policy: rest-heavy
+            seeds: "42,11,144,2584"
+          - policy: mixed
+            seeds: "77,19,233,4096"
+          - policy: random-valid-action
+            seeds: "125,23,377,8192"
+    steps:
+      - name: Checkout sharded stress candidate
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Build
+        run: |
+          npm ci
+          npm run build
+
+      - name: Run four full careers for policy
+        env:
+          PA_LONG_POLICY: ${{ matrix.policy }}
+          PA_LONG_SEEDS: ${{ matrix.seeds }}
+        run: node scripts/stress-player-actions-long-careers.mjs
