@@ -61,7 +61,8 @@
     "test:t55:consequences": "npm run build && node --test scripts/test-t55-consequences.mjs",
     "test:t55:a19": "npm run build && node --test scripts/test-t55-a19-ui.mjs",
     "test:player-actions-core": "npm run build && node --test scripts/test-player-actions-core.mjs",
-    "test:player-actions-session": "npm run build && node --test scripts/test-player-actions-session.mjs"
+    "test:player-actions-session": "npm run build && node --test scripts/test-player-actions-session.mjs",
+    "test:player-actions-final": "npm run build && node --test scripts/test-player-actions-final.mjs"
   },
   "devDependencies": {
     "typescript": "5.8.3"
