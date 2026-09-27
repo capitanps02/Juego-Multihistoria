@@ -21,6 +21,25 @@ async function clickShadow(page, label) {
   assert.equal(clicked.ok, true, clicked.reason);
 }
 
+async function clickCardButton(page, cardTitle, buttonLabel) {
+  const clicked = await page.evaluate(({ cardTitleText, buttonLabelText }) => {
+    const root = document.querySelector("#game")?.shadowRoot;
+    if (!root) return { ok: false, reason: "shadow root missing" };
+    const cards = [...root.querySelectorAll(".player-action-card")];
+    const card = cards.find(node => {
+      const heading = node.querySelector("h2,h3");
+      return heading?.textContent?.trim() === cardTitleText;
+    });
+    if (!card) return { ok: false, reason: `card not found: ${cardTitleText}` };
+    const button = [...card.querySelectorAll("button")]
+      .find(node => node.textContent?.trim() === buttonLabelText && !node.disabled);
+    if (!button) return { ok: false, reason: `button not found in ${cardTitleText}: ${buttonLabelText}` };
+    button.click();
+    return { ok: true };
+  }, { cardTitleText: cardTitle, buttonLabelText: buttonLabel });
+  assert.equal(clicked.ok, true, clicked.reason);
+}
+
 async function assertNoHorizontalOverflow(page, stage, viewportWidth) {
   const metrics = await page.evaluate(() => {
     const host = document.querySelector("#game");
@@ -74,18 +93,18 @@ try {
     assert.match(text, /Estas acciones son opcionales/, "optionality copy missing");
     await assertNoHorizontalOverflow(page, "player_action_menu", viewport.width);
 
-    await clickShadow(page, "Carrera");
+    await clickCardButton(page, "Carrera", "Ver acciones");
     await page.waitForFunction(() => document.querySelector("#game")?.shadowRoot?.textContent?.includes("Hablar con entrenador"));
     await assertNoHorizontalOverflow(page, "career_category", viewport.width);
 
-    await clickShadow(page, "Hablar con entrenador");
-    await page.waitForFunction(() => document.querySelector("#game")?.shadowRoot?.textContent?.includes("¿CON QUIÉN?"));
+    await clickCardButton(page, "Hablar con entrenador", "Abrir");
+    await page.waitForFunction(() => document.querySelector("#game")?.shadowRoot?.textContent?.includes("¿Con quién?"));
     await assertNoHorizontalOverflow(page, "coach_detail", viewport.width);
 
     const targetState = await page.evaluate(() => {
       const root = document.querySelector("#game")?.shadowRoot;
       if (!root) return { selected: false, chose: false, targets: 0 };
-      const targetCards = [...root.querySelectorAll(".action-target-card")];
+      const targetCards = [...root.querySelectorAll(".player-action-target")];
       const buttons = targetCards.flatMap(card => [...card.querySelectorAll("button")]);
       const selected = buttons.some(button => button.textContent?.trim() === "Seleccionado");
       const choose = buttons.find(button => button.textContent?.trim() === "Elegir" && !button.disabled);
