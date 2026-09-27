@@ -220,3 +220,82 @@ jobs:
 
       - name: Run transfer-request market exploit probe
         run: node qa/scripts/stress-player-actions-market.mjs candidate
+
+
+  public_target_contract_a2:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout A6 QA harness
+        uses: actions/checkout@v4
+        with:
+          path: qa
+
+      - name: Checkout PR 806 merged candidate
+        uses: actions/checkout@v4
+        with:
+          ref: refs/pull/806/merge
+          path: candidate
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Build candidate
+        working-directory: candidate
+        run: |
+          npm ci
+          npm run build
+
+      - name: Run public target contract gate
+        run: node qa/scripts/test-player-actions-public-target-contract.mjs candidate
+
+      - name: Zero-action after public target adapter
+        run: |
+          git clone --depth 1 https://github.com/capitanps02/Juego-Multihistoria.git baseline
+          cd baseline
+          git fetch --depth 1 origin 2cc068cb705214ba827677ab02d8d1668e8677ec
+          git checkout 2cc068cb705214ba827677ab02d8d1668e8677ec
+          npm ci
+          npm run build
+          cd ..
+          node qa/scripts/test-player-actions-zero-equivalence.mjs baseline candidate
+
+  public_target_contract_a4:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout A6 QA harness
+        uses: actions/checkout@v4
+        with:
+          path: qa
+
+      - name: Checkout PR 804 merged candidate
+        uses: actions/checkout@v4
+        with:
+          ref: refs/pull/804/merge
+          path: candidate
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Build PlayCanvas candidate
+        working-directory: candidate
+        run: |
+          npm ci
+          npm run build:playcanvas
+
+      - name: Run A2 target + A4 UI contract
+        working-directory: candidate
+        run: |
+          node --test scripts/test-player-actions-session.mjs scripts/test-player-actions-ui-contract.mjs
+
+      - name: Run independent A6 target contract
+        run: node qa/scripts/test-player-actions-public-target-contract.mjs candidate
+
+      - name: Run PlayCanvas regression
+        working-directory: candidate
+        run: node --test scripts/test-playcanvas.mjs scripts/test-t55-a19-ui.mjs
