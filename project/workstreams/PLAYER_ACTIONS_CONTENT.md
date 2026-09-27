@@ -159,10 +159,10 @@ Clasificación:
 | PA_POSITION_CHANGE | BLOCKED | CONTEXTUAL | career | 18+ | coach actual | A1 eligibility + A3 intent | 45d | REQUEST_POSITION_CHANGE | coach |
 | PA_REQUEST_TRANSFER | IMPLEMENTED | CORE | career | 18+ | empleo actual | contextual eligibility aún genérica | 90d | request_transfer | none |
 | PA_WITHDRAW_TRANSFER | BLOCKED | CONTEXTUAL | career | 18+ | request activo | A3 lifecycle | 14d | WITHDRAW_TRANSFER_REQUEST | none |
-| PA_TRAIN_EXTRA | IMPLEMENTED | CORE | training | 18+ | carrera activa | falta variantes A1 | 10d | technique +0.5, fatigue +3 | none |
+| PA_TRAIN_EXTRA | IMPLEMENTED | CORE | training | 18+ | carrera activa | falta variantes A1 | 35d | technique +0.5, fatigue +3 | none |
 | PA_VIDEO_STUDY | BLOCKED | CONTEXTUAL | training | 18+ | carrera activa | A1 effect registry | 14d | tacticalReading pequeño | none |
 | PA_RECOVERY_SESSION | BLOCKED | CORE | health | 18+ | carrera activa | A1 health/effect | 6d | fatigue/fitness/risk pequeño | none |
-| PA_REST | IMPLEMENTED COMPAT | CORE | health final / life actual | 18+ | carrera activa | A1 health category | 7d | fatigue -5, fitness +2 | none |
+| PA_REST | IMPLEMENTED COMPAT | CORE | health final / life actual | 18+ | carrera activa | A1 health category | 21d | fatigue -5, fitness +2 | none |
 | PA_AGENT_MARKET | IMPLEMENTED | CORE | representative | 18+ | representante certificado | target public A2 | 18d | ask_agent_market | agent |
 | PA_REQUEST_RENEWAL | IMPLEMENTED | CORE | representative | 18+ | empleo actual | falta months eligibility | 60d | request_renewal | none |
 | PA_DISCUSS_FUTURE | BLOCKED | CONTEXTUAL | representative | 20+ | representante | A3 CAREER_PRIORITY | 21d | preference fact | agent |
@@ -186,7 +186,7 @@ Clasificación:
 ### PA_TRAIN_EXTRA
 
 - categoría actual: training;
-- cooldown: 10d;
+- cooldown: 35d;
 - effectKey: `train_extra`;
 - directo:
   - technique +0.5;
@@ -200,7 +200,7 @@ Nota de balance: +0.5 cada 10d es demasiado alto como diseño final si el jugado
 
 - categoría actual compatible: life;
 - categoría final deseada: health;
-- cooldown A5: 7d;
+- cooldown A5: 21d;
 - effectKey: `rest`;
 - fatigue -5;
 - fitness +2;
@@ -258,10 +258,10 @@ Runtime válido; UI bloqueada por target projection.
 
 Rango diseñado V1: 6–90 días.
 
-Slice actual:
+Slice actual tras anti-grind A6:
 
-- training: 10d;
-- rest: 7d;
+- training: 35d;
+- rest: 21d;
 - coach: 21d;
 - agent market: 18d;
 - renewal: 60d;
@@ -357,18 +357,32 @@ Handler actual A1:
 
 - +0.5 technique;
 - +3 fatigue;
-- cooldown A5 10d.
+- cooldown A5 **35d**.
 
-Máximo teórico aproximado: 36 acciones/año => +18 technique bruto antes de clamps.
+A6 demostró que el cooldown anterior de 10d permitía ~+18.5 technique/año. A5 lo endurece a 35d:
 
-**Conclusión:** no es balance final aceptable.
+- máximo de 11 ejecuciones/año;
+- máximo bruto +5.5 technique/año antes de clamps/world state.
+
+**Conclusión:** el extremo demostrado por A6 queda acotado en configuración A5, pero el diseño preferido sigue siendo un handler más pequeño (+0.10…+0.20) y eligibility contextual desde A1.
 
 REQUEST_TO_A1:
 reducir handler de producción o permitir handler A5 con +0.10…+0.20 y tradeoff de risk/fatigue.
 
 ### Riesgo T2 — rest
 
--5 fatigue y +2 fitness cada 7 días puede convertirse en rutina obligatoria.
+A6 midió el cooldown anterior de 7d en 20 seeds:
+
+- 53 acciones/año;
+- fitness medio 99.91;
+- fatigue media 0.275.
+
+A5 cambia el cooldown a **21d**, con máximo teórico de 18 usos/año. El nuevo stress gate exige:
+
+- rest average fitness <= 94;
+- rest average fatigue >= 7;
+- mixed average fitness <= 95;
+- mixed average fatigue >= 5.
 
 Stress requerido:
 
@@ -452,7 +466,7 @@ Archivo:
 
 `scripts/test-player-actions-content.mjs`
 
-Casos implementados en la suite:
+Casos implementados en la suite (16):
 
 1. A5-001 UNIQUE IDS
 2. A5-002 VALID CATEGORIES
@@ -468,6 +482,8 @@ Casos implementados en la suite:
 12. A5-012 PLAYER VIEW
 13. A5-013 COPY BUDGETS
 14. A5-014 PLAN/RUNTIME CONTRACT GAPS — valida que health y blockers estén explícitos
+15. A5-015 TRAINING FREQUENCY CEILING — <=11 usos/año
+16. A5-016 REST FREQUENCY CEILING — <=18 usos/año
 
 npm:
 
@@ -476,6 +492,22 @@ npm:
 La suite se añade también a `npm test`.
 
 `src/player-actions/content-plan.ts` codifica las 20 acciones finales, age ranges, clasificación, target, cooldown y blocker. La suite valida ese plan sin afirmar que el engine ya ejecute health/age gates.
+
+Stress de balance:
+
+`scripts/stress-player-actions-content.mjs`
+
+- 20 seeds × 4 políticas × 365 días = 80 carreras;
+- none / training-heavy / rest-heavy / mixed;
+- Δ technique <= 6;
+- rest fitness <= 94;
+- rest fatigue >= 7;
+- mixed fitness <= 95;
+- mixed fatigue >= 5.
+
+Workflow dedicado:
+
+`.github/workflows/player-actions-content.yml`
 
 No se marca PASS hasta obtener CI sobre este HEAD.
 
@@ -617,7 +649,7 @@ A3 documenta que withdraw-transfer no existe en V1 actual y request_transfer exp
 
 ```text
 [A5 STATUS]
-Progreso: 58%
+Progreso: 68%
 BASE_SHA: 75be938bbe4a6f7a01ef45a5078a6bfa6d77262d
 HEAD actual: consultar PR #802
 CATÁLOGO
@@ -644,12 +676,13 @@ RESTANTE
 - full 20-action runtime
 BALANCE
 - estado: PARTIAL
-- training/rest requieren tuning
+- training/rest: cooldown remediation implementada; handler/context tuning A1 sigue pendiente
 TESTS
-- 14 checks authored
+- 16 checks authored
 - 0 TODO en la suite de diseño/contrato
+- stress anual de 80 carreras añadido
 - runtime health/age siguen bloqueados explícitamente
-- PASS pendiente CI
+- PASS del nuevo balance pendiente del workflow exact-head
 BLOQUEOS
 - BLOCKED_BY_A1_CATALOG_CONTRACT
 - BLOCKED_BY_A2_PUBLIC_VIEW
@@ -657,5 +690,5 @@ BLOQUEOS
 Trabajo restante estimado:
 - 14 acciones/runtime decisions
 - 5 bloques de balance/QA
-- ~4–7 horas-agente equivalentes tras desbloqueo
+- ~3–6 horas-agente equivalentes tras desbloqueo A1
 ```
