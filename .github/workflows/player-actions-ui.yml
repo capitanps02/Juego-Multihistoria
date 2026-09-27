@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - a2/player-actions-session
+      - a2/player-actions-public-view
     paths:
       - 'preview/**'
       - 'web/game-ui.js'
