@@ -39,6 +39,27 @@ function coachScope(state: PlayerActionGameState, targetId: string | undefined):
   return { club: requireCurrentClub(state), coachNpcId: targetId };
 }
 
+function agentScope(state: PlayerActionGameState, targetId: string | undefined): { agentNpcId: string } {
+  if (!targetId) throw new Error("Agent conversation requires target");
+  const representation = resolveCurrentRepresentation(state);
+  if (!representation || representation.agentNpcId !== targetId) {
+    throw new Error("Agent conversation requires the current certified representative");
+  }
+  return { agentNpcId: targetId };
+}
+
+function careerPriorityFact(
+  state: PlayerActionGameState,
+  targetId: string | undefined,
+  priority: "minutes" | "salary" | "stability" | "club_level"
+): readonly PlayerActionFactDraft[] {
+  return [{
+    kind: "career_priority",
+    payload: { priority, ...agentScope(state, targetId) },
+    expiresInDays: 20
+  }];
+}
+
 const EFFECTS: Readonly<Record<string, EffectHandler>> = Object.freeze({
   train_extra(state) {
     const fatigue = requireNumber(state.body.fatigue, "body.fatigue");
@@ -102,6 +123,25 @@ const EFFECTS: Readonly<Record<string, EffectHandler>> = Object.freeze({
     }];
   },
 
+  withdraw_transfer_request(state) {
+    return [{
+      kind: "withdraw_transfer_request",
+      payload: {
+        request: "withdraw_transfer",
+        club: requireCurrentClub(state)
+      }
+    }];
+  },
+
+  request_position_change(state, targetId) {
+    const scope = coachScope(state, targetId);
+    return [{
+      kind: "request_position_change",
+      payload: { request: "position_change", ...scope },
+      expiresInDays: 44
+    }];
+  },
+
   request_renewal(state) {
     return [{
       kind: "request_renewal",
@@ -115,19 +155,30 @@ const EFFECTS: Readonly<Record<string, EffectHandler>> = Object.freeze({
   },
 
   ask_agent_market(state, targetId) {
-    if (!targetId) throw new Error("Agent market consultation requires target");
-    const representation = resolveCurrentRepresentation(state);
-    if (!representation || representation.agentNpcId !== targetId) {
-      throw new Error("Agent market consultation requires the current certified representative");
-    }
     return [{
       kind: "ask_agent_market",
       payload: {
         request: "market_status",
-        agentNpcId: targetId
+        ...agentScope(state, targetId)
       },
       expiresInDays: 30
     }];
+  },
+
+  career_priority_minutes(state, targetId) {
+    return careerPriorityFact(state, targetId, "minutes");
+  },
+
+  career_priority_salary(state, targetId) {
+    return careerPriorityFact(state, targetId, "salary");
+  },
+
+  career_priority_stability(state, targetId) {
+    return careerPriorityFact(state, targetId, "stability");
+  },
+
+  career_priority_club_level(state, targetId) {
+    return careerPriorityFact(state, targetId, "club_level");
   }
 });
 
