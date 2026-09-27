@@ -36,8 +36,7 @@ export const PLAYER_ACTION_CONTENT_PLAN: readonly PlayerActionContentPlanRow[] =
     cooldownDays: 31,
     targetKind: "coach",
     status: "implemented",
-    requiredContext: "current coach + active club employment",
-    blockedBy: "A1 active-employment contextual eligibility still generic"
+    requiredContext: "current coach + active club employment"
   },
   {
     id: "PA_ROLE_CHECK",
@@ -69,8 +68,7 @@ export const PLAYER_ACTION_CONTENT_PLAN: readonly PlayerActionContentPlanRow[] =
     cooldownDays: 121,
     targetKind: "none",
     status: "implemented",
-    requiredContext: "current club employment",
-    blockedBy: "A1 active-employment contextual eligibility still generic"
+    requiredContext: "current club employment"
   },
   {
     id: "PA_WITHDRAW_TRANSFER",
@@ -123,8 +121,7 @@ export const PLAYER_ACTION_CONTENT_PLAN: readonly PlayerActionContentPlanRow[] =
     cooldownDays: 21,
     targetKind: "none",
     status: "implemented",
-    requiredContext: "active career",
-    blockedBy: "runtime uses life until A1 adds health"
+    requiredContext: "fatigue >= 24"
   },
   {
     id: "PA_AGENT_MARKET",
@@ -144,8 +141,7 @@ export const PLAYER_ACTION_CONTENT_PLAN: readonly PlayerActionContentPlanRow[] =
     cooldownDays: 91,
     targetKind: "none",
     status: "implemented",
-    requiredContext: "current club employment + renewal window",
-    blockedBy: "A1 active-employment + contract-window contextual eligibility still generic"
+    requiredContext: "current club employment + contract 1..24 months"
   },
   {
     id: "PA_DISCUSS_FUTURE",
