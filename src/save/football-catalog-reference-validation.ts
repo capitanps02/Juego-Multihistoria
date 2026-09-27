@@ -131,16 +131,12 @@ function worldIssue(world: Record<string, unknown>): FootballCatalogReferenceIss
   if (matchStore) {
     for (const [index, fixture] of rows(matchStore.fixtures).entries()) {
       if (!plainRecord(fixture)) continue;
-      const club = newReference(fixture.club, `world.sportMatchModel.fixtures[${index}].club`);
+      const club = historicalReference(fixture.club, `world.sportMatchModel.fixtures[${index}].club`);
       if (club) return club;
-      if (fixture.opponentClubId === undefined) {
-        return {
-          path: `world.sportMatchModel.fixtures[${index}].opponentClubId`,
-          reason: "current V2 fixture is missing stable opponentClubId"
-        };
+      if (fixture.opponentClubId !== undefined) {
+        const opponent = catalogOpponent(fixture.opponentClubId, `world.sportMatchModel.fixtures[${index}].opponentClubId`);
+        if (opponent) return opponent;
       }
-      const opponent = catalogOpponent(fixture.opponentClubId, `world.sportMatchModel.fixtures[${index}].opponentClubId`);
-      if (opponent) return opponent;
     }
     if (plainRecord(matchStore.objective)) {
       const issue = newReference(matchStore.objective.club, "world.sportMatchModel.objective.club");
