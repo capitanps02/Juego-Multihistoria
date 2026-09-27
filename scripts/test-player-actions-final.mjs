@@ -473,3 +473,41 @@ test("A6-019 NARRATIVE RNG FUTURE: local action does not shift future narrative 
   assert.deepEqual(a.pendingDecision, b.pendingDecision);
   assert.equal(a.state.date, b.state.date);
 });
+
+
+test("A6-020 SAVE LOAD CONTINUATION: resumed path remains exact after further commands", async () => {
+  const left = await emptySession(6020, "a6-save-continuation");
+  const right = await emptySession(6020, "a6-save-continuation");
+
+  const action = {
+    type: "player_action",
+    commandId: "a6-save-cont-action",
+    expectedRevision: 0,
+    actionId: "PA_TRAIN_EXTRA",
+    optionId: "TECHNIQUE"
+  };
+  await left.dispatch(clone(action));
+  await right.dispatch(clone(action));
+
+  const resumed = await GameSession.resume(clone(right.exportSnapshot()), { events: [] });
+  assert.deepEqual(resumed.exportSnapshot(), left.exportSnapshot());
+
+  for (let index = 0; index < 8; index += 1) {
+    const commandId = `a6-save-cont-${index}`;
+    const l = {
+      type: "continue",
+      commandId,
+      expectedRevision: left.getView().revision,
+      maxDays: 7
+    };
+    const r = {
+      type: "continue",
+      commandId,
+      expectedRevision: resumed.getView().revision,
+      maxDays: 7
+    };
+    await left.dispatch(l);
+    await resumed.dispatch(r);
+    assert.deepEqual(resumed.exportSnapshot(), left.exportSnapshot(), `save/load diverged after continuation ${index}`);
+  }
+});
