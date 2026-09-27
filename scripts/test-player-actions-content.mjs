@@ -890,14 +890,17 @@ test("A5-050 EFFECT MODE AGREES WITH BALANCE AND FACT ROUTING", () => {
   }
 });
 
-test("A5-051 NEW A3 FACT SURFACE IS MINIMAL", () => {
-  const alreadyImplementedFacts = new Set([
+test("A5-051 A3 FACT SURFACE IS COMPLETE AND MINIMAL", () => {
+  const implementedFacts = new Set([
     "request_more_minutes",
     "request_coach_feedback",
     "coach_role_acknowledged",
     "request_transfer",
+    "withdraw_transfer_request",
+    "request_position_change",
     "request_renewal",
     "ask_agent_market",
+    "career_priority",
     "training_extra_completed",
     "rest_completed"
   ]);
@@ -906,13 +909,10 @@ test("A5-051 NEW A3 FACT SURFACE IS MINIMAL", () => {
     PLAYER_ACTION_EFFECT_PLAN
       .map(row => row.desiredFactKind)
       .filter(Boolean)
-      .filter(kind => !alreadyImplementedFacts.has(kind))
+      .filter(kind => !implementedFacts.has(kind))
   );
 
-  assert.deepEqual(
-    [...missingFacts].sort(),
-    ["career_priority", "request_position_change", "withdraw_transfer_request"].sort()
-  );
+  assert.deepEqual([...missingFacts], []);
 });
 
 test("A5-052 LEADER-ADVICE AND MENTOR ACTIONS STAY LOCAL, NOT A3 FACTS", () => {
@@ -1087,22 +1087,17 @@ test("A5-059 RELATIONSHIP CATEGORY STAYS RELATIONSHIP-LOCAL", () => {
 });
 
 
-test("A5-060 ONLY THREE V1 ACTIONS DEPEND ON NEW A3 CONTRACTS", () => {
+test("A5-060 NO V1 ACTION REMAINS BLOCKED BY A3", () => {
   const a3Blocked = PLAYER_ACTION_CONTENT_PLAN
     .filter(row => /A3/i.test(row.blockedBy ?? ""))
     .map(row => row.id)
     .sort();
 
-  assert.deepEqual(
-    a3Blocked,
-    ["PA_DISCUSS_FUTURE", "PA_POSITION_CHANGE", "PA_WITHDRAW_TRANSFER"].sort()
+  assert.deepEqual(a3Blocked, []);
+  assert.equal(
+    PLAYER_ACTION_CONTENT_PLAN.every(row => row.status === "implemented"),
+    true
   );
-
-  for (const actionId of ["PA_ROLE_CHECK", "PA_LEADER_ADVICE", "PA_MENTOR_TEAMMATE", "PA_SOCIAL_POST"]) {
-    const row = PLAYER_ACTION_CONTENT_PLAN.find(item => item.id === actionId);
-    assert.ok(row);
-    assert.equal(/A3/i.test(row.blockedBy ?? ""), false, `${actionId} has unnecessary A3 dependency`);
-  }
 });
 
 
