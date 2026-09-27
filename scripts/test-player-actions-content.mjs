@@ -1331,19 +1331,36 @@ test("A5-073 PLAN STATUS MATCHES CURRENT RUNTIME ACTION SURFACE", () => {
 });
 
 
-test("A5-074 CERTIFIED A3 FACTS EXPAND RUNTIME TO NINE ACTIONS", () => {
+test("A5-074 FINAL V1 RUNTIME EXPOSES ALL TWENTY ACTIONS AND THIRTY-ONE OPTIONS", () => {
   const expected = [
     "PA_COACH_TALK",
+    "PA_ROLE_CHECK",
     "PA_POSITION_CHANGE",
     "PA_REQUEST_TRANSFER",
     "PA_WITHDRAW_TRANSFER",
     "PA_TRAIN_EXTRA",
+    "PA_VIDEO_STUDY",
+    "PA_RECOVERY_SESSION",
     "PA_REST",
     "PA_AGENT_MARKET",
     "PA_REQUEST_RENEWAL",
-    "PA_DISCUSS_FUTURE"
+    "PA_DISCUSS_FUTURE",
+    "PA_TALK_TEAMMATE",
+    "PA_CLEAR_AIR",
+    "PA_LEADER_ADVICE",
+    "PA_MENTOR_TEAMMATE",
+    "PA_INTERVIEW",
+    "PA_SOCIAL_POST",
+    "PA_PERSONAL_TIME",
+    "PA_DISCONNECT"
   ];
+
   assert.deepEqual(PLAYER_ACTION_CATALOG.map(action => action.id), expected);
+  assert.equal(PLAYER_ACTION_CATALOG.length, 20);
+  assert.equal(
+    PLAYER_ACTION_CATALOG.reduce((total, action) => total + action.options.length, 0),
+    31
+  );
 });
 
 test("A5-075 POSITION CHANGE IS FACT-ONLY AND COACH-SCOPED", () => {
