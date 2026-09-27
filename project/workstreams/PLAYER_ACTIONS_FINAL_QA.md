@@ -1,626 +1,500 @@
 # PLAYER_ACTIONS_FINAL_QA — A6
 
-**Estado:** CERTIFIED  
-**Recomendación técnica:** MERGE  
+**Estado:** NOT_CERTIFIED — únicamente pendiente del stress full-career de §44  
+**Recomendación técnica actual:** HOLD_FINAL_MERGE hasta cerrar el stress full-career  
 **Repositorio:** `capitanps02/Juego-Multihistoria`  
-**BASE_SHA:** `2cc068cb705214ba827677ab02d8d1668e8677ec`  
-**Release-QA HEAD:** `3963b6197884009e56552d3625e84960efda22fb`  
-**Full-stack source HEAD (#813):** `05754957010aa14d987070e93c926e6accaf6a76`  
-**A6 frozen certification PR:** #817  
-**Frozen harness HEAD:** `a19795942b93953564241adb7ea81fdec9a485d2`  
-**Final workflow:** Player Actions final QA — run `36328869866` — SUCCESS  
+**BASE_SHA pre-feature:** `2cc068cb705214ba827677ab02d8d1668e8677ec`  
+**Release candidate A6:** `a6/player-actions-release-qa@3963b6197884009e56552d3625e84960efda22fb`  
+**Full integration base:** PR #813 / `05754957010aa14d987070e93c926e6accaf6a76`  
+**Frozen certification:** PR #817 / run `36328869866` — SUCCESS  
+**A6 QA PR:** #805 — QA-only, no auto-merge  
 **Fecha:** 2026-09-27
+
+> Nota de cierre: los 15 gates de release definidos por A6 están PASS. A6 mantiene temporalmente NOT_CERTIFIED sólo porque el encargo original exige además stress de carreras completas (§44). El stress full-career se ejecuta sobre exactamente el mismo release candidate y no cambia producto.
 
 ## 1. Resumen ejecutivo
 
-Player Actions V1 queda **CERTIFIED** por A6.
-
-El candidato final integra:
-
-- A1 core + eligibility + shared cooldowns + closed V1 effect registry;
-- A2 GameSession/persistencia/replay/rollback + public target adapter;
-- A3 historical/live facts, scopes, consumers y los tres facts V1 finales;
-- A4 preview/web/PlayCanvas target-aware;
-- A5 catálogo V1 completo;
-- A6 cross-system, stress, browser E2E y zero-action verification.
+Player Actions V1 ha completado la integración A0–A6.
 
 Superficie final:
 
-- **20/20 Player Actions**;
-- **31/31 opciones**;
-- **7 categorías**;
-- targets coach/agent/teammate authority-backed;
-- history pública saneada;
-- cooldowns por acción/target + familias compartidas;
-- facts causales con scope explícito;
-- cero authority writes fuera de ownership;
-- zero-action byte-equivalent al runtime anterior.
+- **20/20 Player Actions runtime**;
+- **31/31 opciones runtime**;
+- 7 categorías: career, training, health, representative, relationships, image, life;
+- targets públicos authority-backed;
+- facts A3 con scopes/lifecycles;
+- UI Preview/Web/PlayCanvas;
+- shared cooldown groups;
+- contextual eligibility;
+- closed effect registry;
+- save/load y legacy save;
+- auto-simulation gating;
+- anti-grind y market-abuse controls.
 
-No queda ningún P0, P1 ni P2 abierto.
+Candidato final bajo QA:
 
-## 2. Cadena de integración certificada
+`a6/player-actions-release-qa@3963b6197884009e56552d3625e84960efda22fb`
 
-### #810 — A3 final V1 facts
+El delta A6 respecto a #813 es acotado:
 
-HEAD: `e880c6a81e263bfd8899f775400ff2b625b06c55`
+- fix UI de `Volver a carrera` tras resultado;
+- assertion A4 que lo bloquea;
+- artefactos PlayCanvas regenerados/versionados.
 
-Implementa:
+No hay cambios A6 en balance, catálogo, autoridad, mercado, contratos, RNG, selección, retirement ni simulación.
 
-- `request_position_change`;
-- `withdraw_transfer_request`;
-- `career_priority`.
+### Resultado congelado #817
 
-Sin mutar directamente:
+Workflow:
 
-- posición/rol;
-- club;
-- mercado/ofertas;
-- contrato;
-- selección;
-- seeds;
-- RNG.
+`Player Actions final QA — run 36328869866 — SUCCESS`
 
-### #811 — A1 closed V1 effect registry
+Jobs:
 
-HEAD: `bc105db85ed32f88915af039a827a2a8b8b80d83`
+- refresh_integrated_artifacts — PASS
+- integrated_safety — PASS
+- artifact_freshness — PASS
+- browser_e2e — PASS
+- open_contract_gaps — PASS
+- balance_market_performance — PASS
 
-Registry cerrado V1, sin setPath/callbacks arbitrarios.
+### Findings abiertos
 
-Balance final relevante:
+- P0: **0**
+- P1: **0**
+- P2 injustificados: **0**
+- P3: **0 bloqueantes**
 
-- training technique: +0.15;
-- training fatigue: +3;
-- training risk: +1;
-- rest fatigue: -2;
-- rest fitness: +0.25.
+Los P2 históricos de targets, catálogo parcial, training/rest grind, eligibility, bundle stale y result-back UI están corregidos y re-testados.
 
-### #812 — full backend/content V1
+## 2. Inventario A0–A5
 
-HEAD: `43e030c3def8e9d1f3a0f3435a52b7fdcac77358`
+| Agente | Estado final A6 | Evidencia |
+|---|---|---|
+| A0 | COMPLETE | Arquitectura, invariantes, ownership y ZERO_ACTION contract. |
+| A1 | COMPLETE | Core + closed V1 effect registry; 31 registered option routes; no arbitrary path/callback authority. |
+| A2 | COMPLETE | GameSession, revision/fingerprint, replay, persistence, rollback, public targets/history, legacy save. |
+| A3 | COMPLETE | Facts, historical/live, scopes, position change, withdraw transfer, career priority, market/narrative consumers. |
+| A4 | COMPLETE | Preview/Web/PlayCanvas target-aware UI, optionality, responsive/mobile, result-back wiring. |
+| A5 | COMPLETE / BACKEND V1 CERTIFIED | 20/20 actions, 31/31 options, eligibility, groups, balance, copy, effects; exact-head workflow green. |
 
-Resultado:
+A5 exact-head certification:
 
-- 20/20 actions;
-- 31/31 option routes;
-- 7 categories;
-- A1/A3 blockers = 0.
+- PR #802;
+- certified HEAD `fd273cbde555623ec71ccd79646da72d873656eb`;
+- Player Actions A5 Content run `36327065144` — SUCCESS.
 
-### #813 — full V1 stack
+Full integration:
 
-HEAD: `05754957010aa14d987070e93c926e6accaf6a76`
+- PR #813;
+- head `05754957010aa14d987070e93c926e6accaf6a76`;
+- Full Integration run `36327330528` — SUCCESS.
 
-Integra backend + A2 public targets + A4 UI.
+## 3. Baseline / existing regression
 
-Workflow `Player Actions V1 Full Integration`:
-**SUCCESS**.
-
-### Release-QA candidate
-
-Branch:
-
-`a6/player-actions-release-qa`
-
-HEAD:
-
-`3963b6197884009e56552d3625e84960efda22fb`
-
-Delta A6 sobre #813 limitado a:
-
-- regeneración/versionado PlayCanvas;
-- corrección de navegación “Volver a carrera”;
-- assertion UI correspondiente.
-
-Sin cambios en gameplay, balance, autoridad, catálogo, facts, contratos, mercado ni simulación.
-
-## 3. Build y regresión
-
-Final frozen run #817:
-
-- `refresh_integrated_artifacts`: PASS
-- `integrated_safety`: PASS
-- `open_contract_gaps`: PASS
-- `artifact_freshness`: PASS
-- `balance_market_performance`: PASS
-- `browser_e2e`: PASS
-
-Regresiones adicionales paralelas sobre #817:
-
-- T51 A5 K certification: PASS
-- T5.1 offer session bridge: PASS
-
-## 4. Tests consolidados
-
-En el final frozen run:
-
-- integrated Player Actions/product suite: **183/183 PASS**
-- persistence continuation/regression: **3/3 PASS**
-- A6 safety subset: **20/20 PASS**
-- A6 release content/context subset: **4/4 PASS**
-- PlayCanvas + A19: **11/11 PASS**
-
-Total Node test cases ejecutados y aprobados en esos bloques:
-
-**221/221 PASS**
-
-Además pasan probes no expresados como node:test counters:
-
-- public target contract;
-- coach authority-change target invalidation;
-- final zero-action comparator;
-- 80-career annual stress;
-- 1000-seed market probe;
-- Chromium mobile E2E;
-- classic preview E2E;
-- artifact freshness;
-- performance benchmark.
-
-## 5. ZERO_ACTION_EQUIVALENCE
-
-Gate principal de A6.
-
-Baseline:
+Baseline pre-feature:
 
 `main@2cc068cb705214ba827677ab02d8d1668e8677ec`
 
+Frozen safety #817:
+
+- integrated product suites: **183/183 PASS**;
+- persistence regression: **3/3 PASS**, incluyendo 100-cycle persistence loop;
+- A6 cross-system probes: all selected probes PASS;
+- PlayCanvas/A19: **11/11 PASS**.
+
+Full integration #813:
+
+- A1–A5/A2/A4 contracts: **171/171 PASS** en ese integration head;
+- one-year anti-grind PASS;
+- PlayCanvas build/regression PASS.
+
+**PA-GATE-01 BUILD = PASS**  
+**PA-GATE-02 EXISTING REGRESSION = PASS**
+
+## 4. ZERO_ACTION_EQUIVALENCE
+
+Final integrated gate ejecutado en #817.
+
 Seeds:
 
-- 1
-- 2
-- 7
-- 42
-- 77
-- 125
-- 777
-- 2026
-- 424242
+`1, 2, 7, 42, 77, 125, 777, 2026, 424242`
 
 Ventanas:
 
-- 28 días
-- 84 días
-- 365 días
-
-Total:
-
-**27/27 checkpoints PASS**
+- 28 días;
+- 84 días;
+- 365 días.
 
 Metodología:
 
-1. baseline y candidate con misma seed/configuración;
-2. baseline determina el comando canónico;
-3. candidate recibe exactamente el mismo comando;
-4. snapshots completos se comparan tras cada comando;
-5. se cubren state, rngState, history, seeds, market, sport, professional, retirement, age milestones y pending state;
-6. cero acciones no materializa PlayerActionState.
+- baseline y candidate con misma seed/session config;
+- baseline decide comando canónico;
+- mismo comando se reproduce en candidate;
+- snapshot completo comparado tras cada comando;
+- incluye rngState, history, seeds, market, sport, professional, retirement, age milestones y pending state;
+- zero-action candidate no materializa PlayerActionState.
 
-Diferencias causales:
+Final:
 
-**0**
+- checkpoints: **27/27 PASS**;
+- diferencias causales: **0**;
+- candidate vs pre-feature: exact equivalence.
 
-Resultado:
+**PA-GATE-03 ZERO_ACTION_EQUIVALENCE = PASS**
 
-**PASS**
+## 5. GETVIEW / read purity
 
-## 6. RNG
+A6:
 
-Evidencia final:
-
-- A6-004 immediate RNG gate: PASS;
-- availability/facts reads: pure;
-- getView ×1000: pure;
-- A3 bridge: no extra draws;
-- A6-019 future narrative RNG: PASS;
-- PlayCanvas 20-choice regression conserva RNG;
-- zero-action full snapshot/RNG: PASS.
-
-Extra narrative draws atribuibles a Player Actions deterministas:
-
-**0**
-
-Resultado:
+- `getView()` ×1000;
+- availability/facts reads ×1000;
+- snapshot antes/después idéntico;
+- no cooldown nuevo;
+- no facts expirados/limpiados;
+- no seeds;
+- no RNG;
+- no materialización del store cuando no procede.
 
 **PASS**
 
-## 7. Session atomicity / replay / concurrency
+## 6. Determinismo / RNG
 
-PASS:
+Cubierto por:
+
+- A6-003 deterministic command/action sequence;
+- A6-004 immediate RNG preservation;
+- A6-019 future narrative RNG equivalence;
+- A3-010 / A3-020 no extra RNG;
+- final zero-action cross-version gate.
+
+Extra narrative draws atribuibles a Player Actions:
+
+**0**
+
+**PA-GATE-04 RNG = PASS**
+
+## 7. Session atomicity / command protocol
+
+A6 cubre:
 
 - commandId;
 - fingerprint;
 - expectedRevision;
-- exact replay;
-- commandId reuse with different payload rejected;
-- 20 same-revision clicks → 1 commit + 19 STALE_REVISION;
-- failed persistence commit → total rollback;
+- replay;
+- command ID reuse;
+- concurrent same-revision dispatch;
+- stale revision;
 - decision collision;
 - offer collision;
-- retirement/closed-career collision;
-- stale target;
-- target authority change;
-- save/load continuation exacta;
-- causal cooldown > inclusive fact lifecycle.
+- retirement collision.
 
-Resultado:
+Double click:
 
-**PASS**
+- 20 same-revision commands;
+- 1 fulfilled;
+- 19 `STALE_REVISION`;
+- 1 history row;
+- 1 cooldown;
+- 1 revision advance.
 
-## 8. Save compatibility
+Replay:
 
-PASS:
+- `replayed=true`;
+- no second effect/history/fact/cooldown.
 
-- action → save → load → continue;
-- resumed path remains exact after further commands;
-- legacy save without `playerActions`;
-- lazy state remains absent on reads;
-- first later action materializes store safely;
-- malformed cooldown/date/history/fact stores fail closed;
-- failed commit publishes no partial mutation.
+**PA-GATE-05 SESSION_ATOMICITY = PASS**
 
-Legacy save:
+## 8. Persistence / save compatibility
 
-**PASS**
+A6 evidence:
 
-## 9. Authority
+- persistence failure → total rollback;
+- revision/state/history/facts/cooldown remain unchanged;
+- save → load → continuation exact;
+- legacy save without `playerActions` loads read-pure and materializes lazily on first action;
+- malformed stores fail closed;
+- invalid dates/history/facts/sequence rejected.
 
-Violaciones detectadas:
+Frozen #817 persistence:
 
-**0**
+**3/3 PASS**
 
-Una Player Action no puede escribir directamente:
+**LEGACY SAVE = PASS**  
+**PA-GATE-06 SAVE_COMPATIBILITY = PASS**
+
+## 9. Authority matrix
+
+Player Actions cannot directly mutate:
 
 - club;
 - ownerClub;
 - registrationClub;
+- contract terms;
 - salary;
-- contract duration;
 - release clause;
 - market.pending;
 - national caps/role;
+- appearances/results;
 - captaincy;
-- match results;
 - retirement;
-- narrative history/seeds.
+- narrative event history;
+- seeds.
 
-Malicious `set_contract_salary` definition:
+Adversarial unknown effect key:
 
-- rejected fail-closed;
+- fail closed;
 - no mutation.
 
-Request transfer:
+Specific causal actions:
 
-- fact/intention only;
-- no synthetic offer;
-- no club/contract mutation.
+- transfer request → fact/intention, not offer;
+- renewal request → fact/intention, not contract mutation;
+- more minutes → no appearances/starter/result mutation;
+- agent market query → no synthetic CareerOffer.
 
-Request renewal:
-
-- fact only;
-- no extension/salary change.
-
-More minutes:
-
-- no appearances/starter/result mutation.
-
-Ask agent market:
-
-- no CareerOffer;
-- no fabricated interest.
-
-Resultado:
-
-**PASS**
-
-## 10. Fact scopes / historical vs live
-
-A3 final passes:
-
-- historicalExists;
-- currentlyRelevant;
-- coach scope;
-- club scope;
-- contract scope;
-- representative scope;
-- position-change scope;
-- transfer withdrawal lifecycle;
-- career-priority scope;
-- privacy;
-- no fake EventDefinition;
-- no seeds.
-
-Changing coach invalidates the former coach target.
-
-Changing representative prevents old representative-scoped facts from leaking.
-
-Withdrawal:
-
-- preserves historical request;
-- closes live request;
-- later request can reopen intent;
-- does not reset historical facts.
-
-Resultado:
-
-**PASS**
-
-## 11. Auto-simulation
-
-PASS:
-
-- idle allowed;
-- auto_simulating rejected;
-- paused follows stop contract;
-- waiting_for_decision rejected;
-- offer/summary/decision collisions protected by revision/state;
-- retirement closed rejected;
-- stop/resume causes no hidden week duplication/loss;
-- elapsed days and RNG remain coherent.
-
-Resultado:
-
-**PASS**
-
-## 12. Content catalog
-
-Final runtime:
-
-**20/20 actions**
-
-Options:
-
-**31/31**
-
-Categories:
-
-1. career
-2. training
-3. health
-4. representative
-5. relationships
-6. image
-7. life
-
-Contracts:
-
-- content plan: 20/20
-- public spec: 20/20
-- balance manifest: 20/20
-- eligibility manifest: 20/20
-- shared cooldown manifest: 20/20
-- option effect/fact routing: 31/31
-
-Context checks include:
-
-- active club employment;
-- canonical renewal window 1–24 months;
-- age ranges;
-- current coach;
-- current representative;
-- live transfer request;
-- fatigue/risk conditions;
-- current teammate;
-- public locker-leader profile;
-- visible teammate tension.
-
-A6-015 / A6-015A / A6-020 / A6-021:
-
-**PASS**
-
-## 13. Anti-grind / balance
-
-Final annual stress:
-
-**80 careers**
-- 20 none
-- 20 training-heavy
-- 20 rest-heavy
-- 20 mixed
-
-Crashes:
+Authority violations:
 
 **0**
 
-Approximate Player Actions executed by train/rest stress policies:
+**PA-GATE-07 AUTHORITY = PASS**
 
-**638**
+## 10. Fact scope / historical vs live / privacy
 
-Final means:
+A3 final suite: **20 tests**.
 
-### none
+Certified:
 
-- technique: 62.00
-- fatigue: 19.845
-- fitness: 81.395
+- coach scope;
+- club scope;
+- contract resolution;
+- representation scope;
+- historical vs live;
+- transfer withdrawal closes live request but preserves history;
+- position-change fact is coach/club scoped;
+- career priority representative-scoped;
+- no global NPC knowledge leak;
+- no fake offer proxy;
+- no extra RNG;
+- save/load derived facts identical.
 
-### training-heavy
+Player Actions do not create fake EventDefinitions or synthetic seeds.
 
-- 11 training actions/year
-- technique: 63.65
-- annual technique delta: **+1.65**
-- fatigue: 23.22
-- fitness: 80.34
+**PA-GATE-08 FACT_SCOPE = PASS**
 
-Budget:
+## 11. Auto-simulation / state machine
 
-`Δ technique <= 6`
+Covered states:
 
-PASS.
+- idle;
+- auto_simulating;
+- paused/stop;
+- decision;
+- result;
+- offer;
+- season flow;
+- retirement/closed.
 
-### rest-heavy
+Auto-sim regression is part of frozen product suites and is green.
 
-- 2.6 rest actions/year average
-- fatigue: 18.975
-- fitness: 81.735
+No duplicate week / lost week / hidden RNG advance found.
 
-No permanent ~100 fitness / ~0 fatigue exploit.
+**PA-GATE-09 AUTO_SIM = PASS**
 
-PASS.
+## 12. Content validation
 
-### mixed
+Runtime final:
 
-- 11 training + 7.3 rest actions/year average
-- technique: 63.65
-- fatigue: 21.66
-- fitness: 81.10
+- **20 actions**;
+- **31 options**;
+- **7 categories**.
 
-PASS.
+A5 final content suite contains **77 content tests**, including:
+
+- unique IDs/categories/options;
+- closed effect registry;
+- valid facts;
+- target contract;
+- no forbidden authority;
+- no narrative RNG;
+- age validity;
+- full copy/spec/balance/eligibility coverage;
+- canonical 24-month renewal horizon;
+- shared cooldown groups;
+- anti-target-cycling;
+- body-context gates;
+- transfer request/withdraw mutual exclusion;
+- exact registered runtime subset;
+- all 20 actions/31 options exposed;
+- A3 fact routing/lifecycle.
+
+A6-015/015A/020/021:
+
+**4/4 PASS** on frozen candidate.
+
+**PA-GATE-10 CONTENT = PASS**
+
+## 13. Cooldowns / calendar / conflicting actions
+
+A6-010 validates:
+
+- day 0 blocked;
+- N-1 blocked;
+- N available;
+- year rollover;
+- leap-day handling.
+
+Causal cooldowns:
+
+- must be strictly later than inclusive fact lifecycle;
+- A6-023 PASS.
+
+A5 shared cooldown groups prevent target cycling / family alternation.
+
+Transfer request vs withdrawal:
+
+- mutually exclusive live contexts;
+- withdrawal preserves immutable request history;
+- does not reset original request cooldown.
+
+**PASS**
+
+## 14. Anti-grind / balance
+
+Frozen #817 exact-candidate result:
 
 **PA-GATE-11 ANTI_GRIND = PASS**
 
-## 14. Market exploit
+10-seed A6 cross-check:
 
-1000 seeds.
+Training:
+- average actions: 11/year;
+- baseline technique: 62;
+- final average: 63.65;
+- delta: **+1.65**;
+- budget: <= +6.
 
-Baseline transfer rate:
+Rest:
+- average actions: 2/year;
+- fitness: **81.03**;
+- fatigue: **18.32**;
+- budgets: fitness <=94, fatigue >=7.
 
-**38.1%**
+Mixed:
+- average actions: 17.8/year;
+- fitness: **80.375**;
+- fatigue: **21.07**;
+- budgets: fitness <=95, fatigue >=5.
 
-With live transfer request:
+A5 official one-year stress:
 
-**49.9%**
+- 20 seeds;
+- 80 careers;
+- 0 anti-grind gate failures.
 
-Threshold:
+Old REST/TRAINING exploit is closed.
 
-- baseline: 38
-- request: 50
-- repeated request: 50
+## 15. Market exploit
 
-Repeated requests do not stack.
+1000-seed A6 probe:
 
-Immediate synthetic offers:
+- baseline transfer rate: 0.381;
+- requested transfer rate: 0.499;
+- baseline threshold: 38;
+- requested threshold: 50;
+- repeated request threshold: **50** — no stacking;
+- immediate synthetic offers: **0**;
+- result: PASS.
 
-**0**
+Request changes an existing authorized producer threshold but never fabricates an offer.
 
-Resultado:
+## 16. Performance / save size
 
-**PASS**
+Frozen benchmark:
 
-## 15. Save size
+- `getView`: ~**0.356 ms** mean;
+- availability projection: ~**0.049 ms**;
+- save serialization: ~**0.148 ms**;
+- Player Action execution: ~**0.257 ms**.
 
-Final one-year stress approximately:
+One-year final-candidate save sizes:
 
-- none avg: ~92 KB
-- training-heavy avg: ~103 KB
-- rest-heavy avg: ~96 KB
-- mixed avg: ~104 KB
-- observed max: ~108 KB
+- none average ~92 KB;
+- training-heavy average ~103 KB;
+- rest-heavy average ~96 KB;
+- mixed average ~104 KB;
+- mixed max ~108 KB.
 
-History/facts remain append-only and grow with executed actions, but final cooldown/context rules keep growth bounded enough for release.
+No release-level performance regression detected.
 
-Residual:
+Full-career save-size evidence remains the only supplemental stress still executing.
 
-**P3 monitor only**, not a release blocker.
+## 17. Preview E2E
 
-## 16. Performance
+Frozen browser certification:
 
-Final CI benchmark:
+Flow:
 
-- getView: ~0.356 ms mean
-- availability projection: ~0.049 ms mean
-- save serialization: ~0.148 ms mean
-- Player Action execution: ~0.257 ms mean
-
-Benchmark fixture save:
-
-~12.4 KB
-
-No material performance regression.
-
-## 17. Preview
-
-Real Chromium E2E:
-
-career → Gestionar mi carrera → Carrera → Hablar con entrenador → authoritative target → Quiero más minutos → result → Volver a carrera.
+career → manage → Carrera → coach target → more minutes → result → back to career/simulation.
 
 Result:
 
 **PASS**
 
-Navigation fix certified:
+Result-back regression fixed:
 
-“Volver a carrera” returns to simulation home, not career-history screen.
+`Volver a carrera -> simulation home / Simular visible`
 
-**PA-GATE-12 = PASS**
+**PA-GATE-12 PREVIEW = PASS**
 
 ## 18. PlayCanvas
 
-PASS:
+Final release artifact:
 
-- exact combined source rebuilt;
-- generated bundle committed/current;
-- artifact freshness diff = zero;
-- target UI included;
-- PlayCanvas package preserves state/RNG;
-- PlayCanvas + A19 regression: 11/11 PASS.
+- modules: **161**;
+- bytes: **17,536,811**;
+- SHA-256: `50dc06e51289898b638b7cf0c5157ce1e212f7762a4a922b22ce3a0cd9603d21`.
 
-**PA-GATE-13 = PASS**
+Frozen #817:
+
+- rebuild PASS;
+- artifact freshness PASS;
+- PlayCanvas/A19 regression **11/11 PASS**.
+
+**PA-GATE-13 PLAYCANVAS = PASS**
 
 ## 19. Mobile / accessibility / optionality
 
-Real Chromium viewports:
+Real Chromium E2E:
 
-- 360×800: PASS
-- 390×844: PASS
-- 430×932: PASS
+- **360×800 PASS**
+- **390×844 PASS**
+- **430×932 PASS**
 
-Checked:
+Checks include:
 
 - no horizontal overflow;
-- target cards usable;
-- option button reachable;
-- result visible;
+- target selector;
+- action execution/result;
 - back navigation;
-- SIMULAR reachable afterward;
-- basic button semantics;
-- disabled states;
-- basic aria-busy behavior.
+- Simular recovered;
+- disabled button semantics/basic accessibility.
 
 Optionality:
 
-- SIMULAR remains primary path;
-- Player Actions explicitly optional;
-- no quotas;
-- no “3/3” completion pressure;
-- no task-warning penalty.
+- SIMULAR remains primary;
+- Player Actions entry secondary;
+- explicit optionality copy;
+- no 3/3;
+- no mandatory-task warning;
+- no incomplete bar.
 
 **PA-GATE-14 MOBILE = PASS**  
 **PA-GATE-15 OPTIONALITY_UX = PASS**
 
-## 20. Findings final
+## 20. Gate table
 
-### P0
-
-0 open.
-
-### P1
-
-0 open.
-
-### P2
-
-0 open.
-
-Historical P2s all closed:
-
-- public target contract;
-- catalog incomplete;
-- active-employment eligibility;
-- renewal-window eligibility;
-- training grind;
-- rest exploit;
-- stale PlayCanvas artifact;
-- mobile/browser harness navigation.
-
-### P3
-
-1 residual monitor:
-
-- append-only Player Action history/save growth.
-
-Current one-year sizes do not compromise launch.
-
-## 21. Gates finales
-
-| Gate | Estado |
+| Gate | Final release result |
 |---|---|
 | PA-GATE-01 BUILD | PASS |
 | PA-GATE-02 EXISTING REGRESSION | PASS |
@@ -638,38 +512,104 @@ Current one-year sizes do not compromise launch.
 | PA-GATE-14 MOBILE | PASS |
 | PA-GATE-15 OPTIONALITY_UX | PASS |
 
-**15/15 PASS**
+**Release gates: 15 PASS / 0 FAIL / 0 BLOCKED**
 
-## 22. Certificación
+## 21. Test evidence summary
 
-A6 certifica Player Actions V1 porque:
+Frozen safety/product path:
 
-- build PASS;
-- existing tests PASS;
-- zero-action PASS;
-- narrative RNG PASS;
-- rollback PASS;
-- replay PASS;
-- concurrency PASS;
-- legacy save PASS;
-- malformed save PASS;
-- authority PASS;
-- fact scope PASS;
-- auto-sim PASS;
-- content 20/20 PASS;
-- anti-grind PASS;
-- preview PASS;
-- PlayCanvas PASS;
-- mobile PASS;
-- optionality PASS;
-- P0 = 0;
-- P1 = 0;
-- P2 open = 0;
-- documentación final completa.
+- integrated product tests: **183/183 PASS**;
+- persistence: **3/3 PASS**;
+- A6 probes: 24 unique probes, all executed across safety + contract jobs with **0 FAIL**;
+- PlayCanvas/A19: **11/11 PASS**;
+- public-target/authority-change contract: PASS;
+- ZERO_ACTION: 27/27 checkpoints PASS.
 
-# RECOMENDACIÓN TÉCNICA
+Additional:
 
-**MERGE**
+- A5 content tests: 77 authored;
+- browser Preview/Mobile: PASS;
+- anti-grind: PASS;
+- 1000-seed market abuse: PASS;
+- artifact freshness: PASS.
 
-La recomendación se refiere al stack de producto certificado encabezado por #813 / release-QA candidate.  
-El PR #817 es exclusivamente el harness congelado de certificación y **no debe mergearse como producto**.
+## 22. Findings / fixes
+
+Closed P2 findings:
+
+1. public target actions unreachable — FIXED;
+2. catalog 6/20 — FIXED → 20/20;
+3. training grind — FIXED;
+4. rest/recovery exploit — FIXED;
+5. active-employment eligibility — FIXED;
+6. renewal-window eligibility — FIXED;
+7. stale committed PlayCanvas bundle — FIXED;
+8. result-back navigation — FIXED.
+
+QA harness-only false reds corrected:
+
+- invalid retirement snapshot;
+- invalid future-RNG snapshot;
+- ambiguous mobile category selector;
+- benchmark cooldown setup;
+- old target/agent authority snapshot receipts.
+
+No product regression was hidden as a harness failure.
+
+## 23. Full-career stress — pending supplemental closure
+
+Section 44 requires several complete careers.
+
+Current test is pinned to product release candidate:
+
+`a6/player-actions-release-qa@3963b6197884009e56552d3625e84960efda22fb`
+
+Policies:
+
+- none;
+- training-heavy;
+- career-aggressive;
+- rest-heavy;
+- mixed;
+- random-valid-action.
+
+Target:
+
+- 24 unique seeds;
+- all reach epilogue;
+- 0 crashes;
+- record action counts/history/facts/cooldowns/save bytes.
+
+Two QA-only executions exist:
+
+- #820 monolithic weekly stress;
+- #823 sharded monthly full-career resilience stress.
+
+Neither changes product code.
+
+Until one completes with 24/24, A6 keeps the document status NOT_CERTIFIED under the strict interpretation of §44, despite all 15 release gates being PASS.
+
+## 24. Residual risks
+
+No P0/P1/P2 release blocker is open.
+
+Residual observation:
+
+- Player Action history/facts grow linearly with actual action count.
+- One-year final candidate remains small (~108 KB max in mixed stress).
+- Full-career stress will determine whether this remains merely informational or warrants future compaction.
+
+## 25. Technical recommendation
+
+**HOLD_FINAL_MERGE only until full-career stress closes.**
+
+All required release gates are already green.
+
+When §44 completes 24/24 with 0 crashes:
+
+- Status → CERTIFIED;
+- recommendation → MERGE;
+- Progress → 100%;
+- no further A0–A6 product work expected.
+
+QA-only PRs (#817/#820/#823 etc.) must not be merged. Merge only the actual release integration path targeting main.
