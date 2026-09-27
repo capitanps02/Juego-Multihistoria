@@ -108,7 +108,7 @@ async function runCareer(seed, policy) {
 
     const current = session.getView();
     assert.equal(current.screen, "career");
-    const advanceStep = policy === "rest-heavy" || policy === "mixed" ? 1 : 7;
+    const advanceStep = policy === "none" ? 7 : 1;
     await session.dispatch({
       type: "continue",
       commandId: `stress-${seed}-${policy}-continue-${++commands}`,
