@@ -1226,3 +1226,55 @@ test("A5-068 PLAYER VIEW EXPOSES HEALTH AS FIRST-CLASS CATEGORY", async () => {
   assert.equal(health.label, "Salud");
   assert.ok(health.actions.some(action => action.id === "PA_REST"));
 });
+
+
+test("A5-069 IMPLEMENTED COOLDOWN GROUP MANIFEST IS WIRED INTO RUNTIME", () => {
+  for (const plan of PLAYER_ACTION_CONTENT_PLAN.filter(row => row.status === "implemented")) {
+    const action = PLAYER_ACTION_CATALOG.find(row => row.id === plan.id);
+    const group = PLAYER_ACTION_COOLDOWN_GROUP_SPECS.find(row => row.actionId === plan.id);
+    assert.ok(action && group, `missing runtime/group row for ${plan.id}`);
+    assert.deepEqual(
+      action.cooldownGroup,
+      group.groupId ? { id: group.groupId, days: group.groupDays } : undefined,
+      `${plan.id} runtime cooldown group drift`
+    );
+  }
+});
+
+test("A5-070 SHARED AGENT FAMILY BLOCKS CROSS-ACTION CYCLING", () => {
+  const state = createInitialState(8570);
+  state.contract.monthsRemaining = 12;
+
+  certifyRepresentationInPlace(state, "NPC_AGT_01", {
+    commissionPct: 10,
+    services: ["market"],
+    contactPolicy: "inform_first"
+  }, "a5_group_test");
+
+  const market = PLAYER_ACTION_CATALOG.find(row => row.id === "PA_AGENT_MARKET");
+  const renewal = PLAYER_ACTION_CATALOG.find(row => row.id === "PA_REQUEST_RENEWAL");
+  assert.ok(market && renewal);
+  assert.equal(evaluatePlayerAction(state, market, "NPC_AGT_01").available, true);
+  assert.equal(evaluatePlayerAction(state, renewal).available, true);
+
+  const first = executePlayerActionInPlace(state, {
+    actionId: "PA_AGENT_MARKET",
+    optionId: "ASK",
+    targetId: "NPC_AGT_01"
+  });
+  assert.equal(first.ok, true);
+  assert.ok(state.playerActions?.cooldowns["group:agent_conversation"]);
+
+  const renewalAvailability = evaluatePlayerAction(state, renewal);
+  assert.equal(renewalAvailability.available, false);
+  assert.match(renewalAvailability.unavailableReason ?? "", /Disponible de nuevo/i);
+
+  const before = clone(state);
+  const second = executePlayerActionInPlace(state, {
+    actionId: "PA_REQUEST_RENEWAL",
+    optionId: "REQUEST"
+  });
+  assert.equal(second.ok, false);
+  assert.equal(second.code, "PLAYER_ACTION_COOLDOWN");
+  assert.deepEqual(state, before);
+});
