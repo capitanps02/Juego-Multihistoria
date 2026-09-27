@@ -306,3 +306,60 @@ jobs:
       - name: Run PlayCanvas regression
         working-directory: candidate
         run: node --test scripts/test-playcanvas.mjs scripts/test-t55-a19-ui.mjs
+
+
+  mobile_e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout A6 QA harness
+        uses: actions/checkout@v4
+        with:
+          path: qa
+
+      - name: Checkout latest A4 candidate
+        uses: actions/checkout@v4
+        with:
+          ref: a4/player-actions-ui
+          path: candidate
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install candidate dependencies
+        working-directory: candidate
+        run: |
+          npm ci
+          npm install --no-save --package-lock=false playwright@1.56.1
+          npx playwright install --with-deps chromium
+
+      - name: Build preview and PlayCanvas package
+        working-directory: candidate
+        run: npm run build:playcanvas
+
+      - name: Copy A6 mobile E2E harness
+        run: cp qa/scripts/test-player-actions-mobile-e2e.mjs candidate/scripts/test-player-actions-mobile-e2e.mjs
+
+      - name: Start preview server
+        working-directory: candidate
+        run: |
+          PREVIEW_PORT=4173 node scripts/serve-preview.mjs > /tmp/multihistoria-preview.log 2>&1 &
+          echo $! > /tmp/multihistoria-preview.pid
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:4173/ >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/multihistoria-preview.log
+          exit 1
+
+      - name: Run mobile Chromium E2E
+        working-directory: candidate
+        run: node scripts/test-player-actions-mobile-e2e.mjs http://127.0.0.1:4173
+
+      - name: Show preview log on failure
+        if: failure()
+        run: cat /tmp/multihistoria-preview.log || true
