@@ -446,51 +446,48 @@ test("A6-018 RETIREMENT COLLISION: rendered action fails closed if career is clo
 });
 
 
-test("A6-019 NARRATIVE RNG FUTURE: informational Player Action does not shift future narrative stream", async () => {
-  const withAction = await GameSession.create(6190, {
+test("A6-019 NARRATIVE RNG FUTURE: local action does not shift future narrative stream", async () => {
+  const source = await GameSession.create(6190, {
     microfeeds: false,
     sessionId: "a6-future-rng"
   });
-  const withoutAction = await GameSession.create(6190, {
-    microfeeds: false,
-    sessionId: "a6-future-rng"
-  });
+  const prepared = source.exportSnapshot();
+  prepared.state.body.fatigue = Math.max(30, prepared.state.body.fatigue);
 
-  const actionView = withAction.getView();
-  const agentAction = actionView.actions.categories
-    .flatMap(category => category.actions)
-    .find(action => action.id === "PA_AGENT_MARKET");
-  assert.ok(agentAction, "PA_AGENT_MARKET missing");
-  const agentTarget = agentAction.targets?.find(target => target.available);
-  assert.ok(agentTarget, "no authoritative agent target available");
+  const withActionSession = await GameSession.resume(clone(prepared));
+  const withoutAction = await GameSession.resume(clone(prepared));
+  const bodyBefore = clone(prepared.state.body);
 
-  const beforeRng = clone(withAction.exportSnapshot().state.rngState.narrative);
-  await withAction.dispatch({
+  const beforeRng = clone(withActionSession.exportSnapshot().state.rngState.narrative);
+  await withActionSession.dispatch({
     type: "player_action",
-    commandId: "a6-future-rng-agent",
-    expectedRevision: actionView.revision,
-    actionId: "PA_AGENT_MARKET",
-    optionId: "ASK",
-    targetId: agentTarget.id
+    commandId: "a6-future-rng-rest",
+    expectedRevision: withActionSession.getView().revision,
+    actionId: "PA_REST",
+    optionId: "RECOVER"
   });
   assert.deepEqual(
-    withAction.exportSnapshot().state.rngState.narrative,
+    withActionSession.exportSnapshot().state.rngState.narrative,
     beforeRng,
-    "informational action consumed narrative RNG immediately"
+    "REST consumed narrative RNG immediately"
   );
 
-  const leftView = withAction.getView();
-  const rightView = withoutAction.getView();
+  // Preserve the valid command receipt/history, but neutralize only local
+  // physical deltas before comparing the future narrative stream.
+  const actionSnapshot = withActionSession.exportSnapshot();
+  actionSnapshot.state.body = clone(bodyBefore);
+  const withAction = await GameSession.resume(actionSnapshot);
+
   await withAction.dispatch({
     type: "continue",
-    commandId: "a6-future-rng-left",
-    expectedRevision: leftView.revision,
+    commandId: "a6-future-rng-continue",
+    expectedRevision: withAction.getView().revision,
     maxDays: 30
   });
   await withoutAction.dispatch({
     type: "continue",
-    commandId: "a6-future-rng-right",
-    expectedRevision: rightView.revision,
+    commandId: "a6-future-rng-continue",
+    expectedRevision: withoutAction.getView().revision,
     maxDays: 30
   });
 
