@@ -62,3 +62,53 @@ jobs:
 
       - name: Compare zero-action careers
         run: node candidate/scripts/test-player-actions-zero-equivalence.mjs baseline candidate
+
+
+  upstream_zero_action:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - label: A3
+            candidate_ref: 75be938bbe4a6f7a01ef45a5078a6bfa6d77262d
+          - label: A4
+            candidate_ref: ee07c945e9f6d714fb921f4f98af06f6699d223b
+    steps:
+      - name: Checkout A6 QA harness
+        uses: actions/checkout@v4
+        with:
+          path: qa
+
+      - name: Checkout pre-Player-Actions baseline
+        uses: actions/checkout@v4
+        with:
+          ref: 2cc068cb705214ba827677ab02d8d1668e8677ec
+          path: baseline
+
+      - name: Checkout ${{ matrix.label }} candidate
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.candidate_ref }}
+          path: candidate
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Build baseline
+        working-directory: baseline
+        run: |
+          npm ci
+          npm run build
+
+      - name: Build candidate
+        working-directory: candidate
+        run: |
+          npm ci
+          npm run build
+
+      - name: Compare zero-action careers for ${{ matrix.label }}
+        run: node qa/scripts/test-player-actions-zero-equivalence.mjs baseline candidate
