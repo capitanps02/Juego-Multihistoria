@@ -780,3 +780,59 @@ test("A5-044 RECOVERY/DEVELOPMENT FAMILIES PREVENT DAILY ALTERNATION", () => {
     assert.ok(rows.every(row => row.groupDays >= 7), `family ${family} must block daily cycling`);
   }
 });
+
+
+test("A5-045 TRAINING AND RECOVERY USE CONTEXTUAL BODY GATES", () => {
+  const byId = new Map(PLAYER_ACTION_ELIGIBILITY_SPECS.map(row => [row.actionId, row]));
+
+  const train = byId.get("PA_TRAIN_EXTRA");
+  const rest = byId.get("PA_REST");
+  const recovery = byId.get("PA_RECOVERY_SESSION");
+  assert.ok(train && rest && recovery);
+
+  const trainFatigueMax = train.all.find(predicate => predicate.kind === "fatigue_max");
+  const trainRiskMax = train.all.find(predicate => predicate.kind === "risk_max");
+  const restFatigueMin = rest.all.find(predicate => predicate.kind === "fatigue_min");
+  const recoveryFatigueMin = recovery.all.find(predicate => predicate.kind === "fatigue_min");
+
+  assert.ok(trainFatigueMax && trainFatigueMax.value <= 55);
+  assert.ok(trainRiskMax && trainRiskMax.value <= 40);
+  assert.ok(restFatigueMin && restFatigueMin.value >= 24);
+  assert.ok(recoveryFatigueMin && recoveryFatigueMin.value >= 28);
+});
+
+test("A5-046 TRANSFER REQUEST AND WITHDRAWAL ARE MUTUALLY EXCLUSIVE CONTEXTS", () => {
+  const request = PLAYER_ACTION_ELIGIBILITY_SPECS.find(row => row.actionId === "PA_REQUEST_TRANSFER");
+  const withdraw = PLAYER_ACTION_ELIGIBILITY_SPECS.find(row => row.actionId === "PA_WITHDRAW_TRANSFER");
+  assert.ok(request && withdraw);
+
+  const requestPredicate = request.all.find(predicate => predicate.kind === "live_transfer_request");
+  const withdrawPredicate = withdraw.all.find(predicate => predicate.kind === "live_transfer_request");
+
+  assert.deepEqual(requestPredicate, { kind: "live_transfer_request", required: false });
+  assert.deepEqual(withdrawPredicate, { kind: "live_transfer_request", required: true });
+});
+
+test("A5-047 AGE-SPECIALIZED TEAMMATE ACTIONS MATCH V1 WINDOWS", () => {
+  const veteran = PLAYER_ACTION_ELIGIBILITY_SPECS.find(row => row.actionId === "PA_VETERAN_ADVICE");
+  const mentor = PLAYER_ACTION_ELIGIBILITY_SPECS.find(row => row.actionId === "PA_MENTOR_YOUNG");
+  assert.ok(veteran && mentor);
+
+  assert.deepEqual(
+    veteran.all.find(predicate => predicate.kind === "age_range"),
+    { kind: "age_range", min: 18, max: 23 }
+  );
+  assert.deepEqual(
+    veteran.all.find(predicate => predicate.kind === "teammate_profile"),
+    { kind: "teammate_profile", profile: "veteran" }
+  );
+
+  assert.deepEqual(
+    mentor.all.find(predicate => predicate.kind === "age_range"),
+    { kind: "age_range", min: 30 }
+  );
+  assert.deepEqual(
+    mentor.all.find(predicate => predicate.kind === "teammate_profile"),
+    { kind: "teammate_profile", profile: "young" }
+  );
+});
