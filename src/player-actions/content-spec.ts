@@ -133,17 +133,17 @@ export const PLAYER_ACTION_CONTENT_SPECS: readonly PlayerActionContentSpec[] = [
   {
     id: "PA_CLEAR_AIR",
     label: "Aclarar las cosas",
-    description: "Habla con un compañero cuando existe tensión sin borrar automáticamente el conflicto entre vosotros.",
+    description: "Aborda de frente un roce con un compañero sin borrar automáticamente el historial entre vosotros.",
     options: [
       { id: "TALK", label: "Hablarlo de frente", publicResult: "Habéis intentado rebajar la tensión mediante una conversación." }
     ]
   },
   {
     id: "PA_LEADER_ADVICE",
-    label: "Pedir consejo a un líder",
-    description: "Pide orientación a un compañero con liderazgo reconocido sin convertirla en una mejora automática.",
+    label: "Pedir consejo",
+    description: "Pide orientación a un compañero actual sin convertir su experiencia en una mejora automática.",
     options: [
-      { id: "ASK_ADVICE", label: "Escuchar su experiencia", publicResult: "Has pedido consejo a un líder del vestuario." }
+      { id: "ASK_ADVICE", label: "Escuchar su experiencia", publicResult: "Has pedido consejo a un compañero del vestuario." }
     ]
   },
   {
