@@ -1,0 +1,50 @@
+name: Player Actions A4 UI
+
+on:
+  pull_request:
+    branches:
+      - main
+      - a2/player-actions-session
+      - a2/player-actions-public-view
+    paths:
+      - 'preview/**'
+      - 'web/game-ui.js'
+      - 'web/game-ui.css'
+      - 'src/player-actions/**'
+      - 'src/session/game-session.ts'
+      - 'scripts/test-player-actions-ui-contract.mjs'
+      - 'scripts/test-player-actions-session.mjs'
+      - 'scripts/test-playcanvas.mjs'
+      - 'scripts/build-playcanvas.mjs'
+      - 'package.json'
+      - '.github/workflows/player-actions-ui.yml'
+  workflow_dispatch:
+
+
+# Final target-aware certification — read only.
+permissions:
+  contents: read
+
+jobs:
+  a4-ui:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Parse UI sources
+        run: |
+          node --check preview/app.js
+          node --check web/game-ui.js
+      - name: Build PlayCanvas package
+        run: npm run build:playcanvas
+      - name: Player Actions session + UI contract
+        run: node --test scripts/test-player-actions-session.mjs scripts/test-player-actions-ui-contract.mjs
+      - name: PlayCanvas regression
+        run: node --test scripts/test-playcanvas.mjs scripts/test-t55-a19-ui.mjs
