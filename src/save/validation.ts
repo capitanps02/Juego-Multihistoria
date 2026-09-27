@@ -6,6 +6,8 @@ import { inspectPenaltySetupStore } from "../simulation/match-penalty-context.js
 import * as legacy from "./validation-legacy.js";
 import type { EmploymentStatus } from "../simulation/employment.js";
 import { isVeteranMarketApproach } from "../simulation/veteran-market.js";
+import { classifyFootballClubReference, clubById } from "../catalog/football/index.js";
+import { isSupportedFootballCatalogVersion } from "./football-catalog-version.js";
 
 export * from "./validation-legacy.js";
 
@@ -28,6 +30,88 @@ function assertSportMatchModel(value: unknown): void {
   const world = legacy.record(state.world, "world");
   const issue = inspectSportMatchModelStore(world.sportMatchModel, state.date as string, value as GameState);
   if (issue) legacy.ensure(false, issue.path, issue.reason);
+}
+
+
+function assertFootballCatalogVersion(value: unknown): void {
+  const state = legacy.record(value, "state");
+  if (state.footballCatalogVersion === undefined) return;
+  legacy.ensure(
+    isSupportedFootballCatalogVersion(state.footballCatalogVersion),
+    "footballCatalogVersion",
+    "versión de catálogo no compatible"
+  );
+}
+
+const CLUB_REFERENCE_KEYS = new Set(["club", "ownerClub", "registrationClub"]);
+
+function assertPersistedFootballReference(value: unknown, path: string): void {
+  const classification = classifyFootballClubReference(value);
+  legacy.ensure(
+    classification.kind !== "invalid",
+    path,
+    classification.reason
+  );
+}
+
+function scanFootballReferences(
+  value: unknown,
+  path: string,
+  ancestors = new Set<object>(),
+  depth = 0,
+  budget = { nodes: 0 }
+): void {
+  legacy.ensure(depth <= 40 && ++budget.nodes <= 150_000, path, "estructura de referencias de club demasiado grande");
+  if (value === null || value === undefined || typeof value !== "object") return;
+  if (ancestors.has(value as object)) return;
+  ancestors.add(value as object);
+  try {
+    if (Array.isArray(value)) {
+      value.forEach((row, index) => scanFootballReferences(row, `${path}[${index}]`, ancestors, depth + 1, budget));
+      return;
+    }
+    for (const [key, child] of Object.entries(value as Record<string, unknown>)) {
+      const childPath = path ? `${path}.${key}` : key;
+      if (CLUB_REFERENCE_KEYS.has(key) && child !== null && child !== undefined) {
+        assertPersistedFootballReference(child, childPath);
+      } else if (key === "opponentClubId" && child !== null && child !== undefined) {
+        legacy.ensure(
+          typeof child === "string" && clubById(child) !== null,
+          childPath,
+          "opponentClubId debe ser un ID de catálogo válido"
+        );
+      }
+      if (child !== null && typeof child === "object") {
+        scanFootballReferences(child, childPath, ancestors, depth + 1, budget);
+      }
+    }
+  } finally {
+    ancestors.delete(value as object);
+  }
+}
+
+function assertFootballReferences(value: unknown): void {
+  const state = legacy.record(value, "state");
+  for (const key of ["club"] as const) {
+    assertPersistedFootballReference(state[key], key);
+  }
+  const professional = legacy.record(state.professional, "professional");
+  assertPersistedFootballReference(professional.ownerClub, "professional.ownerClub");
+  assertPersistedFootballReference(professional.registrationClub, "professional.registrationClub");
+  const world = legacy.record(state.world, "world");
+  if (world.ownerClub !== undefined && world.ownerClub !== null) {
+    assertPersistedFootballReference(world.ownerClub, "world.ownerClub");
+  }
+
+  for (const [key, child] of Object.entries({
+    ageMilestones: state.ageMilestones,
+    history: state.history,
+    market: state.market,
+    employment: state.employment,
+    world: state.world
+  })) {
+    if (child !== undefined) scanFootballReferences(child, key);
+  }
 }
 
 const EMPLOYMENT_STATUSES: EmploymentStatus[] = ["contracted","loaned","unattached","expired_pending_resolution"];
@@ -89,6 +173,8 @@ function assertEmployment(value: unknown): void {
  */
 export function validateGameSave(value: unknown, version: number): void {
   legacy.validateGameSave(value, version);
+  assertFootballCatalogVersion(value);
+  assertFootballReferences(value);
   assertSportMatchModel(value);
   assertCompetitionMoments(value);
   assertPenaltySetups(value);
@@ -101,6 +187,8 @@ export function validateGameSave(value: unknown, version: number): void {
 /** Common runtime/save boundary including market + football moment + match-model checks. */
 export function assertGameState(value: unknown): asserts value is GameState {
   legacy.assertGameState(value);
+  assertFootballCatalogVersion(value);
+  assertFootballReferences(value);
   assertSportMatchModel(value);
   assertCompetitionMoments(value);
   assertPenaltySetups(value);
