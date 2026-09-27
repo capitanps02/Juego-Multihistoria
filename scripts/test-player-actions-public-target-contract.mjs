@@ -221,3 +221,79 @@ console.log(JSON.stringify({
     result: "PASS"
   }, null, 2));
 }
+
+
+{
+  const { certifyRepresentationInPlace } = await import(
+    pathToFileURL(path.join(candidateRoot, "dist/simulation/representation-authority.js")).href
+  );
+
+  const seedSession = await GameSession.create(424244, {
+    microfeeds: false,
+    sessionId: "a6-public-target-agent-change"
+  });
+  const withAgentA = seedSession.exportSnapshot();
+  certifyRepresentationInPlace(withAgentA.state, "NPC_AGT_01", {
+    commissionPct: 10,
+    services: ["market"],
+    contactPolicy: "inform_first"
+  }, "a6_agent_a");
+  withAgentA.revision += 1;
+
+  const agentASession = await GameSession.resume(withAgentA);
+  const rendered = agentASession.getView();
+  const agentAction = actionById(rendered, "PA_AGENT_MARKET");
+  assert.ok(agentAction);
+  assert.equal(agentAction.targets.length, 1);
+  assert.equal(agentAction.targets[0].id, "NPC_AGT_01");
+  assert.equal(agentAction.targets[0].available, true);
+
+  const withAgentB = agentASession.exportSnapshot();
+  certifyRepresentationInPlace(withAgentB.state, "NPC_AGT_02", {
+    commissionPct: 9,
+    services: ["market"],
+    contactPolicy: "inform_first"
+  }, "a6_agent_b");
+  withAgentB.revision = rendered.revision + 1;
+
+  const agentBSession = await GameSession.resume(withAgentB);
+  const current = agentBSession.getView();
+  const currentAction = actionById(current, "PA_AGENT_MARKET");
+  assert.equal(currentAction.targets.length, 1);
+  assert.equal(currentAction.targets[0].id, "NPC_AGT_02");
+
+  const beforeOldAgent = agentBSession.exportSnapshot();
+  await assert.rejects(
+    agentBSession.dispatch({
+      type: "player_action",
+      commandId: "a6-old-agent-current-revision",
+      expectedRevision: current.revision,
+      actionId: "PA_AGENT_MARKET",
+      optionId: "ASK",
+      targetId: "NPC_AGT_01"
+    }),
+    error => error?.code === "PLAYER_ACTION_TARGET_INVALID"
+  );
+  assert.deepEqual(agentBSession.exportSnapshot(), beforeOldAgent);
+
+  await assert.rejects(
+    agentBSession.dispatch({
+      type: "player_action",
+      commandId: "a6-old-agent-stale-revision",
+      expectedRevision: rendered.revision,
+      actionId: "PA_AGENT_MARKET",
+      optionId: "ASK",
+      targetId: "NPC_AGT_01"
+    }),
+    error => error?.code === "STALE_REVISION"
+  );
+  assert.deepEqual(agentBSession.exportSnapshot(), beforeOldAgent);
+
+  console.log(JSON.stringify({
+    gate: "A6_TARGET_AGENT_CHANGE",
+    previousAgent: "NPC_AGT_01",
+    currentAgent: "NPC_AGT_02",
+    currentRevision: current.revision,
+    result: "PASS"
+  }, null, 2));
+}
