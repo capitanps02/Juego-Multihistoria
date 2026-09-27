@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 import { createInitialState } from "../dist/content/initial-state.js";
 import { GameSession } from "../dist/session/game-session.js";
 import { materializeAge18MarketOfferInPlace } from "../dist/simulation/early-career-market.js";
+import { certifyRepresentationInPlace } from "../dist/simulation/representation-authority.js";
 import { PLAYER_ACTION_CONTENT_PLAN } from "../dist/player-actions/content-plan.js";
 import {
   PLAYER_ACTION_CATALOG,
@@ -362,6 +363,35 @@ test("A5-023 MORE MINUTES REQUEST NEVER GRANTS SPORT OUTCOME DIRECTLY", () => {
   assert.deepEqual(state.market, before.market);
   assert.equal(
     state.playerActions?.facts.some(fact => fact.kind === "request_more_minutes"),
+    true
+  );
+});
+
+
+test("A5-024 AGENT MARKET QUERY NEVER SYNTHESIZES OFFER", () => {
+  const state = createInitialState(8524);
+  certifyRepresentationInPlace(state, "NPC_AGT_01", {
+    commissionPct: 10,
+    services: ["market"],
+    contactPolicy: "inform_first"
+  }, "a5_content_test");
+
+  const beforeMarket = clone(state.market);
+  const beforeClub = state.club;
+  const beforeContract = clone(state.contract);
+
+  const result = executePlayerActionInPlace(state, {
+    actionId: "PA_AGENT_MARKET",
+    optionId: "ASK",
+    targetId: "NPC_AGT_01"
+  });
+
+  assert.equal(result.ok, true);
+  assert.deepEqual(state.market, beforeMarket);
+  assert.equal(state.club, beforeClub);
+  assert.deepEqual(state.contract, beforeContract);
+  assert.equal(
+    state.playerActions?.facts.some(fact => fact.kind === "ask_agent_market"),
     true
   );
 });
