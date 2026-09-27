@@ -107,8 +107,8 @@ export const PLAYER_ACTION_BALANCE_SPECS: readonly PlayerActionBalanceSpec[] = [
     options: [{
       optionId: "RECOVER",
       directDeltas: [
-        { metric: "body.fatigue", delta: -3 },
-        { metric: "body.fitness", delta: 0.5 },
+        { metric: "body.fatigue", delta: -2 },
+        { metric: "body.fitness", delta: 0.25 },
         { metric: "body.risk", delta: -1 }
       ]
     }]
