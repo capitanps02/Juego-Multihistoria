@@ -89,9 +89,9 @@ test('A4-006 CATEGORY: UI renders public categories/actions dynamically',async()
 test('A4-007 COOLDOWN: action becomes disabled and UI humanizes cooldown',async()=>{
   const session=await GameSession.create(424242);
   await session.dispatch(command(session,'player_action',{actionId:'PA_TRAIN_EXTRA',optionId:'TECHNIQUE'}));
-  const rest=actionById(session.getView(),'PA_REST');
-  assert.equal(rest.available,false);
-  assert.ok(rest.cooldownUntil);
+  const training=actionById(session.getView(),'PA_TRAIN_EXTRA');
+  assert.equal(training.available,false);
+  assert.ok(training.cooldownUntil);
   assert.match(web,/Podrás volver a hacerlo mañana|Disponible en/);
   assert.match(preview,/Podrás volver a hacerlo mañana|Disponible en/);
 });
