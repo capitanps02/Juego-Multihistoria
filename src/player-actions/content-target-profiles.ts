@@ -10,3 +10,8 @@ export type PlayerActionTargetProfile = "locker_leader";
 export const PLAYER_ACTION_TARGET_PROFILES: Readonly<Record<PlayerActionTargetProfile, readonly string[]>> = Object.freeze({
   locker_leader: Object.freeze(["NPC_PLR_10", "NPC_PLR_11"])
 });
+
+
+export const PLAYER_ACTION_TARGET_PROFILE_BY_ACTION: Readonly<Record<string, PlayerActionTargetProfile>> = Object.freeze({
+  PA_LEADER_ADVICE: "locker_leader"
+});
