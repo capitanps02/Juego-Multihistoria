@@ -531,9 +531,40 @@ Stress:
 
 ## 18. Estado A4
 
-Estado de implementación: **INTEGRATION CANDIDATE**.
+Estado de implementación: **COMPLETE**.
 
-Completado en código:
+HEAD funcional certificado antes del cierre documental:
+
+`1296cbbd6d95ae4fbf477dbb5b8b1d026b316777`
+
+Certificación final read-only:
+
+- workflow: Player Actions A4 UI
+- run: `36316821115`
+- conclusión: **SUCCESS**
+- Parse UI sources: PASS
+- Build PlayCanvas package: PASS
+- A2 session + A4 UI contract: PASS
+- PlayCanvas + A19 regression: PASS
+
+Bundle final versionado:
+
+- commit de bundle: `05f7ea368a82df8fac38a3423c139c2a0a428758`
+- módulos: **154**
+- bytes: **17,484,526**
+- SHA-256: `55649e9af9dd64711400fb0d3adddc51ee66f7d55dc0b1b29348e8a304a62bb6`
+
+Suite Player Actions:
+
+- A2-001..027
+- A4-001..019
+- total conjunto: **46/46 PASS**
+
+PlayCanvas/A19:
+
+- **11/11 PASS**
+
+Completado:
 
 - acciones targetless;
 - selector público de coach/agent/teammate;
@@ -544,19 +575,12 @@ Completado en código:
 - auto-sim / pause / stop;
 - preview;
 - shared web UI;
-- PlayCanvas generado desde la misma fuente;
+- bundle PlayCanvas final versionado;
 - protección busy/double click/stale revision;
 - limpieza de target seleccionado en todos los caminos back/navigation;
-- mobile/accessibility contract.
+- mobile/accessibility contract;
+- workflow final read-only.
 
-Dependencia:
+A4 no tiene bloqueos internos abiertos.
 
-- A2 follow-up #806 debe permanecer verde y mergeable.
-
-Criterio para COMPLETE:
-
-1. build conjunto A2+A4 PASS;
-2. A2 session + A4 UI contract PASS incluyendo A4-016..019;
-3. PlayCanvas regression PASS;
-4. bundle PlayCanvas regenerado/versionado sobre el HEAD final;
-5. A6 deja de reportar PA-A6-001.
+El estado COMPLETE de A4 **no implica** que el sistema Player Actions completo esté listo para release. A5/A1 y A6 conservan sus gates propios de catálogo, balance e integración global.
