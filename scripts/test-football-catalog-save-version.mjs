@@ -111,7 +111,7 @@ test("current V2 permits explicit legacy provenance but never persisted narrativ
   );
 });
 
-test("older V2 fixture rows may predate opponentClubId, current V2 rows may not", () => {
+test("historical fixture rows may predate opponentClubId across supported catalog generations", () => {
   const older = {
     footballCatalogVersion: "world-v2-a1-2026-09-28",
     club: "ESP_MADRID",
@@ -125,11 +125,7 @@ test("older V2 fixture rows may predate opponentClubId, current V2 rows may not"
 
   const current = structuredClone(older);
   current.footballCatalogVersion = CURRENT_FOOTBALL_CATALOG_VERSION;
-  current.world.sportMatchModel.fixtures[0].club = "ESP_MADRID";
-  assert.equal(
-    inspectFootballCatalogSaveReferences(current)?.path,
-    "world.sportMatchModel.fixtures[0].opponentClubId"
-  );
+  assert.equal(inspectFootballCatalogSaveReferences(current), null);
 });
 
 test("fixture opponent catalog ID survives save/load and invalid opponent IDs are rejected", () => {
