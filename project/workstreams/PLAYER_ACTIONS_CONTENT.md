@@ -377,7 +377,7 @@ Contrato requerido:
 - coach target no debe usar un registrationClub histórico como autoridad viva estando unattached;
 - stale employment entre render y dispatch debe seguir fallando cerrado.
 
-A5-025 obliga a que esta deuda permanezca explícita en el plan hasta que A1 la cierre.
+A5-026 obliga a que esta deuda permanezca explícita en el plan hasta que A1 la cierre.
 
 ---
 
@@ -459,15 +459,24 @@ Esto captura el bonus A3 de +12 puntos sin aceptar que la acción garantice una 
 
 `action_target` permite potencialmente farmear compañeros diferentes.
 
-Requiere:
+A5 ya define:
+- familia `teammate_interaction` de 7d;
+- gains únicamente relacionales;
+- `current_teammate` obligatorio;
+- `locker_leader` cerrado para PA_LEADER_ADVICE;
+- sin profile veteran/young inventado.
 
-- shared/group cooldown;
-- o gains relacionales mínimos;
-- o eligibility contextual.
+Pendiente: A1 debe implementar el group cooldown y target profile cerrados.
 
 ### Riesgo T5 — image
 
-No implementar hasta tener clamps/cooldowns medidos; evitar `marketHeat`.
+A5 ya elimina el incentivo de checklist:
+- PA_SOCIAL_POST es flavor/informational: cero stat reward;
+- PA_INTERVIEW usa trade-offs explícitos;
+- no se toca `marketHeat`;
+- familia `public_image` = 7d.
+
+Pendiente: A1 debe registrar los handlers cerrados antes de runtime.
 
 ### Riesgo T6 — intent overlap
 
@@ -538,35 +547,72 @@ Archivo:
 
 `scripts/test-player-actions-content.mjs`
 
-Casos implementados en la suite (63):
+Casos implementados en la suite (64):
 
 1. A5-001 UNIQUE IDS
 2. A5-002 VALID CATEGORIES
 3. A5-003 OPTIONS
-4. A5-004 VALID EFFECT PATHS / registry
-5. A5-005 VALID INTENTS / A3 handlers
+4. A5-004 VALID EFFECT PATHS / registry only
+5. A5-005 VALID INTENTS / A3 handlers only
 6. A5-006 COOLDOWN
 7. A5-007 TARGET CONTRACT
 8. A5-008 NO FORBIDDEN AUTHORITY
 9. A5-009 NO NARRATIVE RNG
-10. A5-010 AGE VALIDITY — valida la matriz tipada de diseño
+10. A5-010 AGE VALIDITY
 11. A5-011 ZERO ACTION
 12. A5-012 PLAYER VIEW
 13. A5-013 COPY BUDGETS
-14. A5-014 PLAN/RUNTIME CONTRACT GAPS — valida que health y blockers estén explícitos
-15. A5-015 TRAINING FREQUENCY CEILING — <=11 usos/año
-16. A5-016 REST FREQUENCY CEILING — <=18 usos/año
+14. A5-014 PLAN/RUNTIME CONTRACT GAPS ARE EXPLICIT
+15. A5-015 TRAINING FREQUENCY CEILING
+16. A5-016 REST FREQUENCY CEILING
 17. A5-017 INTENT COOLDOWN > INCLUSIVE FACT LIFECYCLE
 18. A5-018 IMPLEMENTED PLAN/RUNTIME SYNC
-19. A5-019 CONTENT PLAN DISTRIBUTION — 9/8/2/1 y categorías 5/2/2/3/4/2/2
+19. A5-019 CONTENT PLAN DISTRIBUTION
 20. A5-020 NO DUPLICATE RUNTIME SEMANTICS
 21. A5-021 PUBLIC COPY DOES NOT LEAK INTERNALS
-22. A5-022 TRANSFER REQUEST MARKET UPLIFT IS BOUNDED, NOT GUARANTEED — 1000 seeds
+22. A5-022 TRANSFER REQUEST MARKET UPLIFT IS BOUNDED, NOT GUARANTEED
 23. A5-023 MORE MINUTES REQUEST NEVER GRANTS SPORT OUTCOME DIRECTLY
 24. A5-024 AGENT MARKET QUERY NEVER SYNTHESIZES OFFER
 25. A5-025 INCLUSIVE FACT EXPIRY NEVER OVERLAPS RE-EXECUTION
 26. A5-026 IMPLEMENTED CONTEXT GAPS ARE EXPLICIT
 27. A5-027 CAUSAL FACT EXPIRES BEFORE ACTION REOPENS
+28. A5-028 FULL PUBLIC CONTENT SPEC COVERAGE
+29. A5-029 FULL SPEC OPTION AND COPY BUDGETS
+30. A5-030 IMPLEMENTED PUBLIC COPY IS A SUBSET OF CERTIFIED SPEC
+31. A5-031 FULL PUBLIC SPEC DOES NOT LEAK INTERNALS
+32. A5-032 FULL PUBLIC SPEC DOES NOT PROMISE FOREIGN AUTHORITY OUTCOMES
+33. A5-033 FULL BALANCE SPEC COVERS EVERY ACTION AND OPTION
+34. A5-034 TARGET V1 DIRECT DELTAS STAY WITHIN SMALL-EFFECT BUDGETS
+35. A5-035 AUTHORITY/INTENT ACTIONS HAVE NO DIRECT WORLD DELTAS
+36. A5-036 FULL ELIGIBILITY SPEC COVERS ALL 20 ACTIONS
+37. A5-037 ELIGIBILITY AGE RANGE MATCHES CONTENT PLAN
+38. A5-038 CLUB-SCOPED ACTIONS REQUIRE ACTIVE EMPLOYMENT
+39. A5-039 TARGET ELIGIBILITY MATCHES TARGET KIND
+40. A5-040 RENEWAL USES CANONICAL 24-MONTH HORIZON
+41. A5-041 SHARED COOLDOWN POLICY COVERS ALL 20 ACTIONS
+42. A5-042 SHARED COOLDOWN NEVER EXCEEDS ACTION COOLDOWN
+43. A5-043 TARGET-CYCLING FAMILIES HAVE GROUP COOLDOWNS
+44. A5-044 RECOVERY/DEVELOPMENT FAMILIES PREVENT DAILY ALTERNATION
+45. A5-045 TRAINING AND RECOVERY USE CONTEXTUAL BODY GATES
+46. A5-046 TRANSFER REQUEST AND WITHDRAWAL ARE MUTUALLY EXCLUSIVE CONTEXTS
+47. A5-047 AGE-SPECIALIZED TEAMMATE ACTIONS MATCH V1 WINDOWS
+48. A5-048 EFFECT PLAN COVERS EVERY V1 OPTION EXACTLY ONCE
+49. A5-049 IMPLEMENTED EFFECT KEYS MATCH RUNTIME CATALOG
+50. A5-050 EFFECT MODE AGREES WITH BALANCE AND FACT ROUTING
+51. A5-051 NEW A3 FACT SURFACE IS MINIMAL
+52. A5-052 LEADER-ADVICE AND MENTOR ACTIONS STAY LOCAL, NOT A3 FACTS
+53. A5-053 REST AND RECOVERY HAVE DISTINCT HEALTH NICHES
+54. A5-054 TEAMMATE GUIDANCE DOES NOT GRANT GLOBAL PROGRESSION
+55. A5-055 SOCIAL POSTS ARE OPTIONAL FLAVOR WITHOUT STAT REWARD
+56. A5-056 LIFE ACTIONS ARE CONTEXTUAL AND NON-WEEKLY
+57. A5-057 INTERVIEW OPTIONS HAVE EXPLICIT TRADEOFFS
+58. A5-058 THEORETICAL ANNUAL PROFESSIONAL GAINS STAY BOUNDED
+59. A5-059 RELATIONSHIP CATEGORY STAYS RELATIONSHIP-LOCAL
+60. A5-060 ONLY THREE V1 ACTIONS DEPEND ON NEW A3 CONTRACTS
+61. A5-061 LOCKER LEADER PROFILE IS PUBLIC, CLOSED AND CURRENT-TEAMMATE SCOPED
+62. A5-062 LATE MENTORING DOES NOT REQUIRE NPC AGE METADATA
+63. A5-063 NO UNSUPPORTED VETERAN/YOUNG NPC PROFILE IN ELIGIBILITY
+64. A5-064 LOCKER LEADER PROFILE MATCHES PUBLIC CANONICAL ROLES
 
 npm:
 
@@ -678,11 +724,11 @@ Ya cerrado:
 - renewal;
 - market query.
 
-Pendiente en V1:
+Pendiente en V1 — y únicamente estos tres contracts nuevos:
 
-- position change;
-- withdraw transfer;
-- career priority.
+- request_position_change;
+- withdraw_transfer_request;
+- career_priority.
 
 Leader advice y mentor teammate ya no requieren A3: quedan como efectos locales direct_only sin facts persistentes.
 
@@ -727,7 +773,7 @@ A3 documenta que withdraw-transfer no existe en V1 actual y request_transfer exp
 
 ```text
 [A5 STATUS]
-Progreso: 99% owner-side
+Progreso: 97% owner-side
 BASE_SHA: 75be938bbe4a6f7a01ef45a5078a6bfa6d77262d
 HEAD actual: consultar PR #802
 CATÁLOGO
@@ -741,6 +787,7 @@ COMPLETADO
 - eligibility objetivo 20/20 codificado en content-eligibility.ts
 - shared cooldown families 20/20 codificadas en content-cooldown-groups.ts
 - routing effect/fact 31/31 opciones codificado en content-effect-plan.ts
+- target profiles públicos/cerrados codificados en content-target-profiles.ts
 - target profile público locker_leader codificado en content-target-profiles.ts
 - primer slice A3 cableado
 - cooldowns A5 del slice
@@ -765,7 +812,7 @@ BALANCE
 - 1000 seeds de mercado para REQUEST_TRANSFER
 - autoridad de coach/agent validada en catálogo A5
 TESTS
-- 63 checks authored
+- 64 checks authored
 - 0 TODO en la suite de diseño/contrato
 - stress anual de 80 carreras añadido
 - runtime health/age siguen bloqueados explícitamente
@@ -825,9 +872,9 @@ Casos importantes:
 - extra_development;
 - physical_recovery;
 - public_image;
-- personal_wellbeing.
+- personal_wellbeing (14d).
 
-Transfer request/withdraw comparte `club_intent` a 14 días.
+Transfer request/withdraw comparte `club_intent` a 14 días. Rest/recovery comparten `physical_recovery` pero tienen nichos distintos: fatiga vs riesgo físico.
 
 Los cooldowns familiares complementan, no sustituyen, el cooldown individual/action_target.
 
