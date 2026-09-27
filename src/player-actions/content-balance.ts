@@ -161,7 +161,7 @@ export const PLAYER_ACTION_BALANCE_SPECS: readonly PlayerActionBalanceSpec[] = [
     }]
   },
   {
-    actionId: "PA_VETERAN_ADVICE",
+    actionId: "PA_LEADER_ADVICE",
     options: [{
       optionId: "ASK_ADVICE",
       directDeltas: [
@@ -170,7 +170,7 @@ export const PLAYER_ACTION_BALANCE_SPECS: readonly PlayerActionBalanceSpec[] = [
     }]
   },
   {
-    actionId: "PA_MENTOR_YOUNG",
+    actionId: "PA_MENTOR_TEAMMATE",
     options: [{
       optionId: "MENTOR",
       directDeltas: [
