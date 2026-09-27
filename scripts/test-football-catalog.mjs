@@ -106,7 +106,7 @@ test("unknown club identities fail closed for load and new V2 production", () =>
   assert.equal(classifyFootballClubReference(invalid).kind, "invalid");
   assert.equal(isLoadableFootballClubReference(invalid), false);
   assert.equal(isNewFootballClubReference(invalid), false);
-  assert.throws(() => assertLoadableFootballClubReference(invalid, "state.club"), /unknown football club identity/);
+  assert.throws(() => assertLoadableFootballClubReference(invalid, "state.club"), /unknown football (?:club|catalog namespace) identity/);
   assert.throws(() => assertNewFootballClubReference(invalid, "state.club"), /new V2 production requires/);
 });
 
