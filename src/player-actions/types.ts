@@ -46,6 +46,14 @@ export interface PlayerActionDefinition {
     scope: PlayerActionCooldownScope;
     days: number;
   };
+  /**
+   * Optional family-level cooldown layered on top of the action/target cooldown.
+   * The group never replaces the primary cooldown.
+   */
+  cooldownGroup?: {
+    id: string;
+    days: number;
+  };
   eligibilityKey: string;
   /**
    * Optional closed, declarative predicates layered on top of the legacy key.
