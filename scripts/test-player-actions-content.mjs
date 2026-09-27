@@ -427,6 +427,7 @@ test("A5-025 INCLUSIVE FACT EXPIRY NEVER OVERLAPS RE-EXECUTION", () => {
 
 test("A5-026 IMPLEMENTED CONTEXT GAPS ARE EXPLICIT", () => {
   const expectedA1ContextGaps = new Set([
+    "PA_COACH_TALK",
     "PA_REQUEST_TRANSFER",
     "PA_REQUEST_RENEWAL"
   ]);
@@ -438,11 +439,8 @@ test("A5-026 IMPLEMENTED CONTEXT GAPS ARE EXPLICIT", () => {
     assert.match(row.requiredContext, /employment/i, `${row.id} must require active employment`);
   }
 
-  const coachTalk = PLAYER_ACTION_CONTENT_PLAN.find(item => item.id === "PA_COACH_TALK");
   const agentMarket = PLAYER_ACTION_CONTENT_PLAN.find(item => item.id === "PA_AGENT_MARKET");
-  assert.ok(coachTalk);
   assert.ok(agentMarket);
-  assert.equal(coachTalk.blockedBy, undefined, "coach target validation already fails closed");
   assert.equal(agentMarket.blockedBy, undefined, "A2 public-target blocker is resolved by #806");
 });
 
@@ -473,7 +471,7 @@ test("A5-027 CAUSAL FACT EXPIRES BEFORE ACTION REOPENS", () => {
 });
 
 
-test("A5-027 FULL PUBLIC CONTENT SPEC COVERAGE", () => {
+test("A5-028 FULL PUBLIC CONTENT SPEC COVERAGE", () => {
   const planIds = PLAYER_ACTION_CONTENT_PLAN.map(row => row.id).sort();
   const specIds = PLAYER_ACTION_CONTENT_SPECS.map(row => row.id).sort();
 
@@ -482,7 +480,7 @@ test("A5-027 FULL PUBLIC CONTENT SPEC COVERAGE", () => {
   assert.deepEqual(specIds, planIds);
 });
 
-test("A5-028 FULL SPEC OPTION AND COPY BUDGETS", () => {
+test("A5-029 FULL SPEC OPTION AND COPY BUDGETS", () => {
   for (const spec of PLAYER_ACTION_CONTENT_SPECS) {
     assert.ok(spec.label.length > 0 && spec.label.length <= 42, `${spec.id} invalid label length`);
     assert.ok(spec.description.length > 0 && spec.description.length <= 180, `${spec.id} invalid description length`);
@@ -496,7 +494,7 @@ test("A5-028 FULL SPEC OPTION AND COPY BUDGETS", () => {
   }
 });
 
-test("A5-029 IMPLEMENTED PUBLIC COPY IS A SUBSET OF CERTIFIED SPEC", () => {
+test("A5-030 IMPLEMENTED PUBLIC COPY IS A SUBSET OF CERTIFIED SPEC", () => {
   for (const action of PLAYER_ACTION_CATALOG) {
     const spec = PLAYER_ACTION_CONTENT_SPECS.find(row => row.id === action.id);
     assert.ok(spec, `missing public content spec for ${action.id}`);
@@ -513,7 +511,7 @@ test("A5-029 IMPLEMENTED PUBLIC COPY IS A SUBSET OF CERTIFIED SPEC", () => {
 });
 
 
-test("A5-030 FULL PUBLIC SPEC DOES NOT LEAK INTERNALS", () => {
+test("A5-031 FULL PUBLIC SPEC DOES NOT LEAK INTERNALS", () => {
   const forbidden = [
     "rolescore",
     "marketheat",
@@ -538,7 +536,7 @@ test("A5-030 FULL PUBLIC SPEC DOES NOT LEAK INTERNALS", () => {
   }
 });
 
-test("A5-031 FULL PUBLIC SPEC DOES NOT PROMISE FOREIGN AUTHORITY OUTCOMES", () => {
+test("A5-032 FULL PUBLIC SPEC DOES NOT PROMISE FOREIGN AUTHORITY OUTCOMES", () => {
   const forbiddenClaims = [
     "serás titular",
     "eres titular",
