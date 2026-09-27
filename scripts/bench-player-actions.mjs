@@ -8,7 +8,6 @@ const importFrom = async rel => import(pathToFileURL(path.join(candidateRoot, re
 const { GameSession } = await importFrom("dist/session/game-session.js");
 const {
   PLAYER_ACTION_CATALOG,
-  addPlayerActionDays,
   executePlayerActionInPlace,
   listPlayerActions
 } = await importFrom("dist/player-actions/index.js");
