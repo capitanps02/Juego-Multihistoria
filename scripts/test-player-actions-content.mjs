@@ -9,8 +9,11 @@ import { PLAYER_ACTION_CONTENT_PLAN } from "../dist/player-actions/content-plan.
 import {
   PLAYER_ACTION_CATALOG,
   PLAYER_ACTION_EFFECT_KEYS,
+  addPlayerActionDays,
+  evaluatePlayerAction,
   executePlayerActionInPlace,
-  listPlayerActions
+  listPlayerActions,
+  playerActionFacts
 } from "../dist/player-actions/index.js";
 
 const CURRENT_CATEGORIES = new Set([
@@ -394,4 +397,26 @@ test("A5-024 AGENT MARKET QUERY NEVER SYNTHESIZES OFFER", () => {
     state.playerActions?.facts.some(fact => fact.kind === "ask_agent_market"),
     true
   );
+});
+
+
+test("A5-025 INCLUSIVE FACT EXPIRY NEVER OVERLAPS RE-EXECUTION", () => {
+  const state = createInitialState(8525);
+  const action = PLAYER_ACTION_CATALOG.find(row => row.id === "PA_REQUEST_TRANSFER");
+  assert.ok(action);
+
+  const startDate = state.date;
+  const first = executePlayerActionInPlace(state, {
+    actionId: "PA_REQUEST_TRANSFER",
+    optionId: "REQUEST"
+  });
+  assert.equal(first.ok, true);
+
+  state.date = addPlayerActionDays(startDate, 120);
+  assert.equal(playerActionFacts(state).requestedTransfer.currentlyRelevant, true);
+  assert.equal(evaluatePlayerAction(state, action).available, false);
+
+  state.date = addPlayerActionDays(startDate, 121);
+  assert.equal(playerActionFacts(state).requestedTransfer.currentlyRelevant, false);
+  assert.equal(evaluatePlayerAction(state, action).available, true);
 });
