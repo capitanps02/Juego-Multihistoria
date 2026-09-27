@@ -94,13 +94,17 @@ try {
   await waitStoryText("ACCIÓN COMPLETADA");
   await noOverflow("result");
 
+  await page.waitForFunction(() => {
+    const text = document.querySelector("#history")?.textContent ?? "";
+    return /Hablar con entrenador|más minutos|Acción/i.test(text);
+  }, null, { timeout: 5000 });
+  const timelineText = await page.locator("#history").innerText();
+  assert.match(timelineText, /Hablar con entrenador|más minutos|Acción/i);
+
   await (await storyButton("Volver a carrera")).click();
   const simulate = await storyButton("Simular");
   assert.equal(await simulate.isVisible(), true);
   await noOverflow("return");
-
-  const timelineText = await page.locator("#history").textContent();
-  assert.match(timelineText, /Hablar con entrenador|más minutos|Acción/i);
 
   const busy = await page.locator("#story").getAttribute("aria-busy");
   assert.ok(busy === "false" || busy === null);
