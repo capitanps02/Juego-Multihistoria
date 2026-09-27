@@ -6,6 +6,9 @@ const candidateRoot = path.resolve(process.argv[2] ?? ".");
 const { GameSession } = await import(
   pathToFileURL(path.join(candidateRoot, "dist/session/game-session.js")).href
 );
+const { certifyCoachChangeInPlace } = await import(
+  pathToFileURL(path.join(candidateRoot, "dist/simulation/coach-change-authority.js")).href
+);
 
 const actions = view => view.actions.categories.flatMap(category => category.actions);
 const actionById = (view, id) => actions(view).find(action => action.id === id);
@@ -83,6 +86,45 @@ await assert.rejects(
 );
 assert.deepEqual(session.exportSnapshot(), beforeInvalid, "invalid target mutated state");
 
+// Real authority replacement: the previously rendered coach must fail closed,
+// while the public projection moves to the newly certified current coach.
+const replacementSource = await GameSession.create(424243, {
+  microfeeds: false,
+  sessionId: "a6-coach-replacement"
+});
+const replacementBefore = replacementSource.getView();
+const oldCoach = actionById(replacementBefore, "PA_COACH_TALK")?.targets.find(candidate => candidate.available);
+assert.equal(oldCoach?.id, "NPC_CCH_01", "expected default authoritative coach before replacement");
+
+const replacementSnapshot = replacementSource.exportSnapshot();
+certifyCoachChangeInPlace(replacementSnapshot.state, "canonical_change", {
+  previousCoachNpcId: "NPC_CCH_01",
+  newCoachNpcId: "NPC_CCH_02"
+});
+const replacementSession = await GameSession.resume(replacementSnapshot, { events: [] });
+const replacementView = replacementSession.getView();
+const replacementAction = actionById(replacementView, "PA_COACH_TALK");
+assert.ok(replacementAction, "coach action disappeared after certified coach replacement");
+assert.equal(replacementAction.targets.some(candidate => candidate.id === "NPC_CCH_01"), false,
+  "old coach remained publicly targetable after certified replacement");
+const newCoach = replacementAction.targets.find(candidate => candidate.available);
+assert.equal(newCoach?.id, "NPC_CCH_02", "new certified coach was not projected as the authoritative target");
+
+const beforeOldCoachDispatch = replacementSession.exportSnapshot();
+await assert.rejects(
+  replacementSession.dispatch({
+    type: "player_action",
+    commandId: "a6-old-coach-after-replacement",
+    expectedRevision: replacementView.revision,
+    actionId: "PA_COACH_TALK",
+    optionId: "MORE_MINUTES",
+    targetId: oldCoach.id
+  }),
+  error => error?.code === "PLAYER_ACTION_TARGET_INVALID"
+);
+assert.deepEqual(replacementSession.exportSnapshot(), beforeOldCoachDispatch,
+  "dispatch against replaced coach mutated state");
+
 const staleCommand = {
   type: "player_action",
   commandId: "a6-stale-target-revision",
@@ -106,6 +148,8 @@ console.log(JSON.stringify({
   coachTarget: target.id,
   targetCooldownUntil: cooled.cooldownUntil,
   publicHistoryEntries: after.actions.history.length,
+  coachReplacementOldTarget: oldCoach.id,
+  coachReplacementNewTarget: newCoach.id,
   readPurityIterations: 1000,
   result: "PASS"
 }, null, 2));
