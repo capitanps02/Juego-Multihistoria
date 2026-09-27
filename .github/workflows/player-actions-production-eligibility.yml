@@ -1,0 +1,35 @@
+name: Player Actions A1 production eligibility
+
+on:
+  pull_request:
+    branches:
+      - a3/player-actions-narrative-bridge
+      - main
+    paths:
+      - 'src/player-actions/types.ts'
+      - 'src/player-actions/eligibility.ts'
+      - 'src/session/game-session.ts'
+      - 'scripts/test-player-actions-core.mjs'
+      - '.github/workflows/player-actions-production-eligibility.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  a1-production-eligibility:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Player Action core
+        run: node --test scripts/test-player-actions-core.mjs
+      - name: A3 regression
+        run: node --test scripts/test-player-actions-narrative-bridge.mjs
