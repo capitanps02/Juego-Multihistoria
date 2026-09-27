@@ -1,5 +1,6 @@
 import type { GameState } from "../core/types.js";
 import { transferRequestExternalMarketThreshold } from "../player-actions/bridge.js";
+import { selectMarketDestination } from "../catalog/football/market-destination.js";
 import {
   FORMAL_RENEWAL_REASON,
   careerOfferKind,
@@ -40,10 +41,6 @@ function seen(state: GameState, eventId: string): boolean {
   return state.flags[`SEEN_${eventId}`] === true;
 }
 
-function destinationId(prefix: string, tier: number, roll: number): string {
-  return `${prefix}_${tier}_${String((roll % 30) + 1).padStart(2, "0")}`;
-}
-
 function materializeJanuary(state: GameState): CareerOfferKind | null {
   if (seen(state, "EVT_18_JAN_001")) return null;
   if (state.professional.ownerClub !== "UDV" || state.professional.registrationClub !== "UDV") return null;
@@ -66,7 +63,13 @@ function materializeJanuary(state: GameState): CareerOfferKind | null {
 
   if (kind === "loan") {
     const tier = Math.min(4, Math.max(3, state.professional.leagueTier + 1));
-    const destination = destinationId("Development", tier, producerRoll(state, "age18:january:loan-destination"));
+    const destination = selectMarketDestination({
+      countryCode: "ESP",
+      leagueTier: tier,
+      roll: producerRoll(state, "age18:january:loan-destination"),
+      profile: "development",
+      excludeClubIds: [state.club, state.professional.ownerClub, state.professional.registrationClub]
+    }).id;
     proposeCareerChange(state, "Cesión formal de enero", draft => {
       draft.club = destination;
       draft.tier = tier;
@@ -80,7 +83,13 @@ function materializeJanuary(state: GameState): CareerOfferKind | null {
     });
   } else {
     const tier = market >= 52 ? Math.max(2, state.professional.leagueTier - 1) : state.professional.leagueTier;
-    const destination = destinationId("Domestic", tier, producerRoll(state, "age18:january:transfer-destination"));
+    const destination = selectMarketDestination({
+      countryCode: "ESP",
+      leagueTier: tier,
+      roll: producerRoll(state, "age18:january:transfer-destination"),
+      profile: "balanced",
+      excludeClubIds: [state.club, state.professional.ownerClub, state.professional.registrationClub]
+    }).id;
     const salary = Math.max(1200, Math.round(num(state.contract.salaryMonthly, 900) * (1.18 + (producerRoll(state, "age18:january:salary") % 16) / 100)));
     const months = 30 + (producerRoll(state, "age18:january:months") % 19);
     proposeCareerChange(state, "Oferta formal de traspaso en enero", draft => {
@@ -118,7 +127,13 @@ function materializeSummer(state: GameState): CareerOfferKind | null {
 
   if (external) {
     const tier = market >= 58 ? Math.max(2, state.professional.leagueTier - 1) : Math.max(2, state.professional.leagueTier);
-    const destination = destinationId("Summer", tier, producerRoll(state, "age18:summer:transfer-destination"));
+    const destination = selectMarketDestination({
+      countryCode: "ESP",
+      leagueTier: tier,
+      roll: producerRoll(state, "age18:summer:transfer-destination"),
+      profile: "ambitious",
+      excludeClubIds: [state.club, state.professional.ownerClub, state.professional.registrationClub]
+    }).id;
     const salary = Math.max(1350, Math.round(num(state.contract.salaryMonthly, 900) * (1.28 + (producerRoll(state, "age18:summer:salary") % 18) / 100)));
     const months = 36 + (producerRoll(state, "age18:summer:months") % 13);
     proposeCareerChange(state, "Oferta formal de salida en verano", draft => {
