@@ -50,7 +50,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add playcanvas/multihistoria.js playcanvas/manifest.json web/assets.json
           git commit -m "build(A6): refresh integrated PlayCanvas artifacts"
-          git push origin HEAD:a6/player-actions-integrated-qa
+          git push origin HEAD:a6/player-actions-integrated-v4
 
   integrated_safety:
     needs: refresh_integrated_artifacts
