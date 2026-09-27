@@ -1,7 +1,11 @@
 import assert from "node:assert/strict";
 import { chromium } from "playwright";
+import { GameSession } from "../dist/session/game-session.js";
 
 const baseUrl = process.argv[2] ?? "http://127.0.0.1:4173";
+const STORAGE_KEY = "historia-jugador.preview.session.v1";
+const fixture = await GameSession.create(424242, { events: [], microfeeds: false, sessionId: "a6-mobile-e2e" });
+const fixtureRaw = JSON.stringify(fixture.exportSnapshot());
 const viewports = [
   { width: 360, height: 800 },
   { width: 390, height: 844 },
@@ -76,6 +80,10 @@ try {
   for (const viewport of viewports) {
     const context = await browser.newContext({ viewport });
     const page = await context.newPage();
+    await page.addInitScript(({ key, value }) => {
+      localStorage.setItem(key, value);
+      localStorage.removeItem(key + ".previous");
+    }, { key: STORAGE_KEY, value: fixtureRaw });
     await page.goto(baseUrl, { waitUntil: "networkidle" });
 
     await page.waitForFunction(() => {
