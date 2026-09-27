@@ -4,7 +4,7 @@ import { createIndexedSaveStore } from './indexed-save-store.js';
 export function mountGame({root, GameSession, assets, css, storageKey='historia-jugador.preview.session.v1', events}) {
   const KEY=storageKey;
   let session=null, busy=false, busyLabel='Guardando tu historia…', paused=false, view='home', cinematic=false, message='', replacement=null, lastArt='stadium_bg', autoTimer=null;
-  let playerActionUi={screen:'career',categoryId:null,actionId:null,resultExecutionId:null};
+  let playerActionUi={screen:'career',categoryId:null,actionId:null,targetId:null,resultExecutionId:null};
   let savedRaw=null;
   const sessionOptions=events?{events}:{};
   const store=createIndexedSaveStore({storage:localStorage,indexedDB:globalThis.indexedDB,key:KEY,validate:raw=>GameSession.migrateFromSave(raw,sessionOptions)});
@@ -140,49 +140,69 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
       main.append(el('span','GESTIONAR MI CARRERA','eyebrow'),el('h1','¿Qué quieres hacer?'),el('p','Estas acciones son opcionales. Puedes ignorarlas y volver a simular cuando quieras.','muted'));
       const grid=el('div',undefined,'player-action-grid');
       for(const c of v.actions.categories){
-        const p=panel(c.label);p.classList.add('player-action-card');p.append(el('p',PLAYER_ACTION_CATEGORY_COPY[c.id]||'Acciones voluntarias de tu carrera.','muted'),button('Ver acciones',()=>{playerActionUi={screen:'player_action_category',categoryId:c.id,actionId:null,resultExecutionId:null};render(true);},'secondary'));grid.append(p);
+        const p=panel(c.label);p.classList.add('player-action-card');p.append(el('p',PLAYER_ACTION_CATEGORY_COPY[c.id]||'Acciones voluntarias de tu carrera.','muted'),button('Ver acciones',()=>{playerActionUi={screen:'player_action_category',categoryId:c.id,actionId:null,targetId:null,resultExecutionId:null};render(true);},'secondary'));grid.append(p);
       }
       main.append(grid,button('Volver a carrera',()=>{resetPlayerActions();render(true);},'ghost'));
       return true;
     }
     const category=v.actions.categories.find(c=>c.id===playerActionUi.categoryId);
-    if(!category){playerActionUi={screen:'player_action_menu',categoryId:null,actionId:null,resultExecutionId:null};return renderPlayerActions(v,main);}
+    if(!category){playerActionUi={screen:'player_action_menu',categoryId:null,actionId:null,targetId:null,resultExecutionId:null};return renderPlayerActions(v,main);}
     if(playerActionUi.screen==='player_action_category'){
       main.append(el('span','GESTIONAR MI CARRERA','eyebrow'),el('h1',category.label),el('p',PLAYER_ACTION_CATEGORY_COPY[category.id]||'Acciones voluntarias.','muted'));
       const list=el('div',undefined,'player-action-list');
       for(const a of category.actions){
         const p=panel(a.label);p.classList.add('player-action-card');p.append(el('p',a.description,'muted'));
         if(!a.available)p.append(el('p',cooldownText(v,a)||a.unavailableReason||'Ahora mismo no está disponible.','player-action-reason'));
-        p.append(button('Abrir',()=>{playerActionUi={screen:'player_action_detail',categoryId:category.id,actionId:a.id,resultExecutionId:null};render(true);},'secondary',{disabled:!a.available}));
+        p.append(button('Abrir',()=>{playerActionUi={screen:'player_action_detail',categoryId:category.id,actionId:a.id,targetId:null,resultExecutionId:null};render(true);},'secondary',{disabled:!a.available}));
         list.append(p);
       }
-      main.append(list,button('Volver a categorías',()=>{playerActionUi={screen:'player_action_menu',categoryId:null,actionId:null,resultExecutionId:null};render(true);},'ghost'),button('Volver a carrera',()=>{resetPlayerActions();render(true);},'ghost'));
+      main.append(list,button('Volver a categorías',()=>{playerActionUi={screen:'player_action_menu',categoryId:null,actionId:null,targetId:null,resultExecutionId:null};render(true);},'ghost'),button('Volver a carrera',()=>{resetPlayerActions();render(true);},'ghost'));
       return true;
     }
     const a=selectedPlayerAction(v);
-    if(!a){playerActionUi={screen:'player_action_category',categoryId:category.id,actionId:null,resultExecutionId:null};return renderPlayerActions(v,main);}
+    if(!a){playerActionUi={screen:'player_action_category',categoryId:category.id,actionId:null,targetId:null,resultExecutionId:null};return renderPlayerActions(v,main);}
     if(playerActionUi.screen==='player_action_detail'){
       main.append(el('span','ACCIÓN VOLUNTARIA','eyebrow'),el('h1',a.label),el('p',a.description,'muted'));
-      if(!a.available)main.append(el('p',cooldownText(v,a)||a.unavailableReason||'Ahora mismo no está disponible.','player-action-reason'));
+      const requiresTarget=a.targetKind!=='none';
+      const targets=a.targets??[];
+      const selectedTarget=requiresTarget?(targets.find(target=>target.id===playerActionUi.targetId)??(targets.length===1?targets[0]:null)):null;
+      if(requiresTarget){
+        main.append(el('h2','¿Con quién?'));
+        const targetList=el('div',undefined,'player-action-targets');
+        for(const target of targets){
+          const p=el('div',undefined,'player-action-option player-action-target');
+          p.append(el('strong',target.label),el('p',target.role,'muted'));
+          const selected=selectedTarget?.id===target.id;
+          p.append(button(selected?'Seleccionado':'Elegir',()=>{playerActionUi={...playerActionUi,targetId:target.id};render(true);},selected?'primary':'secondary',{disabled:!target.available}));
+          if(!target.available)p.append(el('p',cooldownText(v,target)||target.unavailableReason||'Este objetivo no está disponible.','player-action-reason'));
+          targetList.append(p);
+        }
+        if(!targets.length)targetList.append(el('p',a.unavailableReason||'No hay un objetivo disponible.','player-action-reason'));
+        main.append(targetList);
+      }
+      const availabilitySource=selectedTarget??a;
+      if(!availabilitySource.available)main.append(el('p',cooldownText(v,availabilitySource)||availabilitySource.unavailableReason||'Ahora mismo no está disponible.','player-action-reason'));
       const options=el('div',undefined,'player-action-options');
-      for(const o of a.options){
-        const enabled=a.available&&o.available;
+      const availableOptions=requiresTarget?(selectedTarget?.options??[]):a.options;
+      for(const o of availableOptions){
+        const enabled=availabilitySource.available&&o.available;
         const p=el('div',undefined,'player-action-option');
         if(o.description)p.append(el('p',o.description,'muted'));
-        p.append(button(o.label,()=>run('player_action',{actionId:a.id,optionId:o.id},()=>{
+        p.append(button(o.label,()=>run('player_action',{actionId:a.id,optionId:o.id,...(selectedTarget?{targetId:selectedTarget.id}:{})},()=>{
           const latest=session.getView().actions?.lastResult;
-          playerActionUi={screen:'player_action_result',categoryId:category.id,actionId:a.id,resultExecutionId:latest?.executionId??null};
+          playerActionUi={screen:'player_action_result',categoryId:category.id,actionId:a.id,targetId:selectedTarget?.id??null,resultExecutionId:latest?.executionId??null};
         }),'secondary',{disabled:!enabled}));
-        if(!enabled&&o.unavailableReason&&o.unavailableReason!==a.unavailableReason)p.append(el('p',o.unavailableReason,'player-action-reason'));
+        if(!enabled&&o.unavailableReason&&o.unavailableReason!==availabilitySource.unavailableReason)p.append(el('p',o.unavailableReason,'player-action-reason'));
         options.append(p);
       }
-      main.append(options,button('Volver',()=>{playerActionUi={screen:'player_action_category',categoryId:category.id,actionId:null,resultExecutionId:null};render(true);},'ghost'));
+      if(requiresTarget&&!selectedTarget)options.append(el('p','Elige primero una persona para ver las opciones disponibles.','player-action-reason'));
+      main.append(options,button('Volver',()=>{playerActionUi={screen:'player_action_category',categoryId:category.id,actionId:null,targetId:null,resultExecutionId:null};render(true);},'ghost'));
       return true;
     }
     if(playerActionUi.screen==='player_action_result'){
       const latest=v.actions?.lastResult;
       const p=panel(a.label);p.classList.add('player-action-result');p.prepend(el('span','ACCIÓN COMPLETADA','eyebrow'));p.append(el('p',latest?.executionId===playerActionUi.resultExecutionId?latest.text:'La acción se ha registrado correctamente.','story-text'));
-      const actions=el('div',undefined,'player-action-result-actions');actions.append(button('Realizar otra acción',()=>{playerActionUi={screen:'player_action_menu',categoryId:null,actionId:null,resultExecutionId:null};render(true);}),button('Volver a carrera',()=>{resetPlayerActions();render(true);},'primary'));p.append(actions);main.append(p);return true;
+      const actions=el('div',undefined,'player-action-result-actions');actions.append(button('Realizar otra acción',()=>{playerActionUi={screen:'player_action_menu',categoryId:null,actionId:null,targetId:null,resultExecutionId:null};render(true);}),button('Volver a carrera',()=>{resetPlayerActions();render(true);},'primary'));p.append(actions);main.append(p);return true;
     }
     resetPlayerActions();return false;
   }
@@ -361,7 +381,21 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
     const latest=latestMatchPanel(v);if(latest)main.append(latest);
     if(v.ageMilestones.length){const milestones=panel('Hitos de edad');for(const m of v.ageMilestones)milestones.append(el('p',`${m.age} años · ${date(m.date)} · ${clubName(m.club)}`,'muted'));main.append(milestones);}
     offerHistory(v,main);
-    const history=panel('Decisiones y capítulos');const list=el('div',undefined,'timeline');if(!v.journal.length)list.append(el('p','Aún no hay decisiones registradas. Cuando llegue el primer capítulo, aparecerá aquí.','muted'));for(const [index,row] of [...v.journal.entries()].reverse()){const item=panel(row.title);item.dataset.journalIndex=String(index);item.tabIndex=-1;item.prepend(el('time',date(row.date),'eyebrow'));item.append(el('p',row.choiceLabel,'chosen'));row.messages.forEach(m=>item.append(el('p',m,'muted')));list.append(item);}history.append(list);main.append(history);
+    const history=panel('Decisiones y acciones');const list=el('div',undefined,'timeline');
+    const actionHistory=v.actions?.history??[];
+    const timeline=[
+      ...v.journal.map((row,index)=>({kind:'decision',date:row.date,index,row})),
+      ...actionHistory.map((row,index)=>({kind:'action',date:row.date,index,row}))
+    ].sort((a,b)=>a.date.localeCompare(b.date)||(a.kind===b.kind?a.index-b.index:(a.kind==='decision'?-1:1)));
+    if(!timeline.length)list.append(el('p','Aún no hay decisiones ni acciones voluntarias registradas.','muted'));
+    for(const entry of [...timeline].reverse()){
+      if(entry.kind==='decision'){
+        const row=entry.row,item=panel(row.title);item.dataset.journalIndex=String(entry.index);item.tabIndex=-1;item.prepend(el('time',date(row.date),'eyebrow'));item.append(el('p',row.choiceLabel,'chosen'));row.messages.forEach(m=>item.append(el('p',m,'muted')));list.append(item);
+      }else{
+        const row=entry.row,item=panel(row.actionLabel);item.prepend(el('time',date(row.date),'eyebrow'));item.append(el('p','Acción voluntaria · '+row.optionLabel,'chosen'),el('p',row.text,'muted'));list.append(item);
+      }
+    }
+    history.append(list);main.append(history);
   }
   function world(v,main){
     main.append(el('span','MÁS ALLÁ DEL TERRENO DE JUEGO','eyebrow'),el('h1','El mundo sigue.'),el('p','Resultados, movimientos y noticias pueden avanzar aunque no exista una decisión narrativa esta semana.','muted'));
