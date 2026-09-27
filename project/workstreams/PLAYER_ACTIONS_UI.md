@@ -350,6 +350,7 @@ Extensiones de integración añadidas:
 - A4-016 TARGET FLOW
 - A4-017 HISTORY
 - A4-018 TARGET PRIVACY
+- A4-019 TARGET RESET
 
 El antiguo diagnóstico que esperaba que las acciones target-required estuvieran bloqueadas fue eliminado.
 
@@ -545,6 +546,7 @@ Completado en código:
 - shared web UI;
 - PlayCanvas generado desde la misma fuente;
 - protección busy/double click/stale revision;
+- limpieza de target seleccionado en todos los caminos back/navigation;
 - mobile/accessibility contract.
 
 Dependencia:
@@ -554,7 +556,7 @@ Dependencia:
 Criterio para COMPLETE:
 
 1. build conjunto A2+A4 PASS;
-2. A2 session + A4 UI contract PASS incluyendo A4-016..018;
+2. A2 session + A4 UI contract PASS incluyendo A4-016..019;
 3. PlayCanvas regression PASS;
 4. bundle PlayCanvas regenerado/versionado sobre el HEAD final;
 5. A6 deja de reportar PA-A6-001.
