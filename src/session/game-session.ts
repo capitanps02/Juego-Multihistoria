@@ -284,7 +284,8 @@ const PLAYER_ACTION_CATEGORY_LABELS: Record<PlayerActionCategory, string> = {
   representative: "Representante",
   relationships: "Relaciones",
   image: "Imagen",
-  life: "Vida"
+  life: "Vida",
+  health: "Salud"
 };
 
 function playerActionSessionBlock(snapshot: SessionSnapshot): { code: string; message: string } | null {
