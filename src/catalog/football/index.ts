@@ -140,10 +140,10 @@ export function classifyFootballClubReference(value: unknown): FootballClubRefer
   if (/^[A-Z]{3}_[A-Z0-9_]+$/.test(value)) {
     return Object.freeze({ value, kind: "invalid", club: null, reason: "unknown football catalog namespace identity" });
   }
-  // Pre-V2 saves and tests historically allowed opaque display-like club strings.
-  // They remain loadable compatibility identities but can never be new V2 output.
-  if (value.length <= 200) {
-    return Object.freeze({ value, kind: "legacy_compat", club: null, reason: "opaque historical club identity" });
+  // Pre-V2 saves historically allowed display-like proper names. Keep only a
+  // narrow opaque-name compatibility lane: malformed IDs/underscored tokens still fail closed.
+  if (/^[A-ZÁÉÍÓÚÜÑ][A-Za-zÁÉÍÓÚÜÑáéíóúüñ0-9 .'-]{1,199}$/.test(value)) {
+    return Object.freeze({ value, kind: "legacy_compat", club: null, reason: "opaque historical club display identity" });
   }
   return Object.freeze({ value, kind: "invalid", club: null, reason: "unknown football club identity" });
 }
