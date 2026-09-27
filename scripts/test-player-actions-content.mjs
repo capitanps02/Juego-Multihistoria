@@ -182,3 +182,18 @@ test("A5-014 PLAN/RUNTIME CONTRACT GAPS ARE EXPLICIT", () => {
   const runtimeCategories = new Set(PLAYER_ACTION_CATALOG.map(row => row.category));
   assert.equal(runtimeCategories.has("health"), false, "health must remain explicit gap until A1 contract lands");
 });
+
+
+test("A5-015 TRAINING FREQUENCY CEILING", () => {
+  const action = PLAYER_ACTION_CATALOG.find(row => row.id === "PA_TRAIN_EXTRA");
+  assert.ok(action);
+  const maxUses = Math.floor(364 / action.cooldown.days) + 1;
+  assert.ok(maxUses <= 11, `training can run ${maxUses} times/year`);
+});
+
+test("A5-016 REST FREQUENCY CEILING", () => {
+  const action = PLAYER_ACTION_CATALOG.find(row => row.id === "PA_REST");
+  assert.ok(action);
+  const maxUses = Math.floor(364 / action.cooldown.days) + 1;
+  assert.ok(maxUses <= 18, `rest can run ${maxUses} times/year`);
+});
