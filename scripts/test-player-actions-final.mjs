@@ -423,8 +423,8 @@ test("A6-018 RETIREMENT COLLISION: career closure after render makes old action 
   closed.state.retirement.announcedDate = closed.state.date;
   closed.state.retirement.closedDate = closed.state.date;
   closed.state.retirement.decisionAge = closed.state.age;
-  closed.state.retirement.reason = "a6_collision";
-  closed.state.retirement.closureType = "a6_collision";
+  closed.state.retirement.reason = "qa_terminal";
+  closed.state.retirement.closureType = "qa_terminal";
   const session = await GameSession.resume(closed, { events: [] });
   const before = session.exportSnapshot();
   await assert.rejects(
