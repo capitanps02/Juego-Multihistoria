@@ -82,9 +82,9 @@ export const PLAYER_ACTION_CONTENT_SPECS: readonly PlayerActionContentSpec[] = [
   {
     id: "PA_RECOVERY_SESSION",
     label: "Sesión de recuperación",
-    description: "Prioriza recuperación física sin curar lesiones ni sustituir decisiones del cuerpo médico.",
+    description: "Prioriza recuperación cuando aumenta el riesgo físico, sin curar lesiones ni sustituir al cuerpo médico.",
     options: [
-      { id: "RECOVER", label: "Priorizar recuperación", publicResult: "Has realizado una sesión orientada a recuperar carga." }
+      { id: "RECOVER", label: "Priorizar recuperación", publicResult: "Has hecho una sesión de recuperación para reducir carga y riesgo." }
     ]
   },
   {
