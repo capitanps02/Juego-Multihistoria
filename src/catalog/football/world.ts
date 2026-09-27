@@ -1172,12 +1172,7 @@ function shortName(city: string, modifier: string): string {
   return `${city.slice(0, cityLength).trim()} ${modifier.slice(0, modifierLength)}`.slice(0, MAX_SHORT_NAME_LENGTH).trim();
 }
 
-function archetypesFor(
-  tier: number,
-  prestige: number,
-  seed: number,
-  band: FootballClubBand
-): readonly ClubArchetype[] {
+function archetypesFor(seed: number, band: FootballClubBand): readonly ClubArchetype[] {
   const pool: ClubArchetype[] = ["development","selling","historic","high_pressure","community","technical","physical"];
   const first: ClubArchetype =
     band === "elite" || band === "continental"
@@ -1281,7 +1276,7 @@ for (const [rawCode, config] of Object.entries(COUNTRY_CONFIGS)) {
           tierAdjusted(config.international, tier),
           "international"
         ),
-        archetypes: archetypesFor(tier, prestige, identitySeed, balanceBand),
+        archetypes: archetypesFor(identitySeed, balanceBand),
         clearanceStatus: "working_name_unchecked"
       }));
     }
