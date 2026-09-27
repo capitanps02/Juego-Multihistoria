@@ -66,7 +66,7 @@ async function run(seed, policy) {
       continue;
     }
 
-    if (policy === "training") {
+    if (policy === "training" || policy === "mixed") {
       const row = action(view, "PA_TRAIN_EXTRA");
       if (row?.available) {
         await session.dispatch({
@@ -81,7 +81,7 @@ async function run(seed, policy) {
       }
     }
 
-    if (policy === "rest") {
+    if (policy === "rest" || policy === "mixed") {
       const row = action(view, "PA_REST");
       if (row?.available) {
         await session.dispatch({
@@ -117,7 +117,7 @@ async function run(seed, policy) {
 
 const rows = [];
 for (const seed of SEEDS) {
-  for (const policy of ["none", "training", "rest"]) rows.push(await run(seed, policy));
+  for (const policy of ["none", "training", "rest", "mixed"]) rows.push(await run(seed, policy));
 }
 
 const group = policy => rows.filter(row => row.policy === policy);
@@ -128,8 +128,11 @@ const trainingTechnique = avg("training", "technique");
 const trainingTechniqueDelta = trainingTechnique - noneTechnique;
 const restFitness = avg("rest", "fitness");
 const restFatigue = avg("rest", "fatigue");
+const mixedFitness = avg("mixed", "fitness");
+const mixedFatigue = avg("mixed", "fatigue");
 const trainingActions = avg("training", "actions");
 const restActions = avg("rest", "actions");
+const mixedActions = avg("mixed", "actions");
 
 console.log(JSON.stringify({
   gate: "PA-GATE-11 ANTI_GRIND",
@@ -140,24 +143,42 @@ console.log(JSON.stringify({
     baselineTechnique: noneTechnique,
     averageTechnique: trainingTechnique,
     techniqueDelta: trainingTechniqueDelta,
-    acceptance: "annual average technique delta <= 8, consistent with A5 documented +0.10..+0.20/10d range"
+    acceptance: "annual average technique delta <= 6"
   },
   rest: {
     averageActions: restActions,
     averageFitness: restFitness,
     averageFatigue: restFatigue,
-    acceptance: "must not simultaneously pin average fitness >=99 and average fatigue <=1"
+    acceptance: "average fitness <= 94 and average fatigue >= 7"
+  },
+  mixed: {
+    averageActions: mixedActions,
+    averageFitness: mixedFitness,
+    averageFatigue: mixedFatigue,
+    acceptance: "average fitness <= 95 and average fatigue >= 5"
   }
 }, null, 2));
 
 assert.ok(
-  trainingTechniqueDelta <= 8,
+  trainingTechniqueDelta <= 6,
   `training grind exceeds A5 release budget: +${trainingTechniqueDelta.toFixed(2)} technique/year`
 );
 
 assert.ok(
-  !(restFitness >= 99 && restFatigue <= 1),
-  `rest grind pins recovery near-perfect: fitness=${restFitness.toFixed(2)} fatigue=${restFatigue.toFixed(2)}`
+  restFitness <= 94,
+  `rest-heavy fitness exceeds A5 release budget: ${restFitness.toFixed(2)}`
+);
+assert.ok(
+  restFatigue >= 7,
+  `rest-heavy fatigue is too low: ${restFatigue.toFixed(2)}`
+);
+assert.ok(
+  mixedFitness <= 95,
+  `mixed fitness exceeds A5 release budget: ${mixedFitness.toFixed(2)}`
+);
+assert.ok(
+  mixedFatigue >= 5,
+  `mixed fatigue is too low: ${mixedFatigue.toFixed(2)}`
 );
 
 console.log("PA-GATE-11 ANTI_GRIND PASS");
