@@ -156,6 +156,8 @@ test('A4-013 STALE: stale revision is safe and has player-facing recovery copy',
 test('A4-014 MOBILE: Player Actions use one-column mobile layout without fixed horizontal canvas',()=>{
   assert.match(webCss,/@media\(max-width:430px\)/);
   assert.match(webCss,/player-action-grid.*grid-template-columns:minmax\(0,1fr\)/s);
+  assert.match(webCss,/player-action-targets\{display:grid;gap:12px;margin:18px 0\}/);
+  assert.match(webCss,/@media\(max-width:430px\).*player-action-targets\{gap:10px\}/s);
   assert.match(previewCss,/@media\(max-width:430px\)/);
   assert.match(webCss,/overflow-wrap:anywhere/);
 });
