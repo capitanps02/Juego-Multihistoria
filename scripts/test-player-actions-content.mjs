@@ -336,3 +336,32 @@ test("A5-022 TRANSFER REQUEST MARKET UPLIFT IS BOUNDED, NOT GUARANTEED", () => {
   assert.ok(uplift >= 0.07, `transfer request influence too small to be meaningful: ${uplift}`);
   assert.ok(uplift <= 0.17, `transfer request influence too large for +12 threshold points: ${uplift}`);
 });
+
+
+test("A5-023 MORE MINUTES REQUEST NEVER GRANTS SPORT OUTCOME DIRECTLY", () => {
+  const state = createInitialState(8523);
+  const before = {
+    roleScore: state.sport.roleScore,
+    appearances: state.sport.appearances,
+    minutesShare: state.sport.minutesShare,
+    history: clone(state.history),
+    market: clone(state.market)
+  };
+
+  const result = executePlayerActionInPlace(state, {
+    actionId: "PA_COACH_TALK",
+    optionId: "MORE_MINUTES",
+    targetId: "NPC_CCH_01"
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(state.sport.roleScore, before.roleScore);
+  assert.equal(state.sport.appearances, before.appearances);
+  assert.equal(state.sport.minutesShare, before.minutesShare);
+  assert.deepEqual(state.history, before.history);
+  assert.deepEqual(state.market, before.market);
+  assert.equal(
+    state.playerActions?.facts.some(fact => fact.kind === "request_more_minutes"),
+    true
+  );
+});
