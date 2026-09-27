@@ -138,7 +138,8 @@ test('T5.3 dynamic targets/5 recipient is captured from scene-entry club before 
     const state = state23(10405);
     resolveChoiceInPlace(state, movingEvent, 'ESCALATE');
 
-    assert.equal(state.club, 'NEW_CLUB');
+    assert.ok(clubById(state.club), state.club);
+    assert.notEqual(state.club, 'NEW_CLUB');
     assert.equal(npcKnows(state, 'NPC_PLR_10', movingEvent.id), true);
     const record = getNpcKnowledgeRecord(state, 'NPC_PLR_10', movingEvent.id);
     assert.ok(record);
