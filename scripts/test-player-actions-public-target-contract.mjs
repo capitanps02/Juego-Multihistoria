@@ -89,6 +89,7 @@ assert.deepEqual(session.exportSnapshot(), beforeInvalid, "invalid target mutate
 // Real authority replacement: the previously rendered coach must fail closed,
 // while the public projection moves to the newly certified current coach.
 const replacementSource = await GameSession.create(424243, {
+  events: [],
   microfeeds: false,
   sessionId: "a6-coach-replacement"
 });
