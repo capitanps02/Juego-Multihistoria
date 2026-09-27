@@ -451,9 +451,9 @@ Por tanto:
 
 Resumen gates:
 
-- PASS: 9
+- PASS: 8
 - FAIL: 3
-- BLOCKED: 3
+- BLOCKED: 4
 
 ## 19. Fixes A6
 
