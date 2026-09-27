@@ -533,7 +533,7 @@ Archivo:
 
 `scripts/test-player-actions-content.mjs`
 
-Casos implementados en la suite (26):
+Casos implementados en la suite (27):
 
 1. A5-001 UNIQUE IDS
 2. A5-002 VALID CATEGORIES
@@ -561,6 +561,7 @@ Casos implementados en la suite (26):
 24. A5-024 AGENT MARKET QUERY NEVER SYNTHESIZES OFFER
 25. A5-025 INCLUSIVE FACT EXPIRY NEVER OVERLAPS RE-EXECUTION
 26. A5-026 IMPLEMENTED CONTEXT GAPS ARE EXPLICIT
+27. A5-027 CAUSAL FACT EXPIRES BEFORE ACTION REOPENS
 
 npm:
 
@@ -726,7 +727,7 @@ A3 documenta que withdraw-transfer no existe en V1 actual y request_transfer exp
 
 ```text
 [A5 STATUS]
-Progreso: 83%
+Progreso: 84%
 BASE_SHA: 75be938bbe4a6f7a01ef45a5078a6bfa6d77262d
 HEAD actual: consultar PR #802
 CATÁLOGO
@@ -761,7 +762,7 @@ BALANCE
 - 1000 seeds de mercado para REQUEST_TRANSFER
 - autoridad de coach/agent validada en catálogo A5
 TESTS
-- 26 checks authored
+- 27 checks authored
 - 0 TODO en la suite de diseño/contrato
 - stress anual de 80 carreras añadido
 - runtime health/age siguen bloqueados explícitamente
