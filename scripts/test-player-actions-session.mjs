@@ -13,7 +13,10 @@ const command = (session, type, extra = {}) => ({
 });
 
 async function emptySession(seed, sessionId = `a2-${seed}-${crypto.randomUUID()}`, extra = {}) {
-  return GameSession.create(seed, { events: [], microfeeds: false, sessionId, ...extra });
+  const created = await GameSession.create(seed, { events: [], microfeeds: false, sessionId, ...extra });
+  const snapshot = created.exportSnapshot();
+  snapshot.state.body.fatigue = Math.max(30, Number(snapshot.state.body.fatigue ?? 0));
+  return GameSession.resume(snapshot, { events: [], ...extra });
 }
 
 async function sessionFromMutatedState(seed, mutate, sessionId) {
