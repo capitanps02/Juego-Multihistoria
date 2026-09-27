@@ -15,6 +15,7 @@ import {
 } from "../dist/save/football-catalog-version.js";
 import { loadSave, serializeSave } from "../dist/save/save.js";
 import { advanceWorldDayInPlace } from "../dist/simulation/world-simulator.js";
+import { simulateCareer } from "../dist/simulation/career-simulator.js";
 
 const invalid = error => error?.code === "INVALID_SAVE";
 
@@ -195,4 +196,32 @@ test("DB-A4 current V2 save/load replay matches uninterrupted simulation", () =>
 
   assert.equal(serializeSave(reloaded), serializeSave(direct));
   assert.equal(reloaded.footballCatalogVersion, CURRENT_FOOTBALL_CATALOG_VERSION);
+});
+
+test("DB-A4 long career remains current-catalog and survives terminal save/load", () => {
+  const result = simulateCareer({
+    seed: 424242,
+    untilRetirement: true,
+    maxAge: 55,
+    microfeeds: false,
+    choiceStrategy: "balanced",
+    offerStrategy: "accept"
+  });
+  const state = result.state;
+  assert.equal(state.footballCatalogVersion, CURRENT_FOOTBALL_CATALOG_VERSION);
+  assert.equal(state.retirement.status, "closed");
+  assert.equal(state.epilogue.generated, true);
+
+  const fixtures = state.world.sportMatchModel?.fixtures ?? [];
+  for (const [index, fixture] of fixtures.entries()) {
+    assert.ok(fixture.opponentClubId, `fixture ${index} missing opponentClubId`);
+  }
+
+  const beforeRng = structuredClone(state.rngState);
+  const serialized = serializeSave(state);
+  const restored = loadSave(serialized);
+  assert.equal(serializeSave(restored), serialized);
+  assert.deepEqual(restored.rngState, beforeRng);
+  assert.deepEqual(restored.retirement, state.retirement);
+  assert.deepEqual(restored.epilogue, state.epilogue);
 });
