@@ -308,3 +308,27 @@ test("A6-014 TARGETED PUBLIC FLOW: coach action must be reachable from PlayerVie
     "PA_COACH_TALK is dead in the public flow: target-required availability is projected without a target selector/resolution"
   );
 });
+
+
+test("A6-015 CONTENT RELEASE READINESS: final catalog must be broad, category-complete and non-fixture-only", () => {
+  const categories = new Set(PLAYER_ACTION_CATALOG.map(action => action.category));
+  const requiredCategories = [
+    "career",
+    "training",
+    "health",
+    "representative",
+    "relationships",
+    "image",
+    "life"
+  ];
+  assert.ok(
+    PLAYER_ACTION_CATALOG.length >= 20,
+    `release catalog is not A5-complete: expected >=20 actions, got ${PLAYER_ACTION_CATALOG.length}`
+  );
+  for (const category of requiredCategories) {
+    assert.ok(categories.has(category), `release catalog missing category: ${category}`);
+  }
+  for (const action of PLAYER_ACTION_CATALOG) {
+    assert.ok(action.cooldown.days > 0, `release action has non-productive cooldown: ${action.id}`);
+  }
+});
