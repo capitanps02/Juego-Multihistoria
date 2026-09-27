@@ -279,7 +279,7 @@ function render(focus = false) {
     else if (v.simulation.mode === 'paused') story.append(action('Reanudar','auto',{action:'resume'}),action('Terminar simulación','auto',{action:'stop'},'secondary'));
     else {
       story.append(action('Simular','auto',{action:'start'}));
-      if (v.actions?.available) story.append(uiButton('Gestionar mi carrera',()=>{playerActionUi={screen:'player_action_menu',categoryId:null,actionId:null,resultExecutionId:null};render(true);},'secondary'));
+      if (v.actions?.available) story.append(uiButton('Gestionar mi carrera',()=>{playerActionUi={screen:'player_action_menu',categoryId:null,actionId:null,targetId:null,resultExecutionId:null};render(true);},'secondary'));
     }
   }
   if(v.offerHistory.length)story.append(el('p',v.offerHistory.at(-1).explanation,'body'));
