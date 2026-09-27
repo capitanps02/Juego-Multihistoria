@@ -41,7 +41,7 @@ export const PLAYER_ACTION_CONTENT_PLAN: readonly PlayerActionContentPlanRow[] =
   },
   {
     id: "PA_ROLE_CHECK",
-    classification: "CONTEXTUAL",
+    classification: "CORE",
     category: "career",
     ageRange: [18, null],
     cooldownDays: 21,
