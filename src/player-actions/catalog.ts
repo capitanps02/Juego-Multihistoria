@@ -1,8 +1,14 @@
 import type { PlayerActionDefinition, PlayerActionEligibilityPredicate } from "./types.js";
 import { PLAYER_ACTION_ELIGIBILITY_SPECS } from "./content-eligibility.js";
+import { PLAYER_ACTION_COOLDOWN_GROUP_SPECS } from "./content-cooldown-groups.js";
 
 function eligibilityFor(actionId: string): readonly PlayerActionEligibilityPredicate[] {
   return PLAYER_ACTION_ELIGIBILITY_SPECS.find(row => row.actionId === actionId)?.all ?? [];
+}
+
+function cooldownGroupFor(actionId: string): PlayerActionDefinition["cooldownGroup"] {
+  const row = PLAYER_ACTION_COOLDOWN_GROUP_SPECS.find(candidate => candidate.actionId === actionId);
+  return row?.groupId ? { id: row.groupId, days: row.groupDays } : undefined;
 }
 
 export const PLAYER_ACTION_CATALOG: readonly PlayerActionDefinition[] = [
@@ -13,6 +19,7 @@ export const PLAYER_ACTION_CATALOG: readonly PlayerActionDefinition[] = [
     description: "Añade una sesión corta de trabajo técnico fuera de la simulación normal.",
     targetKind: "none",
     cooldown: { scope: "action", days: 35 },
+    cooldownGroup: cooldownGroupFor("PA_TRAIN_EXTRA"),
     eligibilityKey: "active_career",
     eligibility: eligibilityFor("PA_TRAIN_EXTRA"),
     options: [
@@ -31,6 +38,7 @@ export const PLAYER_ACTION_CATALOG: readonly PlayerActionDefinition[] = [
     description: "Prioriza recuperación ligera sin alterar lesiones ni decisiones médicas.",
     targetKind: "none",
     cooldown: { scope: "action", days: 21 },
+    cooldownGroup: cooldownGroupFor("PA_REST"),
     eligibilityKey: "active_career",
     eligibility: eligibilityFor("PA_REST"),
     options: [
@@ -49,6 +57,7 @@ export const PLAYER_ACTION_CATALOG: readonly PlayerActionDefinition[] = [
     description: "Habla con el entrenador actual para expresar una postura sin cambiar tu rol por decreto.",
     targetKind: "coach",
     cooldown: { scope: "action_target", days: 31 },
+    cooldownGroup: cooldownGroupFor("PA_COACH_TALK"),
     eligibilityKey: "active_career",
     eligibility: eligibilityFor("PA_COACH_TALK"),
     options: [
@@ -79,6 +88,7 @@ export const PLAYER_ACTION_CATALOG: readonly PlayerActionDefinition[] = [
     description: "Comunica que quieres explorar una salida del club sin crear ofertas ni cambiar de equipo.",
     targetKind: "none",
     cooldown: { scope: "action", days: 121 },
+    cooldownGroup: cooldownGroupFor("PA_REQUEST_TRANSFER"),
     eligibilityKey: "active_career",
     eligibility: eligibilityFor("PA_REQUEST_TRANSFER"),
     options: [
@@ -97,6 +107,7 @@ export const PLAYER_ACTION_CATALOG: readonly PlayerActionDefinition[] = [
     description: "Expresa que quieres abrir una conversación de renovación sin modificar tu contrato.",
     targetKind: "none",
     cooldown: { scope: "action", days: 91 },
+    cooldownGroup: cooldownGroupFor("PA_REQUEST_RENEWAL"),
     eligibilityKey: "active_career",
     eligibility: eligibilityFor("PA_REQUEST_RENEWAL"),
     options: [
@@ -115,6 +126,7 @@ export const PLAYER_ACTION_CATALOG: readonly PlayerActionDefinition[] = [
     description: "Pide a tu representante una lectura del mercado sin fabricar interés ni ofertas.",
     targetKind: "agent",
     cooldown: { scope: "action_target", days: 31 },
+    cooldownGroup: cooldownGroupFor("PA_AGENT_MARKET"),
     eligibilityKey: "active_career",
     eligibility: eligibilityFor("PA_AGENT_MARKET"),
     options: [
