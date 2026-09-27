@@ -48,7 +48,7 @@ export const PLAYER_ACTION_CONTENT_PLAN: readonly PlayerActionContentPlanRow[] =
     targetKind: "coach",
     status: "blocked",
     requiredContext: "current coach",
-    blockedBy: "A1/A3 informational role-query contract"
+    blockedBy: "A1 informational handler + coach eligibility"
   },
   {
     id: "PA_POSITION_CHANGE",
@@ -211,7 +211,7 @@ export const PLAYER_ACTION_CONTENT_PLAN: readonly PlayerActionContentPlanRow[] =
     targetKind: "none",
     status: "blocked",
     requiredContext: "active career",
-    blockedBy: "A1 image effect registry"
+    blockedBy: "A1 informational/image handler"
   },
   {
     id: "PA_SOCIAL_POST",
