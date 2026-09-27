@@ -97,7 +97,14 @@ test("A2-005 COMMAND ID REUSE: same id with different action rejects", async () 
   const session = await emptySession(205, "a2-005");
   await session.dispatch({ type: "player_action", commandId: "same", expectedRevision: 0, actionId: "PA_TRAIN_EXTRA", optionId: "TECHNIQUE" });
   await assert.rejects(
-    session.dispatch({ type: "player_action", commandId: "same", expectedRevision: 0, actionId: "PA_TRAIN_EXTRA", optionId: "TECHNIQUE" }),
+    session.dispatch({
+      type: "player_action",
+      commandId: "same",
+      expectedRevision: 0,
+      actionId: "PA_COACH_TALK",
+      optionId: "MORE_MINUTES",
+      targetId: "NPC_CCH_01"
+    }),
     error => error?.code === "COMMAND_ID_REUSED"
   );
   assert.equal(session.exportSnapshot().state.playerActions?.history.length, 1);
