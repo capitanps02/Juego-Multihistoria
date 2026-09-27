@@ -36,6 +36,6 @@ export const PLAYER_ACTION_COOLDOWN_GROUP_SPECS: readonly PlayerActionCooldownGr
   { actionId: "PA_INTERVIEW", groupId: "public_image", groupDays: 7 },
   { actionId: "PA_SOCIAL_POST", groupId: "public_image", groupDays: 7 },
 
-  { actionId: "PA_PERSONAL_TIME", groupId: "personal_wellbeing", groupDays: 7 },
-  { actionId: "PA_DISCONNECT", groupId: "personal_wellbeing", groupDays: 7 }
+  { actionId: "PA_PERSONAL_TIME", groupId: "personal_wellbeing", groupDays: 14 },
+  { actionId: "PA_DISCONNECT", groupId: "personal_wellbeing", groupDays: 14 }
 ] as const;
