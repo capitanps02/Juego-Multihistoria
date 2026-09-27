@@ -369,3 +369,107 @@ jobs:
       - name: Show preview log on failure
         if: failure()
         run: cat /tmp/multihistoria-preview.log || true
+
+
+  integrated_candidate_safety:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Checkout A6 QA harness
+        uses: actions/checkout@v4
+        with:
+          path: qa
+
+      - name: Checkout integrated Player Actions candidate
+        uses: actions/checkout@v4
+        with:
+          ref: a6/player-actions-integrated-candidate
+          path: candidate
+
+      - name: Checkout pre-feature baseline
+        uses: actions/checkout@v4
+        with:
+          ref: 2cc068cb705214ba827677ab02d8d1668e8677ec
+          path: baseline
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Build baseline
+        working-directory: baseline
+        run: |
+          npm ci
+          npm run build
+
+      - name: Build integrated candidate
+        working-directory: candidate
+        run: |
+          npm ci
+          npm run build
+
+      - name: Player Actions integrated focused suites
+        working-directory: candidate
+        run: |
+          node --test             scripts/test-player-actions-core.mjs             scripts/test-player-actions-session.mjs             scripts/test-player-actions-narrative-bridge.mjs             scripts/test-player-actions-content.mjs             scripts/test-player-actions-ui-contract.mjs             scripts/test-t55-auto-simulation.mjs
+
+      - name: Independent public target gate
+        run: node qa/scripts/test-player-actions-public-target-contract.mjs candidate
+
+      - name: Integrated zero-action equivalence
+        run: node qa/scripts/test-player-actions-zero-equivalence.mjs baseline candidate
+
+      - name: Build integrated PlayCanvas package
+        working-directory: candidate
+        run: npm run build:playcanvas
+
+      - name: Integrated PlayCanvas regression
+        working-directory: candidate
+        run: node --test scripts/test-playcanvas.mjs scripts/test-t55-a19-ui.mjs
+
+      - name: Check committed generated package freshness
+        working-directory: candidate
+        run: git diff --exit-code -- playcanvas/multihistoria.js playcanvas/manifest.json web/assets.json
+
+  integrated_candidate_release_gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Checkout A6 QA harness
+        uses: actions/checkout@v4
+        with:
+          path: qa
+
+      - name: Checkout integrated Player Actions candidate
+        uses: actions/checkout@v4
+        with:
+          ref: a6/player-actions-integrated-candidate
+          path: candidate
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Build integrated candidate
+        working-directory: candidate
+        run: |
+          npm ci
+          npm run build
+
+      - name: Enforce content release readiness
+        working-directory: candidate
+        run: |
+          node --input-type=module - <<'EOF'
+          import assert from "node:assert/strict";
+          const { PLAYER_ACTION_CATALOG } = await import("./dist/player-actions/index.js");
+          const categories = new Set(PLAYER_ACTION_CATALOG.map(action => action.category));
+          const required = ["career","training","health","representative","relationships","image","life"];
+          assert.ok(PLAYER_ACTION_CATALOG.length >= 20, `expected >=20 actions, got ${PLAYER_ACTION_CATALOG.length}`);
+          for (const category of required) assert.ok(categories.has(category), `missing release category: ${category}`);
+          console.log("PA-GATE-10 CONTENT PASS");
+          EOF
+
+      - name: Enforce anti-grind release budget
+        run: node qa/scripts/test-player-actions-balance-release.mjs candidate
