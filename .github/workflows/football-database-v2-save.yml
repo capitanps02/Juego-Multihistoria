@@ -1,0 +1,42 @@
+name: Football Database V2 · Save versioning
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/save/**'
+      - 'src/core/types.ts'
+      - 'src/content/initial-state.ts'
+      - 'src/catalog/football/**'
+      - 'src/simulation/match-model.ts'
+      - 'scripts/test-football-catalog-save-version.mjs'
+      - 'scripts/test-saves.mjs'
+      - 'scripts/test-persistence.mjs'
+      - 'package.json'
+      - '.github/workflows/football-database-v2-save.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  save-versioning:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Catalog save/version contract
+        run: node --test scripts/test-football-catalog-save-version.mjs
+      - name: Historical save regression
+        run: node --test scripts/test-saves.mjs
+      - name: Persistence regression
+        run: node --test scripts/test-persistence.mjs
+      - name: Runtime/catalog regression
+        run: node --test scripts/test-football-database-v2-runtime.mjs
