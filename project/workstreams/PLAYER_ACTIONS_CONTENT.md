@@ -533,7 +533,7 @@ Archivo:
 
 `scripts/test-player-actions-content.mjs`
 
-Casos implementados en la suite (27):
+Casos implementados en la suite (47):
 
 1. A5-001 UNIQUE IDS
 2. A5-002 VALID CATEGORIES
@@ -727,7 +727,7 @@ A3 documenta que withdraw-transfer no existe en V1 actual y request_transfer exp
 
 ```text
 [A5 STATUS]
-Progreso: 84%
+Progreso: 94% owner-side
 BASE_SHA: 75be938bbe4a6f7a01ef45a5078a6bfa6d77262d
 HEAD actual: consultar PR #802
 CATÁLOGO
@@ -738,6 +738,8 @@ COMPLETADO
 - catálogo completo diseñado y codificado en content-plan.ts
 - copy/opciones 20/20 codificadas en content-spec.ts
 - balance objetivo 20/20 codificado en content-balance.ts
+- eligibility objetivo 20/20 codificado en content-eligibility.ts
+- shared cooldown families 20/20 codificadas en content-cooldown-groups.ts
 - primer slice A3 cableado
 - cooldowns A5 del slice
 - authority review
@@ -764,7 +766,7 @@ BALANCE
 - 1000 seeds de mercado para REQUEST_TRANSFER
 - autoridad de coach/agent validada en catálogo A5
 TESTS
-- 27 checks authored
+- 47 checks authored
 - 0 TODO en la suite de diseño/contrato
 - stress anual de 80 carreras añadido
 - runtime health/age siguen bloqueados explícitamente
@@ -777,3 +779,55 @@ Trabajo restante estimado:
 - 5 bloques de balance/QA
 - ~3–5 horas-agente equivalentes tras desbloqueo A1
 ```
+
+
+---
+
+## Eligibility final V1
+
+A5 codifica `src/player-actions/content-eligibility.ts` como contrato declarativo cerrado.
+
+No contiene:
+- callbacks;
+- paths arbitrarios;
+- código ejecutable suministrado por contenido.
+
+Predicates previstos:
+- active_career;
+- active_club_employment;
+- age_range;
+- current_coach;
+- current_representation;
+- contract_months;
+- live_transfer_request;
+- fatigue_min / fatigue_max;
+- risk_max;
+- current_teammate;
+- teammate_profile veteran/young;
+- visible_teammate_tension.
+
+Casos importantes:
+- PA_REQUEST_RENEWAL: empleo activo + contrato 1…24 meses;
+- PA_REQUEST_TRANSFER: no puede existir ya una request live;
+- PA_WITHDRAW_TRANSFER: requiere request live;
+- PA_TRAIN_EXTRA: fatigue <=55 y risk <=40;
+- PA_REST: fatigue >=24;
+- PA_RECOVERY_SESSION: fatigue >=28;
+- PA_VETERAN_ADVICE: jugador 18–23 + target veterano;
+- PA_MENTOR_YOUNG: jugador 30+ + target joven.
+
+## Shared cooldown final V1
+
+`src/player-actions/content-cooldown-groups.ts` define familias de 7 días para impedir cycling:
+
+- coach_conversation;
+- agent_conversation;
+- teammate_interaction;
+- extra_development;
+- physical_recovery;
+- public_image;
+- personal_wellbeing.
+
+Transfer request/withdraw comparte `club_intent` a 14 días.
+
+Los cooldowns familiares complementan, no sustituyen, el cooldown individual/action_target.
