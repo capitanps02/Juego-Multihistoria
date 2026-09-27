@@ -1,5 +1,9 @@
 name: DB-A3 fixture baseline
 
+concurrency:
+  group: db-a3-football-runtime-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   push:
     branches:
