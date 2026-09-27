@@ -152,6 +152,12 @@ test("reference classifier separates production, historical read and canonical c
     assert.throws(() => assertNewFootballClubReference(legacy, "new"), /not allowed in new_production/);
   }
 
+  for (const opaqueLegacy of ["Destino", "Development Club", "Propietario"]) {
+    assert.equal(classifyFootballClubReference(opaqueLegacy).kind, "legacy_compat", opaqueLegacy);
+    assert.equal(isLoadableFootballClubReference(opaqueLegacy), true, opaqueLegacy);
+    assert.equal(isNewFootballClubReference(opaqueLegacy), false, opaqueLegacy);
+  }
+
   for (const value of ["ESP_MADRID", "UDV"]) {
     assert.equal(isFootballClubReferenceAllowed(value, "new_production"), true);
     assert.equal(isFootballClubReferenceAllowed(value, "historical_read"), true);
