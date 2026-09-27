@@ -9,6 +9,7 @@ import { PLAYER_ACTION_CONTENT_SPECS } from "../dist/player-actions/content-spec
 import { PLAYER_ACTION_BALANCE_SPECS } from "../dist/player-actions/content-balance.js";
 import { PLAYER_ACTION_ELIGIBILITY_SPECS } from "../dist/player-actions/content-eligibility.js";
 import { PLAYER_ACTION_COOLDOWN_GROUP_SPECS } from "../dist/player-actions/content-cooldown-groups.js";
+import { PLAYER_ACTION_EFFECT_PLAN } from "../dist/player-actions/content-effect-plan.js";
 import {
   PLAYER_ACTION_CATALOG,
   addPlayerActionDays,
@@ -645,6 +646,22 @@ test("A6-015A DESIGN CONTRACT: V1 plan/spec/balance/eligibility/cooldown manifes
     renewal.all.find(predicate => predicate.kind === "contract_months"),
     { kind: "contract_months", min: 1, max: CLUB_RENEWAL_INTENT_MAX_MONTHS }
   );
+
+  const plannedOptions = PLAYER_ACTION_CONTENT_SPECS.flatMap(action =>
+    action.options.map(option => `${action.id}::${option.id}`)
+  ).sort();
+  const effectOptions = PLAYER_ACTION_EFFECT_PLAN.map(row =>
+    `${row.actionId}::${row.optionId}`
+  ).sort();
+  assert.deepEqual(effectOptions, plannedOptions, "effect routing plan must cover every V1 option exactly once");
+
+  for (const row of PLAYER_ACTION_EFFECT_PLAN) {
+    assert.match(row.desiredEffectKey, /^[a-z0-9_]+$/);
+    if (row.mode === "fact_only") assert.ok(row.desiredFactKind, `${row.actionId}/${row.optionId} fact_only missing fact kind`);
+    if (row.mode === "direct_only" || row.mode === "informational") {
+      assert.equal(row.desiredFactKind, undefined, `${row.actionId}/${row.optionId} should not persist an A3 fact`);
+    }
+  }
 
   for (const actionId of ["PA_COACH_TALK","PA_REQUEST_TRANSFER","PA_REQUEST_RENEWAL"]) {
     const row = PLAYER_ACTION_ELIGIBILITY_SPECS.find(item => item.actionId === actionId);
