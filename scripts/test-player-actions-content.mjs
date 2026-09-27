@@ -420,3 +420,23 @@ test("A5-025 INCLUSIVE FACT EXPIRY NEVER OVERLAPS RE-EXECUTION", () => {
   assert.equal(playerActionFacts(state).requestedTransfer.currentlyRelevant, false);
   assert.equal(evaluatePlayerAction(state, action).available, true);
 });
+
+
+test("A5-025 IMPLEMENTED CONTEXT GAPS ARE EXPLICIT", () => {
+  const expectedA1ContextGaps = new Set([
+    "PA_COACH_TALK",
+    "PA_REQUEST_TRANSFER",
+    "PA_REQUEST_RENEWAL"
+  ]);
+
+  for (const row of PLAYER_ACTION_CONTENT_PLAN.filter(item => expectedA1ContextGaps.has(item.id))) {
+    assert.equal(row.status, "implemented");
+    assert.match(row.blockedBy ?? "", /A1/i, `${row.id} must name A1 context blocker`);
+    assert.match(row.blockedBy ?? "", /eligibility/i, `${row.id} must name eligibility blocker`);
+    assert.match(row.requiredContext, /employment/i, `${row.id} must require active employment`);
+  }
+
+  const agentMarket = PLAYER_ACTION_CONTENT_PLAN.find(item => item.id === "PA_AGENT_MARKET");
+  assert.ok(agentMarket);
+  assert.equal(agentMarket.blockedBy, undefined, "A2 public-target blocker is already resolved for agent market");
+});
