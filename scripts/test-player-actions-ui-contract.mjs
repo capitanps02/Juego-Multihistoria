@@ -103,7 +103,7 @@ test('A4-008 EXECUTE: available action dispatches the canonical player_action co
   await session.dispatch(command(session,'player_action',{actionId:'PA_TRAIN_EXTRA',optionId:'TECHNIQUE'}));
   assert.equal(session.getView().revision,before.revision+1);
   assert.match(preview,/type:'player_action'.*actionId:actionView\.id.*optionId:option\.id/s);
-  assert.match(web,/run\('player_action',\{actionId:a\.id,optionId:o\.id\}/);
+  assert.match(web,/run\('player_action',\{actionId:a\.id,optionId:o\.id/);
 });
 
 test('A4-009 RESULT: public lastResult is rendered without reading GameState',async()=>{
@@ -170,12 +170,57 @@ test('A4-015 ACCESSIBILITY: buttons, aria-busy, focus and explicit back paths re
   assert.match(web,/Volver a carrera/);
 });
 
-test('A4 dependency diagnostic: target-required actions stay blocked until A2 exposes public targets',async()=>{
-  const view=(await GameSession.create(424242)).getView();
-  const coach=actionById(view,'PA_COACH_TALK');
+test('A4-016 TARGET FLOW: public coach target can be selected and dispatched end to end',async()=>{
+  const session=await GameSession.create(424242);
+  const coach=actionById(session.getView(),'PA_COACH_TALK');
   assert.ok(coach);
   assert.equal(coach.targetKind,'coach');
-  assert.equal(coach.available,false);
-  assert.match(coach.unavailableReason,/objetivo/i);
-  assert.equal('targets' in coach,false);
+  assert.equal(coach.available,true);
+  assert.equal(coach.targets.length,1);
+  const target=coach.targets[0];
+  assert.equal(target.id,'NPC_CCH_01');
+  assert.equal(target.available,true);
+  await session.dispatch(command(session,'player_action',{
+    actionId:coach.id,
+    optionId:'MORE_MINUTES',
+    targetId:target.id
+  }));
+  const after=actionById(session.getView(),'PA_COACH_TALK');
+  const cooled=after.targets.find(candidate=>candidate.id===target.id);
+  assert.equal(cooled.available,false);
+  assert.ok(cooled.cooldownUntil);
+  assert.match(preview,/targetId:selectedTarget\.id/);
+  assert.match(web,/targetId:selectedTarget\.id/);
+});
+
+test('A4-017 HISTORY: Player Actions are projected into Tu recorrido without reading GameState',async()=>{
+  const session=await GameSession.create(424242);
+  await session.dispatch(command(session,'player_action',{actionId:'PA_REST',optionId:'RECOVER'}));
+  const history=session.getView().actions.history;
+  assert.equal(history.length,1);
+  assert.equal(history[0].actionLabel,'Descansar');
+  assert.equal(history[0].optionLabel,'Recuperar');
+  assert.equal(history[0].text,'Reduces carga y recuperas sensaciones.');
+  assert.deepEqual(Object.keys(history[0]).sort(),['actionId','actionLabel','date','executionId','optionLabel','text']);
+  assert.match(preview,/v\.actions\?\.history/);
+  assert.match(web,/v\.actions\?\.history/);
+  assert.match(web,/Decisiones y acciones/);
+  assert.ok(!/state\.playerActions|exportSnapshot\(\).*playerActions/s.test(web));
+});
+
+test('A4-018 TARGET PRIVACY: UI consumes only public target fields and stale target errors remain safe',async()=>{
+  const session=await GameSession.create(424242);
+  const coach=actionById(session.getView(),'PA_COACH_TALK');
+  const serialized=JSON.stringify(coach.targets);
+  for(const forbidden of ['privateAgenda','knowledge','agenda','payload','effectKey','eligibilityKey','facts']){
+    assert.equal(serialized.includes(forbidden),false);
+  }
+  await assert.rejects(
+    session.dispatch(command(session,'player_action',{
+      actionId:'PA_COACH_TALK',
+      optionId:'MORE_MINUTES',
+      targetId:'NPC_CCH_02'
+    })),
+    error=>error?.code==='PLAYER_ACTION_TARGET_INVALID'
+  );
 });
