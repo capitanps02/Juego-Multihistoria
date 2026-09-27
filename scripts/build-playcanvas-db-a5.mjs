@@ -76,7 +76,7 @@ fs.mkdirSync(path.join(root,'playcanvas'),{recursive:true});
 fs.writeFileSync(path.join(root,'playcanvas/multihistoria.js'),bundle);
 fs.writeFileSync(path.join(root,'web/assets.json'),JSON.stringify(assets));
 
-const inputFiles=[...modules.keys(),'web/game-ui.js','web/club-names.js','web/game-ui.css','web/indexed-save-store.js'];
+const inputFiles=[...modules.keys(),'web/game-ui.js','web/club-names.js','web/game-ui.css','web/indexed-save-store.js','scripts/build-playcanvas-db-a5.mjs','scripts/local-esm-graph.mjs'];
 const manifest={
   integration:'DB-A5-G5',
   targetScene:2593315,
