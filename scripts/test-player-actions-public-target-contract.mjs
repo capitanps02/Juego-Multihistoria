@@ -175,8 +175,6 @@ console.log(JSON.stringify({
     previousCoachNpcId: oldTarget.id,
     newCoachNpcId: "NPC_CCH_02"
   });
-  changed.revision = rendered.revision + 1;
-
   const afterChange = await GameSession.resume(changed);
   const changedView = afterChange.getView();
   const newCoachAction = actionById(changedView, "PA_COACH_TALK");
@@ -198,24 +196,34 @@ console.log(JSON.stringify({
   );
   assert.deepEqual(afterChange.exportSnapshot(), beforeOldTarget);
 
+  // Advance revision through the real transactional command path; never forge snapshot revision.
+  await afterChange.dispatch({
+    type: "player_action",
+    commandId: "a6-coach-revision-advance",
+    expectedRevision: changedView.revision,
+    actionId: "PA_TRAIN_EXTRA",
+    optionId: "TECHNIQUE"
+  });
+  const afterAdvance = afterChange.exportSnapshot();
+
   await assert.rejects(
     afterChange.dispatch({
       type: "player_action",
       commandId: "a6-old-coach-stale-revision",
-      expectedRevision: rendered.revision,
+      expectedRevision: changedView.revision,
       actionId: "PA_COACH_TALK",
       optionId: "MORE_MINUTES",
       targetId: oldTarget.id
     }),
     error => error?.code === "STALE_REVISION"
   );
-  assert.deepEqual(afterChange.exportSnapshot(), beforeOldTarget);
+  assert.deepEqual(afterChange.exportSnapshot(), afterAdvance);
 
   console.log(JSON.stringify({
     gate: "A6_TARGET_AUTHORITY_CHANGE",
     previousCoach: oldTarget.id,
     currentCoach: newCoachAction.targets[0].id,
-    currentRevision: changedView.revision,
+    currentRevision: afterChange.getView().revision,
     oldTargetCurrentRevision: "PLAYER_ACTION_TARGET_INVALID",
     oldTargetStaleRevision: "STALE_REVISION",
     result: "PASS"
@@ -238,7 +246,6 @@ console.log(JSON.stringify({
     services: ["market"],
     contactPolicy: "inform_first"
   }, "a6_agent_a");
-  withAgentA.revision += 1;
 
   const agentASession = await GameSession.resume(withAgentA);
   const rendered = agentASession.getView();
@@ -254,7 +261,6 @@ console.log(JSON.stringify({
     services: ["market"],
     contactPolicy: "inform_first"
   }, "a6_agent_b");
-  withAgentB.revision = rendered.revision + 1;
 
   const agentBSession = await GameSession.resume(withAgentB);
   const current = agentBSession.getView();
@@ -276,24 +282,33 @@ console.log(JSON.stringify({
   );
   assert.deepEqual(agentBSession.exportSnapshot(), beforeOldAgent);
 
+  await agentBSession.dispatch({
+    type: "player_action",
+    commandId: "a6-agent-revision-advance",
+    expectedRevision: current.revision,
+    actionId: "PA_TRAIN_EXTRA",
+    optionId: "TECHNIQUE"
+  });
+  const afterAgentAdvance = agentBSession.exportSnapshot();
+
   await assert.rejects(
     agentBSession.dispatch({
       type: "player_action",
       commandId: "a6-old-agent-stale-revision",
-      expectedRevision: rendered.revision,
+      expectedRevision: current.revision,
       actionId: "PA_AGENT_MARKET",
       optionId: "ASK",
       targetId: "NPC_AGT_01"
     }),
     error => error?.code === "STALE_REVISION"
   );
-  assert.deepEqual(agentBSession.exportSnapshot(), beforeOldAgent);
+  assert.deepEqual(agentBSession.exportSnapshot(), afterAgentAdvance);
 
   console.log(JSON.stringify({
     gate: "A6_TARGET_AGENT_CHANGE",
     previousAgent: "NPC_AGT_01",
     currentAgent: "NPC_AGT_02",
-    currentRevision: current.revision,
+    currentRevision: agentBSession.getView().revision,
     result: "PASS"
   }, null, 2));
 }
