@@ -41,7 +41,7 @@ export const PLAYER_ACTION_CATALOG: readonly PlayerActionDefinition[] = [
     label: "Hablar con entrenador",
     description: "Habla con el entrenador actual para expresar una postura sin cambiar tu rol por decreto.",
     targetKind: "coach",
-    cooldown: { scope: "action_target", days: 30 },
+    cooldown: { scope: "action_target", days: 31 },
     eligibilityKey: "active_career",
     options: [
       {
@@ -70,7 +70,7 @@ export const PLAYER_ACTION_CATALOG: readonly PlayerActionDefinition[] = [
     label: "Solicitar salida",
     description: "Comunica que quieres explorar una salida del club sin crear ofertas ni cambiar de equipo.",
     targetKind: "none",
-    cooldown: { scope: "action", days: 120 },
+    cooldown: { scope: "action", days: 121 },
     eligibilityKey: "active_career",
     options: [
       {
@@ -87,7 +87,7 @@ export const PLAYER_ACTION_CATALOG: readonly PlayerActionDefinition[] = [
     label: "Pedir renovación",
     description: "Expresa que quieres abrir una conversación de renovación sin modificar tu contrato.",
     targetKind: "none",
-    cooldown: { scope: "action", days: 90 },
+    cooldown: { scope: "action", days: 91 },
     eligibilityKey: "active_career",
     options: [
       {
@@ -104,7 +104,7 @@ export const PLAYER_ACTION_CATALOG: readonly PlayerActionDefinition[] = [
     label: "Preguntar por mercado",
     description: "Pide a tu representante una lectura del mercado sin fabricar interés ni ofertas.",
     targetKind: "agent",
-    cooldown: { scope: "action_target", days: 30 },
+    cooldown: { scope: "action_target", days: 31 },
     eligibilityKey: "active_career",
     options: [
       {
