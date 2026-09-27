@@ -129,9 +129,9 @@ Expected profile population:
 Metadata expectation:
 - band = elite, or strict top continental;
 - tier = 1;
-- A3 must keep the final top-continental filter narrow.
+- top-continental thresholds are fixed at prestige >= 88, internationalAttraction >= 84 and division strength >= 78.
 
-BIG_CLUB must never mean a generic upper 60% of a division.
+The current deterministic catalog yields 17 elite clubs plus 9 qualifying top-continental clubs. BIG_CLUB must never mean a generic upper 60% of a division.
 
 ### DEVELOPMENT_CLUB
 
@@ -152,13 +152,13 @@ Expected bands:
 - continental;
 - upper.
 
-It should favor prestige + finance + international attraction but remain distinct from BIG_CLUB.
+It should favor prestige + finance + international attraction but remain distinct from BIG_CLUB. The A2 contract fixes the ambition composite floor at 76.
 
 ### HIGHER_CLUB
 
 Relative selector.
 
-A2 provides the hierarchy metadata only. A3 owns comparison with the current club and must require a meaningful sporting step.
+A2 provides the hierarchy metadata only. A3 owns comparison with the current club and must require either at least +5 prestige points or a stronger competitive band supported by league context.
 
 ## Pass 5 — stress/certification
 
