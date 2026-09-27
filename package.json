@@ -70,7 +70,7 @@
     "test:football-catalog": "npm run build && node --test scripts/test-football-catalog.mjs",
     "test:football-balance": "npm run build && node --test scripts/test-football-catalog.mjs scripts/test-football-catalog-balance.mjs",
     "test:football-runtime": "npm run build && node --test scripts/test-football-database-v2-runtime.mjs scripts/test-t5-age18-market-authority.mjs scripts/test-player-actions-narrative-bridge.mjs",
-    "test:football-presentation": "npm run build:playcanvas && npm run android:offline && node --test scripts/test-football-presentation-platforms.mjs scripts/test-playcanvas.mjs scripts/test-android-offline.mjs scripts/test-player-actions-ui-contract.mjs"
+    "test:football-presentation": "npm run build:playcanvas && node scripts/build-android-offline.mjs && node scripts/finalize-android-offline-db-a5.mjs && node --test scripts/test-club-names.mjs scripts/test-football-presentation-platforms.mjs scripts/test-playcanvas.mjs scripts/test-android-offline.mjs scripts/test-player-actions-ui-contract.mjs"
   },
   "devDependencies": {
     "typescript": "5.8.3"
