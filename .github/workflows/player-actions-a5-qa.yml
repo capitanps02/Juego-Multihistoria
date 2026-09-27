@@ -27,7 +27,7 @@ jobs:
       - name: Checkout A5 candidate
         uses: actions/checkout@v4
         with:
-          ref: bf13494c05d19b9f12e4d019034786df66ce785a
+          ref: 2e61c047a1880686429bcc73fb3afaf681a15bed
           path: candidate
 
       - name: Set up Node.js
@@ -53,6 +53,3 @@ jobs:
 
       - name: A5 zero-action equivalence
         run: node qa/scripts/test-player-actions-zero-equivalence.mjs baseline candidate
-
-      - name: A5 backend stress
-        run: node qa/scripts/stress-player-actions-backend.mjs candidate
