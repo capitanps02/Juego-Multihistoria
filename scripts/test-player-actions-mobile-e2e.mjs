@@ -130,7 +130,9 @@ try {
     await clickShadow(page, "Volver a carrera");
     await page.waitForFunction(() => {
       const root = document.querySelector("#game")?.shadowRoot;
-      return Boolean(root && [...root.querySelectorAll("button")].some(button => button.textContent?.trim() === "Simular"));
+      return Boolean(root && [...root.querySelectorAll("button")].some(button =>
+        button.textContent?.trim().toLowerCase().startsWith("simular")
+      ));
     });
     text = await shadowText(page);
     assert.match(text, /Simular/, "SIMULAR not reachable after Player Action");
