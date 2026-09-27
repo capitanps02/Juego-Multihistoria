@@ -69,7 +69,7 @@ try {
 
   await page.getByRole("button", { name: "Quiero más minutos", exact: true }).click();
   await page.getByText("ACCIÓN COMPLETADA", { exact: true }).waitFor();
-  await page.getByText("Has dejado claro que quieres competir por más minutos.", { exact: true }).waitFor();
+  await page.locator("#story").getByText("Has dejado claro que quieres competir por más minutos.", { exact: true }).waitFor();
   await noOverflow("result");
 
   await page.getByRole("button", { name: "Volver a carrera", exact: true }).click();
