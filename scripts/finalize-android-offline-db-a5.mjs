@@ -28,7 +28,7 @@ function collectFiles(dir,relative=''){
 collectFiles(assetsRoot);
 
 const manifest=JSON.parse(fs.readFileSync(manifestPath,'utf8'));
-manifest.integration='DB-A5-G5';
+manifest.footballPresentation='DB-A5-G5';
 manifest.importGraph={
   entry:'web/local.js',
   moduleCount:modules.length,
@@ -40,7 +40,7 @@ manifest.generatedAt='2026-09-28';
 fs.writeFileSync(manifestPath,JSON.stringify(manifest,null,2)+'\n');
 
 console.log(JSON.stringify({
-  integration:manifest.integration,
+  footballPresentation:manifest.footballPresentation,
   importModules:modules.length,
   copiedWebModules:copiedWebModules.length,
   files:files.length
