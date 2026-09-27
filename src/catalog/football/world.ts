@@ -1172,52 +1172,67 @@ interface ClubProfile {
 }
 
 function archetypesFor(profile: ClubProfile): readonly ClubArchetype[] {
-  const candidates: Array<{ archetype: ClubArchetype; score: number }> = [
+  const candidates: Array<{ archetype: ClubArchetype; score: number; qualified: boolean }> = [
     {
       archetype: "continental",
-      score: profile.tier === 1
-        ? profile.prestige * 0.45 + profile.internationalAttraction * 0.35 + profile.financialPower * 0.20
-        : -1
+      score: profile.prestige * 0.45 + profile.internationalAttraction * 0.35 + profile.financialPower * 0.20,
+      qualified: profile.tier === 1 && profile.prestige >= 80 && profile.internationalAttraction >= 76
     },
     {
       archetype: "development",
-      score: profile.developmentBias * 0.55 + profile.youthQuality * 0.45
+      score: profile.developmentBias * 0.55 + profile.youthQuality * 0.45,
+      qualified: profile.developmentBias >= 76 && profile.youthQuality >= 74
     },
     {
       archetype: "selling",
       score: profile.developmentBias * 0.35 + profile.youthQuality * 0.25
-        + (100 - profile.financialPower) * 0.25 + profile.internationalAttraction * 0.15
+        + (100 - profile.financialPower) * 0.25 + profile.internationalAttraction * 0.15,
+      qualified: profile.financialPower <= 70 && profile.developmentBias >= 70 && profile.youthQuality >= 68
     },
     {
       archetype: "historic",
-      score: profile.prestige * 0.50 + profile.pressure * 0.30 + profile.internationalAttraction * 0.20
+      score: profile.prestige * 0.50 + profile.pressure * 0.30 + profile.internationalAttraction * 0.20,
+      qualified: profile.prestige >= 74 && profile.pressure >= 70
     },
     {
       archetype: "high_pressure",
-      score: profile.pressure * 0.65 + profile.prestige * 0.35
+      score: profile.pressure * 0.65 + profile.prestige * 0.35,
+      qualified: profile.pressure >= 78
     },
     {
       archetype: "community",
-      score: (100 - profile.pressure) * 0.45 + profile.youthQuality * 0.30 + profile.developmentBias * 0.25
+      score: (100 - profile.pressure) * 0.45 + profile.youthQuality * 0.30 + profile.developmentBias * 0.25,
+      qualified: profile.pressure <= 65 && profile.financialPower <= 72
     },
     {
       archetype: "technical",
-      score: profile.developmentBias * 0.45 + profile.youthQuality * 0.35 + profile.prestige * 0.20
+      score: profile.developmentBias * 0.45 + profile.youthQuality * 0.35 + profile.prestige * 0.20,
+      qualified: profile.developmentBias >= 80 || profile.youthQuality >= 82
     },
     {
       archetype: "physical",
       score: profile.pressure * 0.40 + profile.financialPower * 0.25 + profile.prestige * 0.25
-        + ((profile.seed >>> 3) % 11)
+        + ((profile.seed >>> 3) % 11),
+      qualified: profile.pressure >= 70 && profile.financialPower >= 62
     }
   ];
 
-  const eligible = candidates
-    .filter(row => row.archetype !== "continental"
-      || (profile.tier === 1 && profile.prestige >= 80 && profile.internationalAttraction >= 76))
-    .sort((a, b) => b.score - a.score
-      || ((hashString(`${profile.seed}|${a.archetype}`) - hashString(`${profile.seed}|${b.archetype}`)) || a.archetype.localeCompare(b.archetype)));
+  const deterministicOrder = (a: { archetype: ClubArchetype; score: number }, b: { archetype: ClubArchetype; score: number }) =>
+    b.score - a.score
+      || ((hashString(`${profile.seed}|${a.archetype}`) - hashString(`${profile.seed}|${b.archetype}`))
+        || a.archetype.localeCompare(b.archetype));
 
-  return Object.freeze(eligible.slice(0, 2).map(row => row.archetype));
+  const selected = candidates.filter(row => row.qualified).sort(deterministicOrder).slice(0, 2);
+  if (selected.length < 2) {
+    const used = new Set(selected.map(row => row.archetype));
+    const fallback = candidates
+      .filter(row => row.archetype !== "continental" || row.qualified)
+      .filter(row => !used.has(row.archetype))
+      .sort(deterministicOrder);
+    selected.push(...fallback.slice(0, 2 - selected.length));
+  }
+
+  return Object.freeze(selected.map(row => row.archetype));
 }
 
 const divisions: FootballDivision[] = [];
