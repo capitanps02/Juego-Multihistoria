@@ -101,7 +101,18 @@ Metodología:
 5. ignorar únicamente un `playerActions: undefined` top-level si existiera;
 6. exigir que candidate nunca materialice `state.playerActions` cuando no se ejecuta ninguna Player Action.
 
-Resultado: pendiente de CI A6.
+Resultado medido en CI A6: **PASS**.
+
+- 9 seeds: 1, 2, 7, 42, 77, 125, 777, 2026, 424242.
+- 3 ventanas: 28, 84 y 365 días.
+- 27 checkpoints de ventana.
+- comparación después de cada comando reproducido.
+- differences: 0.
+- `state.playerActions` no se materializa por reads/zero-action.
+
+El mismo harness cross-version también terminó **PASS** para:
+- A3 HEAD `75be938bbe4a6f7a01ef45a5078a6bfa6d77262d`;
+- A4 runtime HEAD `ee07c945e9f6d714fb921f4f98af06f6699d223b` (el HEAD posterior A4 sólo añade documentación).
 
 ## 6. RNG
 
@@ -118,7 +129,7 @@ A6 añade:
 - ejecución determinista repetida;
 - checks exactos de RNG para rest/training.
 
-Resultado final: pendiente de CI A6.
+Resultado A6 focused antes del acceptance blocker: PASS. En la suite actual, 13/14 probes pasan; el único FAIL es A6-014, creado deliberadamente para PA-A6-001. RNG, determinismo, concurrency, replay, rollback, malformed/legacy save, cooldown y authority fixtures permanecen verdes.
 
 ## 7. Session / atomicidad / concurrency
 
@@ -175,7 +186,7 @@ A3 PR #803 implementa y documenta:
 
 Su suite declara 15 casos dirigidos, incluidos club/coach scope, renewal, agent, no-extra-RNG, historical/live, save/load y privacy.
 
-PA-GATE-08 permanece **BLOCKED** hasta certificar el HEAD A3 y después repetirlo en el único HEAD integrado con A4/A5/A6.
+A3 ha pasado `npm test` dentro de Repository Integrity hasta el step de project validation y además ha pasado el harness cross-version de A6. El componente A3 queda técnicamente validado de forma aislada; PA-GATE-08 permanece **BLOCKED** únicamente hasta repetir estos checks en el único HEAD integrado con A4/A5/A6.
 
 ## 10. Save compatibility
 
@@ -249,7 +260,14 @@ El HEAD actual de A4 #804 modifica específicamente:
 - workflow `player-actions-ui.yml`
 - suite `test-player-actions-ui-contract.mjs`
 
-A4 documenta que preview y PlayCanvas comparten semántica de GameSession. A6 no marcará PASS hasta verificar el workflow exacto de A4, corregir el target contract y repetir E2E sobre el HEAD integrado.
+El workflow específico A4 terminó **SUCCESS**:
+- suite session + UI contract: 39 PASS / 0 FAIL;
+- build PlayCanvas package: PASS;
+- PlayCanvas regression + A19 UI: 11 PASS / 0 FAIL;
+- A4-014 mobile contract: PASS;
+- A4-015 accessibility contract: PASS.
+
+A6 no marcará PA-GATE-13/14 como PASS final hasta corregir el target contract y repetir E2E sobre el HEAD integrado, pero la implementación aislada de A4 está verde.
 
 ## 15. Mobile / accessibility
 
@@ -327,10 +345,10 @@ A5 #802 diseña 20 acciones, pero declara explícitamente 0/20 implementadas. El
 |---|---|
 | PA-GATE-01 BUILD | BLOCKED — PASS preliminar A2; falta exact A6 HEAD |
 | PA-GATE-02 EXISTING REGRESSION | BLOCKED — Repository Integrity A2 aún no había terminado en captura |
-| PA-GATE-03 ZERO_ACTION_EQUIVALENCE | BLOCKED — gate cross-version creado, pendiente CI |
-| PA-GATE-04 RNG | BLOCKED — tests dirigidos existen, pendiente A6 exact HEAD |
-| PA-GATE-05 SESSION_ATOMICITY | BLOCKED — cobertura fuerte, pendiente A6 exact HEAD |
-| PA-GATE-06 SAVE_COMPATIBILITY | BLOCKED — cobertura ampliada, pendiente A6 exact HEAD |
+| PA-GATE-03 ZERO_ACTION_EQUIVALENCE | PASS — A2/A6 + A3 + A4, 9 seeds × 28/84/365 días, 0 diferencias |
+| PA-GATE-04 RNG | PASS — deterministic actions/read projections preserve RNG; A3 consumer adds 0 draws |
+| PA-GATE-05 SESSION_ATOMICITY | PASS — replay/concurrency/rollback probes green; target flow is a separate P2 |
+| PA-GATE-06 SAVE_COMPATIBILITY | PASS — legacy + malformed matrix + rollback/save-load probes green |
 | PA-GATE-07 AUTHORITY | BLOCKED — fixtures cubiertos; falta catálogo A5 |
 | PA-GATE-08 FACT_SCOPE | BLOCKED — A3 #803 implementado; falta certificar e integrar en HEAD final |
 | PA-GATE-09 AUTO_SIM | BLOCKED — backend cubierto; falta integración/UI stress |
