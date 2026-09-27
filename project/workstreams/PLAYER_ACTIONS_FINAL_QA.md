@@ -324,7 +324,7 @@ A6 considera **A5 design/config = COMPLETE**, sin confundirlo con runtime: el en
 
 ### Runtime
 
-Actualmente: **6 acciones**.
+Actualmente en el candidato final: **20 acciones**.
 
 1. PA_TRAIN_EXTRA
 2. PA_REST
@@ -376,7 +376,7 @@ Sólo tres facts nuevos:
 
 Veteran advice y mentor young quedan `direct_only` locales según el effect plan actual y **no deben** crear facts A3.
 
-**PA-GATE-10 CONTENT = FAIL** mientras el runtime siga 6/20.
+**PA-GATE-10 CONTENT = PASS** en el candidato final #813/release-qa: 20/20 acciones runtime y 31/31 opciones.
 
 ## 11. Balance / anti-grind
 
@@ -573,7 +573,7 @@ Se conserva únicamente evidencia ya completada y reproducible.
 **Owner:** A1 + A3 + A5
 
 Diseño/copy/balance = 20/20.  
-Runtime = 6/20.
+Runtime = 20/20 en #813/release-qa.
 
 ### PA-A6-003 — training grind
 
@@ -630,7 +630,7 @@ A5 alinea `content-plan.ts`, `content-effect-plan.ts` y A5-052: veteran/mentor s
 | PA-GATE-07 AUTHORITY | PASS on implemented slice |
 | PA-GATE-08 FACT_SCOPE | PASS on implemented A3 slice |
 | PA-GATE-09 AUTO_SIM | PASS on implemented slice |
-| PA-GATE-10 CONTENT | FAIL — runtime 6/20 |
+| PA-GATE-10 CONTENT | PASS — 20/20 runtime, 31/31 options on final integration candidate |
 | PA-GATE-11 ANTI_GRIND | BLOCKED — fix implemented, exact annual stress pending |
 | PA-GATE-12 PREVIEW | BLOCKED integrated — A4 component CERTIFIED; browser E2E A6 pending |
 | PA-GATE-13 PLAYCANVAS | BLOCKED integrated — A4 component CERTIFIED; integrated rebuild/freshness pending |
@@ -677,7 +677,7 @@ La razón ya no es fragilidad de la base técnica. Las principales invariantes e
 
 El release está bloqueado principalmente por:
 
-1. completar el runtime catalog;
+1. cerrar el run final A6 sobre el candidato #813/release-qa;
 2. cerrar eligibility A1;
 3. ejecutar los retests exactos del candidato integrado;
 4. certificar PlayCanvas/mobile exact-head.
@@ -718,3 +718,27 @@ Contiene:
 - latest persistence regression.
 
 El workflow A6 usa este SHA exacto mediante `INTEGRATED_REF`. Cualquier cambio upstream posterior requerirá construir un nuevo candidate SHA y una nueva corrida; no se reinterpretará un run antiguo contra una rama móvil.
+
+
+## 23. Final release candidate
+
+El backend/content V1 ya no es blocker.
+
+Cadena certificada upstream:
+
+- #810 A3 V1 facts: SUCCESS;
+- #811 A1 closed V1 effect registry: SUCCESS;
+- #812 backend/content integration: SUCCESS;
+- #813 full V1 integration exact head `05754957010aa14d987070e93c926e6accaf6a76`: SUCCESS.
+
+A6 final usa `a6/player-actions-release-qa`, derivada del HEAD verde de #813 y únicamente puede añadir artefactos PlayCanvas regenerados para QA.
+
+Evidencia ya obtenida sobre release-qa:
+
+- 20/20 runtime content/context gate: PASS;
+- PlayCanvas artifact freshness: PASS;
+- Chromium mobile E2E 360×800 / 390×844 / 430×932: PASS;
+- anti-grind + market exploit: PASS en la pasada previa del mismo stack;
+- preview clásico requería un fix de harness A6 (selectors/fixture), ya corregido en el HEAD A6 actual.
+
+El único criterio de cierre pendiente es que el último workflow A6, con harness corregido, termine en verde de extremo a extremo.
