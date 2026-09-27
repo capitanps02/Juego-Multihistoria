@@ -22,6 +22,7 @@ export type PlayerActionEligibilityPredicate =
   | { kind: "live_transfer_request"; required: boolean }
   | { kind: "fatigue_min"; value: number }
   | { kind: "fatigue_max"; value: number }
+  | { kind: "risk_min"; value: number }
   | { kind: "risk_max"; value: number }
   | { kind: "current_teammate" }
   | { kind: "teammate_profile"; profile: "veteran" | "young" }
