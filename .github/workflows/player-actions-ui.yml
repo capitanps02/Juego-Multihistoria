@@ -20,12 +20,18 @@ on:
       - '.github/workflows/player-actions-ui.yml'
   workflow_dispatch:
 
+
+permissions:
+  contents: write
+
 jobs:
   a4-ui:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -41,3 +47,15 @@ jobs:
         run: node --test scripts/test-player-actions-session.mjs scripts/test-player-actions-ui-contract.mjs
       - name: PlayCanvas regression
         run: node --test scripts/test-playcanvas.mjs scripts/test-t55-a19-ui.mjs
+      - name: Version regenerated PlayCanvas package
+        if: github.event_name == 'pull_request' && github.head_ref == 'a4/player-actions-ui'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add playcanvas/multihistoria.js playcanvas/manifest.json web/assets.json
+          if git diff --cached --quiet; then
+            echo "PlayCanvas package already current."
+            exit 0
+          fi
+          git commit -m "A4: regenerate PlayCanvas package for public targets"
+          git push origin HEAD:a4/player-actions-ui
