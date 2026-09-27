@@ -248,3 +248,11 @@ test('A4-019 TARGET RESET: navigation never carries a selected target into anoth
   assert.match(preview,/player_action_category'.*targetId:null/s);
   assert.match(web,/player_action_category'.*targetId:null/s);
 });
+
+
+test('A4-019 RESULT BACK: web result returns to simulation home, not career history',()=>{
+  assert.match(
+    web,
+    /player_action_result[\s\S]*Volver a carrera'[\s\S]*navigate\('home'\)/
+  );
+});
