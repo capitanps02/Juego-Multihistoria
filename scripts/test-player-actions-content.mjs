@@ -215,3 +215,20 @@ test("A5-017 INTENT COOLDOWN >= FACT LIFECYCLE", () => {
     );
   }
 });
+
+
+test("A5-018 IMPLEMENTED PLAN/RUNTIME SYNC", () => {
+  for (const row of PLAYER_ACTION_CONTENT_PLAN.filter(item => item.status === "implemented")) {
+    const action = PLAYER_ACTION_CATALOG.find(item => item.id === row.id);
+    assert.ok(action, `implemented plan row missing in runtime: ${row.id}`);
+    assert.equal(action.cooldown.days, row.cooldownDays, `${row.id} cooldown drift`);
+    assert.equal(action.targetKind, row.targetKind, `${row.id} target drift`);
+    if (row.id === "PA_REST") {
+      assert.equal(action.category, "life");
+      assert.equal(row.category, "health");
+      assert.match(row.blockedBy ?? "", /health/i);
+    } else {
+      assert.equal(action.category, row.category, `${row.id} category drift`);
+    }
+  }
+});
