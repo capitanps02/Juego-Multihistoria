@@ -21,8 +21,8 @@ A6 confirma que la arquitectura base de Player Actions es segura, determinista y
 - A3 conserva autoridad: Player Actions escriben facts/intents; ofertas, contratos, club, selección y retirement siguen en sus productores autorizados.
 - El adapter público de targets ya está implementado en **A2 follow-up #806**.
 - A4 ya implementa selector público de target, exact `targetId`, history saneado y UI target-aware.
-- A4 obtuvo una pasada target-aware previa de **45/45 PASS** en session+UI y **11/11 PASS** en PlayCanvas+A19.
-- A5 ha completado diseño/copy/balance manifest de las 20 acciones y reporta **90% owner-side**.
+- A4 está **CERTIFIED upstream** en run **36316821115 — SUCCESS**: **46/46 PASS** en A2 session + A4 contract, **11/11 PASS** en PlayCanvas+A19 y bundle target-aware versionado (154 módulos, 17,484,526 bytes, SHA-256 `55649e9af9dd64711400fb0d3adddc51ee66f7d55dc0b1b29348e8a304a62bb6`).
+- A5 reporta **94% owner-side** y ya tiene contratos V1 20/20 para plan, copy, balance, eligibility, cooldown groups y routing effect/fact.
 - A5 ya incluye una mitigación de anti-grind por frecuencia:
   - training 35 días;
   - rest 21 días;
@@ -35,9 +35,9 @@ A6 confirma que la arquitectura base de Player Actions es segura, determinista y
 2. **A1 contextual eligibility:** `active_career` es demasiado amplio para acciones que requieren empleo de club.
 3. **A1 renewal window:** `PA_REQUEST_RENEWAL` debe usar el horizonte canónico de **24 meses**.
 4. **A1 catalog contract:** faltan health, age/context, handlers cerrados adicionales y target predicates veteran/young.
-5. **A3 optional intents:** necesarios si el V1 mantiene position change, withdraw transfer, career priority, veteran advice y mentor young.
-6. **A4 exact final-head / PlayCanvas artifact / mobile E2E:** implementación existe, pero la última certificación exacta está retrasada por saturación de GitHub Actions.
-7. **Anti-grind:** el fix de cooldown existe; la pasada anual exacta del HEAD actual está pendiente de ejecución final.
+5. **A3 minimal extension:** sólo quedan tres nuevos facts persistentes legítimos: `request_position_change`, `withdraw_transfer_request` y `career_priority`.
+6. **A5 manifest coherence:** `content-effect-plan.ts` declara veteran/mentor `direct_only`, pero `content-plan.ts` conserva dos `blockedBy` A3 obsoletos; A6-015A lo rechaza hasta que A5 lo alinee.
+7. **Anti-grind / browser E2E integrado:** los fixes existen, pero la pasada exacta sobre el candidato integrado sigue pendiente por cola de GitHub Actions.
 
 No se certificará por inferencia ni por “fix implementado”: los fixes pasan a PASS sólo después del retest exacto.
 
@@ -50,8 +50,8 @@ No se certificará por inferencia ni por “fix implementado”: los fixes pasan
 | A2 | COMPLETE para sesión base | PR #801, HEAD `522b79d...`. SessionCommand, revision/fingerprint, receipts, persistence, replay, rollback, save compatibility y auto:stop. |
 | A2 public adapter | IMPLEMENTED / pending final integration retest | PR #806, HEAD `4eafe285...`. Targets autoritativos + history pública saneada + stale/invalid fail-closed. |
 | A3 | COMPLETE para slice actual | PR #803, HEAD `75be938...`. Scopes, bridge, consumers y 0 extra RNG. |
-| A4 | INTEGRATION CANDIDATE | PR #804, HEAD `bc08e841...`. Target flow, history, responsive UI y PlayCanvas source. Prior target-aware suites verdes; exact final run pendiente. |
-| A5 | PARTIAL / BLOCKED — 90% owner-side | PR #802, HEAD `cfde62cf...`. 20/20 plan + public spec + balance manifest; runtime aún 6/20 por blockers A1/A3. |
+| A4 | COMPLETE / CERTIFIED | PR #804, HEAD `1296cbb...`. Run 36316821115 SUCCESS; 46/46 A2+A4, 11/11 PlayCanvas+A19, bundle target-aware versionado. Sin blocker A4 restante. |
+| A5 | PARTIAL / BLOCKED — 94% owner-side | PR #802, HEAD `1a7f388...`. 20/20 plan + public spec + balance + eligibility + cooldown groups + effect/fact routing; runtime aún 6/20 por blockers A1/A3. |
 | A6 | IN PROGRESS | PR #805. Gates cross-version, stress, public target, anti-grind, mobile E2E y candidatos integrados. |
 
 ## 3. ZERO_ACTION_EQUIVALENCE
@@ -176,10 +176,16 @@ career → category → action → authoritative target → option → result �
 
 Envía el `targetId` exacto proyectado por A2.
 
-Evidencia previa target-aware:
+Evidencia final target-aware, run **36316821115 — SUCCESS**:
 
-- A2 session + A4 UI: **45/45 PASS**;
-- PlayCanvas + A19: **11/11 PASS**.
+- A2 session + A4 contract: **46/46 PASS**;
+- PlayCanvas + A19: **11/11 PASS**;
+- A2-024..027 public targets/history/privacy: PASS;
+- A4-016 target flow: PASS;
+- A4-017 history: PASS;
+- A4-018 target privacy: PASS;
+- A4-019 target reset: PASS;
+- bundle versionado: 154 módulos · 17,484,526 bytes · SHA-256 `55649e9af9dd64711400fb0d3adddc51ee66f7d55dc0b1b29348e8a304a62bb6`.
 
 La revisión exacta actual incluye además:
 
@@ -194,8 +200,8 @@ A6 conserva:
 
 y el acceptance `A6-014`.
 
-**Finding PA-A6-001:** RESOLVED_IN_CODE / PENDING_FINAL_RETEST.  
-No se cuenta ya como defecto de ingeniería abierto, pero tampoco como PASS final hasta el candidato integrado.
+**Finding PA-A6-001:** CLOSED / CERTIFIED UPSTREAM.  
+A6 conserva A6-014 como regresión independiente en el candidato integrado, pero A2/A4 ya no tienen blocker abierto.
 
 ## 7. Authority / scopes
 
@@ -313,7 +319,10 @@ A5 ya tiene **20/20** en:
 
 - `content-plan.ts`;
 - `content-spec.ts`;
-- `content-balance.ts`.
+- `content-balance.ts`;
+- `content-eligibility.ts`;
+- `content-cooldown-groups.ts`;
+- `content-effect-plan.ts` (31/31 opciones V1).
 
 A5 valida:
 
@@ -330,19 +339,22 @@ Las 14 acciones bloqueadas son por contrato runtime, no por falta de diseño/cop
 ### Blockers A1
 
 - categoría health;
-- age/context eligibility;
-- closed registered content effects;
-- veteran/young teammate predicates;
-- shared/group cooldown cuando proceda;
-- contextual training/recovery handlers.
+- ejecutar el manifest cerrado de age/context eligibility;
+- registrar los effect keys cerrados de `content-effect-plan.ts`;
+- ejecutar veteran/young teammate predicates;
+- implementar group cooldowns;
+- categoría `health`;
+- aplicar los handlers balanceados definidos por A5.
 
-### Blockers A3 opcionales si permanecen en V1
+### Blockers A3 restantes
 
-- position change;
-- withdraw transfer;
-- career priority;
-- veteran advice;
-- mentor young.
+Sólo tres facts nuevos:
+
+- `request_position_change`;
+- `withdraw_transfer_request`;
+- `career_priority`.
+
+Veteran advice y mentor young quedan `direct_only` locales según el effect plan actual y **no deben** crear facts A3.
 
 **PA-GATE-10 CONTENT = FAIL** mientras el runtime siga 6/20.
 
@@ -385,6 +397,11 @@ A6 ha alineado:
 `scripts/test-player-actions-balance-release.mjs`
 
 a exactamente esos límites.
+
+Además, el diseño V1 distingue los dos caminos de salud:
+
+- `PA_REST`: cooldown 21d, puerta por fatiga (`fatigue_min >= 24`), delta objetivo -2 fatiga / +0.25 fitness, sin tocar riesgo;
+- `PA_RECOVERY_SESSION`: cooldown 14d, puerta por riesgo (`risk_min >= 28`), delta objetivo -2 fatiga / +0.25 fitness / -1 riesgo.
 
 **Finding training/rest:** FIX_IMPLEMENTED / PENDING_RETEST.  
 **PA-GATE-11:** BLOCKED hasta ejecutar el stress anual exacto; ya no se mantiene como FAIL histórico si el nuevo candidate cumple.
@@ -438,14 +455,14 @@ El build PlayCanvas genera artefactos versionados:
 - `playcanvas/multihistoria.js`;
 - `playcanvas/manifest.json`.
 
-A4 añadió versionado automático del paquete regenerado.
+A4 ya cerró su certificación exacta en run **36316821115 — SUCCESS** y versionó el paquete final. A4 declara cero engineering blockers restantes.
 
-A6 añade además un freshness gate:
+A6 añade además un freshness gate integrado:
 
 `npm run build:playcanvas` seguido de diff cero del artefacto versionado.
 
-**PA-GATE-12 PREVIEW:** BLOCKED pending exact integrated E2E, no longer engineering FAIL.  
-**PA-GATE-13 PLAYCANVAS:** BLOCKED pending exact-head build/freshness/E2E.
+**PA-GATE-12 PREVIEW:** BLOCKED sólo por el E2E integrado A6; el componente A4 está PASS/CERTIFIED.  
+**PA-GATE-13 PLAYCANVAS:** BLOCKED sólo por el rebuild/freshness integrado A6; el componente A4 está PASS/CERTIFIED.
 
 ## 15. Mobile / accessibility / optionality
 
@@ -500,10 +517,10 @@ El candidato integrado actual combina:
 - A2 session;
 - A2 public target adapter;
 - A3 bridge;
-- A4 target UI;
+- A4 target UI + bundle final certificado;
 - A5 six-action production slice;
 - latest persistence regression;
-- A5 plan/spec tests.
+- A5 plan/spec/balance/eligibility/cooldown/effect-routing manifests y tests.
 
 No convierte las 14 acciones bloqueadas en runtime ficticio.
 
@@ -526,8 +543,9 @@ Se conserva únicamente evidencia ya completada y reproducible.
 ### PA-A6-001 — public target contract
 
 **Severity:** P2 histórico  
-**Estado:** RESOLVED_IN_CODE / PENDING_FINAL_RETEST  
-**Owner:** A2 #806 + A4 #804
+**Estado:** CLOSED / CERTIFIED  
+**Owner:** A2 #806 + A4 #804  
+**Evidence:** A4 run 36316821115 SUCCESS.
 
 ### PA-A6-002 — runtime catalog 6/20
 
@@ -571,6 +589,15 @@ Runtime = 6/20.
 **Canonical horizon:** 24 months.  
 **Acceptance:** A6-021.
 
+### PA-A6-008 — manifest coherence veteran/mentor
+
+**Severity:** P2 OPEN  
+**Owner:** RETURN_TO_A5
+
+`content-effect-plan.ts` + A5-052 declaran `PA_VETERAN_ADVICE` y `PA_MENTOR_YOUNG` como `direct_only` sin A3 fact, pero `content-plan.ts` conserva blockers `A3 advice intent` / `A3 mentorship intent`.
+
+**Acceptance:** A6-015A PASS; los dos `blockedBy` deben alinearse con el routing final.
+
 ## 19. Gates actuales
 
 | Gate | Estado |
@@ -586,8 +613,8 @@ Runtime = 6/20.
 | PA-GATE-09 AUTO_SIM | PASS on implemented slice |
 | PA-GATE-10 CONTENT | FAIL — runtime 6/20 |
 | PA-GATE-11 ANTI_GRIND | BLOCKED — fix implemented, exact annual stress pending |
-| PA-GATE-12 PREVIEW | BLOCKED — target implementation exists, exact integrated E2E pending |
-| PA-GATE-13 PLAYCANVAS | BLOCKED — exact integrated build/artifact/E2E pending |
+| PA-GATE-12 PREVIEW | BLOCKED integrated — A4 component CERTIFIED; browser E2E A6 pending |
+| PA-GATE-13 PLAYCANVAS | BLOCKED integrated — A4 component CERTIFIED; integrated rebuild/freshness pending |
 | PA-GATE-14 MOBILE | BLOCKED — Chromium 360/390/430 job pending |
 | PA-GATE-15 OPTIONALITY_UX | PASS |
 
@@ -622,9 +649,9 @@ El release está bloqueado principalmente por:
 
 Cerrar en este orden:
 
-1. A1 active-employment + renewal-window;
-2. A1 catalog contract;
-3. A3 intents que sobrevivan al V1 final;
+1. A5 corregir los dos `blockedBy` veteran/mentor obsoletos;
+2. A1 active-employment + renewal-window + ejecución de manifests cerrados;
+3. A3 implementar únicamente los 3 facts nuevos del V1;
 4. A5 materializar las 14 acciones bloqueadas;
 5. A6-015 content PASS;
 6. annual anti-grind PASS;
