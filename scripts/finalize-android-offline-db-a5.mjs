@@ -29,6 +29,18 @@ collectFiles(assetsRoot);
 
 const manifest=JSON.parse(fs.readFileSync(manifestPath,'utf8'));
 manifest.footballPresentation='DB-A5-G5';
+const presentationInputFiles=[
+  'web/game-ui.js',
+  'web/club-names.js',
+  'web/indexed-save-store.js',
+  'scripts/build-android-offline.mjs',
+  'scripts/finalize-android-offline-db-a5.mjs',
+  'scripts/local-esm-graph.mjs'
+];
+manifest.presentationInputs=Object.fromEntries(presentationInputFiles.map(relative=>[
+  relative,
+  digest(path.join(root,...relative.split('/')))
+]));
 manifest.importGraph={
   entry:'web/local.js',
   moduleCount:modules.length,
