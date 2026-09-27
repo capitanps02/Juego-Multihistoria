@@ -226,3 +226,14 @@ test('A4-018 TARGET PRIVACY: UI consumes only public target fields and stale tar
     error=>error?.code==='PLAYER_ACTION_TARGET_INVALID'
   );
 });
+
+
+test('A4-019 TARGET RESET: navigation never carries a selected target into another action',()=>{
+  const assignments=source=>[...source.matchAll(/playerActionUi\s*=\s*\{[^;\n]*\}/g)].map(match=>match[0]);
+  for(const [name,source] of [['preview',preview],['web',web]]){
+    const withoutTarget=assignments(source).filter(assignment=>!assignment.includes('targetId'));
+    assert.deepEqual(withoutTarget,[],`${name} has Player Action navigation state without target reset`);
+  }
+  assert.match(preview,/player_action_category'.*targetId:null/s);
+  assert.match(web,/player_action_category'.*targetId:null/s);
+});
