@@ -890,14 +890,17 @@ test("A5-050 EFFECT MODE AGREES WITH BALANCE AND FACT ROUTING", () => {
   }
 });
 
-test("A5-051 NEW A3 FACT SURFACE IS MINIMAL", () => {
-  const alreadyImplementedFacts = new Set([
+test("A5-051 V1 PERSISTENT FACT SURFACE IS FULLY CERTIFIED", () => {
+  const implementedFacts = new Set([
     "request_more_minutes",
     "request_coach_feedback",
     "coach_role_acknowledged",
     "request_transfer",
+    "withdraw_transfer_request",
+    "request_position_change",
     "request_renewal",
     "ask_agent_market",
+    "career_priority",
     "training_extra_completed",
     "rest_completed"
   ]);
@@ -906,13 +909,10 @@ test("A5-051 NEW A3 FACT SURFACE IS MINIMAL", () => {
     PLAYER_ACTION_EFFECT_PLAN
       .map(row => row.desiredFactKind)
       .filter(Boolean)
-      .filter(kind => !alreadyImplementedFacts.has(kind))
+      .filter(kind => !implementedFacts.has(kind))
   );
 
-  assert.deepEqual(
-    [...missingFacts].sort(),
-    ["career_priority", "request_position_change", "withdraw_transfer_request"].sort()
-  );
+  assert.deepEqual([...missingFacts], []);
 });
 
 test("A5-052 LEADER-ADVICE AND MENTOR ACTIONS STAY LOCAL, NOT A3 FACTS", () => {
@@ -1087,21 +1087,17 @@ test("A5-059 RELATIONSHIP CATEGORY STAYS RELATIONSHIP-LOCAL", () => {
 });
 
 
-test("A5-060 ONLY THREE V1 ACTIONS DEPEND ON NEW A3 CONTRACTS", () => {
+test("A5-060 NO V1 ACTION REMAINS BLOCKED ON A3", () => {
   const a3Blocked = PLAYER_ACTION_CONTENT_PLAN
     .filter(row => /A3/i.test(row.blockedBy ?? ""))
-    .map(row => row.id)
-    .sort();
+    .map(row => row.id);
 
-  assert.deepEqual(
-    a3Blocked,
-    ["PA_DISCUSS_FUTURE", "PA_POSITION_CHANGE", "PA_WITHDRAW_TRANSFER"].sort()
-  );
-
-  for (const actionId of ["PA_ROLE_CHECK", "PA_LEADER_ADVICE", "PA_MENTOR_TEAMMATE", "PA_SOCIAL_POST"]) {
+  assert.deepEqual(a3Blocked, []);
+  for (const actionId of ["PA_POSITION_CHANGE", "PA_WITHDRAW_TRANSFER", "PA_DISCUSS_FUTURE"]) {
     const row = PLAYER_ACTION_CONTENT_PLAN.find(item => item.id === actionId);
     assert.ok(row);
-    assert.equal(/A3/i.test(row.blockedBy ?? ""), false, `${actionId} has unnecessary A3 dependency`);
+    assert.equal(row.status, "implemented");
+    assert.equal(row.blockedBy, undefined);
   }
 });
 
@@ -1332,4 +1328,141 @@ test("A5-073 PLAN STATUS MATCHES CURRENT RUNTIME ACTION SURFACE", () => {
       `${plan.id} plan status does not match closed effect registry surface`
     );
   }
+});
+
+
+test("A5-074 CERTIFIED A3 FACTS EXPAND RUNTIME TO NINE ACTIONS", () => {
+  const expected = [
+    "PA_COACH_TALK",
+    "PA_POSITION_CHANGE",
+    "PA_REQUEST_TRANSFER",
+    "PA_WITHDRAW_TRANSFER",
+    "PA_TRAIN_EXTRA",
+    "PA_REST",
+    "PA_AGENT_MARKET",
+    "PA_REQUEST_RENEWAL",
+    "PA_DISCUSS_FUTURE"
+  ];
+  assert.deepEqual(PLAYER_ACTION_CATALOG.map(action => action.id), expected);
+});
+
+test("A5-075 POSITION CHANGE IS FACT-ONLY AND COACH-SCOPED", () => {
+  const state = createInitialState(8575);
+  const before = {
+    club: state.club,
+    professional: clone(state.professional),
+    body: clone(state.body),
+    market: clone(state.market),
+    contract: clone(state.contract),
+    rng: clone(state.rngState)
+  };
+
+  const result = executePlayerActionInPlace(state, {
+    actionId: "PA_POSITION_CHANGE",
+    optionId: "EXPLORE",
+    targetId: "NPC_CCH_01"
+  });
+  assert.equal(result.ok, true);
+  assert.equal(state.club, before.club);
+  assert.deepEqual(state.professional, before.professional);
+  assert.deepEqual(state.body, before.body);
+  assert.deepEqual(state.market, before.market);
+  assert.deepEqual(state.contract, before.contract);
+  assert.deepEqual(state.rngState, before.rng);
+
+  const facts = playerActionFacts(state);
+  assert.equal(facts.requestedPositionChange.historicalExists, true);
+  assert.equal(facts.requestedPositionChange.currentlyRelevant, true);
+  assert.equal(facts.requestedPositionChange.club, "UDV");
+  assert.equal(facts.requestedPositionChange.coachNpcId, "NPC_CCH_01");
+});
+
+test("A5-076 WITHDRAW TRANSFER CLOSES LIVE INTENT WITHOUT RESETTING REQUEST COOLDOWN", () => {
+  const state = createInitialState(8576);
+
+  const request = executePlayerActionInPlace(state, {
+    actionId: "PA_REQUEST_TRANSFER",
+    optionId: "REQUEST"
+  });
+  assert.equal(request.ok, true);
+  assert.equal(playerActionFacts(state).requestedTransfer.currentlyRelevant, true);
+
+  const requestAction = PLAYER_ACTION_CATALOG.find(row => row.id === "PA_REQUEST_TRANSFER");
+  const withdrawAction = PLAYER_ACTION_CATALOG.find(row => row.id === "PA_WITHDRAW_TRANSFER");
+  assert.ok(requestAction && withdrawAction);
+
+  assert.equal(evaluatePlayerAction(state, withdrawAction).available, false);
+  state.date = addPlayerActionDays(state.date, 14);
+  assert.equal(evaluatePlayerAction(state, withdrawAction).available, true);
+
+  const worldBefore = {
+    club: state.club,
+    market: clone(state.market),
+    contract: clone(state.contract),
+    employment: clone(state.employment),
+    rng: clone(state.rngState)
+  };
+
+  const withdrawn = executePlayerActionInPlace(state, {
+    actionId: "PA_WITHDRAW_TRANSFER",
+    optionId: "WITHDRAW"
+  });
+  assert.equal(withdrawn.ok, true);
+  assert.equal(state.club, worldBefore.club);
+  assert.deepEqual(state.market, worldBefore.market);
+  assert.deepEqual(state.contract, worldBefore.contract);
+  assert.deepEqual(state.employment, worldBefore.employment);
+  assert.deepEqual(state.rngState, worldBefore.rng);
+
+  const facts = playerActionFacts(state);
+  assert.equal(facts.requestedTransfer.historicalExists, true);
+  assert.equal(facts.requestedTransfer.currentlyRelevant, false);
+  assert.equal(facts.transferRequestWithdrawn.historicalExists, true);
+  assert.equal(facts.transferRequestWithdrawn.currentlyRelevant, true);
+
+  // Withdrawal must not let the player bypass the original 121-day request cooldown.
+  assert.equal(evaluatePlayerAction(state, requestAction).available, false);
+  assert.equal(
+    state.playerActions?.cooldowns["action:PA_REQUEST_TRANSFER"],
+    addPlayerActionDays("2026-07-01", 121)
+  );
+});
+
+test("A5-077 CAREER PRIORITY IS REPRESENTATIVE-SCOPED AND WORLD-NEUTRAL", () => {
+  const state = createInitialState(8577);
+  state.age = 20;
+
+  certifyRepresentationInPlace(state, "NPC_AGT_01", {
+    commissionPct: 10,
+    services: ["market"],
+    contactPolicy: "inform_first"
+  }, "a5_priority_test");
+
+  const before = {
+    club: state.club,
+    market: clone(state.market),
+    contract: clone(state.contract),
+    employment: clone(state.employment),
+    selection: clone(state.selection),
+    rng: clone(state.rngState)
+  };
+
+  const result = executePlayerActionInPlace(state, {
+    actionId: "PA_DISCUSS_FUTURE",
+    optionId: "SALARY",
+    targetId: "NPC_AGT_01"
+  });
+  assert.equal(result.ok, true);
+  assert.equal(state.club, before.club);
+  assert.deepEqual(state.market, before.market);
+  assert.deepEqual(state.contract, before.contract);
+  assert.deepEqual(state.employment, before.employment);
+  assert.deepEqual(state.selection, before.selection);
+  assert.deepEqual(state.rngState, before.rng);
+
+  const facts = playerActionFacts(state);
+  assert.equal(facts.careerPriority.historicalExists, true);
+  assert.equal(facts.careerPriority.currentlyRelevant, true);
+  assert.equal(facts.careerPriority.agentNpcId, "NPC_AGT_01");
+  assert.equal(facts.careerPriority.priority, "salary");
 });
