@@ -511,3 +511,59 @@ test("A5-029 IMPLEMENTED PUBLIC COPY IS A SUBSET OF CERTIFIED SPEC", () => {
     }
   }
 });
+
+
+test("A5-030 FULL PUBLIC SPEC DOES NOT LEAK INTERNALS", () => {
+  const forbidden = [
+    "rolescore",
+    "marketheat",
+    "rngstate",
+    "effectkey",
+    "eligibilitykey",
+    "originevent",
+    "playeractionfact",
+    "currentlyrelevant"
+  ];
+
+  for (const spec of PLAYER_ACTION_CONTENT_SPECS) {
+    const publicText = [
+      spec.label,
+      spec.description,
+      ...spec.options.flatMap(option => [option.label, option.publicResult])
+    ].join(" ").toLowerCase();
+
+    for (const term of forbidden) {
+      assert.equal(publicText.includes(term), false, `${spec.id} leaks internal term ${term}`);
+    }
+  }
+});
+
+test("A5-031 FULL PUBLIC SPEC DOES NOT PROMISE FOREIGN AUTHORITY OUTCOMES", () => {
+  const forbiddenClaims = [
+    "serás titular",
+    "eres titular",
+    "recibirás una oferta",
+    "tendrás una oferta",
+    "te renuevan",
+    "renovación asegurada",
+    "cambias de club",
+    "fichas por",
+    "curas la lesión",
+    "lesión curada",
+    "te convocan",
+    "eres capitán",
+    "te retiras"
+  ];
+
+  for (const spec of PLAYER_ACTION_CONTENT_SPECS) {
+    const publicText = [
+      spec.label,
+      spec.description,
+      ...spec.options.flatMap(option => [option.label, option.publicResult])
+    ].join(" ").toLowerCase();
+
+    for (const claim of forbiddenClaims) {
+      assert.equal(publicText.includes(claim), false, `${spec.id} promises foreign authority outcome: ${claim}`);
+    }
+  }
+});
