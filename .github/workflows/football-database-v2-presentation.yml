@@ -38,3 +38,21 @@ jobs:
         run: npm run test:football-presentation
       - name: Confirm Android package has no missing relative modules
         run: node --test scripts/test-football-presentation-platforms.mjs
+      - name: Attempt Android APK assemble
+        shell: bash
+        run: |
+          set +e
+          npm run android:apk
+          code=$?
+          set -e
+          if [ "$code" -ne 0 ] && [ "$code" -ne 2 ]; then exit "$code"; fi
+      - name: Validate APK result when toolchain is available
+        run: |
+          node -e "const fs=require('fs');const p='analysis/2026-09-15/T3.3-apk-build.json';if(!fs.existsSync(p)){console.log('APK report not produced');process.exit(0)}const r=JSON.parse(fs.readFileSync(p,'utf8'));const available=r.java?.available&&r.gradle?.available&&r.androidSdk?.exists;if(available&&r.status!=='pass'){console.error(JSON.stringify(r));process.exit(1)}console.log(available?'APK PASS':'APK NOT AVAILABLE');"
+      - name: Preserve APK build report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: db-a5-apk-report
+          path: analysis/2026-09-15/T3.3-apk-build.json
+          if-no-files-found: ignore
