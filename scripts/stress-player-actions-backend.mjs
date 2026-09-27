@@ -1,6 +1,12 @@
 import assert from "node:assert/strict";
 import { performance } from "node:perf_hooks";
-import { GameSession } from "../dist/session/game-session.js";
+import path from "node:path";
+import { pathToFileURL } from "node:url";
+
+const candidateRoot = path.resolve(process.argv[2] ?? ".");
+const { GameSession } = await import(
+  pathToFileURL(path.join(candidateRoot, "dist/session/game-session.js")).href
+);
 
 const SEEDS = Array.from({ length: 20 }, (_, index) => index + 1);
 const POLICIES = ["none", "training-heavy", "rest-heavy", "mixed"];
