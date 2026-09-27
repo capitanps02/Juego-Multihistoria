@@ -1,4 +1,6 @@
 import type { DataValue, GameState } from "../core/types.js";
+import { clubById } from "../catalog/football/index.js";
+import { selectFixtureOpponent } from "../catalog/football/fixture-opponent.js";
 
 const STORE_KEY = "sportMatchModel";
 const OFFICIAL_MONTHS = new Set([8, 9, 10, 11, 12, 1, 2, 3, 4, 5]);
@@ -17,6 +19,8 @@ export interface ScheduledFixture {
   competition: MatchCompetition;
   club: string;
   opponent: string;
+  /** Stable catalog identity for new V2 fixtures; absent on historical rows. */
+  opponentClubId?: string;
   homeAway: MatchHomeAway;
   official: true;
 }
@@ -264,14 +268,21 @@ function fixtureId(season: string, date: string, club: string): string {
 function fixtureProjection(state: GameState, date: string): ScheduledFixture {
   const club = state.professional.registrationClub;
   const fingerprint = avalanche32(hashString(`${state.season}|${date}|${club}|${state.professional.leagueTier}`));
-  const opponent = `SIM_OPP_${state.professional.leagueTier}_${String((fingerprint % 20) + 1).padStart(2, "0")}`;
+  const opponent = selectFixtureOpponent({
+    registrationClub: club,
+    leagueTier: state.professional.leagueTier,
+    route: state.professional.route,
+    abroad: state.flags.ABROAD_ROUTE === true,
+    selectionFingerprint: fingerprint
+  });
   return {
     id: fixtureId(state.season, date, club),
     date,
     season: state.season,
     competition: "league",
     club,
-    opponent,
+    opponent: opponent.name,
+    opponentClubId: opponent.clubId,
     homeAway: fingerprint % 2 === 0 ? "home" : "away",
     official: true
   };
@@ -1076,6 +1087,7 @@ function fixtureIssue(value: unknown, index: number, maxDate?: string, state?: G
   if (!plainRecord(value)) return { path, reason: "fixture must be an object" };
   const legacyKeys = ["id", "date", "season", "competition", "club", "opponent", "homeAway", "official", "player", "decisionContext"];
   const allowedKeys = [...legacyKeys];
+  if (Object.prototype.hasOwnProperty.call(value, "opponentClubId")) allowedKeys.push("opponentClubId");
   if (Object.prototype.hasOwnProperty.call(value, "result")) allowedKeys.push("result");
   if (Object.prototype.hasOwnProperty.call(value, "stats")) allowedKeys.push("stats");
   if (Object.prototype.hasOwnProperty.call(value, "performanceContext")) allowedKeys.push("performanceContext");
@@ -1094,6 +1106,14 @@ function fixtureIssue(value: unknown, index: number, maxDate?: string, state?: G
   }
   for (const key of ["id", "season", "club", "opponent"]) {
     if (typeof value[key] !== "string" || (value[key] as string).length === 0) return { path: `${path}.${key}`, reason: "invalid text" };
+  }
+  if (Object.prototype.hasOwnProperty.call(value, "opponentClubId")) {
+    if (typeof value.opponentClubId !== "string" || value.opponentClubId.length === 0 || value.opponentClubId.length > 200) {
+      return { path: `${path}.opponentClubId`, reason: "invalid opponent catalog id" };
+    }
+    const opponentClub = clubById(value.opponentClubId);
+    if (!opponentClub) return { path: `${path}.opponentClubId`, reason: "unknown opponent catalog id" };
+    if (value.opponent !== opponentClub.name) return { path: `${path}.opponent`, reason: "opponent name does not match catalog id" };
   }
   if (!validIsoDate(value.date)) return { path: `${path}.date`, reason: "invalid fixture date" };
   if (maxDate && value.date > maxDate) return { path: `${path}.date`, reason: "fixture cannot be in the future" };
