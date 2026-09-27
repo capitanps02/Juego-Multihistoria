@@ -1,0 +1,40 @@
+name: Football Database V2 · Presentation / platforms
+
+on:
+  pull_request:
+    paths:
+      - 'src/catalog/football/**'
+      - 'web/game-ui.js'
+      - 'web/club-names.js'
+      - 'web/indexed-save-store.js'
+      - 'scripts/local-esm-graph.mjs'
+      - 'scripts/build-playcanvas-db-a5.mjs'
+      - 'scripts/build-android-offline.mjs'
+      - 'scripts/finalize-android-offline-db-a5.mjs'
+      - 'scripts/test-club-names.mjs'
+      - 'scripts/test-football-presentation-platforms.mjs'
+      - 'scripts/test-playcanvas.mjs'
+      - 'scripts/test-android-offline.mjs'
+      - 'scripts/test-player-actions-ui-contract.mjs'
+      - 'package.json'
+      - '.github/workflows/football-database-v2-presentation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  presentation-platforms:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Football presentation / PlayCanvas / Android offline
+        run: npm run test:football-presentation
+      - name: Confirm Android package has no missing relative modules
+        run: node --test scripts/test-football-presentation-platforms.mjs
