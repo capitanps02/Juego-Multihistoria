@@ -53,8 +53,8 @@ export const PLAYER_ACTION_EFFECT_PLAN: readonly PlayerActionOptionEffectPlan[] 
   { actionId: "PA_INTERVIEW", optionId: "HUMBLE", mode: "direct_only", desiredEffectKey: "interview_humble", implemented: false },
   { actionId: "PA_INTERVIEW", optionId: "AMBITIOUS", mode: "direct_only", desiredEffectKey: "interview_ambitious", implemented: false },
   { actionId: "PA_INTERVIEW", optionId: "TEAM_FIRST", mode: "direct_only", desiredEffectKey: "interview_team_first", implemented: false },
-  { actionId: "PA_SOCIAL_POST", optionId: "PROFESSIONAL", mode: "direct_only", desiredEffectKey: "social_post_professional", implemented: false },
-  { actionId: "PA_SOCIAL_POST", optionId: "PERSONAL", mode: "direct_only", desiredEffectKey: "social_post_personal", implemented: false },
+  { actionId: "PA_SOCIAL_POST", optionId: "PROFESSIONAL", mode: "informational", desiredEffectKey: "social_post_professional", implemented: false },
+  { actionId: "PA_SOCIAL_POST", optionId: "PERSONAL", mode: "informational", desiredEffectKey: "social_post_personal", implemented: false },
 
   { actionId: "PA_PERSONAL_TIME", optionId: "PEOPLE", mode: "direct_only", desiredEffectKey: "personal_time_people", implemented: false },
   { actionId: "PA_PERSONAL_TIME", optionId: "HOBBY", mode: "direct_only", desiredEffectKey: "personal_time_hobby", implemented: false },
