@@ -5,6 +5,7 @@ on:
     paths:
       - 'src/catalog/football/**'
       - 'web/game-ui.js'
+      - 'preview/app.js'
       - 'web/club-names.js'
       - 'web/indexed-save-store.js'
       - 'scripts/local-esm-graph.mjs'
