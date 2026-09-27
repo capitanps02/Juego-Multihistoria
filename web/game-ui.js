@@ -338,7 +338,7 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
   function latestMatchPanel(v){
     const m=v.latestMatch;if(!m)return null;
     const p=panel('Último partido oficial');p.append(el('time',date(m.date),'eyebrow'));
-    const home=m.homeAway==='home'?clubName(m.club):clubName(m.opponent),away=m.homeAway==='home'?clubName(m.opponent):clubName(m.club);
+    const home=m.homeAway==='home'?clubShortName(m.club):clubShortName(m.opponent),away=m.homeAway==='home'?clubShortName(m.opponent):clubShortName(m.club);
     p.append(el('p',m.result?`${home} ${m.result.homeGoals} – ${m.result.awayGoals} ${away}`:`${home} · ${away}`,'season-club'));
     const participation=!m.available?'No disponible para este partido':!m.selected?'No convocado':m.minutes===0?'Suplente sin minutos':m.started?'Titular':'Entraste desde el banquillo';
     p.append(el('p',participation,'muted'));
