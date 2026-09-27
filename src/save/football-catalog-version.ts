@@ -87,7 +87,7 @@ export function migrateFootballStateReferencesExplicitlyInPlace(
   state: GameState,
   mapping: ExplicitFootballClubIdMap
 ): number {
-  let changes = 0;
+  const planned: Array<{ parent: Record<string, unknown>; key: string; replacement: string }> = [];
   const ancestors = new Set<object>();
   let nodes = 0;
 
@@ -106,11 +106,10 @@ export function migrateFootballStateReferencesExplicitlyInPlace(
       if (!plainRecord(value)) throw new Error("Football catalog migration encountered a non-plain object");
       for (const [key, child] of Object.entries(value)) {
         if (MIGRATABLE_REFERENCE_KEYS.has(key) && typeof child === "string") {
-          const migrated = migrateFootballClubReferenceExplicitly(child, mapping);
-          if (migrated !== child) {
-            value[key] = migrated;
-            changes += 1;
-          }
+          // Validate every manifest entry before mutating any state. A tombstone or
+          // invalid target therefore fails atomically instead of leaking a half-migration.
+          const replacement = migrateFootballClubReferenceExplicitly(child, mapping);
+          if (replacement !== child) planned.push({ parent: value, key, replacement });
         } else if (child !== null && typeof child === "object") {
           visit(child, depth + 1);
         }
@@ -121,7 +120,8 @@ export function migrateFootballStateReferencesExplicitlyInPlace(
   };
 
   visit(state, 0);
-  return changes;
+  for (const change of planned) change.parent[change.key] = change.replacement;
+  return planned.length;
 }
 
 export interface FootballCatalogMigrationStep {
