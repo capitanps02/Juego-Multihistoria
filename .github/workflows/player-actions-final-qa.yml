@@ -12,7 +12,7 @@ permissions:
 
 concurrency:
   group: player-actions-final-qa-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 env:
   BASELINE_SHA: 2cc068cb705214ba827677ab02d8d1668e8677ec
