@@ -45,9 +45,9 @@ export const PLAYER_ACTION_CONTENT_PLAN: readonly PlayerActionContentPlanRow[] =
     ageRange: [18, null],
     cooldownDays: 21,
     targetKind: "coach",
-    status: "blocked",
+    status: "implemented",
     requiredContext: "current coach",
-    blockedBy: "A1 informational handler + coach eligibility"
+
   },
   {
     id: "PA_POSITION_CHANGE",
@@ -96,9 +96,9 @@ export const PLAYER_ACTION_CONTENT_PLAN: readonly PlayerActionContentPlanRow[] =
     ageRange: [18, null],
     cooldownDays: 14,
     targetKind: "none",
-    status: "blocked",
+    status: "implemented",
     requiredContext: "active career",
-    blockedBy: "A1 content effect registry"
+
   },
   {
     id: "PA_RECOVERY_SESSION",
@@ -107,9 +107,9 @@ export const PLAYER_ACTION_CONTENT_PLAN: readonly PlayerActionContentPlanRow[] =
     ageRange: [18, null],
     cooldownDays: 14,
     targetKind: "none",
-    status: "blocked",
+    status: "implemented",
     requiredContext: "elevated physical risk",
-    blockedBy: "A1 health category + risk eligibility + recovery handler"
+
   },
   {
     id: "PA_REST",
@@ -158,9 +158,9 @@ export const PLAYER_ACTION_CONTENT_PLAN: readonly PlayerActionContentPlanRow[] =
     ageRange: [18, null],
     cooldownDays: 10,
     targetKind: "teammate",
-    status: "blocked",
+    status: "implemented",
     requiredContext: "eligible current teammate",
-    blockedBy: "A1 relationship handler + shared cooldown support"
+
   },
   {
     id: "PA_CLEAR_AIR",
@@ -169,9 +169,9 @@ export const PLAYER_ACTION_CONTENT_PLAN: readonly PlayerActionContentPlanRow[] =
     ageRange: [18, null],
     cooldownDays: 21,
     targetKind: "teammate",
-    status: "blocked",
+    status: "implemented",
     requiredContext: "current teammate",
-    blockedBy: "A1 relationship handler + shared cooldown support"
+
   },
   {
     id: "PA_LEADER_ADVICE",
@@ -180,9 +180,9 @@ export const PLAYER_ACTION_CONTENT_PLAN: readonly PlayerActionContentPlanRow[] =
     ageRange: [18, 23],
     cooldownDays: 21,
     targetKind: "teammate",
-    status: "blocked",
+    status: "implemented",
     requiredContext: "current teammate",
-    blockedBy: "A1 relationship handler + shared cooldown support"
+
   },
   {
     id: "PA_MENTOR_TEAMMATE",
@@ -191,9 +191,9 @@ export const PLAYER_ACTION_CONTENT_PLAN: readonly PlayerActionContentPlanRow[] =
     ageRange: [30, null],
     cooldownDays: 21,
     targetKind: "teammate",
-    status: "blocked",
+    status: "implemented",
     requiredContext: "current teammate",
-    blockedBy: "A1 age eligibility + relationship handler"
+
   },
   {
     id: "PA_INTERVIEW",
@@ -202,9 +202,9 @@ export const PLAYER_ACTION_CONTENT_PLAN: readonly PlayerActionContentPlanRow[] =
     ageRange: [18, null],
     cooldownDays: 28,
     targetKind: "none",
-    status: "blocked",
+    status: "implemented",
     requiredContext: "active career",
-    blockedBy: "A1 informational/image handler"
+
   },
   {
     id: "PA_SOCIAL_POST",
@@ -213,9 +213,9 @@ export const PLAYER_ACTION_CONTENT_PLAN: readonly PlayerActionContentPlanRow[] =
     ageRange: [18, null],
     cooldownDays: 21,
     targetKind: "none",
-    status: "blocked",
+    status: "implemented",
     requiredContext: "active career",
-    blockedBy: "A1 image effect registry"
+
   },
   {
     id: "PA_PERSONAL_TIME",
@@ -224,9 +224,9 @@ export const PLAYER_ACTION_CONTENT_PLAN: readonly PlayerActionContentPlanRow[] =
     ageRange: [18, null],
     cooldownDays: 30,
     targetKind: "none",
-    status: "blocked",
+    status: "implemented",
     requiredContext: "meaningful fatigue",
-    blockedBy: "A1 life effect registry"
+
   },
   {
     id: "PA_DISCONNECT",
@@ -235,8 +235,8 @@ export const PLAYER_ACTION_CONTENT_PLAN: readonly PlayerActionContentPlanRow[] =
     ageRange: [28, null],
     cooldownDays: 45,
     targetKind: "none",
-    status: "blocked",
+    status: "implemented",
     requiredContext: "late-career fatigue",
-    blockedBy: "A1 age eligibility + life effect registry"
+
   }
 ] as const;
