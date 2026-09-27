@@ -161,7 +161,7 @@ test("DB-A4 older V2 saves may retain historical fixtures without opponentClubId
   assert.equal(inspectFootballCatalogSaveReferences(probe), null);
 });
 
-test("DB-A4 current V2 fixtures require a stable catalog opponent ID", () => {
+test("DB-A4 historical fixture rows may omit opponentClubId; present IDs fail closed", () => {
   const probe = {
     footballCatalogVersion: CURRENT_FOOTBALL_CATALOG_VERSION,
     club: "ESP_MADRID",
@@ -169,10 +169,12 @@ test("DB-A4 current V2 fixtures require a stable catalog opponent ID", () => {
     world: {
       ownerClub: "ESP_MADRID",
       sportMatchModel: {
-        fixtures: [{ club: "ESP_MADRID", opponent: "Nombre de rival" }]
+        fixtures: [{ club: "Aurora CF", opponent: "SIM_OPP_TEST" }]
       }
     }
   };
+  assert.equal(inspectFootballCatalogSaveReferences(probe), null);
+  probe.world.sportMatchModel.fixtures[0].opponentClubId = "ESP_FAKE_CLUB_999";
   const issue = inspectFootballCatalogSaveReferences(probe);
   assert.equal(issue?.path, "world.sportMatchModel.fixtures[0].opponentClubId");
 });
