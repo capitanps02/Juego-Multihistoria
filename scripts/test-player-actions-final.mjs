@@ -414,18 +414,20 @@ test("A6-017 OFFER COLLISION: offer created after render makes old action stale"
   assert.equal(proven, true, "no deterministic offer collision seed found");
 });
 
-test("A6-018 RETIREMENT COLLISION: career closure after render makes old action stale", async () => {
+test("A6-018 RETIREMENT COLLISION: rendered action fails closed if career is closed before click", async () => {
   const source = await emptySession(6018, "a6-retirement-collision");
   const rendered = source.getView();
-  const staleAction = {
+  const click = {
     type: "player_action",
-    commandId: "a6-stale-after-retirement",
+    commandId: "a6-after-retirement",
     expectedRevision: rendered.revision,
     actionId: "PA_REST",
     optionId: "RECOVER"
   };
+
+  // Use the same valid closed-career fixture shape already certified by A2.
+  // Do not forge revision/receipts: closure itself must be enough to fail closed.
   const closed = source.exportSnapshot();
-  closed.revision = rendered.revision + 1;
   closed.state.retirement.status = "closed";
   closed.state.retirement.decidedDate = closed.state.date;
   closed.state.retirement.announcedDate = closed.state.date;
@@ -433,46 +435,64 @@ test("A6-018 RETIREMENT COLLISION: career closure after render makes old action 
   closed.state.retirement.decisionAge = closed.state.age;
   closed.state.retirement.reason = "qa_terminal";
   closed.state.retirement.closureType = "qa_terminal";
+
   const session = await GameSession.resume(closed, { events: [] });
   const before = session.exportSnapshot();
   await assert.rejects(
-    session.dispatch(staleAction),
-    error => error?.code === "STALE_REVISION"
+    session.dispatch(click),
+    error => error?.code === "CAREER_CLOSED"
   );
   assert.deepEqual(session.exportSnapshot(), before);
 });
 
 
-test("A6-019 NARRATIVE RNG FUTURE: local action does not shift future narrative stream", async () => {
-  const source = await GameSession.create(6190, {
+test("A6-019 NARRATIVE RNG FUTURE: informational Player Action does not shift future narrative stream", async () => {
+  const withAction = await GameSession.create(6190, {
     microfeeds: false,
     sessionId: "a6-future-rng"
   });
-  const baselineSnapshot = source.exportSnapshot();
-  const actionSnapshot = clone(baselineSnapshot);
-  const bodyBefore = clone(actionSnapshot.state.body);
-
-  const result = executePlayerActionInPlace(actionSnapshot.state, {
-    actionId: "PA_REST",
-    optionId: "RECOVER"
+  const withoutAction = await GameSession.create(6190, {
+    microfeeds: false,
+    sessionId: "a6-future-rng"
   });
-  assert.equal(result.ok, true);
 
-  // Neutralize only the legitimate local physical differences from REST.
-  actionSnapshot.state.body.fatigue = bodyBefore.fatigue;
-  actionSnapshot.state.body.fitness = bodyBefore.fitness;
+  const actionView = withAction.getView();
+  const agentAction = actionView.actions.categories
+    .flatMap(category => category.actions)
+    .find(action => action.id === "PA_AGENT_MARKET");
+  assert.ok(agentAction, "PA_AGENT_MARKET missing");
+  const agentTarget = agentAction.targets?.find(target => target.available);
+  assert.ok(agentTarget, "no authoritative agent target available");
 
-  const withAction = await GameSession.resume(actionSnapshot);
-  const withoutAction = await GameSession.resume(clone(baselineSnapshot));
+  const beforeRng = clone(withAction.exportSnapshot().state.rngState.narrative);
+  await withAction.dispatch({
+    type: "player_action",
+    commandId: "a6-future-rng-agent",
+    expectedRevision: actionView.revision,
+    actionId: "PA_AGENT_MARKET",
+    optionId: "ASK",
+    targetId: agentTarget.id
+  });
+  assert.deepEqual(
+    withAction.exportSnapshot().state.rngState.narrative,
+    beforeRng,
+    "informational action consumed narrative RNG immediately"
+  );
 
-  const command = {
+  const leftView = withAction.getView();
+  const rightView = withoutAction.getView();
+  await withAction.dispatch({
     type: "continue",
-    commandId: "a6-future-rng-continue",
-    expectedRevision: 0,
+    commandId: "a6-future-rng-left",
+    expectedRevision: leftView.revision,
     maxDays: 30
-  };
-  await withAction.dispatch(clone(command));
-  await withoutAction.dispatch(clone(command));
+  });
+  await withoutAction.dispatch({
+    type: "continue",
+    commandId: "a6-future-rng-right",
+    expectedRevision: rightView.revision,
+    maxDays: 30
+  });
 
   const a = withAction.exportSnapshot();
   const b = withoutAction.exportSnapshot();
@@ -481,7 +501,6 @@ test("A6-019 NARRATIVE RNG FUTURE: local action does not shift future narrative 
   assert.deepEqual(a.pendingDecision, b.pendingDecision);
   assert.equal(a.state.date, b.state.date);
 });
-
 
 test("A6-022 SAVE LOAD CONTINUATION: resumed path remains exact after further commands", async () => {
   const left = await emptySession(6020, "a6-save-continuation");
