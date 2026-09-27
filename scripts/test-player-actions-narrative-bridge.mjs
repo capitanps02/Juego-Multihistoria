@@ -391,7 +391,7 @@ test("A3-016 POSITION CHANGE: fact is coach/club scoped and never changes sporti
   assert.equal(facts.requestedPositionChange.coachNpcId, COACH);
   assert.equal(facts.lastCoachConversation?.stance, "position_change");
 
-  certifyCoachChangeInPlace(state, "a3_position_change", {
+  certifyCoachChangeInPlace(state, "canonical_change", {
     previousCoachNpcId: COACH,
     newCoachNpcId: null
   });
