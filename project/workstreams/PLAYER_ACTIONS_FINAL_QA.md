@@ -14,9 +14,9 @@ A6 se ha creado encima del HEAD exacto de A2 para poder validar el backend más 
 A fecha de esta inspección:
 
 - A0, A1 y A2 existen como PRs abiertos #799, #800 y #801; ninguno está mergeado en `main`.
-- A3 tiene rama, pero no contiene implementación específica ni el documento obligatorio `PLAYER_ACTIONS_NARRATIVE_BRIDGE.md`; su diff efectivo contra `main` coincide con A2.
-- A4 contiene una implementación parcial de UI en `preview/app.js` y `preview/style.css`, pero no contiene el documento obligatorio `PLAYER_ACTIONS_UI.md` ni integración Player Actions específica en PlayCanvas.
-- A5 tiene rama, pero no contiene catálogo/balance específico ni el documento obligatorio `PLAYER_ACTIONS_CONTENT.md`; su diff efectivo contra `main` coincide con A2.
+- A3 está implementado en PR #803 (HEAD `75be938bbe4a6f7a01ef45a5078a6bfa6d77262d`) con bridge factual, scopes, consumers, documento y 15 tests; sigue sin integrarse con A4/A6 en un único HEAD final.
+- A4 está implementado en PR #804 (HEAD `ee07c945e9f6d714fb921f4f98af06f6699d223b`) e incluye preview, `web/game-ui.js`, bundle/manifest PlayCanvas, documento y 15 tests. A4 declara el mismo bloqueo A2 de targets detectado por A6.
+- A5 existe en draft PR #802 (HEAD `5aa4c530338f383a62fdaf8bc0df6e4f49ff3be5`) con diseño de 20 acciones, balance y exploit review, pero está explícitamente `BLOCKED / DESIGN READY — 35%`: 0/20 acciones A5 implementadas.
 - El catálogo disponible en el candidato sigue siendo el vertical slice técnico de A1: `PA_TRAIN_EXTRA`, `PA_REST` y `PA_COACH_TALK`.
 
 Por tanto la feature **no puede certificarse ni recomendarse para merge final todavía**.
@@ -33,9 +33,9 @@ A6 añade dos gates nuevos:
 | A0 | COMPLETE | PR #799. Contrato, invariantes, ownership y ZERO_ACTION_EQUIVALENCE definidos. No mergeado. |
 | A1 | COMPLETE | PR #800. Core determinista, cooldowns, facts, effect allowlist y 15 tests. Repository Integrity del HEAD A1 terminó SUCCESS. No mergeado. |
 | A2 | PARTIAL | PR #801. SessionCommand, persistencia, replay, rollback, view y auto:stop implementados. CI general aún estaba en curso durante la inspección. Tiene un gap de targets públicos descrito en PA-A6-001. |
-| A3 | MISSING | Rama existe pero no hay implementación específica ni documento obligatorio. No hay consumers/scope Player Actions verificables. |
-| A4 | PARTIAL | Preview implementado parcialmente. No documento obligatorio. No integración PlayCanvas específica. Las acciones con target no son ejecutables desde preview. |
-| A5 | MISSING | Rama existe pero no hay catálogo/balance específico ni documento obligatorio. Sólo permanecen los tres fixtures A1. |
+| A3 | COMPLETE | PR #803. Bridge read-only, historical/live, club/coach/contract/agent scopes, consumer narrativo y consumer de mercado, documento y 15 tests. Falta certificación integrada final. |
+| A4 | PARTIAL | PR #804. Preview + web UI + bundle PlayCanvas + documento + 15 tests. Mantiene bloqueo explícito `BLOCKED_BY_A2_PUBLIC_VIEW` para targets. |
+| A5 | PARTIAL | Draft PR #802. 20 acciones diseñadas y balanceadas en documento, pero 0/20 implementadas; bloqueado por extensibilidad A1 y parte del contrato A3. |
 
 ## 3. Componentes inspeccionados
 
@@ -161,19 +161,21 @@ El catálogo A5 completo todavía no existe, por lo que el gate final de autorid
 
 ## 9. Fact scope / historical vs live
 
-**BLOCKED por A3.**
+A3 PR #803 implementa y documenta:
 
-A1 ya persiste facts con `targetId`, fecha, expiry y provenance `player_action`. Sin embargo A3 no ha implementado todavía:
+- `historicalExists` vs `currentlyRelevant`;
+- coach scope con club + coach exactos;
+- club scope para transfer request;
+- contract/renewal resolution a través de autoridad formal posterior;
+- agent scope con representación certificada;
+- proyección read-only `playerActionFacts(state)`;
+- consumer narrativo declarativo;
+- consumer sistémico de mercado sin draw adicional;
+- privacidad: no NPC/global knowledge propagation.
 
-- proyección historical vs active/currentlyRelevant;
-- coach scope tras cambio de entrenador;
-- club scope tras transferencia;
-- contract scope tras renovación/firma;
-- agent scope tras cambio de representante;
-- consumers narrativos/sistémicos;
-- NPC knowledge específico de Player Actions.
+Su suite declara 15 casos dirigidos, incluidos club/coach scope, renewal, agent, no-extra-RNG, historical/live, save/load y privacy.
 
-No se puede certificar PA-GATE-08 hasta que exista código A3 real.
+PA-GATE-08 permanece **BLOCKED** hasta certificar el HEAD A3 y después repetirlo en el único HEAD integrado con A4/A5/A6.
 
 ## 10. Save compatibility
 
@@ -205,9 +207,9 @@ Falta todavía stress repetido y el flujo UI final A4/PlayCanvas. Gate final pen
 
 ## 12. Content / balance / anti-grind / stress
 
-**BLOCKED por A5.**
+**BLOCKED por A5 runtime.**
 
-No existe todavía catálogo A5 ni balance final. El candidato contiene solamente 3 fixtures técnicos, por lo que no es válido medir:
+A5 PR #802 ya entrega diseño de 20 acciones, matriz de disponibilidad, cooldowns, efectos propuestos, límites de balance y exploit review, pero declara 0/20 acciones implementadas y 0/12 tests A5 ejecutables. El candidato runtime sigue conteniendo solamente 3 fixtures técnicos, por lo que todavía no es válido certificar:
 
 - catálogo muerto por edades;
 - contextual actions always-on;
@@ -234,14 +236,20 @@ Por ello PREVIEW no puede pasar todavía.
 
 ## 14. PlayCanvas
 
-**BLOCKED.**
+**BLOCKED, pero implementación A4 sí existe.**
 
-El diff A4 específico de Player Actions sólo modifica:
+El HEAD actual de A4 #804 modifica específicamente:
 
+- `web/game-ui.js`
+- `web/game-ui.css`
+- `playcanvas/multihistoria.js`
+- `playcanvas/manifest.json`
 - `preview/app.js`
 - `preview/style.css`
+- workflow `player-actions-ui.yml`
+- suite `test-player-actions-ui-contract.mjs`
 
-No hay integración Player Actions específica de PlayCanvas en la rama A4 inspeccionada. No se certificará PA-GATE-13 con el preview como sustituto.
+A4 documenta que preview y PlayCanvas comparten semántica de GameSession. A6 no marcará PASS hasta verificar el workflow exacto de A4, corregir el target contract y repetir E2E sobre el HEAD integrado.
 
 ## 15. Mobile / accessibility
 
@@ -306,26 +314,12 @@ La conversación con entrenador no puede ejecutarse mediante el flujo público/p
 - cambio de target/revision entre render y click falla cerrado;
 - no se exponen NPCs no autorizados.
 
-### PA-A6-002 — A3 narrative bridge absent
+### PA-A6-002 — A5 final catalog is design-only, not runtime
 
 **Severity:** P2  
-**Owner:** RETURN_TO_A3
+**Owner:** RETURN_TO_A1 + RETURN_TO_A3 + RETURN_TO_A5
 
-Requiere implementación real del documento/bridge/scopes/consumers y sus tests antes de PA-GATE-08.
-
-### PA-A6-003 — A5 final content/balance absent
-
-**Severity:** P2  
-**Owner:** RETURN_TO_A5
-
-Requiere catálogo real, balance, age/context eligibility y tests antes de PA-GATE-10/11/stress.
-
-### PA-A6-004 — Player Actions PlayCanvas UI absent
-
-**Severity:** P2  
-**Owner:** RETURN_TO_A4
-
-Preview no sustituye el gate obligatorio PlayCanvas.
+A5 #802 diseña 20 acciones, pero declara explícitamente 0/20 implementadas. El core actual no soporta todavía de forma segura `health`, registries extensibles de effects/eligibility/facts, target predicates veteran/young ni shared cooldown anti-target-farming. No se puede certificar CONTENT/ANTI_GRIND hasta resolver esos contratos e implementar el catálogo.
 
 ## 18. Gates actuales
 
@@ -338,12 +332,12 @@ Preview no sustituye el gate obligatorio PlayCanvas.
 | PA-GATE-05 SESSION_ATOMICITY | BLOCKED — cobertura fuerte, pendiente A6 exact HEAD |
 | PA-GATE-06 SAVE_COMPATIBILITY | BLOCKED — cobertura ampliada, pendiente A6 exact HEAD |
 | PA-GATE-07 AUTHORITY | BLOCKED — fixtures cubiertos; falta catálogo A5 |
-| PA-GATE-08 FACT_SCOPE | BLOCKED — A3 missing |
+| PA-GATE-08 FACT_SCOPE | BLOCKED — A3 #803 implementado; falta certificar e integrar en HEAD final |
 | PA-GATE-09 AUTO_SIM | BLOCKED — backend cubierto; falta integración/UI stress |
-| PA-GATE-10 CONTENT | BLOCKED — A5 missing |
-| PA-GATE-11 ANTI_GRIND | BLOCKED — A5 missing |
+| PA-GATE-10 CONTENT | BLOCKED — A5 0/20 runtime |
+| PA-GATE-11 ANTI_GRIND | BLOCKED — A5 design-only, stress final no ejecutable |
 | PA-GATE-12 PREVIEW | FAIL — PA-A6-001 |
-| PA-GATE-13 PLAYCANVAS | BLOCKED — implementación A4 ausente |
+| PA-GATE-13 PLAYCANVAS | BLOCKED — A4 #804 existe; falta target fix + certificación integrada |
 | PA-GATE-14 MOBILE | BLOCKED — necesita UI integrada/E2E |
 | PA-GATE-15 OPTIONALITY_UX | BLOCKED — evidencia estática positiva, E2E pendiente |
 
@@ -362,11 +356,11 @@ El bug PA-A6-001 se entrega a A2/A4 porque resolver targets públicos es parte d
 
 ## 20. Riesgos residuales
 
-1. Target selection/staleness no resuelto.
-2. A3 inexistente: scopes y consumers sin validar.
-3. A5 inexistente: balance y exploits no medibles.
-4. PlayCanvas no implementado.
-5. A0–A2 todavía no integrados en main.
+1. Target selection/staleness no resuelto en contrato público A2/A4.
+2. A3 existe y cubre scopes/consumers, pero aún no está integrado con A4/A6 en un único candidato.
+3. A5 sigue en diseño: balance y exploits del catálogo real no son medibles.
+4. A4 PlayCanvas existe, pero no puede certificar acciones targetted hasta corregir A2.
+5. A0–A4 todavía no están integrados en main y A3/A4 son ramas paralelas sobre A2.
 6. Stress de carreras largas con políticas Player Actions no es representativo hasta disponer de A5.
 7. El crecimiento real del save/history no es medible con catálogo fixture.
 
@@ -374,19 +368,19 @@ El bug PA-A6-001 se entrega a A2/A4 porque resolver targets públicos es parte d
 
 **DO_NOT_MERGE como feature final.**
 
-Sí es razonable usar A2/A6 como base técnica de validación, pero no certificar Player Actions hasta cerrar A3, A4, A5, corregir PA-A6-001 y re-ejecutar todos los gates sobre un único HEAD integrado.
+Sí es razonable usar A2/A3/A4/A6 como base técnica, pero no certificar Player Actions hasta corregir PA-A6-001, desbloquear e implementar A5, integrar A3+A4+A5 en un único HEAD y re-ejecutar todos los gates.
 
 ## 22. Trabajo restante A6
 
 Cuando los upstreams estén disponibles:
 
 1. ejecutar y cerrar A6 focused + cross-version zero-action;
-2. integrar/revalidar A3 scope matrix;
-3. auditar catálogo A5 y anti-grind;
-4. ejecutar 20–50 carreras largas con políticas;
-5. medir save size/performance;
-6. preview E2E;
-7. PlayCanvas E2E;
-8. 360/390/430 mobile;
-9. optionality/accessibility final;
+2. certificar A3 #803 y revalidar scope matrix en el candidato integrado;
+3. corregir contrato de targets A2/A4;
+4. desbloquear/implementar catálogo A5 y auditar anti-grind;
+5. ejecutar 20–50 carreras largas con políticas;
+6. medir save size/performance;
+7. preview E2E;
+8. PlayCanvas E2E;
+9. 360/390/430 mobile + optionality/accessibility;
 10. retest completo y actualizar este documento a CERTIFIED o NOT_CERTIFIED.
