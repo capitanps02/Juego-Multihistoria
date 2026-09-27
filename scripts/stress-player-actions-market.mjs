@@ -69,18 +69,38 @@ for (let seed = 1; seed <= N; seed += 1) {
   assert.deepEqual(withRequest.rngState, beforeWithRng, "requested market producer unexpectedly mutated RNG state");
 }
 
-// Repeated request must not stack causal strength.
+// Repeated request must never overlap or stack causal strength.
+// At +90d the original 120d fact is still live and the 121d cooldown must reject a second request.
 const repeated = prep(424242);
-requestTransfer(repeated);
+const firstRequest = requestTransfer(repeated);
 assert.equal(transferRequestExternalMarketThreshold(repeated, 38), 50);
+
 repeated.date = addPlayerActionDays(repeated.date, 90);
-requestTransfer(repeated);
+const beforeBlocked = clone(repeated);
+const blockedRepeat = executePlayerActionInPlace(repeated, {
+  actionId: "PA_REQUEST_TRANSFER",
+  optionId: "REQUEST"
+});
+assert.equal(blockedRepeat.ok, false, "repeat inside causal lifecycle unexpectedly succeeded");
+assert.equal(blockedRepeat.code, "PLAYER_ACTION_COOLDOWN");
+assert.deepEqual(repeated, beforeBlocked, "blocked repeat mutated state");
 assert.equal(
   transferRequestExternalMarketThreshold(repeated, 38),
   50,
-  "repeated transfer requests stacked market threshold"
+  "blocked repeat changed market threshold"
 );
-assert.equal(repeated.market?.pending ?? null, null, "repeated request created an offer immediately");
+
+// At the exact reopen boundary (+121d), the old fact is no longer current.
+// A new request may succeed, but strength remains the same fixed +12 rather than stacking.
+repeated.date = addPlayerActionDays(firstRequest.cooldownUntil ? prep(424242).date : repeated.date, 121);
+const reopened = requestTransfer(repeated);
+assert.equal(reopened.ok, true);
+assert.equal(
+  transferRequestExternalMarketThreshold(repeated, 38),
+  50,
+  "reopened transfer request stacked market threshold"
+);
+assert.equal(repeated.market?.pending ?? null, null, "reopened request created an offer immediately");
 
 assert.ok(counts.requested.transfer < N, "transfer request guarantees a transfer offer");
 assert.ok(counts.requested.transfer >= counts.baseline.transfer, "transfer request unexpectedly reduces transfer opportunities");
