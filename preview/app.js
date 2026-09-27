@@ -21,7 +21,18 @@ function error(message) { $('#error').textContent = message; $('#error').hidden 
 function setBusy(value) {
   busy = value;
   $('#story').setAttribute('aria-busy', String(value));
-  document.querySelectorAll('button').forEach(b => { b.disabled = value; });
+  if (value) {
+    document.querySelectorAll('button').forEach(button => {
+      if (button.disabled) return;
+      button.dataset.busyDisabled = 'true';
+      button.disabled = true;
+    });
+    return;
+  }
+  document.querySelectorAll('button[data-busy-disabled="true"]').forEach(button => {
+    button.disabled = false;
+    delete button.dataset.busyDisabled;
+  });
 }
 const dateText = date => new Intl.DateTimeFormat('es-ES', { day:'numeric', month:'short', year:'numeric', timeZone:'UTC' }).format(new Date(date+'T00:00:00Z'));
 
