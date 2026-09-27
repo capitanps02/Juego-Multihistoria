@@ -28,6 +28,43 @@ function requireNumber(value: unknown, label: string): number {
   return value;
 }
 
+function rounded(value: number): number {
+  return Math.round(value * 100) / 100;
+}
+
+type BodyMetric = "fatigue" | "fitness" | "risk";
+type ProfessionalMetric =
+  | "technique"
+  | "tacticalReading"
+  | "matchEndurance"
+  | "commercialPower"
+  | "publicPolarization"
+  | "institutionalTrust"
+  | "motivationReserve";
+type RelationshipMetric = "affinity" | "respect" | "resentment";
+
+function adjustBody(state: PlayerActionGameState, metric: BodyMetric, delta: number): void {
+  const current = requireNumber(state.body[metric], `body.${metric}`);
+  state.body[metric] = rounded(clamp(current + delta));
+}
+
+function adjustProfessional(state: PlayerActionGameState, metric: ProfessionalMetric, delta: number): void {
+  const current = requireNumber(state.professional[metric], `professional.${metric}`);
+  state.professional[metric] = rounded(clamp(current + delta));
+}
+
+function adjustRelationship(
+  state: PlayerActionGameState,
+  targetId: string | undefined,
+  metric: RelationshipMetric,
+  delta: number
+): void {
+  if (!targetId) throw new Error("Relationship Player Action requires target");
+  const relationship = state.relationships.find(row => row.npcId === targetId);
+  if (!relationship) throw new Error("Relationship Player Action requires an existing relationship");
+  relationship[metric] = rounded(clamp(requireNumber(relationship[metric], `relationship.${metric}`) + delta));
+}
+
 function requireCurrentClub(state: PlayerActionGameState): string {
   const club = currentEmploymentClub(state);
   if (!club) throw new Error("Player Action requires current club employment");
@@ -62,10 +99,9 @@ function careerPriorityFact(
 
 const EFFECTS: Readonly<Record<string, EffectHandler>> = Object.freeze({
   train_extra(state) {
-    const fatigue = requireNumber(state.body.fatigue, "body.fatigue");
-    const technique = requireNumber(state.professional.technique, "professional.technique");
-    state.body.fatigue = Math.round(clamp(fatigue + 3) * 10) / 10;
-    state.professional.technique = Math.round(clamp(technique + 0.5) * 10) / 10;
+    adjustProfessional(state, "technique", 0.15);
+    adjustBody(state, "fatigue", 3);
+    adjustBody(state, "risk", 1);
     return [{
       kind: "training_extra_completed",
       payload: { focus: "technique" },
@@ -73,16 +109,53 @@ const EFFECTS: Readonly<Record<string, EffectHandler>> = Object.freeze({
     }];
   },
 
+  train_extra_physical(state) {
+    adjustProfessional(state, "matchEndurance", 0.15);
+    adjustBody(state, "fitness", 0.5);
+    adjustBody(state, "fatigue", 4);
+    adjustBody(state, "risk", 2);
+    return [{
+      kind: "training_extra_completed",
+      payload: { focus: "physical" },
+      expiresInDays: 0
+    }];
+  },
+
+  train_extra_tactical(state) {
+    adjustProfessional(state, "tacticalReading", 0.15);
+    adjustBody(state, "fatigue", 2);
+    return [{
+      kind: "training_extra_completed",
+      payload: { focus: "tactical" },
+      expiresInDays: 0
+    }];
+  },
+
+  video_study(state) {
+    adjustProfessional(state, "tacticalReading", 0.1);
+    adjustBody(state, "fatigue", 1);
+    return [];
+  },
+
+  recovery_session(state) {
+    adjustBody(state, "fatigue", -2);
+    adjustBody(state, "fitness", 0.25);
+    adjustBody(state, "risk", -1);
+    return [];
+  },
+
   rest(state) {
-    const fatigue = requireNumber(state.body.fatigue, "body.fatigue");
-    const fitness = requireNumber(state.body.fitness, "body.fitness");
-    state.body.fatigue = Math.round(clamp(fatigue - 5) * 10) / 10;
-    state.body.fitness = Math.round(clamp(fitness + 2) * 10) / 10;
+    adjustBody(state, "fatigue", -2);
+    adjustBody(state, "fitness", 0.25);
     return [{
       kind: "rest_completed",
       payload: { focus: "recovery" },
       expiresInDays: 0
     }];
+  },
+
+  query_role_status() {
+    return [];
   },
 
   coach_request_more_minutes(state, targetId) {
@@ -179,6 +252,71 @@ const EFFECTS: Readonly<Record<string, EffectHandler>> = Object.freeze({
 
   career_priority_club_level(state, targetId) {
     return careerPriorityFact(state, targetId, "club_level");
+  },
+
+  teammate_connect(state, targetId) {
+    adjustRelationship(state, targetId, "affinity", 1);
+    adjustRelationship(state, targetId, "respect", 0.5);
+    return [];
+  },
+
+  teammate_clear_air(state, targetId) {
+    adjustRelationship(state, targetId, "resentment", -1);
+    return [];
+  },
+
+  leader_advice(state, targetId) {
+    adjustRelationship(state, targetId, "respect", 1);
+    return [];
+  },
+
+  mentor_teammate(state, targetId) {
+    adjustRelationship(state, targetId, "respect", 1);
+    return [];
+  },
+
+  interview_humble(state) {
+    adjustProfessional(state, "institutionalTrust", 0.25);
+    adjustProfessional(state, "commercialPower", -0.25);
+    return [];
+  },
+
+  interview_ambitious(state) {
+    adjustProfessional(state, "commercialPower", 0.5);
+    adjustProfessional(state, "publicPolarization", 0.5);
+    return [];
+  },
+
+  interview_team_first(state) {
+    adjustProfessional(state, "institutionalTrust", 0.5);
+    adjustProfessional(state, "commercialPower", -0.25);
+    return [];
+  },
+
+  social_post_professional() {
+    return [];
+  },
+
+  social_post_personal() {
+    return [];
+  },
+
+  personal_time_people(state) {
+    adjustBody(state, "fatigue", -0.5);
+    adjustProfessional(state, "motivationReserve", 0.25);
+    return [];
+  },
+
+  personal_time_hobby(state) {
+    adjustBody(state, "fatigue", -0.5);
+    adjustProfessional(state, "motivationReserve", 0.25);
+    return [];
+  },
+
+  disconnect(state) {
+    adjustBody(state, "fatigue", -1);
+    adjustProfessional(state, "motivationReserve", 0.5);
+    return [];
   }
 });
 
