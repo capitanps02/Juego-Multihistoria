@@ -168,7 +168,7 @@ async function runCareer(seed, policy) {
       type: "continue",
       commandId: `lc-${seed}-${policy}-continue-${++commands}`,
       expectedRevision: view.revision,
-      maxDays: 7
+      maxDays: 28
     });
   }
 
