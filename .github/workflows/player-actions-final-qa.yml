@@ -16,7 +16,7 @@ concurrency:
 
 env:
   BASELINE_SHA: 2cc068cb705214ba827677ab02d8d1668e8677ec
-  INTEGRATED_REF: 0973c9bf58ce190431400dbaf15f5d090e89c00c
+  INTEGRATED_REF: a6/player-actions-integrated-v3
 
 jobs:
   refresh_integrated_artifacts:
@@ -26,7 +26,7 @@ jobs:
       - name: Checkout mutable integrated QA branch
         uses: actions/checkout@v4
         with:
-          ref: a6/player-actions-integrated-qa
+          ref: a6/player-actions-integrated-v3
           fetch-depth: 0
 
       - name: Set up Node.js
@@ -53,6 +53,7 @@ jobs:
           git push origin HEAD:a6/player-actions-integrated-qa
 
   integrated_safety:
+    needs: refresh_integrated_artifacts
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
@@ -128,6 +129,7 @@ jobs:
         run: node --test scripts/test-playcanvas.mjs scripts/test-t55-a19-ui.mjs
 
   artifact_freshness:
+    needs: refresh_integrated_artifacts
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -153,6 +155,7 @@ jobs:
         run: git diff --exit-code -- playcanvas/multihistoria.js playcanvas/manifest.json web/assets.json
 
   open_contract_gaps:
+    needs: refresh_integrated_artifacts
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -188,6 +191,7 @@ jobs:
           scripts/a6-player-actions-final.mjs
 
   balance_market_performance:
+    needs: refresh_integrated_artifacts
     runs-on: ubuntu-latest
     timeout-minutes: 35
     steps:
@@ -228,6 +232,7 @@ jobs:
         run: node qa/scripts/bench-player-actions.mjs candidate
 
   browser_e2e:
+    needs: refresh_integrated_artifacts
     runs-on: ubuntu-latest
     timeout-minutes: 35
     steps:
