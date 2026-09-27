@@ -69,7 +69,8 @@
     "test:player-actions-ui": "npm run build && node --test scripts/test-player-actions-ui-contract.mjs",
     "test:football-catalog": "npm run build && node --test scripts/test-football-catalog.mjs",
     "test:football-balance": "npm run build && node --test scripts/test-football-catalog.mjs scripts/test-football-catalog-balance.mjs",
-    "test:football-runtime": "npm run build && node --test scripts/test-football-database-v2-runtime.mjs scripts/test-t5-age18-market-authority.mjs scripts/test-player-actions-narrative-bridge.mjs"
+    "test:football-runtime": "npm run build && node --test scripts/test-football-database-v2-runtime.mjs scripts/test-t5-age18-market-authority.mjs scripts/test-player-actions-narrative-bridge.mjs",
+    "qa:football-db:a7:preflight": "node scripts/qa-football-database-v2-a7-preflight.mjs"
   },
   "devDependencies": {
     "typescript": "5.8.3"
