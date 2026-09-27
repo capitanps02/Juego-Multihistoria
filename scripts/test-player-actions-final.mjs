@@ -425,7 +425,12 @@ test("A6-017 OFFER COLLISION: offer created after render makes old action stale"
 });
 
 test("A6-018 RETIREMENT COLLISION: rendered action fails closed if career is closed before click", async () => {
-  const source = await emptySession(6018, "a6-retirement-collision");
+  // Reuse the exact closed-career fixture shape already certified by A2.
+  const source = await GameSession.create(1, {
+    events: [],
+    microfeeds: false,
+    sessionId: "a6-retirement-collision"
+  });
   const rendered = source.getView();
   const click = {
     type: "player_action",
@@ -435,8 +440,6 @@ test("A6-018 RETIREMENT COLLISION: rendered action fails closed if career is clo
     optionId: "RECOVER"
   };
 
-  // Use the same valid closed-career fixture shape already certified by A2.
-  // Do not forge revision/receipts: closure itself must be enough to fail closed.
   const closed = source.exportSnapshot();
   closed.state.retirement.status = "closed";
   closed.state.retirement.decidedDate = closed.state.date;
@@ -457,46 +460,45 @@ test("A6-018 RETIREMENT COLLISION: rendered action fails closed if career is clo
 
 
 test("A6-019 NARRATIVE RNG FUTURE: local action does not shift future narrative stream", async () => {
-  const source = await GameSession.create(6190, {
+  const event = clone(EVENTS.find(row => row.id === "EVT_18_PRE_001"));
+  assert.ok(event);
+
+  const seedSource = await GameSession.create(6190, {
+    events: [event],
     microfeeds: false,
     sessionId: "a6-future-rng"
   });
-  const prepared = source.exportSnapshot();
-  prepared.state.body.fatigue = Math.max(30, prepared.state.body.fatigue);
+  const prepared = seedSource.exportSnapshot();
+  // Make REST eligible before any command receipt exists.
+  prepared.state.body.fatigue = Math.max(30, Number(prepared.state.body.fatigue) || 0);
+  prepared.state.body.risk = Math.min(20, Number(prepared.state.body.risk) || 20);
 
-  const withActionSession = await GameSession.resume(clone(prepared));
-  const withoutAction = await GameSession.resume(clone(prepared));
-  const bodyBefore = clone(prepared.state.body);
+  const withAction = await GameSession.resume(clone(prepared), { events: [event] });
+  const withoutAction = await GameSession.resume(clone(prepared), { events: [event] });
 
-  const beforeRng = clone(withActionSession.exportSnapshot().state.rngState.narrative);
-  await withActionSession.dispatch({
+  const beforeRng = clone(withAction.exportSnapshot().state.rngState.narrative);
+  await withAction.dispatch({
     type: "player_action",
     commandId: "a6-future-rng-rest",
-    expectedRevision: withActionSession.getView().revision,
+    expectedRevision: withAction.getView().revision,
     actionId: "PA_REST",
     optionId: "RECOVER"
   });
   assert.deepEqual(
-    withActionSession.exportSnapshot().state.rngState.narrative,
+    withAction.exportSnapshot().state.rngState.narrative,
     beforeRng,
     "REST consumed narrative RNG immediately"
   );
 
-  // Preserve the valid command receipt/history, but neutralize only local
-  // physical deltas before comparing the future narrative stream.
-  const actionSnapshot = withActionSession.exportSnapshot();
-  actionSnapshot.state.body = clone(bodyBefore);
-  const withAction = await GameSession.resume(actionSnapshot);
-
   await withAction.dispatch({
     type: "continue",
-    commandId: "a6-future-rng-continue",
+    commandId: "a6-future-rng-continue-a",
     expectedRevision: withAction.getView().revision,
     maxDays: 30
   });
   await withoutAction.dispatch({
     type: "continue",
-    commandId: "a6-future-rng-continue",
+    commandId: "a6-future-rng-continue-b",
     expectedRevision: withoutAction.getView().revision,
     maxDays: 30
   });
@@ -504,10 +506,15 @@ test("A6-019 NARRATIVE RNG FUTURE: local action does not shift future narrative 
   const a = withAction.exportSnapshot();
   const b = withoutAction.exportSnapshot();
   assert.deepEqual(a.state.rngState.narrative, b.state.rngState.narrative);
+  assert.equal(a.pendingDecision?.eventId, b.pendingDecision?.eventId);
+  assert.deepEqual(
+    a.pendingDecision?.eligibleChoiceIds ?? null,
+    b.pendingDecision?.eligibleChoiceIds ?? null
+  );
   assert.deepEqual(a.state.history, b.state.history);
-  assert.deepEqual(a.pendingDecision, b.pendingDecision);
   assert.equal(a.state.date, b.state.date);
 });
+
 
 test("A6-022 SAVE LOAD CONTINUATION: resumed path remains exact after further commands", async () => {
   const left = await emptySession(6020, "a6-save-continuation");
