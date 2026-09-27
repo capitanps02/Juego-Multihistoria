@@ -56,9 +56,8 @@ export const PLAYER_ACTION_CONTENT_PLAN: readonly PlayerActionContentPlanRow[] =
     ageRange: [18, null],
     cooldownDays: 45,
     targetKind: "coach",
-    status: "blocked",
+    status: "implemented",
     requiredContext: "current coach",
-    blockedBy: "A1 contextual eligibility + A3 position-change intent"
   },
   {
     id: "PA_REQUEST_TRANSFER",
@@ -77,9 +76,8 @@ export const PLAYER_ACTION_CONTENT_PLAN: readonly PlayerActionContentPlanRow[] =
     ageRange: [18, null],
     cooldownDays: 14,
     targetKind: "none",
-    status: "blocked",
+    status: "implemented",
     requiredContext: "currently relevant transfer request",
-    blockedBy: "A3 withdraw lifecycle / anti-toggle contract"
   },
   {
     id: "PA_TRAIN_EXTRA",
@@ -150,9 +148,8 @@ export const PLAYER_ACTION_CONTENT_PLAN: readonly PlayerActionContentPlanRow[] =
     ageRange: [20, null],
     cooldownDays: 21,
     targetKind: "agent",
-    status: "blocked",
+    status: "implemented",
     requiredContext: "certified current representative",
-    blockedBy: "A3 career-priority fact contract"
   },
   {
     id: "PA_TALK_TEAMMATE",
