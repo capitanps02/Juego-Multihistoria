@@ -22,7 +22,7 @@ export const PLAYER_ACTION_CONTENT_SPECS: readonly PlayerActionContentSpec[] = [
   {
     id: "PA_COACH_TALK",
     label: "Hablar con entrenador",
-    description: "Habla con el entrenador para expresar una postura sin cambiar tu rol ni tus minutos por decreto.",
+    description: "Habla con el entrenador actual para expresar una postura sin cambiar tu rol por decreto.",
     options: [
       { id: "MORE_MINUTES", label: "Quiero más minutos", publicResult: "Has dejado claro que quieres competir por más minutos." },
       { id: "WHAT_TO_IMPROVE", label: "¿Qué debo mejorar?", publicResult: "Has pedido una referencia concreta sobre qué debes mejorar." },
@@ -64,9 +64,9 @@ export const PLAYER_ACTION_CONTENT_SPECS: readonly PlayerActionContentSpec[] = [
   {
     id: "PA_TRAIN_EXTRA",
     label: "Entrenamiento extra",
-    description: "Añade una sesión voluntaria con una carga moderada y sin sustituir el entrenamiento normal.",
+    description: "Añade una sesión corta de trabajo técnico fuera de la simulación normal.",
     options: [
-      { id: "TECHNIQUE", label: "Trabajo técnico", publicResult: "Has completado una sesión extra centrada en técnica." },
+      { id: "TECHNIQUE", label: "Trabajo técnico", publicResult: "Completas una sesión técnica adicional." },
       { id: "PHYSICAL", label: "Trabajo físico", publicResult: "Has completado una sesión extra de carga física controlada." },
       { id: "TACTICAL", label: "Trabajo táctico", publicResult: "Has completado una sesión extra centrada en lectura táctica." }
     ]
@@ -90,9 +90,9 @@ export const PLAYER_ACTION_CONTENT_SPECS: readonly PlayerActionContentSpec[] = [
   {
     id: "PA_REST",
     label: "Descansar",
-    description: "Baja el ritmo durante unos días sin alterar lesiones ni decisiones médicas.",
+    description: "Prioriza recuperación ligera sin alterar lesiones ni decisiones médicas.",
     options: [
-      { id: "RECOVER", label: "Tomarme un respiro", publicResult: "Has reducido carga y priorizado el descanso." }
+      { id: "RECOVER", label: "Recuperar", publicResult: "Reduces carga y recuperas sensaciones." }
     ]
   },
   {
