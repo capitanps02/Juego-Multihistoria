@@ -29,6 +29,7 @@ import {
 const CURRENT_CATEGORIES = new Set([
   "career",
   "training",
+  "health",
   "representative",
   "relationships",
   "image",
@@ -136,6 +137,7 @@ test("A5-009 NO NARRATIVE RNG", () => {
     ["PA_REQUEST_RENEWAL", "REQUEST"]
   ]) {
     const state = createInitialState(8509);
+    if (actionId === "PA_REST") state.body.fatigue = 24;
     const before = clone(state.rngState.narrative);
     const result = executePlayerActionInPlace(state, { actionId, optionId });
     assert.equal(result.ok, true, `${actionId} should execute`);
@@ -195,7 +197,7 @@ test("A5-014 PLAN/RUNTIME CONTRACT GAPS ARE EXPLICIT", () => {
   }
   assert.ok(PLAYER_ACTION_CONTENT_PLAN.some(row => row.category === "health"));
   const runtimeCategories = new Set(PLAYER_ACTION_CATALOG.map(row => row.category));
-  assert.equal(runtimeCategories.has("health"), false, "health must remain explicit gap until A1 contract lands");
+  assert.equal(runtimeCategories.has("health"), true, "health must be live after #808 contract integration");
 });
 
 
@@ -238,13 +240,7 @@ test("A5-018 IMPLEMENTED PLAN/RUNTIME SYNC", () => {
     assert.ok(action, `implemented plan row missing in runtime: ${row.id}`);
     assert.equal(action.cooldown.days, row.cooldownDays, `${row.id} cooldown drift`);
     assert.equal(action.targetKind, row.targetKind, `${row.id} target drift`);
-    if (row.id === "PA_REST") {
-      assert.equal(action.category, "life");
-      assert.equal(row.category, "health");
-      assert.match(row.blockedBy ?? "", /health/i);
-    } else {
-      assert.equal(action.category, row.category, `${row.id} category drift`);
-    }
+    assert.equal(action.category, row.category, `${row.id} category drift`);
   }
 });
 
@@ -432,25 +428,31 @@ test("A5-025 INCLUSIVE FACT EXPIRY NEVER OVERLAPS RE-EXECUTION", () => {
 });
 
 
-test("A5-026 IMPLEMENTED CONTEXT GAPS ARE EXPLICIT", () => {
-  const expectedA1ContextGaps = new Set([
+test("A5-026 IMPLEMENTED CONTEXT ELIGIBILITY IS WIRED", () => {
+  const expectedResolved = new Set([
     "PA_COACH_TALK",
     "PA_REQUEST_TRANSFER",
-    "PA_REQUEST_RENEWAL"
+    "PA_REQUEST_RENEWAL",
+    "PA_REST"
   ]);
 
-  for (const row of PLAYER_ACTION_CONTENT_PLAN.filter(item => expectedA1ContextGaps.has(item.id))) {
+  for (const actionId of expectedResolved) {
+    const row = PLAYER_ACTION_CONTENT_PLAN.find(item => item.id === actionId);
+    const action = PLAYER_ACTION_CATALOG.find(item => item.id === actionId);
+    const spec = PLAYER_ACTION_ELIGIBILITY_SPECS.find(item => item.actionId === actionId);
+    assert.ok(row && action && spec, `missing integrated action ${actionId}`);
     assert.equal(row.status, "implemented");
-    assert.match(row.blockedBy ?? "", /A1/i, `${row.id} must name A1 context blocker`);
-    assert.match(row.blockedBy ?? "", /eligibility/i, `${row.id} must name eligibility blocker`);
-    assert.match(row.requiredContext, /employment/i, `${row.id} must require active employment`);
+    assert.equal(row.blockedBy, undefined, `${actionId} still advertises resolved A1 blocker`);
+    assert.deepEqual(action.eligibility, spec.all, `${actionId} runtime eligibility drift`);
   }
+
+  const rest = PLAYER_ACTION_CATALOG.find(item => item.id === "PA_REST");
+  assert.equal(rest?.category, "health");
 
   const agentMarket = PLAYER_ACTION_CONTENT_PLAN.find(item => item.id === "PA_AGENT_MARKET");
   assert.ok(agentMarket);
   assert.equal(agentMarket.blockedBy, undefined, "A2 public-target blocker is resolved by #806");
 });
-
 
 test("A5-027 CAUSAL FACT EXPIRES BEFORE ACTION REOPENS", () => {
   const state = createInitialState(8526);
