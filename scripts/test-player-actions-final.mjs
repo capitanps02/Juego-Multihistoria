@@ -511,3 +511,21 @@ test("A6-020 SAVE LOAD CONTINUATION: resumed path remains exact after further co
     assert.deepEqual(resumed.exportSnapshot(), left.exportSnapshot(), `save/load diverged after continuation ${index}`);
   }
 });
+
+
+test("A6-020 CAUSAL COOLDOWN STRICT: cooldown must outlive inclusive fact relevance", () => {
+  const lifecycles = new Map([
+    ["PA_COACH_TALK", 30],
+    ["PA_REQUEST_TRANSFER", 120],
+    ["PA_REQUEST_RENEWAL", 90],
+    ["PA_AGENT_MARKET", 30]
+  ]);
+  for (const [actionId, lifecycleDays] of lifecycles) {
+    const action = PLAYER_ACTION_CATALOG.find(row => row.id === actionId);
+    assert.ok(action, `missing causal action ${actionId}`);
+    assert.ok(
+      action.cooldown.days > lifecycleDays,
+      `${actionId} cooldown ${action.cooldown.days}d must be > inclusive fact lifecycle ${lifecycleDays}d`
+    );
+  }
+});
