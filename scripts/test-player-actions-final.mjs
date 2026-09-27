@@ -529,3 +529,60 @@ test("A6-020 CAUSAL COOLDOWN STRICT: cooldown must outlive inclusive fact releva
     );
   }
 });
+
+
+test("A6-020 ACTIVE EMPLOYMENT: club-scoped actions fail at eligibility while unattached", async () => {
+  const session = await emptySession(6020, "a6-unattached-eligibility");
+  const snapshot = session.exportSnapshot();
+  const state = snapshot.state;
+
+  state.contract.monthsRemaining = 0;
+  state.contract.salaryMonthly = 0;
+  state.employment = {
+    version: 1,
+    status: "unattached",
+    since: state.date,
+    previous: {
+      club: state.club,
+      ownerClub: state.professional.ownerClub,
+      registrationClub: state.professional.registrationClub,
+      salaryMonthly: 0,
+      endedDate: state.date,
+      reason: "contract_expired"
+    }
+  };
+
+  const transfer = definition("PA_REQUEST_TRANSFER");
+  const renewal = definition("PA_REQUEST_RENEWAL");
+  assert.equal(
+    evaluatePlayerAction(state, transfer).available,
+    false,
+    "transfer request must not be advertised while unattached"
+  );
+  assert.equal(
+    evaluatePlayerAction(state, renewal).available,
+    false,
+    "renewal request must not be advertised while unattached"
+  );
+
+  const transferBefore = structuredClone(state);
+  const transferResult = executePlayerActionInPlace(state, {
+    actionId: "PA_REQUEST_TRANSFER",
+    optionId: "REQUEST"
+  });
+  assert.equal(transferResult.ok, false);
+  assert.equal(
+    transferResult.code,
+    "PLAYER_ACTION_UNAVAILABLE",
+    "unattached transfer must fail in eligibility, not inside effect execution"
+  );
+  assert.deepEqual(state, transferBefore);
+
+  const coach = definition("PA_COACH_TALK");
+  const projectedCoach = evaluatePlayerAction(state, coach, "NPC_CCH_01");
+  assert.equal(
+    projectedCoach.available,
+    false,
+    "coach conversation must fail closed when no active club employment exists"
+  );
+});
