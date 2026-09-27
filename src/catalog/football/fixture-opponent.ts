@@ -2,7 +2,6 @@ import {
   FOOTBALL_DIVISIONS,
   clubById,
   clubsForDivision,
-  divisionById,
   nearestDivisionForCountry
 } from "./index.js";
 import type { FootballCountryCode } from "./types.js";
@@ -53,8 +52,10 @@ function foreignCountryForCompatibilityClub(registrationClub: string, leagueTier
 
 /**
  * Resolve sporting league context without mutating career state.
- * Catalog clubs use their exact division. Canonical/domestic compatibility IDs
- * project to Spain, while historical abroad IDs project to one stable foreign country.
+ * Live career leagueTier is authoritative for sporting level. A catalog club supplies
+ * its country identity, but its catalog division is metadata and must not override an
+ * in-career promotion/relegation. Canonical/domestic compatibility IDs project to Spain,
+ * while historical abroad IDs project to one stable foreign country.
  */
 export function resolveFixtureDivision(
   registrationClub: string,
@@ -63,7 +64,7 @@ export function resolveFixtureDivision(
   abroad: boolean
 ) {
   const catalogClub = clubById(registrationClub);
-  if (catalogClub) return divisionById(catalogClub.divisionId);
+  if (catalogClub) return nearestDivisionForCountry(catalogClub.countryCode, leagueTier);
 
   const foreign = abroad || route === "abroad" || /^Foreign_/i.test(registrationClub);
   const countryCode = foreign
