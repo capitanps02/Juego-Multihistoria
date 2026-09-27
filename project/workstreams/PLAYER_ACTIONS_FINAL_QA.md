@@ -365,3 +365,37 @@ Los siguientes hallazgos fueron corregidos sin relajar contratos:
 La feature Player Actions V1 queda técnicamente lista para integración.
 
 No se autoriza auto-merge desde este informe. La integración a la cadena principal debe conservar exactamente el candidato certificado o demostrar equivalencia mediante CI si el SHA cambia.
+
+
+## 18. Verificación post-merge a main
+
+Producto integrado mediante:
+
+**PR #822 — Release: Player Actions V1 — 20/20 certified**
+
+Merge commit en `main`:
+
+`761d14021e00f10b4f7cbf82ffeedd58533c0a4c`
+
+Candidato certificado:
+
+`3963b6197884009e56552d3625e84960efda22fb`
+
+Comprobación Git post-merge:
+
+- #822: MERGED;
+- parent producto del merge = candidato certificado exacto;
+- compare candidato → main: `ahead_by=1` únicamente por el merge commit;
+- archivos diferentes entre candidato certificado y main: **0**;
+- árbol del merge en main: `8c867bbfbd56f8139c9a63402380bea0ee6cc33e`;
+- árbol del candidato certificado: el mismo árbol `8c867bbfbd56f8139c9a63402380bea0ee6cc33e`.
+
+Conclusión:
+
+**POST_MERGE_TREE_EQUIVALENCE = PASS.**
+
+No existe drift de producto entre lo certificado por A6 y lo que quedó integrado en `main`.
+
+El merge commit no disparó suites adicionales por `push`; las suites certificadoras se ejecutaron previamente sobre el árbol exacto finalmente integrado. Dado que el árbol es idéntico byte-a-byte, no existe cambio de código que requiera reinterpretar la certificación.
+
+A6 puede cerrarse definitivamente.
