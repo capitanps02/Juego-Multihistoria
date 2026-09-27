@@ -94,6 +94,27 @@ jobs:
         working-directory: candidate
         run: node --test scripts/test-playcanvas.mjs scripts/test-t55-a19-ui.mjs
 
+  artifact_freshness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout integrated candidate
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.INTEGRATED_REF }}
+          path: candidate
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Rebuild PlayCanvas package
+        working-directory: candidate
+        run: |
+          npm ci
+          npm run build:playcanvas
+
       - name: Require committed PlayCanvas package freshness
         working-directory: candidate
         run: git diff --exit-code -- playcanvas/multihistoria.js playcanvas/manifest.json web/assets.json
