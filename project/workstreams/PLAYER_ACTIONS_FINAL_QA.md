@@ -300,6 +300,26 @@ No se crea un segundo threshold en Player Actions.
 **Owner:** RETURN_TO_A1 / A5 configuration.  
 **Severity:** P2.
 
+### Contrato A5 declarativo cerrado
+
+El último A5 inspeccionado aporta:
+
+- 20/20 `content-plan`;
+- 20/20 `content-spec`;
+- 20/20 `content-balance`;
+- 20/20 `content-eligibility`;
+- 20/20 `content-cooldown-groups`;
+- 31/31 rutas opción→efecto en `content-effect-plan`;
+- `content-target-profiles` con único perfil público `locker_leader`;
+- 60 checks A5 authored;
+- exactamente tres nuevos fact kinds A3 pendientes: `request_position_change`, `withdraw_transfer_request`, `career_priority`.
+
+Renames finales del V1:
+- `PA_LEADER_ADVICE` sustituye la antigua idea de veteran-advice y usa perfil público `locker_leader`;
+- `PA_MENTOR_TEAMMATE` evita inferir edad/perfil oculto del target y sólo exige jugador 30+ + compañero actual.
+
+A6 considera **A5 design/config = COMPLETE**, sin confundirlo con runtime: el engine sigue ejecutando sólo 6 acciones.
+
 ## 10. Content catalog
 
 ### Runtime
@@ -341,7 +361,7 @@ Las 14 acciones bloqueadas son por contrato runtime, no por falta de diseño/cop
 - categoría health;
 - ejecutar el manifest cerrado de age/context eligibility;
 - registrar los effect keys cerrados de `content-effect-plan.ts`;
-- ejecutar veteran/young teammate predicates;
+- ejecutar closed teammate target-profile support (`locker_leader`) + current-teammate validation;
 - implementar group cooldowns;
 - categoría `health`;
 - aplicar los handlers balanceados definidos por A5.
