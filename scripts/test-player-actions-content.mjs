@@ -8,6 +8,9 @@ import { certifyRepresentationInPlace } from "../dist/simulation/representation-
 import { PLAYER_ACTION_CONTENT_PLAN } from "../dist/player-actions/content-plan.js";
 import { PLAYER_ACTION_CONTENT_SPECS } from "../dist/player-actions/content-spec.js";
 import { PLAYER_ACTION_BALANCE_SPECS } from "../dist/player-actions/content-balance.js";
+import { PLAYER_ACTION_ELIGIBILITY_SPECS } from "../dist/player-actions/content-eligibility.js";
+import { PLAYER_ACTION_COOLDOWN_GROUP_SPECS } from "../dist/player-actions/content-cooldown-groups.js";
+import { CLUB_RENEWAL_INTENT_MAX_MONTHS } from "../dist/simulation/club-contract-intent.js";
 import {
   PLAYER_ACTION_CATALOG,
   PLAYER_ACTION_EFFECT_KEYS,
@@ -645,4 +648,191 @@ test("A5-035 AUTHORITY/INTENT ACTIONS HAVE NO DIRECT WORLD DELTAS", () => {
       );
     }
   }
+});
+
+
+test("A5-036 FULL ELIGIBILITY SPEC COVERS ALL 20 ACTIONS", () => {
+  const planIds = PLAYER_ACTION_CONTENT_PLAN.map(row => row.id).sort();
+  const eligibilityIds = PLAYER_ACTION_ELIGIBILITY_SPECS.map(row => row.actionId).sort();
+
+  assert.equal(PLAYER_ACTION_ELIGIBILITY_SPECS.length, 20);
+  assert.equal(new Set(eligibilityIds).size, eligibilityIds.length);
+  assert.deepEqual(eligibilityIds, planIds);
+
+  for (const row of PLAYER_ACTION_ELIGIBILITY_SPECS) {
+    assert.ok(row.all.length >= 2, `${row.actionId} eligibility is underspecified`);
+    assert.equal(row.all.some(predicate => predicate.kind === "active_career"), true);
+  }
+});
+
+test("A5-037 ELIGIBILITY AGE RANGE MATCHES CONTENT PLAN", () => {
+  for (const plan of PLAYER_ACTION_CONTENT_PLAN) {
+    const eligibility = PLAYER_ACTION_ELIGIBILITY_SPECS.find(row => row.actionId === plan.id);
+    assert.ok(eligibility, `missing eligibility for ${plan.id}`);
+    const age = eligibility.all.find(predicate => predicate.kind === "age_range");
+    assert.ok(age, `${plan.id} missing age_range predicate`);
+    assert.equal(age.min, plan.ageRange[0], `${plan.id} min age drift`);
+    assert.equal(age.max ?? null, plan.ageRange[1], `${plan.id} max age drift`);
+  }
+});
+
+test("A5-038 CLUB-SCOPED ACTIONS REQUIRE ACTIVE EMPLOYMENT", () => {
+  const clubScoped = new Set([
+    "PA_COACH_TALK",
+    "PA_ROLE_CHECK",
+    "PA_POSITION_CHANGE",
+    "PA_REQUEST_TRANSFER",
+    "PA_WITHDRAW_TRANSFER",
+    "PA_REQUEST_RENEWAL",
+    "PA_TALK_TEAMMATE",
+    "PA_CLEAR_AIR",
+    "PA_VETERAN_ADVICE",
+    "PA_MENTOR_YOUNG"
+  ]);
+
+  for (const row of PLAYER_ACTION_ELIGIBILITY_SPECS.filter(item => clubScoped.has(item.actionId))) {
+    assert.equal(
+      row.all.some(predicate => predicate.kind === "active_club_employment"),
+      true,
+      `${row.actionId} must fail before execution when unattached`
+    );
+  }
+});
+
+test("A5-039 TARGET ELIGIBILITY MATCHES TARGET KIND", () => {
+  const planById = new Map(PLAYER_ACTION_CONTENT_PLAN.map(row => [row.id, row]));
+
+  for (const row of PLAYER_ACTION_ELIGIBILITY_SPECS) {
+    const plan = planById.get(row.actionId);
+    assert.ok(plan);
+    const kinds = new Set(row.all.map(predicate => predicate.kind));
+
+    if (plan.targetKind === "coach") assert.equal(kinds.has("current_coach"), true, `${row.actionId} missing current_coach`);
+    if (plan.targetKind === "agent") assert.equal(kinds.has("current_representation"), true, `${row.actionId} missing current_representation`);
+    if (plan.targetKind === "teammate") assert.equal(kinds.has("current_teammate"), true, `${row.actionId} missing current_teammate`);
+  }
+});
+
+test("A5-040 RENEWAL USES CANONICAL 24-MONTH HORIZON", () => {
+  const renewal = PLAYER_ACTION_ELIGIBILITY_SPECS.find(row => row.actionId === "PA_REQUEST_RENEWAL");
+  assert.ok(renewal);
+  const contract = renewal.all.find(predicate => predicate.kind === "contract_months");
+  assert.ok(contract);
+  assert.equal(contract.min, 1);
+  assert.equal(contract.max, CLUB_RENEWAL_INTENT_MAX_MONTHS);
+  assert.equal(CLUB_RENEWAL_INTENT_MAX_MONTHS, 24);
+});
+
+
+test("A5-041 SHARED COOLDOWN POLICY COVERS ALL 20 ACTIONS", () => {
+  const planIds = PLAYER_ACTION_CONTENT_PLAN.map(row => row.id).sort();
+  const groupIds = PLAYER_ACTION_COOLDOWN_GROUP_SPECS.map(row => row.actionId).sort();
+
+  assert.equal(PLAYER_ACTION_COOLDOWN_GROUP_SPECS.length, 20);
+  assert.equal(new Set(groupIds).size, groupIds.length);
+  assert.deepEqual(groupIds, planIds);
+
+  for (const row of PLAYER_ACTION_COOLDOWN_GROUP_SPECS) {
+    assert.ok(Number.isInteger(row.groupDays) && row.groupDays >= 0);
+    if (row.groupId) assert.ok(row.groupId.length > 0);
+  }
+});
+
+test("A5-042 SHARED COOLDOWN NEVER EXCEEDS ACTION COOLDOWN", () => {
+  const planById = new Map(PLAYER_ACTION_CONTENT_PLAN.map(row => [row.id, row]));
+
+  for (const row of PLAYER_ACTION_COOLDOWN_GROUP_SPECS) {
+    const plan = planById.get(row.actionId);
+    assert.ok(plan);
+    assert.ok(
+      row.groupDays <= plan.cooldownDays,
+      `${row.actionId} group cooldown ${row.groupDays}d exceeds action cooldown ${plan.cooldownDays}d`
+    );
+  }
+});
+
+test("A5-043 TARGET-CYCLING FAMILIES HAVE GROUP COOLDOWNS", () => {
+  const requiredFamilies = new Set([
+    "coach_conversation",
+    "agent_conversation",
+    "teammate_interaction"
+  ]);
+
+  const present = new Set(
+    PLAYER_ACTION_COOLDOWN_GROUP_SPECS
+      .map(row => row.groupId)
+      .filter(Boolean)
+  );
+
+  for (const family of requiredFamilies) {
+    assert.equal(present.has(family), true, `missing anti-cycling family ${family}`);
+  }
+
+  for (const row of PLAYER_ACTION_COOLDOWN_GROUP_SPECS.filter(item => item.groupId === "teammate_interaction")) {
+    assert.ok(row.groupDays >= 7, `${row.actionId} teammate family cooldown too short`);
+  }
+});
+
+test("A5-044 RECOVERY/DEVELOPMENT FAMILIES PREVENT DAILY ALTERNATION", () => {
+  for (const family of ["extra_development", "physical_recovery", "public_image", "personal_wellbeing"]) {
+    const rows = PLAYER_ACTION_COOLDOWN_GROUP_SPECS.filter(item => item.groupId === family);
+    assert.ok(rows.length >= 2, `family ${family} must contain at least two actions`);
+    assert.ok(rows.every(row => row.groupDays >= 7), `family ${family} must block daily cycling`);
+  }
+});
+
+
+test("A5-045 TRAINING AND RECOVERY USE CONTEXTUAL BODY GATES", () => {
+  const byId = new Map(PLAYER_ACTION_ELIGIBILITY_SPECS.map(row => [row.actionId, row]));
+
+  const train = byId.get("PA_TRAIN_EXTRA");
+  const rest = byId.get("PA_REST");
+  const recovery = byId.get("PA_RECOVERY_SESSION");
+  assert.ok(train && rest && recovery);
+
+  const trainFatigueMax = train.all.find(predicate => predicate.kind === "fatigue_max");
+  const trainRiskMax = train.all.find(predicate => predicate.kind === "risk_max");
+  const restFatigueMin = rest.all.find(predicate => predicate.kind === "fatigue_min");
+  const recoveryFatigueMin = recovery.all.find(predicate => predicate.kind === "fatigue_min");
+
+  assert.ok(trainFatigueMax && trainFatigueMax.value <= 55);
+  assert.ok(trainRiskMax && trainRiskMax.value <= 40);
+  assert.ok(restFatigueMin && restFatigueMin.value >= 24);
+  assert.ok(recoveryFatigueMin && recoveryFatigueMin.value >= 28);
+});
+
+test("A5-046 TRANSFER REQUEST AND WITHDRAWAL ARE MUTUALLY EXCLUSIVE CONTEXTS", () => {
+  const request = PLAYER_ACTION_ELIGIBILITY_SPECS.find(row => row.actionId === "PA_REQUEST_TRANSFER");
+  const withdraw = PLAYER_ACTION_ELIGIBILITY_SPECS.find(row => row.actionId === "PA_WITHDRAW_TRANSFER");
+  assert.ok(request && withdraw);
+
+  const requestPredicate = request.all.find(predicate => predicate.kind === "live_transfer_request");
+  const withdrawPredicate = withdraw.all.find(predicate => predicate.kind === "live_transfer_request");
+
+  assert.deepEqual(requestPredicate, { kind: "live_transfer_request", required: false });
+  assert.deepEqual(withdrawPredicate, { kind: "live_transfer_request", required: true });
+});
+
+test("A5-047 AGE-SPECIALIZED TEAMMATE ACTIONS MATCH V1 WINDOWS", () => {
+  const veteran = PLAYER_ACTION_ELIGIBILITY_SPECS.find(row => row.actionId === "PA_VETERAN_ADVICE");
+  const mentor = PLAYER_ACTION_ELIGIBILITY_SPECS.find(row => row.actionId === "PA_MENTOR_YOUNG");
+  assert.ok(veteran && mentor);
+
+  assert.deepEqual(
+    veteran.all.find(predicate => predicate.kind === "age_range"),
+    { kind: "age_range", min: 18, max: 23 }
+  );
+  assert.deepEqual(
+    veteran.all.find(predicate => predicate.kind === "teammate_profile"),
+    { kind: "teammate_profile", profile: "veteran" }
+  );
+
+  assert.deepEqual(
+    mentor.all.find(predicate => predicate.kind === "age_range"),
+    { kind: "age_range", min: 30 }
+  );
+  assert.deepEqual(
+    mentor.all.find(predicate => predicate.kind === "teammate_profile"),
+    { kind: "teammate_profile", profile: "young" }
+  );
 });
