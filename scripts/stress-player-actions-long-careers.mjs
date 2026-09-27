@@ -220,7 +220,7 @@ for (let index = 0; index < seedsToRun.length; index += 1) {
 }
 
 assert.equal(failures.length, 0, JSON.stringify(failures, null, 2));
-assert.equal(rows.length, SEEDS.length);
+assert.equal(rows.length, seedsToRun.length);
 
 const byPolicy = Object.fromEntries(policiesToReport.map(policy => {
   const group = rows.filter(row => row.policy === policy);
