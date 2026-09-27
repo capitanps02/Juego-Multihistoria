@@ -3,78 +3,66 @@
 **Estado:** NOT_CERTIFIED  
 **Recomendación:** DO_NOT_MERGE como feature final  
 **Repositorio:** `capitanps02/Juego-Multihistoria`  
-**BASE_SHA / main inspeccionado:** `2cc068cb705214ba827677ab02d8d1668e8677ec`  
+**BASE_SHA:** `2cc068cb705214ba827677ab02d8d1668e8677ec`  
 **Rama A6:** `a6/player-actions-final-qa`  
-**PR A6:** #805 (draft)  
+**PR A6:** #805 (draft; base QA aislada para reducir ruido de CI)  
 **Corte de evidencia:** 2026-09-27
 
 ## 1. Resumen ejecutivo
 
-Player Actions tiene una base técnica sólida, pero todavía no cumple los criterios de release A6.
+A6 confirma que la arquitectura base de Player Actions es segura, determinista y zero-action compatible, pero la feature todavía no es certificable como release final.
 
-Resultados fuertes ya medidos:
+### Evidencia fuerte ya obtenida
 
-- ZERO_ACTION_EQUIVALENCE pasa con **0 diferencias** contra el runtime pre-feature.
-- A2 conserva atomicidad, replay, rollback, save legacy y bloqueo de estados.
-- A3 conserva autoridad: las acciones escriben facts/intents y los sistemas autorizados consumen esos facts; no crean directamente ofertas, contratos o cambios de club.
-- A4 tiene implementación real tanto en preview/web como en bundle PlayCanvas, con su suite UI verde para los flujos targetless.
-- El slice A5 probado completa **80 carreras / 0 crashes** y también pasa zero-action.
-- No se ha encontrado ningún P0 ni P1.
+- **ZERO_ACTION_EQUIVALENCE:** PASS contra el runtime pre-feature, con 9 seeds y ventanas 28/84/365 días; 0 diferencias causales.
+- **P0:** 0.
+- **P1:** 0.
+- Replay, concurrency, rollback, legacy saves, malformed saves y lazy store tienen evidencia positiva.
+- A3 conserva autoridad: Player Actions escriben facts/intents; ofertas, contratos, club, selección y retirement siguen en sus productores autorizados.
+- El adapter público de targets ya está implementado en **A2 follow-up #806**.
+- A4 ya implementa selector público de target, exact `targetId`, history saneado y UI target-aware.
+- A4 obtuvo una pasada target-aware previa de **45/45 PASS** en session+UI y **11/11 PASS** en PlayCanvas+A19.
+- A5 ha completado diseño/copy/balance manifest de las 20 acciones y reporta **90% owner-side**.
+- A5 ya incluye una mitigación de anti-grind por frecuencia:
+  - training 35 días;
+  - rest 21 días;
+  - causal actions usan lifecycle + 1 día para impedir intents solapados.
+- Existe un candidato A6 integrado temporal para probar A2/A3/A4/A5 juntos sin tocar main.
 
-Bloqueos de release:
+### Bloqueos reales actuales
 
-1. las acciones con target siguen sin ser ejecutables desde la API pública/UI porque A2 no proyecta targets autorizados;
-2. A5 sigue PARTIAL/BLOCKED: runtime actual = **6 acciones**, frente a la matriz V1 de 20;
-3. anti-grind falla en training y rest;
-4. PlayCanvas no puede certificarse end-to-end para acciones targetted;
-5. mobile 360/390/430 sólo tiene cobertura contractual/estática, no viewport E2E;
-6. varios probes A6 recién añadidos (collision/future-RNG) permanecían en cola en el último HEAD al congelar esta evidencia.
+1. **PA-GATE-10 CONTENT:** runtime sigue en **6/20 acciones**. Las 14 restantes están diseñadas pero no ejecutables.
+2. **A1 contextual eligibility:** `active_career` es demasiado amplio para acciones que requieren empleo de club.
+3. **A1 renewal window:** `PA_REQUEST_RENEWAL` debe usar el horizonte canónico de **24 meses**.
+4. **A1 catalog contract:** faltan health, age/context, handlers cerrados adicionales y target predicates veteran/young.
+5. **A3 optional intents:** necesarios si el V1 mantiene position change, withdraw transfer, career priority, veteran advice y mentor young.
+6. **A4 exact final-head / PlayCanvas artifact / mobile E2E:** implementación existe, pero la última certificación exacta está retrasada por saturación de GitHub Actions.
+7. **Anti-grind:** el fix de cooldown existe; la pasada anual exacta del HEAD actual está pendiente de ejecución final.
+
+No se certificará por inferencia ni por “fix implementado”: los fixes pasan a PASS sólo después del retest exacto.
 
 ## 2. Inventario A0–A5
 
 | Agente | Estado A6 | Evidencia |
 |---|---|---|
-| A0 | COMPLETE | PR #799. Contrato, ownership, invariantes, ZERO_ACTION_EQUIVALENCE y límites de autoridad. No mergeado a main. |
-| A1 | COMPLETE | PR #800. Core, eligibility/cooldowns, fact-first model, fail-closed targets, closed effect registry, 15 tests. |
-| A2 | PARTIAL | PR #801. SessionCommand, revision/fingerprint, receipts/replay, persistence, legacy saves, PlayerView, auto:stop. Falta contrato público de targets. HEAD actual sólo añade CI sobre el código ya inspeccionado. |
-| A3 | COMPLETE para slice actual | PR #803, HEAD `75be938...`. Historical/live, coach/club/contract/agent scopes, narrative consumer, market consumer, no extra RNG, 15-case suite. |
-| A4 | PARTIAL | PR #804. Preview + web UI + PlayCanvas + 15 UI tests. Targetless flow verde; explícitamente BLOCKED_BY_A2_PUBLIC_VIEW para targets. |
-| A5 | PARTIAL / BLOCKED | PR #802, snapshot `2e61c047...`: 6 acciones runtime de 20 previstas; documento de 20 acciones y content-plan existen; faltan health, age/context, shared cooldown y extensiones de intents. |
+| A0 | COMPLETE | PR #799. Contrato, invariantes, ownership, zero-action y límites de autoridad. |
+| A1 | COMPLETE como core / PARTIAL para catálogo V1 | PR #800. Core seguro y cerrado. Faltan contratos para health, context eligibility, más handlers y predicates necesarios por A5. |
+| A2 | COMPLETE para sesión base | PR #801, HEAD `522b79d...`. SessionCommand, revision/fingerprint, receipts, persistence, replay, rollback, save compatibility y auto:stop. |
+| A2 public adapter | IMPLEMENTED / pending final integration retest | PR #806, HEAD `4eafe285...`. Targets autoritativos + history pública saneada + stale/invalid fail-closed. |
+| A3 | COMPLETE para slice actual | PR #803, HEAD `75be938...`. Scopes, bridge, consumers y 0 extra RNG. |
+| A4 | INTEGRATION CANDIDATE | PR #804, HEAD `bc08e841...`. Target flow, history, responsive UI y PlayCanvas source. Prior target-aware suites verdes; exact final run pendiente. |
+| A5 | PARTIAL / BLOCKED — 90% owner-side | PR #802, HEAD `cfde62cf...`. 20/20 plan + public spec + balance manifest; runtime aún 6/20 por blockers A1/A3. |
+| A6 | IN PROGRESS | PR #805. Gates cross-version, stress, public target, anti-grind, mobile E2E y candidatos integrados. |
 
-## 3. Componentes inspeccionados
+## 3. ZERO_ACTION_EQUIVALENCE
 
-A6 verificó código real y no sólo handoffs:
-
-- `src/player-actions/**`
-- `src/session/game-session.ts`
-- session/save validation
-- A3 facts/bridge/market consumer
-- A4 preview, `web/game-ui.*`, PlayCanvas bundle/manifest
-- A5 catalog/effects/content tests/content-plan
-- workflows de A1–A5
-- tests de core/session/narrative/UI/content
-- saves, auto-simulation y regresiones PlayCanvas relevantes
-
-## 4. Baseline y regresión
-
-Baseline pre-feature:
-
-`main@2cc068cb705214ba827677ab02d8d1668e8677ec`
-
-Evidencia:
-
-- A2: build + `npm test` PASS; core A1 15/15, session A2 23/23 y regresiones de auto/save verdes.
-- A4 dedicated workflow: A2+A4 **39/39 PASS**.
-- A4 PlayCanvas/A19 regression: **11/11 PASS**.
-- A5 snapshot probado: build PASS; content suite **12 PASS / 0 FAIL / 2 TODO**. En el HEAD A5 posterior los dos TODO se transformaron en assertions explícitas de contract gaps; catalog/effects no cambiaron desde el snapshot estresado.
-
-No se ha observado regresión existente atribuible a Player Actions en los suites completados.
-
-## 5. ZERO_ACTION_EQUIVALENCE — gate crítico
-
-A6 creó:
+Harness:
 
 `scripts/test-player-actions-zero-equivalence.mjs`
+
+Baseline:
+
+`main@2cc068cb705214ba827677ab02d8d1668e8677ec`
 
 Seeds:
 
@@ -86,132 +74,231 @@ Ventanas:
 - 84 días
 - 365 días
 
-Metodología:
+Se reproduce el mismo comando canónico en baseline y candidate y se compara snapshot completo después de cada comando.
 
-1. compilar baseline pre-feature y candidato;
-2. misma seed, sessionId y configuración;
-3. dejar que el baseline determine el siguiente comando canónico;
-4. reproducir el comando idéntico en candidate;
-5. comparar snapshots completos tras **cada comando**;
-6. incluir rngState, history, market, sport, professional, retirement, age milestones, pending state y seeds;
-7. tolerar únicamente un campo `playerActions: undefined` vacío;
-8. exigir que cero acciones no materialice el store Player Actions.
+Se comprueba explícitamente:
 
-Resultados medidos:
+- state;
+- rngState;
+- history;
+- seeds;
+- market;
+- sport;
+- professional;
+- retirement;
+- age milestones;
+- pending state;
+- no materialización de `playerActions` si nunca se usa.
 
-- A2/A6 source: PASS
-- A3 `75be938...`: PASS
-- A4 runtime source `ee07c945...`: PASS; el HEAD A4 posterior sólo cambia documentación
-- A5 runtime snapshot `bf13494...`: PASS; el HEAD A5 `2e61c047...` mantiene catalog/effects del snapshot probado
+Resultados medidos en runtime A2/A3/A4/A5 del slice actual:
 
-Por candidato: 9 seeds × 3 ventanas = 27 checkpoints.  
-Diferencias causales: **0**.
+**0 diferencias causales.**
 
-**PA-GATE-03 = PASS** para todo el runtime implementado hasta este corte.
+**PA-GATE-03 ZERO_ACTION_EQUIVALENCE = PASS.**
 
-## 6. Pureza y RNG
+Los cambios A5 posteriores son cooldown/content-spec/balance configuration y no participan en zero-action, pero el candidato final volverá a ejecutar el gate.
 
-Cubierto y verde:
+## 4. RNG / pureza
 
-- `getView()` repetido 1000 veces no muta snapshot ni materializa store.
-- list/evaluate/facts repetidos no mutan estado.
-- acciones deterministas preservan los streams RNG inmediatamente.
-- A3 projection/bridge usa cero draws extra.
-- zero-action compara snapshot/RNG completos.
-- A4 PlayCanvas regression conserva estado y RNG a través de 20 decisiones interactivas.
+Evidencia disponible:
 
-A6 añadió además `A6-019 NARRATIVE RNG FUTURE`: neutraliza únicamente el efecto físico legítimo de REST y compara el stream narrativo posterior. Ese probe estaba aún en cola en el último HEAD al cerrar el informe, por lo que el gate final completo queda conservadoramente BLOCKED pese a la evidencia inmediata positiva.
+- `getView()` ×1000 no muta snapshot;
+- availability/facts reads no mutan;
+- Player Actions deterministas no consumen RNG inmediatamente;
+- A3 bridge/projection no añade draws;
+- request transfer reutiliza el productor/roll autorizado;
+- zero-action compara el RNG completo;
+- PlayCanvas regression histórica conserva estado/RNG.
 
-## 7. Session / replay / concurrency / rollback
+A6 incluye además `A6-019 NARRATIVE RNG FUTURE` para demostrar que REST no desplaza el stream narrativo después de neutralizar únicamente su diferencia física legítima.
 
-Evidencia verde ya ejecutada:
+**Estado final del gate:** BLOCKED hasta ejecutar A6-019 sobre el candidato integrado final.
 
-- fingerprint incluye `targetId`;
+## 5. Session / atomicidad / persistence
+
+Cubierto por A2/A6:
+
+- canonical fingerprint con `targetId`;
 - expectedRevision;
-- replay exacto sin duplicar efectos/history/intents/cooldowns;
-- reuse de commandId con payload distinto falla;
-- 20 comandos simultáneos con misma revision: 1 commit y 19 STALE_REVISION;
-- persist failure: rollback total;
-- Player Action no avanza día/mundo;
-- decision/result/offer/retirement bloquean acciones;
-- pause/stop recupera idle sin avance oculto.
+- replay idempotente;
+- commandId reuse con payload distinto;
+- 20 same-revision clicks → un único commit;
+- failed commit → rollback total;
+- save/load continuo equivalente;
+- legacy save sin `playerActions`;
+- malformed store fail-closed;
+- Player Action no avanza mundo;
+- auto:stop sin avance temporal/RNG;
+- decision/result/offer/closed career bloquean acciones.
 
-A6 añadió probes específicos de decision collision, offer collision y retirement collision contra una acción renderizada con revision antigua. Permanecían en cola al congelar evidencia; por eso el gate final de atomicidad cross-system no se sobre-certifica.
+A6 también contiene probes específicos:
 
-## 8. Save compatibility
+- A6-016 decision collision;
+- A6-017 offer collision;
+- A6-018 retirement collision.
 
-PASS sobre el slice implementado:
+**Estado final del gate:** BLOCKED hasta última ejecución integrada exacta.
 
-- action → save → load → continue conserva estado;
-- legacy save sin `playerActions` carga, mantiene el campo ausente en lecturas y permite materializarlo sólo al ejecutar la primera acción;
-- malformed store falla cerrado;
-- casos A6 incluyen cooldown inválido, fecha imposible, sequence/history incoherente, actionId vacío y fact kind desconocido;
-- persistence failure no publica revision ni efectos parciales.
+## 6. Public targets / UI contract
 
-No se incrementó artificialmente SESSION_VERSION/schema sólo por el campo opcional.
+El finding original de A6 sobre targets **ya tiene implementación upstream**.
 
-## 9. Authority matrix
+### A2 #806
 
-Comprobaciones ejecutadas sobre acciones implementadas:
+Proyecta únicamente targets que pasan `validatePlayerActionTarget()` y expone:
 
-No pueden escribir directamente:
+- id;
+- nombre público;
+- rol público;
+- availability;
+- unavailableReason;
+- cooldown;
+- options públicas.
 
-- club;
-- ownerClub / registrationClub;
+No expone:
+
+- knowledge;
+- agenda;
+- facts;
+- payload;
+- effectKey;
+- eligibilityKey;
+- RNG;
+- consumer state.
+
+También proyecta `actions.history` saneado.
+
+### A4 #804
+
+Implementa:
+
+career → category → action → authoritative target → option → result → career.
+
+Envía el `targetId` exacto proyectado por A2.
+
+Evidencia previa target-aware:
+
+- A2 session + A4 UI: **45/45 PASS**;
+- PlayCanvas + A19: **11/11 PASS**.
+
+La revisión exacta actual incluye además:
+
+- target cooldown copy;
+- target reset en navegación;
+- busy guard que no revive botones deshabilitados;
+- responsive target selector.
+
+A6 conserva:
+
+`scripts/test-player-actions-public-target-contract.mjs`
+
+y el acceptance `A6-014`.
+
+**Finding PA-A6-001:** RESOLVED_IN_CODE / PENDING_FINAL_RETEST.  
+No se cuenta ya como defecto de ingeniería abierto, pero tampoco como PASS final hasta el candidato integrado.
+
+## 7. Authority / scopes
+
+### Authority
+
+No se han observado escrituras directas no autorizadas a:
+
+- club / owner / registration;
 - contract terms;
-- market pending;
-- national caps/role;
-- appearances/role;
+- market.pending;
+- national team;
+- appearances / match results;
+- captaincy;
 - retirement;
 - narrative history;
 - seeds.
 
-A6 inyecta una definición maliciosa con `effectKey=set_contract_salary`; el registry la rechaza con `PLAYER_ACTION_EFFECT_FORBIDDEN` y estado idéntico.
+El malicious-effect test de A6 inyecta `set_contract_salary` y debe ser rechazado sin mutación.
 
-Casos A3/A5:
+### A3 scopes
 
-- REQUEST_TRANSFER: crea fact/intención, no oferta ni cambio de club.
-- REQUEST_RENEWAL: crea fact, no extiende contrato ni cambia salario.
-- MORE_MINUTES: no crea apariciones, titularidad ni resultados.
-- ASK_AGENT_MARKET: no crea CareerOffer ni interés ficticio.
+Implementado:
 
-El productor de mercado sigue siendo la autoridad que crea la oferta.
-
-## 10. Fact scopes / historical vs live / privacidad
-
-A3 implementa:
-
-- `historicalExists`;
-- `currentlyRelevant`;
-- club scope;
-- coach scope exacto;
-- contract/renewal resolution;
+- historical vs currentlyRelevant;
+- coach + club scope;
+- club scope para transfer request;
+- renewal resolution por autoridad contractual posterior;
 - agent/representation scope;
-- read-only `playerActionFacts(state)`;
-- no propagación automática a prensa, compañeros u otros entrenadores;
-- no seeds ni fake EventDefinition/originEvent.
+- privacy;
+- no fake EventDefinition;
+- no seeds.
 
-El consumer de transfer request no crea una oferta. Mientras la petición está live, eleva un umbral del productor autorizado en **+12**; el valor no se acumula con solicitudes repetidas porque el bridge consulta relevancia booleana y aplica un bonus constante.
+Request transfer:
 
-## 11. Auto-sim y colisiones
+- no crea CareerOffer;
+- no cambia club;
+- no consume RNG adicional;
+- aplica un threshold fijo al productor autorizado mientras el fact está live;
+- repetir request no apila fuerza causal.
 
-Backend/A4 ya cubren:
+## 8. Nuevo P2 — eligibility de empleo activo
 
-- idle: acciones targetless permitidas;
-- auto_simulating: rechazadas;
-- paused: bloqueadas hasta stop según contrato;
-- waiting decision/result/offer: rechazadas;
-- retirement closed: rechazada;
-- auto:stop no avanza tiempo/RNG;
-- UI busy guard evita double-click.
+A5 ha demostrado un mismatch real:
 
-Los tests específicos stale-after-decision/offer/retirement están añadidos a A6 y pendientes de ejecución exacta del último HEAD.
+`active_career` sólo comprueba que la carrera no esté cerrada.
 
-## 12. Content catalog
+Eso no basta para:
 
-A5 snapshot de release no está completo.
+- PA_COACH_TALK;
+- PA_REQUEST_TRANSFER;
+- PA_REQUEST_RENEWAL.
 
-Runtime actual:
+En estado `employment.status = unattached`, una acción de club no debe anunciarse como disponible y fallar después dentro del effect.
+
+La autoridad canónica ya existe:
+
+`hasActiveClubEmployment(state)`
+
+de `src/simulation/employment.ts`.
+
+A6 añadió:
+
+`A6-020 ACTIVE EMPLOYMENT`
+
+Acceptance:
+
+- transfer unavailable;
+- renewal unavailable;
+- coach talk fail-closed;
+- raw dispatch no llega al effect;
+- error esperado = `PLAYER_ACTION_UNAVAILABLE`;
+- estado idéntico.
+
+**Owner:** RETURN_TO_A1.  
+**Severity:** P2.
+
+## 9. Nuevo P2 — renewal window
+
+El runtime ya tiene una definición canónica:
+
+`CLUB_RENEWAL_INTENT_MAX_MONTHS = 24`
+
+en `src/simulation/club-contract-intent.ts`.
+
+A6 añadió:
+
+`A6-021 RENEWAL WINDOW`
+
+Acceptance:
+
+- 25 meses → request renewal unavailable;
+- 24 meses → puede entrar en eligibility si existe empleo activo.
+
+No se crea un segundo threshold en Player Actions.
+
+**Owner:** RETURN_TO_A1 / A5 configuration.  
+**Severity:** P2.
+
+## 10. Content catalog
+
+### Runtime
+
+Actualmente: **6 acciones**.
 
 1. PA_TRAIN_EXTRA
 2. PA_REST
@@ -220,289 +307,331 @@ Runtime actual:
 5. PA_REQUEST_RENEWAL
 6. PA_AGENT_MARKET
 
-Matriz objetivo documentada: 20 acciones.
+### Diseño V1
 
-Gaps explícitos:
+A5 ya tiene **20/20** en:
 
-- health category no soportada por A1;
-- age/context eligibility insuficiente;
+- `content-plan.ts`;
+- `content-spec.ts`;
+- `content-balance.ts`.
+
+A5 valida:
+
+- distribución de classes;
+- distribución de categories;
+- IDs/options;
+- copy budgets;
+- no leakage de nombres internos;
+- direct-effect ceilings;
+- authority/intents con zero direct effect.
+
+Las 14 acciones bloqueadas son por contrato runtime, no por falta de diseño/copy.
+
+### Blockers A1
+
+- categoría health;
+- age/context eligibility;
+- closed registered content effects;
 - veteran/young teammate predicates;
-- shared/group cooldown;
-- intents opcionales de position change, withdraw transfer, career priority, veteran advice y mentor young.
+- shared/group cooldown cuando proceda;
+- contextual training/recovery handlers.
 
-A6 añadió `A6-015 CONTENT RELEASE READINESS` para que no sea posible aprobar accidentalmente un catálogo fixture/partial como release final.
+### Blockers A3 opcionales si permanecen en V1
 
-## 13. Stress / balance / anti-grind
+- position change;
+- withdraw transfer;
+- career priority;
+- veteran advice;
+- mentor young.
 
-### A2/core fixture stress
+**PA-GATE-10 CONTENT = FAIL** mientras el runtime siga 6/20.
 
-20 seeds × 4 políticas × 365 días = **80 carreras, 0 crashes**.
+## 11. Balance / anti-grind
 
-Políticas: none, training-heavy, rest-heavy, mixed.
+### Evidencia del slice anterior
 
-Con cooldown REST=1 día del slice A2:
+A6 midió el slice con training 10d y rest 7d:
 
-- rest-heavy: 365 acciones/año;
-- fitness medio 99.95;
-- fatigue medio 0.175;
-- save medio ~314.7 KB;
-- mixed: 418 acciones/año;
-- technique 88.5;
-- fitness 99.95;
-- save medio ~345.4 KB, max ~347.5 KB.
+- 80 carreras;
+- 0 crashes;
+- mixed: technique ~80.5 vs baseline 62;
+- rest-heavy: fitness ~99.91 / fatigue ~0.275.
 
-Esto confirmó el exploit y motivó la comprobación del A5 rebalanceado.
+Eso era FAIL claro.
 
-### A5 implemented slice stress
+### Remediación A5 actual
 
-Mismo protocolo, 20 seeds × 4 políticas × 365 días = **80 carreras, 0 crashes**.
+A5 no ha invadido A1 effects. Ha reducido frecuencia:
 
-Baseline:
-- technique 62
-- fatigue 19.845
-- fitness 81.395
-- save ~55.4 KB
+- training: **35d**;
+- rest: **21d**;
+- coach: 31d;
+- transfer: 121d;
+- renewal: 91d;
+- agent market: 31d.
 
-Training-heavy con stepping semanal:
-- 26 acciones;
-- technique 75.
+Los cooldowns causales están alineados a lifecycle + 1, evitando reejecución mientras el fact anterior sigue currentlyRelevant.
 
-Mixed con polling diario, que permite el máximo real del cooldown de training de 10 días:
-- 90 acciones totales;
-- technique **80.5**;
-- fatigue 3.095;
-- fitness **99.845**;
-- save medio ~147.0 KB.
+Budget A5 oficial:
 
-Rest-heavy con cooldown 7 días:
-- 53 acciones;
-- fatigue **0.275**;
-- fitness **99.91**;
-- save medio ~125.2 KB.
+- training Δ technique <= 6;
+- rest fitness <= 94;
+- rest fatigue >= 7;
+- mixed fitness <= 95;
+- mixed fatigue >= 5.
 
-Conclusión:
+A6 ha alineado:
 
-- Training sigue permitiendo aproximadamente **+18.5 técnica en una temporada** vía menú opcional.
-- Rest sigue manteniendo recuperación prácticamente perfecta durante un año.
+`scripts/test-player-actions-balance-release.mjs`
 
-**PA-GATE-11 = FAIL.**
+a exactamente esos límites.
 
-### Market / coach exploit
+**Finding training/rest:** FIX_IMPLEMENTED / PENDING_RETEST.  
+**PA-GATE-11:** BLOCKED hasta ejecutar el stress anual exacto; ya no se mantiene como FAIL histórico si el nuevo candidate cumple.
 
-- Transfer request no acumula bonus; bridge actual usa un único +12 mientras el fact está vigente.
-- La acción no fabrica ofertas; la oferta sigue saliendo del productor autorizado y del roll determinista existente.
-- More-minutes no modifica directamente titularidad/apariciones/resultados.
+## 12. Market exploit
 
-No se ha detectado el patrón de “cada click garantiza oferta/titularidad”; el problema de balance demostrado está en training/rest.
+A6 mantiene un probe de 1000 seeds.
 
-## 14. Save size
+Debe demostrar:
 
-A5 mixed 1-year:
+- request no crea `market.pending`;
+- no consume RNG;
+- productor autorizado puede responder después;
+- rate requested <65%;
+- uplift bounded;
+- repeated request no acumula threshold;
+- no synthetic offer.
 
-- max history entries: 90;
-- max facts: 90;
-- max save: ~148 KB.
+A5 incorpora el mismo criterio como gate propio.
 
-A2 worst-case pre-rebalance:
+## 13. Save size / performance
 
-- 418 history/facts;
-- ~347 KB.
+Hallazgo histórico:
 
-El crecimiento es aproximadamente lineal con acciones/facts. No se considera corrupción ni P0/P1. Se registra como P3/riesgo residual para carreras largas y futura compactación si el catálogo final aumenta mucho la frecuencia.
+- crecimiento de history/facts aproximadamente lineal;
+- viejo slice A5: ~148 KB para 90 acciones/año;
+- viejo A2 worst-case: ~347 KB para 418 acciones/año.
 
-## 15. Performance
+Los cooldowns nuevos reducen fuertemente la frecuencia máxima, por lo que estas cifras son upper bounds históricos, no la proyección final.
 
-No se observan crashes ni bloqueo del loop.
+**PA-A6 save growth:** P3, monitorizar en stress de carrera completa final.  
+No optimizar prematuramente mientras no exista problema real de carrera completa.
 
-Medición orientativa en CI con `events: []`:
+A6 dispone de `scripts/bench-player-actions.mjs` para:
 
-- A5 none: ~0.11 s por carrera de 365 días;
-- A5 mixed: ~1.43 s por carrera de 365 días;
-- A2 worst mixed de 418 acciones: ~8.61 s por carrera.
+- getView;
+- availability;
+- execution;
+- serialization.
 
-A6 añadió `scripts/bench-player-actions.mjs` para separar `getView`, availability, execution y serialization; ese workflow estaba en cola al congelar evidencia. No se usa una métrica pendiente para declarar PASS.
+## 14. Preview / PlayCanvas
 
-## 16. Preview / PlayCanvas / Mobile / Optionality
-
-A4 existe realmente en ambas superficies:
+A4 ya implementa el flujo target-aware en:
 
 - preview;
-- `web/game-ui.js/css`;
-- PlayCanvas bundle/manifest.
+- web UI;
+- fuente compartida para PlayCanvas.
 
-Suite A4:
+El build PlayCanvas genera artefactos versionados:
 
-- A2+A4: 39/39 PASS
-- PlayCanvas/A19: 11/11 PASS
-- SIMULAR permanece CTA principal;
-- Player Actions se presenta como opcional;
-- double click y stale recovery cubiertos;
-- mobile one-column contract y accessibility basics cubiertos.
+- `playcanvas/multihistoria.js`;
+- `playcanvas/manifest.json`.
 
-### P2 público de targets
+A4 añadió versionado automático del paquete regenerado.
 
-`publicPlayerActionsView()` evalúa acciones targetted sin proyectar un target autorizado. A1 exige target para coach/agent/teammate. Resultado: `PA_COACH_TALK` llega como unavailable y A4 no puede enviar `targetId` sin inventar autoridad.
+A6 añade además un freshness gate:
 
-A6 dejó el acceptance `A6-014 TARGETED PUBLIC FLOW` deliberadamente rojo hasta que A2 exponga targets saneados.
+`npm run build:playcanvas` seguido de diff cero del artefacto versionado.
 
-Por tanto:
+**PA-GATE-12 PREVIEW:** BLOCKED pending exact integrated E2E, no longer engineering FAIL.  
+**PA-GATE-13 PLAYCANVAS:** BLOCKED pending exact-head build/freshness/E2E.
 
-- preview targetless: funcional;
-- preview completo: FAIL;
-- PlayCanvas targetless: suite PASS;
-- PlayCanvas feature completa: BLOCKED;
-- mobile CSS/contract: PASS parcial;
-- viewport E2E 360x800 / 390x844 / 430x932: BLOCKED.
+## 15. Mobile / accessibility / optionality
 
-## 17. Findings
+A6 creó un E2E real Chromium:
 
-### PA-A6-001 — Public target flow inexistente
+`scripts/test-player-actions-mobile-e2e.mjs`
 
-**Severity:** P2  
-**Owner:** RETURN_TO_A2 + RETURN_TO_A4
+Viewports:
 
-**Reproduction:** abrir carrera, localizar PA_COACH_TALK en PlayerView. Se proyecta sin target autorizado y queda unavailable. A4 no dispone de selector/resolución pública segura.
+- 360×800;
+- 390×844;
+- 430×932.
 
-**Expected:** targets saneados y authority-backed en PlayerView; UI envía targetId exacto con la revision renderizada; target/revision stale falla cerrado.
+Flujo:
 
-**Actual:** coach/agent/teammate actions no son ejecutables por el flujo público.
+career → Gestionar mi carrera → Carrera → Hablar con entrenador → target → Quiero más minutos → resultado → Volver a carrera.
 
-**Files likely involved:** `src/session/game-session.ts`, PlayerView contract, `web/game-ui.js`, `preview/app.js`.
+Comprueba:
 
-**Acceptance test:** A6-014 verde + stale-target test + cero private-field leakage.
+- no horizontal overflow;
+- target selector;
+- botones;
+- regreso;
+- SIMULAR accesible;
+- optionality copy;
+- semántica básica de botones.
 
-### PA-A6-002 — Catálogo release incompleto
+**PA-GATE-14 MOBILE:** BLOCKED hasta ejecutar el navegador real sobre candidato integrado.
 
-**Severity:** P2  
-**Owner:** RETURN_TO_A1 + RETURN_TO_A3 + RETURN_TO_A5
+Optionality ya tiene evidencia positiva:
 
-**Reproduction:** inspeccionar `PLAYER_ACTION_CATALOG`: 6 acciones runtime frente a matriz final de 20; faltan health/age/context/shared cooldown y varias families.
+- SIMULAR primario;
+- Gestionar mi carrera secundario;
+- copy explícita de opcionalidad;
+- sin quotas/3 de 3/task warnings.
 
-**Expected:** catálogo V1 aprobado completamente expresable por contratos seguros.
+**PA-GATE-15 OPTIONALITY_UX = PASS.**
 
-**Actual:** A5 = PARTIAL/BLOCKED.
+## 16. Integrated QA candidates
 
-**Files likely involved:** `src/player-actions/types.ts`, eligibility/effects/facts registries, catalog/content-plan, A3 intents.
+A6 ya no depende únicamente de ramas aisladas.
 
-**Acceptance test:** A6-015 verde + A5 suite sin contract gaps + 20-action automated audit.
+Existen candidatos temporales:
 
-### PA-A6-003 — Training grind
+- `a6/player-actions-integrated-candidate`;
+- `a6/player-actions-integrated-qa`.
 
-**Severity:** P2  
-**Owner:** RETURN_TO_A5
+Se usan sólo para QA, no para saltarse ownership ni mergear producto.
 
-**Reproduction:** 20 seeds, 365 días, mixed daily polling sobre A5 slice. Technique media 62 → 80.5.
+El candidato integrado actual combina:
 
-**Expected:** menú opcional no debe producir progresión dominante por spam de cooldown.
+- A2 session;
+- A2 public target adapter;
+- A3 bridge;
+- A4 target UI;
+- A5 six-action production slice;
+- latest persistence regression;
+- A5 plan/spec tests.
 
-**Actual:** ~+18.5 técnica/año por Player Actions.
+No convierte las 14 acciones bloqueadas en runtime ficticio.
 
-**Files likely involved:** training effect magnitude + cooldown/eligibility A5.
+## 17. Estado de GitHub Actions
 
-**Acceptance test:** repetir misma política 20+ seeds y demostrar ceiling razonable documentado respecto a none.
+La infraestructura está saturada por muchas ejecuciones superseded generadas durante los commits rápidos de A5/A6.
 
-### PA-A6-004 — Rest/recovery exploit
+Los latest exact-head runs permanecen mayoritariamente `queued`.
 
-**Severity:** P2  
-**Owner:** RETURN_TO_A5
+A6 no interpreta:
 
-**Reproduction:** rest-heavy A5, 53 acciones/año. Fitness 99.91; fatigue 0.275.
+- `queued` como PASS;
+- fixes en source como PASS;
+- runs de HEAD antiguos como certificación del HEAD actual.
 
-**Expected:** recuperación útil pero no fitness ~100/fatigue ~0 permanente; nunca debe borrar lesión canónica.
+Se conserva únicamente evidencia ya completada y reproducible.
 
-**Actual:** estado físico prácticamente perfecto durante una temporada.
+## 18. Findings actuales
 
-**Files likely involved:** rest effect magnitude, cooldown/context eligibility.
+### PA-A6-001 — public target contract
 
-**Acceptance test:** stress anual 20+ seeds con delta explícito versus none; injury/recovery authority intacta.
+**Severity:** P2 histórico  
+**Estado:** RESOLVED_IN_CODE / PENDING_FINAL_RETEST  
+**Owner:** A2 #806 + A4 #804
 
-### PA-A6-005 — Crecimiento lineal de save
+### PA-A6-002 — runtime catalog 6/20
 
-**Severity:** P3  
-**Owner:** A2/A5 future optimization
+**Severity:** P2 OPEN  
+**Owner:** A1 + A3 + A5
 
-**Reproduction:** 90 acciones A5 → ~148 KB; 418 acciones A2 worst-case → ~347 KB.
+Diseño/copy/balance = 20/20.  
+Runtime = 6/20.
 
-**Expected:** crecimiento controlado en carrera larga.
+### PA-A6-003 — training grind
 
-**Actual:** history y facts crecen linealmente.
+**Severity:** P2 histórico  
+**Estado:** FIX_IMPLEMENTED / PENDING_RETEST  
+**Owner:** A5
 
-**Acceptance:** medir carrera completa con catálogo final antes de decidir compactación. No optimizar prematuramente.
+10d → 35d.
 
-## 18. Gates finales en este corte
+### PA-A6-004 — rest exploit
 
-| Gate | Estado | Evidencia |
-|---|---|---|
-| PA-GATE-01 BUILD | PASS | A2/A4/A5 builds verdes en runs ejecutados. |
-| PA-GATE-02 EXISTING REGRESSION | PASS | npm test/regresiones relevantes verdes en A2/A4; no regresión conocida introducida. |
-| PA-GATE-03 ZERO_ACTION_EQUIVALENCE | PASS | A2/A3/A4/A5 runtime; 9 seeds × 3 ventanas; 0 diferencias. |
-| PA-GATE-04 RNG | BLOCKED | immediate/no-extra RNG PASS; A6-019 future-stream exact probe aún en cola. |
-| PA-GATE-05 SESSION_ATOMICITY | BLOCKED | replay/concurrency/rollback PASS; A6-016..018 collision probes exactos aún en cola. |
-| PA-GATE-06 SAVE_COMPATIBILITY | PASS | save/load, legacy, malformed y rollback cubiertos. |
-| PA-GATE-07 AUTHORITY | PASS | slice implementado + malicious-effect guard + A3/A5 authority tests. |
-| PA-GATE-08 FACT_SCOPE | PASS | A3 historical/live y club/coach/contract/agent scope implementados/testeados. |
-| PA-GATE-09 AUTO_SIM | PASS | A2/A4 lock/stop/resume behavior cubierto. |
-| PA-GATE-10 CONTENT | FAIL | 6/20 runtime; contracts incompletos. |
-| PA-GATE-11 ANTI_GRIND | FAIL | training +18.5 technique/año; rest ~99.9 fitness/~0 fatigue. |
-| PA-GATE-12 PREVIEW | FAIL | targetted flow no ejecutable. |
-| PA-GATE-13 PLAYCANVAS | BLOCKED | targetless suite verde; targetted flow depende de PA-A6-001. |
-| PA-GATE-14 MOBILE | BLOCKED | responsive contract verde; viewports E2E no certificados. |
-| PA-GATE-15 OPTIONALITY_UX | PASS | A4-001/A4-002 y copy: SIMULAR suficiente, sin tasks/quota obligatoria. |
+**Severity:** P2 histórico  
+**Estado:** FIX_IMPLEMENTED / PENDING_RETEST  
+**Owner:** A5
 
-Resumen gates:
+7d → 21d.
 
-- PASS: 8
-- FAIL: 3
-- BLOCKED: 4
+### PA-A6-005 — save growth
 
-## 19. Fixes A6
+**Severity:** P3 OPEN/MONITOR  
+**Owner:** future A2/A5 optimization only if final stress warrants it.
 
-A6 no ha hecho refactor productivo.
+### PA-A6-006 — active-employment eligibility leak
 
-Añadido:
+**Severity:** P2 OPEN  
+**Owner:** RETURN_TO_A1  
+**Acceptance:** A6-020.
 
-- `scripts/test-player-actions-final.mjs`;
-- `scripts/test-player-actions-zero-equivalence.mjs`;
-- `scripts/stress-player-actions-backend.mjs`;
-- `scripts/bench-player-actions.mjs`;
-- workflows A6 y snapshot QA A5;
-- gates explícitos para target public flow y content readiness;
-- tests de collision y narrative future RNG;
-- este informe;
-- handoffs precisos en PR #801 y PR #802.
+### PA-A6-007 — renewal window eligibility
 
-## 20. Riesgos residuales
+**Severity:** P2 OPEN  
+**Owner:** RETURN_TO_A1  
+**Canonical horizon:** 24 months.  
+**Acceptance:** A6-021.
 
-1. No existe aún un único HEAD integrado A0–A5 listo para release.
-2. A2 public target contract sigue bloqueando coach/agent/teammate UI.
-3. A5 sigue al 52% y su catálogo final no existe.
-4. Training/rest requieren rebalance.
-5. Viewport visual mobile real pendiente.
-6. Save growth debe repetirse en carrera larga con catálogo final.
-7. Market transfer bonus actual es bounded (+12, no stack), pero debe revalidarse con el catálogo final y carreras completas.
+## 19. Gates actuales
+
+| Gate | Estado |
+|---|---|
+| PA-GATE-01 BUILD | PASS — previously measured source stacks; final integrated build still reruns |
+| PA-GATE-02 EXISTING REGRESSION | PASS for measured source stacks; final integrated rerun required before CERTIFIED |
+| PA-GATE-03 ZERO_ACTION_EQUIVALENCE | PASS |
+| PA-GATE-04 RNG | BLOCKED — A6-019 final integrated run pending |
+| PA-GATE-05 SESSION_ATOMICITY | BLOCKED — A6-016..018 final integrated run pending |
+| PA-GATE-06 SAVE_COMPATIBILITY | PASS |
+| PA-GATE-07 AUTHORITY | PASS on implemented slice |
+| PA-GATE-08 FACT_SCOPE | PASS on implemented A3 slice |
+| PA-GATE-09 AUTO_SIM | PASS on implemented slice |
+| PA-GATE-10 CONTENT | FAIL — runtime 6/20 |
+| PA-GATE-11 ANTI_GRIND | BLOCKED — fix implemented, exact annual stress pending |
+| PA-GATE-12 PREVIEW | BLOCKED — target implementation exists, exact integrated E2E pending |
+| PA-GATE-13 PLAYCANVAS | BLOCKED — exact integrated build/artifact/E2E pending |
+| PA-GATE-14 MOBILE | BLOCKED — Chromium 360/390/430 job pending |
+| PA-GATE-15 OPTIONALITY_UX | PASS |
+
+## 20. A6 artifacts
+
+- `scripts/test-player-actions-final.mjs`
+- `scripts/test-player-actions-zero-equivalence.mjs`
+- `scripts/test-player-actions-public-target-contract.mjs`
+- `scripts/stress-player-actions-backend.mjs`
+- `scripts/stress-player-actions-market.mjs`
+- `scripts/test-player-actions-balance-release.mjs`
+- `scripts/test-player-actions-mobile-e2e.mjs`
+- `scripts/bench-player-actions.mjs`
+- dedicated A6 workflows
+- integrated QA branches
+- handoffs en #800/#802/#803/#804
 
 ## 21. Recomendación técnica
 
 **DO_NOT_MERGE como feature final.**
 
-Sí puede continuarse usando A1/A2/A3/A4 como base y el slice A5 como laboratorio, porque zero-action, authority, save compatibility y los flujos targetless son sólidos.
+La razón ya no es fragilidad de la base técnica. Las principales invariantes están bien.
 
-No debe declararse Player Actions CERTIFIED hasta que:
+El release está bloqueado principalmente por:
 
-- PA-A6-001 se cierre;
-- A5 llegue al catálogo release y cierre sus contract gaps;
-- training/rest superen anti-grind;
-- A6-016..019 ejecuten verdes en el HEAD integrado;
-- PlayCanvas targetted E2E pase;
-- 360/390/430 viewport E2E pase;
-- se repitan zero-action/stress sobre el único HEAD final.
+1. completar el runtime catalog;
+2. cerrar eligibility A1;
+3. ejecutar los retests exactos del candidato integrado;
+4. certificar PlayCanvas/mobile exact-head.
 
-## 22. Trabajo restante A6
+## 22. Criterio para la siguiente actualización A6
 
-- 3 gates FAIL por corregir;
-- 3 gates BLOCKED por desbloquear/ejecutar;
-- 4 P2 por cerrar;
-- 1 P3 por monitorizar;
-- retest final sobre un único candidato integrado.
+Cerrar en este orden:
 
-Estimación residual una vez resueltos los upstream contracts: **~5–8 horas-agente equivalentes**.
+1. A1 active-employment + renewal-window;
+2. A1 catalog contract;
+3. A3 intents que sobrevivan al V1 final;
+4. A5 materializar las 14 acciones bloqueadas;
+5. A6-015 content PASS;
+6. annual anti-grind PASS;
+7. A6-016..021 PASS;
+8. PlayCanvas freshness/E2E;
+9. mobile Chromium;
+10. zero-action final integrated rerun;
+11. report final CERTIFIED o NOT_CERTIFIED.
+
+Estimación A6 residual después de que A1/A3 desbloqueen runtime: **~4–7 horas-agente equivalentes**.
