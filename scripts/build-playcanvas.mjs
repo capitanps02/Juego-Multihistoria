@@ -19,6 +19,7 @@ function collect(file){
   }
 }
 collect('src/session/game-session.ts');
+// DB-A5 presentation packaging.
 const entries=[...modules].map(([id,source])=>JSON.stringify(id)+': function(module,exports,require){\n'+source+'\n}').join(',\n');
 const loader=`const modules={${entries}};const cache={};function load(id){if(cache[id])return cache[id].exports;const m={exports:{}};cache[id]=m;modules[id](m,m.exports,name=>{const bits=(id.slice(0,id.lastIndexOf('/')+1)+name).split('/'),out=[];for(const b of bits){if(b==='..')out.pop();else if(b!=='.')out.push(b);}return load(out.join('/').replace(/\\.js$/,'.ts'));});return m.exports;}const {GameSession}=load('src/session/game-session.ts');`;
 const assets={};
