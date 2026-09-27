@@ -1,0 +1,28 @@
+name: Football Database V2 · Balance
+
+on:
+  pull_request:
+    paths:
+      - "src/catalog/football/**"
+      - "scripts/test-football-balance.mjs"
+      - "scripts/test-football-catalog.mjs"
+      - "docs/football-database-v2-a2-balance.md"
+      - "package.json"
+      - ".github/workflows/football-database-v2-balance.yml"
+  push:
+    branches:
+      - "db-a2/football-data-balance"
+
+jobs:
+  balance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run test:football-catalog
+      - run: npm run test:football-balance
