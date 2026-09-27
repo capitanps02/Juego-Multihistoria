@@ -1,0 +1,55 @@
+name: Player Actions A5 QA
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  a5_current:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Checkout A6 QA harness
+        uses: actions/checkout@v4
+        with:
+          path: qa
+
+      - name: Checkout pre-Player-Actions baseline
+        uses: actions/checkout@v4
+        with:
+          ref: 2cc068cb705214ba827677ab02d8d1668e8677ec
+          path: baseline
+
+      - name: Checkout A5 candidate
+        uses: actions/checkout@v4
+        with:
+          ref: 2e61c047a1880686429bcc73fb3afaf681a15bed
+          path: candidate
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Build baseline
+        working-directory: baseline
+        run: |
+          npm ci
+          npm run build
+
+      - name: Build A5 candidate
+        working-directory: candidate
+        run: |
+          npm ci
+          npm run build
+
+      - name: Run A5 content suite
+        working-directory: candidate
+        run: node --test scripts/test-player-actions-content.mjs
+
+      - name: A5 zero-action equivalence
+        run: node qa/scripts/test-player-actions-zero-equivalence.mjs baseline candidate

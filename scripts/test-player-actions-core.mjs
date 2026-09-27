@@ -1,0 +1,231 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+
+import { createInitialState } from "../dist/content/initial-state.js";
+import {
+  PLAYER_ACTION_CATALOG,
+  executePlayerActionInPlace,
+  getAvailablePlayerActions,
+  getPlayerActionFacts,
+  isPlayerActionAvailable
+} from "../dist/player-actions/index.js";
+
+const COACH = "NPC_CCH_01";
+
+function clone(value) {
+  return structuredClone(value);
+}
+
+function addDays(iso, days) {
+  const date = new Date(`${iso}T00:00:00Z`);
+  date.setUTCDate(date.getUTCDate() + days);
+  return date.toISOString().slice(0, 10);
+}
+
+function definition(id) {
+  const found = PLAYER_ACTION_CATALOG.find(action => action.id === id);
+  assert.ok(found, `missing fixture action ${id}`);
+  return found;
+}
+
+test("A1-001 READ ONLY ELIGIBILITY: 100 reads leave state byte-equivalent", () => {
+  const state = createInitialState(101);
+  const before = clone(state);
+  for (let index = 0; index < 100; index += 1) {
+    getAvailablePlayerActions(state, PLAYER_ACTION_CATALOG, { PA_COACH_TALK: COACH });
+  }
+  assert.deepEqual(state, before);
+});
+
+test("A1-002 ZERO ACTION: importing and initializing does not materialize PlayerActionState", () => {
+  const state = createInitialState(102);
+  assert.equal(Object.prototype.hasOwnProperty.call(state, "playerActions"), false);
+  assert.equal(state.playerActions, undefined);
+});
+
+test("A1-003 EXECUTION: valid training applies only bounded effect + own state", () => {
+  const state = createInitialState(103);
+  const narrativeBefore = clone(state.rngState.narrative);
+  const historyBefore = clone(state.history);
+  const seedsBefore = clone(state.seeds);
+  const contractBefore = clone(state.contract);
+  const marketBefore = clone(state.market);
+  const clubBefore = state.club;
+  const nationalRoleBefore = state.professional.nationalRole;
+  const fatigueBefore = state.body.fatigue;
+  const techniqueBefore = state.professional.technique;
+
+  const result = executePlayerActionInPlace(state, {
+    actionId: "PA_TRAIN_EXTRA",
+    optionId: "TECHNIQUE"
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(state.body.fatigue, fatigueBefore + 3);
+  assert.equal(state.professional.technique, techniqueBefore + 0.5);
+  assert.equal(state.playerActions?.history.length, 1);
+  assert.equal(state.playerActions?.facts.length, 1);
+  assert.equal(Object.keys(state.playerActions?.cooldowns ?? {}).length, 1);
+  assert.deepEqual(state.rngState.narrative, narrativeBefore);
+  assert.deepEqual(state.history, historyBefore);
+  assert.deepEqual(state.seeds, seedsBefore);
+  assert.deepEqual(state.contract, contractBefore);
+  assert.deepEqual(state.market, marketBefore);
+  assert.equal(state.club, clubBefore);
+  assert.equal(state.professional.nationalRole, nationalRoleBefore);
+});
+
+test("A1-004 INVALID ACTION: unknown id rejects with identical state", () => {
+  const state = createInitialState(104);
+  const before = clone(state);
+  const result = executePlayerActionInPlace(state, { actionId: "PA_UNKNOWN", optionId: "X" });
+  assert.equal(result.ok, false);
+  assert.equal(result.code, "PLAYER_ACTION_UNKNOWN");
+  assert.deepEqual(state, before);
+});
+
+test("A1-005 INVALID OPTION: unknown option rejects with identical state", () => {
+  const state = createInitialState(105);
+  const before = clone(state);
+  const result = executePlayerActionInPlace(state, { actionId: "PA_REST", optionId: "NOPE" });
+  assert.equal(result.ok, false);
+  assert.equal(result.code, "PLAYER_ACTION_OPTION_UNKNOWN");
+  assert.deepEqual(state, before);
+});
+
+test("A1-006 INVALID TARGET: non-coach target rejects closed", () => {
+  const state = createInitialState(106);
+  const before = clone(state);
+  const result = executePlayerActionInPlace(state, {
+    actionId: "PA_COACH_TALK",
+    optionId: "MORE_MINUTES",
+    targetId: "NPC_DOES_NOT_EXIST"
+  });
+  assert.equal(result.ok, false);
+  assert.equal(result.code, "PLAYER_ACTION_TARGET_INVALID");
+  assert.deepEqual(state, before);
+});
+
+test("A1-007 COOLDOWN: immediate repeat rejects without second mutation", () => {
+  const state = createInitialState(107);
+  const first = executePlayerActionInPlace(state, { actionId: "PA_REST", optionId: "RECOVER" });
+  assert.equal(first.ok, true);
+  const afterFirst = clone(state);
+  const second = executePlayerActionInPlace(state, { actionId: "PA_REST", optionId: "RECOVER" });
+  assert.equal(second.ok, false);
+  assert.equal(second.code, "PLAYER_ACTION_COOLDOWN");
+  assert.deepEqual(state, afterFirst);
+});
+
+test("A1-008 COOLDOWN EXPIRY: action is available exactly on cooldownUntil", () => {
+  const state = createInitialState(108);
+  const first = executePlayerActionInPlace(state, { actionId: "PA_REST", optionId: "RECOVER" });
+  assert.equal(first.ok, true);
+  assert.ok(first.cooldownUntil);
+  state.date = first.cooldownUntil;
+  assert.equal(isPlayerActionAvailable(state, definition("PA_REST")), true);
+});
+
+test("A1-009 NARRATIVE RNG: deterministic action never changes narrative stream", () => {
+  const state = createInitialState(109);
+  const before = clone(state.rngState.narrative);
+  const result = executePlayerActionInPlace(state, { actionId: "PA_REST", optionId: "RECOVER" });
+  assert.equal(result.ok, true);
+  assert.deepEqual(state.rngState.narrative, before);
+});
+
+test("A1-010 HISTORY SEPARATION: Player Action never appends state.history", () => {
+  const state = createInitialState(110);
+  const before = clone(state.history);
+  const result = executePlayerActionInPlace(state, {
+    actionId: "PA_COACH_TALK",
+    optionId: "MORE_MINUTES",
+    targetId: COACH
+  });
+  assert.equal(result.ok, true);
+  assert.deepEqual(state.history, before);
+  assert.equal(state.playerActions?.history.length, 1);
+});
+
+test("A1-011 AUTHORITY GUARD: arbitrary club/contract/national writes have no registered effect", () => {
+  for (const effectKey of ["club", "contract.salaryMonthly", "professional.nationalRole"]) {
+    const state = createInitialState(111);
+    const before = clone(state);
+    const malicious = [{
+      id: `PA_MALICIOUS_${effectKey}`,
+      category: "career",
+      label: "malicious",
+      description: "test only",
+      targetKind: "none",
+      cooldown: { scope: "action", days: 1 },
+      eligibilityKey: "active_career",
+      options: [{ id: "RUN", label: "run", effectKey, publicResult: "never" }]
+    }];
+    const result = executePlayerActionInPlace(
+      state,
+      { actionId: malicious[0].id, optionId: "RUN" },
+      malicious
+    );
+    assert.equal(result.ok, false);
+    assert.equal(result.code, "PLAYER_ACTION_EFFECT_FORBIDDEN");
+    assert.deepEqual(state, before);
+  }
+});
+
+test("A1-012 ATOMIC FAILURE: failure after a valid draft effect leaves confirmed state intact", () => {
+  const state = createInitialState(112);
+  // Deliberately malformed pre-existing PA store. The direct REST effect is valid
+  // and mutates only the cloned draft; post-effect store validation must then fail.
+  state.playerActions = {
+    version: 1,
+    sequence: 5,
+    history: [],
+    cooldowns: {},
+    facts: []
+  };
+  const before = clone(state);
+  const result = executePlayerActionInPlace(state, {
+    actionId: "PA_REST",
+    optionId: "RECOVER"
+  });
+  assert.equal(result.ok, false);
+  assert.equal(result.code, "PLAYER_ACTION_STATE_INVALID");
+  assert.deepEqual(state, before);
+});
+
+test("A1-013 DETERMINISM: identical states + request produce identical outputs", () => {
+  const left = createInitialState(113);
+  const right = clone(left);
+  const request = {
+    actionId: "PA_COACH_TALK",
+    optionId: "MORE_MINUTES",
+    targetId: COACH
+  };
+  const leftResult = executePlayerActionInPlace(left, request);
+  const rightResult = executePlayerActionInPlace(right, request);
+  assert.deepEqual(leftResult, rightResult);
+  assert.deepEqual(left, right);
+});
+
+test("A1-014 OPTIONALITY: reads without execution create no store, flags, costs or cooldowns", () => {
+  const state = createInitialState(114);
+  const before = clone(state);
+  getAvailablePlayerActions(state, PLAYER_ACTION_CATALOG, { PA_COACH_TALK: COACH });
+  assert.deepEqual(state, before);
+  assert.equal(Object.prototype.hasOwnProperty.call(state, "playerActions"), false);
+});
+
+test("A0 PA-014 FACT EXPIRY READ: expired facts disappear from active projection without cleanup write", () => {
+  const state = createInitialState(115);
+  const result = executePlayerActionInPlace(state, {
+    actionId: "PA_COACH_TALK",
+    optionId: "MORE_MINUTES",
+    targetId: COACH
+  });
+  assert.equal(result.ok, true);
+  const stored = clone(state.playerActions);
+  assert.equal(getPlayerActionFacts(state, { activeOnly: true, kind: "request_more_minutes" }).length, 1);
+  state.date = addDays(state.date, 31);
+  assert.equal(getPlayerActionFacts(state, { activeOnly: true, kind: "request_more_minutes" }).length, 0);
+  assert.deepEqual(state.playerActions, stored);
+});

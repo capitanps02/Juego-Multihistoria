@@ -1,0 +1,70 @@
+name: Player Actions final safety probes
+
+on:
+  pull_request:
+    branches:
+      - a6/player-actions-qa-base
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  BASELINE_SHA: 2cc068cb705214ba827677ab02d8d1668e8677ec
+  CANDIDATE_REF: a6/player-actions-release-qa
+
+jobs:
+  safety:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Checkout A6 harness
+        uses: actions/checkout@v4
+        with:
+          path: qa
+
+      - name: Checkout release candidate
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.CANDIDATE_REF }}
+          path: candidate
+
+      - name: Checkout pre-feature baseline
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.BASELINE_SHA }}
+          path: baseline
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Build candidate
+        working-directory: candidate
+        run: |
+          npm ci
+          npm run build
+          cp ../qa/scripts/test-player-actions-final.mjs scripts/a6-player-actions-final.mjs
+
+      - name: Run A6 cross-system probes
+        working-directory: candidate
+        run: node --test --test-name-pattern='A6-' scripts/a6-player-actions-final.mjs
+
+      - name: Run independent public target contract
+        run: node qa/scripts/test-player-actions-public-target-contract.mjs candidate
+
+      - name: Build pre-feature baseline
+        working-directory: baseline
+        run: |
+          npm ci
+          npm run build
+
+      - name: Run final ZERO_ACTION_EQUIVALENCE
+        run: node qa/scripts/test-player-actions-zero-equivalence.mjs baseline candidate
+
+      - name: Run PlayCanvas regression
+        working-directory: candidate
+        run: |
+          npm run build:playcanvas
+          node --test scripts/test-playcanvas.mjs scripts/test-t55-a19-ui.mjs
