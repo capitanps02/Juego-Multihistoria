@@ -292,3 +292,75 @@ test("A2-023 PUBLIC VIEW: result is visible without leaking internal facts/effec
     assert.equal(json.includes(forbidden), false, `public actions leaked ${forbidden}`);
   }
 });
+
+
+test("A2-024 PUBLIC TARGET: coach action exposes the authoritative current coach", async () => {
+  const session = await emptySession(224, "a2-024");
+  const action = session.getView().actions.categories
+    .flatMap(category => category.actions)
+    .find(candidate => candidate.id === "PA_COACH_TALK");
+  assert.ok(action);
+  assert.equal(action.targetKind, "coach");
+  assert.equal(action.available, true);
+  assert.equal(action.targets.length, 1);
+  assert.equal(action.targets[0].id, "NPC_CCH_01");
+  assert.equal(action.targets[0].label, "Darío Montalbán");
+  assert.equal(action.targets[0].available, true);
+  assert.equal(action.targets[0].options.every(option => option.available), true);
+});
+
+test("A2-025 TARGET EXECUTION: projected targetId executes and exposes target-scoped cooldown", async () => {
+  const session = await emptySession(225, "a2-025");
+  const before = session.getView();
+  const action = before.actions.categories
+    .flatMap(category => category.actions)
+    .find(candidate => candidate.id === "PA_COACH_TALK");
+  const target = action.targets[0];
+  await session.dispatch(command(session, "player_action", {
+    actionId: action.id,
+    optionId: "MORE_MINUTES",
+    targetId: target.id
+  }));
+  const after = session.getView();
+  const cooled = after.actions.categories
+    .flatMap(category => category.actions)
+    .find(candidate => candidate.id === "PA_COACH_TALK")
+    .targets.find(candidate => candidate.id === target.id);
+  assert.equal(cooled.available, false);
+  assert.ok(cooled.cooldownUntil);
+  assert.match(cooled.unavailableReason, /Disponible de nuevo/);
+});
+
+test("A2-026 PUBLIC HISTORY: sanitized history survives save/load without private causal data", async () => {
+  const session = await emptySession(226, "a2-026");
+  await session.dispatch(command(session, "player_action", { actionId: "PA_REST", optionId: "RECOVER" }));
+  const history = session.getView().actions.history;
+  assert.equal(history.length, 1);
+  assert.deepEqual(Object.keys(history[0]).sort(), [
+    "actionId", "actionLabel", "date", "executionId", "optionLabel", "text"
+  ]);
+  assert.equal(history[0].actionLabel, "Descansar");
+  assert.equal(history[0].optionLabel, "Recuperar");
+  const resumed = await GameSession.resume(clone(session.exportSnapshot()), { events: [] });
+  assert.deepEqual(resumed.getView().actions.history, history);
+  const json = JSON.stringify(resumed.getView().actions);
+  for (const forbidden of ["effectKey", "eligibilityKey", "\"facts\"", "\"payload\"", "privateAgenda", "\"knowledge\"", "rngState"]) {
+    assert.equal(json.includes(forbidden), false, `public actions leaked ${forbidden}`);
+  }
+});
+
+test("A2-027 PUBLIC TARGET PURE: repeated target projection is read-only and stale ids fail closed", async () => {
+  const session = await emptySession(227, "a2-027");
+  const before = session.exportSnapshot();
+  for (let index = 0; index < 100; index += 1) session.getView().actions;
+  assert.deepEqual(session.exportSnapshot(), before);
+  await assert.rejects(
+    session.dispatch(command(session, "player_action", {
+      actionId: "PA_COACH_TALK",
+      optionId: "MORE_MINUTES",
+      targetId: "NPC_CCH_02"
+    })),
+    error => error?.code === "PLAYER_ACTION_TARGET_INVALID"
+  );
+  assert.deepEqual(session.exportSnapshot(), before);
+});
