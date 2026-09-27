@@ -16,7 +16,7 @@ concurrency:
 
 env:
   BASELINE_SHA: 2cc068cb705214ba827677ab02d8d1668e8677ec
-  INTEGRATED_REF: a6/player-actions-integrated-v5
+  INTEGRATED_REF: a6/player-actions-release-qa
 
 jobs:
   refresh_integrated_artifacts:
