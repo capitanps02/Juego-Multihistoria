@@ -165,7 +165,6 @@ export const PLAYER_ACTION_BALANCE_SPECS: readonly PlayerActionBalanceSpec[] = [
     options: [{
       optionId: "ASK_ADVICE",
       directDeltas: [
-        { metric: "professional.tacticalReading", delta: 0.05 },
         { metric: "relationship.respect", delta: 1 }
       ]
     }]
@@ -175,7 +174,6 @@ export const PLAYER_ACTION_BALANCE_SPECS: readonly PlayerActionBalanceSpec[] = [
     options: [{
       optionId: "MENTOR",
       directDeltas: [
-        { metric: "professional.lockerPower", delta: 0.05 },
         { metric: "relationship.respect", delta: 1 }
       ]
     }]
@@ -183,22 +181,34 @@ export const PLAYER_ACTION_BALANCE_SPECS: readonly PlayerActionBalanceSpec[] = [
   {
     actionId: "PA_INTERVIEW",
     options: [
-      { optionId: "HUMBLE", directDeltas: [{ metric: "professional.commercialPower", delta: 0.5 }] },
+      {
+        optionId: "HUMBLE",
+        directDeltas: [
+          { metric: "professional.institutionalTrust", delta: 0.25 },
+          { metric: "professional.commercialPower", delta: -0.25 }
+        ]
+      },
       {
         optionId: "AMBITIOUS",
         directDeltas: [
-          { metric: "professional.commercialPower", delta: 0.75 },
+          { metric: "professional.commercialPower", delta: 0.5 },
           { metric: "professional.publicPolarization", delta: 0.5 }
         ]
       },
-      { optionId: "TEAM_FIRST", directDeltas: [{ metric: "professional.institutionalTrust", delta: 0.5 }] }
+      {
+        optionId: "TEAM_FIRST",
+        directDeltas: [
+          { metric: "professional.institutionalTrust", delta: 0.5 },
+          { metric: "professional.commercialPower", delta: -0.25 }
+        ]
+      }
     ]
   },
   {
     actionId: "PA_SOCIAL_POST",
     options: [
-      { optionId: "PROFESSIONAL", directDeltas: [{ metric: "professional.commercialPower", delta: 0.25 }] },
-      { optionId: "PERSONAL", directDeltas: [{ metric: "professional.motivationReserve", delta: 0.25 }] }
+      { optionId: "PROFESSIONAL", directDeltas: [] },
+      { optionId: "PERSONAL", directDeltas: [] }
     ]
   },
   {
@@ -207,15 +217,15 @@ export const PLAYER_ACTION_BALANCE_SPECS: readonly PlayerActionBalanceSpec[] = [
       {
         optionId: "PEOPLE",
         directDeltas: [
-          { metric: "body.fatigue", delta: -1 },
-          { metric: "professional.motivationReserve", delta: 0.5 }
+          { metric: "body.fatigue", delta: -0.5 },
+          { metric: "professional.motivationReserve", delta: 0.25 }
         ]
       },
       {
         optionId: "HOBBY",
         directDeltas: [
-          { metric: "body.fatigue", delta: -1 },
-          { metric: "professional.motivationReserve", delta: 0.5 }
+          { metric: "body.fatigue", delta: -0.5 },
+          { metric: "professional.motivationReserve", delta: 0.25 }
         ]
       }
     ]
@@ -225,8 +235,8 @@ export const PLAYER_ACTION_BALANCE_SPECS: readonly PlayerActionBalanceSpec[] = [
     options: [{
       optionId: "DISCONNECT",
       directDeltas: [
-        { metric: "body.fatigue", delta: -2 },
-        { metric: "professional.motivationReserve", delta: 1 }
+        { metric: "body.fatigue", delta: -1 },
+        { metric: "professional.motivationReserve", delta: 0.5 }
       ]
     }]
   }
