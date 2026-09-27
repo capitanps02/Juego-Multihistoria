@@ -194,7 +194,7 @@ Clasificación:
 - fact: `training_extra_completed`;
 - sin RNG.
 
-Nota de balance: +0.5 cada 10d es demasiado alto como diseño final si el jugador puede repetirlo toda la temporada. Se mantiene temporalmente porque el handler pertenece a A1. A5 recomienda reducir a +0.10…+0.20 cuando A1 transfiera/extienda el registry.
+Nota de balance: A6 demostró que el cooldown anterior de 10d con +0.5 era demasiado alto. A5 lo limita ahora a 35d; aun así recomienda reducir el handler a +0.10…+0.20 cuando A1 transfiera/extienda el registry y permita eligibility contextual.
 
 ### PA_REST
 
