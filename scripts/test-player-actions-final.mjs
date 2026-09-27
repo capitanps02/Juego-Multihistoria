@@ -22,7 +22,18 @@ import {
 const clone = value => structuredClone(value);
 
 async function emptySession(seed, sessionId = `a6-${seed}`, extra = {}) {
-  return GameSession.create(seed, { events: [], microfeeds: false, sessionId, ...extra });
+  const base = await GameSession.create(seed, { events: [], microfeeds: false, sessionId, ...extra });
+  const snapshot = base.exportSnapshot();
+  // A6 neutral fixture: final V1 makes REST/TRAINING contextual.
+  // fatigue=30 and risk=20 satisfy both public eligibility contracts.
+  snapshot.state.body.fatigue = 30;
+  snapshot.state.body.risk = 20;
+  return GameSession.resume(snapshot, {
+    events: [],
+    ...(extra.commit ? { commit: extra.commit } : {}),
+    ...(extra.migrationRoutes ? { migrationRoutes: extra.migrationRoutes } : {}),
+    ...(extra.contentSources ? { contentSources: extra.contentSources } : {})
+  });
 }
 
 function fixedCommand(session, commandId, type, extra = {}) {
