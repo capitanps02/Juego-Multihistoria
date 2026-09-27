@@ -37,6 +37,7 @@ export const PLAYER_ACTION_CONTENT_PLAN: readonly PlayerActionContentPlanRow[] =
     targetKind: "coach",
     status: "implemented",
     requiredContext: "current coach + active club employment",
+    blockedBy: "A1 active-employment contextual eligibility still generic"
   },
   {
     id: "PA_ROLE_CHECK",
@@ -123,6 +124,7 @@ export const PLAYER_ACTION_CONTENT_PLAN: readonly PlayerActionContentPlanRow[] =
     targetKind: "none",
     status: "implemented",
     requiredContext: "active career",
+    blockedBy: "runtime uses life until A1 adds health"
   },
   {
     id: "PA_AGENT_MARKET",
@@ -143,6 +145,7 @@ export const PLAYER_ACTION_CONTENT_PLAN: readonly PlayerActionContentPlanRow[] =
     targetKind: "none",
     status: "implemented",
     requiredContext: "current club employment + renewal window",
+    blockedBy: "A1 active-employment + contract-window contextual eligibility still generic"
   },
   {
     id: "PA_DISCUSS_FUTURE",
@@ -185,8 +188,8 @@ export const PLAYER_ACTION_CONTENT_PLAN: readonly PlayerActionContentPlanRow[] =
     cooldownDays: 21,
     targetKind: "teammate",
     status: "blocked",
-    requiredContext: "eligible veteran teammate",
-    blockedBy: "A1 veteran predicate + relationship handler"
+    requiredContext: "current locker-leader teammate",
+    blockedBy: "A1 content target-profile support + relationship handler"
   },
   {
     id: "PA_MENTOR_TEAMMATE",
@@ -196,8 +199,8 @@ export const PLAYER_ACTION_CONTENT_PLAN: readonly PlayerActionContentPlanRow[] =
     cooldownDays: 21,
     targetKind: "teammate",
     status: "blocked",
-    requiredContext: "eligible young teammate",
-    blockedBy: "A1 young-player predicate + relationship handler"
+    requiredContext: "current teammate",
+    blockedBy: "A1 age eligibility + relationship handler"
   },
   {
     id: "PA_INTERVIEW",
