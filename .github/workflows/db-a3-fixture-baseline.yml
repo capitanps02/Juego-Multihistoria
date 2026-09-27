@@ -23,3 +23,10 @@ jobs:
       - run: npm run build
       - run: node --test scripts/test-db-a3-fixture-baseline.mjs
       - run: node --test scripts/test-player-actions-narrative-bridge.mjs scripts/test-t5-age18-market-authority.mjs
+      - run: node --test scripts/test-db-a3-continuous-market-baseline.mjs
+      - name: Emit continuous-market baseline
+        run: |
+          echo '### DB-A3 continuous-market baseline' >> "$GITHUB_STEP_SUMMARY"
+          echo '```json' >> "$GITHUB_STEP_SUMMARY"
+          node scripts/test-db-a3-continuous-market-baseline.mjs --emit >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
