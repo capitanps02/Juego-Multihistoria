@@ -1,21 +1,33 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import {
   FOOTBALL_CLUBS,
   FOOTBALL_DIVISIONS,
   FOOTBALL_CATALOG_VERSION,
+  assertFootballCatalogData,
+  assertFootballClubReferenceForContext,
   assertLoadableFootballClubReference,
   assertNewFootballClubReference,
+  catalogMultiClubIdentityKey,
   classifyFootballClubReference,
   clubById,
   clubsForCountry,
   clubsForDivision,
   divisionById,
   divisionsForCountry,
+  footballCatalogStructuralFingerprint,
   inspectFootballCatalog,
+  inspectFootballCatalogData,
+  isCanonicalSpecialClubId,
+  isCatalogClubId,
+  isFootballClubReferenceAllowed,
+  isLegacyClubReference,
   isLoadableFootballClubReference,
+  isNarrativeClubAlias,
   isNewFootballClubReference,
-  nearestDivisionForCountry
+  nearestDivisionForCountry,
+  stableCatalogClubId
 } from "../dist/catalog/football/index.js";
 
 const EXPECTED_COUNTRY_COUNTS = Object.freeze({
@@ -26,6 +38,23 @@ const EXPECTED_COUNTRY_COUNTS = Object.freeze({
 const EXPECTED_CONFEDERATION_COUNTS = Object.freeze({
   UEFA: 382, CONCACAF: 48, CONMEBOL: 30, AFC: 36, CAF: 32
 });
+
+function mutableCatalog() {
+  return {
+    clubs: FOOTBALL_CLUBS.map(club => ({ ...club, archetypes: [...club.archetypes] })),
+    divisions: FOOTBALL_DIVISIONS.map(division => ({ ...division }))
+  };
+}
+
+function corruptionIssues(mutator) {
+  const snapshot = mutableCatalog();
+  mutator(snapshot);
+  return inspectFootballCatalogData(snapshot.clubs, snapshot.divisions);
+}
+
+function hasReason(issues, pattern) {
+  return issues.some(item => pattern.test(`${item.path}: ${item.reason}`));
+}
 
 test("world football catalog keeps the first-wave structural scope", () => {
   assert.equal(FOOTBALL_CLUBS.length, 528);
@@ -43,9 +72,10 @@ test("world football catalog keeps the first-wave structural scope", () => {
   }
 });
 
-test("catalog integrity inspector is clean and indexes are stable", () => {
+test("catalog integrity inspector is clean, immutable and indexed", () => {
   assert.deepEqual(inspectFootballCatalog(), []);
   assert.equal(new Set(FOOTBALL_CLUBS.map(club => club.id)).size, FOOTBALL_CLUBS.length);
+  assert.equal(new Set(FOOTBALL_CLUBS.map(club => club.name)).size, FOOTBALL_CLUBS.length);
   assert.equal(new Set(FOOTBALL_DIVISIONS.map(division => division.id)).size, FOOTBALL_DIVISIONS.length);
 
   for (const stableId of [
@@ -60,22 +90,53 @@ test("catalog integrity inspector is clean and indexes are stable", () => {
     assert.equal(divisionById(division.id), division);
     assert.equal(clubsForDivision(division.id).length, division.clubCount, division.id);
     assert.ok(Object.isFrozen(clubsForDivision(division.id)), division.id);
+    assert.ok(Object.isFrozen(division), division.id);
   }
 
+  for (const club of FOOTBALL_CLUBS) {
+    assert.ok(Object.isFrozen(club), club.id);
+    assert.ok(Object.isFrozen(club.archetypes), club.id);
+  }
+
+  assert.ok(Object.isFrozen(FOOTBALL_CLUBS));
+  assert.ok(Object.isFrozen(FOOTBALL_DIVISIONS));
   assert.equal(nearestDivisionForCountry("ESP", 1)?.id, "ESP_D1");
   assert.equal(nearestDivisionForCountry("ESP", 9)?.id, "ESP_D3");
 });
 
-test("reference classifier separates V2 production from compatibility", () => {
+test("stable identity mechanism preserves V1 ids and requires explicit multi-club ids", () => {
+  assert.equal(stableCatalogClubId("ESP", "Madrid"), "ESP_MADRID");
+  assert.equal(catalogMultiClubIdentityKey("ESP", "Madrid", 2), "ESP|MADRID|2");
+  assert.throws(
+    () => stableCatalogClubId("ESP", "Madrid", 2),
+    /require an explicit stable club id/
+  );
+  assert.equal(stableCatalogClubId("ESP", "Madrid", 2, "ESP_MADRID_02"), "ESP_MADRID_02");
+  assert.throws(
+    () => stableCatalogClubId("ESP", "Madrid", 2, "ENG_MADRID_02"),
+    /does not match country/
+  );
+  assert.throws(
+    () => stableCatalogClubId("ESP", "Madrid", 2, "ESP Madrid 02"),
+    /Malformed explicit football club id/
+  );
+});
+
+test("reference classifier separates production, historical read and canonical content", () => {
   assert.equal(classifyFootballClubReference("ESP_MADRID").kind, "catalog");
   assert.equal(classifyFootballClubReference("UDV").kind, "canonical_special");
+  assert.equal(isCatalogClubId("ESP_MADRID"), true);
+  assert.equal(isCanonicalSpecialClubId("UDV"), true);
 
   for (const alias of [
     "NEW_CLUB","DEVELOPMENT_CLUB","DEVELOPMENT_CLUB_2","HIGHER_CLUB","BIG_CLUB","FOREIGN_DEV_CLUB"
   ]) {
     assert.equal(classifyFootballClubReference(alias).kind, "narrative_alias", alias);
-    assert.equal(isLoadableFootballClubReference(alias), true, alias);
+    assert.equal(isNarrativeClubAlias(alias), true, alias);
+    assert.equal(isFootballClubReferenceAllowed(alias, "canonical_content"), true, alias);
+    assert.equal(isFootballClubReferenceAllowed(alias, "historical_read"), false, alias);
     assert.equal(isNewFootballClubReference(alias), false, alias);
+    assert.throws(() => assertNewFootballClubReference(alias, "persisted.club"), /not allowed in new_production/);
   }
 
   for (const legacy of [
@@ -83,32 +144,172 @@ test("reference classifier separates V2 production from compatibility", () => {
     "Summer_2_12","Foreign_1_02","Loan_3_14","Club 3 · 4"
   ]) {
     assert.equal(classifyFootballClubReference(legacy).kind, "legacy_compat", legacy);
+    assert.equal(isLegacyClubReference(legacy), true, legacy);
     assert.equal(isLoadableFootballClubReference(legacy), true, legacy);
+    assert.equal(isFootballClubReferenceAllowed(legacy, "canonical_content"), false, legacy);
     assert.equal(isNewFootballClubReference(legacy), false, legacy);
     assert.doesNotThrow(() => assertLoadableFootballClubReference(legacy, "legacy"));
-    assert.throws(() => assertNewFootballClubReference(legacy, "new"), /new V2 production requires/);
+    assert.throws(() => assertNewFootballClubReference(legacy, "new"), /not allowed in new_production/);
   }
 
-  assert.equal(isNewFootballClubReference("ESP_MADRID"), true);
-  assert.equal(isNewFootballClubReference("UDV"), true);
-  assert.doesNotThrow(() => assertNewFootballClubReference("ESP_MADRID"));
-  assert.doesNotThrow(() => assertNewFootballClubReference("UDV"));
+  for (const value of ["ESP_MADRID", "UDV"]) {
+    assert.equal(isFootballClubReferenceAllowed(value, "new_production"), true);
+    assert.equal(isFootballClubReferenceAllowed(value, "historical_read"), true);
+    assert.equal(isFootballClubReferenceAllowed(value, "canonical_content"), true);
+  }
+
+  assert.doesNotThrow(() => assertFootballClubReferenceForContext("NEW_CLUB", "canonical_content"));
+  assert.throws(
+    () => assertFootballClubReferenceForContext("NEW_CLUB", "historical_read"),
+    /not allowed in historical_read/
+  );
 });
 
-test("unknown club identities fail closed for load and new V2 production", () => {
-  const invalid = "ESP_FAKE_CLUB_999";
-  assert.equal(classifyFootballClubReference(invalid).kind, "invalid");
-  assert.equal(isLoadableFootballClubReference(invalid), false);
-  assert.equal(isNewFootballClubReference(invalid), false);
-  assert.throws(() => assertLoadableFootballClubReference(invalid, "state.club"), /unknown football club identity/);
-  assert.throws(() => assertNewFootballClubReference(invalid, "state.club"), /new V2 production requires/);
+test("unknown and malformed identities fail closed", () => {
+  for (const invalid of [
+    "ESP_FAKE_CLUB_999",
+    "UDV_2",
+    "udv",
+    "SIM_OPP",
+    "Domestic_X_1",
+    "",
+    null,
+    42
+  ]) {
+    assert.equal(classifyFootballClubReference(invalid).kind, "invalid", String(invalid));
+    assert.equal(isLoadableFootballClubReference(invalid), false, String(invalid));
+    assert.equal(isNewFootballClubReference(invalid), false, String(invalid));
+  }
+
+  assert.throws(
+    () => assertLoadableFootballClubReference("ESP_FAKE_CLUB_999", "state.club"),
+    /not allowed in historical_read/
+  );
+  assert.throws(
+    () => assertNewFootballClubReference("ESP_FAKE_CLUB_999", "state.club"),
+    /not allowed in new_production/
+  );
 });
 
-test("club and division metadata remain immutable and bounded", () => {
+test("negative corruption matrix rejects structural failures", () => {
+  const cases = [
+    {
+      name: "empty club id",
+      mutate: ({ clubs }) => { clubs[0].id = ""; },
+      expected: /club id must be non-empty/
+    },
+    {
+      name: "malformed club id",
+      mutate: ({ clubs }) => { clubs[0].id = "ESP Madrid"; },
+      expected: /malformed club id/
+    },
+    {
+      name: "duplicate club id",
+      mutate: ({ clubs }) => { clubs[1].id = clubs[0].id; },
+      expected: /duplicate club id/
+    },
+    {
+      name: "duplicate forbidden club name",
+      mutate: ({ clubs }) => { clubs[1].name = clubs[0].name; },
+      expected: /duplicate club name/
+    },
+    {
+      name: "unknown division",
+      mutate: ({ clubs }) => { clubs[0].divisionId = "ESP_D99"; },
+      expected: /unknown division/
+    },
+    {
+      name: "country mismatch",
+      mutate: ({ clubs }) => { clubs[0].countryCode = "ENG"; },
+      expected: /country mismatch/
+    },
+    {
+      name: "confederation mismatch",
+      mutate: ({ clubs }) => { clubs[0].confederation = "AFC"; },
+      expected: /confederation mismatch/
+    },
+    {
+      name: "tier mismatch",
+      mutate: ({ clubs }) => { clubs[0].tier = clubs[0].tier + 1; },
+      expected: /division tier mismatch/
+    },
+    {
+      name: "numeric below range",
+      mutate: ({ clubs }) => { clubs[0].prestige = -1; },
+      expected: /club coefficient must be integer 0\.\.100/
+    },
+    {
+      name: "numeric above range",
+      mutate: ({ clubs }) => { clubs[0].financialPower = 101; },
+      expected: /club coefficient must be integer 0\.\.100/
+    },
+    {
+      name: "invalid archetype",
+      mutate: ({ clubs }) => { clubs[0].archetypes = ["wizard"]; },
+      expected: /invalid archetype/
+    },
+    {
+      name: "invalid clearance",
+      mutate: ({ clubs }) => { clubs[0].clearanceStatus = "approved"; },
+      expected: /invalid clearance status/
+    },
+    {
+      name: "duplicate division id",
+      mutate: ({ divisions }) => { divisions[1].id = divisions[0].id; },
+      expected: /duplicate division id/
+    },
+    {
+      name: "unknown division country",
+      mutate: ({ divisions }) => { divisions[0].countryCode = "XXX"; },
+      expected: /unknown country code/
+    },
+    {
+      name: "invalid division strength",
+      mutate: ({ divisions }) => { divisions[0].strength = 101; },
+      expected: /strength must be integer 0\.\.100/
+    }
+  ];
+
+  for (const entry of cases) {
+    const issues = corruptionIssues(entry.mutate);
+    assert.ok(hasReason(issues, entry.expected), `${entry.name}: ${JSON.stringify(issues)}`);
+  }
+
+  const broken = mutableCatalog();
+  broken.clubs[0].divisionId = "ESP_D99";
+  assert.throws(
+    () => assertFootballCatalogData(broken.clubs, broken.divisions, "corrupt fixture"),
+    /integrity failure/
+  );
+});
+
+test("catalog construction is deterministic and consumes no game RNG", () => {
+  const fingerprint = footballCatalogStructuralFingerprint(FOOTBALL_CLUBS, FOOTBALL_DIVISIONS);
+  assert.match(fingerprint, /^[0-9a-f]{8}$/);
+  assert.equal(
+    footballCatalogStructuralFingerprint(FOOTBALL_CLUBS, FOOTBALL_DIVISIONS),
+    fingerprint
+  );
+
+  const clone = mutableCatalog();
+  assert.equal(
+    footballCatalogStructuralFingerprint(clone.clubs, clone.divisions),
+    fingerprint
+  );
+
+  const sourceFiles = [
+    "../src/catalog/football/world.ts",
+    "../src/catalog/football/identity.ts",
+    "../src/catalog/football/integrity.ts"
+  ].map(relative => readFileSync(new URL(relative, import.meta.url), "utf8")).join("\n");
+
+  assert.doesNotMatch(sourceFiles, /Math\.random|\brng\.(?:next|float|int)\b|GameStateRng/);
+});
+
+test("club and division metadata remain bounded and coherent", () => {
   for (const division of FOOTBALL_DIVISIONS) {
     assert.ok(Number.isInteger(division.strength), division.id);
     assert.ok(division.strength >= 0 && division.strength <= 100, division.id);
-    assert.ok(Object.isFrozen(division), division.id);
   }
 
   for (const club of FOOTBALL_CLUBS) {
@@ -122,11 +323,43 @@ test("club and division metadata remain immutable and bounded", () => {
     assert.ok(club.name.length > 1);
     assert.ok(club.shortName.length > 0 && club.shortName.length <= 22, club.id);
     assert.equal(club.clearanceStatus, "working_name_unchecked");
-    assert.ok(Object.isFrozen(club), club.id);
-    assert.ok(Object.isFrozen(club.archetypes), club.id);
     for (const field of ["prestige","financialPower","youthQuality","developmentBias","pressure","internationalAttraction"]) {
       assert.ok(Number.isInteger(club[field]), `${club.id} ${field}`);
       assert.ok(club[field] >= 0 && club[field] <= 100, `${club.id} ${field}`);
+    }
+  }
+});
+
+test("working names retain V1 obvious-brand safety checks", () => {
+  const forbidden = [
+    "real madrid","fc barcelona","atletico de madrid","athletic club",
+    "manchester united","manchester city","liverpool fc","arsenal","chelsea","tottenham hotspur",
+    "juventus","inter milan","ac milan","bayern munich","borussia dortmund","paris saint-germain",
+    "benfica","sporting clube","ajax","inter miami","la galaxy","new york city fc",
+    "club america","chivas de guadalajara","cf monterrey","club de futbol monterrey",
+    "boca juniors","river plate","racing club","urawa reds","kashima antlers","vissel kobe",
+    "beijing guoan","shanghai port","galatasaray","fenerbahce","besiktas","rosenborg","bodo/glimt",
+    "wydad","raja casablanca","kaizer chiefs","orlando pirates","mamelodi sundowns"
+  ];
+  for (const club of FOOTBALL_CLUBS) {
+    const normalized = club.name.toLowerCase();
+    for (const identity of forbidden) {
+      assert.equal(normalized.includes(identity), false, `${club.name} resembles ${identity}`);
+    }
+  }
+});
+
+test("fictional division labels retain V1 obvious-brand safety checks", () => {
+  const forbidden = [
+    "laliga","la liga","premier league","championship","league one","serie a","serie b",
+    "bundesliga","ligue 1","eredivisie","primeira liga","jupiler","major league soccer","mls",
+    "liga mx","liga profesional","j1 league","j1","chinese super league","csl","süper lig",
+    "super lig","eliteserien","botola","premiership"
+  ];
+  for (const division of FOOTBALL_DIVISIONS) {
+    const normalized = division.name.toLowerCase();
+    for (const identity of forbidden) {
+      assert.equal(normalized.includes(identity), false, `${division.name} resembles ${identity}`);
     }
   }
 });
