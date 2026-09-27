@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: player-actions-final-qa-${{ github.event.pull_request.number || github.ref }}
@@ -19,6 +19,39 @@ env:
   INTEGRATED_REF: 77976dbd962c67652992410d0777b7958e348117
 
 jobs:
+  refresh_integrated_artifacts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout mutable integrated QA branch
+        uses: actions/checkout@v4
+        with:
+          ref: a6/player-actions-integrated-qa
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Rebuild integrated PlayCanvas package
+        run: |
+          npm ci
+          npm run build:playcanvas
+
+      - name: Commit refreshed generated artifacts when needed
+        run: |
+          if git diff --quiet -- playcanvas/multihistoria.js playcanvas/manifest.json web/assets.json; then
+            echo "Integrated PlayCanvas artifacts are already fresh."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add playcanvas/multihistoria.js playcanvas/manifest.json web/assets.json
+          git commit -m "build(A6): refresh integrated PlayCanvas artifacts"
+          git push origin HEAD:a6/player-actions-integrated-qa
+
   integrated_safety:
     runs-on: ubuntu-latest
     timeout-minutes: 45
