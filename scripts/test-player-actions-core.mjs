@@ -361,3 +361,26 @@ test("A1-020 TEAMMATE PROFILE: unsupported veteran/young inference fails closed"
   assert.match(availability.unavailableReason, /objetivo válido/i);
   assert.deepEqual(state, before);
 });
+
+
+test("A1-021 RISK MIN: recovery-style gate opens only at the configured boundary", () => {
+  const action = syntheticDefinition({
+    id: "PA_QA_RECOVERY_RISK",
+    category: "health",
+    eligibility: [
+      { kind: "active_career" },
+      { kind: "age_range", min: 18 },
+      { kind: "risk_min", value: 28 }
+    ]
+  });
+  const state = createInitialState(153);
+  state.body.risk = 27;
+  let before = clone(state);
+  assert.equal(evaluatePlayerAction(state, action).available, false);
+  assert.deepEqual(state, before);
+
+  state.body.risk = 28;
+  before = clone(state);
+  assert.equal(evaluatePlayerAction(state, action).available, true);
+  assert.deepEqual(state, before);
+});
