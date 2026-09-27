@@ -2,10 +2,10 @@
   "integration": "T3.2",
   "targetScene": 2593315,
   "moduleCount": 154,
-  "bundleBytes": 17478669,
-  "bundleSha256": "50ddba3b95eee93f14f2c21a02d0dda85861ecab1c39558e3be64d04047e30a5",
+  "bundleBytes": 17484526,
+  "bundleSha256": "55649e9af9dd64711400fb0d3adddc51ee66f7d55dc0b1b29348e8a304a62bb6",
   "inputs": {
-    "src/session/game-session.ts": "f4852f212ce00c1d2379c1678629ae2ed14ebb1aeb41c9039819bada2e6f09eb",
+    "src/session/game-session.ts": "50721cd373b6603285dea7069b143d44d549e1779c683e4c032ec1d2040770a7",
     "src/session/decision-memories.ts": "188545abfbeb2384ab8cdb29b5eaf947a24f033c9171b490c73dc5dbdf300d22",
     "src/simulation/offers.ts": "af46a90a06946adcd10484621628a5872f98821554d2eb99fd390e7a2b657a6d",
     "src/simulation/employment.ts": "957665f8fd920badcc6efd0bb3d2fefa329b2b5dc698a14dd61ab265dc29a75e",
@@ -159,9 +159,9 @@
     "src/core/player-contacts.ts": "45e69763b7e7ff70f2831714dba2ff3f1e7d1a4a0298af5f3f19df99e6d0c127",
     "src/session/auto-simulation.ts": "57d688c71da9ee81eab39b09074321795bd036a622c59716c39ecd9972df20b0",
     "src/session/period-report.ts": "b802e59ef84208ecadca896ec67de8f5964dc353bb1bb56a36c934c81d6dc126",
-    "web/game-ui.js": "93cef251834bdca2bf2f9e2647b308f43c5bf9387cf9de5b9fc72d093e805c8b",
+    "web/game-ui.js": "c6d633f85ea29e8884fdde9fd15897c97e6b1db414811fa96c7a7adadbf17d85",
     "web/club-names.js": "31ea92412020dfb2b5e08c7be6ceef144607ed78731150ad6ce66c67390acf91",
-    "web/game-ui.css": "7039a01e74ae4eae6c2abca7c1b4dd1fe62ebb28510d155bbee9fb0c9acfdee1",
+    "web/game-ui.css": "ebcc83edaa576f6ddab38ffc0511ff2be6d601bc9cb3e57710538df481470007",
     "web/indexed-save-store.js": "0a124e36954dcebeffe7761913eb1333e57a8fd8053cc07d89f0ed4409f5668d"
   }
 }
