@@ -425,13 +425,14 @@ test("A6-017 OFFER COLLISION: offer created after render makes old action stale"
 });
 
 test("A6-018 RETIREMENT COLLISION: rendered action fails closed if career is closed before click", async () => {
-  // Reuse the exact closed-career fixture shape already certified by A2.
-  const source = await GameSession.create(1, {
+  // Render on one pristine session, then close an identical pristine session before the click.
+  // This models an externally advanced lifecycle without fabricating receipts/revisions.
+  const renderedSession = await GameSession.create(1, {
     events: [],
     microfeeds: false,
-    sessionId: "a6-retirement-collision"
+    sessionId: "a6-retirement-rendered"
   });
-  const rendered = source.getView();
+  const rendered = renderedSession.getView();
   const click = {
     type: "player_action",
     commandId: "a6-after-retirement",
@@ -440,7 +441,12 @@ test("A6-018 RETIREMENT COLLISION: rendered action fails closed if career is clo
     optionId: "RECOVER"
   };
 
-  const closed = source.exportSnapshot();
+  const closingBase = await GameSession.create(1, {
+    events: [],
+    microfeeds: false,
+    sessionId: "a6-retirement-closed"
+  });
+  const closed = closingBase.exportSnapshot();
   closed.state.retirement.status = "closed";
   closed.state.retirement.decidedDate = closed.state.date;
   closed.state.retirement.announcedDate = closed.state.date;
@@ -450,6 +456,7 @@ test("A6-018 RETIREMENT COLLISION: rendered action fails closed if career is clo
   closed.state.retirement.closureType = "qa_terminal";
 
   const session = await GameSession.resume(closed, { events: [] });
+  assert.equal(session.getView().revision, rendered.revision);
   const before = session.exportSnapshot();
   await assert.rejects(
     session.dispatch(click),
