@@ -61,6 +61,26 @@ test("scheduled fixture projection is read-only and exposes only catalog opponen
   assert.deepEqual(state, before);
 });
 
+test("fixture opponent follows live league tier instead of static catalog division metadata", () => {
+  const state = createInitialState(19005);
+  state.professional.ownerClub = "ESP_MADRID";
+  state.professional.registrationClub = "ESP_MADRID";
+  state.professional.leagueTier = 2;
+  state.professional.route = "domestic";
+  state.club = "ESP_MADRID";
+  state.tier = 2;
+  state.flags.ABROAD_ROUTE = false;
+
+  const before = structuredClone(state.rngState);
+  const fixture = scheduledLeagueFixtures(state, 70)[0];
+  assert.ok(fixture?.opponentClubId);
+  const opponent = clubById(fixture.opponentClubId);
+  assert.ok(opponent);
+  assert.equal(opponent.countryCode, "ESP");
+  assert.equal(opponent.tier, 2, "live leagueTier must drive opponent pool after promotion/relegation");
+  assert.deepEqual(state.rngState, before);
+});
+
 test("market selector is pure, deterministic and honors exclusions", () => {
   const request = { countryCode: "ESP", leagueTier: 3, roll: 123456789, profile: "balanced" };
   const first = selectMarketDestination(request);
