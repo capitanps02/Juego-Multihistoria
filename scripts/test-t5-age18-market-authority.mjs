@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createInitialState } from '../dist/content/initial-state.js';
+import { clubById } from '../dist/catalog/football/index.js';
 import { EVENTS_18_20 as BASE_EVENTS_18_20 } from '../dist/content/events/18_20/canonical-events.js';
 import { applyAge18MarketOfferBridges } from '../dist/content/events/18_20/t51-age18-market-offer-bridges.js';
 import { eligibleChoices } from '../dist/narrative/choice-eligibility.js';
@@ -113,10 +114,32 @@ test('age-18 producer is deterministic, detached and preserves pending offer thr
   assert.equal(careerOfferKind(restored.market.pending), 'loan');
   assert.equal(restored.market.pending.terms.ownerClub, 'UDV');
   assert.notEqual(restored.market.pending.terms.registrationClub, 'UDV');
+  assert.ok(clubById(restored.market.pending.terms.registrationClub));
 
   const b = januaryLoanState();
   assert.equal(b.rngState.narrative.seed, seed);
   assert.deepEqual(b.market.pending, beforeOffer);
+});
+
+test('age-18 external formal destinations are stable catalog clubs while live tier remains authoritative', () => {
+  const cases = [
+    { state: januaryLoanState(), kind: 'loan' },
+    { state: januaryTransferState(), kind: 'transfer' },
+    { state: summerTransferState(), kind: 'transfer' }
+  ];
+  for (const { state, kind } of cases) {
+    const offer = state.market.pending;
+    assert.ok(offer);
+    assert.equal(careerOfferKind(offer), kind);
+    const club = clubById(offer.terms.club);
+    assert.ok(club, offer.terms.club);
+    assert.equal(offer.terms.registrationClub, club.id);
+    assert.equal(offer.terms.club, club.id);
+    assert.equal(offer.terms.leagueTier, offer.terms.tier);
+    assert.doesNotMatch(offer.terms.club, /^(Development|Domestic|Summer)_/);
+    if (kind === 'loan') assert.equal(offer.terms.ownerClub, 'UDV');
+    else assert.equal(offer.terms.ownerClub, club.id);
+  }
 });
 
 test('producer attempts only on the one authoritative date in each age-18 market window', () => {

@@ -1,4 +1,5 @@
 import type { GameState } from "../core/types.js";
+import { selectMarketDestination } from "../catalog/football/market-destination.js";
 import {
   activateEmploymentFromAcceptedTermsInPlace,
   employmentStatus
@@ -105,6 +106,13 @@ export interface MarketState {
 }
 
 const clone=<T>(value:T):T=>structuredClone(value);
+
+function stableOfferRoll(state:GameState,reason:string,terms:CareerTerms):number{
+  let h=(state.rngState.narrative.seed>>>0)^0x9e3779b9;
+  const input=`${state.date}|${state.season}|${reason}|${state.club}|${terms.leagueTier}|${terms.prestigeTier}`;
+  for(let i=0;i<input.length;i++){h^=input.charCodeAt(i);h=Math.imul(h,16777619)>>>0;}
+  return h>>>0;
+}
 
 function liveOffers(m:MarketState):CareerOffer[]{
   if(!m.openOffers)m.openOffers=m.pending?[clone(m.pending)]:[];
@@ -238,7 +246,14 @@ function materializeCareerOffer(
   if(sameCareerTerms(before,terms))return null;
   if(renewalWasRejectedFromSameTerms(market,reason,before))return null;
   if(terms.club===before.club&&(terms.leagueTier!==before.leagueTier||terms.prestigeTier!==before.prestigeTier)){
-    terms.club=`Club ${terms.leagueTier} · ${terms.prestigeTier}`;terms.ownerClub=terms.registrationClub=terms.club;terms.loan=false;terms.abroad=false;terms.route="domestic";
+    const destination=selectMarketDestination({
+      countryCode:"ESP",
+      leagueTier:terms.leagueTier,
+      roll:stableOfferRoll(s,reason,terms),
+      profile:terms.prestigeTier>=4?"ambitious":terms.prestigeTier<=1?"development":"balanced",
+      excludeClubIds:[before.club,before.ownerClub,before.registrationClub]
+    }).id;
+    terms.club=destination;terms.ownerClub=terms.registrationClub=destination;terms.loan=false;terms.abroad=false;terms.route="domestic";
   }
   if(terms.club!==before.club){
     terms.registrationClub=terms.club;
