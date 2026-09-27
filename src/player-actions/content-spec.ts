@@ -176,7 +176,7 @@ export const PLAYER_ACTION_CONTENT_SPECS: readonly PlayerActionContentSpec[] = [
   {
     id: "PA_PERSONAL_TIME",
     label: "Tiempo personal",
-    description: "Reserva un espacio fuera del fútbol para desconectar sin generar obligaciones ni recompensas diarias.",
+    description: "Reserva tiempo fuera del fútbol cuando acumulas carga, sin convertirlo en una recompensa diaria obligatoria.",
     options: [
       { id: "PEOPLE", label: "Familia o amigos", publicResult: "Has reservado tiempo para gente cercana." },
       { id: "HOBBY", label: "Hobby tranquilo", publicResult: "Has dedicado un rato a una actividad fuera del fútbol." }
@@ -185,7 +185,7 @@ export const PLAYER_ACTION_CONTENT_SPECS: readonly PlayerActionContentSpec[] = [
   {
     id: "PA_DISCONNECT",
     label: "Desconectar del ruido",
-    description: "Tómate un respiro del entorno público del fútbol sin abandonar tus obligaciones profesionales.",
+    description: "Tómate un respiro cuando el desgaste se acumula, sin abandonar tus obligaciones profesionales.",
     options: [
       { id: "DISCONNECT", label: "Bajar el ritmo", publicResult: "Has reducido durante unos días el ruido alrededor de tu carrera." }
     ]
