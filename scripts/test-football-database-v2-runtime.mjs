@@ -62,6 +62,32 @@ test("scheduled fixture projection is read-only and exposes only catalog opponen
   assert.deepEqual(state, before);
 });
 
+test("legacy career club identities project to valid catalog opponents without mutating state", () => {
+  for (const sample of [
+    { club: "UDV", route: "home", abroad: false, expectSpain: true },
+    { club: "Domestic_3_01", route: "domestic", abroad: false, expectSpain: true },
+    { club: "Foreign_2_07", route: "abroad", abroad: true, expectSpain: false }
+  ]) {
+    const state = createInitialState(19006);
+    state.professional.ownerClub = sample.club;
+    state.professional.registrationClub = sample.club;
+    state.professional.leagueTier = sample.club.startsWith("Foreign_") ? 2 : 3;
+    state.professional.route = sample.route;
+    state.club = sample.club;
+    state.tier = state.professional.leagueTier;
+    state.flags.ABROAD_ROUTE = sample.abroad;
+
+    const before = structuredClone(state);
+    const fixture = scheduledLeagueFixtures(state, 70)[0];
+    assert.ok(fixture?.opponentClubId, sample.club);
+    const opponent = clubById(fixture.opponentClubId);
+    assert.ok(opponent, sample.club);
+    if (sample.expectSpain) assert.equal(opponent.countryCode, "ESP", sample.club);
+    else assert.notEqual(opponent.countryCode, "ESP", sample.club);
+    assert.deepEqual(state, before, `${sample.club}: fixture projection must be read-only`);
+  }
+});
+
 test("fixture opponent follows live league tier instead of static catalog division metadata", () => {
   const state = createInitialState(19005);
   state.professional.ownerClub = "ESP_MADRID";
