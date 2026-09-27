@@ -25,7 +25,7 @@ export type PlayerActionEligibilityPredicate =
   | { kind: "risk_min"; value: number }
   | { kind: "risk_max"; value: number }
   | { kind: "current_teammate" }
-  | { kind: "teammate_profile"; profile: "veteran" | "young" }
+  | { kind: "teammate_profile"; profile: "locker_leader" }
   | { kind: "visible_teammate_tension" };
 
 export interface PlayerActionOption {
