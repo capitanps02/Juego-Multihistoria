@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 
 import { createInitialState } from "../dist/content/initial-state.js";
 import { GameSession } from "../dist/session/game-session.js";
+import { materializeAge18MarketOfferInPlace } from "../dist/simulation/early-career-market.js";
 import { PLAYER_ACTION_CONTENT_PLAN } from "../dist/player-actions/content-plan.js";
 import {
   PLAYER_ACTION_CATALOG,
@@ -296,4 +297,42 @@ test("A5-021 PUBLIC COPY DOES NOT LEAK INTERNALS", () => {
       assert.equal(publicText.includes(term), false, `${action.id} leaks internal term ${term}`);
     }
   }
+});
+
+
+test("A5-022 TRANSFER REQUEST MARKET UPLIFT IS BOUNDED, NOT GUARANTEED", () => {
+  let withoutTransfer = 0;
+  let withTransfer = 0;
+  const samples = 1000;
+
+  for (let seed = 1; seed <= samples; seed += 1) {
+    const base = createInitialState(seed);
+    base.date = "2027-06-04";
+    base.age = 18;
+    base.flags.OFFICIAL_DEBUT = true;
+    base.sport.appearances = 3;
+    base.reputation.marketHeat = 40;
+
+    const neutral = clone(base);
+    const requested = clone(base);
+
+    const action = executePlayerActionInPlace(requested, {
+      actionId: "PA_REQUEST_TRANSFER",
+      optionId: "REQUEST"
+    });
+    assert.equal(action.ok, true);
+    assert.equal(requested.market?.pending ?? null, null, "Player Action must not synthesize an offer");
+
+    if (materializeAge18MarketOfferInPlace(neutral) === "transfer") withoutTransfer += 1;
+    if (materializeAge18MarketOfferInPlace(requested) === "transfer") withTransfer += 1;
+  }
+
+  const neutralRate = withoutTransfer / samples;
+  const requestedRate = withTransfer / samples;
+  const uplift = requestedRate - neutralRate;
+
+  assert.ok(requestedRate > neutralRate, `transfer request should have positive market influence: ${neutralRate} -> ${requestedRate}`);
+  assert.ok(requestedRate < 0.65, `transfer request became too close to a guarantee: ${requestedRate}`);
+  assert.ok(uplift >= 0.07, `transfer request influence too small to be meaningful: ${uplift}`);
+  assert.ok(uplift <= 0.17, `transfer request influence too large for +12 threshold points: ${uplift}`);
 });
