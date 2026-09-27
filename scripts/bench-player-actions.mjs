@@ -36,18 +36,19 @@ rows.push(measure("getView", 5000, () => session.getView()));
 rows.push(measure("availability_projection", 5000, () => listPlayerActions(state)));
 rows.push(measure("save_serialization", 2000, () => JSON.stringify(session.exportSnapshot())));
 
-const executionState = structuredClone(state);
 const started = performance.now();
 let executed = 0;
+let lastExecutionState = null;
 for (let index = 0; index < 500; index += 1) {
+  const executionState = structuredClone(state);
+  executionState.body.fatigue = Math.max(40, Number(executionState.body.fatigue) || 0);
   const result = executePlayerActionInPlace(executionState, {
     actionId: "PA_REST",
     optionId: "RECOVER"
   });
   if (!result.ok) throw new Error(`performance execution setup failed: ${result.code}`);
   executed += 1;
-  if (!result.cooldownUntil) throw new Error("performance execution did not return cooldownUntil");
-  executionState.date = result.cooldownUntil;
+  lastExecutionState = executionState;
 }
 const executionElapsedMs = performance.now() - started;
 rows.push({
@@ -61,11 +62,11 @@ console.log(JSON.stringify({
   note: "Approximate CI timing only; informational, not a hard release threshold.",
   candidateRoot,
   rows,
-  finalHistoryEntries: executionState.playerActions?.history.length ?? 0,
+  finalHistoryEntries: lastExecutionState?.playerActions?.history.length ?? 0,
   finalSaveBytes: Buffer.byteLength(JSON.stringify({
     sessionVersion: snapshot.sessionVersion,
     revision: snapshot.revision,
-    state: executionState,
+    state: lastExecutionState ?? state,
     receipts: snapshot.receipts
   }))
 }, null, 2));
