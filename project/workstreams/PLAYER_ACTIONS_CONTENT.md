@@ -502,7 +502,7 @@ Archivo:
 
 `scripts/test-player-actions-content.mjs`
 
-Casos implementados en la suite (24):
+Casos implementados en la suite (25):
 
 1. A5-001 UNIQUE IDS
 2. A5-002 VALID CATEGORIES
@@ -528,6 +528,7 @@ Casos implementados en la suite (24):
 22. A5-022 TRANSFER REQUEST MARKET UPLIFT IS BOUNDED, NOT GUARANTEED — 1000 seeds
 23. A5-023 MORE MINUTES REQUEST NEVER GRANTS SPORT OUTCOME DIRECTLY
 24. A5-024 AGENT MARKET QUERY NEVER SYNTHESIZES OFFER
+25. A5-025 INCLUSIVE FACT EXPIRY NEVER OVERLAPS RE-EXECUTION
 
 npm:
 
@@ -693,7 +694,7 @@ A3 documenta que withdraw-transfer no existe en V1 actual y request_transfer exp
 
 ```text
 [A5 STATUS]
-Progreso: 80%
+Progreso: 82%
 BASE_SHA: 75be938bbe4a6f7a01ef45a5078a6bfa6d77262d
 HEAD actual: consultar PR #802
 CATÁLOGO
@@ -728,7 +729,7 @@ BALANCE
 - 1000 seeds de mercado para REQUEST_TRANSFER
 - autoridad de coach/agent validada en catálogo A5
 TESTS
-- 24 checks authored
+- 25 checks authored
 - 0 TODO en la suite de diseño/contrato
 - stress anual de 80 carreras añadido
 - runtime health/age siguen bloqueados explícitamente
