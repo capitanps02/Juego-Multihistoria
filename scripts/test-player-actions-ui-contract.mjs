@@ -88,7 +88,7 @@ test('A4-006 CATEGORY: UI renders public categories/actions dynamically',async()
 
 test('A4-007 COOLDOWN: action becomes disabled and UI humanizes cooldown',async()=>{
   const session=await GameSession.create(424242);
-  await session.dispatch(command(session,'player_action',{actionId:'PA_REST',optionId:'RECOVER'}));
+  await session.dispatch(command(session,'player_action',{actionId:'PA_TRAIN_EXTRA',optionId:'TECHNIQUE'}));
   const rest=actionById(session.getView(),'PA_REST');
   assert.equal(rest.available,false);
   assert.ok(rest.cooldownUntil);
@@ -108,10 +108,10 @@ test('A4-008 EXECUTE: available action dispatches the canonical player_action co
 
 test('A4-009 RESULT: public lastResult is rendered without reading GameState',async()=>{
   const session=await GameSession.create(424242);
-  await session.dispatch(command(session,'player_action',{actionId:'PA_REST',optionId:'RECOVER'}));
+  await session.dispatch(command(session,'player_action',{actionId:'PA_TRAIN_EXTRA',optionId:'TECHNIQUE'}));
   const result=session.getView().actions.lastResult;
   assert.ok(result?.executionId);
-  assert.equal(result.text,'Reduces carga y recuperas sensaciones.');
+  assert.equal(result.text,'Completas una sesión técnica adicional.');
   assert.match(preview,/view\.actions\?\.lastResult/);
   assert.match(web,/v\.actions\?\.lastResult/);
   assert.ok(!/playerActions\.facts/.test(web));
@@ -120,7 +120,7 @@ test('A4-009 RESULT: public lastResult is rendered without reading GameState',as
 test('A4-010 RETURN: Player Action execution does not advance calendar time',async()=>{
   const session=await GameSession.create(424242);
   const before=session.getView().date;
-  await session.dispatch(command(session,'player_action',{actionId:'PA_REST',optionId:'RECOVER'}));
+  await session.dispatch(command(session,'player_action',{actionId:'PA_TRAIN_EXTRA',optionId:'TECHNIQUE'}));
   assert.equal(session.getView().date,before);
   assert.equal(session.getView().screen,'career');
 });
@@ -128,11 +128,11 @@ test('A4-010 RETURN: Player Action execution does not advance calendar time',asy
 test('A4-011 MULTIPLE ACTIONS: compatible actions can run in the same game date',async()=>{
   const session=await GameSession.create(424242);
   const date=session.getView().date;
-  await session.dispatch(command(session,'player_action',{actionId:'PA_REST',optionId:'RECOVER'}));
   await session.dispatch(command(session,'player_action',{actionId:'PA_TRAIN_EXTRA',optionId:'TECHNIQUE'}));
+  await session.dispatch(command(session,'player_action',{actionId:'PA_SOCIAL_POST',optionId:'PROFESSIONAL'}));
   const view=session.getView();
   assert.equal(view.date,date);
-  assert.equal(view.actions.lastResult.text,'Completas una sesión técnica adicional.');
+  assert.equal(view.actions.lastResult.text,'Has compartido una publicación relacionada con tu trabajo.');
 });
 
 test('A4-012 DOUBLE CLICK: UI blocks re-entry while a command is executing',()=>{
@@ -146,7 +146,7 @@ test('A4-012 DOUBLE CLICK: UI blocks re-entry while a command is executing',()=>
 
 test('A4-013 STALE: stale revision is safe and has player-facing recovery copy',async()=>{
   const session=await GameSession.create(424242);
-  await session.dispatch(command(session,'player_action',{actionId:'PA_REST',optionId:'RECOVER'}));
+  await session.dispatch(command(session,'player_action',{actionId:'PA_TRAIN_EXTRA',optionId:'TECHNIQUE'}));
   await assert.rejects(
     session.dispatch(command(session,'player_action',{actionId:'PA_TRAIN_EXTRA',optionId:'TECHNIQUE'},0)),
     {code:'STALE_REVISION'}
@@ -201,12 +201,12 @@ test('A4-016 TARGET FLOW: public coach target can be selected and dispatched end
 
 test('A4-017 HISTORY: Player Actions are projected into Tu recorrido without reading GameState',async()=>{
   const session=await GameSession.create(424242);
-  await session.dispatch(command(session,'player_action',{actionId:'PA_REST',optionId:'RECOVER'}));
+  await session.dispatch(command(session,'player_action',{actionId:'PA_TRAIN_EXTRA',optionId:'TECHNIQUE'}));
   const history=session.getView().actions.history;
   assert.equal(history.length,1);
-  assert.equal(history[0].actionLabel,'Descansar');
-  assert.equal(history[0].optionLabel,'Recuperar');
-  assert.equal(history[0].text,'Reduces carga y recuperas sensaciones.');
+  assert.equal(history[0].actionLabel,'Entrenamiento extra');
+  assert.equal(history[0].optionLabel,'Trabajo técnico');
+  assert.equal(history[0].text,'Completas una sesión técnica adicional.');
   assert.deepEqual(Object.keys(history[0]).sort(),['actionId','actionLabel','date','executionId','optionLabel','text']);
   assert.match(preview,/v\.actions\?\.history/);
   assert.match(web,/v\.actions\?\.history/);
