@@ -150,7 +150,7 @@ export const PLAYER_ACTION_ELIGIBILITY_SPECS: readonly PlayerActionEligibilitySp
     ]
   },
   {
-    actionId: "PA_VETERAN_ADVICE",
+    actionId: "PA_LEADER_ADVICE",
     all: [
       { kind: "active_career" },
       { kind: "active_club_employment" },
@@ -160,7 +160,7 @@ export const PLAYER_ACTION_ELIGIBILITY_SPECS: readonly PlayerActionEligibilitySp
     ]
   },
   {
-    actionId: "PA_MENTOR_YOUNG",
+    actionId: "PA_MENTOR_TEAMMATE",
     all: [
       { kind: "active_career" },
       { kind: "active_club_employment" },
