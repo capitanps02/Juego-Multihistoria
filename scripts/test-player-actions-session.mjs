@@ -57,18 +57,18 @@ async function closedCareerSession() {
 test("A2-001 COMMAND: valid Player Action executes through GameSession", async () => {
   const session = await emptySession(201, "a2-001");
   const response = await session.dispatch(command(session, "player_action", {
-    actionId: "PA_REST", optionId: "RECOVER"
+    actionId: "PA_TRAIN_EXTRA", optionId: "TECHNIQUE"
   }));
   assert.equal(response.replayed, false);
   assert.equal(response.receipt.type, "player_action");
   assert.equal(session.exportSnapshot().state.playerActions?.history.length, 1);
-  assert.equal(response.view.actions.lastResult?.text, "Reduces carga y recuperas sensaciones.");
+  assert.equal(response.view.actions.lastResult?.text, "Completas una sesión técnica adicional.");
 });
 
 test("A2-002 REVISION: successful action increments revision exactly once", async () => {
   const session = await emptySession(202, "a2-002");
   const before = session.getView().revision;
-  await session.dispatch(command(session, "player_action", { actionId: "PA_REST", optionId: "RECOVER" }));
+  await session.dispatch(command(session, "player_action", { actionId: "PA_TRAIN_EXTRA", optionId: "TECHNIQUE" }));
   assert.equal(session.getView().revision, before + 1);
 });
 
@@ -76,15 +76,15 @@ test("A2-003 RECEIPT: canonical fingerprint includes target slot", async () => {
   const session = await emptySession(203, "a2-003");
   const response = await session.dispatch({
     type: "player_action", commandId: "a2-003-action", expectedRevision: 0,
-    actionId: "PA_REST", optionId: "RECOVER"
+    actionId: "PA_TRAIN_EXTRA", optionId: "TECHNIQUE"
   });
-  assert.equal(response.receipt.fingerprint, JSON.stringify(["player_action", 0, "PA_REST", "RECOVER", null]));
+  assert.equal(response.receipt.fingerprint, JSON.stringify(["player_action", 0, "PA_TRAIN_EXTRA", "TECHNIQUE", null]));
   assert.equal(response.receipt.revision, 1);
 });
 
 test("A2-004 REPLAY: same commandId + same fingerprint is idempotent", async () => {
   const session = await emptySession(204, "a2-004");
-  const c = { type: "player_action", commandId: "a2-replay", expectedRevision: 0, actionId: "PA_REST", optionId: "RECOVER" };
+  const c = { type: "player_action", commandId: "a2-replay", expectedRevision: 0, actionId: "PA_TRAIN_EXTRA", optionId: "TECHNIQUE" };
   const first = await session.dispatch(c);
   const afterFirst = session.exportSnapshot();
   const replay = await session.dispatch(c);
@@ -95,7 +95,7 @@ test("A2-004 REPLAY: same commandId + same fingerprint is idempotent", async () 
 
 test("A2-005 COMMAND ID REUSE: same id with different action rejects", async () => {
   const session = await emptySession(205, "a2-005");
-  await session.dispatch({ type: "player_action", commandId: "same", expectedRevision: 0, actionId: "PA_REST", optionId: "RECOVER" });
+  await session.dispatch({ type: "player_action", commandId: "same", expectedRevision: 0, actionId: "PA_TRAIN_EXTRA", optionId: "TECHNIQUE" });
   await assert.rejects(
     session.dispatch({ type: "player_action", commandId: "same", expectedRevision: 0, actionId: "PA_TRAIN_EXTRA", optionId: "TECHNIQUE" }),
     error => error?.code === "COMMAND_ID_REUSED"
@@ -106,7 +106,7 @@ test("A2-005 COMMAND ID REUSE: same id with different action rejects", async () 
 test("A2-006 DOUBLE CLICK: same revision has exactly one winner", async () => {
   const session = await emptySession(206, "a2-006");
   const revision = session.getView().revision;
-  const a = { type: "player_action", commandId: "a2-double-a", expectedRevision: revision, actionId: "PA_REST", optionId: "RECOVER" };
+  const a = { type: "player_action", commandId: "a2-double-a", expectedRevision: revision, actionId: "PA_TRAIN_EXTRA", optionId: "TECHNIQUE" };
   const b = { type: "player_action", commandId: "a2-double-b", expectedRevision: revision, actionId: "PA_TRAIN_EXTRA", optionId: "TECHNIQUE" };
   const results = await Promise.allSettled([session.dispatch(a), session.dispatch(b)]);
   assert.equal(results.filter(row => row.status === "fulfilled").length, 1);
@@ -130,7 +130,7 @@ test("A2-008 FAILED COMMIT: persistence failure rolls back all Player Action cha
   const before = session.exportSnapshot();
   fail = true;
   await assert.rejects(
-    session.dispatch(command(session, "player_action", { actionId: "PA_REST", optionId: "RECOVER" })),
+    session.dispatch(command(session, "player_action", { actionId: "PA_TRAIN_EXTRA", optionId: "TECHNIQUE" })),
     /write failed/
   );
   assert.deepEqual(session.exportSnapshot(), before);
@@ -150,7 +150,7 @@ test("A2-010 AUTO RUNNING: action is rejected during auto_simulating", async () 
   assert.equal(session.getView().simulation.mode, "auto_simulating");
   const before = session.exportSnapshot();
   await assert.rejects(
-    session.dispatch(command(session, "player_action", { actionId: "PA_REST", optionId: "RECOVER" })),
+    session.dispatch(command(session, "player_action", { actionId: "PA_TRAIN_EXTRA", optionId: "TECHNIQUE" })),
     error => error?.code === "PLAYER_ACTION_STATE"
   );
   assert.deepEqual(session.exportSnapshot(), before);
@@ -164,7 +164,7 @@ test("A2-011 DECISION: pending narrative decision blocks Player Actions", async 
   assert.equal(session.getView().screen, "decision");
   const before = session.exportSnapshot();
   await assert.rejects(
-    session.dispatch(command(session, "player_action", { actionId: "PA_REST", optionId: "RECOVER" })),
+    session.dispatch(command(session, "player_action", { actionId: "PA_TRAIN_EXTRA", optionId: "TECHNIQUE" })),
     error => error?.code === "PLAYER_ACTION_STATE"
   );
   assert.deepEqual(session.exportSnapshot(), before);
@@ -183,7 +183,7 @@ test("A2-012 RESULT: pending narrative result blocks Player Actions", async () =
   assert.equal(session.getView().screen, "result");
   const before = session.exportSnapshot();
   await assert.rejects(
-    session.dispatch(command(session, "player_action", { actionId: "PA_REST", optionId: "RECOVER" })),
+    session.dispatch(command(session, "player_action", { actionId: "PA_TRAIN_EXTRA", optionId: "TECHNIQUE" })),
     error => error?.code === "PLAYER_ACTION_STATE"
   );
   assert.deepEqual(session.exportSnapshot(), before);
@@ -194,7 +194,7 @@ test("A2-013 OFFER: pending formal offer blocks Player Actions", async () => {
   assert.equal(session.getView().screen, "offer");
   const before = session.exportSnapshot();
   await assert.rejects(
-    session.dispatch(command(session, "player_action", { actionId: "PA_REST", optionId: "RECOVER" })),
+    session.dispatch(command(session, "player_action", { actionId: "PA_TRAIN_EXTRA", optionId: "TECHNIQUE" })),
     error => error?.code === "PLAYER_ACTION_STATE"
   );
   assert.deepEqual(session.exportSnapshot(), before);
@@ -204,7 +204,7 @@ test("A2-014 RETIRED: closed career rejects Player Actions", async () => {
   const session = await closedCareerSession();
   const before = session.exportSnapshot();
   await assert.rejects(
-    session.dispatch(command(session, "player_action", { actionId: "PA_REST", optionId: "RECOVER" })),
+    session.dispatch(command(session, "player_action", { actionId: "PA_TRAIN_EXTRA", optionId: "TECHNIQUE" })),
     error => error?.code === "CAREER_CLOSED"
   );
   assert.deepEqual(session.exportSnapshot(), before);
@@ -213,7 +213,7 @@ test("A2-014 RETIRED: closed career rejects Player Actions", async () => {
 test("A2-015 NO WORLD ADVANCE: action changes neither date nor runtime day", async () => {
   const session = await emptySession(215, "a2-015");
   const before = session.exportSnapshot();
-  await session.dispatch(command(session, "player_action", { actionId: "PA_REST", optionId: "RECOVER" }));
+  await session.dispatch(command(session, "player_action", { actionId: "PA_TRAIN_EXTRA", optionId: "TECHNIQUE" }));
   const after = session.exportSnapshot();
   assert.equal(after.state.date, before.state.date);
   assert.equal(after.state.runtime.day, before.state.runtime.day);
@@ -222,14 +222,14 @@ test("A2-015 NO WORLD ADVANCE: action changes neither date nor runtime day", asy
 test("A2-016 NO NARRATIVE HISTORY: action does not append state.history", async () => {
   const session = await emptySession(216, "a2-016");
   const before = clone(session.exportSnapshot().state.history);
-  await session.dispatch(command(session, "player_action", { actionId: "PA_REST", optionId: "RECOVER" }));
+  await session.dispatch(command(session, "player_action", { actionId: "PA_TRAIN_EXTRA", optionId: "TECHNIQUE" }));
   assert.deepEqual(session.exportSnapshot().state.history, before);
 });
 
 test("A2-017 NO PROVENANCE: action does not append decisionProvenance", async () => {
   const session = await emptySession(217, "a2-017");
   const before = clone(session.exportSnapshot().decisionProvenance);
-  await session.dispatch(command(session, "player_action", { actionId: "PA_REST", optionId: "RECOVER" }));
+  await session.dispatch(command(session, "player_action", { actionId: "PA_TRAIN_EXTRA", optionId: "TECHNIQUE" }));
   assert.deepEqual(session.exportSnapshot().decisionProvenance, before);
 });
 
@@ -266,7 +266,7 @@ test("A2-021 AUTO STOP: paused block can exit without day/RNG changes and then e
   assert.equal(session.getView().simulation.mode, "idle");
   assert.deepEqual(afterStop.state, beforeStop.state);
   assert.deepEqual(afterStop.state.rngState, beforeStop.state.rngState);
-  await session.dispatch(command(session, "player_action", { actionId: "PA_REST", optionId: "RECOVER" }));
+  await session.dispatch(command(session, "player_action", { actionId: "PA_TRAIN_EXTRA", optionId: "TECHNIQUE" }));
   assert.equal(session.exportSnapshot().state.playerActions?.history.length, 1);
 });
 
@@ -277,7 +277,7 @@ test("A2-022 SAVE VALIDATION: malformed Player Action state is rejected", async 
     version: 1,
     sequence: 0,
     history: [],
-    cooldowns: { "action:PA_REST": "not-a-date" },
+    cooldowns: { "action:PA_TRAIN_EXTRA": "not-a-date" },
     facts: []
   };
   await assert.rejects(GameSession.resume(bad, { events: [] }));
@@ -285,9 +285,9 @@ test("A2-022 SAVE VALIDATION: malformed Player Action state is rejected", async 
 
 test("A2-023 PUBLIC VIEW: result is visible without leaking internal facts/effects/RNG", async () => {
   const session = await emptySession(223, "a2-023");
-  await session.dispatch(command(session, "player_action", { actionId: "PA_REST", optionId: "RECOVER" }));
+  await session.dispatch(command(session, "player_action", { actionId: "PA_TRAIN_EXTRA", optionId: "TECHNIQUE" }));
   const json = JSON.stringify(session.getView().actions);
-  assert.match(json, /Reduces carga y recuperas sensaciones/);
+  assert.match(json, /Completas una sesión técnica adicional/);
   for (const forbidden of ["effectKey", "eligibilityKey", "\"facts\"", "rngState", "source"]) {
     assert.equal(json.includes(forbidden), false, `public actions leaked ${forbidden}`);
   }
