@@ -9,6 +9,7 @@ let session = null;
 let busy = false;
 let replacement = null;
 let autoTimer = null;
+let playerActionUi = { screen:'career', categoryId:null, actionId:null, resultExecutionId:null };
 
 function el(tag, text, className) {
   const node = document.createElement(tag);
@@ -40,6 +41,125 @@ function action(label, type, extra = {}, className = 'primary') {
   return button;
 }
 
+function uiButton(label, onClick, className = 'secondary', disabled = false) {
+  const button = el('button', label, className);
+  button.type = 'button';
+  button.disabled = disabled;
+  button.addEventListener('click', onClick);
+  return button;
+}
+
+const PLAYER_ACTION_CATEGORY_COPY = {
+  career: 'Conversaciones y pasos voluntarios sobre tu situación deportiva.',
+  training: 'Trabajo extra que puedes hacer si te apetece.',
+  representative: 'Consulta y gestiona tu relación con la representación.',
+  relationships: 'Interacciones voluntarias con las personas de tu carrera.',
+  image: 'Decisiones opcionales sobre tu exposición pública.',
+  life: 'Descanso y decisiones personales fuera del campo.',
+  health: 'Recuperación y cuidado personal cuando estén disponibles.'
+};
+
+function resetPlayerActionUi() {
+  playerActionUi = { screen:'career', categoryId:null, actionId:null, resultExecutionId:null };
+}
+
+function cooldownText(view, action) {
+  if (!action?.cooldownUntil) return action?.unavailableReason ?? '';
+  const from = new Date(view.date+'T00:00:00Z');
+  const to = new Date(action.cooldownUntil+'T00:00:00Z');
+  const days = Math.max(0, Math.ceil((to-from)/86400000));
+  if (days === 0) return action.unavailableReason ?? '';
+  if (days === 1) return 'Podrás volver a hacerlo mañana.';
+  if (days <= 7) return 'Podrás volver a hacerlo la próxima semana.';
+  return `Disponible en ${days} días.`;
+}
+
+function selectedAction(view) {
+  for (const category of view.actions?.categories ?? []) {
+    const found = category.actions.find(action => action.id === playerActionUi.actionId);
+    if (found) return found;
+  }
+  return null;
+}
+
+function renderPlayerActionSubview(view, story) {
+  if (playerActionUi.screen === 'career') return false;
+  if (view.screen !== 'career' || !view.actions?.available || view.simulation?.mode !== 'idle') {
+    resetPlayerActionUi();
+    return false;
+  }
+
+  if (playerActionUi.screen === 'player_action_menu') {
+    story.append(el('span','GESTIONAR MI CARRERA','eyebrow'),el('h1','¿Qué quieres hacer?'),el('p','Estas acciones son opcionales. Puedes volver y simular cuando quieras.','body'));
+    const list = el('div',undefined,'action-list');
+    for (const category of view.actions.categories) {
+      const card = el('div',undefined,'action-card');
+      const open = uiButton(category.label,()=>{playerActionUi={screen:'player_action_category',categoryId:category.id,actionId:null,resultExecutionId:null};render(true);},'secondary');
+      card.append(open,el('p',PLAYER_ACTION_CATEGORY_COPY[category.id] ?? 'Acciones voluntarias de tu carrera.','body'));
+      list.append(card);
+    }
+    story.append(list,uiButton('Volver a carrera',()=>{resetPlayerActionUi();render(true);},'ghost'));
+    return true;
+  }
+
+  const category = view.actions.categories.find(row => row.id === playerActionUi.categoryId);
+  if (!category) {
+    playerActionUi={screen:'player_action_menu',categoryId:null,actionId:null,resultExecutionId:null};
+    return renderPlayerActionSubview(view,story);
+  }
+
+  if (playerActionUi.screen === 'player_action_category') {
+    story.append(el('span','GESTIONAR MI CARRERA','eyebrow'),el('h1',category.label),el('p',PLAYER_ACTION_CATEGORY_COPY[category.id] ?? 'Acciones voluntarias.','body'));
+    const list=el('div',undefined,'action-list');
+    for (const actionView of category.actions) {
+      const card=el('div',undefined,'action-card');
+      const open=uiButton(actionView.label,()=>{playerActionUi={screen:'player_action_detail',categoryId:category.id,actionId:actionView.id,resultExecutionId:null};render(true);},'secondary',!actionView.available);
+      card.append(open,el('p',actionView.description,'body'));
+      if (!actionView.available) card.append(el('p',cooldownText(view,actionView) || 'Ahora mismo no está disponible.','action-reason'));
+      list.append(card);
+    }
+    story.append(list,uiButton('Volver a categorías',()=>{playerActionUi={screen:'player_action_menu',categoryId:null,actionId:null,resultExecutionId:null};render(true);},'ghost'),uiButton('Volver a carrera',()=>{resetPlayerActionUi();render(true);},'ghost'));
+    return true;
+  }
+
+  const actionView=selectedAction(view);
+  if (!actionView) {
+    playerActionUi={screen:'player_action_category',categoryId:category.id,actionId:null,resultExecutionId:null};
+    return renderPlayerActionSubview(view,story);
+  }
+
+  if (playerActionUi.screen === 'player_action_detail') {
+    story.append(el('span','ACCIÓN VOLUNTARIA','eyebrow'),el('h1',actionView.label),el('p',actionView.description,'body'));
+    if (!actionView.available) story.append(el('p',cooldownText(view,actionView) || actionView.unavailableReason || 'Ahora mismo no está disponible.','action-reason'));
+    const choices=el('div',undefined,'choices');
+    for (const option of actionView.options) {
+      const enabled=actionView.available&&option.available;
+      const optionButton=uiButton(option.label,()=>{
+        const command={type:'player_action',commandId:crypto.randomUUID(),expectedRevision:session.getView().revision,actionId:actionView.id,optionId:option.id};
+        run(command,()=>{
+          const latest=session.getView().actions?.lastResult;
+          playerActionUi={screen:'player_action_result',categoryId:category.id,actionId:actionView.id,resultExecutionId:latest?.executionId??null};
+        });
+      },'choice',!enabled);
+      choices.append(optionButton);
+      if (!enabled && option.unavailableReason && option.unavailableReason!==actionView.unavailableReason) choices.append(el('p',option.unavailableReason,'action-reason'));
+    }
+    story.append(choices,uiButton('Volver',()=>{playerActionUi={screen:'player_action_category',categoryId:category.id,actionId:null,resultExecutionId:null};render(true);},'ghost'));
+    return true;
+  }
+
+  if (playerActionUi.screen === 'player_action_result') {
+    const latest=view.actions?.lastResult;
+    story.append(el('span','ACCIÓN COMPLETADA','eyebrow'),el('h1',actionView.label));
+    story.append(el('p',latest?.executionId===playerActionUi.resultExecutionId?latest.text:'La acción se ha registrado correctamente.','body'));
+    story.append(uiButton('Realizar otra acción',()=>{playerActionUi={screen:'player_action_menu',categoryId:null,actionId:null,resultExecutionId:null};render(true);},'secondary'),uiButton('Volver a carrera',()=>{resetPlayerActionUi();render(true);},'primary'));
+    return true;
+  }
+
+  resetPlayerActionUi();
+  return false;
+}
+
 function render(focus = false) {
   const v = session.getView();
   $('#launch-help').hidden = true;
@@ -52,7 +172,8 @@ function render(focus = false) {
   }
   const story = $('#story');
   story.replaceChildren();
-  if (v.screen === 'decision') {
+  if (renderPlayerActionSubview(v, story)) {
+  } else if (v.screen === 'decision') {
     const d = v.decision;
     story.append(el('span','UN MOMENTO QUE CUENTA','eyebrow'),el('h1',d.title),el('p',d.body,'body'));
     if (d.visible.length || d.uncertain.length) {
@@ -116,8 +237,11 @@ function render(focus = false) {
   } else {
     story.append(el('span','TU CARRERA SIGUE','eyebrow'),el('h1',v.decisionsMade ? 'El siguiente paso.' : 'Todo empieza en Valdoria.'),el('p',v.decisionsMade ? 'Los entrenamientos, las conversaciones y el mercado siguen su curso. Simula el tiempo hasta la próxima situación importante.' : 'Tienes 18 años y una oportunidad de acercarte al primer equipo. Todavía queda todo por decidir.','body'));
     if (v.simulation.mode === 'auto_simulating') story.append(action('Pausar','auto',{action:'pause'}));
-    else if (v.simulation.mode === 'paused') story.append(action('Reanudar','auto',{action:'resume'}));
-    else story.append(action('Simular','auto',{action:'start'}));
+    else if (v.simulation.mode === 'paused') story.append(action('Reanudar','auto',{action:'resume'}),action('Terminar simulación','auto',{action:'stop'},'secondary'));
+    else {
+      story.append(action('Simular','auto',{action:'start'}));
+      if (v.actions?.available) story.append(uiButton('Gestionar mi carrera',()=>{playerActionUi={screen:'player_action_menu',categoryId:null,actionId:null,resultExecutionId:null};render(true);},'secondary'));
+    }
   }
   if(v.offerHistory.length)story.append(el('p',v.offerHistory.at(-1).explanation,'body'));
   const history = $('#history');
@@ -150,7 +274,7 @@ function queueAutoStep() {
   }, 120);
 }
 
-async function run(command) {
+async function run(command, onSuccess) {
   if (busy || !session) return;
   if (command.type === 'auto' && command.action === 'pause') clearTimeout(autoTimer);
   let completed = false;
@@ -158,6 +282,7 @@ async function run(command) {
   try {
     await session.dispatch(command);
     completed = true;
+    if (onSuccess) onSuccess(session.getView());
     render(true);
   } catch (e) {
     clearTimeout(autoTimer);
@@ -168,7 +293,9 @@ async function run(command) {
       } catch {}
     }
     if (session) render();
-    error(`No se pudo completar el paso. La simulación se detuvo en el último estado válido. ${e.message}`);
+    if (e?.code === 'STALE_REVISION') error('La situación de tu carrera ha cambiado. La pantalla se ha actualizado; vuelve a intentarlo.');
+    else if (command.type === 'player_action') error(e?.message || 'Esta acción ya no está disponible.');
+    else error(`No se pudo completar el paso. La simulación se detuvo en el último estado válido. ${e.message}`);
   } finally {
     setBusy(false);
     if (completed) queueAutoStep();
