@@ -173,8 +173,8 @@ Clasificación:
 | PA_DISCUSS_FUTURE | BLOCKED | CONTEXTUAL | representative | 20+ | representante | A3 CAREER_PRIORITY | 21d | preference fact | agent |
 | PA_TALK_TEAMMATE | BLOCKED | CONTEXTUAL | relationships | 18+ | teammate válido | A1 relationship handler + shared cooldown | 10d | affinity/respect pequeño | teammate |
 | PA_CLEAR_AIR | BLOCKED | CONTEXTUAL | relationships | 18+ | tensión visible | A1 eligibility/effect | 21d | resentment/trust pequeño | teammate |
-| PA_VETERAN_ADVICE | BLOCKED | CONTEXTUAL | relationships | 18–23 | veterano elegible | A1 veteran predicate + relationship handler | 21d | relation local | teammate |
-| PA_MENTOR_YOUNG | BLOCKED | LATE_CAREER | relationships | 30+ | joven elegible | A1 young-player predicate + relationship handler | 21d | relation local | teammate |
+| PA_LEADER_ADVICE | BLOCKED | CONTEXTUAL | relationships | 18–23 | veterano elegible | A1 veteran predicate + relationship handler | 21d | relation local | teammate |
+| PA_MENTOR_TEAMMATE | BLOCKED | LATE_CAREER | relationships | 30+ | joven elegible | A1 young-player predicate + relationship handler | 21d | relation local | teammate |
 | PA_INTERVIEW | BLOCKED | CORE | image | 18+ | carrera activa | A1 effect registry | 28d | image/polarization pequeño | none |
 | PA_SOCIAL_POST | BLOCKED | OPTIONAL_FLAVOR | image | 18+ | carrera activa | A1 informational handler | 21d | sin stat reward | none |
 | PA_PERSONAL_TIME | BLOCKED | CONTEXTUAL | life | 18+ | fatiga significativa | A1 life handler + fatigue eligibility | 30d | fatigue/motivation muy pequeño | none |
@@ -339,8 +339,8 @@ Diseño futuro:
 - teammate:
   - PA_TALK_TEAMMATE;
   - PA_CLEAR_AIR;
-  - PA_VETERAN_ADVICE;
-  - PA_MENTOR_YOUNG.
+  - PA_LEADER_ADVICE;
+  - PA_MENTOR_TEAMMATE.
 
 Bloqueos:
 
@@ -679,7 +679,7 @@ Pendiente en V1:
 - withdraw transfer;
 - career priority.
 
-Veteran advice y mentor young ya no requieren A3: quedan como efectos locales direct_only sin facts persistentes.
+Leader advice y mentor teammate ya no requieren A3: quedan como efectos locales direct_only sin facts persistentes.
 
 A3 documenta que withdraw-transfer no existe en V1 actual y request_transfer expira/cierra por cambio de club o 120d.
 
@@ -809,8 +809,8 @@ Casos importantes:
 - PA_TRAIN_EXTRA: fatigue <=55 y risk <=40;
 - PA_REST: fatigue >=24;
 - PA_RECOVERY_SESSION: risk >=28;
-- PA_VETERAN_ADVICE: jugador 18–23 + target veterano;
-- PA_MENTOR_YOUNG: jugador 30+ + target joven.
+- PA_LEADER_ADVICE: jugador 18–23 + target veterano;
+- PA_MENTOR_TEAMMATE: jugador 30+ + target joven.
 
 ## Shared cooldown final V1
 
@@ -851,8 +851,8 @@ Nuevos facts A3 realmente necesarios:
 - career_priority.
 
 Se elimina la dependencia A3 para:
-- veteran advice;
-- mentor young.
+- leader advice;
+- mentor teammate.
 
 Ambas quedan como acciones direct_only con target teammate validado y efectos locales pequeños.
 
@@ -863,7 +863,7 @@ Objetivo: el jugador debe poder pulsar SIMULAR sin sentir que está dejando buff
 
 Medidas A5:
 - social post: informational/flavor, cero stat reward;
-- veteran advice / mentor young: sólo relación local, sin skill/locker global;
+- leader advice / mentor teammate: sólo relación local, sin skill/locker global;
 - personal time: cooldown 30d + fatigue>=20 + deltas <=0.5 fatigue / 0.25 motivation;
 - disconnect: cooldown 45d + age>=28 + fatigue>=30 + deltas <=1 fatigue / 0.5 motivation;
 - interview:
