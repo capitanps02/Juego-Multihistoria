@@ -9,7 +9,10 @@ const FACT_KINDS = new Set<PlayerActionFactKind>([
   "rest_completed",
   "request_more_minutes",
   "request_coach_feedback",
-  "coach_role_acknowledged"
+  "coach_role_acknowledged",
+  "request_transfer",
+  "request_renewal",
+  "ask_agent_market"
 ]);
 
 function record(value: unknown): Record<string, unknown> | null {
