@@ -288,6 +288,10 @@ jobs:
           npm ci
           npm run build:playcanvas
 
+      - name: Verify committed PlayCanvas artifacts are current
+        working-directory: candidate
+        run: git diff --exit-code -- playcanvas/multihistoria.js playcanvas/manifest.json web/assets.json
+
       - name: Run A2 target + A4 UI contract
         working-directory: candidate
         run: |
