@@ -7,6 +7,7 @@ import { materializeAge18MarketOfferInPlace } from "../dist/simulation/early-car
 import { certifyRepresentationInPlace } from "../dist/simulation/representation-authority.js";
 import { PLAYER_ACTION_CONTENT_PLAN } from "../dist/player-actions/content-plan.js";
 import { PLAYER_ACTION_CONTENT_SPECS } from "../dist/player-actions/content-spec.js";
+import { PLAYER_ACTION_BALANCE_SPECS } from "../dist/player-actions/content-balance.js";
 import {
   PLAYER_ACTION_CATALOG,
   PLAYER_ACTION_EFFECT_KEYS,
@@ -562,6 +563,86 @@ test("A5-032 FULL PUBLIC SPEC DOES NOT PROMISE FOREIGN AUTHORITY OUTCOMES", () =
 
     for (const claim of forbiddenClaims) {
       assert.equal(publicText.includes(claim), false, `${spec.id} promises foreign authority outcome: ${claim}`);
+    }
+  }
+});
+
+
+test("A5-033 FULL BALANCE SPEC COVERS EVERY ACTION AND OPTION", () => {
+  const specByAction = new Map(PLAYER_ACTION_CONTENT_SPECS.map(spec => [spec.id, spec]));
+  const balanceIds = PLAYER_ACTION_BALANCE_SPECS.map(row => row.actionId).sort();
+
+  assert.equal(PLAYER_ACTION_BALANCE_SPECS.length, 20);
+  assert.equal(new Set(balanceIds).size, balanceIds.length);
+  assert.deepEqual(balanceIds, PLAYER_ACTION_CONTENT_SPECS.map(row => row.id).sort());
+
+  for (const balance of PLAYER_ACTION_BALANCE_SPECS) {
+    const spec = specByAction.get(balance.actionId);
+    assert.ok(spec, `missing content spec for balance row ${balance.actionId}`);
+    assert.deepEqual(
+      balance.options.map(row => row.optionId).sort(),
+      spec.options.map(row => row.id).sort(),
+      `${balance.actionId} balance options drift from content spec`
+    );
+  }
+});
+
+test("A5-034 TARGET V1 DIRECT DELTAS STAY WITHIN SMALL-EFFECT BUDGETS", () => {
+  const maxAbsByMetric = new Map([
+    ["body.fatigue", 4],
+    ["body.fitness", 0.5],
+    ["body.risk", 2],
+    ["professional.technique", 0.2],
+    ["professional.tacticalReading", 0.2],
+    ["professional.matchEndurance", 0.2],
+    ["professional.commercialPower", 1],
+    ["professional.publicPolarization", 1],
+    ["professional.institutionalTrust", 1],
+    ["professional.motivationReserve", 1],
+    ["professional.lockerPower", 0.1],
+    ["relationship.affinity", 1],
+    ["relationship.trust", 1],
+    ["relationship.respect", 1],
+    ["relationship.resentment", 1]
+  ]);
+
+  for (const action of PLAYER_ACTION_BALANCE_SPECS) {
+    for (const option of action.options) {
+      const metrics = option.directDeltas.map(delta => delta.metric);
+      assert.equal(new Set(metrics).size, metrics.length, `${action.actionId}/${option.optionId} repeats a metric`);
+
+      for (const delta of option.directDeltas) {
+        const limit = maxAbsByMetric.get(delta.metric);
+        assert.ok(limit !== undefined, `${action.actionId}/${option.optionId} uses non-approved metric ${delta.metric}`);
+        assert.ok(Number.isFinite(delta.delta) && delta.delta !== 0);
+        assert.ok(
+          Math.abs(delta.delta) <= limit,
+          `${action.actionId}/${option.optionId} ${delta.metric} delta ${delta.delta} exceeds ${limit}`
+        );
+      }
+    }
+  }
+});
+
+test("A5-035 AUTHORITY/INTENT ACTIONS HAVE NO DIRECT WORLD DELTAS", () => {
+  const factFirstActions = new Set([
+    "PA_COACH_TALK",
+    "PA_ROLE_CHECK",
+    "PA_POSITION_CHANGE",
+    "PA_REQUEST_TRANSFER",
+    "PA_WITHDRAW_TRANSFER",
+    "PA_AGENT_MARKET",
+    "PA_REQUEST_RENEWAL",
+    "PA_DISCUSS_FUTURE"
+  ]);
+
+  for (const action of PLAYER_ACTION_BALANCE_SPECS.filter(row => factFirstActions.has(row.actionId))) {
+    for (const option of action.options) {
+      assert.deepEqual(
+        option.directDeltas,
+        [],
+        `${action.actionId}/${option.optionId} must remain fact/intent-first`
+      );
     }
   }
 });
