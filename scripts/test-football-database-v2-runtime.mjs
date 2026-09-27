@@ -61,6 +61,26 @@ test("scheduled fixture projection is read-only and exposes only catalog opponen
   assert.deepEqual(state, before);
 });
 
+test("fixture opponent follows live league tier instead of static catalog division metadata", () => {
+  const state = createInitialState(19005);
+  state.professional.ownerClub = "ESP_MADRID";
+  state.professional.registrationClub = "ESP_MADRID";
+  state.professional.leagueTier = 2;
+  state.professional.route = "domestic";
+  state.club = "ESP_MADRID";
+  state.tier = 2;
+  state.flags.ABROAD_ROUTE = false;
+
+  const before = structuredClone(state.rngState);
+  const fixture = scheduledLeagueFixtures(state, 70)[0];
+  assert.ok(fixture?.opponentClubId);
+  const opponent = clubById(fixture.opponentClubId);
+  assert.ok(opponent);
+  assert.equal(opponent.countryCode, "ESP");
+  assert.equal(opponent.tier, 2, "live leagueTier must drive opponent pool after promotion/relegation");
+  assert.deepEqual(state.rngState, before);
+});
+
 test("market selector is pure, deterministic and honors exclusions", () => {
   const request = { countryCode: "ESP", leagueTier: 3, roll: 123456789, profile: "balanced" };
   const first = selectMarketDestination(request);
@@ -100,6 +120,7 @@ test("age-18 January producer keeps offer authority detached and emits catalog d
 
 test("continuous market proposals use catalog identities and replay deterministically", () => {
   let proposals = 0;
+  let loanProposals = 0;
   for (let seed = 1; seed <= 900; seed += 1) {
     const state = createInitialState(seed);
     state.age = 21;
@@ -133,14 +154,22 @@ test("continuous market proposals use catalog identities and replay deterministi
     proposals += 1;
     assert.ok(clubById(offer.terms.club), `${seed}: ${offer.terms.club}`);
     assert.doesNotMatch(offer.terms.club, /^(Foreign_|Loan_|Domestic_|Development_|Summer_|Club \d)/);
+    if (offer.terms.loan) {
+      loanProposals += 1;
+      assert.equal(offer.terms.ownerClub, "UDV", `seed ${seed}: loan must preserve contractual owner`);
+      assert.equal(offer.terms.registrationClub, offer.terms.club, `seed ${seed}: loan registration must be destination`);
+      assert.notEqual(offer.terms.ownerClub, offer.terms.registrationClub, `seed ${seed}: loan owner/registration must remain distinct`);
+    }
   }
   assert.ok(proposals >= 10, `expected continuous-market coverage, got ${proposals}`);
+  assert.ok(loanProposals >= 1, `expected at least one directed loan proposal, got ${loanProposals}`);
 });
 
 test("all active narrative aliases project deterministically to catalog identities", () => {
   const state = createInitialState(91001);
   state.age = 19;
   state.date = "2027-01-15";
+  const before = structuredClone(state);
   const aliases = [
     "NEW_CLUB",
     "DEVELOPMENT_CLUB",
@@ -166,6 +195,7 @@ test("all active narrative aliases project deterministically to catalog identiti
     if (alias === "FOREIGN_DEV_CLUB") assert.notEqual(club.countryCode, "ESP");
     else assert.equal(club.countryCode, "ESP");
   }
+  assert.deepEqual(state, before, "alias materialization must be a pure projection with zero RNG/state mutation");
 });
 
 test("DEVELOPMENT_CLUB_2 resolves inside canonical content without rewriting the event", () => {
