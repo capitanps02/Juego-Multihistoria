@@ -663,6 +663,26 @@ test("A6-015A DESIGN CONTRACT: V1 plan/spec/balance/eligibility/cooldown manifes
     }
   }
 
+  const effectRowsByAction = new Map();
+  for (const row of PLAYER_ACTION_EFFECT_PLAN) {
+    const rows = effectRowsByAction.get(row.actionId) ?? [];
+    rows.push(row);
+    effectRowsByAction.set(row.actionId, rows);
+  }
+
+  for (const plan of PLAYER_ACTION_CONTENT_PLAN) {
+    const rows = effectRowsByAction.get(plan.id) ?? [];
+    const directOnlyNoFacts = rows.length > 0
+      && rows.every(row => row.mode === "direct_only" && row.desiredFactKind === undefined);
+    if (directOnlyNoFacts) {
+      assert.equal(
+        /A3/i.test(plan.blockedBy ?? ""),
+        false,
+        `${plan.id} direct-only actions must not retain stale A3 blockers`
+      );
+    }
+  }
+
   for (const actionId of ["PA_COACH_TALK","PA_REQUEST_TRANSFER","PA_REQUEST_RENEWAL"]) {
     const row = PLAYER_ACTION_ELIGIBILITY_SPECS.find(item => item.actionId === actionId);
     assert.ok(row);
