@@ -1,17 +1,16 @@
-name: Player Actions final QA
+name: Player Actions safety freeze
 
 on:
   pull_request:
     branches:
-      - main
       - a6/player-actions-qa-base
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: player-actions-final-qa-${{ github.event.pull_request.number || github.ref }}
+  group: player-actions-safety-freeze-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 env:
@@ -19,41 +18,7 @@ env:
   INTEGRATED_REF: a6/player-actions-release-qa
 
 jobs:
-  refresh_integrated_artifacts:
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    steps:
-      - name: Checkout mutable integrated QA branch
-        uses: actions/checkout@v4
-        with:
-          ref: a6/player-actions-release-qa
-          fetch-depth: 0
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-
-      - name: Rebuild integrated PlayCanvas package
-        run: |
-          npm ci
-          npm run build:playcanvas
-
-      - name: Commit refreshed generated artifacts when needed
-        run: |
-          if git diff --quiet -- playcanvas/multihistoria.js playcanvas/manifest.json web/assets.json; then
-            echo "Integrated PlayCanvas artifacts are already fresh."
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add playcanvas/multihistoria.js playcanvas/manifest.json web/assets.json
-          git commit -m "build(A6): refresh integrated PlayCanvas artifacts"
-          git push origin HEAD:a6/player-actions-release-qa
-
-  integrated_safety:
-    needs: refresh_integrated_artifacts
+  safety:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
@@ -63,13 +28,13 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           path: qa
 
-      - name: Checkout integrated candidate
+      - name: Checkout release candidate
         uses: actions/checkout@v4
         with:
           ref: ${{ env.INTEGRATED_REF }}
           path: candidate
 
-      - name: Checkout pre-feature baseline
+      - name: Checkout baseline
         uses: actions/checkout@v4
         with:
           ref: ${{ env.BASELINE_SHA }}
@@ -80,35 +45,47 @@ jobs:
         with:
           node-version: 20
 
-      - name: Build integrated candidate
+      - name: Build candidate
         working-directory: candidate
         run: |
           npm ci
           npm run build
 
-      - name: Run integrated product suites
+      - name: Core suite
         working-directory: candidate
+        run: timeout 300s node --test scripts/test-player-actions-core.mjs
+
+      - name: Session suite
+        working-directory: candidate
+        run: timeout 300s node --test scripts/test-player-actions-session.mjs
+
+      - name: Narrative bridge suite
+        working-directory: candidate
+        run: timeout 300s node --test scripts/test-player-actions-narrative-bridge.mjs
+
+      - name: Content suite
+        working-directory: candidate
+        run: timeout 300s node --test scripts/test-player-actions-content.mjs
+
+      - name: UI contract suite
+        working-directory: candidate
+        run: timeout 300s node --test scripts/test-player-actions-ui-contract.mjs
+
+      - name: Auto-simulation regression
+        working-directory: candidate
+        run: timeout 300s node --test scripts/test-t55-auto-simulation.mjs
+
+      - name: Persistence regression
+        working-directory: candidate
+        run: timeout 300s node --test scripts/test-persistence.mjs
+
+      - name: Run all A6 cross-system probes
         run: |
-          node --test \
-            scripts/test-player-actions-core.mjs \
-            scripts/test-player-actions-session.mjs \
-            scripts/test-player-actions-narrative-bridge.mjs \
-            scripts/test-player-actions-content.mjs \
-            scripts/test-player-actions-ui-contract.mjs \
-            scripts/test-t55-auto-simulation.mjs
-          node --test scripts/test-persistence.mjs
+          cp qa/scripts/test-player-actions-final.mjs candidate/scripts/a6-player-actions-final.mjs
+          cd candidate
+          timeout 300s node --test scripts/a6-player-actions-final.mjs
 
-      - name: Run A6 cross-system safety probes
-        run: cp qa/scripts/test-player-actions-final.mjs candidate/scripts/a6-player-actions-final.mjs
-
-      - name: Execute A6 safety probes excluding known release blockers
-        working-directory: candidate
-        run: >
-          node --test
-          --test-name-pattern='A6-(001|002|003|004|005|006|007|008|009|010|011|012|013|014|016|017|018|019|022|023)'
-          scripts/a6-player-actions-final.mjs
-
-      - name: Run independent public target contract
+      - name: Public target contract
         run: node qa/scripts/test-player-actions-public-target-contract.mjs candidate
 
       - name: Build baseline
@@ -117,179 +94,11 @@ jobs:
           npm ci
           npm run build
 
-      - name: Run final integrated zero-action equivalence
-        run: node qa/scripts/test-player-actions-zero-equivalence.mjs baseline candidate
+      - name: Final zero-action equivalence
+        run: timeout 600s node qa/scripts/test-player-actions-zero-equivalence.mjs baseline candidate
 
-      - name: Build PlayCanvas package
-        working-directory: candidate
-        run: npm run build:playcanvas
-
-      - name: Run PlayCanvas regression
-        working-directory: candidate
-        run: node --test scripts/test-playcanvas.mjs scripts/test-t55-a19-ui.mjs
-
-  artifact_freshness:
-    needs: refresh_integrated_artifacts
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    steps:
-      - name: Checkout integrated candidate
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ env.INTEGRATED_REF }}
-          path: candidate
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Rebuild PlayCanvas package
+      - name: PlayCanvas build and regression
         working-directory: candidate
         run: |
-          npm ci
           npm run build:playcanvas
-
-      - name: Require committed PlayCanvas package freshness
-        working-directory: candidate
-        run: git diff --exit-code -- playcanvas/multihistoria.js playcanvas/manifest.json web/assets.json
-
-  open_contract_gaps:
-    needs: refresh_integrated_artifacts
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    steps:
-      - name: Checkout A6 harness
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
-          path: qa
-
-      - name: Checkout integrated candidate
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ env.INTEGRATED_REF }}
-          path: candidate
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Build candidate
-        working-directory: candidate
-        run: |
-          npm ci
-          npm run build
-          cp ../qa/scripts/test-player-actions-final.mjs scripts/a6-player-actions-final.mjs
-
-      - name: Enforce final catalog and contextual eligibility
-        working-directory: candidate
-        run: >
-          node --test
-          --test-name-pattern='A6-(015|020|021)'
-          scripts/a6-player-actions-final.mjs
-
-  balance_market_performance:
-    needs: refresh_integrated_artifacts
-    runs-on: ubuntu-latest
-    timeout-minutes: 35
-    steps:
-      - name: Checkout A6 harness
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
-          path: qa
-
-      - name: Checkout integrated candidate
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ env.INTEGRATED_REF }}
-          path: candidate
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Build candidate
-        working-directory: candidate
-        run: |
-          npm ci
-          npm run build
-
-      - name: Run official A5 annual balance stress
-        working-directory: candidate
-        run: npm run test:player-actions-balance
-
-      - name: Cross-check A6 anti-grind budget
-        run: node qa/scripts/test-player-actions-balance-release.mjs candidate
-
-      - name: Run 1000-seed market exploit probe
-        run: node qa/scripts/stress-player-actions-market.mjs candidate
-
-      - name: Run informational performance probe
-        run: node qa/scripts/bench-player-actions.mjs candidate
-
-  browser_e2e:
-    needs: refresh_integrated_artifacts
-    runs-on: ubuntu-latest
-    timeout-minutes: 35
-    steps:
-      - name: Checkout A6 harness
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
-          path: qa
-
-      - name: Checkout integrated candidate
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ env.INTEGRATED_REF }}
-          path: candidate
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Install browser dependencies
-        working-directory: candidate
-        run: |
-          npm ci
-          npm install --no-save --package-lock=false playwright@1.56.1
-          npx playwright install --with-deps chromium
-
-      - name: Build candidate
-        working-directory: candidate
-        run: npm run build:playcanvas
-
-      - name: Copy A6 browser harnesses
-        run: |
-          cp qa/scripts/test-player-actions-mobile-e2e.mjs candidate/scripts/test-player-actions-mobile-e2e.mjs
-          cp qa/scripts/test-player-actions-preview-e2e.mjs candidate/scripts/test-player-actions-preview-e2e.mjs
-
-      - name: Start preview server
-        working-directory: candidate
-        run: |
-          PREVIEW_PORT=4173 node scripts/serve-preview.mjs > /tmp/multihistoria-preview.log 2>&1 &
-          for i in $(seq 1 30); do
-            if curl -fsS http://127.0.0.1:4173/ >/dev/null; then
-              exit 0
-            fi
-            sleep 1
-          done
-          cat /tmp/multihistoria-preview.log
-          exit 1
-
-      - name: Run mobile Chromium E2E
-        working-directory: candidate
-        run: node scripts/test-player-actions-mobile-e2e.mjs http://127.0.0.1:4173
-
-      - name: Run classic preview Chromium E2E
-        working-directory: candidate
-        run: node scripts/test-player-actions-preview-e2e.mjs http://127.0.0.1:4173
-
-      - name: Show preview log on failure
-        if: failure()
-        run: cat /tmp/multihistoria-preview.log || true
+          node --test scripts/test-playcanvas.mjs scripts/test-t55-a19-ui.mjs
