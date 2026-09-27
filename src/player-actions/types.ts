@@ -61,7 +61,10 @@ export type PlayerActionFactKind =
   | "rest_completed"
   | "request_more_minutes"
   | "request_coach_feedback"
-  | "coach_role_acknowledged";
+  | "coach_role_acknowledged"
+  | "request_transfer"
+  | "request_renewal"
+  | "ask_agent_market";
 
 export interface PlayerActionFact {
   factId: string;
