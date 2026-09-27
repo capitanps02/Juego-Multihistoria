@@ -293,3 +293,18 @@ test("A6-013 CONTENT INVENTORY: current A1 fixture catalog is explicit and dupli
     ids
   }));
 });
+
+
+test("A6-014 TARGETED PUBLIC FLOW: coach action must be reachable from PlayerView when a current coach exists", async () => {
+  const session = await emptySession(6014, "a6-target-public-flow");
+  const view = session.getView();
+  const coachAction = view.actions.categories
+    .flatMap(category => category.actions)
+    .find(action => action.id === "PA_COACH_TALK");
+  assert.ok(coachAction, "PA_COACH_TALK must be present in the public catalog");
+  assert.equal(
+    coachAction.available,
+    true,
+    "PA_COACH_TALK is dead in the public flow: target-required availability is projected without a target selector/resolution"
+  );
+});
