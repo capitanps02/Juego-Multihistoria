@@ -11,7 +11,9 @@ import { PLAYER_ACTION_BALANCE_SPECS } from "../dist/player-actions/content-bala
 import { PLAYER_ACTION_ELIGIBILITY_SPECS } from "../dist/player-actions/content-eligibility.js";
 import { PLAYER_ACTION_COOLDOWN_GROUP_SPECS } from "../dist/player-actions/content-cooldown-groups.js";
 import { PLAYER_ACTION_EFFECT_PLAN } from "../dist/player-actions/content-effect-plan.js";
+import { PLAYER_ACTION_TARGET_PROFILES } from "../dist/player-actions/content-target-profiles.js";
 import { CLUB_RENEWAL_INTENT_MAX_MONTHS } from "../dist/simulation/club-contract-intent.js";
+import { NPC_CATALOG } from "../dist/catalog/npcs.js";
 import {
   PLAYER_ACTION_CATALOG,
   PLAYER_ACTION_EFFECT_KEYS,
@@ -27,7 +29,6 @@ import {
 const CURRENT_CATEGORIES = new Set([
   "career",
   "training",
-  "health",
   "representative",
   "relationships",
   "image",
@@ -135,7 +136,6 @@ test("A5-009 NO NARRATIVE RNG", () => {
     ["PA_REQUEST_RENEWAL", "REQUEST"]
   ]) {
     const state = createInitialState(8509);
-    if (actionId === "PA_REST") state.body.fatigue = 24;
     const before = clone(state.rngState.narrative);
     const result = executePlayerActionInPlace(state, { actionId, optionId });
     assert.equal(result.ok, true, `${actionId} should execute`);
@@ -195,7 +195,7 @@ test("A5-014 PLAN/RUNTIME CONTRACT GAPS ARE EXPLICIT", () => {
   }
   assert.ok(PLAYER_ACTION_CONTENT_PLAN.some(row => row.category === "health"));
   const runtimeCategories = new Set(PLAYER_ACTION_CATALOG.map(row => row.category));
-  assert.equal(runtimeCategories.has("health"), true, "health must be live after #808 contract integration");
+  assert.equal(runtimeCategories.has("health"), false, "health must remain explicit gap until A1 contract lands");
 });
 
 
@@ -238,7 +238,13 @@ test("A5-018 IMPLEMENTED PLAN/RUNTIME SYNC", () => {
     assert.ok(action, `implemented plan row missing in runtime: ${row.id}`);
     assert.equal(action.cooldown.days, row.cooldownDays, `${row.id} cooldown drift`);
     assert.equal(action.targetKind, row.targetKind, `${row.id} target drift`);
-    assert.equal(action.category, row.category, `${row.id} category drift`);
+    if (row.id === "PA_REST") {
+      assert.equal(action.category, "life");
+      assert.equal(row.category, "health");
+      assert.match(row.blockedBy ?? "", /health/i);
+    } else {
+      assert.equal(action.category, row.category, `${row.id} category drift`);
+    }
   }
 });
 
@@ -426,31 +432,25 @@ test("A5-025 INCLUSIVE FACT EXPIRY NEVER OVERLAPS RE-EXECUTION", () => {
 });
 
 
-test("A5-026 IMPLEMENTED CONTEXT ELIGIBILITY IS WIRED", () => {
-  const expectedResolved = new Set([
+test("A5-026 IMPLEMENTED CONTEXT GAPS ARE EXPLICIT", () => {
+  const expectedA1ContextGaps = new Set([
     "PA_COACH_TALK",
     "PA_REQUEST_TRANSFER",
-    "PA_REQUEST_RENEWAL",
-    "PA_REST"
+    "PA_REQUEST_RENEWAL"
   ]);
 
-  for (const actionId of expectedResolved) {
-    const row = PLAYER_ACTION_CONTENT_PLAN.find(item => item.id === actionId);
-    const action = PLAYER_ACTION_CATALOG.find(item => item.id === actionId);
-    const spec = PLAYER_ACTION_ELIGIBILITY_SPECS.find(item => item.actionId === actionId);
-    assert.ok(row && action && spec, `missing integrated action ${actionId}`);
+  for (const row of PLAYER_ACTION_CONTENT_PLAN.filter(item => expectedA1ContextGaps.has(item.id))) {
     assert.equal(row.status, "implemented");
-    assert.equal(row.blockedBy, undefined, `${actionId} still advertises a resolved A1 blocker`);
-    assert.deepEqual(action.eligibility, spec.all, `${actionId} runtime eligibility drift`);
+    assert.match(row.blockedBy ?? "", /A1/i, `${row.id} must name A1 context blocker`);
+    assert.match(row.blockedBy ?? "", /eligibility/i, `${row.id} must name eligibility blocker`);
+    assert.match(row.requiredContext, /employment/i, `${row.id} must require active employment`);
   }
-
-  const rest = PLAYER_ACTION_CATALOG.find(item => item.id === "PA_REST");
-  assert.equal(rest?.category, "health");
 
   const agentMarket = PLAYER_ACTION_CONTENT_PLAN.find(item => item.id === "PA_AGENT_MARKET");
   assert.ok(agentMarket);
   assert.equal(agentMarket.blockedBy, undefined, "A2 public-target blocker is resolved by #806");
 });
+
 
 test("A5-027 CAUSAL FACT EXPIRES BEFORE ACTION REOPENS", () => {
   const state = createInitialState(8526);
@@ -689,8 +689,8 @@ test("A5-038 CLUB-SCOPED ACTIONS REQUIRE ACTIVE EMPLOYMENT", () => {
     "PA_REQUEST_RENEWAL",
     "PA_TALK_TEAMMATE",
     "PA_CLEAR_AIR",
-    "PA_VETERAN_ADVICE",
-    "PA_MENTOR_YOUNG"
+    "PA_LEADER_ADVICE",
+    "PA_MENTOR_TEAMMATE"
   ]);
 
   for (const row of PLAYER_ACTION_ELIGIBILITY_SPECS.filter(item => clubScoped.has(item.actionId))) {
@@ -817,26 +817,26 @@ test("A5-046 TRANSFER REQUEST AND WITHDRAWAL ARE MUTUALLY EXCLUSIVE CONTEXTS", (
 });
 
 test("A5-047 AGE-SPECIALIZED TEAMMATE ACTIONS MATCH V1 WINDOWS", () => {
-  const veteran = PLAYER_ACTION_ELIGIBILITY_SPECS.find(row => row.actionId === "PA_VETERAN_ADVICE");
-  const mentor = PLAYER_ACTION_ELIGIBILITY_SPECS.find(row => row.actionId === "PA_MENTOR_YOUNG");
-  assert.ok(veteran && mentor);
+  const leader = PLAYER_ACTION_ELIGIBILITY_SPECS.find(row => row.actionId === "PA_LEADER_ADVICE");
+  const mentor = PLAYER_ACTION_ELIGIBILITY_SPECS.find(row => row.actionId === "PA_MENTOR_TEAMMATE");
+  assert.ok(leader && mentor);
 
   assert.deepEqual(
-    veteran.all.find(predicate => predicate.kind === "age_range"),
+    leader.all.find(predicate => predicate.kind === "age_range"),
     { kind: "age_range", min: 18, max: 23 }
   );
   assert.deepEqual(
-    veteran.all.find(predicate => predicate.kind === "teammate_profile"),
-    { kind: "teammate_profile", profile: "veteran" }
+    leader.all.find(predicate => predicate.kind === "teammate_profile"),
+    { kind: "teammate_profile", profile: "locker_leader" }
   );
 
   assert.deepEqual(
     mentor.all.find(predicate => predicate.kind === "age_range"),
     { kind: "age_range", min: 30 }
   );
-  assert.deepEqual(
-    mentor.all.find(predicate => predicate.kind === "teammate_profile"),
-    { kind: "teammate_profile", profile: "young" }
+  assert.equal(
+    mentor.all.some(predicate => predicate.kind === "teammate_profile"),
+    false
   );
 });
 
@@ -922,8 +922,8 @@ test("A5-051 NEW A3 FACT SURFACE IS MINIMAL", () => {
   );
 });
 
-test("A5-052 VETERAN AND MENTOR ACTIONS STAY LOCAL, NOT A3 FACTS", () => {
-  for (const actionId of ["PA_VETERAN_ADVICE", "PA_MENTOR_YOUNG"]) {
+test("A5-052 LEADER-ADVICE AND MENTOR ACTIONS STAY LOCAL, NOT A3 FACTS", () => {
+  for (const actionId of ["PA_LEADER_ADVICE", "PA_MENTOR_TEAMMATE"]) {
     const rows = PLAYER_ACTION_EFFECT_PLAN.filter(row => row.actionId === actionId);
     assert.ok(rows.length > 0);
     assert.ok(rows.every(row => row.mode === "direct_only"));
@@ -964,7 +964,7 @@ test("A5-053 REST AND RECOVERY HAVE DISTINCT HEALTH NICHES", () => {
 
 
 test("A5-054 TEAMMATE GUIDANCE DOES NOT GRANT GLOBAL PROGRESSION", () => {
-  for (const actionId of ["PA_VETERAN_ADVICE", "PA_MENTOR_YOUNG"]) {
+  for (const actionId of ["PA_LEADER_ADVICE", "PA_MENTOR_TEAMMATE"]) {
     const balance = PLAYER_ACTION_BALANCE_SPECS.find(row => row.actionId === actionId);
     assert.ok(balance);
     for (const option of balance.options) {
@@ -1105,9 +1105,56 @@ test("A5-060 ONLY THREE V1 ACTIONS DEPEND ON NEW A3 CONTRACTS", () => {
     ["PA_DISCUSS_FUTURE", "PA_POSITION_CHANGE", "PA_WITHDRAW_TRANSFER"].sort()
   );
 
-  for (const actionId of ["PA_ROLE_CHECK", "PA_VETERAN_ADVICE", "PA_MENTOR_YOUNG", "PA_SOCIAL_POST"]) {
+  for (const actionId of ["PA_ROLE_CHECK", "PA_LEADER_ADVICE", "PA_MENTOR_TEAMMATE", "PA_SOCIAL_POST"]) {
     const row = PLAYER_ACTION_CONTENT_PLAN.find(item => item.id === actionId);
     assert.ok(row);
     assert.equal(/A3/i.test(row.blockedBy ?? ""), false, `${actionId} has unnecessary A3 dependency`);
+  }
+});
+
+
+test("A5-061 LOCKER LEADER PROFILE IS PUBLIC, CLOSED AND CURRENT-TEAMMATE SCOPED", () => {
+  assert.deepEqual(
+    [...PLAYER_ACTION_TARGET_PROFILES.locker_leader].sort(),
+    ["NPC_PLR_10", "NPC_PLR_11"].sort()
+  );
+  assert.equal(new Set(PLAYER_ACTION_TARGET_PROFILES.locker_leader).size, 2);
+  assert.ok(PLAYER_ACTION_TARGET_PROFILES.locker_leader.every(id => id.startsWith("NPC_PLR_")));
+
+  const leader = PLAYER_ACTION_ELIGIBILITY_SPECS.find(row => row.actionId === "PA_LEADER_ADVICE");
+  assert.ok(leader);
+  assert.ok(leader.all.some(predicate => predicate.kind === "current_teammate"));
+  assert.deepEqual(
+    leader.all.find(predicate => predicate.kind === "teammate_profile"),
+    { kind: "teammate_profile", profile: "locker_leader" }
+  );
+});
+
+test("A5-062 LATE MENTORING DOES NOT REQUIRE NPC AGE METADATA", () => {
+  const mentor = PLAYER_ACTION_ELIGIBILITY_SPECS.find(row => row.actionId === "PA_MENTOR_TEAMMATE");
+  assert.ok(mentor);
+  assert.ok(mentor.all.some(predicate => predicate.kind === "current_teammate"));
+  assert.deepEqual(
+    mentor.all.find(predicate => predicate.kind === "age_range"),
+    { kind: "age_range", min: 30 }
+  );
+  assert.equal(mentor.all.some(predicate => predicate.kind === "teammate_profile"), false);
+});
+
+test("A5-063 NO UNSUPPORTED VETERAN/YOUNG NPC PROFILE IN ELIGIBILITY", () => {
+  const serialized = JSON.stringify(PLAYER_ACTION_ELIGIBILITY_SPECS).toLowerCase();
+  assert.equal(serialized.includes('"profile":"veteran"'), false);
+  assert.equal(serialized.includes('"profile":"young"'), false);
+});
+
+
+test("A5-064 LOCKER LEADER PROFILE MATCHES PUBLIC CANONICAL ROLES", () => {
+  const byId = new Map(NPC_CATALOG.map(npc => [npc.id, npc]));
+  for (const npcId of PLAYER_ACTION_TARGET_PROFILES.locker_leader) {
+    const npc = byId.get(npcId);
+    assert.ok(npc, `locker leader ${npcId} missing from canonical NPC catalog`);
+    assert.equal(npc.id.startsWith("NPC_PLR_"), true);
+    assert.equal(npc.initialClub, "UDV");
+    assert.match(npc.role.toLowerCase(), /capit[aá]n/, `${npcId} no longer has a public captaincy role`);
   }
 });
