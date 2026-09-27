@@ -173,8 +173,8 @@ Clasificación:
 | PA_DISCUSS_FUTURE | BLOCKED | CONTEXTUAL | representative | 20+ | representante | A3 CAREER_PRIORITY | 21d | preference fact | agent |
 | PA_TALK_TEAMMATE | BLOCKED | CONTEXTUAL | relationships | 18+ | teammate válido | A1 relationship handler + shared cooldown | 10d | affinity/respect pequeño | teammate |
 | PA_CLEAR_AIR | BLOCKED | CONTEXTUAL | relationships | 18+ | tensión visible | A1 eligibility/effect | 21d | resentment/trust pequeño | teammate |
-| PA_VETERAN_ADVICE | BLOCKED | CONTEXTUAL | relationships | 18–23 | veterano elegible | A1 veteran predicate + relationship handler | 21d | relation local | teammate |
-| PA_MENTOR_YOUNG | BLOCKED | LATE_CAREER | relationships | 30+ | joven elegible | A1 young-player predicate + relationship handler | 21d | relation local | teammate |
+| PA_LEADER_ADVICE | BLOCKED | CONTEXTUAL | relationships | 18–23 | líder de vestuario actual | A1 content target-profile + relationship handler | 21d | relation local | teammate |
+| PA_MENTOR_TEAMMATE | BLOCKED | LATE_CAREER | relationships | 30+ | compañero actual | A1 age eligibility + relationship handler | 21d | relation local | teammate |
 | PA_INTERVIEW | BLOCKED | CORE | image | 18+ | carrera activa | A1 effect registry | 28d | image/polarization pequeño | none |
 | PA_SOCIAL_POST | BLOCKED | OPTIONAL_FLAVOR | image | 18+ | carrera activa | A1 informational handler | 21d | sin stat reward | none |
 | PA_PERSONAL_TIME | BLOCKED | CONTEXTUAL | life | 18+ | fatiga significativa | A1 life handler + fatigue eligibility | 30d | fatigue/motivation muy pequeño | none |
@@ -287,7 +287,7 @@ Prioridad:
 - entrenador;
 - minutos;
 - entrenamiento;
-- veterano;
+- consejo de líder de vestuario;
 - agente;
 - adaptación.
 
@@ -323,7 +323,7 @@ Prioridad:
 - futuro;
 - desconexión.
 
-**Runtime actual:** no puede aplicar age windows por acción porque A1 todavía no expone ese contrato. A5-010 permanece TODO, no se falsea con checks ad-hoc fuera del engine.
+**Runtime actual:** no puede aplicar age windows por acción porque A1 todavía no expone ese contrato. A5 ya valida la matriz de edades como configuración; la enforcement runtime sigue bloqueada en A1.
 
 ---
 
@@ -334,19 +334,24 @@ Runtime actual:
 - coach: PA_COACH_TALK;
 - agent: PA_AGENT_MARKET.
 
-Diseño futuro:
+A2/#806 + A4/#804 ya resuelven proyección pública authority-backed y exact targetId.
 
-- teammate:
-  - PA_TALK_TEAMMATE;
-  - PA_CLEAR_AIR;
-  - PA_VETERAN_ADVICE;
-  - PA_MENTOR_YOUNG.
+Diseño V1 teammate:
 
-Bloqueos:
+- PA_TALK_TEAMMATE → current teammate;
+- PA_CLEAR_AIR → current teammate + visible tension;
+- PA_LEADER_ADVICE → current teammate + profile público locker_leader;
+- PA_MENTOR_TEAMMATE → current teammate, jugador de 30+.
 
-1. A2 debe proyectar targets autorizados públicamente.
-2. A1 debe soportar predicates seguros para veteran/young.
-3. A5 no inferirá NPCs desde contacts o estado privado.
+A5 no infiere edades de NPC inexistentes ni usa agenda/knowledge privada.
+
+Profile público A5:
+
+- locker_leader:
+  - NPC_PLR_10;
+  - NPC_PLR_11.
+
+La pertenencia al profile nunca basta por sí sola: A1 debe seguir verificando que el NPC esté activo y sea compañero actual.
 
 ---
 
@@ -533,7 +538,7 @@ Archivo:
 
 `scripts/test-player-actions-content.mjs`
 
-Casos implementados en la suite (60):
+Casos implementados en la suite (63):
 
 1. A5-001 UNIQUE IDS
 2. A5-002 VALID CATEGORIES
@@ -634,9 +639,9 @@ Para cerrar A5:
 1. añadir `health`;
 2. contract de age/context eligibility;
 3. content effect registry extensible o ownership limitado;
-4. target predicates veteran/young;
-5. idealmente shared/group cooldown;
-6. handler de training balanceable a magnitud A5.
+4. optional closed teammate target-profile support para `locker_leader`;
+5. shared/group cooldown;
+6. handler de training/recovery balanceable a magnitud A5.
 
 No añadir:
 
@@ -679,7 +684,7 @@ Pendiente en V1:
 - withdraw transfer;
 - career priority.
 
-Veteran advice y mentor young ya no requieren A3: quedan como efectos locales direct_only sin facts persistentes.
+Leader advice y mentor teammate ya no requieren A3: quedan como efectos locales direct_only sin facts persistentes.
 
 A3 documenta que withdraw-transfer no existe en V1 actual y request_transfer expira/cierra por cambio de club o 120d.
 
@@ -722,7 +727,7 @@ A3 documenta que withdraw-transfer no existe en V1 actual y request_transfer exp
 
 ```text
 [A5 STATUS]
-Progreso: 98% owner-side
+Progreso: 99% owner-side
 BASE_SHA: 75be938bbe4a6f7a01ef45a5078a6bfa6d77262d
 HEAD actual: consultar PR #802
 CATÁLOGO
@@ -736,6 +741,7 @@ COMPLETADO
 - eligibility objetivo 20/20 codificado en content-eligibility.ts
 - shared cooldown families 20/20 codificadas en content-cooldown-groups.ts
 - routing effect/fact 31/31 opciones codificado en content-effect-plan.ts
+- target profile público locker_leader codificado en content-target-profiles.ts
 - primer slice A3 cableado
 - cooldowns A5 del slice
 - authority review
@@ -748,13 +754,10 @@ EN CURSO
 - CI del slice
 - coordinación A1/A3 + integración A6
 RESTANTE
-- health
-- age/context
-- relationships
-- image/life effects
-- active-employment/context eligibility
-- balance simulation
-- full 20-action runtime
+- upstream A1 runtime contract
+- tres facts A3
+- integración final de las 14 acciones bloqueadas
+- exact-head balance/integration retest
 BALANCE
 - estado: PARTIAL
 - training/rest: cooldown remediation implementada; handler/context tuning A1 sigue pendiente
@@ -762,7 +765,7 @@ BALANCE
 - 1000 seeds de mercado para REQUEST_TRANSFER
 - autoridad de coach/agent validada en catálogo A5
 TESTS
-- 60 checks authored
+- 63 checks authored
 - 0 TODO en la suite de diseño/contrato
 - stress anual de 80 carreras añadido
 - runtime health/age siguen bloqueados explícitamente
@@ -773,7 +776,7 @@ BLOQUEOS
 Trabajo restante estimado:
 - 14 acciones/runtime decisions
 - 1 bloque de integración/retest A5 tras upstream
-- ~2–4 horas-agente equivalentes tras desbloqueo A1/A3
+- ~2–3 horas-agente equivalentes de wiring/retest tras desbloqueo A1/A3
 ```
 
 
@@ -799,7 +802,7 @@ Predicates previstos:
 - fatigue_min / fatigue_max;
 - risk_min / risk_max;
 - current_teammate;
-- teammate_profile veteran/young;
+- teammate_profile locker_leader;
 - visible_teammate_tension.
 
 Casos importantes:
@@ -809,8 +812,8 @@ Casos importantes:
 - PA_TRAIN_EXTRA: fatigue <=55 y risk <=40;
 - PA_REST: fatigue >=24;
 - PA_RECOVERY_SESSION: risk >=28;
-- PA_VETERAN_ADVICE: jugador 18–23 + target veterano;
-- PA_MENTOR_YOUNG: jugador 30+ + target joven.
+- PA_LEADER_ADVICE: jugador 18–23 + current teammate + locker_leader;
+- PA_MENTOR_TEAMMATE: jugador 30+ + cualquier current teammate.
 
 ## Shared cooldown final V1
 
@@ -851,8 +854,8 @@ Nuevos facts A3 realmente necesarios:
 - career_priority.
 
 Se elimina la dependencia A3 para:
-- veteran advice;
-- mentor young.
+- leader advice;
+- mentor teammate.
 
 Ambas quedan como acciones direct_only con target teammate validado y efectos locales pequeños.
 
@@ -863,7 +866,7 @@ Objetivo: el jugador debe poder pulsar SIMULAR sin sentir que está dejando buff
 
 Medidas A5:
 - social post: informational/flavor, cero stat reward;
-- veteran advice / mentor young: sólo relación local, sin skill/locker global;
+- leader advice / mentor teammate: sólo relación local, sin skill/locker global;
 - personal time: cooldown 30d + fatigue>=20 + deltas <=0.5 fatigue / 0.25 motivation;
 - disconnect: cooldown 45d + age>=28 + fatigue>=30 + deltas <=1 fatigue / 0.5 motivation;
 - interview:
@@ -879,3 +882,35 @@ A5-058 calcula techo anual bruto ignorando incluso eligibility/shared cooldown:
 - cualquier métrica professional positiva <=8 puntos/año.
 
 A5-059 obliga a que Relationships no escriba progreso profesional global.
+
+
+## Target profile safety
+
+El modelo NPC actual no contiene `age`, `ageBand` ni `careerStage` para jugadores NPC.
+
+Por tanto A5 prohíbe inferir:
+- "young";
+- "veteran";
+
+desde:
+- nombres;
+- agenda privada;
+- conocimiento privado;
+- texto de cantera estático que envejece mal en carreras largas.
+
+Solución V1:
+
+`src/player-actions/content-target-profiles.ts`
+
+Profile público cerrado:
+
+`locker_leader = [NPC_PLR_10, NPC_PLR_11]`
+
+Motivo factual/público:
+- capitán;
+- vicecapitán.
+
+`PA_LEADER_ADVICE` exige además current teammate.
+`PA_MENTOR_TEAMMATE` no usa profile: a partir de 30 años del protagonista puede orientar a cualquier compañero actual.
+
+A5-061…063 impiden reintroducir age inference inexistente.
