@@ -6,7 +6,6 @@ const baseUrl = process.argv[2] ?? "http://127.0.0.1:4173";
 const KEY = "historia-jugador.preview.session.v1";
 
 const fixture = await GameSession.create(424242, {
-  events: [],
   microfeeds: false,
   sessionId: "a6-preview-e2e"
 });
@@ -22,7 +21,24 @@ try {
   }, { key: KEY, value: raw });
 
   await page.goto(baseUrl + "/classic", { waitUntil: "networkidle" });
-  await page.getByRole("button", { name: "Gestionar mi carrera", exact: true }).waitFor();
+  const initialReady = await page.getByRole("button", { name: "Gestionar mi carrera", exact: true })
+    .waitFor({ timeout: 10000 })
+    .then(() => true)
+    .catch(() => false);
+  if (!initialReady) {
+    const diagnostic = await page.evaluate(() => ({
+      body: document.body.innerText,
+      error: document.querySelector("#error")?.textContent ?? "",
+      saveStatus: document.querySelector("#save-status")?.textContent ?? "",
+      story: document.querySelector("#story")?.textContent ?? "",
+      busy: document.querySelector("#story")?.getAttribute("aria-busy"),
+      buttons: [...document.querySelectorAll("button")].map(button => ({
+        text: button.textContent?.trim() ?? "",
+        disabled: button.disabled
+      }))
+    }));
+    throw new Error(`classic initial career surface missing: ${JSON.stringify(diagnostic)}`);
+  }
 
   const noOverflow = async stage => {
     const metrics = await page.evaluate(() => ({
