@@ -687,8 +687,8 @@ test("A5-038 CLUB-SCOPED ACTIONS REQUIRE ACTIVE EMPLOYMENT", () => {
     "PA_REQUEST_RENEWAL",
     "PA_TALK_TEAMMATE",
     "PA_CLEAR_AIR",
-    "PA_VETERAN_ADVICE",
-    "PA_MENTOR_YOUNG"
+    "PA_LEADER_ADVICE",
+    "PA_MENTOR_TEAMMATE"
   ]);
 
   for (const row of PLAYER_ACTION_ELIGIBILITY_SPECS.filter(item => clubScoped.has(item.actionId))) {
@@ -815,8 +815,8 @@ test("A5-046 TRANSFER REQUEST AND WITHDRAWAL ARE MUTUALLY EXCLUSIVE CONTEXTS", (
 });
 
 test("A5-047 AGE-SPECIALIZED TEAMMATE ACTIONS MATCH V1 WINDOWS", () => {
-  const veteran = PLAYER_ACTION_ELIGIBILITY_SPECS.find(row => row.actionId === "PA_VETERAN_ADVICE");
-  const mentor = PLAYER_ACTION_ELIGIBILITY_SPECS.find(row => row.actionId === "PA_MENTOR_YOUNG");
+  const veteran = PLAYER_ACTION_ELIGIBILITY_SPECS.find(row => row.actionId === "PA_LEADER_ADVICE");
+  const mentor = PLAYER_ACTION_ELIGIBILITY_SPECS.find(row => row.actionId === "PA_MENTOR_TEAMMATE");
   assert.ok(veteran && mentor);
 
   assert.deepEqual(
@@ -920,8 +920,8 @@ test("A5-051 NEW A3 FACT SURFACE IS MINIMAL", () => {
   );
 });
 
-test("A5-052 VETERAN AND MENTOR ACTIONS STAY LOCAL, NOT A3 FACTS", () => {
-  for (const actionId of ["PA_VETERAN_ADVICE", "PA_MENTOR_YOUNG"]) {
+test("A5-052 LEADER-ADVICE AND MENTOR ACTIONS STAY LOCAL, NOT A3 FACTS", () => {
+  for (const actionId of ["PA_LEADER_ADVICE", "PA_MENTOR_TEAMMATE"]) {
     const rows = PLAYER_ACTION_EFFECT_PLAN.filter(row => row.actionId === actionId);
     assert.ok(rows.length > 0);
     assert.ok(rows.every(row => row.mode === "direct_only"));
@@ -962,7 +962,7 @@ test("A5-053 REST AND RECOVERY HAVE DISTINCT HEALTH NICHES", () => {
 
 
 test("A5-054 TEAMMATE GUIDANCE DOES NOT GRANT GLOBAL PROGRESSION", () => {
-  for (const actionId of ["PA_VETERAN_ADVICE", "PA_MENTOR_YOUNG"]) {
+  for (const actionId of ["PA_LEADER_ADVICE", "PA_MENTOR_TEAMMATE"]) {
     const balance = PLAYER_ACTION_BALANCE_SPECS.find(row => row.actionId === actionId);
     assert.ok(balance);
     for (const option of balance.options) {
@@ -1103,7 +1103,7 @@ test("A5-060 ONLY THREE V1 ACTIONS DEPEND ON NEW A3 CONTRACTS", () => {
     ["PA_DISCUSS_FUTURE", "PA_POSITION_CHANGE", "PA_WITHDRAW_TRANSFER"].sort()
   );
 
-  for (const actionId of ["PA_ROLE_CHECK", "PA_VETERAN_ADVICE", "PA_MENTOR_YOUNG", "PA_SOCIAL_POST"]) {
+  for (const actionId of ["PA_ROLE_CHECK", "PA_LEADER_ADVICE", "PA_MENTOR_TEAMMATE", "PA_SOCIAL_POST"]) {
     const row = PLAYER_ACTION_CONTENT_PLAN.find(item => item.id === actionId);
     assert.ok(row);
     assert.equal(/A3/i.test(row.blockedBy ?? ""), false, `${actionId} has unnecessary A3 dependency`);
