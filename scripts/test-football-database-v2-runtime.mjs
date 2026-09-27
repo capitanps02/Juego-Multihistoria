@@ -16,6 +16,7 @@ import { adaptState20ToProfessional } from "../dist/simulation/professional-adap
 import { careerTerms, proposeCareerChange } from "../dist/simulation/offers.js";
 import { resolveChoice } from "../dist/narrative/resolver.js";
 import { assertGameState } from "../dist/save/validation.js";
+import { executePlayerActionInPlace } from "../dist/player-actions/index.js";
 
 function matchDayState(seed = 19001) {
   const state = createInitialState(seed);
@@ -116,6 +117,58 @@ test("age-18 January producer keeps offer authority detached and emits catalog d
     assert.deepEqual(careerTerms(state), beforeTerms, `seed ${seed} offer must remain detached`);
   }
   assert.ok(materialized >= 40, `expected broad offer coverage, got ${materialized}`);
+});
+
+test("Player Actions transfer request only changes the existing summer producer threshold", () => {
+  let found = null;
+
+  for (let seed = 1; seed <= 600 && !found; seed += 1) {
+    const base = createInitialState(seed);
+    base.date = "2027-06-04";
+    base.age = 18;
+    base.phase = "18_20";
+    base.professional.ownerClub = "UDV";
+    base.professional.registrationClub = "UDV";
+    base.professional.leagueTier = 3;
+    base.club = "UDV";
+    base.tier = 3;
+    base.contract.monthsRemaining = 18;
+    base.sport.appearances = 5;
+    base.flags.OFFICIAL_DEBUT = true;
+    base.reputation.marketHeat = 55;
+    base.market.pending = null;
+    base.market.openOffers = [];
+
+    const noAction = structuredClone(base);
+    const requested = structuredClone(base);
+    const beforeTerms = careerTerms(base);
+    const beforeRng = structuredClone(base.rngState);
+
+    const action = executePlayerActionInPlace(requested, {
+      actionId: "PA_REQUEST_TRANSFER",
+      optionId: "REQUEST"
+    });
+    if (!action.ok) continue;
+
+    materializeAge18MarketOfferInPlace(noAction);
+    materializeAge18MarketOfferInPlace(requested);
+
+    const normal = noAction.market?.pending;
+    const signaled = requested.market?.pending;
+    if (normal?.reason === "Renovación de contrato"
+      && signaled?.reason === "Oferta formal de salida en verano") {
+      found = { seed, noAction, requested, beforeTerms, beforeRng };
+    }
+  }
+
+  assert.ok(found, "expected a deterministic seed in the 38..49 threshold delta");
+  assert.equal(found.noAction.market.pending.reason, "Renovación de contrato");
+  assert.equal(found.requested.market.pending.reason, "Oferta formal de salida en verano");
+  assert.ok(clubById(found.requested.market.pending.terms.club));
+  assert.deepEqual(careerTerms(found.noAction), found.beforeTerms, "renewal proposal must remain detached");
+  assert.deepEqual(careerTerms(found.requested), found.beforeTerms, "transfer proposal must remain detached");
+  assert.deepEqual(found.noAction.rngState, found.beforeRng, "summer producer must consume zero GameState RNG draws");
+  assert.deepEqual(found.requested.rngState, found.beforeRng, "Player Action + summer producer must consume zero GameState RNG draws");
 });
 
 test("continuous market proposals use catalog identities and replay deterministically", () => {
