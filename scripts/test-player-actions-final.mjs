@@ -10,6 +10,7 @@ import { PLAYER_ACTION_BALANCE_SPECS } from "../dist/player-actions/content-bala
 import { PLAYER_ACTION_ELIGIBILITY_SPECS } from "../dist/player-actions/content-eligibility.js";
 import { PLAYER_ACTION_COOLDOWN_GROUP_SPECS } from "../dist/player-actions/content-cooldown-groups.js";
 import { PLAYER_ACTION_EFFECT_PLAN } from "../dist/player-actions/content-effect-plan.js";
+import { PLAYER_ACTION_TARGET_PROFILES } from "../dist/player-actions/content-target-profiles.js";
 import {
   PLAYER_ACTION_CATALOG,
   addPlayerActionDays,
@@ -682,6 +683,36 @@ test("A6-015A DESIGN CONTRACT: V1 plan/spec/balance/eligibility/cooldown manifes
       );
     }
   }
+
+  assert.deepEqual(
+    Object.keys(PLAYER_ACTION_TARGET_PROFILES).sort(),
+    ["locker_leader"],
+    "V1 target-profile registry must remain closed"
+  );
+  assert.ok(
+    PLAYER_ACTION_TARGET_PROFILES.locker_leader.length >= 1,
+    "locker_leader profile must have at least one canonical public member"
+  );
+  assert.equal(
+    PLAYER_ACTION_TARGET_PROFILES.locker_leader.every(id => /^NPC_PLR_\d+$/.test(id)),
+    true,
+    "target profiles must contain canonical public teammate IDs only"
+  );
+
+  const leaderAdvice = PLAYER_ACTION_ELIGIBILITY_SPECS.find(row => row.actionId === "PA_LEADER_ADVICE");
+  assert.ok(leaderAdvice);
+  assert.deepEqual(
+    leaderAdvice.all.find(predicate => predicate.kind === "teammate_profile"),
+    { kind: "teammate_profile", profile: "locker_leader" }
+  );
+
+  const mentor = PLAYER_ACTION_ELIGIBILITY_SPECS.find(row => row.actionId === "PA_MENTOR_TEAMMATE");
+  assert.ok(mentor);
+  assert.equal(
+    mentor.all.some(predicate => predicate.kind === "teammate_profile"),
+    false,
+    "mentor target selection must not infer hidden teammate age/profile"
+  );
 
   for (const actionId of ["PA_COACH_TALK","PA_REQUEST_TRANSFER","PA_REQUEST_RENEWAL"]) {
     const row = PLAYER_ACTION_ELIGIBILITY_SPECS.find(item => item.actionId === actionId);
