@@ -152,7 +152,7 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
       const list=el('div',undefined,'player-action-list');
       for(const a of category.actions){
         const p=panel(a.label);p.classList.add('player-action-card');p.append(el('p',a.description,'muted'));
-        if(!a.available)p.append(el('p',cooldownText(v,a)||a.unavailableReason||'Ahora mismo no está disponible.','player-action-reason'));
+        if(!a.available){const reasonSource=a.targetKind!=='none'?(a.targets?.find(target=>target.cooldownUntil)??a.targets?.find(target=>!target.available)??a):a;p.append(el('p',cooldownText(v,reasonSource)||reasonSource.unavailableReason||a.unavailableReason||'Ahora mismo no está disponible.','player-action-reason'));}
         p.append(button('Abrir',()=>{playerActionUi={screen:'player_action_detail',categoryId:category.id,actionId:a.id,targetId:null,resultExecutionId:null};render(true);},'secondary',{disabled:!a.available}));
         list.append(p);
       }
