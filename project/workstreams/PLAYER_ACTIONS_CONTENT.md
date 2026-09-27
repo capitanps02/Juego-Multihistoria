@@ -533,7 +533,7 @@ Archivo:
 
 `scripts/test-player-actions-content.mjs`
 
-Casos implementados en la suite (47):
+Casos implementados en la suite (52):
 
 1. A5-001 UNIQUE IDS
 2. A5-002 VALID CATEGORIES
@@ -727,7 +727,7 @@ A3 documenta que withdraw-transfer no existe en V1 actual y request_transfer exp
 
 ```text
 [A5 STATUS]
-Progreso: 94% owner-side
+Progreso: 96% owner-side
 BASE_SHA: 75be938bbe4a6f7a01ef45a5078a6bfa6d77262d
 HEAD actual: consultar PR #802
 CATÁLOGO
@@ -740,6 +740,7 @@ COMPLETADO
 - balance objetivo 20/20 codificado en content-balance.ts
 - eligibility objetivo 20/20 codificado en content-eligibility.ts
 - shared cooldown families 20/20 codificadas en content-cooldown-groups.ts
+- routing effect/fact 31/31 opciones codificado en content-effect-plan.ts
 - primer slice A3 cableado
 - cooldowns A5 del slice
 - authority review
@@ -766,7 +767,7 @@ BALANCE
 - 1000 seeds de mercado para REQUEST_TRANSFER
 - autoridad de coach/agent validada en catálogo A5
 TESTS
-- 47 checks authored
+- 52 checks authored
 - 0 TODO en la suite de diseño/contrato
 - stress anual de 80 carreras añadido
 - runtime health/age siguen bloqueados explícitamente
@@ -831,3 +832,31 @@ Casos importantes:
 Transfer request/withdraw comparte `club_intent` a 14 días.
 
 Los cooldowns familiares complementan, no sustituyen, el cooldown individual/action_target.
+
+
+## Effect/fact routing final V1
+
+`src/player-actions/content-effect-plan.ts` cubre las 31 opciones públicas V1.
+
+Modos:
+- fact_only;
+- direct_only;
+- direct_and_fact;
+- informational.
+
+Regla de autoridad:
+- fact_only => cero direct deltas;
+- direct_only => ningún fact persistente;
+- direct_and_fact => deltas locales permitidos + fact acotado;
+- informational => sin direct deltas ni fact causal.
+
+Nuevos facts A3 realmente necesarios:
+- request_position_change;
+- withdraw_transfer_request;
+- career_priority.
+
+Se elimina la dependencia A3 para:
+- veteran advice;
+- mentor young.
+
+Ambas quedan como acciones direct_only con target teammate validado y efectos locales pequeños.
