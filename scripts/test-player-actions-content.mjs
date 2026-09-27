@@ -8,6 +8,8 @@ import { certifyRepresentationInPlace } from "../dist/simulation/representation-
 import { PLAYER_ACTION_CONTENT_PLAN } from "../dist/player-actions/content-plan.js";
 import { PLAYER_ACTION_CONTENT_SPECS } from "../dist/player-actions/content-spec.js";
 import { PLAYER_ACTION_BALANCE_SPECS } from "../dist/player-actions/content-balance.js";
+import { PLAYER_ACTION_ELIGIBILITY_SPECS } from "../dist/player-actions/content-eligibility.js";
+import { CLUB_RENEWAL_INTENT_MAX_MONTHS } from "../dist/simulation/club-contract-intent.js";
 import {
   PLAYER_ACTION_CATALOG,
   PLAYER_ACTION_EFFECT_KEYS,
@@ -645,4 +647,77 @@ test("A5-035 AUTHORITY/INTENT ACTIONS HAVE NO DIRECT WORLD DELTAS", () => {
       );
     }
   }
+});
+
+
+test("A5-036 FULL ELIGIBILITY SPEC COVERS ALL 20 ACTIONS", () => {
+  const planIds = PLAYER_ACTION_CONTENT_PLAN.map(row => row.id).sort();
+  const eligibilityIds = PLAYER_ACTION_ELIGIBILITY_SPECS.map(row => row.actionId).sort();
+
+  assert.equal(PLAYER_ACTION_ELIGIBILITY_SPECS.length, 20);
+  assert.equal(new Set(eligibilityIds).size, eligibilityIds.length);
+  assert.deepEqual(eligibilityIds, planIds);
+
+  for (const row of PLAYER_ACTION_ELIGIBILITY_SPECS) {
+    assert.ok(row.all.length >= 2, `${row.actionId} eligibility is underspecified`);
+    assert.equal(row.all.some(predicate => predicate.kind === "active_career"), true);
+  }
+});
+
+test("A5-037 ELIGIBILITY AGE RANGE MATCHES CONTENT PLAN", () => {
+  for (const plan of PLAYER_ACTION_CONTENT_PLAN) {
+    const eligibility = PLAYER_ACTION_ELIGIBILITY_SPECS.find(row => row.actionId === plan.id);
+    assert.ok(eligibility, `missing eligibility for ${plan.id}`);
+    const age = eligibility.all.find(predicate => predicate.kind === "age_range");
+    assert.ok(age, `${plan.id} missing age_range predicate`);
+    assert.equal(age.min, plan.ageRange[0], `${plan.id} min age drift`);
+    assert.equal(age.max ?? null, plan.ageRange[1], `${plan.id} max age drift`);
+  }
+});
+
+test("A5-038 CLUB-SCOPED ACTIONS REQUIRE ACTIVE EMPLOYMENT", () => {
+  const clubScoped = new Set([
+    "PA_COACH_TALK",
+    "PA_ROLE_CHECK",
+    "PA_POSITION_CHANGE",
+    "PA_REQUEST_TRANSFER",
+    "PA_WITHDRAW_TRANSFER",
+    "PA_REQUEST_RENEWAL",
+    "PA_TALK_TEAMMATE",
+    "PA_CLEAR_AIR",
+    "PA_VETERAN_ADVICE",
+    "PA_MENTOR_YOUNG"
+  ]);
+
+  for (const row of PLAYER_ACTION_ELIGIBILITY_SPECS.filter(item => clubScoped.has(item.actionId))) {
+    assert.equal(
+      row.all.some(predicate => predicate.kind === "active_club_employment"),
+      true,
+      `${row.actionId} must fail before execution when unattached`
+    );
+  }
+});
+
+test("A5-039 TARGET ELIGIBILITY MATCHES TARGET KIND", () => {
+  const planById = new Map(PLAYER_ACTION_CONTENT_PLAN.map(row => [row.id, row]));
+
+  for (const row of PLAYER_ACTION_ELIGIBILITY_SPECS) {
+    const plan = planById.get(row.actionId);
+    assert.ok(plan);
+    const kinds = new Set(row.all.map(predicate => predicate.kind));
+
+    if (plan.targetKind === "coach") assert.equal(kinds.has("current_coach"), true, `${row.actionId} missing current_coach`);
+    if (plan.targetKind === "agent") assert.equal(kinds.has("current_representation"), true, `${row.actionId} missing current_representation`);
+    if (plan.targetKind === "teammate") assert.equal(kinds.has("current_teammate"), true, `${row.actionId} missing current_teammate`);
+  }
+});
+
+test("A5-040 RENEWAL USES CANONICAL 24-MONTH HORIZON", () => {
+  const renewal = PLAYER_ACTION_ELIGIBILITY_SPECS.find(row => row.actionId === "PA_REQUEST_RENEWAL");
+  assert.ok(renewal);
+  const contract = renewal.all.find(predicate => predicate.kind === "contract_months");
+  assert.ok(contract);
+  assert.equal(contract.min, 1);
+  assert.equal(contract.max, CLUB_RENEWAL_INTENT_MAX_MONTHS);
+  assert.equal(CLUB_RENEWAL_INTENT_MAX_MONTHS, 24);
 });
