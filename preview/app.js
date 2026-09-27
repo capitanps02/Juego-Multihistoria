@@ -110,14 +110,14 @@ function render(focus = false) {
         max_auto_weeks:'el tramo automático ha llegado a su límite'
       })[s.interruption.type] || 'ha ocurrido un momento relevante'}.`,'body'));
     }
-    story.append(action('Continuar','auto',{action:'start'}));
+    story.append(action('Simular otra semana','auto',{action:'start',maxWeeks:1}));
   } else if (v.screen === 'epilogue') {
     story.append(el('span','CIERRE DE CARRERA','eyebrow'),el('h1','Así se escribió tu historia.'),el('p',`Tu carrera termina a los ${v.age} años, después de ${v.decisionsMade} decisiones. Puedes volver sobre ellas en «Tu recorrido» o comenzar otra historia.`,'body'));
   } else {
     story.append(el('span','TU CARRERA SIGUE','eyebrow'),el('h1',v.decisionsMade ? 'El siguiente paso.' : 'Todo empieza en Valdoria.'),el('p',v.decisionsMade ? 'Los entrenamientos, las conversaciones y el mercado siguen su curso. Simula el tiempo hasta la próxima situación importante.' : 'Tienes 18 años y una oportunidad de acercarte al primer equipo. Todavía queda todo por decidir.','body'));
     if (v.simulation.mode === 'auto_simulating') story.append(action('Pausar','auto',{action:'pause'}));
     else if (v.simulation.mode === 'paused') story.append(action('Reanudar','auto',{action:'resume'}));
-    else story.append(action('Simular','auto',{action:'start'}));
+    else story.append(action('Simular semana','auto',{action:'start',maxWeeks:1}));
   }
   if(v.offerHistory.length)story.append(el('p',v.offerHistory.at(-1).explanation,'body'));
   const history = $('#history');
