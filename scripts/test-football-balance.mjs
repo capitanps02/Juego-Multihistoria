@@ -100,8 +100,36 @@ test("DB-A2 selector profiles are useful and contracts remain narrow", () => {
   assert.deepEqual(FOOTBALL_SELECTOR_PROFILE_CONTRACT.BIG_CLUB.expectedBands, ["elite", "continental"]);
   assert.deepEqual(FOOTBALL_SELECTOR_PROFILE_CONTRACT.BIG_CLUB.allowedTiers, [1]);
   assert.equal(FOOTBALL_SELECTOR_PROFILE_CONTRACT.BIG_CLUB.relative, false);
+  assert.deepEqual(
+    FOOTBALL_SELECTOR_PROFILE_CONTRACT.BIG_CLUB.topContinental,
+    { minPrestige: 88, minInternationalAttraction: 84, minDivisionStrength: 78 }
+  );
+  assert.equal(FOOTBALL_SELECTOR_PROFILE_CONTRACT.AMBITIOUS.minAmbitionComposite, 76);
   assert.equal(FOOTBALL_SELECTOR_PROFILE_CONTRACT.HIGHER_CLUB.relative, true);
+  assert.equal(FOOTBALL_SELECTOR_PROFILE_CONTRACT.HIGHER_CLUB.minPrestigeDelta, 5);
   assert.deepEqual(FOOTBALL_SELECTOR_PROFILE_CONTRACT.DEVELOPMENT_CLUB.expectedBands, ["development"]);
+
+  const bigClub = FOOTBALL_CLUBS.filter(club => {
+    const division = divisionById(club.divisionId);
+    assert.ok(division, club.divisionId);
+    const meta = footballClubBalanceMetadata(club, division);
+    if (club.tier !== 1) return false;
+    if (meta.band === "elite") return true;
+    const top = FOOTBALL_SELECTOR_PROFILE_CONTRACT.BIG_CLUB.topContinental;
+    return (
+      meta.band === "continental" &&
+      club.prestige >= top.minPrestige &&
+      club.internationalAttraction >= top.minInternationalAttraction &&
+      division.strength >= top.minDivisionStrength
+    );
+  });
+  assert.ok(bigClub.length >= 20 && bigClub.length <= 40, `BIG_CLUB population: ${bigClub.length}`);
+  for (const club of bigClub) {
+    const division = divisionById(club.divisionId);
+    assert.ok(division, club.divisionId);
+    const band = footballClubBandFor(club.id, club.tier, division.strength);
+    assert.ok(band === "elite" || band === "continental", club.id);
+  }
 });
 
 test("DB-A2 balance metadata is deterministic, bounded and consumes no runtime RNG", () => {
