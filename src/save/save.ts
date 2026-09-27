@@ -1,11 +1,16 @@
 import type { GameState } from "../core/types.js";
 import { makeRngStream } from "../core/rng.js";
 import { assertGameState, ensure, parseSaveJson, record, validateGameSave } from "./validation.js";
+import { CURRENT_FOOTBALL_CATALOG_VERSION, normalizeFootballCatalogVersion } from "./football-catalog-version.js";
 
 export const CURRENT_SCHEMA_VERSION = 8;
 export function serializeSave(state: GameState, pretty=false):string{
-  assertGameState(state);
-  return JSON.stringify(state,null,pretty?2:0);
+  const snapshot: GameState = {
+    ...state,
+    footballCatalogVersion: CURRENT_FOOTBALL_CATALOG_VERSION
+  };
+  assertGameState(snapshot);
+  return JSON.stringify(snapshot,null,pretty?2:0);
 }
 
 function v3to4(parsed:Record<string,unknown>):Record<string,unknown>{
@@ -96,6 +101,7 @@ export function loadSave(raw:string):GameState{
   const parsed=record(parseSaveJson(raw),"state"); const version=parsed.schemaVersion;
   ensure(typeof version === "number" && Number.isInteger(version) && version >= 2 && version <= CURRENT_SCHEMA_VERSION,
     "schemaVersion","versión no compatible (2–8)");
+  const normalizedCatalogVersion = normalizeFootballCatalogVersion(parsed.footballCatalogVersion);
   validateGameSave(parsed,version);
   let state:GameState;
   if(version===2) state=v7to8(v6to7(v5to6(v4to5(v2to4(parsed)) as unknown as Record<string,unknown>) as unknown as Record<string,unknown>) as unknown as Record<string,unknown>);
@@ -105,6 +111,7 @@ export function loadSave(raw:string):GameState{
   else if(version===6) state=v7to8(v6to7(parsed) as unknown as Record<string,unknown>);
   else if(version===7) state=v7to8(parsed);
   else state=parsed as unknown as GameState;
+  state.footballCatalogVersion = normalizedCatalogVersion;
   assertGameState(state);
   return state;
 }
