@@ -344,7 +344,7 @@ test("A1-019 LIVE TRANSFER REQUEST: request context closes immediately after fac
   assert.equal(evaluatePlayerAction(state, action).available, false);
 });
 
-test("A1-020 TEAMMATE PROFILE: unsupported veteran/young inference fails closed", () => {
+test("A1-020 TEAMMATE PROFILE: locker leader profile fails closed without explicit registry", () => {
   const state = createInitialState(152);
   const action = syntheticDefinition({
     id: "PA_QA_VETERAN",
@@ -352,7 +352,7 @@ test("A1-020 TEAMMATE PROFILE: unsupported veteran/young inference fails closed"
     eligibility: [
       { kind: "active_career" },
       { kind: "current_teammate" },
-      { kind: "teammate_profile", profile: "veteran" }
+      { kind: "teammate_profile", profile: "locker_leader" }
     ]
   });
   const before = clone(state);
