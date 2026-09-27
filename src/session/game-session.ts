@@ -1,3 +1,4 @@
+import { eventCutscene, type EventCutscene } from "../content/event-cutscenes.js";
 import { decisionMemories, type DecisionMemory } from "./decision-memories.js";
 import { careerTerms, marketState, respondToOffer, type CareerOffer, type OfferAction, type OfferDecision } from "../simulation/offers.js";
 import type { AgeMilestone } from "../simulation/age-milestones.js";
@@ -170,6 +171,7 @@ export interface PlayerView {
   news: Array<{ date: string; text: string }>;
   contacts: Array<{ id: string; name: string; role: string }>;
   decision: { memories: DecisionMemory[]; instanceId: string; family: string; title: string; body: string; visible: string[]; uncertain: string[]; choices: Array<{ id: string; label: string }> } | null;
+  cutscene: EventCutscene | null;
   result: PendingResult | null;
   /** Presentation-only category for the current result; keeps event families out of the player-facing contract. */
   resultCategory: "match" | "story" | null;
@@ -405,6 +407,7 @@ export class GameSession {
       decision: p ? { memories: decisionMemories(s, p.event, this.#snapshot.journal), instanceId: p.instanceId, family: p.event.family, title: p.event.text.title, body: p.event.text.body,
         visible: p.event.intel.visible, uncertain: p.event.intel.uncertain,
         choices: eligibleChoices(s, p.event).map(c => ({ id: c.id, label: c.label })) } : null,
+      cutscene: eventCutscene(s, result ? "result" : p ? "decision" : s.retirement.status === "closed" ? "epilogue" : "other", p?.event.id),
       result: publicResult, resultCategory: result ? (lastEvent?.family === "sport" ? "match" : "story") : null,
       journal: playerFacingJournal(this.#snapshot.journal),
       simulation

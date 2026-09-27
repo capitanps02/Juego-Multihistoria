@@ -1,15 +1,25 @@
+import { createCutscenePlayer } from './cutscene-player.js';
 import { formatClubName } from './club-names.js';
 import { createIndexedSaveStore } from './indexed-save-store.js';
 // UI reads PlayerView only. All career mutations go through GameSession commands.
-export function mountGame({root, GameSession, assets, css, storageKey='historia-jugador.preview.session.v1', events}) {
+export function mountGame({root, GameSession, assets, css, storageKey='historia-jugador.preview.session.v1', events, cutsceneUrl=clip=>'/web/assets/cutscenes/'+clip.file}) {
   const KEY=storageKey;
   let session=null, busy=false, busyLabel='Guardando tu historia…', paused=false, view='home', cinematic=false, message='', replacement=null, lastArt='stadium_bg', autoTimer=null;
-  let savedRaw=null;
+  let savedRaw=null, disposeCutscene=null;
+  const watchedKey=KEY+'.watched-cutscenes.v1';
+  let watchedScenes=new Set();
+  try{const items=JSON.parse(localStorage.getItem(watchedKey)||'[]');if(Array.isArray(items))watchedScenes=new Set(items.filter(x=>typeof x==='string'));}catch{}
+  function appendCutscene(v,target){
+    if(!v.cutscene)return;
+    const sceneKey=[v.sessionId,v.cutscene.file,v.screen,v.decisionsMade].join(':');
+    const player=createCutscenePlayer({document:doc,clip:v.cutscene,url:cutsceneUrl(v.cutscene),autoplay:!watchedScenes.has(sceneKey),onStarted(){watchedScenes.add(sceneKey);try{localStorage.setItem(watchedKey,JSON.stringify([...watchedScenes].slice(-512)));}catch{}}});
+    if(player){target.append(player.element);disposeCutscene=player.dispose;}
+  }
   const sessionOptions=events?{events}:{};
   const store=createIndexedSaveStore({storage:localStorage,indexedDB:globalThis.indexedDB,key:KEY,validate:raw=>GameSession.migrateFromSave(raw,sessionOptions)});
   const doc=root.ownerDocument, win=doc.defaultView||globalThis, el=(tag,text,cls)=>{const n=doc.createElement(tag);if(text!==undefined)n.textContent=text;if(cls)n.className=cls;return n;};
   const style=el('style');style.textContent=css;root.append(style);
-  const shell=el('div',undefined,'mh');shell.dataset.release='2026-09-26-recuerdos';root.append(shell);
+  const shell=el('div',undefined,'mh');shell.dataset.release='2026-09-27-cinematicas';root.append(shell);
   const date=s=>new Intl.DateTimeFormat('es-ES',{day:'numeric',month:'short',year:'numeric',timeZone:'UTC'}).format(new Date(s+'T00:00:00Z'));
   const decisionCount=n=>`${n} ${n===1?'decisión':'decisiones'}`;
   const hasBackup=()=>store.hasPrevious();
@@ -169,6 +179,7 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
     return p;
   }
   function home(v,main){
+    if(v.screen==='epilogue')appendCutscene(v,main);
     const grid=el('div',undefined,'home-grid');
     grid.append(hero(v));
     const next=panel(v.screen==='epilogue'?'El final de un capítulo':v.screen==='summary'?'Tu último tramo':'Lo que viene ahora');next.classList.add('next');next.append(photo('stadium_bg','card-bg'));
@@ -192,6 +203,7 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
   function renderDecision(v,main){if(v.screen==='offer'){renderOffer(v,main);return;}const d=v.decision, result=v.screen==='result';if(d)lastArt=['preseason','sport','team','captaincy','tactical'].includes(d.family)?'prematch_scene':'stadium_bg';
     main.classList.add('cinema');main.append(photo(lastArt,'cinema-bg'));const top=el('div',undefined,'cinema-top');top.append(button('Volver a Inicio',closeCinematic,'glass'),el('span',date(v.date)+' · '+club(v),'eyebrow'));main.append(top);
     const sheet=el('section',undefined,'decision-sheet');sheet.append(el('span',result?'DESPUÉS DE TU DECISIÓN':'UN MOMENTO QUE CUENTA','eyebrow'),el('h1',result?v.result.title:d.title));
+    appendCutscene(v,sheet);
     if(result){
       sheet.append(el('p',v.result.choiceLabel,'chosen'));
       const visible=v.result.visibleEffects??[], narrative=v.result.narrativeEffects??[], deferred=v.result.hiddenEffects??[];
@@ -299,7 +311,7 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
     const codeLabel=el('label','Código de historia','file-label');const seed=el('input');seed.type='number';seed.min='0';seed.max='4294967295';seed.value='424242';seed.setAttribute('aria-label','Código de historia de la nueva carrera');codeLabel.append(seed);n.append(codeLabel,button('Empezar otra carrera',async()=>{const selected=Number(seed.value);if(!Number.isSafeInteger(selected)||selected<0||selected>4294967295){message='Introduce un código de historia entre 0 y 4294967295.';render();return;}let old;try{old=await store.readRaw();}catch(e){message=e.message;render();return;}confirmReplace('Empezar otra carrera','La partida actual pasará a la copia anterior.',async()=>{replacement=old;session=await GameSession.create(selected,{...sessionOptions,commit});view='home';cinematic=false;replaceRouteState();});}));
     main.append(n);
   }
-  function render(focus=false){const v=session?.getView();shell.replaceChildren();shell.classList.toggle('immersive',cinematic&&!!v);const header=el('header',undefined,'topbar');const brand=el('div',undefined,'brand');brand.append(el('span','M','brand-mark'));const name=el('div');name.append(el('strong','Multihistoria'),el('small','Carrera de futbolista'));brand.append(name);const simMode=v?.simulation?.mode;const pause=v&&['auto_simulating','paused'].includes(simMode)?button(simMode==='paused'?'Reanudar':'Pausar',pauseToggle,'secondary',{ariaLabel:simMode==='paused'?'Reanudar la simulación':'Pausar la simulación',pressed:simMode==='paused'}):null;if(pause)pause.classList.add('pause-button');header.append(brand,el('span',v?'Temporada '+v.season.replace('-',' / 20'):'Una vida. Mil decisiones.','chapter'),...(pause?[pause]:[]),button(v?date(v.date)+' · Partida':'Tu partida',()=>navigate('save'),'date-button',{ariaLabel:v?'Abrir Tu partida y el contexto de guardado de '+date(v.date):'Abrir Tu partida'}));shell.append(header);
+  function render(focus=false){disposeCutscene?.();disposeCutscene=null;const v=session?.getView();shell.replaceChildren();shell.classList.toggle('immersive',cinematic&&!!v);const header=el('header',undefined,'topbar');const brand=el('div',undefined,'brand');brand.append(el('span','M','brand-mark'));const name=el('div');name.append(el('strong','Multihistoria'),el('small','Carrera de futbolista'));brand.append(name);const simMode=v?.simulation?.mode;const pause=v&&['auto_simulating','paused'].includes(simMode)?button(simMode==='paused'?'Reanudar':'Pausar',pauseToggle,'secondary',{ariaLabel:simMode==='paused'?'Reanudar la simulación':'Pausar la simulación',pressed:simMode==='paused'}):null;if(pause)pause.classList.add('pause-button');header.append(brand,el('span',v?'Temporada '+v.season.replace('-',' / 20'):'Una vida. Mil decisiones.','chapter'),...(pause?[pause]:[]),button(v?date(v.date)+' · Partida':'Tu partida',()=>navigate('save'),'date-button',{ariaLabel:v?'Abrir Tu partida y el contexto de guardado de '+date(v.date):'Abrir Tu partida'}));shell.append(header);
     const nav=el('nav',undefined,'navigation');nav.setAttribute('aria-label','Navegación principal');for(const [key,label]of[['home','Inicio'],['career','Carrera'],['world','Mundo'],['relations','Relaciones'],['profile','Perfil'],['save','Tu partida']]){const b=button(label,()=>navigate(key),'nav-button');b.prepend(icon(key));if(key===view){b.classList.add('active');b.setAttribute('aria-current','page');}nav.append(b);}const foot=el('div',undefined,'nav-foot');foot.append(el('span','Cada elección cuenta.'),el('small','Una carrera de principio a fin.'));nav.append(foot);shell.append(nav);
     const main=el('main');main.tabIndex=-1;main.setAttribute('aria-busy',String(busy));shell.append(main);
     if(v){if(cinematic&&['decision','result','offer'].includes(v.screen))renderDecision(v,main);else({home,career,world,relations,profile,save:saves})[view](v,main);}else if(view==='save')saves(null,main);else main.append(el('h1','Tu historia está a punto de empezar.'));
@@ -310,5 +322,5 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
   function keyboard(e){if(e.key==='Escape'&&!shell.querySelector('dialog[open]')){e.preventDefault();goBack();}if(['ArrowDown','ArrowRight','ArrowUp','ArrowLeft'].includes(e.key)&&e.target.closest('.choices,.navigation')){const group=e.target.closest('.choices,.navigation'),buttons=[...group.querySelectorAll('button:not(:disabled)')],index=buttons.indexOf(e.target.closest('button'));e.preventDefault();buttons[(index+(['ArrowDown','ArrowRight'].includes(e.key)?1:buttons.length-1))%buttons.length]?.focus();}}
   function popstate(e){const s=e.state;if(!s?.mhOwner){view='home';cinematic=false;message='';render(true);return;}view=validViews.has(s.mhView)?s.mhView:'home';cinematic=Boolean(s.mhCinematic)&&Boolean(session&&['decision','result','offer'].includes(session.getView().screen));message='';render(true);}
   root.addEventListener('keydown',keyboard);win.addEventListener?.('popstate',popstate);load();
-  return ()=>{clearTimeout(autoTimer);store.close().catch(()=>{});root.removeEventListener('keydown',keyboard);win.removeEventListener?.('popstate',popstate);shell.remove();style.remove();};
+  return ()=>{disposeCutscene?.();clearTimeout(autoTimer);store.close().catch(()=>{});root.removeEventListener('keydown',keyboard);win.removeEventListener?.('popstate',popstate);shell.remove();style.remove();};
 }

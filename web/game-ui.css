@@ -13,3 +13,8 @@
 .period-summary{margin-bottom:12px}
 
 .decision-memory{padding:12px 0;border-top:1px solid #ffffff20;overflow-wrap:anywhere}.decision-memory h3{margin:8px 0}.timeline [data-journal-index]:focus{outline:2px solid #d6b86a;outline-offset:3px}
+
+.event-cutscene{margin:1rem 0;padding:1rem;border:1px solid #ffffff26;border-radius:14px;background:#0008}
+.event-cutscene video{display:block;width:100%;max-height:52vh;object-fit:contain;background:#000;border-radius:10px;margin-bottom:.75rem}
+.event-cutscene [hidden]{display:none}
+.event-cutscene button{white-space:normal;max-width:100%}
