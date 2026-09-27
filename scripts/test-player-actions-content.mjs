@@ -1087,22 +1087,17 @@ test("A5-059 RELATIONSHIP CATEGORY STAYS RELATIONSHIP-LOCAL", () => {
 });
 
 
-test("A5-060 ONLY THREE V1 ACTIONS DEPEND ON NEW A3 CONTRACTS", () => {
+test("A5-060 FINAL V1 HAS NO UNRESOLVED A3 CONTRACT DEPENDENCY", () => {
   const a3Blocked = PLAYER_ACTION_CONTENT_PLAN
     .filter(row => /A3/i.test(row.blockedBy ?? ""))
     .map(row => row.id)
     .sort();
 
-  assert.deepEqual(
-    a3Blocked,
-    ["PA_DISCUSS_FUTURE", "PA_POSITION_CHANGE", "PA_WITHDRAW_TRANSFER"].sort()
+  assert.deepEqual(a3Blocked, []);
+  assert.equal(
+    PLAYER_ACTION_CONTENT_PLAN.every(row => row.status === "implemented" && row.blockedBy === undefined),
+    true
   );
-
-  for (const actionId of ["PA_ROLE_CHECK", "PA_LEADER_ADVICE", "PA_MENTOR_TEAMMATE", "PA_SOCIAL_POST"]) {
-    const row = PLAYER_ACTION_CONTENT_PLAN.find(item => item.id === actionId);
-    assert.ok(row);
-    assert.equal(/A3/i.test(row.blockedBy ?? ""), false, `${actionId} has unnecessary A3 dependency`);
-  }
 });
 
 
