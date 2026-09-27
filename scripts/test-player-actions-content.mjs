@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 
 import { createInitialState } from "../dist/content/initial-state.js";
 import { GameSession } from "../dist/session/game-session.js";
+import { PLAYER_ACTION_CONTENT_PLAN } from "../dist/player-actions/content-plan.js";
 import {
   PLAYER_ACTION_CATALOG,
   PLAYER_ACTION_EFFECT_KEYS,
@@ -22,8 +23,11 @@ const CURRENT_CATEGORIES = new Set([
 const clone = value => structuredClone(value);
 
 test("A5-001 UNIQUE IDS", () => {
-  const ids = PLAYER_ACTION_CATALOG.map(action => action.id);
-  assert.equal(new Set(ids).size, ids.length);
+  const runtimeIds = PLAYER_ACTION_CATALOG.map(action => action.id);
+  const planIds = PLAYER_ACTION_CONTENT_PLAN.map(action => action.id);
+  assert.equal(new Set(runtimeIds).size, runtimeIds.length);
+  assert.equal(new Set(planIds).size, planIds.length);
+  assert.equal(PLAYER_ACTION_CONTENT_PLAN.length, 20);
 });
 
 test("A5-002 VALID CATEGORIES", () => {
@@ -124,7 +128,13 @@ test("A5-009 NO NARRATIVE RNG", () => {
   }
 });
 
-test.todo("A5-010 AGE VALIDITY — blocked until A1 exposes age/context eligibility contract");
+test("A5-010 AGE VALIDITY", () => {
+  for (const row of PLAYER_ACTION_CONTENT_PLAN) {
+    const [minAge, maxAge] = row.ageRange;
+    assert.ok(Number.isInteger(minAge) && minAge >= 18, `${row.id} invalid minAge`);
+    assert.ok(maxAge === null || (Number.isInteger(maxAge) && maxAge >= minAge), `${row.id} invalid maxAge`);
+  }
+});
 
 test("A5-011 ZERO ACTION", () => {
   const state = createInitialState(8511);
@@ -161,4 +171,14 @@ test("A5-013 COPY BUDGETS", () => {
   }
 });
 
-test.todo("A5-014 HEALTH CATEGORY — blocked until PlayerActionCategory includes health");
+test("A5-014 PLAN/RUNTIME CONTRACT GAPS ARE EXPLICIT", () => {
+  const finalCategories = new Set(["career","training","health","representative","relationships","image","life"]);
+  for (const row of PLAYER_ACTION_CONTENT_PLAN) {
+    assert.ok(finalCategories.has(row.category), `${row.id} invalid planned category`);
+    assert.ok(["implemented","blocked"].includes(row.status));
+    if (row.status === "blocked") assert.ok(row.blockedBy, `${row.id} missing blocker`);
+  }
+  assert.ok(PLAYER_ACTION_CONTENT_PLAN.some(row => row.category === "health"));
+  const runtimeCategories = new Set(PLAYER_ACTION_CATALOG.map(row => row.category));
+  assert.equal(runtimeCategories.has("health"), false, "health must remain explicit gap until A1 contract lands");
+});
