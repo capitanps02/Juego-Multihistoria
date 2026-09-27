@@ -1,5 +1,18 @@
-import type { PlayerActionEligibilityPredicate } from "./types.js";
-export type { PlayerActionEligibilityPredicate } from "./types.js";
+export type PlayerActionEligibilityPredicate =
+  | { kind: "active_career" }
+  | { kind: "active_club_employment" }
+  | { kind: "age_range"; min: number; max?: number }
+  | { kind: "current_coach" }
+  | { kind: "current_representation" }
+  | { kind: "contract_months"; min: number; max: number }
+  | { kind: "live_transfer_request"; required: boolean }
+  | { kind: "fatigue_min"; value: number }
+  | { kind: "fatigue_max"; value: number }
+  | { kind: "risk_min"; value: number }
+  | { kind: "risk_max"; value: number }
+  | { kind: "current_teammate" }
+  | { kind: "teammate_profile"; profile: "locker_leader" }
+  | { kind: "visible_teammate_tension" };
 
 export interface PlayerActionEligibilitySpec {
   actionId: string;
@@ -143,7 +156,7 @@ export const PLAYER_ACTION_ELIGIBILITY_SPECS: readonly PlayerActionEligibilitySp
       { kind: "active_club_employment" },
       { kind: "age_range", min: 18, max: 23 },
       { kind: "current_teammate" },
-      { kind: "teammate_profile", profile: "veteran" }
+      { kind: "teammate_profile", profile: "locker_leader" }
     ]
   },
   {
@@ -152,8 +165,7 @@ export const PLAYER_ACTION_ELIGIBILITY_SPECS: readonly PlayerActionEligibilitySp
       { kind: "active_career" },
       { kind: "active_club_employment" },
       { kind: "age_range", min: 30 },
-      { kind: "current_teammate" },
-      { kind: "teammate_profile", profile: "young" }
+      { kind: "current_teammate" }
     ]
   },
   {
