@@ -1379,6 +1379,7 @@ test("A5-075 POSITION CHANGE IS FACT-ONLY AND COACH-SCOPED", () => {
 
 test("A5-076 WITHDRAW TRANSFER CLOSES LIVE INTENT WITHOUT RESETTING REQUEST COOLDOWN", () => {
   const state = createInitialState(8576);
+  const requestDate = state.date;
 
   const request = executePlayerActionInPlace(state, {
     actionId: "PA_REQUEST_TRANSFER",
@@ -1424,7 +1425,7 @@ test("A5-076 WITHDRAW TRANSFER CLOSES LIVE INTENT WITHOUT RESETTING REQUEST COOL
   assert.equal(evaluatePlayerAction(state, requestAction).available, false);
   assert.equal(
     state.playerActions?.cooldowns["action:PA_REQUEST_TRANSFER"],
-    addPlayerActionDays("2026-07-01", 121)
+    addPlayerActionDays(requestDate, 121)
   );
 });
 
