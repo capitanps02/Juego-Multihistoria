@@ -39,7 +39,7 @@ const CANONICAL_SPECIAL_SET = new Set<string>(CANONICAL_SPECIAL_CLUB_IDS);
 const NARRATIVE_ALIAS_SET = new Set<string>(NARRATIVE_CLUB_ALIASES);
 const LEGACY_NAMED_SET = new Set<string>(LEGACY_NAMED_CLUB_IDS);
 const LEGACY_PATTERNS: readonly RegExp[] = Object.freeze([
-  /^SIM_OPP_\d+_(?:\d+|TEST)$/i,
+  /^SIM_OPP_(?:\d+_(?:\d+|TEST)|TEST)$/i,
   /^(?:Development|Domestic|Summer|Foreign|Loan)_\d+_\d+$/i,
   /^Club \d+ · \d+$/
 ]);
