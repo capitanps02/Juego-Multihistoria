@@ -66,11 +66,16 @@ Contrato transaccional operativo:
 - `PlayerView.actions`;
 - `auto:stop`.
 
-Hallazgo A6/A4 pendiente de A2:
+El antiguo blocker público de targets **PA-A6-001 / BLOCKED_BY_A2_PUBLIC_VIEW** tiene implementación en PR #806 y A4 #804:
 
-**PA-A6-001 / BLOCKED_BY_A2_PUBLIC_VIEW**
+- targets authority-backed;
+- availability/cooldown por target;
+- targetId exacto;
+- historial público saneado;
+- stale target fail-closed;
+- UI sin inferir autoridad desde contacts/GameState.
 
-Las acciones target-required no reciben targets públicos ejecutables. Por ello coach/agent/teammate pueden existir en dominio pero quedar deshabilitados en UI.
+A5 ya no considera A2 un blocker de diseño/contenido. Su integración final sigue perteneciendo a A6.
 
 ### A3
 
@@ -154,17 +159,17 @@ Clasificación:
 
 | Action ID | Estado runtime | Class | Category final | Edad | Contexto requerido | Bloqueado por | Cooldown | Efecto directo / intent | Target |
 |---|---|---|---|---|---|---|---:|---|---|
-| PA_COACH_TALK | IMPLEMENTED | CORE | career | 18+ | coach actual | target public A2 | 31d | feedback / more minutes / accept role facts | coach |
+| PA_COACH_TALK | IMPLEMENTED | CORE | career | 18+ | coach + empleo activo | A1 employment eligibility | 31d | feedback / more minutes / accept role facts | coach |
 | PA_ROLE_CHECK | BLOCKED | CONTEXTUAL | career | 18+ | coach actual | A1/A3 role-query contract | 21d | informational role query, no roleScore write | coach |
 | PA_POSITION_CHANGE | BLOCKED | CONTEXTUAL | career | 18+ | coach actual | A1 eligibility + A3 intent | 45d | REQUEST_POSITION_CHANGE | coach |
-| PA_REQUEST_TRANSFER | IMPLEMENTED | CORE | career | 18+ | empleo actual | contextual eligibility aún genérica | 121d | request_transfer | none |
+| PA_REQUEST_TRANSFER | IMPLEMENTED | CORE | career | 18+ | empleo actual | A1 employment eligibility | 121d | request_transfer | none |
 | PA_WITHDRAW_TRANSFER | BLOCKED | CONTEXTUAL | career | 18+ | request activo | A3 lifecycle | 14d | WITHDRAW_TRANSFER_REQUEST | none |
 | PA_TRAIN_EXTRA | IMPLEMENTED | CORE | training | 18+ | carrera activa | falta variantes A1 | 35d | technique +0.5, fatigue +3 | none |
 | PA_VIDEO_STUDY | BLOCKED | CONTEXTUAL | training | 18+ | carrera activa | A1 effect registry | 14d | tacticalReading pequeño | none |
 | PA_RECOVERY_SESSION | BLOCKED | CORE | health | 18+ | carrera activa | A1 health/effect | 6d | fatigue/fitness/risk pequeño | none |
 | PA_REST | IMPLEMENTED COMPAT | CORE | health final / life actual | 18+ | carrera activa | A1 health category | 21d | fatigue -5, fitness +2 | none |
-| PA_AGENT_MARKET | IMPLEMENTED | CORE | representative | 18+ | representante certificado | target public A2 | 31d | ask_agent_market | agent |
-| PA_REQUEST_RENEWAL | IMPLEMENTED | CORE | representative | 18+ | empleo actual | falta months eligibility | 91d | request_renewal | none |
+| PA_AGENT_MARKET | IMPLEMENTED | CORE | representative | 18+ | representante certificado | none | 31d | ask_agent_market | agent |
+| PA_REQUEST_RENEWAL | IMPLEMENTED | CORE | representative | 18+ | empleo + ventana renovación | A1 employment/contract eligibility | 91d | request_renewal | none |
 | PA_DISCUSS_FUTURE | BLOCKED | CONTEXTUAL | representative | 20+ | representante | A3 CAREER_PRIORITY | 21d | preference fact | agent |
 | PA_TALK_TEAMMATE | BLOCKED | CONTEXTUAL | relationships | 18+ | teammate válido | A1 effect + A2 target | 10d | affinity/respect pequeño | teammate |
 | PA_CLEAR_AIR | BLOCKED | CONTEXTUAL | relationships | 18+ | tensión visible | A1 eligibility/effect | 21d | resentment/trust pequeño | teammate |
@@ -345,6 +350,32 @@ Bloqueos:
 
 ---
 
+## 10. Availability/execution mismatch pendiente de A1
+
+El slice actual todavía tiene un gap de contexto reproducible:
+
+- `PA_COACH_TALK`;
+- `PA_REQUEST_TRANSFER`;
+- `PA_REQUEST_RENEWAL`.
+
+Todos usan hoy `eligibilityKey = active_career`, que sólo comprueba que la carrera no esté cerrada. En un estado `employment.status = unattached` pueden aparecer disponibles.
+
+Sin embargo sus handlers causales requieren `currentEmploymentClub()`. Sin empleo activo, el effect falla cerrado y el executor devuelve `PLAYER_ACTION_EFFECT_FAILED` sin publicar mutación.
+
+Esto conserva atomicidad, pero es UX incorrecta: una acción anunciada como disponible no debe fallar al pulsarla por un contexto que el engine ya podía conocer.
+
+Owner: A1.
+
+Contrato requerido:
+- active-club-employment eligibility;
+- renewal-window eligibility;
+- coach target no debe usar un registrationClub histórico como autoridad viva estando unattached;
+- stale employment entre render y dispatch debe seguir fallando cerrado.
+
+A5-025 obliga a que esta deuda permanezca explícita en el plan hasta que A1 la cierre.
+
+---
+
 ## 10. Balance / anti-grind
 
 ### Principio
@@ -520,7 +551,7 @@ Casos implementados en la suite (25):
 14. A5-014 PLAN/RUNTIME CONTRACT GAPS — valida que health y blockers estén explícitos
 15. A5-015 TRAINING FREQUENCY CEILING — <=11 usos/año
 16. A5-016 REST FREQUENCY CEILING — <=18 usos/año
-17. A5-017 INTENT COOLDOWN >= FACT LIFECYCLE
+17. A5-017 INTENT COOLDOWN > INCLUSIVE FACT LIFECYCLE
 18. A5-018 IMPLEMENTED PLAN/RUNTIME SYNC
 19. A5-019 CONTENT PLAN DISTRIBUTION — 9/8/2/1 y categorías 5/2/2/3/4/2/2
 20. A5-020 NO DUPLICATE RUNTIME SEMANTICS
@@ -713,13 +744,13 @@ COMPLETADO
 - suite A5 creada
 EN CURSO
 - CI del slice
-- coordinación A1/A2
+- coordinación A1/A3 + integración A6
 RESTANTE
 - health
 - age/context
 - relationships
 - image/life effects
-- target public flow
+- active-employment/context eligibility
 - balance simulation
 - full 20-action runtime
 BALANCE
@@ -736,7 +767,6 @@ TESTS
 - PASS del nuevo balance pendiente del workflow exact-head
 BLOQUEOS
 - BLOCKED_BY_A1_CATALOG_CONTRACT
-- BLOCKED_BY_A2_PUBLIC_VIEW
 - BLOCKED_BY_A3_INTENT_CONTRACT sólo para acciones V1 opcionales aún no soportadas
 Trabajo restante estimado:
 - 14 acciones/runtime decisions
