@@ -390,3 +390,5 @@ Tras reutilizar A1/A2 y las autoridades existentes:
 - documentación: completada.
 
 Trabajo restante de ingeniería tras este documento: certificación, correcciones si aparecen y cierre de PR.
+
+La certificación debe ejecutarse sobre el HEAD final de A3; el PR puede retargetarse temporalmente a `main` sólo para activar los workflows cuya política de GitHub limita `pull_request.branches` a `main`.
