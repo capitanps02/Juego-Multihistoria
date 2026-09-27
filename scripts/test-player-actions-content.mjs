@@ -29,12 +29,6 @@ const CURRENT_CATEGORIES = new Set([
 
 const clone = value => structuredClone(value);
 
-function addDays(iso, days) {
-  const date = new Date(`${iso}T00:00:00Z`);
-  date.setUTCDate(date.getUTCDate() + days);
-  return date.toISOString().slice(0, 10);
-}
-
 test("A5-001 UNIQUE IDS", () => {
   const runtimeIds = PLAYER_ACTION_CATALOG.map(action => action.id);
   const planIds = PLAYER_ACTION_CONTENT_PLAN.map(action => action.id);
@@ -452,7 +446,7 @@ test("A5-026 IMPLEMENTED CONTEXT GAPS ARE EXPLICIT", () => {
 });
 
 
-test("A5-026 CAUSAL FACT EXPIRES BEFORE ACTION REOPENS", () => {
+test("A5-027 CAUSAL FACT EXPIRES BEFORE ACTION REOPENS", () => {
   const state = createInitialState(8526);
   const definition = PLAYER_ACTION_CATALOG.find(row => row.id === "PA_REQUEST_TRANSFER");
   assert.ok(definition);
@@ -466,7 +460,7 @@ test("A5-026 CAUSAL FACT EXPIRES BEFORE ACTION REOPENS", () => {
 
   const fact = getPlayerActionFacts(state, { kind: "request_transfer" }).at(-1);
   assert.ok(fact?.expiresAfter);
-  assert.equal(result.cooldownUntil, addDays(fact.expiresAfter, 1));
+  assert.equal(result.cooldownUntil, addPlayerActionDays(fact.expiresAfter, 1));
 
   state.date = fact.expiresAfter;
   assert.equal(getPlayerActionFacts(state, { activeOnly: true, kind: "request_transfer" }).length, 1);
