@@ -161,6 +161,16 @@ export function classifyFootballClubReference(value: unknown): FootballClubRefer
   if (LEGACY_NAMED_SET.has(value) || LEGACY_PATTERNS.some(pattern => pattern.test(value))) {
     return Object.freeze({ value, kind: "legacy_compat", club: null, reason: "historical compatibility identity" });
   }
+  // Reserve the V2-like country namespace: an unknown ABC_* identity is not
+  // silently accepted as legacy because that would hide catalog corruption.
+  if (/^[A-Z]{3}_[A-Z0-9_]+$/.test(value)) {
+    return Object.freeze({ value, kind: "invalid", club: null, reason: "unknown football catalog namespace identity" });
+  }
+  // Pre-V2 saves and tests historically allowed opaque display-like club strings.
+  // They remain loadable compatibility identities but can never be new V2 output.
+  if (value.length <= 200) {
+    return Object.freeze({ value, kind: "legacy_compat", club: null, reason: "opaque historical club identity" });
+  }
   return Object.freeze({ value, kind: "invalid", club: null, reason: "unknown football club identity" });
 }
 
