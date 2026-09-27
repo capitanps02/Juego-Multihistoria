@@ -26,7 +26,7 @@ jobs:
       - name: Checkout mutable integrated QA branch
         uses: actions/checkout@v4
         with:
-          ref: a6/player-actions-integrated-v5
+          ref: ${{ env.INTEGRATED_REF }}
           fetch-depth: 0
 
       - name: Set up Node.js
@@ -50,7 +50,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add playcanvas/multihistoria.js playcanvas/manifest.json web/assets.json
           git commit -m "build(A6): refresh integrated PlayCanvas artifacts"
-          git push origin HEAD:a6/player-actions-integrated-v5
+          git push origin HEAD:${INTEGRATED_REF}
 
   integrated_safety:
     needs: refresh_integrated_artifacts
