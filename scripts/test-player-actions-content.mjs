@@ -13,6 +13,7 @@ import { PLAYER_ACTION_COOLDOWN_GROUP_SPECS } from "../dist/player-actions/conte
 import { PLAYER_ACTION_EFFECT_PLAN } from "../dist/player-actions/content-effect-plan.js";
 import { PLAYER_ACTION_TARGET_PROFILES } from "../dist/player-actions/content-target-profiles.js";
 import { CLUB_RENEWAL_INTENT_MAX_MONTHS } from "../dist/simulation/club-contract-intent.js";
+import { NPC_CATALOG } from "../dist/catalog/npcs.js";
 import {
   PLAYER_ACTION_CATALOG,
   PLAYER_ACTION_EFFECT_KEYS,
@@ -1144,4 +1145,16 @@ test("A5-063 NO UNSUPPORTED VETERAN/YOUNG NPC PROFILE IN ELIGIBILITY", () => {
   const serialized = JSON.stringify(PLAYER_ACTION_ELIGIBILITY_SPECS).toLowerCase();
   assert.equal(serialized.includes('"profile":"veteran"'), false);
   assert.equal(serialized.includes('"profile":"young"'), false);
+});
+
+
+test("A5-064 LOCKER LEADER PROFILE MATCHES PUBLIC CANONICAL ROLES", () => {
+  const byId = new Map(NPC_CATALOG.map(npc => [npc.id, npc]));
+  for (const npcId of PLAYER_ACTION_TARGET_PROFILES.locker_leader) {
+    const npc = byId.get(npcId);
+    assert.ok(npc, `locker leader ${npcId} missing from canonical NPC catalog`);
+    assert.equal(npc.id.startsWith("NPC_PLR_"), true);
+    assert.equal(npc.initialClub, "UDV");
+    assert.match(npc.role.toLowerCase(), /capit[aá]n/, `${npcId} no longer has a public captaincy role`);
+  }
 });
