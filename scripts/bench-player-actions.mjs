@@ -1,10 +1,16 @@
 import { performance } from "node:perf_hooks";
-import { GameSession } from "../dist/session/game-session.js";
-import {
+import path from "node:path";
+import { pathToFileURL } from "node:url";
+
+const candidateRoot = path.resolve(process.argv[2] ?? ".");
+const importFrom = async rel => import(pathToFileURL(path.join(candidateRoot, rel)).href);
+
+const { GameSession } = await importFrom("dist/session/game-session.js");
+const {
   addPlayerActionDays,
   executePlayerActionInPlace,
   listPlayerActions
-} from "../dist/player-actions/index.js";
+} = await importFrom("dist/player-actions/index.js");
 
 function measure(label, iterations, fn) {
   const started = performance.now();
@@ -60,6 +66,7 @@ rows.push({
 
 console.log(JSON.stringify({
   note: "Approximate CI timing only; informational, not a hard release threshold.",
+  candidateRoot,
   rows,
   finalHistoryEntries: executionState.playerActions?.history.length ?? 0,
   finalSaveBytes: Buffer.byteLength(JSON.stringify({
