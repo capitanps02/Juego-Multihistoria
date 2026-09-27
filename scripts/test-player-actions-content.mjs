@@ -11,9 +11,7 @@ import { PLAYER_ACTION_BALANCE_SPECS } from "../dist/player-actions/content-bala
 import { PLAYER_ACTION_ELIGIBILITY_SPECS } from "../dist/player-actions/content-eligibility.js";
 import { PLAYER_ACTION_COOLDOWN_GROUP_SPECS } from "../dist/player-actions/content-cooldown-groups.js";
 import { PLAYER_ACTION_EFFECT_PLAN } from "../dist/player-actions/content-effect-plan.js";
-import { PLAYER_ACTION_TARGET_PROFILES, PLAYER_ACTION_TARGET_PROFILE_BY_ACTION } from "../dist/player-actions/content-target-profiles.js";
 import { CLUB_RENEWAL_INTENT_MAX_MONTHS } from "../dist/simulation/club-contract-intent.js";
-import { NPC_CATALOG } from "../dist/catalog/npcs.js";
 import {
   PLAYER_ACTION_CATALOG,
   PLAYER_ACTION_EFFECT_KEYS,
@@ -824,7 +822,6 @@ test("A5-047 AGE-SPECIALIZED TEAMMATE ACTIONS MATCH V1 WINDOWS", () => {
     leader.all.some(predicate => predicate.kind === "teammate_profile"),
     false
   );
-  assert.equal(PLAYER_ACTION_TARGET_PROFILE_BY_ACTION.PA_LEADER_ADVICE, "locker_leader");
 
   assert.deepEqual(
     mentor.all.find(predicate => predicate.kind === "age_range"),
@@ -1109,19 +1106,15 @@ test("A5-060 ONLY THREE V1 ACTIONS DEPEND ON NEW A3 CONTRACTS", () => {
 });
 
 
-test("A5-061 LOCKER LEADER PROFILE IS PUBLIC, CLOSED AND CURRENT-TEAMMATE SCOPED", () => {
-  assert.deepEqual(
-    [...PLAYER_ACTION_TARGET_PROFILES.locker_leader].sort(),
-    ["NPC_PLR_10", "NPC_PLR_11"].sort()
-  );
-  assert.equal(new Set(PLAYER_ACTION_TARGET_PROFILES.locker_leader).size, 2);
-  assert.ok(PLAYER_ACTION_TARGET_PROFILES.locker_leader.every(id => id.startsWith("NPC_PLR_")));
-
+test("A5-061 LEADER ADVICE USES ONLY CERTIFIED CURRENT-TEAMMATE TARGETING", () => {
   const leader = PLAYER_ACTION_ELIGIBILITY_SPECS.find(row => row.actionId === "PA_LEADER_ADVICE");
   assert.ok(leader);
-  assert.ok(leader.all.some(predicate => predicate.kind === "current_teammate"));
+  assert.deepEqual(
+    leader.all.find(predicate => predicate.kind === "age_range"),
+    { kind: "age_range", min: 18, max: 23 }
+  );
+  assert.equal(leader.all.some(predicate => predicate.kind === "current_teammate"), true);
   assert.equal(leader.all.some(predicate => predicate.kind === "teammate_profile"), false);
-  assert.equal(PLAYER_ACTION_TARGET_PROFILE_BY_ACTION.PA_LEADER_ADVICE, "locker_leader");
 });
 
 test("A5-062 LATE MENTORING DOES NOT REQUIRE NPC AGE METADATA", () => {
@@ -1135,22 +1128,22 @@ test("A5-062 LATE MENTORING DOES NOT REQUIRE NPC AGE METADATA", () => {
   assert.equal(mentor.all.some(predicate => predicate.kind === "teammate_profile"), false);
 });
 
-test("A5-063 NO UNSUPPORTED VETERAN/YOUNG NPC PROFILE IN ELIGIBILITY", () => {
+test("A5-063 NO UNSUPPORTED TEAMMATE PROFILE OR TENSION PREDICATES IN V1 CONTENT", () => {
   const serialized = JSON.stringify(PLAYER_ACTION_ELIGIBILITY_SPECS).toLowerCase();
-  assert.equal(serialized.includes('"profile":"veteran"'), false);
-  assert.equal(serialized.includes('"profile":"young"'), false);
+  assert.equal(serialized.includes('"kind":"teammate_profile"'), false);
+  assert.equal(serialized.includes('"kind":"visible_teammate_tension"'), false);
 });
 
+test("A5-064 CLEAR AIR IS REPAIR-ONLY AND CANNOT FARM POSITIVE RELATIONSHIP STATS", () => {
+  const eligibility = PLAYER_ACTION_ELIGIBILITY_SPECS.find(row => row.actionId === "PA_CLEAR_AIR");
+  const balance = PLAYER_ACTION_BALANCE_SPECS.find(row => row.actionId === "PA_CLEAR_AIR");
+  assert.ok(eligibility && balance);
+  assert.equal(eligibility.all.some(predicate => predicate.kind === "current_teammate"), true);
+  assert.equal(eligibility.all.some(predicate => predicate.kind === "visible_teammate_tension"), false);
 
-test("A5-064 LOCKER LEADER PROFILE MATCHES PUBLIC CANONICAL ROLES", () => {
-  const byId = new Map(NPC_CATALOG.map(npc => [npc.id, npc]));
-  for (const npcId of PLAYER_ACTION_TARGET_PROFILES.locker_leader) {
-    const npc = byId.get(npcId);
-    assert.ok(npc, `locker leader ${npcId} missing from canonical NPC catalog`);
-    assert.equal(npc.id.startsWith("NPC_PLR_"), true);
-    assert.equal(npc.initialClub, "UDV");
-    assert.match(npc.role.toLowerCase(), /capit[aá]n/, `${npcId} no longer has a public captaincy role`);
-  }
+  const deltas = balance.options[0].directDeltas;
+  assert.deepEqual(deltas, [{ metric: "relationship.resentment", delta: -1 }]);
+  assert.equal(deltas.some(delta => delta.delta > 0), false);
 });
 
 
