@@ -7,7 +7,7 @@ export const PLAYER_ACTION_CATALOG: readonly PlayerActionDefinition[] = [
     label: "Entrenamiento extra",
     description: "Añade una sesión corta de trabajo técnico fuera de la simulación normal.",
     targetKind: "none",
-    cooldown: { scope: "action", days: 10 },
+    cooldown: { scope: "action", days: 35 },
     eligibilityKey: "active_career",
     options: [
       {
@@ -24,7 +24,7 @@ export const PLAYER_ACTION_CATALOG: readonly PlayerActionDefinition[] = [
     label: "Descansar",
     description: "Prioriza recuperación ligera sin alterar lesiones ni decisiones médicas.",
     targetKind: "none",
-    cooldown: { scope: "action", days: 7 },
+    cooldown: { scope: "action", days: 21 },
     eligibilityKey: "active_career",
     options: [
       {
