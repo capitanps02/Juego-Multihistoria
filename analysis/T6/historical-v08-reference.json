@@ -1,0 +1,80 @@
+{
+  "kind": "T6-historical-reference",
+  "referenceOnly": true,
+  "comparableToT6Candidate": false,
+  "reason": "The v0.8 acceptance run sampled the historical career simulator and primarily measured 34+ coverage. It predates the T5 canonical reconciliation and the T6 semantic-profile runner, so its distributions are context, not a balance gate.",
+  "source": {
+    "artifact": "qa/acceptance-v08.json",
+    "artifactSha": "46bd53fba301918debf88babd12abd0fbd58ca12",
+    "shardRunner": "scripts/qa-v08-shard.mjs",
+    "shardRunnerSha": "b5b01a7acf0c6d96f5f7921ba1777f50a7087267",
+    "aggregateScript": "scripts/qa-v08-aggregate.mjs",
+    "runs": 1000
+  },
+  "observed": {
+    "blockedCareers": 0,
+    "earlyRetirements": 6,
+    "uniqueNarrativeSignatures": 1000,
+    "coverage34Plus": {
+      "principal": { "seen": 50, "expected": 50, "averagePerCareer": 19.683 },
+      "conditional": { "seen": 32, "expected": 32, "averagePerCareer": 10.772 },
+      "microfeed": { "seen": 64, "expected": 64, "averagePerCareer": 41.418 },
+      "endingFamilies": { "seen": 20, "expected": 20 }
+    },
+    "retirementAge": {
+      "mean": 41.394,
+      "p10": 34,
+      "p25": 40,
+      "p50": 42,
+      "p75": 43,
+      "p90": 46,
+      "p95": 48,
+      "p99": 49,
+      "histogram": {
+        "33": 6,
+        "34": 114,
+        "35": 34,
+        "36": 14,
+        "37": 10,
+        "38": 7,
+        "39": 22,
+        "40": 61,
+        "41": 73,
+        "42": 354,
+        "43": 69,
+        "44": 60,
+        "45": 51,
+        "46": 39,
+        "47": 32,
+        "48": 30,
+        "49": 14,
+        "50": 6,
+        "51": 3,
+        "52": 1
+      }
+    },
+    "retirementReasons": {
+      "retire_on_low": { "count": 118, "rate": 0.118 },
+      "voluntary": { "count": 259, "rate": 0.259 },
+      "no_market": { "count": 435, "rate": 0.435 },
+      "retire_on_high": { "count": 145, "rate": 0.145 },
+      "early_retirement_30_34": { "count": 6, "rate": 0.006 },
+      "health": { "count": 37, "rate": 0.037 }
+    },
+    "closureTypes": {
+      "no_last_match": { "count": 763, "rate": 0.763 },
+      "planned_last_match": { "count": 140, "rate": 0.14 },
+      "storybook": { "count": 91, "rate": 0.091 },
+      "early_retirement": { "count": 6, "rate": 0.006 }
+    },
+    "retirementReversals": 89,
+    "aggregateWorkerMs": 251867
+  },
+  "signalsForFutureT6": [
+    "Re-measure whether the retirement-age mass around age 42 persists after canonical T5 content is integrated.",
+    "Re-measure the historical 43.5% no_market retirement reason without treating the old rate as a target.",
+    "Re-measure the historical 76.3% no_last_match closure type and inspect which profiles/routes produce it.",
+    "Preserve the ability to observe all ending families, but do not require equal or historical frequencies.",
+    "Compare diversity using matched profile/seed samples; v0.8's 1000 unique signatures are not directly comparable to the T6 signature definition."
+  ]
+}
