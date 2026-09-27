@@ -35,10 +35,14 @@ function definition(id) {
 function authoritySnapshot(state) {
   return {
     club: state.club,
-    professional: clone(state.professional),
+    ownerClub: state.professional?.ownerClub,
+    registrationClub: state.professional?.registrationClub,
     contract: clone(state.contract),
     market: clone(state.market),
-    nationalTeam: clone(state.nationalTeam),
+    nationalCaps: state.professional?.nationalCaps,
+    nationalRole: state.professional?.nationalRole,
+    appearances: state.sport?.appearances,
+    roleScore: state.sport?.roleScore,
     retirement: clone(state.retirement),
     history: clone(state.history)
   };
@@ -208,14 +212,17 @@ test("A6-009 MALFORMED SAVE MATRIX: corrupt stores fail closed", async () => {
 test("A6-010 COOLDOWN BOUNDARY: day 0 and N-1 blocked, day N allowed; calendar rollover is UTC-safe", async () => {
   const session = await emptySession(6010, "a6-cooldown");
   const state = session.exportSnapshot().state;
+  const executedDate = state.date;
   const result = executePlayerActionInPlace(state, { actionId: "PA_TRAIN_EXTRA", optionId: "TECHNIQUE" });
   assert.equal(result.ok, true);
   const train = definition("PA_TRAIN_EXTRA");
   const until = state.playerActions?.history.at(-1)?.cooldownUntil;
   assert.ok(until);
-  assert.equal(evaluatePlayerAction(state, train).available, false);
-  state.date = addPlayerActionDays(until, -0);
-  assert.equal(evaluatePlayerAction(state, train).available, true);
+  assert.equal(evaluatePlayerAction(state, train).available, false, "day 0 must be blocked");
+  state.date = addPlayerActionDays(executedDate, 6);
+  assert.equal(evaluatePlayerAction(state, train).available, false, "N-1 must be blocked");
+  state.date = until;
+  assert.equal(evaluatePlayerAction(state, train).available, true, "day N must be available");
   assert.equal(addPlayerActionDays("2026-12-31", 1), "2027-01-01");
   assert.equal(addPlayerActionDays("2028-02-28", 1), "2028-02-29");
 });
