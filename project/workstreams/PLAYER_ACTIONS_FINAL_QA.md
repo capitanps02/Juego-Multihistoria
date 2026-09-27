@@ -231,6 +231,31 @@ A5 PR #802 ya entrega diseño de 20 acciones, matriz de disponibilidad, cooldown
 
 A6 sí valida duplicados/cooldowns/options sobre el catálogo disponible como smoke test, pero esto no sustituye A5.
 
+### Stress backend sobre fixtures actuales
+
+A6 ejecutó 80 carreras de 365 días: 20 seeds × políticas none / training-heavy / rest-heavy / mixed.
+
+Resultado de estabilidad:
+- 80/80 carreras completadas;
+- 0 crashes;
+- no invalid states observados por el harness.
+
+Resultados medios:
+- none: 0 acciones, technique 62, fatigue 19.845, fitness 81.395, save 55,428 B.
+- training-heavy: 52 acciones, technique 88, fatigue 35.21, fitness 77.815, save 89,808 B.
+- rest-heavy: 365 acciones, technique 62, fatigue 0.175, fitness 99.95, save 314,722 B.
+- mixed: 418 acciones, technique 88.5, fatigue 1.28, fitness 99.95, save 345,352 B; max 347,493 B.
+
+Conclusión:
+- estabilidad del backend fixture: PASS;
+- balance/anti-grind del runtime actual: **FAIL**;
+- training-heavy produce +26 puntos de technique en una temporada;
+- rest-heavy mantiene prácticamente fitness 100 y fatigue 0;
+- mixed combina ambos extremos;
+- el crecimiento de save es material porque cada acción añade history/fact; con cooldowns A5 6–90d debería reducirse, pero debe re-medirse.
+
+Estos resultados son sobre fixtures A1 y no sobre el diseño A5 definitivo. Precisamente demuestran que los fixtures no son contenido de release.
+
 ## 13. Preview
 
 A4 añade navegación:
@@ -344,7 +369,26 @@ La conversación con entrenador no puede ejecutarse mediante el flujo público/p
 **Severity:** P2  
 **Owner:** RETURN_TO_A1 + RETURN_TO_A3 + RETURN_TO_A5
 
-A5 #802 diseña 20 acciones, pero declara explícitamente 0/20 implementadas. El core actual no soporta todavía de forma segura `health`, registries extensibles de effects/eligibility/facts, target predicates veteran/young ni shared cooldown anti-target-farming. No se puede certificar CONTENT/ANTI_GRIND hasta resolver esos contratos e implementar el catálogo.
+A5 #802 diseña 20 acciones, pero declara explícitamente 0/20 implementadas. El core actual no soporta todavía de forma segura `health`, registries extensibles de effects/eligibility/facts, target predicates veteran/young ni shared cooldown anti-target-farming. No se puede certificar CONTENT hasta resolver esos contratos e implementar el catálogo.
+
+### PA-A6-003 — current fixture balance is exploitable
+
+**Severity:** P2  
+**Owner:** RETURN_TO_A5
+
+**Evidence**
+- 20-seed × 365-day training-heavy: 52 actions/year, average technique 62 → 88.
+- rest-heavy: 365 actions/year, average fitness 99.95, fatigue 0.175.
+- mixed: 418 actions/year, average technique 88.5, fitness 99.95, fatigue 1.28.
+
+**Expected**
+Optional actions may help slightly but no spam policy should dominate progression or make recovery effectively perfect.
+
+**Actual**
+Current A1 fixtures create extreme stat acceleration/recovery.
+
+**Acceptance**
+Repeat the same policy stress on final A5 content and show materially bounded deltas with no strategy that becomes mandatory/obviously dominant.
 
 ## 18. Gates actuales
 
@@ -359,8 +403,8 @@ A5 #802 diseña 20 acciones, pero declara explícitamente 0/20 implementadas. El
 | PA-GATE-07 AUTHORITY | BLOCKED — fixtures cubiertos; falta catálogo A5 |
 | PA-GATE-08 FACT_SCOPE | BLOCKED — A3 #803 implementado; falta certificar e integrar en HEAD final |
 | PA-GATE-09 AUTO_SIM | BLOCKED — backend cubierto; falta integración/UI stress |
-| PA-GATE-10 CONTENT | BLOCKED — A5 0/20 runtime |
-| PA-GATE-11 ANTI_GRIND | BLOCKED — A5 design-only, stress final no ejecutable |
+| PA-GATE-10 CONTENT | FAIL — runtime actual sólo tiene 3 fixtures; A5 0/20 implementadas |
+| PA-GATE-11 ANTI_GRIND | FAIL — training +26 technique/año; rest mantiene fitness ~99.95/fatigue ~0.18 |
 | PA-GATE-12 PREVIEW | FAIL — PA-A6-001 |
 | PA-GATE-13 PLAYCANVAS | BLOCKED — A4 #804 existe; falta target fix + certificación integrada |
 | PA-GATE-14 MOBILE | BLOCKED — necesita UI integrada/E2E |
@@ -383,7 +427,7 @@ El bug PA-A6-001 se entrega a A2/A4 porque resolver targets públicos es parte d
 
 1. Target selection/staleness no resuelto en contrato público A2/A4.
 2. A3 existe y cubre scopes/consumers, pero aún no está integrado con A4/A6 en un único candidato.
-3. A5 sigue en diseño: balance y exploits del catálogo real no son medibles.
+3. A5 sigue en diseño: el catálogo real no es medible aún; los fixtures actuales sí han demostrado exploits graves de grind/recovery.
 4. A4 PlayCanvas existe, pero no puede certificar acciones targetted hasta corregir A2.
 5. A0–A4 todavía no están integrados en main y A3/A4 son ramas paralelas sobre A2.
 6. Stress de carreras largas con políticas Player Actions no es representativo hasta disponer de A5.
