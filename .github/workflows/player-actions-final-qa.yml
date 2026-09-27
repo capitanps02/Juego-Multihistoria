@@ -5,10 +5,12 @@ on:
     branches:
       - main
       - a6/player-actions-qa-base
+    paths-ignore:
+      - 'project/workstreams/PLAYER_ACTIONS_FINAL_QA.md'
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: player-actions-final-qa-${{ github.event.pull_request.number || github.ref }}-${{ github.event.pull_request.head.sha || github.sha }}
@@ -23,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - name: Checkout mutable integrated QA branch
+      - name: Checkout frozen integrated QA candidate
         uses: actions/checkout@v4
         with:
           ref: ${{ env.INTEGRATED_REF }}
@@ -40,17 +42,8 @@ jobs:
           npm ci
           npm run build:playcanvas
 
-      - name: Commit refreshed generated artifacts when needed
-        run: |
-          if git diff --quiet -- playcanvas/multihistoria.js playcanvas/manifest.json web/assets.json; then
-            echo "Integrated PlayCanvas artifacts are already fresh."
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add playcanvas/multihistoria.js playcanvas/manifest.json web/assets.json
-          git commit -m "build(A6): refresh integrated PlayCanvas artifacts"
-          git push origin HEAD:${INTEGRATED_REF}
+      - name: Require frozen generated artifacts to be current
+        run: git diff --exit-code -- playcanvas/multihistoria.js playcanvas/manifest.json web/assets.json
 
   integrated_safety:
     needs: refresh_integrated_artifacts
