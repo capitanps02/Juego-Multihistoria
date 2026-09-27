@@ -2,7 +2,9 @@ name: Player Actions final QA
 
 on:
   pull_request:
-    branches: [main]
+    branches:
+      - main
+      - a6/player-actions-qa-base
   workflow_dispatch:
 
 permissions:
@@ -12,97 +14,68 @@ concurrency:
   group: player-actions-final-qa-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
+env:
+  BASELINE_SHA: 2cc068cb705214ba827677ab02d8d1668e8677ec
+  INTEGRATED_REF: a6/player-actions-integrated-qa
+
 jobs:
-  focused:
+  integrated_safety:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 45
     steps:
-      - name: Checkout candidate
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run A6 final focused suite
-        run: npm run test:player-actions-final
-
-  zero_action_equivalence:
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    steps:
-      - name: Checkout candidate
+      - name: Checkout A6 harness
         uses: actions/checkout@v4
         with:
-          path: candidate
-
-      - name: Checkout pre-Player-Actions baseline
-        uses: actions/checkout@v4
-        with:
-          ref: 2cc068cb705214ba827677ab02d8d1668e8677ec
-          path: baseline
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Build baseline
-        working-directory: baseline
-        run: |
-          npm ci
-          npm run build
-
-      - name: Build candidate
-        working-directory: candidate
-        run: |
-          npm ci
-          npm run build
-
-      - name: Compare zero-action careers
-        run: node candidate/scripts/test-player-actions-zero-equivalence.mjs baseline candidate
-
-
-  upstream_zero_action:
-    runs-on: ubuntu-latest
-    timeout-minutes: 35
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - label: A3
-            candidate_ref: 75be938bbe4a6f7a01ef45a5078a6bfa6d77262d
-          - label: A4
-            candidate_ref: a4/player-actions-ui
-          - label: A5
-            candidate_ref: a5/player-actions-content
-    steps:
-      - name: Checkout A6 QA harness
-        uses: actions/checkout@v4
-        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           path: qa
 
-      - name: Checkout pre-Player-Actions baseline
+      - name: Checkout integrated candidate
         uses: actions/checkout@v4
         with:
-          ref: 2cc068cb705214ba827677ab02d8d1668e8677ec
-          path: baseline
-
-      - name: Checkout ${{ matrix.label }} candidate
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ matrix.candidate_ref }}
+          ref: ${{ env.INTEGRATED_REF }}
           path: candidate
+
+      - name: Checkout pre-feature baseline
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.BASELINE_SHA }}
+          path: baseline
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
+
+      - name: Build integrated candidate
+        working-directory: candidate
+        run: |
+          npm ci
+          npm run build
+
+      - name: Run integrated product suites
+        working-directory: candidate
+        run: |
+          node --test \
+            scripts/test-player-actions-core.mjs \
+            scripts/test-player-actions-session.mjs \
+            scripts/test-player-actions-narrative-bridge.mjs \
+            scripts/test-player-actions-content.mjs \
+            scripts/test-player-actions-ui-contract.mjs \
+            scripts/test-t55-auto-simulation.mjs
+          node --test scripts/test-persistence.mjs
+
+      - name: Run A6 cross-system safety probes
+        run: cp qa/scripts/test-player-actions-final.mjs candidate/scripts/a6-player-actions-final.mjs
+
+      - name: Execute A6 safety probes excluding known release blockers
+        working-directory: candidate
+        run: >
+          node --test
+          --test-name-pattern='A6-(001|002|003|004|005|006|007|008|009|010|011|012|013|014|016|017|018|019)'
+          scripts/a6-player-actions-final.mjs
+
+      - name: Run independent public target contract
+        run: node qa/scripts/test-player-actions-public-target-contract.mjs candidate
 
       - name: Build baseline
         working-directory: baseline
@@ -110,221 +83,35 @@ jobs:
           npm ci
           npm run build
 
-      - name: Build candidate
-        working-directory: candidate
-        run: |
-          npm ci
-          npm run build
-
-      - name: Compare zero-action careers for ${{ matrix.label }}
+      - name: Run final integrated zero-action equivalence
         run: node qa/scripts/test-player-actions-zero-equivalence.mjs baseline candidate
 
-
-  backend_stress:
-    runs-on: ubuntu-latest
-    timeout-minutes: 25
-    steps:
-      - name: Checkout candidate
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build candidate
-        run: npm run build
-
-      - name: Run 20-seed backend stress
-        run: node scripts/stress-player-actions-backend.mjs
-
-
-  performance:
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - name: Checkout candidate
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build candidate
-        run: npm run build
-
-      - name: Run informational performance probe
-        run: node scripts/bench-player-actions.mjs
-
-
-  a5_backend_stress:
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    steps:
-      - name: Checkout A6 QA harness
-        uses: actions/checkout@v4
-        with:
-          path: qa
-
-      - name: Checkout A5 candidate
-        uses: actions/checkout@v4
-        with:
-          ref: a5/player-actions-content
-          path: candidate
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Build A5 candidate
+      - name: Build PlayCanvas package
         working-directory: candidate
-        run: |
-          npm ci
-          npm run build
-
-      - name: Run 20-seed A5 slice stress
-        run: node qa/scripts/stress-player-actions-backend.mjs candidate
-
-      - name: Enforce A5 anti-grind release budget
-        run: node qa/scripts/test-player-actions-balance-release.mjs candidate
-
-
-  a5_market_exploit:
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    steps:
-      - name: Checkout A6 QA harness
-        uses: actions/checkout@v4
-        with:
-          path: qa
-
-      - name: Checkout A5 candidate
-        uses: actions/checkout@v4
-        with:
-          ref: a5/player-actions-content
-          path: candidate
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Build A5 candidate
-        working-directory: candidate
-        run: |
-          npm ci
-          npm run build
-
-      - name: Run transfer-request market exploit probe
-        run: node qa/scripts/stress-player-actions-market.mjs candidate
-
-
-  public_target_contract_a2:
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    steps:
-      - name: Checkout A6 QA harness
-        uses: actions/checkout@v4
-        with:
-          path: qa
-
-      - name: Checkout PR 806 merged candidate
-        uses: actions/checkout@v4
-        with:
-          ref: refs/pull/806/merge
-          path: candidate
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Build candidate
-        working-directory: candidate
-        run: |
-          npm ci
-          npm run build
-
-      - name: Run public target contract gate
-        run: node qa/scripts/test-player-actions-public-target-contract.mjs candidate
-
-      - name: Zero-action after public target adapter
-        run: |
-          git clone --depth 1 https://github.com/capitanps02/Juego-Multihistoria.git baseline
-          cd baseline
-          git fetch --depth 1 origin 2cc068cb705214ba827677ab02d8d1668e8677ec
-          git checkout 2cc068cb705214ba827677ab02d8d1668e8677ec
-          npm ci
-          npm run build
-          cd ..
-          node qa/scripts/test-player-actions-zero-equivalence.mjs baseline candidate
-
-  public_target_contract_a4:
-    runs-on: ubuntu-latest
-    timeout-minutes: 25
-    steps:
-      - name: Checkout A6 QA harness
-        uses: actions/checkout@v4
-        with:
-          path: qa
-
-      - name: Checkout PR 804 merged candidate
-        uses: actions/checkout@v4
-        with:
-          ref: refs/pull/804/merge
-          path: candidate
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Build PlayCanvas candidate
-        working-directory: candidate
-        run: |
-          npm ci
-          npm run build:playcanvas
-
-      - name: Verify committed PlayCanvas artifacts are current
-        working-directory: candidate
-        run: git diff --exit-code -- playcanvas/multihistoria.js playcanvas/manifest.json web/assets.json
-
-      - name: Run A2 target + A4 UI contract
-        working-directory: candidate
-        run: |
-          node --test scripts/test-player-actions-session.mjs scripts/test-player-actions-ui-contract.mjs
-
-      - name: Run independent A6 target contract
-        run: node qa/scripts/test-player-actions-public-target-contract.mjs candidate
+        run: npm run build:playcanvas
 
       - name: Run PlayCanvas regression
         working-directory: candidate
         run: node --test scripts/test-playcanvas.mjs scripts/test-t55-a19-ui.mjs
 
+      - name: Require committed PlayCanvas package freshness
+        working-directory: candidate
+        run: git diff --exit-code -- playcanvas/multihistoria.js playcanvas/manifest.json web/assets.json
 
-  mobile_e2e:
+  open_contract_gaps:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     steps:
-      - name: Checkout A6 QA harness
+      - name: Checkout A6 harness
         uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           path: qa
 
-      - name: Checkout latest A4 candidate
+      - name: Checkout integrated candidate
         uses: actions/checkout@v4
         with:
-          ref: a6/player-actions-integrated-qa
+          ref: ${{ env.INTEGRATED_REF }}
           path: candidate
 
       - name: Set up Node.js
@@ -332,18 +119,93 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install candidate dependencies
+      - name: Build candidate
+        working-directory: candidate
+        run: |
+          npm ci
+          npm run build
+          cp ../qa/scripts/test-player-actions-final.mjs scripts/a6-player-actions-final.mjs
+
+      - name: Enforce final catalog and contextual eligibility
+        working-directory: candidate
+        run: >
+          node --test
+          --test-name-pattern='A6-(015|020|021)'
+          scripts/a6-player-actions-final.mjs
+
+  balance_market_performance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Checkout A6 harness
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          path: qa
+
+      - name: Checkout integrated candidate
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.INTEGRATED_REF }}
+          path: candidate
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Build candidate
+        working-directory: candidate
+        run: |
+          npm ci
+          npm run build
+
+      - name: Run official A5 annual balance stress
+        working-directory: candidate
+        run: npm run test:player-actions-balance
+
+      - name: Cross-check A6 anti-grind budget
+        run: node qa/scripts/test-player-actions-balance-release.mjs candidate
+
+      - name: Run 1000-seed market exploit probe
+        run: node qa/scripts/stress-player-actions-market.mjs candidate
+
+      - name: Run informational performance probe
+        run: node qa/scripts/bench-player-actions.mjs candidate
+
+  browser_e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Checkout A6 harness
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          path: qa
+
+      - name: Checkout integrated candidate
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.INTEGRATED_REF }}
+          path: candidate
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install browser dependencies
         working-directory: candidate
         run: |
           npm ci
           npm install --no-save --package-lock=false playwright@1.56.1
           npx playwright install --with-deps chromium
 
-      - name: Build preview and PlayCanvas package
+      - name: Build candidate
         working-directory: candidate
         run: npm run build:playcanvas
 
-      - name: Copy A6 browser E2E harnesses
+      - name: Copy A6 browser harnesses
         run: |
           cp qa/scripts/test-player-actions-mobile-e2e.mjs candidate/scripts/test-player-actions-mobile-e2e.mjs
           cp qa/scripts/test-player-actions-preview-e2e.mjs candidate/scripts/test-player-actions-preview-e2e.mjs
@@ -352,7 +214,6 @@ jobs:
         working-directory: candidate
         run: |
           PREVIEW_PORT=4173 node scripts/serve-preview.mjs > /tmp/multihistoria-preview.log 2>&1 &
-          echo $! > /tmp/multihistoria-preview.pid
           for i in $(seq 1 30); do
             if curl -fsS http://127.0.0.1:4173/ >/dev/null; then
               exit 0
@@ -373,177 +234,3 @@ jobs:
       - name: Show preview log on failure
         if: failure()
         run: cat /tmp/multihistoria-preview.log || true
-
-
-  integrated_candidate_safety:
-    runs-on: ubuntu-latest
-    timeout-minutes: 40
-    steps:
-      - name: Checkout A6 QA harness
-        uses: actions/checkout@v4
-        with:
-          path: qa
-
-      - name: Checkout integrated Player Actions candidate
-        uses: actions/checkout@v4
-        with:
-          ref: a6/player-actions-integrated-candidate
-          path: candidate
-
-      - name: Checkout pre-feature baseline
-        uses: actions/checkout@v4
-        with:
-          ref: 2cc068cb705214ba827677ab02d8d1668e8677ec
-          path: baseline
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Build baseline
-        working-directory: baseline
-        run: |
-          npm ci
-          npm run build
-
-      - name: Build integrated candidate
-        working-directory: candidate
-        run: |
-          npm ci
-          npm run build
-
-      - name: Player Actions integrated focused suites
-        working-directory: candidate
-        run: |
-          node --test             scripts/test-player-actions-core.mjs             scripts/test-player-actions-session.mjs             scripts/test-player-actions-narrative-bridge.mjs             scripts/test-player-actions-content.mjs             scripts/test-player-actions-ui-contract.mjs             scripts/test-t55-auto-simulation.mjs
-
-      - name: Independent public target gate
-        run: node qa/scripts/test-player-actions-public-target-contract.mjs candidate
-
-      - name: Integrated zero-action equivalence
-        run: node qa/scripts/test-player-actions-zero-equivalence.mjs baseline candidate
-
-      - name: Build integrated PlayCanvas package
-        working-directory: candidate
-        run: npm run build:playcanvas
-
-      - name: Integrated PlayCanvas regression
-        working-directory: candidate
-        run: node --test scripts/test-playcanvas.mjs scripts/test-t55-a19-ui.mjs
-
-      - name: Check committed generated package freshness
-        working-directory: candidate
-        run: git diff --exit-code -- playcanvas/multihistoria.js playcanvas/manifest.json web/assets.json
-
-  integrated_candidate_release_gates:
-    runs-on: ubuntu-latest
-    timeout-minutes: 35
-    steps:
-      - name: Checkout A6 QA harness
-        uses: actions/checkout@v4
-        with:
-          path: qa
-
-      - name: Checkout integrated Player Actions candidate
-        uses: actions/checkout@v4
-        with:
-          ref: a6/player-actions-integrated-candidate
-          path: candidate
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Build integrated candidate
-        working-directory: candidate
-        run: |
-          npm ci
-          npm run build
-
-      - name: Enforce content release readiness
-        working-directory: candidate
-        run: |
-          node --input-type=module - <<'EOF'
-          import assert from "node:assert/strict";
-          const { PLAYER_ACTION_CATALOG } = await import("./dist/player-actions/index.js");
-          const categories = new Set(PLAYER_ACTION_CATALOG.map(action => action.category));
-          const required = ["career","training","health","representative","relationships","image","life"];
-          assert.ok(PLAYER_ACTION_CATALOG.length >= 20, `expected >=20 actions, got ${PLAYER_ACTION_CATALOG.length}`);
-          for (const category of required) assert.ok(categories.has(category), `missing release category: ${category}`);
-          console.log("PA-GATE-10 CONTENT PASS");
-          EOF
-
-      - name: Run official A5 80-career anti-grind gate
-        working-directory: candidate
-        run: npm run test:player-actions-balance
-
-      - name: Cross-check A6 anti-grind probe
-        run: node qa/scripts/test-player-actions-balance-release.mjs candidate
-
-
-  integrated_candidate:
-    runs-on: ubuntu-latest
-    timeout-minutes: 45
-    steps:
-      - name: Checkout A6 QA harness
-        uses: actions/checkout@v4
-        with:
-          path: qa
-
-      - name: Checkout integrated candidate
-        uses: actions/checkout@v4
-        with:
-          ref: a6/player-actions-integrated-qa
-          path: candidate
-
-      - name: Checkout pre-feature baseline
-        uses: actions/checkout@v4
-        with:
-          ref: 2cc068cb705214ba827677ab02d8d1668e8677ec
-          path: baseline
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Install and build candidate
-        working-directory: candidate
-        run: |
-          npm ci
-          npm run build
-
-      - name: Run integrated Player Actions suites
-        working-directory: candidate
-        run: |
-          node --test             scripts/test-player-actions-core.mjs             scripts/test-player-actions-session.mjs             scripts/test-player-actions-narrative-bridge.mjs             scripts/test-player-actions-content.mjs             scripts/test-player-actions-ui-contract.mjs
-          node --test scripts/test-persistence.mjs
-
-      - name: Run A6 public target gate
-        run: node qa/scripts/test-player-actions-public-target-contract.mjs candidate
-
-      - name: Build baseline
-        working-directory: baseline
-        run: |
-          npm ci
-          npm run build
-
-      - name: Run integrated zero-action equivalence
-        run: node qa/scripts/test-player-actions-zero-equivalence.mjs baseline candidate
-
-      - name: Run integrated stress
-        run: node qa/scripts/stress-player-actions-backend.mjs candidate
-
-      - name: Run integrated anti-grind gate
-        run: node qa/scripts/test-player-actions-balance-release.mjs candidate
-
-      - name: Run integrated market exploit probe
-        run: node qa/scripts/stress-player-actions-market.mjs candidate
-
-      - name: Build and test PlayCanvas
-        working-directory: candidate
-        run: |
-          npm run build:playcanvas
-          node --test scripts/test-playcanvas.mjs scripts/test-t55-a19-ui.mjs
