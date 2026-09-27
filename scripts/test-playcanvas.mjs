@@ -31,3 +31,20 @@ test('package is self-contained and requires no localhost or external image/font
   assert.ok(!source.includes('127.0.0.1'));assert.ok(!source.includes('localhost:'));assert.ok(source.includes('data:image/jpeg;base64,'));assert.ok(!source.includes('new Function('));
   const manifest=JSON.parse(fs.readFileSync('playcanvas/manifest.json'));assert.equal(manifest.targetScene,2593315);assert.equal(manifest.bundleBytes,Buffer.byteLength(source));
 });
+
+test('PlayCanvas package runs the real multi-week automatic simulation loop',async()=>{
+  const a=await GameSession.create(1,{events:[],microfeeds:false,sessionId:'playcanvas-auto'});
+  const b=await Bundled.create(1,{events:[],microfeeds:false,sessionId:'playcanvas-auto'});
+  let commandIndex=0;
+  const send=async(action,extra={})=>{
+    const cmd={type:'auto',action,commandId:'auto-'+(commandIndex++),expectedRevision:a.getView().revision,...extra};
+    await a.dispatch(cmd);
+    await b.dispatch(cmd);
+    assert.equal(json(a.exportSnapshot()),json(b.exportSnapshot()));
+  };
+  await send('start',{maxWeeks:3});
+  for(let guard=0;guard<10&&a.getView().simulation.mode==='auto_simulating';guard++)await send('step');
+  assert.equal(a.exportSnapshot().state.runtime.day,21);
+  assert.equal(a.getView().simulation.summary.weeksSimulated,3);
+  assert.equal(a.getView().simulation.interruption.type,'max_auto_weeks');
+});
