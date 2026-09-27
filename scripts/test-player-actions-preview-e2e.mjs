@@ -99,7 +99,7 @@ try {
   assert.equal(await simulate.isVisible(), true);
   await noOverflow("return");
 
-  const timelineText = await page.locator("#story").innerText();
+  const timelineText = await page.locator("#history").textContent();
   assert.match(timelineText, /Hablar con entrenador|más minutos|Acción/i);
 
   const busy = await page.locator("#story").getAttribute("aria-busy");
