@@ -281,6 +281,7 @@ function commandFingerprint(c: SessionCommand): string {
 const PLAYER_ACTION_CATEGORY_LABELS: Record<PlayerActionCategory, string> = {
   career: "Carrera",
   training: "Entrenamiento",
+  health: "Salud",
   representative: "Representante",
   relationships: "Relaciones",
   image: "Imagen",
