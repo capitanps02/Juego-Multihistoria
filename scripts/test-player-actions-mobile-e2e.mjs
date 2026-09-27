@@ -146,12 +146,26 @@ try {
     await assertNoHorizontalOverflow(page, "action_result", viewport.width);
 
     await clickShadow(page, "Volver a carrera");
-    await page.waitForFunction(() => {
+    const simulateReady = await page.waitForFunction(() => {
       const root = document.querySelector("#game")?.shadowRoot;
       return Boolean(root && [...root.querySelectorAll("button")].some(button =>
         button.textContent?.trim().toLowerCase().startsWith("simular")
       ));
-    });
+    }, undefined, { timeout: 10000 }).then(() => true).catch(() => false);
+    if (!simulateReady) {
+      const diagnostic = await page.evaluate(() => {
+        const root = document.querySelector("#game")?.shadowRoot;
+        return {
+          shadowText: root?.textContent ?? "",
+          buttons: [...(root?.querySelectorAll("button") ?? [])].map(button => ({
+            text: button.textContent?.trim() ?? "",
+            disabled: button.disabled
+          })),
+          mainText: root?.querySelector("main")?.textContent ?? ""
+        };
+      });
+      throw new Error(`SIMULAR not reachable after Player Action: ${JSON.stringify(diagnostic)}`);
+    }
     text = await shadowText(page);
     assert.match(text, /Simular/, "SIMULAR not reachable after Player Action");
     await assertNoHorizontalOverflow(page, "return_to_career", viewport.width);
