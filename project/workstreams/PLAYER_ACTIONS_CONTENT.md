@@ -155,7 +155,7 @@ Clasificación:
 | Action ID | Estado runtime | Class | Category final | Edad | Contexto requerido | Bloqueado por | Cooldown | Efecto directo / intent | Target |
 |---|---|---|---|---|---|---|---:|---|---|
 | PA_COACH_TALK | IMPLEMENTED | CORE | career | 18+ | coach actual | target public A2 | 21d | feedback / more minutes / accept role facts | coach |
-| PA_MORE_MINUTES | ABSORBIDO EN COACH_TALK | CORE | career | 18+ | coach actual | target public A2 | shared | request_more_minutes | coach |
+| PA_ROLE_CHECK | BLOCKED | CONTEXTUAL | career | 18+ | coach actual | A1/A3 role-query contract | 21d | informational role query, no roleScore write | coach |
 | PA_POSITION_CHANGE | BLOCKED | CONTEXTUAL | career | 18+ | coach actual | A1 eligibility + A3 intent | 45d | REQUEST_POSITION_CHANGE | coach |
 | PA_REQUEST_TRANSFER | IMPLEMENTED | CORE | career | 18+ | empleo actual | contextual eligibility aún genérica | 90d | request_transfer | none |
 | PA_WITHDRAW_TRANSFER | BLOCKED | CONTEXTUAL | career | 18+ | request activo | A3 lifecycle | 14d | WITHDRAW_TRANSFER_REQUEST | none |
@@ -177,9 +177,7 @@ Clasificación:
 
 ### Decisión de redundancia
 
-`PA_MORE_MINUTES` no se duplica como botón mientras `PA_COACH_TALK/MORE_MINUTES` ya expresa exactamente la misma intención y comparte la conversación con entrenador.
-
-Si UX futuro demuestra que necesita acceso directo, se puede añadir alias visual sin crear un segundo fact semántico.
+`Pedir más minutos` permanece como opción de `PA_COACH_TALK` para no duplicar semántica ni cooldown. El hueco de quinta acción de Carrera se reserva a `PA_ROLE_CHECK`, una consulta informativa que nunca debe escribir `roleScore`.
 
 ---
 
@@ -454,7 +452,7 @@ Archivo:
 
 `scripts/test-player-actions-content.mjs`
 
-Casos authored:
+Casos implementados en la suite:
 
 1. A5-001 UNIQUE IDS
 2. A5-002 VALID CATEGORIES
@@ -465,17 +463,19 @@ Casos authored:
 7. A5-007 TARGET CONTRACT
 8. A5-008 NO FORBIDDEN AUTHORITY
 9. A5-009 NO NARRATIVE RNG
-10. A5-010 AGE VALIDITY — TODO/BLOCKED
+10. A5-010 AGE VALIDITY — valida la matriz tipada de diseño
 11. A5-011 ZERO ACTION
 12. A5-012 PLAYER VIEW
 13. A5-013 COPY BUDGETS
-14. A5-014 HEALTH CATEGORY — TODO/BLOCKED
+14. A5-014 PLAN/RUNTIME CONTRACT GAPS — valida que health y blockers estén explícitos
 
 npm:
 
 `test:player-actions-content`
 
 La suite se añade también a `npm test`.
+
+`src/player-actions/content-plan.ts` codifica las 20 acciones finales, age ranges, clasificación, target, cooldown y blocker. La suite valida ese plan sin afirmar que el engine ya ejecute health/age gates.
 
 No se marca PASS hasta obtener CI sobre este HEAD.
 
@@ -617,7 +617,7 @@ A3 documenta que withdraw-transfer no existe en V1 actual y request_transfer exp
 
 ```text
 [A5 STATUS]
-Progreso: 52%
+Progreso: 58%
 BASE_SHA: 75be938bbe4a6f7a01ef45a5078a6bfa6d77262d
 HEAD actual: consultar PR #802
 CATÁLOGO
@@ -625,7 +625,7 @@ CATÁLOGO
 - 20 acciones V1 diseñadas
 COMPLETADO
 - análisis A0-A4/A6
-- catálogo completo diseñado
+- catálogo completo diseñado y codificado en content-plan.ts
 - primer slice A3 cableado
 - cooldowns A5 del slice
 - authority review
@@ -646,8 +646,9 @@ BALANCE
 - estado: PARTIAL
 - training/rest requieren tuning
 TESTS
-- 14 authored
-- 2 TODO/BLOCKED por contrato
+- 14 checks authored
+- 0 TODO en la suite de diseño/contrato
+- runtime health/age siguen bloqueados explícitamente
 - PASS pendiente CI
 BLOQUEOS
 - BLOCKED_BY_A1_CATALOG_CONTRACT
@@ -656,5 +657,5 @@ BLOQUEOS
 Trabajo restante estimado:
 - 14 acciones/runtime decisions
 - 5 bloques de balance/QA
-- ~5–8 horas-agente equivalentes tras desbloqueo
+- ~4–7 horas-agente equivalentes tras desbloqueo
 ```
