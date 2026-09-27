@@ -112,3 +112,26 @@ jobs:
 
       - name: Compare zero-action careers for ${{ matrix.label }}
         run: node qa/scripts/test-player-actions-zero-equivalence.mjs baseline candidate
+
+
+  backend_stress:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout candidate
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build candidate
+        run: npm run build
+
+      - name: Run 20-seed backend stress
+        run: node scripts/stress-player-actions-backend.mjs
