@@ -21,9 +21,9 @@ on:
   workflow_dispatch:
 
 
-# Final target-aware certification trigger — A4-019.
+# Final target-aware certification — read only.
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   a4-ui:
@@ -48,15 +48,3 @@ jobs:
         run: node --test scripts/test-player-actions-session.mjs scripts/test-player-actions-ui-contract.mjs
       - name: PlayCanvas regression
         run: node --test scripts/test-playcanvas.mjs scripts/test-t55-a19-ui.mjs
-      - name: Version regenerated PlayCanvas package
-        if: github.event_name == 'pull_request' && github.head_ref == 'a4/player-actions-ui'
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add playcanvas/multihistoria.js playcanvas/manifest.json web/assets.json
-          if git diff --cached --quiet; then
-            echo "PlayCanvas package already current."
-            exit 0
-          fi
-          git commit -m "A4: regenerate PlayCanvas package for public targets"
-          git push origin HEAD:a4/player-actions-ui
