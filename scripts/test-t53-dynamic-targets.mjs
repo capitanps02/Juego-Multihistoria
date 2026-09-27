@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { NPC_EVENT_KNOWLEDGE_RULES } from '../dist/catalog/npc-knowledge-rules.js';
+import { clubById } from '../dist/catalog/football/index.js';
 import { createInitialState } from '../dist/content/initial-state.js';
 import { getNpcKnowledgeRecord, npcKnows } from '../dist/core/npc-knowledge.js';
 import { eligibleChoices } from '../dist/narrative/choice-eligibility.js';
@@ -138,7 +139,8 @@ test('T5.3 dynamic targets/5 recipient is captured from scene-entry club before 
     const state = state23(10405);
     resolveChoiceInPlace(state, movingEvent, 'ESCALATE');
 
-    assert.equal(state.club, 'NEW_CLUB');
+    assert.ok(clubById(state.club), state.club);
+    assert.notEqual(state.club, 'NEW_CLUB');
     assert.equal(npcKnows(state, 'NPC_PLR_10', movingEvent.id), true);
     const record = getNpcKnowledgeRecord(state, 'NPC_PLR_10', movingEvent.id);
     assert.ok(record);
