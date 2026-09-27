@@ -9,7 +9,7 @@ let session = null;
 let busy = false;
 let replacement = null;
 let autoTimer = null;
-let playerActionUi = { screen:'career', categoryId:null, actionId:null, resultExecutionId:null };
+let playerActionUi = { screen:'career', categoryId:null, actionId:null, targetId:null, resultExecutionId:null };
 
 function el(tag, text, className) {
   const node = document.createElement(tag);
@@ -60,7 +60,7 @@ const PLAYER_ACTION_CATEGORY_COPY = {
 };
 
 function resetPlayerActionUi() {
-  playerActionUi = { screen:'career', categoryId:null, actionId:null, resultExecutionId:null };
+  playerActionUi = { screen:'career', categoryId:null, actionId:null, targetId:null, resultExecutionId:null };
 }
 
 function cooldownText(view, action) {
@@ -94,7 +94,7 @@ function renderPlayerActionSubview(view, story) {
     const list = el('div',undefined,'action-list');
     for (const category of view.actions.categories) {
       const card = el('div',undefined,'action-card');
-      const open = uiButton(category.label,()=>{playerActionUi={screen:'player_action_category',categoryId:category.id,actionId:null,resultExecutionId:null};render(true);},'secondary');
+      const open = uiButton(category.label,()=>{playerActionUi={screen:'player_action_category',categoryId:category.id,actionId:null,targetId:null,resultExecutionId:null};render(true);},'secondary');
       card.append(open,el('p',PLAYER_ACTION_CATEGORY_COPY[category.id] ?? 'Acciones voluntarias de tu carrera.','body'));
       list.append(card);
     }
@@ -104,7 +104,7 @@ function renderPlayerActionSubview(view, story) {
 
   const category = view.actions.categories.find(row => row.id === playerActionUi.categoryId);
   if (!category) {
-    playerActionUi={screen:'player_action_menu',categoryId:null,actionId:null,resultExecutionId:null};
+    playerActionUi={screen:'player_action_menu',categoryId:null,actionId:null,targetId:null,resultExecutionId:null};
     return renderPlayerActionSubview(view,story);
   }
 
@@ -113,38 +113,72 @@ function renderPlayerActionSubview(view, story) {
     const list=el('div',undefined,'action-list');
     for (const actionView of category.actions) {
       const card=el('div',undefined,'action-card');
-      const open=uiButton(actionView.label,()=>{playerActionUi={screen:'player_action_detail',categoryId:category.id,actionId:actionView.id,resultExecutionId:null};render(true);},'secondary',!actionView.available);
+      const open=uiButton(actionView.label,()=>{playerActionUi={screen:'player_action_detail',categoryId:category.id,actionId:actionView.id,targetId:null,resultExecutionId:null};render(true);},'secondary',!actionView.available);
       card.append(open,el('p',actionView.description,'body'));
-      if (!actionView.available) card.append(el('p',cooldownText(view,actionView) || 'Ahora mismo no está disponible.','action-reason'));
+      if (!actionView.available) card.append(el('p',cooldownText(view,actionView) || actionView.unavailableReason || 'Ahora mismo no está disponible.','action-reason'));
       list.append(card);
     }
-    story.append(list,uiButton('Volver a categorías',()=>{playerActionUi={screen:'player_action_menu',categoryId:null,actionId:null,resultExecutionId:null};render(true);},'ghost'),uiButton('Volver a carrera',()=>{resetPlayerActionUi();render(true);},'ghost'));
+    story.append(list,uiButton('Volver a categorías',()=>{playerActionUi={screen:'player_action_menu',categoryId:null,actionId:null,targetId:null,resultExecutionId:null};render(true);},'ghost'),uiButton('Volver a carrera',()=>{resetPlayerActionUi();render(true);},'ghost'));
     return true;
   }
 
   const actionView=selectedAction(view);
   if (!actionView) {
-    playerActionUi={screen:'player_action_category',categoryId:category.id,actionId:null,resultExecutionId:null};
+    playerActionUi={screen:'player_action_category',categoryId:category.id,actionId:null,targetId:null,resultExecutionId:null};
     return renderPlayerActionSubview(view,story);
   }
 
   if (playerActionUi.screen === 'player_action_detail') {
     story.append(el('span','ACCIÓN VOLUNTARIA','eyebrow'),el('h1',actionView.label),el('p',actionView.description,'body'));
-    if (!actionView.available) story.append(el('p',cooldownText(view,actionView) || actionView.unavailableReason || 'Ahora mismo no está disponible.','action-reason'));
+    const requiresTarget=actionView.targetKind!=='none';
+    const targets=actionView.targets ?? [];
+    const selectedTarget=requiresTarget
+      ? (targets.find(target=>target.id===playerActionUi.targetId) ?? (targets.length===1 ? targets[0] : null))
+      : null;
+
+    if (requiresTarget) {
+      story.append(el('span','¿CON QUIÉN?','eyebrow'));
+      const targetList=el('div',undefined,'action-list action-target-list');
+      for (const target of targets) {
+        const card=el('div',undefined,'action-card action-target-card');
+        card.append(el('strong',target.label),el('p',target.role,'body'));
+        const selected=selectedTarget?.id===target.id;
+        card.append(uiButton(selected?'Seleccionado':'Elegir',()=>{
+          playerActionUi={...playerActionUi,targetId:target.id};
+          render(true);
+        },selected?'primary':'secondary',!target.available));
+        if (!target.available) card.append(el('p',cooldownText(view,target) || target.unavailableReason || 'Este objetivo no está disponible.','action-reason'));
+        targetList.append(card);
+      }
+      if (!targets.length) targetList.append(el('p',actionView.unavailableReason || 'No hay un objetivo disponible.','action-reason'));
+      story.append(targetList);
+    }
+
+    const availabilitySource=selectedTarget ?? actionView;
+    if (!availabilitySource.available) story.append(el('p',cooldownText(view,availabilitySource) || availabilitySource.unavailableReason || 'Ahora mismo no está disponible.','action-reason'));
     const choices=el('div',undefined,'choices');
-    for (const option of actionView.options) {
-      const enabled=actionView.available&&option.available;
+    const options=requiresTarget ? (selectedTarget?.options ?? []) : actionView.options;
+    for (const option of options) {
+      const enabled=availabilitySource.available&&option.available;
       const optionButton=uiButton(option.label,()=>{
-        const command={type:'player_action',commandId:crypto.randomUUID(),expectedRevision:session.getView().revision,actionId:actionView.id,optionId:option.id};
+        const command={
+          type:'player_action',
+          commandId:crypto.randomUUID(),
+          expectedRevision:session.getView().revision,
+          actionId:actionView.id,
+          optionId:option.id,
+          ...(selectedTarget ? {targetId:selectedTarget.id} : {})
+        };
         run(command,()=>{
           const latest=session.getView().actions?.lastResult;
-          playerActionUi={screen:'player_action_result',categoryId:category.id,actionId:actionView.id,resultExecutionId:latest?.executionId??null};
+          playerActionUi={screen:'player_action_result',categoryId:category.id,actionId:actionView.id,targetId:selectedTarget?.id??null,resultExecutionId:latest?.executionId??null};
         });
       },'choice',!enabled);
       choices.append(optionButton);
-      if (!enabled && option.unavailableReason && option.unavailableReason!==actionView.unavailableReason) choices.append(el('p',option.unavailableReason,'action-reason'));
+      if (!enabled && option.unavailableReason && option.unavailableReason!==availabilitySource.unavailableReason) choices.append(el('p',option.unavailableReason,'action-reason'));
     }
-    story.append(choices,uiButton('Volver',()=>{playerActionUi={screen:'player_action_category',categoryId:category.id,actionId:null,resultExecutionId:null};render(true);},'ghost'));
+    if (requiresTarget && !selectedTarget) choices.append(el('p','Elige primero una persona para ver las opciones disponibles.','action-reason'));
+    story.append(choices,uiButton('Volver',()=>{playerActionUi={screen:'player_action_category',categoryId:category.id,actionId:null,targetId:null,resultExecutionId:null};render(true);},'ghost'));
     return true;
   }
 
@@ -152,7 +186,7 @@ function renderPlayerActionSubview(view, story) {
     const latest=view.actions?.lastResult;
     story.append(el('span','ACCIÓN COMPLETADA','eyebrow'),el('h1',actionView.label));
     story.append(el('p',latest?.executionId===playerActionUi.resultExecutionId?latest.text:'La acción se ha registrado correctamente.','body'));
-    story.append(uiButton('Realizar otra acción',()=>{playerActionUi={screen:'player_action_menu',categoryId:null,actionId:null,resultExecutionId:null};render(true);},'secondary'),uiButton('Volver a carrera',()=>{resetPlayerActionUi();render(true);},'primary'));
+    story.append(uiButton('Realizar otra acción',()=>{playerActionUi={screen:'player_action_menu',categoryId:null,actionId:null,targetId:null,resultExecutionId:null};render(true);},'secondary'),uiButton('Volver a carrera',()=>{resetPlayerActionUi();render(true);},'primary'));
     return true;
   }
 
@@ -246,14 +280,25 @@ function render(focus = false) {
   if(v.offerHistory.length)story.append(el('p',v.offerHistory.at(-1).explanation,'body'));
   const history = $('#history');
   history.replaceChildren();
-  $('#history-title').textContent = `Tu recorrido · ${v.journal.length} ${v.journal.length === 1 ? 'decisión' : 'decisiones'}`;
-  for (const row of v.journal.slice().reverse()) {
+  const actionHistory=v.actions?.history ?? [];
+  const timeline=[
+    ...v.journal.map((row,index)=>({kind:'decision',date:row.date,index,row})),
+    ...actionHistory.map((row,index)=>({kind:'action',date:row.date,index,row}))
+  ].sort((a,b)=>a.date.localeCompare(b.date)||(a.kind===b.kind?a.index-b.index:(a.kind==='decision'?-1:1)));
+  $('#history-title').textContent = `Tu recorrido · ${timeline.length} ${timeline.length === 1 ? 'momento' : 'momentos'}`;
+  for (const entry of timeline.slice().reverse()) {
     const item = el('li');
-    item.append(el('time',dateText(row.date)),el('h3',row.title),el('p',row.choiceLabel));
-    row.messages.forEach(m=>item.append(el('p',m)));
+    if (entry.kind === 'decision') {
+      const row=entry.row;
+      item.append(el('time',dateText(row.date)),el('h3',row.title),el('p',row.choiceLabel));
+      row.messages.forEach(m=>item.append(el('p',m)));
+    } else {
+      const row=entry.row;
+      item.append(el('time',dateText(row.date)),el('h3',row.actionLabel),el('p',`Acción voluntaria · ${row.optionLabel}`),el('p',row.text));
+    }
     history.append(item);
   }
-  if (!v.journal.length) history.append(el('li','Las decisiones que tomes quedarán aquí.','empty'));
+  if (!timeline.length) history.append(el('li','Tus decisiones y acciones voluntarias quedarán aquí.','empty'));
   $('#save-status').textContent = `Guardada en este navegador · ${v.decisionsMade} ${v.decisionsMade === 1 ? 'decisión' : 'decisiones'}`;
   if (focus) {
     const heading = story.querySelector('h1');
