@@ -55,6 +55,11 @@ export type FootballClubReferenceKind =
   | "legacy_compat"
   | "invalid";
 
+export type FootballClubReferenceContext =
+  | "new_production"
+  | "historical_read"
+  | "canonical_content";
+
 export interface FootballClubReferenceClassification {
   readonly value: string;
   readonly kind: FootballClubReferenceKind;
