@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { EVENTS } from '../dist/content/events/index.js';
+import { clubById } from '../dist/catalog/football/index.js';
 import { createInitialState } from '../dist/content/initial-state.js';
 import { getNpcKnowledgeRecord, npcKnows } from '../dist/core/npc-knowledge.js';
 import { resolveChoiceInPlace } from '../dist/narrative/resolver.js';
