@@ -9,9 +9,12 @@ import {
   CURRENT_FOOTBALL_CATALOG_VERSION,
   PRE_FOOTBALL_CATALOG_VERSION,
   footballCatalogVersionOf,
-  migrateFootballClubReferenceExplicitly
+  migrateFootballCatalogVersionInPlace,
+  migrateFootballClubReferenceExplicitly,
+  migrateFootballStateReferencesExplicitlyInPlace
 } from "../dist/save/football-catalog-version.js";
 import { loadSave, serializeSave } from "../dist/save/save.js";
+import { advanceWorldDayInPlace } from "../dist/simulation/world-simulator.js";
 
 const invalid = error => error?.code === "INVALID_SAVE";
 
@@ -136,4 +139,60 @@ test("DB-A4 explicit future migration primitive maps only exact IDs and honors t
     () => migrateFootballClubReferenceExplicitly("OLD_BAD", { OLD_BAD: "BIG_CLUB" }),
     /not a current football identity/
   );
+});
+
+test("DB-A4 catalog migration is idempotent and changes generation only explicitly", () => {
+  const state = createInitialState(9408);
+  state.footballCatalogVersion = "world-v2-a1-2026-09-28";
+  const before = structuredClone(state);
+  const rngBefore = structuredClone(state.rngState);
+
+  assert.equal(migrateFootballCatalogVersionInPlace(state), true);
+  assert.equal(state.footballCatalogVersion, CURRENT_FOOTBALL_CATALOG_VERSION);
+  assert.deepEqual(state.rngState, rngBefore);
+
+  const afterFirst = structuredClone(state);
+  assert.equal(migrateFootballCatalogVersionInPlace(state), false);
+  assert.deepEqual(state, afterFirst);
+
+  const expected = structuredClone(before);
+  expected.footballCatalogVersion = CURRENT_FOOTBALL_CATALOG_VERSION;
+  assert.deepEqual(state, expected);
+});
+
+test("DB-A4 explicit ID manifest preserves owner/registration independence and is idempotent", () => {
+  const [oldOwner, oldRegistration, newOwner, newRegistration] = FOOTBALL_CLUBS.slice(0, 4).map(club => club.id);
+  const state = createInitialState(9409);
+  state.club = oldRegistration;
+  state.professional.ownerClub = oldOwner;
+  state.professional.registrationClub = oldRegistration;
+  state.world.ownerClub = oldOwner;
+
+  const mapping = {
+    [oldOwner]: newOwner,
+    [oldRegistration]: newRegistration
+  };
+  const first = migrateFootballStateReferencesExplicitlyInPlace(state, mapping);
+  assert.ok(first >= 4);
+  assert.equal(state.club, newRegistration);
+  assert.equal(state.professional.ownerClub, newOwner);
+  assert.equal(state.professional.registrationClub, newRegistration);
+  assert.notEqual(state.professional.ownerClub, state.professional.registrationClub);
+
+  const snapshot = structuredClone(state);
+  assert.equal(migrateFootballStateReferencesExplicitlyInPlace(state, mapping), 0);
+  assert.deepEqual(state, snapshot);
+});
+
+test("DB-A4 current V2 save/load replay matches uninterrupted simulation", () => {
+  const direct = createInitialState(9410);
+  const reloaded = loadSave(serializeSave(direct));
+
+  for (let day = 0; day < 45; day += 1) {
+    advanceWorldDayInPlace(direct);
+    advanceWorldDayInPlace(reloaded);
+  }
+
+  assert.equal(serializeSave(reloaded), serializeSave(direct));
+  assert.equal(reloaded.footballCatalogVersion, CURRENT_FOOTBALL_CATALOG_VERSION);
 });
