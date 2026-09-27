@@ -364,7 +364,21 @@ Evidencia verificable en código/tests:
 - auto pause/stop no abre gestión;
 - PlayCanvas se genera desde la misma UI web.
 
-No se adjunta screenshot automatizado en esta entrega porque el conector GitHub disponible no ejecuta un navegador gráfico. La suite cubre contrato + runtime y el gate PlayCanvas reconstruye el bundle.
+No se adjunta screenshot automatizado en esta entrega porque el entorno de certificación no incorpora un navegador gráfico. La suite cubre contrato + runtime y el gate PlayCanvas reconstruye el bundle.
+
+### Evidencia CI A4
+
+GitHub Actions `Player Actions A4 UI`, run `36312610515`:
+
+- Parse UI sources: PASS.
+- Build PlayCanvas package: PASS.
+- Bundle generado: 154 módulos, 17,478,669 bytes.
+- SHA-256: `50ddba3b95eee93f14f2c21a02d0dda85861ecab1c39558e3be64d04047e30a5`.
+- A2 + A4: 39/39 PASS (23 A2 + 15 criterios A4 + 1 diagnóstico de dependencia).
+- PlayCanvas + A19 regression: 11/11 PASS.
+- Failures: 0.
+
+El bundle generado fue posteriormente versionado en `playcanvas/multihistoria.js` y su `playcanvas/manifest.json` quedó actualizado con el mismo SHA-256.
 
 ## 16. HANDOFF A5 — CONTENT
 
