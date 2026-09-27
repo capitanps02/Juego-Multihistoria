@@ -232,3 +232,68 @@ test("A5-018 IMPLEMENTED PLAN/RUNTIME SYNC", () => {
     }
   }
 });
+
+
+test("A5-019 CONTENT PLAN DISTRIBUTION", () => {
+  const countBy = (key) => PLAYER_ACTION_CONTENT_PLAN.reduce((acc, row) => {
+    acc[row[key]] = (acc[row[key]] ?? 0) + 1;
+    return acc;
+  }, {});
+  assert.deepEqual(countBy("classification"), {
+    CORE: 9,
+    CONTEXTUAL: 8,
+    LATE_CAREER: 2,
+    OPTIONAL_FLAVOR: 1
+  });
+  assert.deepEqual(countBy("category"), {
+    career: 5,
+    training: 2,
+    health: 2,
+    representative: 3,
+    relationships: 4,
+    image: 2,
+    life: 2
+  });
+});
+
+test("A5-020 NO DUPLICATE RUNTIME SEMANTICS", () => {
+  const seen = new Map();
+  for (const action of PLAYER_ACTION_CATALOG) {
+    const signature = JSON.stringify({
+      category: action.category,
+      targetKind: action.targetKind,
+      effects: [...action.options.map(option => option.effectKey)].sort()
+    });
+    const previous = seen.get(signature);
+    assert.equal(previous, undefined, `${action.id} duplicates runtime semantics of ${previous}`);
+    seen.set(signature, action.id);
+  }
+});
+
+test("A5-021 PUBLIC COPY DOES NOT LEAK INTERNALS", () => {
+  const forbidden = [
+    "rolescore",
+    "marketheat",
+    "rngstate",
+    "effectkey",
+    "eligibilitykey",
+    "originEvent",
+    "playeractionfact",
+    "currentlyrelevant"
+  ].map(term => term.toLowerCase());
+
+  for (const action of PLAYER_ACTION_CATALOG) {
+    const publicText = [
+      action.label,
+      action.description,
+      ...action.options.flatMap(option => [
+        option.label,
+        option.description ?? "",
+        option.publicResult
+      ])
+    ].join(" ").toLowerCase();
+    for (const term of forbidden) {
+      assert.equal(publicText.includes(term), false, `${action.id} leaks internal term ${term}`);
+    }
+  }
+});
