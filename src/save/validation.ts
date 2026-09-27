@@ -1,4 +1,5 @@
 import type { GameState } from "../core/types.js";
+import { assertPlayerActionState } from "../player-actions/validation.js";
 import { inspectSportMatchModelStore } from "../simulation/match-model.js";
 import { inspectCompetitionMomentStore } from "../simulation/competition-context.js";
 import { inspectPenaltySetupStore } from "../simulation/match-penalty-context.js";
@@ -93,6 +94,8 @@ export function validateGameSave(value: unknown, version: number): void {
   assertPenaltySetups(value);
   assertEmployment(value);
   assertVeteranMarketFacts(value);
+  const state = value as GameState;
+  if (state.playerActions !== undefined) assertPlayerActionState(state.playerActions, state.date);
 }
 
 /** Common runtime/save boundary including market + football moment + match-model checks. */
@@ -103,4 +106,6 @@ export function assertGameState(value: unknown): asserts value is GameState {
   assertPenaltySetups(value);
   assertEmployment(value);
   assertVeteranMarketFacts(value);
+  const state = value as GameState;
+  if (state.playerActions !== undefined) assertPlayerActionState(state.playerActions, state.date);
 }
