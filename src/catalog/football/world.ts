@@ -1233,4 +1233,4 @@ for (const [rawCode, config] of Object.entries(COUNTRY_CONFIGS)) {
 
 export const FOOTBALL_DIVISIONS: readonly FootballDivision[] = Object.freeze(divisions);
 export const FOOTBALL_CLUBS: readonly FootballClub[] = Object.freeze(clubs);
-export const FOOTBALL_CATALOG_VERSION = "world-v1-2026-09-26";
+export const FOOTBALL_CATALOG_VERSION = "world-v2-a1-2026-09-28";
