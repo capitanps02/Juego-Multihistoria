@@ -187,14 +187,16 @@ export const PLAYER_ACTION_ELIGIBILITY_SPECS: readonly PlayerActionEligibilitySp
     actionId: "PA_PERSONAL_TIME",
     all: [
       { kind: "active_career" },
-      { kind: "age_range", min: 18 }
+      { kind: "age_range", min: 18 },
+      { kind: "fatigue_min", value: 20 }
     ]
   },
   {
     actionId: "PA_DISCONNECT",
     all: [
       { kind: "active_career" },
-      { kind: "age_range", min: 28 }
+      { kind: "age_range", min: 28 },
+      { kind: "fatigue_min", value: 30 }
     ]
   }
 ] as const;
