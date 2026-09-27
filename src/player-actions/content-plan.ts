@@ -46,7 +46,7 @@ export const PLAYER_ACTION_CONTENT_PLAN: readonly PlayerActionContentPlanRow[] =
     cooldownDays: 21,
     targetKind: "coach",
     status: "implemented",
-    requiredContext: "current coach"
+    requiredContext: "current coach",
   },
   {
     id: "PA_POSITION_CHANGE",
@@ -96,7 +96,7 @@ export const PLAYER_ACTION_CONTENT_PLAN: readonly PlayerActionContentPlanRow[] =
     cooldownDays: 14,
     targetKind: "none",
     status: "implemented",
-    requiredContext: "active career"
+    requiredContext: "active career",
   },
   {
     id: "PA_RECOVERY_SESSION",
@@ -106,7 +106,7 @@ export const PLAYER_ACTION_CONTENT_PLAN: readonly PlayerActionContentPlanRow[] =
     cooldownDays: 14,
     targetKind: "none",
     status: "implemented",
-    requiredContext: "elevated physical risk"
+    requiredContext: "elevated physical risk",
   },
   {
     id: "PA_REST",
@@ -156,7 +156,7 @@ export const PLAYER_ACTION_CONTENT_PLAN: readonly PlayerActionContentPlanRow[] =
     cooldownDays: 10,
     targetKind: "teammate",
     status: "implemented",
-    requiredContext: "eligible current teammate"
+    requiredContext: "eligible current teammate",
   },
   {
     id: "PA_CLEAR_AIR",
@@ -166,7 +166,7 @@ export const PLAYER_ACTION_CONTENT_PLAN: readonly PlayerActionContentPlanRow[] =
     cooldownDays: 21,
     targetKind: "teammate",
     status: "implemented",
-    requiredContext: "current teammate"
+    requiredContext: "current teammate",
   },
   {
     id: "PA_LEADER_ADVICE",
@@ -176,7 +176,7 @@ export const PLAYER_ACTION_CONTENT_PLAN: readonly PlayerActionContentPlanRow[] =
     cooldownDays: 21,
     targetKind: "teammate",
     status: "implemented",
-    requiredContext: "current teammate"
+    requiredContext: "current teammate",
   },
   {
     id: "PA_MENTOR_TEAMMATE",
@@ -186,7 +186,7 @@ export const PLAYER_ACTION_CONTENT_PLAN: readonly PlayerActionContentPlanRow[] =
     cooldownDays: 21,
     targetKind: "teammate",
     status: "implemented",
-    requiredContext: "current teammate"
+    requiredContext: "current teammate",
   },
   {
     id: "PA_INTERVIEW",
@@ -196,7 +196,7 @@ export const PLAYER_ACTION_CONTENT_PLAN: readonly PlayerActionContentPlanRow[] =
     cooldownDays: 28,
     targetKind: "none",
     status: "implemented",
-    requiredContext: "active career"
+    requiredContext: "active career",
   },
   {
     id: "PA_SOCIAL_POST",
@@ -206,7 +206,7 @@ export const PLAYER_ACTION_CONTENT_PLAN: readonly PlayerActionContentPlanRow[] =
     cooldownDays: 21,
     targetKind: "none",
     status: "implemented",
-    requiredContext: "active career"
+    requiredContext: "active career",
   },
   {
     id: "PA_PERSONAL_TIME",
@@ -216,7 +216,7 @@ export const PLAYER_ACTION_CONTENT_PLAN: readonly PlayerActionContentPlanRow[] =
     cooldownDays: 30,
     targetKind: "none",
     status: "implemented",
-    requiredContext: "meaningful fatigue"
+    requiredContext: "meaningful fatigue",
   },
   {
     id: "PA_DISCONNECT",
@@ -226,6 +226,6 @@ export const PLAYER_ACTION_CONTENT_PLAN: readonly PlayerActionContentPlanRow[] =
     cooldownDays: 45,
     targetKind: "none",
     status: "implemented",
-    requiredContext: "late-career fatigue"
+    requiredContext: "late-career fatigue",
   }
 ] as const;
