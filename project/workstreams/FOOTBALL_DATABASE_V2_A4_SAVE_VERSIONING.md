@@ -1,9 +1,9 @@
 # DB-A4 — Pass 1 persistence inventory
 
-Status: COMPLETE
-Progress: 20%
-Passes: 1 / 5
-Estimated remaining: 4
+Status: IN PROGRESS — PASSES 1–3 COMPLETE
+Progress: 65%
+Passes: 3 / 5
+Estimated remaining: 2
 
 ## Baseline
 
@@ -92,3 +92,86 @@ Implement:
 3. missing metadata interpreted as `pre-football-catalog`;
 4. present unsupported versions rejected;
 5. no `schemaVersion` increment solely for this metadata.
+
+## Pass 2 — catalog version contract — COMPLETE (42%)
+
+- `GameState.footballCatalogVersion` is optional for backwards compatibility.
+- new careers are stamped with `CURRENT_FOOTBALL_CATALOG_VERSION`;
+- missing metadata reads as `pre-football-catalog`;
+- load/save does not auto-upgrade or materialize missing metadata;
+- current schema remains `8`;
+- unsupported/future catalog generations fail closed;
+- catalog version changes are not part of normal gameplay.
+
+## Pass 3 — explicit migration / normalization — COMPLETE (65%)
+
+- `world-v2-a1-2026-09-28 -> world-v2-a2-2026-09-28` is an explicit migration step with an empty ID map because stable IDs did not change.
+- pre-catalog saves are not guessed into V2; they require a future audited explicit manifest before any upgrade.
+- exact-ID migration supports explicit replacements and tombstones.
+- migration never matches by display name, short name, city or array position.
+- V2 active/new writes accept only catalog or canonical-special identities.
+- historical provenance may retain explicit legacy-compatible references.
+- narrative aliases are not valid new V2 identities.
+- owner and registration are preserved independently.
+- new V2 fixture rows require stable `opponentClubId`; pre-catalog/historical saves remain under their compatibility contract.
+- Player Actions schema is unchanged; existing club-scoped fact payloads are validated only for V2 saves.
+- no RNG stream is touched by versioning/migration.
+
+## Current QA status
+
+Dedicated regression: `scripts/test-football-catalog-save-versioning.mjs`.
+
+Coverage includes:
+- new-save metadata;
+- exact pre-catalog round trip;
+- active legacy pre-catalog identity;
+- invalid V2 identity injection;
+- historical legacy provenance;
+- owner/registration loan preservation;
+- unsupported version rejection;
+- Player Actions fact persistence;
+- exact-ID mapping and tombstones.
+
+CI workflow: `Football Database V2 · Save versioning`.
+
+Pass 4 and Pass 5 remain open until the exact PR HEAD has green save/load replay, migration idempotence, Player Actions persistence, catalog/runtime regressions and repository CI. G4 is not certified while predecessor G3 is still unresolved.
+
+## DB-A4 status
+
+```text
+DB-A4 — STATUS
+
+PROGRESO:
+65%
+
+PASADAS COMPLETADAS:
+3 / 5
+
+PASADAS ESTIMADAS RESTANTES:
+2
+
+SAVE VERSIONS:
+schema 2..8 supported; schema 8 current
+
+FOOTBALL CATALOG:
+world-v2-a2-2026-09-28 current
+missing => pre-football-catalog
+
+MIGRATIONS:
+explicit ID-only; A1 -> A2 path defined; pre-V2 implicit upgrade forbidden
+
+VALIDATION:
+V2 contextual reference validation implemented
+
+TESTS:
+dedicated suite + CI gate committed; exact-head certification pending
+
+BLOQUEADORES:
+serialized G3 predecessor + exact-head CI
+
+RIESGOS:
+parallel predecessor/A2 lines must be resolved before G4 certification
+
+SIGUIENTE:
+Pass 4 — save/load replay, invalid-ID injection, idempotence, Player Actions regression.
+```
