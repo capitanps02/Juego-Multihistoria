@@ -1144,7 +1144,7 @@ function clubId(countryCode: FootballCountryCode, city: string): string {
   return `${countryCode}_${asciiToken(city)}`;
 }
 
-function variation(id: string, channel: string, radius = 7): number {
+function variation(id: string, channel: string, radius: number): number {
   return (hashString(`${id}|${channel}`) % (radius * 2 + 1)) - radius;
 }
 
@@ -1160,11 +1160,64 @@ function shortName(city: string, modifier: string): string {
   return `${city.slice(0, cityLength).trim()} ${modifier.slice(0, modifierLength)}`.slice(0, MAX_SHORT_NAME_LENGTH).trim();
 }
 
-function archetypesFor(tier: number, prestige: number, seed: number): readonly ClubArchetype[] {
-  const pool: ClubArchetype[] = ["development","selling","historic","high_pressure","community","technical","physical"];
-  const first: ClubArchetype = prestige >= 84 && tier === 1 ? "continental" : pool[seed % pool.length]!;
-  const second = pool[(seed + 3) % pool.length]!;
-  return Object.freeze(first === second ? [first] : [first, second]);
+interface ClubProfile {
+  tier: number;
+  prestige: number;
+  financialPower: number;
+  youthQuality: number;
+  developmentBias: number;
+  pressure: number;
+  internationalAttraction: number;
+  seed: number;
+}
+
+function archetypesFor(profile: ClubProfile): readonly ClubArchetype[] {
+  const candidates: Array<{ archetype: ClubArchetype; score: number }> = [
+    {
+      archetype: "continental",
+      score: profile.tier === 1
+        ? profile.prestige * 0.45 + profile.internationalAttraction * 0.35 + profile.financialPower * 0.20
+        : -1
+    },
+    {
+      archetype: "development",
+      score: profile.developmentBias * 0.55 + profile.youthQuality * 0.45
+    },
+    {
+      archetype: "selling",
+      score: profile.developmentBias * 0.35 + profile.youthQuality * 0.25
+        + (100 - profile.financialPower) * 0.25 + profile.internationalAttraction * 0.15
+    },
+    {
+      archetype: "historic",
+      score: profile.prestige * 0.50 + profile.pressure * 0.30 + profile.internationalAttraction * 0.20
+    },
+    {
+      archetype: "high_pressure",
+      score: profile.pressure * 0.65 + profile.prestige * 0.35
+    },
+    {
+      archetype: "community",
+      score: (100 - profile.pressure) * 0.45 + profile.youthQuality * 0.30 + profile.developmentBias * 0.25
+    },
+    {
+      archetype: "technical",
+      score: profile.developmentBias * 0.45 + profile.youthQuality * 0.35 + profile.prestige * 0.20
+    },
+    {
+      archetype: "physical",
+      score: profile.pressure * 0.40 + profile.financialPower * 0.25 + profile.prestige * 0.25
+        + ((profile.seed >>> 3) % 11)
+    }
+  ];
+
+  const eligible = candidates
+    .filter(row => row.archetype !== "continental"
+      || (profile.tier === 1 && profile.prestige >= 80 && profile.internationalAttraction >= 76))
+    .sort((a, b) => b.score - a.score
+      || ((hashString(`${profile.seed}|${a.archetype}`) - hashString(`${profile.seed}|${b.archetype}`)) || a.archetype.localeCompare(b.archetype)));
+
+  return Object.freeze(eligible.slice(0, 2).map(row => row.archetype));
 }
 
 const divisions: FootballDivision[] = [];
@@ -1206,7 +1259,12 @@ for (const [rawCode, config] of Object.entries(COUNTRY_CONFIGS)) {
       const identitySeed = hashString(`${countryCode}|${city}|identity`);
       const modifier = config.mods[identitySeed % config.mods.length]!;
       const nameValue = `${city} ${modifier}`;
-      const prestige = clamp(divisionStrength + variation(id, "prestige"));
+      const prestige = clamp(divisionStrength + variation(id, "prestige", 4));
+      const financialPower = clamp(tierAdjusted(config.finance, tier) + variation(id, "finance", 5));
+      const youthQuality = clamp(tierAdjusted(config.youth, tier) + variation(id, "youth", 5));
+      const developmentBias = clamp(tierAdjusted(config.development, tier) + variation(id, "development", 5));
+      const pressure = clamp(tierAdjusted(config.pressure, tier) + variation(id, "pressure", 5));
+      const internationalAttraction = clamp(tierAdjusted(config.international, tier) + variation(id, "international", 4));
       clubs.push(Object.freeze({
         id,
         name: nameValue,
@@ -1218,12 +1276,21 @@ for (const [rawCode, config] of Object.entries(COUNTRY_CONFIGS)) {
         divisionId,
         tier,
         prestige,
-        financialPower: clamp(tierAdjusted(config.finance, tier) + variation(id, "finance")),
-        youthQuality: clamp(tierAdjusted(config.youth, tier) + variation(id, "youth")),
-        developmentBias: clamp(tierAdjusted(config.development, tier) + variation(id, "development")),
-        pressure: clamp(tierAdjusted(config.pressure, tier) + variation(id, "pressure")),
-        internationalAttraction: clamp(tierAdjusted(config.international, tier) + variation(id, "international")),
-        archetypes: archetypesFor(tier, prestige, identitySeed),
+        financialPower,
+        youthQuality,
+        developmentBias,
+        pressure,
+        internationalAttraction,
+        archetypes: archetypesFor({
+          tier,
+          prestige,
+          financialPower,
+          youthQuality,
+          developmentBias,
+          pressure,
+          internationalAttraction,
+          seed: identitySeed
+        }),
         clearanceStatus: "working_name_unchecked"
       }));
     }
@@ -1233,4 +1300,4 @@ for (const [rawCode, config] of Object.entries(COUNTRY_CONFIGS)) {
 
 export const FOOTBALL_DIVISIONS: readonly FootballDivision[] = Object.freeze(divisions);
 export const FOOTBALL_CLUBS: readonly FootballClub[] = Object.freeze(clubs);
-export const FOOTBALL_CATALOG_VERSION = "world-v2-a1-2026-09-28";
+export const FOOTBALL_CATALOG_VERSION = "world-v2-a2-2026-09-28";
