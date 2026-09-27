@@ -339,8 +339,10 @@ jobs:
         working-directory: candidate
         run: npm run build:playcanvas
 
-      - name: Copy A6 mobile E2E harness
-        run: cp qa/scripts/test-player-actions-mobile-e2e.mjs candidate/scripts/test-player-actions-mobile-e2e.mjs
+      - name: Copy A6 browser E2E harnesses
+        run: |
+          cp qa/scripts/test-player-actions-mobile-e2e.mjs candidate/scripts/test-player-actions-mobile-e2e.mjs
+          cp qa/scripts/test-player-actions-preview-e2e.mjs candidate/scripts/test-player-actions-preview-e2e.mjs
 
       - name: Start preview server
         working-directory: candidate
@@ -359,6 +361,10 @@ jobs:
       - name: Run mobile Chromium E2E
         working-directory: candidate
         run: node scripts/test-player-actions-mobile-e2e.mjs http://127.0.0.1:4173
+
+      - name: Run classic preview Chromium E2E
+        working-directory: candidate
+        run: node scripts/test-player-actions-preview-e2e.mjs http://127.0.0.1:4173
 
       - name: Show preview log on failure
         if: failure()
