@@ -7,8 +7,11 @@ import {
   CURRENT_FOOTBALL_CATALOG_VERSION,
   PRE_FOOTBALL_CATALOG_VERSION,
   footballCatalogVersionOf,
-  migrateFootballClubReferenceExplicitly
+  migrateFootballCatalogVersionInPlace,
+  migrateFootballClubReferenceExplicitly,
+  migrateFootballStateReferencesExplicitlyInPlace
 } from "../dist/save/football-catalog-version.js";
+import { inspectFootballCatalogSaveReferences } from "../dist/save/football-catalog-reference-validation.js";
 
 test("DB-A4 new careers persist an independent football catalog version", () => {
   const state = createInitialState(404);
@@ -76,4 +79,129 @@ test("DB-A4 explicit ID migration never guesses from names or positions", () => 
     () => migrateFootballClubReferenceExplicitly("ESP_MADRID", { ESP_MADRID: "ESP_FAKE_CLUB_999" }),
     /not a current football identity/
   );
+});
+
+test("DB-A4 explicit state migration preserves owner/registration semantics and is idempotent", () => {
+  const state = createInitialState(407);
+  state.footballCatalogVersion = "world-v2-a1-2026-09-28";
+  state.club = "ESP_MADRID";
+  state.professional.registrationClub = "ESP_MADRID";
+  state.professional.ownerClub = "ESP_BARCELONA";
+  state.world.ownerClub = "ESP_BARCELONA";
+  state.history.push({
+    eventId: "EVT_MIGRATION_PROBE",
+    date: state.date,
+    season: state.season,
+    choiceId: "A",
+    outcomeId: "A_PRIMARY",
+    club: "ESP_MADRID",
+    snapshot: {},
+    salience: 50,
+    visibility: "private"
+  });
+  state.npcs[0].club = "ESP_BARCELONA";
+  state.playerActions = {
+    version: 1,
+    sequence: 0,
+    history: [],
+    cooldowns: {},
+    facts: [{
+      factId: "fact:migration-probe",
+      kind: "request_transfer",
+      createdDate: state.date,
+      source: { kind: "player_action", executionId: "action:probe", actionId: "PA_REQUEST_TRANSFER", optionId: "REQUEST" },
+      payload: { club: "ESP_MADRID" }
+    }]
+  };
+
+  const mapping = {
+    ESP_MADRID: "ESP_VALENCIA",
+    ESP_BARCELONA: "ESP_SEVILLA"
+  };
+  const changes = migrateFootballStateReferencesExplicitlyInPlace(state, mapping);
+  assert.ok(changes >= 6);
+  assert.equal(state.club, "ESP_VALENCIA");
+  assert.equal(state.professional.registrationClub, "ESP_VALENCIA");
+  assert.equal(state.professional.ownerClub, "ESP_SEVILLA");
+  assert.equal(state.world.ownerClub, "ESP_SEVILLA");
+  assert.notEqual(state.professional.ownerClub, state.professional.registrationClub);
+  assert.equal(state.history[0].club, "ESP_VALENCIA");
+  assert.equal(state.npcs[0].club, "ESP_SEVILLA");
+  assert.equal(state.playerActions.facts[0].payload.club, "ESP_VALENCIA");
+  assert.equal(migrateFootballStateReferencesExplicitlyInPlace(state, mapping), 0);
+});
+
+test("DB-A4 catalog-version migration is explicit, idempotent and refuses pre-V2 guessing", () => {
+  const v2 = createInitialState(408);
+  v2.footballCatalogVersion = "world-v2-a1-2026-09-28";
+  assert.equal(migrateFootballCatalogVersionInPlace(v2), true);
+  assert.equal(v2.footballCatalogVersion, CURRENT_FOOTBALL_CATALOG_VERSION);
+  assert.equal(migrateFootballCatalogVersionInPlace(v2), false);
+
+  const legacy = createInitialState(409);
+  delete legacy.footballCatalogVersion;
+  assert.throws(
+    () => migrateFootballCatalogVersionInPlace(legacy),
+    /require an audited explicit legacy manifest/
+  );
+});
+
+test("DB-A4 older V2 saves may retain historical fixtures without opponentClubId", () => {
+  const probe = {
+    footballCatalogVersion: "world-v2-a1-2026-09-28",
+    club: "ESP_MADRID",
+    professional: { ownerClub: "ESP_MADRID", registrationClub: "ESP_MADRID" },
+    world: {
+      ownerClub: "ESP_MADRID",
+      sportMatchModel: {
+        fixtures: [{ club: "Aurora CF", opponent: "SIM_OPP_TEST" }]
+      }
+    }
+  };
+  assert.equal(inspectFootballCatalogSaveReferences(probe), null);
+});
+
+test("DB-A4 current V2 fixtures require a stable catalog opponent ID", () => {
+  const probe = {
+    footballCatalogVersion: CURRENT_FOOTBALL_CATALOG_VERSION,
+    club: "ESP_MADRID",
+    professional: { ownerClub: "ESP_MADRID", registrationClub: "ESP_MADRID" },
+    world: {
+      ownerClub: "ESP_MADRID",
+      sportMatchModel: {
+        fixtures: [{ club: "ESP_MADRID", opponent: "Nombre de rival" }]
+      }
+    }
+  };
+  const issue = inspectFootballCatalogSaveReferences(probe);
+  assert.equal(issue?.path, "world.sportMatchModel.fixtures[0].opponentClubId");
+});
+
+test("DB-A4 current V2 keeps historical legacy provenance but rejects persisted aliases", () => {
+  const base = {
+    footballCatalogVersion: CURRENT_FOOTBALL_CATALOG_VERSION,
+    club: "ESP_MADRID",
+    professional: { ownerClub: "ESP_MADRID", registrationClub: "ESP_MADRID" },
+    world: { ownerClub: "ESP_MADRID" }
+  };
+  assert.equal(
+    inspectFootballCatalogSaveReferences({ ...base, history: [{ club: "Aurora CF" }] }),
+    null
+  );
+  const issue = inspectFootballCatalogSaveReferences({ ...base, history: [{ club: "BIG_CLUB" }] });
+  assert.equal(issue?.path, "history[0].club");
+});
+
+test("DB-A4 current Player Action club facts cannot persist legacy synthetic identities", () => {
+  const probe = {
+    footballCatalogVersion: CURRENT_FOOTBALL_CATALOG_VERSION,
+    club: "ESP_MADRID",
+    professional: { ownerClub: "ESP_MADRID", registrationClub: "ESP_MADRID" },
+    world: { ownerClub: "ESP_MADRID" },
+    playerActions: {
+      facts: [{ payload: { club: "Aurora CF" } }]
+    }
+  };
+  const issue = inspectFootballCatalogSaveReferences(probe);
+  assert.equal(issue?.path, "playerActions.facts[0].payload.club");
 });
