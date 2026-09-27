@@ -794,12 +794,12 @@ test("A5-045 TRAINING AND RECOVERY USE CONTEXTUAL BODY GATES", () => {
   const trainFatigueMax = train.all.find(predicate => predicate.kind === "fatigue_max");
   const trainRiskMax = train.all.find(predicate => predicate.kind === "risk_max");
   const restFatigueMin = rest.all.find(predicate => predicate.kind === "fatigue_min");
-  const recoveryFatigueMin = recovery.all.find(predicate => predicate.kind === "fatigue_min");
+  const recoveryRiskMin = recovery.all.find(predicate => predicate.kind === "risk_min");
 
   assert.ok(trainFatigueMax && trainFatigueMax.value <= 55);
   assert.ok(trainRiskMax && trainRiskMax.value <= 40);
   assert.ok(restFatigueMin && restFatigueMin.value >= 24);
-  assert.ok(recoveryFatigueMin && recoveryFatigueMin.value >= 28);
+  assert.ok(recoveryRiskMin && recoveryRiskMin.value >= 28);
 });
 
 test("A5-046 TRANSFER REQUEST AND WITHDRAWAL ARE MUTUALLY EXCLUSIVE CONTEXTS", () => {
@@ -927,4 +927,35 @@ test("A5-052 VETERAN AND MENTOR ACTIONS STAY LOCAL, NOT A3 FACTS", () => {
     assert.ok(rows.every(row => row.mode === "direct_only"));
     assert.ok(rows.every(row => row.desiredFactKind === undefined));
   }
+});
+
+
+test("A5-053 REST AND RECOVERY HAVE DISTINCT HEALTH NICHES", () => {
+  const eligibilityById = new Map(PLAYER_ACTION_ELIGIBILITY_SPECS.map(row => [row.actionId, row]));
+  const balanceById = new Map(PLAYER_ACTION_BALANCE_SPECS.map(row => [row.actionId, row]));
+
+  const restEligibility = eligibilityById.get("PA_REST");
+  const recoveryEligibility = eligibilityById.get("PA_RECOVERY_SESSION");
+  const restBalance = balanceById.get("PA_REST");
+  const recoveryBalance = balanceById.get("PA_RECOVERY_SESSION");
+  assert.ok(restEligibility && recoveryEligibility && restBalance && recoveryBalance);
+
+  assert.ok(restEligibility.all.some(predicate => predicate.kind === "fatigue_min"));
+  assert.equal(restEligibility.all.some(predicate => predicate.kind === "risk_min"), false);
+
+  assert.ok(recoveryEligibility.all.some(predicate => predicate.kind === "risk_min"));
+  assert.equal(recoveryEligibility.all.some(predicate => predicate.kind === "fatigue_min"), false);
+
+  const restDeltas = restBalance.options[0].directDeltas;
+  const recoveryDeltas = recoveryBalance.options[0].directDeltas;
+
+  assert.equal(restDeltas.some(delta => delta.metric === "body.risk"), false);
+  assert.equal(
+    recoveryDeltas.some(delta => delta.metric === "body.risk" && delta.delta < 0),
+    true
+  );
+
+  const recoveryPlan = PLAYER_ACTION_CONTENT_PLAN.find(row => row.id === "PA_RECOVERY_SESSION");
+  assert.ok(recoveryPlan);
+  assert.ok(recoveryPlan.cooldownDays >= 14);
 });
