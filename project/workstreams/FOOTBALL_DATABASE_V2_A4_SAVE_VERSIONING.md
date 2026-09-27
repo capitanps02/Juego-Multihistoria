@@ -1,9 +1,10 @@
 # DB-A4 — Pass 1 persistence inventory
 
-Status: IN PROGRESS — PASSES 1–3 COMPLETE
-Progress: 65%
-Passes: 3 / 5
-Estimated remaining: 2
+Status: IMPLEMENTATION COMPLETE — G4 CERTIFICATION PENDING
+Progress: 90%
+Passes certified: 3 / 5
+Passes implemented: 5 / 5
+Estimated remaining: 1 certification sweep
 
 ## Baseline
 
@@ -117,61 +118,39 @@ Implement:
 - Player Actions schema is unchanged; existing club-scoped fact payloads are validated only for V2 saves.
 - no RNG stream is touched by versioning/migration.
 
+## Pass 4 — validation / save-load replay — IMPLEMENTED, CI PENDING
+
+Committed QA now covers:
+- schema 2..8 frozen migration/round-trip baselines;
+- exact schema-8 pre-catalog no-op load/re-save;
+- supported A1 metadata preserved until explicit migration;
+- invalid/future catalog generation rejection;
+- active V2 invalid-ID injection;
+- exact-ID migration idempotence and tombstones;
+- ownerClub != registrationClub loan preservation;
+- Player Actions club-scoped fact persistence;
+- fresh V2 fixture production with catalog opponent identity;
+- deterministic current-V2 replay across save/load;
+- retirement save/load in playing / decided / announced / closed states.
+
+No versioning or migration path consumes RNG.
+
+## Pass 5 — minimum compatibility matrix — IMPLEMENTED, CERTIFICATION PENDING
+
+| Matrix row | Evidence |
+| --- | --- |
+| old schema 2..7 | `scripts/test-saves.mjs` frozen migration cases |
+| schema-8 pre-V2 | exact fixture round-trip with missing catalog metadata |
+| V2 A1 generation | supported compatibility generation + explicit A1→A2 migration |
+| fresh current V2 | new-career metadata + save/load |
+| transfer/current employment | market/current reference validation |
+| loan owner != registration | dedicated A4 round-trip |
+| historical fixture | missing `opponentClubId` remains loadable; no heuristic backfill |
+| new fixture | runtime producer + A4 long-career assert stable `opponentClubId` |
+| Player Actions | dedicated session persistence + club-fact reference validation |
+| long career | seed 424242 through terminal career + final save/load |
+| retirement | T5.36 states plus terminal long-career round-trip |
+
+Important fixture rule: a migrated historical row may predate `opponentClubId`; the migration never fabricates one. New V2 fixture production is separately required and tested to write a stable catalog opponent ID.
+
 ## Current QA status
-
-Dedicated regression: `scripts/test-football-catalog-save-versioning.mjs`.
-
-Coverage includes:
-- new-save metadata;
-- exact pre-catalog round trip;
-- active legacy pre-catalog identity;
-- invalid V2 identity injection;
-- historical legacy provenance;
-- owner/registration loan preservation;
-- unsupported version rejection;
-- Player Actions fact persistence;
-- exact-ID mapping and tombstones.
-
-CI workflow: `Football Database V2 · Save versioning`.
-
-Pass 4 and Pass 5 remain open until the exact PR HEAD has green save/load replay, migration idempotence, Player Actions persistence, catalog/runtime regressions and repository CI. G4 is not certified while predecessor G3 is still unresolved.
-
-## DB-A4 status
-
-```text
-DB-A4 — STATUS
-
-PROGRESO:
-65%
-
-PASADAS COMPLETADAS:
-3 / 5
-
-PASADAS ESTIMADAS RESTANTES:
-2
-
-SAVE VERSIONS:
-schema 2..8 supported; schema 8 current
-
-FOOTBALL CATALOG:
-world-v2-a2-2026-09-28 current
-missing => pre-football-catalog
-
-MIGRATIONS:
-explicit ID-only; A1 -> A2 path defined; pre-V2 implicit upgrade forbidden
-
-VALIDATION:
-V2 contextual reference validation implemented
-
-TESTS:
-dedicated suite + CI gate committed; exact-head certification pending
-
-BLOQUEADORES:
-serialized G3 predecessor + exact-head CI
-
-RIESGOS:
-parallel predecessor/A2 lines must be resolved before G4 certification
-
-SIGUIENTE:
-Pass 4 — save/load replay, invalid-ID injection, idempotence, Player Actions regression.
-```
