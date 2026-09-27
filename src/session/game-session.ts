@@ -4,9 +4,12 @@ import type { AgeMilestone } from "../simulation/age-milestones.js";
 import type { EventDefinition, GameState } from "../core/types.js";
 import {
   PLAYER_ACTION_CATALOG,
+  evaluatePlayerAction,
   executePlayerActionInPlace,
   listPlayerActions,
-  type PlayerActionCategory
+  validatePlayerActionTarget,
+  type PlayerActionCategory,
+  type PlayerActionDefinition
 } from "../player-actions/index.js";
 import { EVENTS } from "../content/events/index.js";
 import { createInitialState } from "../content/initial-state.js";
@@ -33,6 +36,7 @@ import { ENGINE_BUILD } from "../core/build.js";
 import { assertGameState, parseSaveJson, record, validateData } from "../save/validation.js";
 import { assertSessionSnapshot } from "./validate-session.js";
 import { knownPlayerContacts } from "../core/player-contacts.js";
+import { NPC_CATALOG } from "../catalog/npcs.js";
 import { contentIdentity } from "./content-identity.js";
 import {
   applyMigrationPathInPlace,
@@ -158,6 +162,15 @@ export interface PublicPlayerActionOptionView {
   available: boolean;
   unavailableReason: string | null;
 }
+export interface PublicPlayerActionTargetView {
+  id: string;
+  label: string;
+  role: string;
+  available: boolean;
+  unavailableReason: string | null;
+  cooldownUntil: string | null;
+  options: PublicPlayerActionOptionView[];
+}
 export interface PublicPlayerActionView {
   id: string;
   label: string;
@@ -167,16 +180,26 @@ export interface PublicPlayerActionView {
   unavailableReason: string | null;
   cooldownUntil: string | null;
   options: PublicPlayerActionOptionView[];
+  targets: PublicPlayerActionTargetView[];
 }
 export interface PublicPlayerActionCategoryView {
   id: PlayerActionCategory;
   label: string;
   actions: PublicPlayerActionView[];
 }
+export interface PublicPlayerActionHistoryView {
+  executionId: string;
+  date: string;
+  actionId: string;
+  actionLabel: string;
+  optionLabel: string;
+  text: string;
+}
 export interface PublicPlayerActionsView {
   available: boolean;
   unavailableReason: string | null;
   categories: PublicPlayerActionCategoryView[];
+  history: PublicPlayerActionHistoryView[];
   lastResult: { executionId: string; date: string; text: string } | null;
 }
 
@@ -282,14 +305,53 @@ export function canExecutePlayerAction(snapshot: SessionSnapshot): boolean {
   return playerActionSessionBlock(snapshot) === null;
 }
 
+function publicPlayerActionTargets(
+  state: GameState,
+  definition: PlayerActionDefinition,
+  block: { code: string; message: string } | null
+): PublicPlayerActionTargetView[] {
+  if (definition.targetKind === "none") return [];
+  const publicNpcById = new Map(NPC_CATALOG.map(npc => [npc.id, { name: npc.name, role: npc.role }]));
+  const targets: PublicPlayerActionTargetView[] = [];
+  for (const npc of state.npcs) {
+    if (!validatePlayerActionTarget(state, definition, npc.id).valid) continue;
+    const availability = evaluatePlayerAction(state, definition, npc.id);
+    const publicNpc = publicNpcById.get(npc.id);
+    targets.push({
+      id: npc.id,
+      label: publicNpc?.name ?? npc.id,
+      role: publicNpc?.role ?? npc.role,
+      available: block === null && availability.available,
+      unavailableReason: block?.message ?? availability.unavailableReason,
+      cooldownUntil: availability.cooldownUntil,
+      options: availability.options.map(option => ({
+        id: option.id,
+        label: option.label,
+        ...(option.description ? { description: option.description } : {}),
+        available: block === null && option.available,
+        unavailableReason: block?.message ?? option.unavailableReason
+      }))
+    });
+  }
+  return targets;
+}
+
 function publicPlayerActionsView(snapshot: SessionSnapshot): PublicPlayerActionsView {
   const block = playerActionSessionBlock(snapshot);
   const availability = new Map(listPlayerActions(snapshot.state, PLAYER_ACTION_CATALOG).map(row => [row.actionId, row]));
   const byCategory = new Map<PlayerActionCategory, PublicPlayerActionView[]>();
   for (const definition of PLAYER_ACTION_CATALOG) {
     const row = availability.get(definition.id);
-    const unavailableReason = block?.message ?? row?.unavailableReason ?? null;
-    const available = block === null && Boolean(row?.available);
+    const targets = publicPlayerActionTargets(snapshot.state, definition, block);
+    const targetRequired = definition.targetKind !== "none";
+    const targetAvailable = targets.some(target => target.available);
+    const targetReason = targets.length === 0
+      ? "No hay un objetivo válido disponible para esta acción."
+      : targets.find(target => !target.available)?.unavailableReason ?? null;
+    const unavailableReason = block?.message
+      ?? (targetRequired ? (targetAvailable ? null : targetReason) : row?.unavailableReason ?? null);
+    const available = block === null
+      && (targetRequired ? targetAvailable : Boolean(row?.available));
     const actions = byCategory.get(definition.category) ?? [];
     actions.push({
       id: definition.id,
@@ -298,21 +360,41 @@ function publicPlayerActionsView(snapshot: SessionSnapshot): PublicPlayerActions
       targetKind: definition.targetKind,
       available,
       unavailableReason,
-      cooldownUntil: row?.cooldownUntil ?? null,
+      cooldownUntil: targetRequired ? null : row?.cooldownUntil ?? null,
       options: definition.options.map(option => {
         const optionAvailability = row?.options.find(candidate => candidate.id === option.id);
+        const targetOptionAvailability = targets
+          .map(target => target.options.find(candidate => candidate.id === option.id))
+          .filter((candidate): candidate is PublicPlayerActionOptionView => Boolean(candidate));
+        const targetOptionAvailable = targetOptionAvailability.some(candidate => candidate.available);
         return {
           id: option.id,
           label: option.label,
           ...(option.description ? { description: option.description } : {}),
-          available: block === null && Boolean(optionAvailability?.available),
-          unavailableReason: block?.message ?? optionAvailability?.unavailableReason ?? null
+          available: block === null && (targetRequired ? targetOptionAvailable : Boolean(optionAvailability?.available)),
+          unavailableReason: block?.message
+            ?? (targetRequired
+              ? (targetOptionAvailable ? null : targetOptionAvailability[0]?.unavailableReason ?? targetReason)
+              : optionAvailability?.unavailableReason ?? null)
         };
-      })
+      }),
+      targets
     });
     byCategory.set(definition.category, actions);
   }
-  const last = snapshot.state.playerActions?.history.at(-1) ?? null;
+  const history = (snapshot.state.playerActions?.history ?? []).map(entry => {
+    const definition = PLAYER_ACTION_CATALOG.find(candidate => candidate.id === entry.actionId);
+    const option = definition?.options.find(candidate => candidate.id === entry.optionId);
+    return {
+      executionId: entry.executionId,
+      date: entry.date,
+      actionId: entry.actionId,
+      actionLabel: definition?.label ?? entry.actionId,
+      optionLabel: option?.label ?? entry.optionId,
+      text: entry.visibleResult
+    };
+  });
+  const last = history.at(-1) ?? null;
   return {
     available: block === null,
     unavailableReason: block?.message ?? null,
@@ -321,7 +403,8 @@ function publicPlayerActionsView(snapshot: SessionSnapshot): PublicPlayerActions
       label: PLAYER_ACTION_CATEGORY_LABELS[id],
       actions
     })),
-    lastResult: last ? { executionId: last.executionId, date: last.date, text: last.visibleResult } : null
+    history,
+    lastResult: last ? { executionId: last.executionId, date: last.date, text: last.text } : null
   };
 }
 
