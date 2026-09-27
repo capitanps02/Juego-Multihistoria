@@ -3,6 +3,7 @@ import {
   type FootballClubReferenceKind
 } from "../catalog/football/index.js";
 import {
+  CURRENT_FOOTBALL_CATALOG_VERSION,
   PRE_FOOTBALL_CATALOG_VERSION,
   footballCatalogVersionOf
 } from "./football-catalog-version.js";
@@ -212,6 +213,57 @@ function playerActionsIssue(value: unknown): FootballCatalogReferenceIssue | nul
   return null;
 }
 
+const COMPATIBILITY_REFERENCE_KEYS = new Set([
+  "club",
+  "ownerClub",
+  "registrationClub",
+  "clubId",
+  "destination"
+]);
+
+function compatibilityGenerationIssue(value: unknown): FootballCatalogReferenceIssue | null {
+  let nodes = 0;
+  const ancestors = new Set<object>();
+
+  const visit = (node: unknown, path: string, depth: number): FootballCatalogReferenceIssue | null => {
+    if (++nodes > 300_000 || depth > 64) {
+      return { path, reason: "football reference graph is too large or deep" };
+    }
+    if (node === null || typeof node !== "object") return null;
+    if (ancestors.has(node as object)) return { path, reason: "football reference graph contains a cycle" };
+    ancestors.add(node as object);
+    try {
+      if (Array.isArray(node)) {
+        for (let index = 0; index < node.length; index += 1) {
+          const issue = visit(node[index], `${path}[${index}]`, depth + 1);
+          if (issue) return issue;
+        }
+        return null;
+      }
+      if (!plainRecord(node)) return { path, reason: "football reference graph contains a non-plain object" };
+      for (const [key, child] of Object.entries(node)) {
+        const childPath = path ? `${path}.${key}` : key;
+        if (COMPATIBILITY_REFERENCE_KEYS.has(key) && child !== null && child !== undefined) {
+          const issue = historicalReference(child, childPath);
+          if (issue) return issue;
+        } else if (key === "opponentClubId" && child !== null && child !== undefined) {
+          const issue = catalogOpponent(child, childPath);
+          if (issue) return issue;
+        }
+        if (child !== null && typeof child === "object") {
+          const issue = visit(child, childPath, depth + 1);
+          if (issue) return issue;
+        }
+      }
+      return null;
+    } finally {
+      ancestors.delete(node as object);
+    }
+  };
+
+  return visit(value, "", 0);
+}
+
 /**
  * Referential integrity is intentionally version-gated. Missing/pre-catalog saves
  * retain frozen legacy semantics; current V2 saves fail closed on every active/new
@@ -221,6 +273,7 @@ export function inspectFootballCatalogSaveReferences(value: unknown): FootballCa
   if (!plainRecord(value)) return null;
   const version = footballCatalogVersionOf(value.footballCatalogVersion);
   if (version === PRE_FOOTBALL_CATALOG_VERSION) return null;
+  if (version !== CURRENT_FOOTBALL_CATALOG_VERSION) return compatibilityGenerationIssue(value);
 
   const professional = plainRecord(value.professional) ? value.professional : {};
   const world = plainRecord(value.world) ? value.world : {};
