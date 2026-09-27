@@ -1,0 +1,57 @@
+name: Football Database V2 - A7 preflight
+
+on:
+  workflow_dispatch:
+    inputs:
+      candidate_sha:
+        description: Exact integrated candidate SHA
+        required: true
+        type: string
+      a1_sha:
+        description: Certified A1 SHA
+        required: true
+        type: string
+      a2_sha:
+        description: Certified A2 SHA
+        required: true
+        type: string
+      a3_sha:
+        description: Certified A3 SHA
+        required: true
+        type: string
+      a4_sha:
+        description: Certified A4 SHA
+        required: true
+        type: string
+      a5_sha:
+        description: Certified A5 SHA
+        required: true
+        type: string
+      a6_sha:
+        description: Certified A6 SHA
+        required: true
+        type: string
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.candidate_sha }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: DB-A7 exact-head and generation ancestry
+        env:
+          DB_A7_CANDIDATE_SHA: ${{ inputs.candidate_sha }}
+          DB_A7_A1_SHA: ${{ inputs.a1_sha }}
+          DB_A7_A2_SHA: ${{ inputs.a2_sha }}
+          DB_A7_A3_SHA: ${{ inputs.a3_sha }}
+          DB_A7_A4_SHA: ${{ inputs.a4_sha }}
+          DB_A7_A5_SHA: ${{ inputs.a5_sha }}
+          DB_A7_A6_SHA: ${{ inputs.a6_sha }}
+        run: node scripts/qa-football-database-v2-a7-preflight.mjs
