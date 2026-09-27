@@ -9,6 +9,7 @@ import { PLAYER_ACTION_CONTENT_PLAN } from "../dist/player-actions/content-plan.
 import { PLAYER_ACTION_CONTENT_SPECS } from "../dist/player-actions/content-spec.js";
 import { PLAYER_ACTION_BALANCE_SPECS } from "../dist/player-actions/content-balance.js";
 import { PLAYER_ACTION_ELIGIBILITY_SPECS } from "../dist/player-actions/content-eligibility.js";
+import { PLAYER_ACTION_COOLDOWN_GROUP_SPECS } from "../dist/player-actions/content-cooldown-groups.js";
 import { CLUB_RENEWAL_INTENT_MAX_MONTHS } from "../dist/simulation/club-contract-intent.js";
 import {
   PLAYER_ACTION_CATALOG,
@@ -720,4 +721,62 @@ test("A5-040 RENEWAL USES CANONICAL 24-MONTH HORIZON", () => {
   assert.equal(contract.min, 1);
   assert.equal(contract.max, CLUB_RENEWAL_INTENT_MAX_MONTHS);
   assert.equal(CLUB_RENEWAL_INTENT_MAX_MONTHS, 24);
+});
+
+
+test("A5-041 SHARED COOLDOWN POLICY COVERS ALL 20 ACTIONS", () => {
+  const planIds = PLAYER_ACTION_CONTENT_PLAN.map(row => row.id).sort();
+  const groupIds = PLAYER_ACTION_COOLDOWN_GROUP_SPECS.map(row => row.actionId).sort();
+
+  assert.equal(PLAYER_ACTION_COOLDOWN_GROUP_SPECS.length, 20);
+  assert.equal(new Set(groupIds).size, groupIds.length);
+  assert.deepEqual(groupIds, planIds);
+
+  for (const row of PLAYER_ACTION_COOLDOWN_GROUP_SPECS) {
+    assert.ok(Number.isInteger(row.groupDays) && row.groupDays >= 0);
+    if (row.groupId) assert.ok(row.groupId.length > 0);
+  }
+});
+
+test("A5-042 SHARED COOLDOWN NEVER EXCEEDS ACTION COOLDOWN", () => {
+  const planById = new Map(PLAYER_ACTION_CONTENT_PLAN.map(row => [row.id, row]));
+
+  for (const row of PLAYER_ACTION_COOLDOWN_GROUP_SPECS) {
+    const plan = planById.get(row.actionId);
+    assert.ok(plan);
+    assert.ok(
+      row.groupDays <= plan.cooldownDays,
+      `${row.actionId} group cooldown ${row.groupDays}d exceeds action cooldown ${plan.cooldownDays}d`
+    );
+  }
+});
+
+test("A5-043 TARGET-CYCLING FAMILIES HAVE GROUP COOLDOWNS", () => {
+  const requiredFamilies = new Set([
+    "coach_conversation",
+    "agent_conversation",
+    "teammate_interaction"
+  ]);
+
+  const present = new Set(
+    PLAYER_ACTION_COOLDOWN_GROUP_SPECS
+      .map(row => row.groupId)
+      .filter(Boolean)
+  );
+
+  for (const family of requiredFamilies) {
+    assert.equal(present.has(family), true, `missing anti-cycling family ${family}`);
+  }
+
+  for (const row of PLAYER_ACTION_COOLDOWN_GROUP_SPECS.filter(item => item.groupId === "teammate_interaction")) {
+    assert.ok(row.groupDays >= 7, `${row.actionId} teammate family cooldown too short`);
+  }
+});
+
+test("A5-044 RECOVERY/DEVELOPMENT FAMILIES PREVENT DAILY ALTERNATION", () => {
+  for (const family of ["extra_development", "physical_recovery", "public_image", "personal_wellbeing"]) {
+    const rows = PLAYER_ACTION_COOLDOWN_GROUP_SPECS.filter(item => item.groupId === family);
+    assert.ok(rows.length >= 2, `family ${family} must contain at least two actions`);
+    assert.ok(rows.every(row => row.groupDays >= 7), `family ${family} must block daily cycling`);
+  }
 });
