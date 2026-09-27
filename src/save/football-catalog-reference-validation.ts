@@ -4,7 +4,6 @@ import {
 } from "../catalog/football/index.js";
 import {
   CURRENT_FOOTBALL_CATALOG_VERSION,
-  PRE_FOOTBALL_CATALOG_VERSION,
   footballCatalogVersionOf
 } from "./football-catalog-version.js";
 
@@ -21,7 +20,7 @@ function rows(value: unknown): unknown[] {
 }
 
 const NEW_KINDS: readonly FootballClubReferenceKind[] = ["catalog", "canonical_special"];
-const HISTORICAL_KINDS: readonly FootballClubReferenceKind[] = ["catalog", "canonical_special", "legacy_compat"];
+const HISTORICAL_KINDS: readonly FootballClubReferenceKind[] = ["catalog", "canonical_special", "legacy_compat", "narrative_alias"];
 
 function referenceIssue(
   value: unknown,
@@ -37,6 +36,7 @@ function referenceIssue(
 }
 const newReference = (value: unknown, path: string) => referenceIssue(value, path, NEW_KINDS);
 const historicalReference = (value: unknown, path: string) => referenceIssue(value, path, HISTORICAL_KINDS);
+const persistedReference = historicalReference;
 
 function catalogOpponent(value: unknown, path: string): FootballCatalogReferenceIssue | null {
   const classified = classifyFootballClubReference(value);
@@ -65,11 +65,11 @@ function marketIssue(value: unknown): FootballCatalogReferenceIssue | null {
   if (!plainRecord(value)) return null;
 
   if (value.pending !== null && value.pending !== undefined) {
-    const issue = offerIssue(value.pending, "market.pending", false);
+    const issue = offerIssue(value.pending, "market.pending", true);
     if (issue) return issue;
   }
   for (const [index, offer] of rows(value.openOffers).entries()) {
-    const issue = offerIssue(offer, `market.openOffers[${index}]`, false);
+    const issue = offerIssue(offer, `market.openOffers[${index}]`, true);
     if (issue) return issue;
   }
   for (const [index, decision] of rows(value.history).entries()) {
@@ -84,16 +84,16 @@ function marketIssue(value: unknown): FootballCatalogReferenceIssue | null {
   }
   for (const [index, negotiation] of rows(value.futureNegotiations).entries()) {
     if (!plainRecord(negotiation)) continue;
-    const destination = newReference(negotiation.destination, `market.futureNegotiations[${index}].destination`);
+    const destination = persistedReference(negotiation.destination, `market.futureNegotiations[${index}].destination`);
     if (destination) return destination;
-    const before = termsIssue(negotiation.before, `market.futureNegotiations[${index}].before`, false);
+    const before = termsIssue(negotiation.before, `market.futureNegotiations[${index}].before`, true);
     if (before) return before;
-    const terms = termsIssue(negotiation.terms, `market.futureNegotiations[${index}].terms`, false);
+    const terms = termsIssue(negotiation.terms, `market.futureNegotiations[${index}].terms`, true);
     if (terms) return terms;
   }
   for (const [index, agreement] of rows(value.futureAgreements).entries()) {
     if (!plainRecord(agreement)) continue;
-    const issue = termsIssue(agreement.terms, `market.futureAgreements[${index}].terms`, false);
+    const issue = termsIssue(agreement.terms, `market.futureAgreements[${index}].terms`, true);
     if (issue) return issue;
   }
   return null;
@@ -132,19 +132,15 @@ function worldIssue(world: Record<string, unknown>): FootballCatalogReferenceIss
   if (matchStore) {
     for (const [index, fixture] of rows(matchStore.fixtures).entries()) {
       if (!plainRecord(fixture)) continue;
-      const club = newReference(fixture.club, `world.sportMatchModel.fixtures[${index}].club`);
+      const club = persistedReference(fixture.club, `world.sportMatchModel.fixtures[${index}].club`);
       if (club) return club;
-      if (fixture.opponentClubId === undefined) {
-        return {
-          path: `world.sportMatchModel.fixtures[${index}].opponentClubId`,
-          reason: "V2 fixture is missing stable opponentClubId"
-        };
+      if (fixture.opponentClubId !== undefined) {
+        const opponent = catalogOpponent(fixture.opponentClubId, `world.sportMatchModel.fixtures[${index}].opponentClubId`);
+        if (opponent) return opponent;
       }
-      const opponent = catalogOpponent(fixture.opponentClubId, `world.sportMatchModel.fixtures[${index}].opponentClubId`);
-      if (opponent) return opponent;
     }
     if (plainRecord(matchStore.objective)) {
-      const issue = newReference(matchStore.objective.club, "world.sportMatchModel.objective.club");
+      const issue = persistedReference(matchStore.objective.club, "world.sportMatchModel.objective.club");
       if (issue) return issue;
     }
   }
@@ -152,27 +148,27 @@ function worldIssue(world: Record<string, unknown>): FootballCatalogReferenceIss
   const competition = plainRecord(world.sportCompetitionMoments) ? world.sportCompetitionMoments : null;
   if (competition) for (const [index, moment] of rows(competition.moments).entries()) {
     if (!plainRecord(moment)) continue;
-    const issue = newReference(moment.club, `world.sportCompetitionMoments.moments[${index}].club`);
+    const issue = persistedReference(moment.club, `world.sportCompetitionMoments.moments[${index}].club`);
     if (issue) return issue;
   }
 
   const penalties = plainRecord(world.sportPenaltySetups) ? world.sportPenaltySetups : null;
   if (penalties) for (const [index, setup] of rows(penalties.contexts).entries()) {
     if (!plainRecord(setup)) continue;
-    const issue = newReference(setup.club, `world.sportPenaltySetups.contexts[${index}].club`);
+    const issue = persistedReference(setup.club, `world.sportPenaltySetups.contexts[${index}].club`);
     if (issue) return issue;
   }
 
   for (const [index, approach] of rows(world.veteranMarketApproaches).entries()) {
     if (!plainRecord(approach)) continue;
-    const issue = newReference(approach.club, `world.veteranMarketApproaches[${index}].club`);
+    const issue = persistedReference(approach.club, `world.veteranMarketApproaches[${index}].club`);
     if (issue) return issue;
   }
 
   const leadership = plainRecord(world.playerClubLeadershipAuthority) ? world.playerClubLeadershipAuthority : null;
   if (leadership) {
     if (plainRecord(leadership.currentLeadership)) {
-      const issue = newReference(leadership.currentLeadership.clubId, "world.playerClubLeadershipAuthority.currentLeadership.clubId");
+      const issue = persistedReference(leadership.currentLeadership.clubId, "world.playerClubLeadershipAuthority.currentLeadership.clubId");
       if (issue) return issue;
     }
     for (const [index, row] of rows(leadership.history).entries()) {
@@ -181,7 +177,7 @@ function worldIssue(world: Record<string, unknown>): FootballCatalogReferenceIss
       if (issue) return issue;
     }
     if (plainRecord(leadership.successor)) {
-      const issue = newReference(leadership.successor.clubId, "world.playerClubLeadershipAuthority.successor.clubId");
+      const issue = persistedReference(leadership.successor.clubId, "world.playerClubLeadershipAuthority.successor.clubId");
       if (issue) return issue;
     }
   }
@@ -196,7 +192,7 @@ function worldIssue(world: Record<string, unknown>): FootballCatalogReferenceIss
   const injuries = plainRecord(world.injuryEpisodes) ? world.injuryEpisodes : null;
   if (injuries) for (const [index, episode] of rows(injuries.episodes).entries()) {
     if (!plainRecord(episode)) continue;
-    const issue = newReference(episode.registrationClub, `world.injuryEpisodes.episodes[${index}].registrationClub`);
+    const issue = persistedReference(episode.registrationClub, `world.injuryEpisodes.episodes[${index}].registrationClub`);
     if (issue) return issue;
   }
 
@@ -207,7 +203,7 @@ function playerActionsIssue(value: unknown): FootballCatalogReferenceIssue | nul
   if (!plainRecord(value)) return null;
   for (const [index, fact] of rows(value.facts).entries()) {
     if (!plainRecord(fact) || !plainRecord(fact.payload) || fact.payload.club === undefined) continue;
-    const issue = newReference(fact.payload.club, `playerActions.facts[${index}].payload.club`);
+    const issue = persistedReference(fact.payload.club, `playerActions.facts[${index}].payload.club`);
     if (issue) return issue;
   }
   return null;
@@ -284,13 +280,13 @@ export function inspectFootballCatalogSaveReferences(value: unknown): FootballCa
     ["professional.registrationClub", professional.registrationClub],
     ["world.ownerClub", world.ownerClub]
   ] as const) {
-    const issue = newReference(reference, path);
+    const issue = persistedReference(reference, path);
     if (issue) return issue;
   }
 
   for (const [index, npc] of rows(value.npcs).entries()) {
     if (!plainRecord(npc) || npc.club === null || npc.club === undefined) continue;
-    const issue = newReference(npc.club, `npcs[${index}].club`);
+    const issue = persistedReference(npc.club, `npcs[${index}].club`);
     if (issue) return issue;
   }
 
