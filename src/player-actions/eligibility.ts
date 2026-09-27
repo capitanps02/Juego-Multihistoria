@@ -1,7 +1,9 @@
 import type { GameState } from "../core/types.js";
 import { resolveRecentCurrentClubCoachChange } from "../simulation/coach-change-authority.js";
+import { hasActiveClubEmployment } from "../simulation/employment.js";
 import { resolveCurrentRepresentation } from "../simulation/representation-authority.js";
 import { PLAYER_ACTION_CATALOG } from "./catalog.js";
+import { playerActionFacts } from "./facts.js";
 import {
   getPlayerActionCooldown,
   isPlayerActionCooldownActive
@@ -10,6 +12,7 @@ import type {
   PlayerActionAvailability,
   PlayerActionDefinition,
   PlayerActionErrorCode,
+  PlayerActionEligibilityPredicate,
   PlayerActionGameState,
   PlayerActionTargetKind
 } from "./types.js";
@@ -61,13 +64,110 @@ export function validatePlayerActionTarget(
   return { valid: true, code: null, reason: null };
 }
 
-function eligibilityPass(state: PlayerActionGameState, eligibilityKey: string): boolean {
+function legacyEligibilityPass(state: PlayerActionGameState, eligibilityKey: string): boolean {
   switch (eligibilityKey) {
     case "active_career":
       return state.retirement.status !== "closed";
+    case "active_employment":
+      return state.retirement.status !== "closed" && hasActiveClubEmployment(state);
+    case "renewal_window": {
+      if (state.retirement.status === "closed" || !hasActiveClubEmployment(state)) return false;
+      const months = Number(state.contract.monthsRemaining);
+      return Number.isFinite(months) && months >= 1 && months <= 24;
+    }
     default:
       return false;
   }
+}
+
+function finiteNumber(value: unknown): number | null {
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
+}
+
+function predicatePass(
+  state: PlayerActionGameState,
+  predicate: PlayerActionEligibilityPredicate,
+  targetId?: string
+): boolean {
+  switch (predicate.kind) {
+    case "active_career":
+      return state.retirement.status !== "closed";
+    case "active_club_employment":
+      return hasActiveClubEmployment(state);
+    case "age_range":
+      return state.age >= predicate.min && (predicate.max === undefined || state.age <= predicate.max);
+    case "current_coach":
+      return Boolean(targetId && targetMatchesKind(state, "coach", targetId));
+    case "current_representation":
+      return Boolean(targetId && targetMatchesKind(state, "agent", targetId));
+    case "contract_months": {
+      const months = finiteNumber(state.contract.monthsRemaining);
+      return months !== null && months >= predicate.min && months <= predicate.max;
+    }
+    case "live_transfer_request":
+      return playerActionFacts(state).requestedTransfer.currentlyRelevant === predicate.required;
+    case "fatigue_min": {
+      const fatigue = finiteNumber(state.body.fatigue);
+      return fatigue !== null && fatigue >= predicate.value;
+    }
+    case "fatigue_max": {
+      const fatigue = finiteNumber(state.body.fatigue);
+      return fatigue !== null && fatigue <= predicate.value;
+    }
+    case "risk_max": {
+      const risk = finiteNumber(state.body.risk);
+      return risk !== null && risk <= predicate.value;
+    }
+    case "current_teammate":
+      return Boolean(targetId && targetMatchesKind(state, "teammate", targetId));
+    case "teammate_profile":
+      // NPCState has no canonical age/profile field yet. Do not infer from id, role or copy.
+      return false;
+    case "visible_teammate_tension":
+      // No certified player-facing tension authority exists yet.
+      return false;
+  }
+}
+
+function eligibilityFailureReason(predicate: PlayerActionEligibilityPredicate): string {
+  switch (predicate.kind) {
+    case "active_club_employment":
+      return "Necesitas tener un club actual para realizar esta acción.";
+    case "age_range":
+      return "Esta acción no está disponible en esta etapa de tu carrera.";
+    case "contract_months":
+      return "Esta acción no está disponible en esta fase del contrato.";
+    case "fatigue_min":
+    case "fatigue_max":
+    case "risk_max":
+      return "Tu estado físico actual no permite esta acción.";
+    case "current_coach":
+    case "current_representation":
+    case "current_teammate":
+    case "teammate_profile":
+    case "visible_teammate_tension":
+      return "No hay un objetivo válido disponible para esta acción.";
+    case "live_transfer_request":
+      return "Esta acción no está disponible con tu situación de mercado actual.";
+    case "active_career":
+      return "Esta acción no está disponible en el estado actual de la carrera.";
+  }
+}
+
+function eligibilityResult(
+  state: PlayerActionGameState,
+  definition: PlayerActionDefinition,
+  targetId?: string
+): { eligible: boolean; reason: string | null } {
+  if (!legacyEligibilityPass(state, definition.eligibilityKey)) {
+    return { eligible: false, reason: "Esta acción no está disponible en el estado actual de la carrera." };
+  }
+  for (const predicate of definition.eligibility ?? []) {
+    if (!predicatePass(state, predicate, targetId)) {
+      return { eligible: false, reason: eligibilityFailureReason(predicate) };
+    }
+  }
+  return { eligible: true, reason: null };
 }
 
 export function evaluatePlayerAction(
@@ -78,10 +178,10 @@ export function evaluatePlayerAction(
   const target = validatePlayerActionTarget(state, definition, targetId);
   const cooldownUntil = getPlayerActionCooldown(state, definition, targetId);
   const cooldownActive = isPlayerActionCooldownActive(state.date, cooldownUntil);
-  const eligible = eligibilityPass(state, definition.eligibilityKey);
+  const eligibility = eligibilityResult(state, definition, targetId);
 
   let unavailableReason: string | null = null;
-  if (!eligible) unavailableReason = "Esta acción no está disponible en el estado actual de la carrera.";
+  if (!eligibility.eligible) unavailableReason = eligibility.reason;
   else if (!target.valid) unavailableReason = target.reason;
   else if (cooldownActive) unavailableReason = `Disponible de nuevo el ${cooldownUntil}.`;
 
