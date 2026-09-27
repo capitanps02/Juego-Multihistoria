@@ -1,0 +1,42 @@
+name: Football Database V2 · Save versioning
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/save/**'
+      - 'src/core/types.ts'
+      - 'src/content/initial-state.ts'
+      - 'src/catalog/football/**'
+      - 'src/player-actions/**'
+      - 'src/simulation/**'
+      - 'scripts/test-football-catalog-save-versioning.mjs'
+      - 'scripts/test-saves.mjs'
+      - 'package.json'
+      - '.github/workflows/football-database-v2-save-versioning.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  save-versioning:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Build
+        run: npm run build
+      - name: DB-A4 catalog save contract
+        run: node --test scripts/test-football-catalog-save-versioning.mjs
+      - name: Save migration and replay regressions
+        run: node --test scripts/test-saves.mjs scripts/test-t5-retirement-save-known-bug.mjs
+      - name: Player Actions persistence regression
+        run: node --test scripts/test-player-actions-session.mjs
+      - name: Catalog + runtime regressions
+        run: node --test scripts/test-football-catalog.mjs scripts/test-football-catalog-balance.mjs scripts/test-football-database-v2-runtime.mjs
