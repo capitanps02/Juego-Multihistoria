@@ -1033,3 +1033,60 @@ test("A5-057 INTERVIEW OPTIONS HAVE EXPLICIT TRADEOFFS", () => {
   assert.ok(teamFirst.some(delta => delta.metric === "professional.institutionalTrust" && delta.delta > 0));
   assert.ok(teamFirst.some(delta => delta.metric === "professional.commercialPower" && delta.delta < 0));
 });
+
+
+test("A5-058 THEORETICAL ANNUAL PROFESSIONAL GAINS STAY BOUNDED", () => {
+  const planById = new Map(PLAYER_ACTION_CONTENT_PLAN.map(row => [row.id, row]));
+  const annualPositive = new Map();
+
+  for (const action of PLAYER_ACTION_BALANCE_SPECS) {
+    const plan = planById.get(action.actionId);
+    assert.ok(plan);
+    const maxUses = Math.floor(364 / plan.cooldownDays) + 1;
+
+    const bestByMetric = new Map();
+    for (const option of action.options) {
+      for (const delta of option.directDeltas) {
+        if (!delta.metric.startsWith("professional.") || delta.delta <= 0) continue;
+        bestByMetric.set(
+          delta.metric,
+          Math.max(bestByMetric.get(delta.metric) ?? 0, delta.delta)
+        );
+      }
+    }
+
+    for (const [metric, delta] of bestByMetric) {
+      annualPositive.set(metric, (annualPositive.get(metric) ?? 0) + delta * maxUses);
+    }
+  }
+
+  for (const metric of [
+    "professional.technique",
+    "professional.tacticalReading",
+    "professional.matchEndurance"
+  ]) {
+    assert.ok((annualPositive.get(metric) ?? 0) <= 5, `${metric} gross annual menu gain too high`);
+  }
+
+  for (const [metric, value] of annualPositive) {
+    assert.ok(value <= 8, `${metric} theoretical gross annual menu gain ${value} exceeds 8`);
+  }
+});
+
+test("A5-059 RELATIONSHIP CATEGORY STAYS RELATIONSHIP-LOCAL", () => {
+  const relationshipIds = new Set(
+    PLAYER_ACTION_CONTENT_PLAN
+      .filter(row => row.category === "relationships")
+      .map(row => row.id)
+  );
+
+  for (const action of PLAYER_ACTION_BALANCE_SPECS.filter(row => relationshipIds.has(row.actionId))) {
+    for (const option of action.options) {
+      assert.ok(option.directDeltas.length > 0);
+      assert.ok(
+        option.directDeltas.every(delta => delta.metric.startsWith("relationship.")),
+        `${action.actionId}/${option.optionId} leaks into global progression`
+      );
+    }
+  }
+});
