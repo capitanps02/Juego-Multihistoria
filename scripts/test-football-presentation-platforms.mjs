@@ -59,6 +59,8 @@ test('PlayCanvas bundle declares the authoritative football presentation source'
   assert.equal(manifest.presentationCatalogSource,'src/catalog/football/index.ts');
   assert.ok(Object.hasOwn(manifest.inputs,'src/catalog/football/index.ts'));
   assert.ok(Object.hasOwn(manifest.inputs,'web/club-names.js'));
+  assert.ok(Object.hasOwn(manifest.inputs,'scripts/build-playcanvas-db-a5.mjs'));
+  assert.ok(Object.hasOwn(manifest.inputs,'scripts/local-esm-graph.mjs'));
   assert.equal(manifest.bundleBytes,Buffer.byteLength(source));
   assert.doesNotMatch(source,/(^|\n)\s*import\s/m);
   assert.ok(source.includes('classifyFootballClubReference'));
@@ -70,6 +72,7 @@ test('Android package closes the historical club-names import hole recursively',
   assert.equal(manifest.integration,'T3.3');
   assert.equal(manifest.footballPresentation,'DB-A5-G5');
   assert.equal(manifest.importGraph.entry,'web/local.js');
+  for(const input of ['web/game-ui.js','web/club-names.js','scripts/build-android-offline.mjs','scripts/finalize-android-offline-db-a5.mjs','scripts/local-esm-graph.mjs'])assert.ok(manifest.presentationInputs[input],input);
   assert.ok(manifest.importGraph.moduleCount>0);
   for(const required of [
     'web/local.js',
