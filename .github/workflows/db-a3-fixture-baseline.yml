@@ -22,3 +22,4 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: node --test scripts/test-db-a3-fixture-baseline.mjs
+      - run: node --test scripts/test-player-actions-narrative-bridge.mjs scripts/test-t5-age18-market-authority.mjs
