@@ -1,4 +1,6 @@
 import type { DataValue } from "../core/types.js";
+import { currentEmploymentClub } from "../simulation/employment.js";
+import { resolveCurrentRepresentation } from "../simulation/representation-authority.js";
 import type {
   PlayerActionFactKind,
   PlayerActionGameState
@@ -26,6 +28,17 @@ function requireNumber(value: unknown, label: string): number {
   return value;
 }
 
+function requireCurrentClub(state: PlayerActionGameState): string {
+  const club = currentEmploymentClub(state);
+  if (!club) throw new Error("Player Action requires current club employment");
+  return club;
+}
+
+function coachScope(state: PlayerActionGameState, targetId: string | undefined): { club: string; coachNpcId: string } {
+  if (!targetId) throw new Error("Coach conversation requires target");
+  return { club: requireCurrentClub(state), coachNpcId: targetId };
+}
+
 const EFFECTS: Readonly<Record<string, EffectHandler>> = Object.freeze({
   train_extra(state) {
     const fatigue = requireNumber(state.body.fatigue, "body.fatigue");
@@ -51,30 +64,69 @@ const EFFECTS: Readonly<Record<string, EffectHandler>> = Object.freeze({
     }];
   },
 
-  coach_request_more_minutes(_state, targetId) {
-    if (!targetId) throw new Error("Coach conversation requires target");
+  coach_request_more_minutes(state, targetId) {
+    const scope = coachScope(state, targetId);
     return [{
       kind: "request_more_minutes",
-      payload: { request: "more_minutes" },
+      payload: { request: "more_minutes", ...scope },
       expiresInDays: 30
     }];
   },
 
-  coach_request_feedback(_state, targetId) {
-    if (!targetId) throw new Error("Coach conversation requires target");
+  coach_request_feedback(state, targetId) {
+    const scope = coachScope(state, targetId);
     return [{
       kind: "request_coach_feedback",
-      payload: { request: "development_feedback" },
+      payload: { request: "development_feedback", ...scope },
       expiresInDays: 14
     }];
   },
 
-  coach_acknowledge_role(_state, targetId) {
-    if (!targetId) throw new Error("Coach conversation requires target");
+  coach_acknowledge_role(state, targetId) {
+    const scope = coachScope(state, targetId);
     return [{
       kind: "coach_role_acknowledged",
-      payload: { stance: "comfortable_with_current_role" },
+      payload: { stance: "comfortable_with_current_role", ...scope },
       expiresInDays: 14
+    }];
+  },
+
+  request_transfer(state) {
+    return [{
+      kind: "request_transfer",
+      payload: {
+        request: "transfer",
+        club: requireCurrentClub(state)
+      },
+      expiresInDays: 120
+    }];
+  },
+
+  request_renewal(state) {
+    return [{
+      kind: "request_renewal",
+      payload: {
+        request: "renewal",
+        club: requireCurrentClub(state),
+        marketHistoryCount: state.market?.history.length ?? 0
+      },
+      expiresInDays: 90
+    }];
+  },
+
+  ask_agent_market(state, targetId) {
+    if (!targetId) throw new Error("Agent market consultation requires target");
+    const representation = resolveCurrentRepresentation(state);
+    if (!representation || representation.agentNpcId !== targetId) {
+      throw new Error("Agent market consultation requires the current certified representative");
+    }
+    return [{
+      kind: "ask_agent_market",
+      payload: {
+        request: "market_status",
+        agentNpcId: targetId
+      },
+      expiresInDays: 30
     }];
   }
 });
