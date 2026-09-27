@@ -67,7 +67,8 @@
     "test:player-actions-content": "npm run build && node --test scripts/test-player-actions-content.mjs",
     "test:player-actions-balance": "npm run build && node scripts/stress-player-actions-content.mjs",
     "test:player-actions-ui": "npm run build && node --test scripts/test-player-actions-ui-contract.mjs",
-    "test:football-catalog": "npm run build && node --test scripts/test-football-catalog.mjs"
+    "test:football-catalog": "npm run build && node --test scripts/test-football-catalog.mjs",
+    "test:football-balance": "npm run build && node --test scripts/test-football-catalog.mjs scripts/test-football-catalog-balance.mjs"
   },
   "devDependencies": {
     "typescript": "5.8.3"
