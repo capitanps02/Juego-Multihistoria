@@ -140,18 +140,18 @@ export const PLAYER_ACTION_CONTENT_SPECS: readonly PlayerActionContentSpec[] = [
   },
   {
     id: "PA_LEADER_ADVICE",
-    label: "Pedir consejo",
-    description: "Pide orientación a un compañero veterano sin convertir su experiencia en una mejora automática.",
+    label: "Pedir consejo a un líder",
+    description: "Pide orientación a un compañero con liderazgo reconocido sin convertirla en una mejora automática.",
     options: [
-      { id: "ASK_ADVICE", label: "Escuchar su experiencia", publicResult: "Has pedido consejo a un compañero con más experiencia." }
+      { id: "ASK_ADVICE", label: "Escuchar su experiencia", publicResult: "Has pedido consejo a un líder del vestuario." }
     ]
   },
   {
     id: "PA_MENTOR_TEAMMATE",
-    label: "Ayudar a un joven",
-    description: "Dedica tiempo a un compañero joven sin otorgarle minutos, rol ni progreso deportivo por decreto.",
+    label: "Compartir experiencia",
+    description: "En la madurez de tu carrera, dedica tiempo a orientar a un compañero sin alterar su rol ni sus minutos.",
     options: [
-      { id: "MENTOR", label: "Compartir experiencia", publicResult: "Has dedicado tiempo a ayudar a un compañero joven." }
+      { id: "MENTOR", label: "Orientar a un compañero", publicResult: "Has compartido experiencia con un compañero del vestuario." }
     ]
   },
   {
