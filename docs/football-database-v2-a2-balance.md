@@ -196,3 +196,55 @@ A2 is based on the A1 head and must not merge before:
 A2 authority ends at:
 
 **G2 — FOOTBALL DATA / BALANCE CERTIFIED**
+
+
+## Final league/country distribution
+
+Post-calibration country averages:
+
+| country | clubs | prestige | finance | youth | development | pressure | attraction |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| ESP | 62 | 72.81 | 73.34 | 76.24 | 75.19 | 73.37 | 75.24 |
+| ENG | 68 | 74.62 | 77.97 | 75.13 | 72.99 | 75.35 | 77.51 |
+| ITA | 40 | 78.00 | 75.60 | 79.40 | 74.90 | 78.83 | 80.83 |
+| DEU | 36 | 76.14 | 78.08 | 79.69 | 79.83 | 75.00 | 79.67 |
+| FRA | 36 | 76.56 | 77.00 | 80.14 | 79.67 | 74.86 | 79.64 |
+| PRT | 36 | 70.58 | 66.69 | 80.03 | 81.64 | 69.58 | 75.72 |
+| NLD | 38 | 69.92 | 67.58 | 81.63 | 83.76 | 66.50 | 75.32 |
+| BEL | 32 | 64.75 | 62.94 | 78.66 | 81.94 | 62.69 | 69.94 |
+| USA | 30 | 68.83 | 79.47 | 74.77 | 77.00 | 70.03 | 76.63 |
+| MEX | 18 | 69.11 | 69.61 | 78.28 | 77.56 | 77.00 | 71.11 |
+| ARG | 30 | 76.87 | 67.57 | 87.37 | 84.43 | 84.60 | 81.87 |
+| JPN | 20 | 69.20 | 74.10 | 81.30 | 84.95 | 68.15 | 73.20 |
+| CHN | 16 | 63.38 | 72.50 | 71.75 | 73.13 | 69.00 | 67.06 |
+| TUR | 18 | 72.39 | 72.83 | 77.89 | 76.72 | 81.72 | 77.33 |
+| NOR | 16 | 63.25 | 64.63 | 80.69 | 84.94 | 61.38 | 70.19 |
+| MAR | 16 | 62.94 | 58.75 | 78.00 | 84.56 | 66.13 | 66.81 |
+| ZAF | 16 | 60.75 | 59.56 | 74.31 | 79.56 | 65.38 | 64.06 |
+
+Tier averages:
+
+| tier | clubs | prestige | finance | youth | development | pressure | attraction |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 1 | 328 | 73.99 | 74.25 | 80.97 | 81.04 | 75.71 | 78.07 |
+| 2 | 156 | 68.41 | 68.47 | 76.04 | 76.46 | 67.92 | 72.54 |
+| 3 | 44 | 64.57 | 67.02 | 68.68 | 69.86 | 65.48 | 67.89 |
+
+### Deterministic-flavour outliers
+
+Before A2, 148/528 clubs had an absolute prestige flavour contribution of 6 or 7 points.
+After A2 the raw deterministic flavour is hard-bounded to +/-3, therefore unexplained flavour contributions above 3 are structurally impossible. Competitive extremes must now come from league/tier structure plus an explicit club band.
+
+### Prestige extremes after calibration
+
+Top ten:
+`ENG_PORTSMOUTH 97`, `ENG_WOLVERHAMPTON 96`, `ESP_VALLADOLID 95`,
+`ENG_READING 95`, `ENG_HULL 94`, `ITA_CATANIA 94`, `DEU_HAMBURG 94`,
+`DEU_ESSEN 94`, `ENG_BIRMINGHAM 93`, `ENG_COVENTRY 93`.
+
+Bottom ten:
+`BEL_DENDERMONDE 53`, `BEL_TURNHOUT 54`, `ZAF_GQEBERHA 54`,
+`BEL_BEVEREN 55`, `ZAF_EAST_LONDON 55`, `CHN_CHONGQING 56`,
+`NOR_STAVANGER 56`, `NOR_BOD 56`, `ZAF_RUSTENBURG 56`, `CHN_WUHAN 57`.
+
+The lower extreme is dominated by the explicit lower band rather than uncontrolled hash noise.
