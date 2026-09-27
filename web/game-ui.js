@@ -202,7 +202,7 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
     if(playerActionUi.screen==='player_action_result'){
       const latest=v.actions?.lastResult;
       const p=panel(a.label);p.classList.add('player-action-result');p.prepend(el('span','ACCIÓN COMPLETADA','eyebrow'));p.append(el('p',latest?.executionId===playerActionUi.resultExecutionId?latest.text:'La acción se ha registrado correctamente.','story-text'));
-      const actions=el('div',undefined,'player-action-result-actions');actions.append(button('Realizar otra acción',()=>{playerActionUi={screen:'player_action_menu',categoryId:null,actionId:null,targetId:null,resultExecutionId:null};render(true);}),button('Volver a carrera',()=>{resetPlayerActions();render(true);},'primary'));p.append(actions);main.append(p);return true;
+      const actions=el('div',undefined,'player-action-result-actions');actions.append(button('Realizar otra acción',()=>{playerActionUi={screen:'player_action_menu',categoryId:null,actionId:null,targetId:null,resultExecutionId:null};render(true);}),button('Volver a carrera',()=>navigate('home'),'primary'));p.append(actions);main.append(p);return true;
     }
     resetPlayerActions();return false;
   }
