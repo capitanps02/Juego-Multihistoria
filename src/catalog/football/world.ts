@@ -1,4 +1,6 @@
 import type { ClubArchetype, FootballConfederation, FootballCountryCode, FootballClub, FootballDivision } from "./types.js";
+import type { FootballClubBand, FootballBalanceAttribute } from "./balance.js";
+import { footballBandAttributeModifier, footballClubBandFor, footballStructuralCoefficient } from "./balance.js";
 import { assertFootballCatalogData } from "./integrity.js";
 import { catalogMultiClubIdentityKey, defaultCatalogClubId, stableCatalogClubId } from "./identity.js";
 
@@ -1140,12 +1142,26 @@ function clamp(value: number, min = 0, max = 100): number {
   return Math.min(max, Math.max(min, Math.round(value)));
 }
 
-function variation(id: string, channel: string, radius = 7): number {
+function variation(id: string, channel: string, radius = 3): number {
   return (hashString(`${id}|${channel}`) % (radius * 2 + 1)) - radius;
 }
 
 function tierAdjusted(value: number, tier: number): number {
   return clamp(value - (TIER_STRENGTH_PENALTY[tier] ?? 30));
+}
+
+function balancedAttribute(
+  id: string,
+  band: FootballClubBand,
+  attribute: FootballBalanceAttribute,
+  structuralValue: number,
+  variationChannel: string
+): number {
+  return clamp(
+    footballStructuralCoefficient(structuralValue) +
+    footballBandAttributeModifier(band, attribute) +
+    variation(id, variationChannel, 3)
+  );
 }
 
 function shortName(city: string, modifier: string): string {
@@ -1156,9 +1172,19 @@ function shortName(city: string, modifier: string): string {
   return `${city.slice(0, cityLength).trim()} ${modifier.slice(0, modifierLength)}`.slice(0, MAX_SHORT_NAME_LENGTH).trim();
 }
 
-function archetypesFor(tier: number, prestige: number, seed: number): readonly ClubArchetype[] {
+function archetypesFor(
+  tier: number,
+  prestige: number,
+  seed: number,
+  band: FootballClubBand
+): readonly ClubArchetype[] {
   const pool: ClubArchetype[] = ["development","selling","historic","high_pressure","community","technical","physical"];
-  const first: ClubArchetype = prestige >= 84 && tier === 1 ? "continental" : pool[seed % pool.length]!;
+  const first: ClubArchetype =
+    band === "elite" || band === "continental"
+      ? "continental"
+      : band === "development"
+        ? "development"
+        : pool[seed % pool.length]!;
   const second = pool[(seed + 3) % pool.length]!;
   return Object.freeze(first === second ? [first] : [first, second]);
 }
@@ -1207,7 +1233,8 @@ for (const [rawCode, config] of Object.entries(COUNTRY_CONFIGS)) {
       const identitySeed = hashString(`${countryCode}|${city}|identity`);
       const modifier = config.mods[identitySeed % config.mods.length]!;
       const nameValue = `${city} ${modifier}`;
-      const prestige = clamp(divisionStrength + variation(id, "prestige"));
+      const balanceBand = footballClubBandFor(id, tier, divisionStrength);
+      const prestige = balancedAttribute(id, balanceBand, "prestige", divisionStrength, "prestige");
       clubs.push(Object.freeze({
         id,
         name: nameValue,
@@ -1219,12 +1246,42 @@ for (const [rawCode, config] of Object.entries(COUNTRY_CONFIGS)) {
         divisionId,
         tier,
         prestige,
-        financialPower: clamp(tierAdjusted(config.finance, tier) + variation(id, "finance")),
-        youthQuality: clamp(tierAdjusted(config.youth, tier) + variation(id, "youth")),
-        developmentBias: clamp(tierAdjusted(config.development, tier) + variation(id, "development")),
-        pressure: clamp(tierAdjusted(config.pressure, tier) + variation(id, "pressure")),
-        internationalAttraction: clamp(tierAdjusted(config.international, tier) + variation(id, "international")),
-        archetypes: archetypesFor(tier, prestige, identitySeed),
+        financialPower: balancedAttribute(
+          id,
+          balanceBand,
+          "financialPower",
+          tierAdjusted(config.finance, tier),
+          "finance"
+        ),
+        youthQuality: balancedAttribute(
+          id,
+          balanceBand,
+          "youthQuality",
+          tierAdjusted(config.youth, tier),
+          "youth"
+        ),
+        developmentBias: balancedAttribute(
+          id,
+          balanceBand,
+          "developmentBias",
+          tierAdjusted(config.development, tier),
+          "development"
+        ),
+        pressure: balancedAttribute(
+          id,
+          balanceBand,
+          "pressure",
+          tierAdjusted(config.pressure, tier),
+          "pressure"
+        ),
+        internationalAttraction: balancedAttribute(
+          id,
+          balanceBand,
+          "internationalAttraction",
+          tierAdjusted(config.international, tier),
+          "international"
+        ),
+        archetypes: archetypesFor(tier, prestige, identitySeed, balanceBand),
         clearanceStatus: "working_name_unchecked"
       }));
     }
@@ -1239,4 +1296,4 @@ assertFootballCatalogData(frozenClubs, frozenDivisions, "Football Database V2 ca
 
 export const FOOTBALL_DIVISIONS = frozenDivisions;
 export const FOOTBALL_CLUBS = frozenClubs;
-export const FOOTBALL_CATALOG_VERSION = "world-v2-a1-2026-09-28";
+export const FOOTBALL_CATALOG_VERSION = "world-v2-a2-2026-09-28";
