@@ -55,6 +55,7 @@ test("A1-003 EXECUTION: valid training applies only bounded effect + own state",
   const clubBefore = state.club;
   const nationalRoleBefore = state.professional.nationalRole;
   const fatigueBefore = state.body.fatigue;
+  const riskBefore = state.body.risk;
   const techniqueBefore = state.professional.technique;
 
   const result = executePlayerActionInPlace(state, {
@@ -64,7 +65,8 @@ test("A1-003 EXECUTION: valid training applies only bounded effect + own state",
 
   assert.equal(result.ok, true);
   assert.equal(state.body.fatigue, fatigueBefore + 3);
-  assert.equal(state.professional.technique, techniqueBefore + 0.5);
+  assert.equal(state.body.risk, riskBefore + 1);
+  assert.equal(state.professional.technique, techniqueBefore + 0.15);
   assert.equal(state.playerActions?.history.length, 1);
   assert.equal(state.playerActions?.facts.length, 1);
   assert.equal(Object.keys(state.playerActions?.cooldowns ?? {}).length, 1);
