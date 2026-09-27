@@ -102,11 +102,12 @@ async function runCareer(seed, policy) {
 
     const current = session.getView();
     assert.equal(current.screen, "career");
+    const advanceStep = policy === "rest-heavy" || policy === "mixed" ? 1 : 7;
     await session.dispatch({
       type: "continue",
       commandId: `stress-${seed}-${policy}-continue-${++commands}`,
       expectedRevision: current.revision,
-      maxDays: Math.min(7, TARGET_DAYS - session.exportSnapshot().state.runtime.day)
+      maxDays: Math.min(advanceStep, TARGET_DAYS - session.exportSnapshot().state.runtime.day)
     });
   }
 
