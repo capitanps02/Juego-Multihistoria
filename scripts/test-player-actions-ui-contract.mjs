@@ -137,7 +137,9 @@ test('A4-011 MULTIPLE ACTIONS: compatible actions can run in the same game date'
 
 test('A4-012 DOUBLE CLICK: UI blocks re-entry while a command is executing',()=>{
   assert.match(preview,/if \(busy \|\| !session\) return/);
-  assert.match(preview,/document\.querySelectorAll\('button'\).*disabled = value/s);
+  assert.match(preview,/button\.dataset\.busyDisabled = 'true'/);
+  assert.match(preview,/button\[data-busy-disabled="true"\]/);
+  assert.doesNotMatch(preview,/document\.querySelectorAll\('button'\)\.forEach\(b => \{ b\.disabled = value; \}\)/);
   assert.match(web,/if\(busy\|\|!session\)return/);
   assert.match(web,/b\.disabled=busy\|\|options\.disabled===true/);
 });
