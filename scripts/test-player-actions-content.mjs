@@ -6,6 +6,7 @@ import { GameSession } from "../dist/session/game-session.js";
 import { materializeAge18MarketOfferInPlace } from "../dist/simulation/early-career-market.js";
 import { certifyRepresentationInPlace } from "../dist/simulation/representation-authority.js";
 import { PLAYER_ACTION_CONTENT_PLAN } from "../dist/player-actions/content-plan.js";
+import { PLAYER_ACTION_CONTENT_SPECS } from "../dist/player-actions/content-spec.js";
 import {
   PLAYER_ACTION_CATALOG,
   PLAYER_ACTION_EFFECT_KEYS,
@@ -469,4 +470,44 @@ test("A5-027 CAUSAL FACT EXPIRES BEFORE ACTION REOPENS", () => {
   state.date = result.cooldownUntil;
   assert.equal(getPlayerActionFacts(state, { activeOnly: true, kind: "request_transfer" }).length, 0);
   assert.equal(isPlayerActionAvailable(state, definition), true);
+});
+
+
+test("A5-027 FULL PUBLIC CONTENT SPEC COVERAGE", () => {
+  const planIds = PLAYER_ACTION_CONTENT_PLAN.map(row => row.id).sort();
+  const specIds = PLAYER_ACTION_CONTENT_SPECS.map(row => row.id).sort();
+
+  assert.equal(PLAYER_ACTION_CONTENT_SPECS.length, 20);
+  assert.equal(new Set(specIds).size, specIds.length);
+  assert.deepEqual(specIds, planIds);
+});
+
+test("A5-028 FULL SPEC OPTION AND COPY BUDGETS", () => {
+  for (const spec of PLAYER_ACTION_CONTENT_SPECS) {
+    assert.ok(spec.label.length > 0 && spec.label.length <= 42, `${spec.id} invalid label length`);
+    assert.ok(spec.description.length > 0 && spec.description.length <= 180, `${spec.id} invalid description length`);
+    assert.ok(spec.options.length >= 1 && spec.options.length <= 5, `${spec.id} invalid option count`);
+    assert.equal(new Set(spec.options.map(option => option.id)).size, spec.options.length, `${spec.id} duplicate option ids`);
+
+    for (const option of spec.options) {
+      assert.ok(option.label.length > 0 && option.label.length <= 48, `${spec.id}/${option.id} invalid option label`);
+      assert.ok(option.publicResult.length > 0 && option.publicResult.length <= 140, `${spec.id}/${option.id} invalid public result`);
+    }
+  }
+});
+
+test("A5-029 IMPLEMENTED PUBLIC COPY IS A SUBSET OF CERTIFIED SPEC", () => {
+  for (const action of PLAYER_ACTION_CATALOG) {
+    const spec = PLAYER_ACTION_CONTENT_SPECS.find(row => row.id === action.id);
+    assert.ok(spec, `missing public content spec for ${action.id}`);
+    assert.equal(action.label, spec.label, `${action.id} label drift`);
+    assert.equal(action.description, spec.description, `${action.id} description drift`);
+
+    for (const option of action.options) {
+      const plannedOption = spec.options.find(row => row.id === option.id);
+      assert.ok(plannedOption, `${action.id}/${option.id} missing from public content spec`);
+      assert.equal(option.label, plannedOption.label, `${action.id}/${option.id} label drift`);
+      assert.equal(option.publicResult, plannedOption.publicResult, `${action.id}/${option.id} result drift`);
+    }
+  }
 });
