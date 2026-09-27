@@ -42,15 +42,15 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
   function routeState(){return {mhOwner:true,mhView:view,mhCinematic:cinematic};}
   function replaceRouteState(){if(win.history?.replaceState)win.history.replaceState(routeState(),'');}
   function prepareHistory(){if(historyReady||!win.history?.replaceState)return;const initialCinematic=cinematic;win.history.replaceState({...routeState(),mhCinematic:false},'');historyReady=true;if(initialCinematic)win.history.pushState(routeState(),'');}
-  function navigate(name){view=validViews.has(name)?name:'home';cinematic=false;message='';playerActionUi={screen:'career',categoryId:null,actionId:null,resultExecutionId:null};if(historyReady)win.history.pushState(routeState(),'');else prepareHistory();render(true);}
+  function navigate(name){view=validViews.has(name)?name:'home';cinematic=false;message='';playerActionUi={screen:'career',categoryId:null,actionId:null,targetId:null,resultExecutionId:null};if(historyReady)win.history.pushState(routeState(),'');else prepareHistory();render(true);}
   function openCinematic(){if(!session)return;cinematic=true;if(historyReady)win.history.pushState(routeState(),'');else prepareHistory();render(true);}
   function closeCinematic(){if(historyReady&&win.history.state?.mhOwner&&win.history.state.mhCinematic){win.history.back();return;}cinematic=false;view='home';replaceRouteState();render(true);}
   function goBack(){
     if(cinematic){closeCinematic();return;}
     if(playerActionUi.screen!=='career'){
-      if(playerActionUi.screen==='player_action_result'||playerActionUi.screen==='player_action_detail')playerActionUi={screen:'player_action_category',categoryId:playerActionUi.categoryId,actionId:null,resultExecutionId:null};
-      else if(playerActionUi.screen==='player_action_category')playerActionUi={screen:'player_action_menu',categoryId:null,actionId:null,resultExecutionId:null};
-      else playerActionUi={screen:'career',categoryId:null,actionId:null,resultExecutionId:null};
+      if(playerActionUi.screen==='player_action_result'||playerActionUi.screen==='player_action_detail')playerActionUi={screen:'player_action_category',categoryId:playerActionUi.categoryId,actionId:null,targetId:null,resultExecutionId:null};
+      else if(playerActionUi.screen==='player_action_category')playerActionUi={screen:'player_action_menu',categoryId:null,actionId:null,targetId:null,resultExecutionId:null};
+      else playerActionUi={screen:'career',categoryId:null,actionId:null,targetId:null,resultExecutionId:null};
       render(true);return;
     }
     if(historyReady&&win.history.state?.mhOwner&&view!=='home'){win.history.back();return;}
@@ -123,7 +123,7 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
     life:'Descanso y decisiones personales fuera del campo.',
     health:'Recuperación y cuidado personal cuando estén disponibles.'
   };
-  function resetPlayerActions(){playerActionUi={screen:'career',categoryId:null,actionId:null,resultExecutionId:null};}
+  function resetPlayerActions(){playerActionUi={screen:'career',categoryId:null,actionId:null,targetId:null,resultExecutionId:null};}
   function cooldownText(v,a){
     if(!a?.cooldownUntil)return a?.unavailableReason||'';
     const days=Math.max(0,Math.ceil((new Date(a.cooldownUntil+'T00:00:00Z')-new Date(v.date+'T00:00:00Z'))/86400000));
@@ -133,7 +133,7 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
     return 'Disponible en '+days+' días.';
   }
   function selectedPlayerAction(v){for(const c of v.actions?.categories??[]){const a=c.actions.find(row=>row.id===playerActionUi.actionId);if(a)return a;}return null;}
-  function openPlayerActions(){const v=session?.getView();if(!v||v.screen!=='career'||v.simulation?.mode!=='idle'||!v.actions?.available)return;view='career';cinematic=false;playerActionUi={screen:'player_action_menu',categoryId:null,actionId:null,resultExecutionId:null};render(true);}
+  function openPlayerActions(){const v=session?.getView();if(!v||v.screen!=='career'||v.simulation?.mode!=='idle'||!v.actions?.available)return;view='career';cinematic=false;playerActionUi={screen:'player_action_menu',categoryId:null,actionId:null,targetId:null,resultExecutionId:null};render(true);}
   function renderPlayerActions(v,main){
     if(v.screen!=='career'||v.simulation?.mode!=='idle'||!v.actions?.available){resetPlayerActions();return false;}
     if(playerActionUi.screen==='player_action_menu'){
