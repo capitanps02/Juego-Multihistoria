@@ -197,3 +197,21 @@ test("A5-016 REST FREQUENCY CEILING", () => {
   const maxUses = Math.floor(364 / action.cooldown.days) + 1;
   assert.ok(maxUses <= 18, `rest can run ${maxUses} times/year`);
 });
+
+
+test("A5-017 INTENT COOLDOWN >= FACT LIFECYCLE", () => {
+  const minimums = new Map([
+    ["PA_COACH_TALK", 30],
+    ["PA_REQUEST_TRANSFER", 120],
+    ["PA_REQUEST_RENEWAL", 90],
+    ["PA_AGENT_MARKET", 30]
+  ]);
+  for (const [actionId, minimumDays] of minimums) {
+    const action = PLAYER_ACTION_CATALOG.find(row => row.id === actionId);
+    assert.ok(action, `missing ${actionId}`);
+    assert.ok(
+      action.cooldown.days >= minimumDays,
+      `${actionId} cooldown ${action.cooldown.days}d is shorter than causal fact lifecycle ${minimumDays}d`
+    );
+  }
+});
