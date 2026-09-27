@@ -651,6 +651,24 @@ A5 alinea `content-plan.ts`, `content-effect-plan.ts` y A5-052: veteran/mentor s
 - integrated QA branches
 - handoffs en #800/#802/#803/#804
 
+## 20A. Última corrección de integración UI
+
+A6 reprodujo en Chromium un wiring incorrecto específico de la superficie web/PlayCanvas:
+
+- flujo alcanzaba `ACCIÓN COMPLETADA`;
+- al pulsar `Volver a carrera`, la UI sólo reseteaba el submenú Player Actions;
+- `view` permanecía en `career`, por lo que el jugador llegaba al historial y no recuperaba el CTA principal `Simular`.
+
+Clasificación: **P2 de wiring A4/A6**, no arquitectura.
+
+Fix aplicado en el candidato de release:
+`Volver a carrera -> navigate('home')`.
+
+Regresión añadida:
+`A4-019 RESULT BACK`.
+
+El E2E móvil anterior ya demostró que target selection, ejecución y pantalla de resultado funcionaban; sólo fallaba el retorno final a Simular. El gate MOBILE/PREVIEW requiere retest exacto del release candidate después de este fix.
+
 ## 21. Recomendación técnica
 
 **DO_NOT_MERGE como feature final.**
