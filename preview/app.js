@@ -115,7 +115,12 @@ function renderPlayerActionSubview(view, story) {
       const card=el('div',undefined,'action-card');
       const open=uiButton(actionView.label,()=>{playerActionUi={screen:'player_action_detail',categoryId:category.id,actionId:actionView.id,targetId:null,resultExecutionId:null};render(true);},'secondary',!actionView.available);
       card.append(open,el('p',actionView.description,'body'));
-      if (!actionView.available) card.append(el('p',cooldownText(view,actionView) || actionView.unavailableReason || 'Ahora mismo no está disponible.','action-reason'));
+      if (!actionView.available) {
+        const reasonSource=actionView.targetKind!=='none'
+          ? (actionView.targets?.find(target=>target.cooldownUntil) ?? actionView.targets?.find(target=>!target.available) ?? actionView)
+          : actionView;
+        card.append(el('p',cooldownText(view,reasonSource) || reasonSource.unavailableReason || actionView.unavailableReason || 'Ahora mismo no está disponible.','action-reason'));
+      }
       list.append(card);
     }
     story.append(list,uiButton('Volver a categorías',()=>{playerActionUi={screen:'player_action_menu',categoryId:null,actionId:null,targetId:null,resultExecutionId:null};render(true);},'ghost'),uiButton('Volver a carrera',()=>{resetPlayerActionUi();render(true);},'ghost'));
