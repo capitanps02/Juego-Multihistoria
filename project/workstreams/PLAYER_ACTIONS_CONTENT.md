@@ -154,17 +154,17 @@ Clasificación:
 
 | Action ID | Estado runtime | Class | Category final | Edad | Contexto requerido | Bloqueado por | Cooldown | Efecto directo / intent | Target |
 |---|---|---|---|---|---|---|---:|---|---|
-| PA_COACH_TALK | IMPLEMENTED | CORE | career | 18+ | coach actual | target public A2 | 30d | feedback / more minutes / accept role facts | coach |
+| PA_COACH_TALK | IMPLEMENTED | CORE | career | 18+ | coach actual | target public A2 | 31d | feedback / more minutes / accept role facts | coach |
 | PA_ROLE_CHECK | BLOCKED | CONTEXTUAL | career | 18+ | coach actual | A1/A3 role-query contract | 21d | informational role query, no roleScore write | coach |
 | PA_POSITION_CHANGE | BLOCKED | CONTEXTUAL | career | 18+ | coach actual | A1 eligibility + A3 intent | 45d | REQUEST_POSITION_CHANGE | coach |
-| PA_REQUEST_TRANSFER | IMPLEMENTED | CORE | career | 18+ | empleo actual | contextual eligibility aún genérica | 120d | request_transfer | none |
+| PA_REQUEST_TRANSFER | IMPLEMENTED | CORE | career | 18+ | empleo actual | contextual eligibility aún genérica | 121d | request_transfer | none |
 | PA_WITHDRAW_TRANSFER | BLOCKED | CONTEXTUAL | career | 18+ | request activo | A3 lifecycle | 14d | WITHDRAW_TRANSFER_REQUEST | none |
 | PA_TRAIN_EXTRA | IMPLEMENTED | CORE | training | 18+ | carrera activa | falta variantes A1 | 35d | technique +0.5, fatigue +3 | none |
 | PA_VIDEO_STUDY | BLOCKED | CONTEXTUAL | training | 18+ | carrera activa | A1 effect registry | 14d | tacticalReading pequeño | none |
 | PA_RECOVERY_SESSION | BLOCKED | CORE | health | 18+ | carrera activa | A1 health/effect | 6d | fatigue/fitness/risk pequeño | none |
 | PA_REST | IMPLEMENTED COMPAT | CORE | health final / life actual | 18+ | carrera activa | A1 health category | 21d | fatigue -5, fitness +2 | none |
-| PA_AGENT_MARKET | IMPLEMENTED | CORE | representative | 18+ | representante certificado | target public A2 | 30d | ask_agent_market | agent |
-| PA_REQUEST_RENEWAL | IMPLEMENTED | CORE | representative | 18+ | empleo actual | falta months eligibility | 90d | request_renewal | none |
+| PA_AGENT_MARKET | IMPLEMENTED | CORE | representative | 18+ | representante certificado | target public A2 | 31d | ask_agent_market | agent |
+| PA_REQUEST_RENEWAL | IMPLEMENTED | CORE | representative | 18+ | empleo actual | falta months eligibility | 91d | request_renewal | none |
 | PA_DISCUSS_FUTURE | BLOCKED | CONTEXTUAL | representative | 20+ | representante | A3 CAREER_PRIORITY | 21d | preference fact | agent |
 | PA_TALK_TEAMMATE | BLOCKED | CONTEXTUAL | relationships | 18+ | teammate válido | A1 effect + A2 target | 10d | affinity/respect pequeño | teammate |
 | PA_CLEAR_AIR | BLOCKED | CONTEXTUAL | relationships | 18+ | tensión visible | A1 eligibility/effect | 21d | resentment/trust pequeño | teammate |
@@ -211,7 +211,7 @@ El gain +2 fitness semanal requiere stress A6; puede ser demasiado fuerte.
 ### PA_COACH_TALK
 
 - targetKind: coach;
-- cooldown: 30d por target;
+- cooldown: 31d por target;
 - opciones:
   - Quiero más minutos;
   - ¿Qué debo mejorar?;
@@ -223,7 +223,7 @@ Runtime válido; flujo UI bloqueado hasta resolver targets públicos A2.
 
 ### PA_REQUEST_TRANSFER
 
-- cooldown: 120d;
+- cooldown: 121d;
 - effectKey: `request_transfer`;
 - fact dura hasta 120d según A3;
 - no crea oferta;
@@ -234,7 +234,7 @@ Balance sensible: A6 debe medir si threshold 38→50 convierte la acción en dom
 
 ### PA_REQUEST_RENEWAL
 
-- cooldown: 90d;
+- cooldown: 91d;
 - effectKey: `request_renewal`;
 - no cambia términos;
 - no crea oferta;
@@ -262,10 +262,10 @@ Slice actual tras anti-grind A6:
 
 - training: 35d;
 - rest: 21d;
-- coach: 30d;
-- agent market: 30d;
-- renewal: 90d;
-- transfer: 120d.
+- coach: 31d;
+- agent market: 31d;
+- renewal: 91d;
+- transfer: 121d.
 
 No hay cooldown 0.
 
@@ -401,6 +401,24 @@ Medir:
 - diferencias respecto a zero-action;
 - si pedir salida se vuelve estrategia universal.
 
+### Balance de REQUEST_TRANSFER
+
+A5 añade un gate poblacional de 1000 seeds sobre la ventana de verano:
+
+1. mismo estado factual y mismo seed;
+2. rama neutral sin Player Action;
+3. rama con PA_REQUEST_TRANSFER;
+4. antes del productor autorizado, la acción debe dejar `market.pending = null`;
+5. después actúa `materializeAge18MarketOfferInPlace`.
+
+Criterios:
+- la petición debe aumentar la tasa de transfer;
+- la tasa con petición debe permanecer <65%;
+- uplift mínimo 7 puntos porcentuales;
+- uplift máximo 17 puntos porcentuales.
+
+Esto captura el bonus A3 de +12 puntos sin aceptar que la acción garantice una oferta.
+
 ### Riesgo T4 — targets
 
 `action_target` permite potencialmente farmear compañeros diferentes.
@@ -424,14 +442,14 @@ A3 define lifecycles causales:
 - renewal request: 90d;
 - agent market query: 30d.
 
-A5 alinea el cooldown mínimo de cada acción con la vida máxima del fact que puede producir:
+A3 usa expiración inclusiva (`expiresAfter >= date`) y el cooldown deja de bloquear cuando `date >= cooldownUntil`. Por eso A5 usa **lifecycle + 1 día**:
 
-- PA_COACH_TALK: 30d;
-- PA_REQUEST_TRANSFER: 120d;
-- PA_REQUEST_RENEWAL: 90d;
-- PA_AGENT_MARKET: 30d.
+- PA_COACH_TALK: 31d para un fact máximo de 30d;
+- PA_REQUEST_TRANSFER: 121d para un fact de 120d;
+- PA_REQUEST_RENEWAL: 91d para un fact de 90d;
+- PA_AGENT_MARKET: 31d para un fact de 30d.
 
-Así el jugador no puede materializar una segunda intención equivalente mientras la anterior sigue siendo `currentlyRelevant`.
+Así nunca existe un día en el que la intención anterior siga `currentlyRelevant` y la misma acción ya pueda volver a ejecutarse.
 
 ---
 
@@ -484,7 +502,7 @@ Archivo:
 
 `scripts/test-player-actions-content.mjs`
 
-Casos implementados en la suite (21):
+Casos implementados en la suite (24):
 
 1. A5-001 UNIQUE IDS
 2. A5-002 VALID CATEGORIES
@@ -507,6 +525,9 @@ Casos implementados en la suite (21):
 19. A5-019 CONTENT PLAN DISTRIBUTION — 9/8/2/1 y categorías 5/2/2/3/4/2/2
 20. A5-020 NO DUPLICATE RUNTIME SEMANTICS
 21. A5-021 PUBLIC COPY DOES NOT LEAK INTERNALS
+22. A5-022 TRANSFER REQUEST MARKET UPLIFT IS BOUNDED, NOT GUARANTEED — 1000 seeds
+23. A5-023 MORE MINUTES REQUEST NEVER GRANTS SPORT OUTCOME DIRECTLY
+24. A5-024 AGENT MARKET QUERY NEVER SYNTHESIZES OFFER
 
 npm:
 
@@ -672,7 +693,7 @@ A3 documenta que withdraw-transfer no existe en V1 actual y request_transfer exp
 
 ```text
 [A5 STATUS]
-Progreso: 75%
+Progreso: 80%
 BASE_SHA: 75be938bbe4a6f7a01ef45a5078a6bfa6d77262d
 HEAD actual: consultar PR #802
 CATÁLOGO
@@ -704,8 +725,10 @@ BALANCE
 - estado: PARTIAL
 - training/rest: cooldown remediation implementada; handler/context tuning A1 sigue pendiente
 - causal intent overlap eliminado por configuración
+- 1000 seeds de mercado para REQUEST_TRANSFER
+- autoridad de coach/agent validada en catálogo A5
 TESTS
-- 21 checks authored
+- 24 checks authored
 - 0 TODO en la suite de diseño/contrato
 - stress anual de 80 carreras añadido
 - runtime health/age siguen bloqueados explícitamente
