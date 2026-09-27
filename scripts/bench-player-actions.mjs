@@ -7,6 +7,7 @@ const importFrom = async rel => import(pathToFileURL(path.join(candidateRoot, re
 
 const { GameSession } = await importFrom("dist/session/game-session.js");
 const {
+  PLAYER_ACTION_CATALOG,
   addPlayerActionDays,
   executePlayerActionInPlace,
   listPlayerActions
@@ -38,6 +39,8 @@ rows.push(measure("availability_projection", 5000, () => listPlayerActions(state
 rows.push(measure("save_serialization", 2000, () => JSON.stringify(session.exportSnapshot())));
 
 const executionState = structuredClone(state);
+const restDefinition = PLAYER_ACTION_CATALOG.find(action => action.id === "PA_REST");
+if (!restDefinition) throw new Error("performance setup missing PA_REST");
 const started = performance.now();
 let executed = 0;
 for (let index = 0; index < 500; index += 1) {
@@ -45,16 +48,9 @@ for (let index = 0; index < 500; index += 1) {
     actionId: "PA_REST",
     optionId: "RECOVER"
   });
-  if (!result.ok) {
-    executionState.date = addPlayerActionDays(executionState.date, 1);
-    const retry = executePlayerActionInPlace(executionState, {
-      actionId: "PA_REST",
-      optionId: "RECOVER"
-    });
-    if (!retry.ok) throw new Error(`performance execution setup failed: ${retry.code}`);
-  }
+  if (!result.ok) throw new Error(`performance execution setup failed: ${result.code}`);
   executed += 1;
-  executionState.date = addPlayerActionDays(executionState.date, 1);
+  executionState.date = addPlayerActionDays(executionState.date, restDefinition.cooldown.days);
 }
 const executionElapsedMs = performance.now() - started;
 rows.push({
