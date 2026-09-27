@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 import { createInitialState } from "../dist/content/initial-state.js";
 import {
   PLAYER_ACTION_CATALOG,
+  evaluatePlayerAction,
   executePlayerActionInPlace,
   getAvailablePlayerActions,
   getPlayerActionFacts,
@@ -228,4 +229,135 @@ test("A0 PA-014 FACT EXPIRY READ: expired facts disappear from active projection
   state.date = addDays(state.date, 31);
   assert.equal(getPlayerActionFacts(state, { activeOnly: true, kind: "request_more_minutes" }).length, 0);
   assert.deepEqual(state.playerActions, stored);
+});
+
+
+function syntheticDefinition({
+  id,
+  category = "career",
+  targetKind = "none",
+  effectKey = "rest",
+  eligibility = []
+}) {
+  return {
+    id,
+    category,
+    label: id,
+    description: "QA synthetic Player Action",
+    targetKind,
+    cooldown: { scope: targetKind === "none" ? "action" : "action_target", days: 0 },
+    eligibilityKey: "active_career",
+    eligibility,
+    options: [{ id: "RUN", label: "Run", effectKey, publicResult: "ok" }]
+  };
+}
+
+test("A1-015 HEALTH CATEGORY: core accepts a health action without special UI logic", () => {
+  const state = createInitialState(116);
+  const action = syntheticDefinition({
+    id: "PA_QA_HEALTH",
+    category: "health",
+    eligibility: [{ kind: "active_career" }]
+  });
+  const before = clone(state);
+  assert.equal(evaluatePlayerAction(state, action).available, true);
+  assert.deepEqual(state, before);
+});
+
+test("A1-016 ACTIVE EMPLOYMENT: unattached club action fails before effect execution", () => {
+  const state = createInitialState(117);
+  state.employment = { version: 1, status: "unattached", since: state.date, previous: null };
+  const action = syntheticDefinition({
+    id: "PA_QA_TRANSFER",
+    effectKey: "request_transfer",
+    eligibility: [
+      { kind: "active_career" },
+      { kind: "active_club_employment" }
+    ]
+  });
+  const before = clone(state);
+  const result = executePlayerActionInPlace(state, { actionId: action.id, optionId: "RUN" }, [action]);
+  assert.equal(result.ok, false);
+  assert.equal(result.code, "PLAYER_ACTION_UNAVAILABLE");
+  assert.match(result.message, /club actual/i);
+  assert.deepEqual(state, before);
+});
+
+test("A1-017 CONTRACT WINDOW: renewal eligibility is inclusive at 1..24 months", () => {
+  const action = syntheticDefinition({
+    id: "PA_QA_RENEWAL",
+    effectKey: "request_renewal",
+    eligibility: [
+      { kind: "active_career" },
+      { kind: "active_club_employment" },
+      { kind: "contract_months", min: 1, max: 24 }
+    ]
+  });
+
+  for (const [months, expected] of [[0, false], [1, true], [24, true], [25, false]]) {
+    const state = createInitialState(118 + months);
+    state.contract.monthsRemaining = months;
+    const before = clone(state);
+    assert.equal(evaluatePlayerAction(state, action).available, expected, `months=${months}`);
+    assert.deepEqual(state, before);
+  }
+});
+
+test("A1-018 AGE AND BODY PREDICATES: boundaries are deterministic and read-only", () => {
+  const action = syntheticDefinition({
+    id: "PA_QA_CONTEXT",
+    eligibility: [
+      { kind: "active_career" },
+      { kind: "age_range", min: 18, max: 23 },
+      { kind: "fatigue_max", value: 55 },
+      { kind: "risk_max", value: 40 }
+    ]
+  });
+  const state = createInitialState(150);
+  state.age = 23;
+  state.body.fatigue = 55;
+  state.body.risk = 40;
+  let before = clone(state);
+  assert.equal(evaluatePlayerAction(state, action).available, true);
+  assert.deepEqual(state, before);
+
+  state.age = 24;
+  before = clone(state);
+  assert.equal(evaluatePlayerAction(state, action).available, false);
+  assert.deepEqual(state, before);
+});
+
+test("A1-019 LIVE TRANSFER REQUEST: request context closes immediately after fact creation", () => {
+  const action = syntheticDefinition({
+    id: "PA_QA_TRANSFER_LIFECYCLE",
+    effectKey: "request_transfer",
+    eligibility: [
+      { kind: "active_career" },
+      { kind: "active_club_employment" },
+      { kind: "live_transfer_request", required: false }
+    ]
+  });
+  const state = createInitialState(151);
+  assert.equal(evaluatePlayerAction(state, action).available, true);
+  const result = executePlayerActionInPlace(state, { actionId: action.id, optionId: "RUN" }, [action]);
+  assert.equal(result.ok, true);
+  assert.equal(evaluatePlayerAction(state, action).available, false);
+});
+
+test("A1-020 TEAMMATE PROFILE: unsupported veteran/young inference fails closed", () => {
+  const state = createInitialState(152);
+  const action = syntheticDefinition({
+    id: "PA_QA_VETERAN",
+    targetKind: "teammate",
+    eligibility: [
+      { kind: "active_career" },
+      { kind: "current_teammate" },
+      { kind: "teammate_profile", profile: "veteran" }
+    ]
+  });
+  const before = clone(state);
+  const availability = evaluatePlayerAction(state, action, "NPC_PLR_10");
+  assert.equal(availability.available, false);
+  assert.match(availability.unavailableReason, /objetivo válido/i);
+  assert.deepEqual(state, before);
 });
