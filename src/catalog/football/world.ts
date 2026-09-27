@@ -1,4 +1,6 @@
 import type { ClubArchetype, FootballConfederation, FootballCountryCode, FootballClub, FootballDivision } from "./types.js";
+import { assertFootballCatalogData } from "./integrity.js";
+import { catalogMultiClubIdentityKey, defaultCatalogClubId, stableCatalogClubId } from "./identity.js";
 
 const COUNTRY_CONFIGS = {
   "ESP": {
@@ -1118,6 +1120,13 @@ const COUNTRY_CONFIGS = {
 const MAX_SHORT_NAME_LENGTH = 22;
 const TIER_STRENGTH_PENALTY = [0, 0, 14, 25] as const;
 
+/**
+ * Explicit immutable identities for additional clubs in an already represented city.
+ * Existing first-city IDs intentionally remain COUNTRY_CITY for save compatibility.
+ * Example future entry: "ESP|MADRID|2": "ESP_MADRID_02".
+ */
+const EXPLICIT_MULTI_CLUB_IDS: Readonly<Record<string, string>> = Object.freeze({});
+
 function hashString(value: string): number {
   let hash = 2166136261;
   for (let i = 0; i < value.length; i += 1) {
@@ -1129,19 +1138,6 @@ function hashString(value: string): number {
 
 function clamp(value: number, min = 0, max = 100): number {
   return Math.min(max, Math.max(min, Math.round(value)));
-}
-
-function asciiToken(value: string): string {
-  return value
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toUpperCase()
-    .replace(/[^A-Z0-9]+/g, "_")
-    .replace(/^_+|_+$/g, "");
-}
-
-function clubId(countryCode: FootballCountryCode, city: string): string {
-  return `${countryCode}_${asciiToken(city)}`;
 }
 
 function variation(id: string, channel: string, radius = 7): number {
@@ -1170,6 +1166,7 @@ function archetypesFor(tier: number, prestige: number, seed: number): readonly C
 const divisions: FootballDivision[] = [];
 const clubs: FootballClub[] = [];
 const seenClubIds = new Set<string>();
+const cityOccurrences = new Map<string, number>();
 
 for (const [rawCode, config] of Object.entries(COUNTRY_CONFIGS)) {
   const countryCode = rawCode as FootballCountryCode;
@@ -1197,9 +1194,13 @@ for (const [rawCode, config] of Object.entries(COUNTRY_CONFIGS)) {
 
     for (let index = 0; index < clubCount; index += 1) {
       const city = config.cities[cityOffset + index]!;
-      const id = clubId(countryCode, city);
+      const cityKey = defaultCatalogClubId(countryCode, city);
+      const occurrence = (cityOccurrences.get(cityKey) ?? 0) + 1;
+      cityOccurrences.set(cityKey, occurrence);
+      const explicitId = EXPLICIT_MULTI_CLUB_IDS[catalogMultiClubIdentityKey(countryCode, city, occurrence)];
+      const id = stableCatalogClubId(countryCode, city, occurrence, explicitId);
       if (seenClubIds.has(id)) {
-        throw new Error(`Football catalog duplicate stable club id: ${id}. Add an explicit club identity before allowing multiple clubs in one city.`);
+        throw new Error(`Football catalog duplicate stable club id: ${id}.`);
       }
       seenClubIds.add(id);
 
@@ -1231,6 +1232,11 @@ for (const [rawCode, config] of Object.entries(COUNTRY_CONFIGS)) {
   });
 }
 
-export const FOOTBALL_DIVISIONS: readonly FootballDivision[] = Object.freeze(divisions);
-export const FOOTBALL_CLUBS: readonly FootballClub[] = Object.freeze(clubs);
+const frozenDivisions: readonly FootballDivision[] = Object.freeze(divisions.slice());
+const frozenClubs: readonly FootballClub[] = Object.freeze(clubs.slice());
+
+assertFootballCatalogData(frozenClubs, frozenDivisions, "Football Database V2 catalog");
+
+export const FOOTBALL_DIVISIONS = frozenDivisions;
+export const FOOTBALL_CLUBS = frozenClubs;
 export const FOOTBALL_CATALOG_VERSION = "world-v2-a1-2026-09-28";
