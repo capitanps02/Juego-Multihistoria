@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { NPC_EVENT_KNOWLEDGE_RULES } from '../dist/catalog/npc-knowledge-rules.js';
+import { clubById } from '../dist/catalog/football/index.js';
 import { createInitialState } from '../dist/content/initial-state.js';
 import { getNpcKnowledgeRecord, npcKnows } from '../dist/core/npc-knowledge.js';
 import { eligibleChoices } from '../dist/narrative/choice-eligibility.js';
