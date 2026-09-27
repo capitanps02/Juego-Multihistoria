@@ -16,6 +16,7 @@ import { adaptState20ToProfessional } from "../dist/simulation/professional-adap
 import { careerTerms, proposeCareerChange } from "../dist/simulation/offers.js";
 import { resolveChoice } from "../dist/narrative/resolver.js";
 import { assertGameState } from "../dist/save/validation.js";
+import { executePlayerActionInPlace } from "../dist/player-actions/index.js";
 
 function matchDayState(seed = 19001) {
   const state = createInitialState(seed);
@@ -61,6 +62,52 @@ test("scheduled fixture projection is read-only and exposes only catalog opponen
   assert.deepEqual(state, before);
 });
 
+test("legacy career club identities project to valid catalog opponents without mutating state", () => {
+  for (const sample of [
+    { club: "UDV", route: "home", abroad: false, expectSpain: true },
+    { club: "Domestic_3_01", route: "domestic", abroad: false, expectSpain: true },
+    { club: "Foreign_2_07", route: "abroad", abroad: true, expectSpain: false }
+  ]) {
+    const state = createInitialState(19006);
+    state.professional.ownerClub = sample.club;
+    state.professional.registrationClub = sample.club;
+    state.professional.leagueTier = sample.club.startsWith("Foreign_") ? 2 : 3;
+    state.professional.route = sample.route;
+    state.club = sample.club;
+    state.tier = state.professional.leagueTier;
+    state.flags.ABROAD_ROUTE = sample.abroad;
+
+    const before = structuredClone(state);
+    const fixture = scheduledLeagueFixtures(state, 70)[0];
+    assert.ok(fixture?.opponentClubId, sample.club);
+    const opponent = clubById(fixture.opponentClubId);
+    assert.ok(opponent, sample.club);
+    if (sample.expectSpain) assert.equal(opponent.countryCode, "ESP", sample.club);
+    else assert.notEqual(opponent.countryCode, "ESP", sample.club);
+    assert.deepEqual(state, before, `${sample.club}: fixture projection must be read-only`);
+  }
+});
+
+test("fixture opponent follows live league tier instead of static catalog division metadata", () => {
+  const state = createInitialState(19005);
+  state.professional.ownerClub = "ESP_MADRID";
+  state.professional.registrationClub = "ESP_MADRID";
+  state.professional.leagueTier = 2;
+  state.professional.route = "domestic";
+  state.club = "ESP_MADRID";
+  state.tier = 2;
+  state.flags.ABROAD_ROUTE = false;
+
+  const before = structuredClone(state.rngState);
+  const fixture = scheduledLeagueFixtures(state, 70)[0];
+  assert.ok(fixture?.opponentClubId);
+  const opponent = clubById(fixture.opponentClubId);
+  assert.ok(opponent);
+  assert.equal(opponent.countryCode, "ESP");
+  assert.equal(opponent.tier, 2, "live leagueTier must drive opponent pool after promotion/relegation");
+  assert.deepEqual(state.rngState, before);
+});
+
 test("market selector is pure, deterministic and honors exclusions", () => {
   const request = { countryCode: "ESP", leagueTier: 3, roll: 123456789, profile: "balanced" };
   const first = selectMarketDestination(request);
@@ -98,8 +145,61 @@ test("age-18 January producer keeps offer authority detached and emits catalog d
   assert.ok(materialized >= 40, `expected broad offer coverage, got ${materialized}`);
 });
 
+test("Player Actions transfer request only changes the existing summer producer threshold", () => {
+  let found = null;
+
+  for (let seed = 1; seed <= 600 && !found; seed += 1) {
+    const base = createInitialState(seed);
+    base.date = "2027-06-04";
+    base.age = 18;
+    base.phase = "18_20";
+    base.professional.ownerClub = "UDV";
+    base.professional.registrationClub = "UDV";
+    base.professional.leagueTier = 3;
+    base.club = "UDV";
+    base.tier = 3;
+    base.contract.monthsRemaining = 18;
+    base.sport.appearances = 5;
+    base.flags.OFFICIAL_DEBUT = true;
+    base.reputation.marketHeat = 55;
+    base.market.pending = null;
+    base.market.openOffers = [];
+
+    const noAction = structuredClone(base);
+    const requested = structuredClone(base);
+    const beforeTerms = careerTerms(base);
+    const beforeRng = structuredClone(base.rngState);
+
+    const action = executePlayerActionInPlace(requested, {
+      actionId: "PA_REQUEST_TRANSFER",
+      optionId: "REQUEST"
+    });
+    if (!action.ok) continue;
+
+    materializeAge18MarketOfferInPlace(noAction);
+    materializeAge18MarketOfferInPlace(requested);
+
+    const normal = noAction.market?.pending;
+    const signaled = requested.market?.pending;
+    if (normal?.reason === "Renovación de contrato"
+      && signaled?.reason === "Oferta formal de salida en verano") {
+      found = { seed, noAction, requested, beforeTerms, beforeRng };
+    }
+  }
+
+  assert.ok(found, "expected a deterministic seed in the 38..49 threshold delta");
+  assert.equal(found.noAction.market.pending.reason, "Renovación de contrato");
+  assert.equal(found.requested.market.pending.reason, "Oferta formal de salida en verano");
+  assert.ok(clubById(found.requested.market.pending.terms.club));
+  assert.deepEqual(careerTerms(found.noAction), found.beforeTerms, "renewal proposal must remain detached");
+  assert.deepEqual(careerTerms(found.requested), found.beforeTerms, "transfer proposal must remain detached");
+  assert.deepEqual(found.noAction.rngState, found.beforeRng, "summer producer must consume zero GameState RNG draws");
+  assert.deepEqual(found.requested.rngState, found.beforeRng, "Player Action + summer producer must consume zero GameState RNG draws");
+});
+
 test("continuous market proposals use catalog identities and replay deterministically", () => {
   let proposals = 0;
+  let loanProposals = 0;
   for (let seed = 1; seed <= 900; seed += 1) {
     const state = createInitialState(seed);
     state.age = 21;
@@ -133,14 +233,22 @@ test("continuous market proposals use catalog identities and replay deterministi
     proposals += 1;
     assert.ok(clubById(offer.terms.club), `${seed}: ${offer.terms.club}`);
     assert.doesNotMatch(offer.terms.club, /^(Foreign_|Loan_|Domestic_|Development_|Summer_|Club \d)/);
+    if (offer.terms.loan) {
+      loanProposals += 1;
+      assert.equal(offer.terms.ownerClub, "UDV", `seed ${seed}: loan must preserve contractual owner`);
+      assert.equal(offer.terms.registrationClub, offer.terms.club, `seed ${seed}: loan registration must be destination`);
+      assert.notEqual(offer.terms.ownerClub, offer.terms.registrationClub, `seed ${seed}: loan owner/registration must remain distinct`);
+    }
   }
   assert.ok(proposals >= 10, `expected continuous-market coverage, got ${proposals}`);
+  assert.ok(loanProposals >= 1, `expected at least one directed loan proposal, got ${loanProposals}`);
 });
 
 test("all active narrative aliases project deterministically to catalog identities", () => {
   const state = createInitialState(91001);
   state.age = 19;
   state.date = "2027-01-15";
+  const before = structuredClone(state);
   const aliases = [
     "NEW_CLUB",
     "DEVELOPMENT_CLUB",
@@ -166,6 +274,7 @@ test("all active narrative aliases project deterministically to catalog identiti
     if (alias === "FOREIGN_DEV_CLUB") assert.notEqual(club.countryCode, "ESP");
     else assert.equal(club.countryCode, "ESP");
   }
+  assert.deepEqual(state, before, "alias materialization must be a pure projection with zero RNG/state mutation");
 });
 
 test("DEVELOPMENT_CLUB_2 resolves inside canonical content without rewriting the event", () => {
