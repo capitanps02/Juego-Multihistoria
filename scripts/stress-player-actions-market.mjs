@@ -72,10 +72,11 @@ for (let seed = 1; seed <= N; seed += 1) {
 // Repeated request must never overlap or stack causal strength.
 // At +90d the original 120d fact is still live and the 121d cooldown must reject a second request.
 const repeated = prep(424242);
-const firstRequest = requestTransfer(repeated);
+const repeatedStartDate = repeated.date;
+requestTransfer(repeated);
 assert.equal(transferRequestExternalMarketThreshold(repeated, 38), 50);
 
-repeated.date = addPlayerActionDays(repeated.date, 90);
+repeated.date = addPlayerActionDays(repeatedStartDate, 90);
 const beforeBlocked = clone(repeated);
 const blockedRepeat = executePlayerActionInPlace(repeated, {
   actionId: "PA_REQUEST_TRANSFER",
@@ -92,7 +93,7 @@ assert.equal(
 
 // At the exact reopen boundary (+121d), the old fact is no longer current.
 // A new request may succeed, but strength remains the same fixed +12 rather than stacking.
-repeated.date = addPlayerActionDays(firstRequest.cooldownUntil ? prep(424242).date : repeated.date, 121);
+repeated.date = addPlayerActionDays(repeatedStartDate, 121);
 const reopened = requestTransfer(repeated);
 assert.equal(reopened.ok, true);
 assert.equal(
