@@ -5,3 +5,5 @@ export * from "./eligibility.js";
 export * from "./effects.js";
 export * from "./executor.js";
 export * from "./validation.js";
+export * from "./facts.js";
+export * from "./bridge.js";
