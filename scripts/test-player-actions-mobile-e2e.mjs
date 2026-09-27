@@ -74,33 +74,35 @@ try {
     assert.match(text, /Estas acciones son opcionales/, "optionality copy missing");
     await assertNoHorizontalOverflow(page, "player_action_menu", viewport.width);
 
-    const openedCareer = await page.evaluate(() => {
-      const root = document.querySelector("#game")?.shadowRoot;
-      if (!root) return false;
-      const cards = [...root.querySelectorAll(".player-action-card")];
-      const card = cards.find(row => /\bCarrera\b/.test(row.textContent ?? ""));
-      const button = card ? [...card.querySelectorAll("button")].find(node => node.textContent?.trim() === "Ver acciones") : null;
-      button?.click();
-      return Boolean(button);
-    });
-    assert.equal(openedCareer, true, "Carrera category not reachable");
+    await clickShadow(page, "Carrera");
     await page.waitForFunction(() => document.querySelector("#game")?.shadowRoot?.textContent?.includes("Hablar con entrenador"));
     await assertNoHorizontalOverflow(page, "career_category", viewport.width);
 
-    const openedCoach = await page.evaluate(() => {
+    await clickShadow(page, "Hablar con entrenador");
+    await page.waitForFunction(() => document.querySelector("#game")?.shadowRoot?.textContent?.includes("¿CON QUIÉN?"));
+    await assertNoHorizontalOverflow(page, "coach_detail", viewport.width);
+
+    const targetState = await page.evaluate(() => {
       const root = document.querySelector("#game")?.shadowRoot;
-      if (!root) return false;
-      const cards = [...root.querySelectorAll(".player-action-card")];
-      const card = cards.find(row => /Hablar con entrenador/.test(row.textContent ?? ""));
-      const button = card ? [...card.querySelectorAll("button")].find(node => node.textContent?.trim() === "Abrir") : null;
-      button?.click();
-      return Boolean(button);
+      if (!root) return { selected: false, chose: false, targets: 0 };
+      const targetCards = [...root.querySelectorAll(".action-target-card")];
+      const buttons = targetCards.flatMap(card => [...card.querySelectorAll("button")]);
+      const selected = buttons.some(button => button.textContent?.trim() === "Seleccionado");
+      const choose = buttons.find(button => button.textContent?.trim() === "Elegir" && !button.disabled);
+      if (!selected && choose) choose.click();
+      return { selected, chose: Boolean(choose), targets: targetCards.length };
     });
-    assert.equal(openedCoach, true, "coach action not reachable");
-    await page.waitForFunction(() => document.querySelector("#game")?.shadowRoot?.textContent?.includes("¿Con quién?"));
+    assert.ok(targetState.targets >= 1, "coach target not projected");
+    assert.ok(targetState.selected || targetState.chose, "no available coach target");
+
+    await page.waitForFunction(() => {
+      const root = document.querySelector("#game")?.shadowRoot;
+      return Boolean(root && [...root.querySelectorAll("button")].some(
+        button => button.textContent?.trim() === "Quiero más minutos" && !button.disabled
+      ));
+    });
     text = await shadowText(page);
     assert.match(text, /Quiero más minutos/, "coach option missing");
-    await assertNoHorizontalOverflow(page, "coach_detail", viewport.width);
 
     await clickShadow(page, "Quiero más minutos");
     await page.waitForFunction(() => document.querySelector("#game")?.shadowRoot?.textContent?.includes("ACCIÓN COMPLETADA"));
