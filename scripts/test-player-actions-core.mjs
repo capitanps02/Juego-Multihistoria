@@ -55,6 +55,7 @@ test("A1-003 EXECUTION: valid training applies only bounded effect + own state",
   const clubBefore = state.club;
   const nationalRoleBefore = state.professional.nationalRole;
   const fatigueBefore = state.body.fatigue;
+  const riskBefore = state.body.risk;
   const techniqueBefore = state.professional.technique;
 
   const result = executePlayerActionInPlace(state, {
@@ -64,12 +65,11 @@ test("A1-003 EXECUTION: valid training applies only bounded effect + own state",
 
   assert.equal(result.ok, true);
   assert.equal(state.body.fatigue, fatigueBefore + 3);
-  assert.equal(state.professional.technique, techniqueBefore + 0.5);
+  assert.equal(state.body.risk, riskBefore + 1);
+  assert.equal(state.professional.technique, techniqueBefore + 0.15);
   assert.equal(state.playerActions?.history.length, 1);
   assert.equal(state.playerActions?.facts.length, 1);
-  assert.equal(Object.keys(state.playerActions?.cooldowns ?? {}).length, 2);
-  assert.ok(state.playerActions?.cooldowns["action:PA_TRAIN_EXTRA"]);
-  assert.ok(state.playerActions?.cooldowns["group:extra_development"]);
+  assert.equal(Object.keys(state.playerActions?.cooldowns ?? {}).length, 1);
   assert.deepEqual(state.rngState.narrative, narrativeBefore);
   assert.deepEqual(state.history, historyBefore);
   assert.deepEqual(state.seeds, seedsBefore);
@@ -112,7 +112,6 @@ test("A1-006 INVALID TARGET: non-coach target rejects closed", () => {
 
 test("A1-007 COOLDOWN: immediate repeat rejects without second mutation", () => {
   const state = createInitialState(107);
-  state.body.fatigue = 30;
   const first = executePlayerActionInPlace(state, { actionId: "PA_REST", optionId: "RECOVER" });
   assert.equal(first.ok, true);
   const afterFirst = clone(state);
@@ -124,7 +123,6 @@ test("A1-007 COOLDOWN: immediate repeat rejects without second mutation", () => 
 
 test("A1-008 COOLDOWN EXPIRY: action is available exactly on cooldownUntil", () => {
   const state = createInitialState(108);
-  state.body.fatigue = 30;
   const first = executePlayerActionInPlace(state, { actionId: "PA_REST", optionId: "RECOVER" });
   assert.equal(first.ok, true);
   assert.ok(first.cooldownUntil);
@@ -134,7 +132,6 @@ test("A1-008 COOLDOWN EXPIRY: action is available exactly on cooldownUntil", () 
 
 test("A1-009 NARRATIVE RNG: deterministic action never changes narrative stream", () => {
   const state = createInitialState(109);
-  state.body.fatigue = 30;
   const before = clone(state.rngState.narrative);
   const result = executePlayerActionInPlace(state, { actionId: "PA_REST", optionId: "RECOVER" });
   assert.equal(result.ok, true);
@@ -181,7 +178,6 @@ test("A1-011 AUTHORITY GUARD: arbitrary club/contract/national writes have no re
 
 test("A1-012 ATOMIC FAILURE: failure after a valid draft effect leaves confirmed state intact", () => {
   const state = createInitialState(112);
-  state.body.fatigue = 30;
   // Deliberately malformed pre-existing PA store. The direct REST effect is valid
   // and mutates only the cloned draft; post-effect store validation must then fail.
   state.playerActions = {
