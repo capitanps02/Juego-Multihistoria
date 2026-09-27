@@ -74,7 +74,9 @@ jobs:
           - label: A3
             candidate_ref: 75be938bbe4a6f7a01ef45a5078a6bfa6d77262d
           - label: A4
-            candidate_ref: ee07c945e9f6d714fb921f4f98af06f6699d223b
+            candidate_ref: a4/player-actions-ui
+          - label: A5
+            candidate_ref: a5/player-actions-content
     steps:
       - name: Checkout A6 QA harness
         uses: actions/checkout@v4
@@ -158,3 +160,33 @@ jobs:
 
       - name: Run informational performance probe
         run: node scripts/bench-player-actions.mjs
+
+
+  a5_backend_stress:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout A6 QA harness
+        uses: actions/checkout@v4
+        with:
+          path: qa
+
+      - name: Checkout A5 candidate
+        uses: actions/checkout@v4
+        with:
+          ref: a5/player-actions-content
+          path: candidate
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Build A5 candidate
+        working-directory: candidate
+        run: |
+          npm ci
+          npm run build
+
+      - name: Run 20-seed A5 slice stress
+        run: node qa/scripts/stress-player-actions-backend.mjs candidate
