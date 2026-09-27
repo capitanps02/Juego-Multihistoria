@@ -139,7 +139,7 @@ export const PLAYER_ACTION_CONTENT_SPECS: readonly PlayerActionContentSpec[] = [
     ]
   },
   {
-    id: "PA_VETERAN_ADVICE",
+    id: "PA_LEADER_ADVICE",
     label: "Pedir consejo",
     description: "Pide orientación a un compañero veterano sin convertir su experiencia en una mejora automática.",
     options: [
@@ -147,7 +147,7 @@ export const PLAYER_ACTION_CONTENT_SPECS: readonly PlayerActionContentSpec[] = [
     ]
   },
   {
-    id: "PA_MENTOR_YOUNG",
+    id: "PA_MENTOR_TEAMMATE",
     label: "Ayudar a un joven",
     description: "Dedica tiempo a un compañero joven sin otorgarle minutos, rol ni progreso deportivo por decreto.",
     options: [
