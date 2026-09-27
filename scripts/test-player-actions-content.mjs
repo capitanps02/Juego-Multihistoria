@@ -422,9 +422,8 @@ test("A5-025 INCLUSIVE FACT EXPIRY NEVER OVERLAPS RE-EXECUTION", () => {
 });
 
 
-test("A5-025 IMPLEMENTED CONTEXT GAPS ARE EXPLICIT", () => {
+test("A5-026 IMPLEMENTED CONTEXT GAPS ARE EXPLICIT", () => {
   const expectedA1ContextGaps = new Set([
-    "PA_COACH_TALK",
     "PA_REQUEST_TRANSFER",
     "PA_REQUEST_RENEWAL"
   ]);
@@ -436,7 +435,10 @@ test("A5-025 IMPLEMENTED CONTEXT GAPS ARE EXPLICIT", () => {
     assert.match(row.requiredContext, /employment/i, `${row.id} must require active employment`);
   }
 
+  const coachTalk = PLAYER_ACTION_CONTENT_PLAN.find(item => item.id === "PA_COACH_TALK");
   const agentMarket = PLAYER_ACTION_CONTENT_PLAN.find(item => item.id === "PA_AGENT_MARKET");
+  assert.ok(coachTalk);
   assert.ok(agentMarket);
-  assert.equal(agentMarket.blockedBy, undefined, "A2 public-target blocker is already resolved for agent market");
+  assert.equal(coachTalk.blockedBy, undefined, "coach target validation already fails closed");
+  assert.equal(agentMarket.blockedBy, undefined, "A2 public-target blocker is resolved by #806");
 });
