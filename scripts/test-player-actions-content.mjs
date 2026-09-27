@@ -3,6 +3,8 @@ import assert from "node:assert/strict";
 
 import { createInitialState } from "../dist/content/initial-state.js";
 import { GameSession } from "../dist/session/game-session.js";
+import { materializeAge18MarketOfferInPlace } from "../dist/simulation/early-career-market.js";
+import { certifyRepresentationInPlace } from "../dist/simulation/representation-authority.js";
 import { PLAYER_ACTION_CONTENT_PLAN } from "../dist/player-actions/content-plan.js";
 import {
   PLAYER_ACTION_CATALOG,
@@ -296,4 +298,100 @@ test("A5-021 PUBLIC COPY DOES NOT LEAK INTERNALS", () => {
       assert.equal(publicText.includes(term), false, `${action.id} leaks internal term ${term}`);
     }
   }
+});
+
+
+test("A5-022 TRANSFER REQUEST MARKET UPLIFT IS BOUNDED, NOT GUARANTEED", () => {
+  let withoutTransfer = 0;
+  let withTransfer = 0;
+  const samples = 1000;
+
+  for (let seed = 1; seed <= samples; seed += 1) {
+    const base = createInitialState(seed);
+    base.date = "2027-06-04";
+    base.age = 18;
+    base.flags.OFFICIAL_DEBUT = true;
+    base.sport.appearances = 3;
+    base.reputation.marketHeat = 40;
+
+    const neutral = clone(base);
+    const requested = clone(base);
+
+    const action = executePlayerActionInPlace(requested, {
+      actionId: "PA_REQUEST_TRANSFER",
+      optionId: "REQUEST"
+    });
+    assert.equal(action.ok, true);
+    assert.equal(requested.market?.pending ?? null, null, "Player Action must not synthesize an offer");
+
+    if (materializeAge18MarketOfferInPlace(neutral) === "transfer") withoutTransfer += 1;
+    if (materializeAge18MarketOfferInPlace(requested) === "transfer") withTransfer += 1;
+  }
+
+  const neutralRate = withoutTransfer / samples;
+  const requestedRate = withTransfer / samples;
+  const uplift = requestedRate - neutralRate;
+
+  assert.ok(requestedRate > neutralRate, `transfer request should have positive market influence: ${neutralRate} -> ${requestedRate}`);
+  assert.ok(requestedRate < 0.65, `transfer request became too close to a guarantee: ${requestedRate}`);
+  assert.ok(uplift >= 0.07, `transfer request influence too small to be meaningful: ${uplift}`);
+  assert.ok(uplift <= 0.17, `transfer request influence too large for +12 threshold points: ${uplift}`);
+});
+
+
+test("A5-023 MORE MINUTES REQUEST NEVER GRANTS SPORT OUTCOME DIRECTLY", () => {
+  const state = createInitialState(8523);
+  const before = {
+    roleScore: state.sport.roleScore,
+    appearances: state.sport.appearances,
+    minutesShare: state.sport.minutesShare,
+    history: clone(state.history),
+    market: clone(state.market)
+  };
+
+  const result = executePlayerActionInPlace(state, {
+    actionId: "PA_COACH_TALK",
+    optionId: "MORE_MINUTES",
+    targetId: "NPC_CCH_01"
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(state.sport.roleScore, before.roleScore);
+  assert.equal(state.sport.appearances, before.appearances);
+  assert.equal(state.sport.minutesShare, before.minutesShare);
+  assert.deepEqual(state.history, before.history);
+  assert.deepEqual(state.market, before.market);
+  assert.equal(
+    state.playerActions?.facts.some(fact => fact.kind === "request_more_minutes"),
+    true
+  );
+});
+
+
+test("A5-024 AGENT MARKET QUERY NEVER SYNTHESIZES OFFER", () => {
+  const state = createInitialState(8524);
+  certifyRepresentationInPlace(state, "NPC_AGT_01", {
+    commissionPct: 10,
+    services: ["market"],
+    contactPolicy: "inform_first"
+  }, "a5_content_test");
+
+  const beforeMarket = clone(state.market);
+  const beforeClub = state.club;
+  const beforeContract = clone(state.contract);
+
+  const result = executePlayerActionInPlace(state, {
+    actionId: "PA_AGENT_MARKET",
+    optionId: "ASK",
+    targetId: "NPC_AGT_01"
+  });
+
+  assert.equal(result.ok, true);
+  assert.deepEqual(state.market, beforeMarket);
+  assert.equal(state.club, beforeClub);
+  assert.deepEqual(state.contract, beforeContract);
+  assert.equal(
+    state.playerActions?.facts.some(fact => fact.kind === "ask_agent_market"),
+    true
+  );
 });
