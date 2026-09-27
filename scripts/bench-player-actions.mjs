@@ -7,7 +7,6 @@ const importFrom = async rel => import(pathToFileURL(path.join(candidateRoot, re
 
 const { GameSession } = await importFrom("dist/session/game-session.js");
 const {
-  PLAYER_ACTION_CATALOG,
   executePlayerActionInPlace,
   listPlayerActions
 } = await importFrom("dist/player-actions/index.js");
@@ -38,8 +37,6 @@ rows.push(measure("availability_projection", 5000, () => listPlayerActions(state
 rows.push(measure("save_serialization", 2000, () => JSON.stringify(session.exportSnapshot())));
 
 const executionState = structuredClone(state);
-const restDefinition = PLAYER_ACTION_CATALOG.find(action => action.id === "PA_REST");
-if (!restDefinition) throw new Error("performance setup missing PA_REST");
 const started = performance.now();
 let executed = 0;
 for (let index = 0; index < 500; index += 1) {
@@ -49,7 +46,8 @@ for (let index = 0; index < 500; index += 1) {
   });
   if (!result.ok) throw new Error(`performance execution setup failed: ${result.code}`);
   executed += 1;
-  executionState.date = addPlayerActionDays(executionState.date, restDefinition.cooldown.days);
+  if (!result.cooldownUntil) throw new Error("performance execution did not return cooldownUntil");
+  executionState.date = result.cooldownUntil;
 }
 const executionElapsedMs = performance.now() - started;
 rows.push({
