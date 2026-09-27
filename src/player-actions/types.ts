@@ -6,10 +6,27 @@ export type PlayerActionCategory =
   | "representative"
   | "relationships"
   | "image"
-  | "life";
+  | "life"
+  | "health";
 
 export type PlayerActionTargetKind = "none" | "coach" | "agent" | "teammate";
 export type PlayerActionCooldownScope = "action" | "action_target";
+
+export type PlayerActionEligibilityPredicate =
+  | { kind: "active_career" }
+  | { kind: "active_club_employment" }
+  | { kind: "age_range"; min: number; max?: number }
+  | { kind: "current_coach" }
+  | { kind: "current_representation" }
+  | { kind: "contract_months"; min: number; max: number }
+  | { kind: "live_transfer_request"; required: boolean }
+  | { kind: "fatigue_min"; value: number }
+  | { kind: "fatigue_max"; value: number }
+  | { kind: "risk_min"; value: number }
+  | { kind: "risk_max"; value: number }
+  | { kind: "current_teammate" }
+  | { kind: "teammate_profile"; profile: "veteran" | "young" }
+  | { kind: "visible_teammate_tension" };
 
 export interface PlayerActionOption {
   id: string;
@@ -30,6 +47,11 @@ export interface PlayerActionDefinition {
     days: number;
   };
   eligibilityKey: string;
+  /**
+   * Optional closed, declarative predicates layered on top of the legacy key.
+   * Unsupported predicates fail closed; content never supplies executable code.
+   */
+  eligibility?: readonly PlayerActionEligibilityPredicate[];
   options: readonly PlayerActionOption[];
 }
 
