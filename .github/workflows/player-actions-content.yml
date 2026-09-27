@@ -27,6 +27,12 @@ jobs:
       - name: A1 core integration regression
         run: node --test scripts/test-player-actions-core.mjs
 
+      - name: A1 V1 effect registry regression
+        run: node --test scripts/test-player-actions-v1-effects.mjs
+
+      - name: A2 session integration regression
+        run: node --test scripts/test-player-actions-session.mjs
+
       - name: A3 bridge integration regression
         run: node --test scripts/test-player-actions-narrative-bridge.mjs
 
