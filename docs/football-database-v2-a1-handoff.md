@@ -96,6 +96,12 @@ Historical generated families include:
 - `Loan_*`
 - `Club N · M`
 
+Pre-V2 saves and certified regression fixtures also contain display-like opaque club names such as
+`Destino`, `Destino FC`, `Development Club`, `Propietario`, `Parent Club` and `Loan Club`.
+A narrow display-name compatibility lane classifies that legacy shape as `legacy_compat` only for
+historical reads. Unknown V2-shaped IDs such as `ESP_FAKE_CLUB_999`, malformed underscored tokens,
+aliases and lowercase/empty values still fail closed.
+
 Legacy compatibility is read-only compatibility. It is never legal new V2 production.
 
 ## Context validation
