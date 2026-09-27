@@ -3,7 +3,9 @@ import {
   addPlayerActionDays,
   ensurePlayerActionStateInPlace,
   isPlayerActionCooldownActive,
+  isPlayerActionCooldownGroupValid,
   playerActionCooldownKey,
+  playerActionGroupCooldownKey,
   readPlayerActionState
 } from "./action-state.js";
 import { applyPlayerActionEffect, hasPlayerActionEffect } from "./effects.js";
@@ -89,6 +91,10 @@ export function executePlayerActionInPlace(
   const option = definition.options.find(candidate => candidate.id === request.optionId);
   if (!option) return failed(request, "PLAYER_ACTION_OPTION_UNKNOWN", "Opción desconocida.");
 
+  if (!isPlayerActionCooldownGroupValid(definition)) {
+    return failed(request, "PLAYER_ACTION_STATE_INVALID", "La configuración de cooldown compartido no es válida.");
+  }
+
   const target = validatePlayerActionTarget(state, definition, request.targetId);
   if (!target.valid) {
     return failed(request, target.code ?? "PLAYER_ACTION_TARGET_INVALID", target.reason ?? "Objetivo no válido.");
@@ -113,13 +119,26 @@ export function executePlayerActionInPlace(
     const factDrafts = applyPlayerActionEffect(draft, option.effectKey, request.targetId);
     const sequence = readPlayerActionState(draft).sequence + 1;
     const id = executionId(sequence);
-    const cooldownUntil = definition.cooldown.days > 0
+    const actionCooldownUntil = definition.cooldown.days > 0
       ? addPlayerActionDays(draft.date, definition.cooldown.days)
       : null;
     const cooldownKey = playerActionCooldownKey(definition, request.targetId);
     if (definition.cooldown.days > 0 && !cooldownKey) {
       return failed(request, "PLAYER_ACTION_STATE_INVALID", "No se pudo derivar el cooldown de forma segura.");
     }
+
+    const groupCooldownKey = playerActionGroupCooldownKey(definition);
+    const groupCooldownUntil = definition.cooldownGroup && definition.cooldownGroup.days > 0
+      ? addPlayerActionDays(draft.date, definition.cooldownGroup.days)
+      : null;
+    if (definition.cooldownGroup && !groupCooldownKey) {
+      return failed(request, "PLAYER_ACTION_STATE_INVALID", "No se pudo derivar el cooldown compartido de forma segura.");
+    }
+
+    const cooldownUntil = [actionCooldownUntil, groupCooldownUntil]
+      .filter((value): value is string => typeof value === "string")
+      .sort()
+      .at(-1) ?? null;
 
     const facts = factRows(draft, request, sequence, factDrafts);
     const store = ensurePlayerActionStateInPlace(draft);
@@ -135,7 +154,8 @@ export function executePlayerActionInPlace(
       visibleResult: option.publicResult,
       cooldownUntil
     });
-    if (cooldownKey && cooldownUntil) store.cooldowns[cooldownKey] = cooldownUntil;
+    if (cooldownKey && actionCooldownUntil) store.cooldowns[cooldownKey] = actionCooldownUntil;
+    if (groupCooldownKey && groupCooldownUntil) store.cooldowns[groupCooldownKey] = groupCooldownUntil;
     store.facts.push(...facts);
 
     const issue = inspectPlayerActionState(store, draft.date);

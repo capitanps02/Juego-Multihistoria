@@ -125,7 +125,7 @@ function predicatePass(
     case "current_teammate":
       return Boolean(targetId && targetMatchesKind(state, "teammate", targetId));
     case "teammate_profile":
-      // NPCState has no canonical age/profile field yet. Do not infer from id, role or copy.
+      // Profile membership needs an explicit public registry. Do not infer from age, role text or private NPC data.
       return false;
     case "visible_teammate_tension":
       // No certified player-facing tension authority exists yet.

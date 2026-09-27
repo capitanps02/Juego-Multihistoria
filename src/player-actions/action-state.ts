@@ -59,14 +59,39 @@ export function playerActionCooldownKey(
   return `action_target:${definition.id}:${targetId}`;
 }
 
+export function playerActionGroupCooldownKey(
+  definition: PlayerActionDefinition
+): string | null {
+  const group = definition.cooldownGroup;
+  if (!group) return null;
+  if (!/^[a-z0-9][a-z0-9_-]{0,63}$/i.test(group.id)) return null;
+  if (!Number.isInteger(group.days) || group.days < 0) return null;
+  return `group:${group.id}`;
+}
+
+export function isPlayerActionCooldownGroupValid(
+  definition: PlayerActionDefinition
+): boolean {
+  return definition.cooldownGroup === undefined || playerActionGroupCooldownKey(definition) !== null;
+}
+
+function latestCooldown(...values: Array<string | null | undefined>): string | null {
+  const dates = values.filter((value): value is string => typeof value === "string");
+  return dates.length ? dates.sort().at(-1) ?? null : null;
+}
+
 export function getPlayerActionCooldown(
   state: PlayerActionGameState,
   definition: PlayerActionDefinition,
   targetId?: string
 ): string | null {
-  const key = playerActionCooldownKey(definition, targetId);
-  if (!key) return null;
-  return readPlayerActionState(state).cooldowns[key] ?? null;
+  const store = readPlayerActionState(state);
+  const actionKey = playerActionCooldownKey(definition, targetId);
+  const groupKey = playerActionGroupCooldownKey(definition);
+  return latestCooldown(
+    actionKey ? store.cooldowns[actionKey] : null,
+    groupKey ? store.cooldowns[groupKey] : null
+  );
 }
 
 export function isPlayerActionCooldownActive(currentDate: string, cooldownUntil: string | null): boolean {

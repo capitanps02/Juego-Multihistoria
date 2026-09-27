@@ -8,6 +8,7 @@ import {
   executePlayerActionInPlace,
   getAvailablePlayerActions,
   getPlayerActionFacts,
+  inspectPlayerActionState,
   isPlayerActionAvailable
 } from "../dist/player-actions/index.js";
 
@@ -237,7 +238,9 @@ function syntheticDefinition({
   category = "career",
   targetKind = "none",
   effectKey = "rest",
-  eligibility = []
+  eligibility = [],
+  cooldownDays = 0,
+  cooldownGroup
 }) {
   return {
     id,
@@ -245,7 +248,8 @@ function syntheticDefinition({
     label: id,
     description: "QA synthetic Player Action",
     targetKind,
-    cooldown: { scope: targetKind === "none" ? "action" : "action_target", days: 0 },
+    cooldown: { scope: targetKind === "none" ? "action" : "action_target", days: cooldownDays },
+    ...(cooldownGroup ? { cooldownGroup } : {}),
     eligibilityKey: "active_career",
     eligibility,
     options: [{ id: "RUN", label: "Run", effectKey, publicResult: "ok" }]
@@ -344,7 +348,7 @@ test("A1-019 LIVE TRANSFER REQUEST: request context closes immediately after fac
   assert.equal(evaluatePlayerAction(state, action).available, false);
 });
 
-test("A1-020 TEAMMATE PROFILE: unsupported veteran/young inference fails closed", () => {
+test("A1-020 TEAMMATE PROFILE: locker leader profile fails closed without explicit registry", () => {
   const state = createInitialState(152);
   const action = syntheticDefinition({
     id: "PA_QA_VETERAN",
@@ -352,7 +356,7 @@ test("A1-020 TEAMMATE PROFILE: unsupported veteran/young inference fails closed"
     eligibility: [
       { kind: "active_career" },
       { kind: "current_teammate" },
-      { kind: "teammate_profile", profile: "veteran" }
+      { kind: "teammate_profile", profile: "locker_leader" }
     ]
   });
   const before = clone(state);
@@ -382,5 +386,96 @@ test("A1-021 RISK MIN: recovery-style gate opens only at the configured boundary
   state.body.risk = 28;
   before = clone(state);
   assert.equal(evaluatePlayerAction(state, action).available, true);
+  assert.deepEqual(state, before);
+});
+
+
+test("A1-022 GROUP COOLDOWN: family block is additive and does not replace action cooldown", () => {
+  const state = createInitialState(154);
+  const started = state.date;
+  const first = syntheticDefinition({
+    id: "PA_QA_GROUP_A",
+    cooldownDays: 21,
+    cooldownGroup: { id: "physical_recovery", days: 7 }
+  });
+  const second = syntheticDefinition({
+    id: "PA_QA_GROUP_B",
+    cooldownDays: 14,
+    cooldownGroup: { id: "physical_recovery", days: 7 }
+  });
+  const unrelated = syntheticDefinition({
+    id: "PA_QA_GROUP_C",
+    cooldownDays: 14,
+    cooldownGroup: { id: "public_image", days: 7 }
+  });
+  const catalog = [first, second, unrelated];
+
+  const result = executePlayerActionInPlace(
+    state,
+    { actionId: first.id, optionId: "RUN" },
+    catalog
+  );
+  assert.equal(result.ok, true);
+  assert.equal(result.cooldownUntil, addDays(started, 21));
+  assert.equal(state.playerActions?.cooldowns[`action:${first.id}`], addDays(started, 21));
+  assert.equal(state.playerActions?.cooldowns["group:physical_recovery"], addDays(started, 7));
+  assert.equal(inspectPlayerActionState(state.playerActions, state.date), null);
+
+  const siblingBlocked = evaluatePlayerAction(state, second);
+  assert.equal(siblingBlocked.available, false);
+  assert.equal(siblingBlocked.cooldownUntil, addDays(started, 7));
+  assert.equal(evaluatePlayerAction(state, unrelated).available, true);
+
+  state.date = addDays(started, 7);
+  assert.equal(evaluatePlayerAction(state, second).available, true);
+  const originalStillBlocked = evaluatePlayerAction(state, first);
+  assert.equal(originalStillBlocked.available, false);
+  assert.equal(originalStillBlocked.cooldownUntil, addDays(started, 21));
+});
+
+test("A1-023 GROUP TARGET FARMING: switching teammate cannot bypass family cooldown", () => {
+  const state = createInitialState(155);
+  const started = state.date;
+  const action = syntheticDefinition({
+    id: "PA_QA_TEAMMATE_FAMILY",
+    targetKind: "teammate",
+    cooldownDays: 30,
+    cooldownGroup: { id: "teammate_interaction", days: 7 }
+  });
+
+  const first = executePlayerActionInPlace(
+    state,
+    { actionId: action.id, optionId: "RUN", targetId: "NPC_PLR_10" },
+    [action]
+  );
+  assert.equal(first.ok, true);
+  assert.equal(state.playerActions?.cooldowns[`action_target:${action.id}:NPC_PLR_10`], addDays(started, 30));
+  assert.equal(state.playerActions?.cooldowns["group:teammate_interaction"], addDays(started, 7));
+
+  const alternateTarget = evaluatePlayerAction(state, action, "NPC_PLR_11");
+  assert.equal(alternateTarget.available, false);
+  assert.equal(alternateTarget.cooldownUntil, addDays(started, 7));
+
+  state.date = addDays(started, 7);
+  assert.equal(evaluatePlayerAction(state, action, "NPC_PLR_11").available, true);
+  assert.equal(evaluatePlayerAction(state, action, "NPC_PLR_10").available, false);
+});
+
+test("A1-024 GROUP CONFIG: malformed shared cooldown fails closed without mutation", () => {
+  const state = createInitialState(156);
+  const before = clone(state);
+  const action = syntheticDefinition({
+    id: "PA_QA_BAD_GROUP",
+    cooldownDays: 1,
+    cooldownGroup: { id: "bad:group", days: 7 }
+  });
+
+  const result = executePlayerActionInPlace(
+    state,
+    { actionId: action.id, optionId: "RUN" },
+    [action]
+  );
+  assert.equal(result.ok, false);
+  assert.equal(result.code, "PLAYER_ACTION_STATE_INVALID");
   assert.deepEqual(state, before);
 });
