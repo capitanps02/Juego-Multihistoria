@@ -220,7 +220,12 @@ export const FOOTBALL_SELECTOR_PROFILE_CONTRACT = Object.freeze({
     expectedBands: Object.freeze(["elite", "continental"] as const),
     allowedTiers: Object.freeze([1] as const),
     relative: false,
-    rule: "elite OR top continental; A3 applies the strict top-continental thresholds"
+    topContinental: Object.freeze({
+      minPrestige: 88,
+      minInternationalAttraction: 84,
+      minDivisionStrength: 78
+    }),
+    rule: "elite OR continental meeting every topContinental threshold"
   }),
   DEVELOPMENT_CLUB: Object.freeze({
     expectedBands: Object.freeze(["development"] as const),
@@ -232,6 +237,7 @@ export const FOOTBALL_SELECTOR_PROFILE_CONTRACT = Object.freeze({
     expectedBands: Object.freeze(["continental", "upper"] as const),
     allowedTiers: Object.freeze([1, 2] as const),
     relative: false,
+    minAmbitionComposite: 76,
     rule: "favor prestige + financialPower + internationalAttraction without becoming BIG_CLUB"
   }),
   BALANCED: Object.freeze({
@@ -244,6 +250,7 @@ export const FOOTBALL_SELECTOR_PROFILE_CONTRACT = Object.freeze({
     expectedBands: Object.freeze(["elite", "continental", "upper", "mid"] as const),
     allowedTiers: Object.freeze([1, 2, 3] as const),
     relative: true,
-    rule: "A3 must compare candidate strength against the current club and require a meaningful step"
+    minPrestigeDelta: 5,
+    rule: "A3 must compare against the current club and require >=5 prestige points or a stronger band plus league context"
   })
 } as const);
