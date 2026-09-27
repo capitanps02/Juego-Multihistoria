@@ -475,5 +475,9 @@ jobs:
           console.log("PA-GATE-10 CONTENT PASS");
           EOF
 
-      - name: Enforce anti-grind release budget
+      - name: Run official A5 80-career anti-grind gate
+        working-directory: candidate
+        run: npm run test:player-actions-balance
+
+      - name: Cross-check A6 anti-grind probe
         run: node qa/scripts/test-player-actions-balance-release.mjs candidate
