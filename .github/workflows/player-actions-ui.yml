@@ -21,6 +21,7 @@ on:
   workflow_dispatch:
 
 
+# Final target-aware certification trigger.
 permissions:
   contents: write
 
