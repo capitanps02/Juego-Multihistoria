@@ -9,11 +9,10 @@ export const PRE_FOOTBALL_CATALOG_VERSION = "pre-football-catalog";
 
 /**
  * Input generations whose stable identity space is understood by V2.
- * PRE is an input compatibility marker only: load normalizes it to CURRENT in memory.
+ * PRE is a compatibility generation: load/read never upgrades it implicitly.
  */
 export const SUPPORTED_FOOTBALL_CATALOG_VERSIONS = Object.freeze([
   PRE_FOOTBALL_CATALOG_VERSION,
-  "world-v1-2026-09-26",
   "world-v2-a1-2026-09-28",
   CURRENT_FOOTBALL_CATALOG_VERSION
 ] as const);
@@ -34,12 +33,12 @@ export function footballCatalogVersionOf(value: unknown): string {
 }
 
 /**
- * Every understood pre/current generation is normalized to the active catalog in memory.
- * Stable IDs are preserved; no display-name matching is performed.
+ * Compatibility reader retained for callers that used the original helper name.
+ * This function validates but never migrates. Version changes belong exclusively
+ * to migrateFootballCatalogVersionInPlace.
  */
 export function normalizeFootballCatalogVersion(value: unknown): string {
-  footballCatalogVersionOf(value);
-  return CURRENT_FOOTBALL_CATALOG_VERSION;
+  return footballCatalogVersionOf(value);
 }
 
 export interface ExplicitFootballClubIdMap {
