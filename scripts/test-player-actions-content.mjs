@@ -10,6 +10,7 @@ import { PLAYER_ACTION_CONTENT_SPECS } from "../dist/player-actions/content-spec
 import { PLAYER_ACTION_BALANCE_SPECS } from "../dist/player-actions/content-balance.js";
 import { PLAYER_ACTION_ELIGIBILITY_SPECS } from "../dist/player-actions/content-eligibility.js";
 import { PLAYER_ACTION_COOLDOWN_GROUP_SPECS } from "../dist/player-actions/content-cooldown-groups.js";
+import { PLAYER_ACTION_EFFECT_PLAN } from "../dist/player-actions/content-effect-plan.js";
 import { CLUB_RENEWAL_INTENT_MAX_MONTHS } from "../dist/simulation/club-contract-intent.js";
 import {
   PLAYER_ACTION_CATALOG,
@@ -835,4 +836,95 @@ test("A5-047 AGE-SPECIALIZED TEAMMATE ACTIONS MATCH V1 WINDOWS", () => {
     mentor.all.find(predicate => predicate.kind === "teammate_profile"),
     { kind: "teammate_profile", profile: "young" }
   );
+});
+
+
+test("A5-048 EFFECT PLAN COVERS EVERY V1 OPTION EXACTLY ONCE", () => {
+  const contentOptions = PLAYER_ACTION_CONTENT_SPECS
+    .flatMap(action => action.options.map(option => `${action.id}::${option.id}`))
+    .sort();
+  const effectOptions = PLAYER_ACTION_EFFECT_PLAN
+    .map(row => `${row.actionId}::${row.optionId}`)
+    .sort();
+
+  assert.equal(PLAYER_ACTION_EFFECT_PLAN.length, contentOptions.length);
+  assert.equal(new Set(effectOptions).size, effectOptions.length);
+  assert.deepEqual(effectOptions, contentOptions);
+});
+
+test("A5-049 IMPLEMENTED EFFECT KEYS MATCH RUNTIME CATALOG", () => {
+  for (const row of PLAYER_ACTION_EFFECT_PLAN.filter(item => item.implemented)) {
+    const action = PLAYER_ACTION_CATALOG.find(item => item.id === row.actionId);
+    assert.ok(action, `implemented effect row missing action ${row.actionId}`);
+    const option = action.options.find(item => item.id === row.optionId);
+    assert.ok(option, `implemented effect row missing option ${row.actionId}/${row.optionId}`);
+    assert.equal(option.effectKey, row.desiredEffectKey, `${row.actionId}/${row.optionId} effect key drift`);
+  }
+});
+
+test("A5-050 EFFECT MODE AGREES WITH BALANCE AND FACT ROUTING", () => {
+  const balanceByOption = new Map(
+    PLAYER_ACTION_BALANCE_SPECS.flatMap(action =>
+      action.options.map(option => [`${action.actionId}::${option.optionId}`, option])
+    )
+  );
+
+  for (const row of PLAYER_ACTION_EFFECT_PLAN) {
+    const balance = balanceByOption.get(`${row.actionId}::${row.optionId}`);
+    assert.ok(balance, `missing balance row for ${row.actionId}/${row.optionId}`);
+
+    if (row.mode === "fact_only") {
+      assert.deepEqual(balance.directDeltas, []);
+      assert.ok(row.desiredFactKind, `${row.actionId}/${row.optionId} fact_only requires desiredFactKind`);
+    }
+
+    if (row.mode === "direct_only") {
+      assert.equal(row.desiredFactKind, undefined);
+      assert.ok(balance.directDeltas.length > 0, `${row.actionId}/${row.optionId} direct_only needs direct deltas`);
+    }
+
+    if (row.mode === "direct_and_fact") {
+      assert.ok(row.desiredFactKind);
+      assert.ok(balance.directDeltas.length > 0);
+    }
+
+    if (row.mode === "informational") {
+      assert.equal(row.desiredFactKind, undefined);
+      assert.deepEqual(balance.directDeltas, []);
+    }
+  }
+});
+
+test("A5-051 NEW A3 FACT SURFACE IS MINIMAL", () => {
+  const alreadyImplementedFacts = new Set([
+    "request_more_minutes",
+    "request_coach_feedback",
+    "coach_role_acknowledged",
+    "request_transfer",
+    "request_renewal",
+    "ask_agent_market",
+    "training_extra_completed",
+    "rest_completed"
+  ]);
+
+  const missingFacts = new Set(
+    PLAYER_ACTION_EFFECT_PLAN
+      .map(row => row.desiredFactKind)
+      .filter(Boolean)
+      .filter(kind => !alreadyImplementedFacts.has(kind))
+  );
+
+  assert.deepEqual(
+    [...missingFacts].sort(),
+    ["career_priority", "request_position_change", "withdraw_transfer_request"].sort()
+  );
+});
+
+test("A5-052 VETERAN AND MENTOR ACTIONS STAY LOCAL, NOT A3 FACTS", () => {
+  for (const actionId of ["PA_VETERAN_ADVICE", "PA_MENTOR_YOUNG"]) {
+    const rows = PLAYER_ACTION_EFFECT_PLAN.filter(row => row.actionId === actionId);
+    assert.ok(rows.length > 0);
+    assert.ok(rows.every(row => row.mode === "direct_only"));
+    assert.ok(rows.every(row => row.desiredFactKind === undefined));
+  }
 });
