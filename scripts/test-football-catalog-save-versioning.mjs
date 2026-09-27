@@ -203,9 +203,7 @@ test("DB-A4 long career remains current-catalog and survives terminal save/load"
     seed: 424242,
     untilRetirement: true,
     maxAge: 55,
-    microfeeds: false,
-    choiceStrategy: "balanced",
-    offerStrategy: "accept"
+    microfeeds: true
   });
   const state = result.state;
   assert.equal(state.footballCatalogVersion, CURRENT_FOOTBALL_CATALOG_VERSION);
