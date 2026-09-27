@@ -1,0 +1,34 @@
+name: Player Actions A3 V1 Facts
+
+on:
+  pull_request:
+    branches:
+      - a1/player-actions-group-cooldowns
+    paths:
+      - 'src/player-actions/**'
+      - 'src/session/**'
+      - 'scripts/test-player-actions-core.mjs'
+      - 'scripts/test-player-actions-session.mjs'
+      - 'scripts/test-player-actions-narrative-bridge.mjs'
+      - 'package.json'
+      - '.github/workflows/player-actions-a3-v1-facts.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  a3-v1-facts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Build
+        run: npm run build
+      - name: A1 core + A2 session + A3 bridge
+        run: node --test scripts/test-player-actions-core.mjs scripts/test-player-actions-session.mjs scripts/test-player-actions-narrative-bridge.mjs
