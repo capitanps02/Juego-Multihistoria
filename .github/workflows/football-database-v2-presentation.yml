@@ -22,6 +22,10 @@ on:
       - '.github/workflows/football-database-v2-presentation.yml'
   workflow_dispatch:
 
+concurrency:
+  group: football-db-a5-presentation-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
