@@ -8,6 +8,7 @@ on:
     paths:
       - 'src/player-actions/types.ts'
       - 'src/player-actions/eligibility.ts'
+      - 'src/session/game-session.ts'
       - 'scripts/test-player-actions-core.mjs'
       - '.github/workflows/player-actions-production-eligibility.yml'
   workflow_dispatch:
