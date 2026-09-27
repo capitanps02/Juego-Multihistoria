@@ -201,7 +201,7 @@ test("A5-016 REST FREQUENCY CEILING", () => {
 });
 
 
-test("A5-017 INTENT COOLDOWN >= FACT LIFECYCLE", () => {
+test("A5-017 INTENT COOLDOWN > INCLUSIVE FACT LIFECYCLE", () => {
   const minimums = new Map([
     ["PA_COACH_TALK", 30],
     ["PA_REQUEST_TRANSFER", 120],
@@ -212,8 +212,8 @@ test("A5-017 INTENT COOLDOWN >= FACT LIFECYCLE", () => {
     const action = PLAYER_ACTION_CATALOG.find(row => row.id === actionId);
     assert.ok(action, `missing ${actionId}`);
     assert.ok(
-      action.cooldown.days >= minimumDays,
-      `${actionId} cooldown ${action.cooldown.days}d is shorter than causal fact lifecycle ${minimumDays}d`
+      action.cooldown.days > minimumDays,
+      `${actionId} cooldown ${action.cooldown.days}d must exceed inclusive causal fact lifecycle ${minimumDays}d`
     );
   }
 });
