@@ -23,9 +23,10 @@ At the same snapshot, A4 was not a clean descendant of the current A3 PR head, s
 - PASADAS ESTIMADAS RESTANTES: **6**
 - GATES PASS: **0 / 15 certified**
 - P0: **0 known**
-- P1: **1 process blocker** — no serialized integrated A1→A6 candidate exists yet
+- P1: **0 known**
+- CERTIFICATION BLOCKER: **YES** — no serialized integrated A1→A6 candidate exists yet
 
-This P1 is a certification-process blocker, not a gameplay defect.
+This is a dependency/integration precondition blocker, not a P0/P1 gameplay defect.
 
 ## Preflight harness
 
@@ -51,3 +52,15 @@ The harness fails closed unless:
 5. the minimum catalog/runtime/save and regression command surface exists.
 
 Only after this preflight passes may DB-A7 start PASS 1 and count certification progress.
+
+
+## Dependency refresh after scaffold creation
+
+A second repository check found:
+
+- A5 branch `db-a5-football-presentation-platforms` at `2ce9bf51d38c592dfe018d5bc6a32d3ce6ca9535`;
+- A5 is a clean descendant of current A3 PR head by 3 commits, but diverges from the current A4 WIP branch by 6 ahead / 6 behind;
+- A6 branch `db-a6/football-data-polish` currently points to `14acd8dcf3fa048453047dab705beb98dccb7a6d`, identical to the current A2 candidate, so no A6 polish generation has landed yet;
+- therefore there is still no single candidate containing G4 + G5 + G6.
+
+Formal DB-A7 certification remains at **0% / 0 of 6 passes / 0 of 15 gates certified** until a serialized candidate exists.
