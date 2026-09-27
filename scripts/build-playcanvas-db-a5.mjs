@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
 import { createHash } from 'node:crypto';
+import { relativeModuleSpecifiers } from './local-esm-graph.mjs';
 
 const root=path.resolve(import.meta.dirname,'..');
 const require=createRequire(import.meta.url);
@@ -27,6 +28,8 @@ function inlineWeb(file,removedImports=[]){
     if(!source.includes(statement))throw Error('Expected import missing in '+file+': '+statement);
     source=source.replace(statement,'');
   }
+  const relativeLeftovers=relativeModuleSpecifiers(source);
+  if(relativeLeftovers.length)throw Error('Unhandled local ESM dependency while inlining '+file+': '+relativeLeftovers.join(', '));
   if(source.split('\n').some(line=>line.trimStart().startsWith('import ')))throw Error('Unhandled web import in '+file);
   return source.replaceAll('export function ','function ');
 }
