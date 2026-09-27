@@ -89,6 +89,12 @@ test("reference classifier separates V2 production from compatibility", () => {
     assert.throws(() => assertNewFootballClubReference(legacy, "new"), /new V2 production requires/);
   }
 
+  for (const opaqueLegacy of ["Destino", "Development Club", "Propietario"]) {
+    assert.equal(classifyFootballClubReference(opaqueLegacy).kind, "legacy_compat", opaqueLegacy);
+    assert.equal(isLoadableFootballClubReference(opaqueLegacy), true, opaqueLegacy);
+    assert.equal(isNewFootballClubReference(opaqueLegacy), false, opaqueLegacy);
+  }
+
   assert.equal(isNewFootballClubReference("ESP_MADRID"), true);
   assert.equal(isNewFootballClubReference("UDV"), true);
   assert.doesNotThrow(() => assertNewFootballClubReference("ESP_MADRID"));
