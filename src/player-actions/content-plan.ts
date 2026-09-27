@@ -87,7 +87,7 @@ export const PLAYER_ACTION_CONTENT_PLAN: readonly PlayerActionContentPlanRow[] =
     classification: "CORE",
     category: "training",
     ageRange: [18, null],
-    cooldownDays: 10,
+    cooldownDays: 35,
     targetKind: "none",
     status: "implemented",
     requiredContext: "active career"
@@ -119,7 +119,7 @@ export const PLAYER_ACTION_CONTENT_PLAN: readonly PlayerActionContentPlanRow[] =
     classification: "CORE",
     category: "health",
     ageRange: [18, null],
-    cooldownDays: 7,
+    cooldownDays: 21,
     targetKind: "none",
     status: "implemented",
     requiredContext: "active career",
