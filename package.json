@@ -70,7 +70,7 @@
     "test:football-catalog": "npm run build && node --test scripts/test-football-catalog.mjs",
     "test:football-balance": "npm run build && node --test scripts/test-football-catalog.mjs scripts/test-football-catalog-balance.mjs",
     "test:football-runtime": "npm run build && node --test scripts/test-football-database-v2-runtime.mjs scripts/test-t5-age18-market-authority.mjs scripts/test-player-actions-narrative-bridge.mjs",
-    "test:football-save": "npm run build && node --test scripts/test-football-save-versioning.mjs scripts/test-football-catalog-save-version.mjs scripts/test-football-catalog-save-versioning.mjs scripts/test-saves.mjs scripts/test-player-actions-session.mjs scripts/test-t536-t537-retirement.mjs"
+    "test:football-save": "npm run build && node --test scripts/test-football-save-versioning.mjs scripts/test-football-catalog-save-version.mjs scripts/test-football-catalog-save-versioning.mjs scripts/test-saves.mjs scripts/test-player-actions-session.mjs scripts/test-offers.mjs scripts/test-t5-market-contract-authority.mjs"
   },
   "devDependencies": {
     "typescript": "5.8.3"
