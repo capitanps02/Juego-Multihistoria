@@ -433,3 +433,43 @@ test("A6-018 RETIREMENT COLLISION: career closure after render makes old action 
   );
   assert.deepEqual(session.exportSnapshot(), before);
 });
+
+
+test("A6-019 NARRATIVE RNG FUTURE: local action does not shift future narrative stream", async () => {
+  const source = await GameSession.create(6190, {
+    microfeeds: false,
+    sessionId: "a6-future-rng"
+  });
+  const baselineSnapshot = source.exportSnapshot();
+  const actionSnapshot = clone(baselineSnapshot);
+  const bodyBefore = clone(actionSnapshot.state.body);
+
+  const result = executePlayerActionInPlace(actionSnapshot.state, {
+    actionId: "PA_REST",
+    optionId: "RECOVER"
+  });
+  assert.equal(result.ok, true);
+
+  // Neutralize only the legitimate local physical differences from REST.
+  actionSnapshot.state.body.fatigue = bodyBefore.fatigue;
+  actionSnapshot.state.body.fitness = bodyBefore.fitness;
+
+  const withAction = await GameSession.resume(actionSnapshot);
+  const withoutAction = await GameSession.resume(clone(baselineSnapshot));
+
+  const command = {
+    type: "continue",
+    commandId: "a6-future-rng-continue",
+    expectedRevision: 0,
+    maxDays: 30
+  };
+  await withAction.dispatch(clone(command));
+  await withoutAction.dispatch(clone(command));
+
+  const a = withAction.exportSnapshot();
+  const b = withoutAction.exportSnapshot();
+  assert.deepEqual(a.state.rngState.narrative, b.state.rngState.narrative);
+  assert.deepEqual(a.state.history, b.state.history);
+  assert.deepEqual(a.pendingDecision, b.pendingDecision);
+  assert.equal(a.state.date, b.state.date);
+});
