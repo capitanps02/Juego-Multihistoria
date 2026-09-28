@@ -249,6 +249,7 @@ test('T5.36/15 schema-7 legacy migration cannot announce or close retirement',()
   const current=lateState(1515);
   const legacy=structuredClone(current);
   legacy.schemaVersion=7;
+  delete legacy.footballCatalogVersion;
   delete legacy.retirement;
   delete legacy.epilogue;
   const rng=structuredClone(legacy.rngState);
