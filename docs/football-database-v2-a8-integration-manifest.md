@@ -280,3 +280,58 @@ DB-A8 — PASS 1 COMPLETE
 - SEMANTIC CONFLICTS: **none**
 - BLOCKERS: **none**
 - SIGUIENTE: **Build clean release candidate**
+
+
+## PASS 2 closeout
+
+DB-A8 — PASS 2 COMPLETE
+
+- PROGRESS: **55%**
+- PASSES: **2 / 4**
+- PASSES ESTIMADAS RESTANTES: **2**
+- clean release branch: `db-a8/football-database-v2-release-main2`
+- source authority delta: **none under src/****
+- generated deployables promoted from exact A8 artifact output
+- one-shot materialization helper: **removed from final branch**
+- remaining A8 workflows: **contents: read**
+
+Certified/generated deployable identities:
+
+- Android offline assets tree:
+  `870d8dba07f64b3fc8c11bfe783a2c8f0fe53b0d`
+- PlayCanvas bundle blob:
+  `1af0a9f7c9f53fd5c8856423c18a06686dc77ab4`
+- PlayCanvas manifest blob:
+  `a74dff8d83c95c057c8f8660955f039085d1c583`
+- web/assets.json blob:
+  `f62465d3463976b229d5cc8a4329bec9c2e3f1d1`
+- web/club-catalog-names.js blob:
+  `05dee64fcafecbc143d40e03ffdd551da1a8e264`
+- web/club-names.js blob:
+  `dcb8537dd636bf99938e8db8e8131b28d5a0ed59`
+
+Prior exact-RC evidence before this documentation-only trigger:
+
+- A8 release-artifacts run `36439580428`: **SUCCESS**
+- PlayCanvas rebuild/regression: **PASS**
+- Android offline rebuild/regression: **PASS**
+- generated artifact freshness: **PASS**
+
+This closeout intentionally changes only A8 documentation. Because exact-HEAD
+release certification is required, this commit triggers a fresh Pass 3
+regression on its own final HEAD.
+
+## PASS 3 entry
+
+Target: **80%**
+
+Required on the exact post-Pass-2 HEAD:
+
+- release gates green;
+- save/version/migration green;
+- RNG/determinism/zero-action green;
+- Repository Integrity green;
+- PlayCanvas + Android freshness green;
+- 4/4 long-career shards green (24 complete careers);
+- no P0/P1 release blockers;
+- HEAD unchanged after certification.
