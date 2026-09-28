@@ -6,6 +6,7 @@ import { materializeNarrativeClubAlias } from "../dist/catalog/football/narrativ
 import { advanceWorldDayInPlace } from "../dist/simulation/world-simulator.js";
 import { respondToOffer } from "../dist/simulation/offers.js";
 import { loadSave, serializeSave } from "../dist/save/save.js";
+import { materializeNarrativeClubAlias } from "../dist/catalog/football/narrative-club-alias.js";
 
 function settlePendingOffer(state) {
   const pending = state.market?.pending;
@@ -54,6 +55,26 @@ for (const alias of [
   });
   assert.equal(first, second, `${alias}: deterministic alias materialization`);
   assert.deepEqual(aliasProbe.rngState, aliasBeforeRng, `${alias}: RNG state mutated`);
+}
+
+const aliases = ["NEW_CLUB","DEVELOPMENT_CLUB","DEVELOPMENT_CLUB_2","HIGHER_CLUB","BIG_CLUB","FOREIGN_DEV_CLUB"];
+for (let seed = 1; seed <= 25; seed += 1) {
+  const state = createInitialState(seed);
+  for (const alias of aliases) {
+    const before = structuredClone(state.rngState);
+    const first = materializeNarrativeClubAlias(state, alias, {
+      eventId: "A7_RNG_PROBE",
+      choiceId: "A",
+      targetTier: null
+    });
+    const second = materializeNarrativeClubAlias(state, alias, {
+      eventId: "A7_RNG_PROBE",
+      choiceId: "A",
+      targetTier: null
+    });
+    assert.equal(first, second, `alias projection nondeterminism ${alias} seed=${seed}`);
+    assert.deepEqual(state.rngState, before, `alias projection consumed RNG ${alias} seed=${seed}`);
+  }
 }
 
 const seeds = [1, 42, 777, 94001, 424242, 20260928];
