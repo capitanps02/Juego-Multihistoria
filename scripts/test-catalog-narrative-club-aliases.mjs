@@ -104,12 +104,12 @@ test("all six canonical aliases materialize deterministically without mutating s
     const first = materializeNarrativeClubAlias(state, alias, {
       eventId: "QA_ALIAS_EVENT",
       choiceId: "QA",
-      targetTier: alias === "BIG_CLUB" ? 1 : 3
+      targetTier: alias === "BIG_CLUB" ? 1 : alias === "HIGHER_CLUB" ? 2 : 3
     });
     const replay = materializeNarrativeClubAlias(state, alias, {
       eventId: "QA_ALIAS_EVENT",
       choiceId: "QA",
-      targetTier: alias === "BIG_CLUB" ? 1 : 3
+      targetTier: alias === "BIG_CLUB" ? 1 : alias === "HIGHER_CLUB" ? 2 : 3
     });
     assert.equal(first, replay, alias);
     const club = clubById(first);
