@@ -1,0 +1,40 @@
+name: Football Database V2 · Presentation platforms
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/catalog/football/**'
+      - 'web/club-names.js'
+      - 'web/game-ui.js'
+      - 'scripts/build-playcanvas.mjs'
+      - 'scripts/build-android-offline.mjs'
+      - 'scripts/test-club-names.mjs'
+      - 'scripts/test-playcanvas.mjs'
+      - 'scripts/test-android-offline.mjs'
+      - 'package.json'
+      - '.github/workflows/football-database-v2-platforms.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  football-platforms:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Build PlayCanvas package
+        run: npm run build:playcanvas
+      - name: Shared club-name and PlayCanvas regression
+        run: node --test scripts/test-club-names.mjs scripts/test-playcanvas.mjs
+      - name: Build Android offline package
+        run: npm run android:offline
+      - name: Android offline regression
+        run: node --test scripts/test-android-offline.mjs
