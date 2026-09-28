@@ -11,7 +11,7 @@ export const MUIR_VIEWPORTS=[
 export const MUIR_FIXTURES=[
   {id:'home-normal',surface:'HOME',seed:424242,route:'home',recipe:'initial'},
   {id:'home-pending-decision',surface:'HOME',seed:42,route:'home',recipe:'pending-decision'},
-  {id:'home-offer',surface:'OFFER',seed:123,route:'home',recipe:'offer'},
+  {id:'home-offer',surface:'HOME',seed:123,route:'home',recipe:'offer'},
   {id:'result',surface:'RESULT',seed:42,route:'home',recipe:'result'},
   {id:'auto-running',surface:'AUTO_SIM',seed:1,route:'home',recipe:'auto-running'},
   {id:'auto-paused',surface:'AUTO_SIM',seed:777,route:'home',recipe:'auto-paused'},
