@@ -1,0 +1,66 @@
+name: MUIR P0 certification
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'analysis/muir/**'
+      - 'scripts/test-muir-*.mjs'
+      - 'scripts/build-muir-evidence.mjs'
+      - 'scripts/build-android-offline.mjs'
+      - 'scripts/test-android-offline.mjs'
+      - 'web/**'
+      - 'src/**'
+      - 'MUIR-RTM.md'
+  workflow_dispatch:
+
+jobs:
+  certify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Build engine
+        run: npm run build
+      - name: MUIR fixture contracts
+        run: node --test scripts/test-muir-fixtures.mjs
+      - name: MUIR package graph
+        run: node --test scripts/test-muir-package-graph.mjs
+      - name: Session
+        run: npm run test:session
+      - name: Saves
+        run: npm run test:saves
+      - name: Persistence
+        run: npm run test:persistence
+      - name: Player Actions UI
+        run: npm run test:player-actions-ui
+      - name: Player Actions session
+        run: npm run test:player-actions-session
+      - name: Auto-simulation
+        run: npm run test:t55:a14
+      - name: Epilogue UI
+        run: npm run test:t55:a19
+      - name: PlayCanvas
+        run: npm run test:playcanvas
+      - name: Android offline clean package
+        run: npm run build:android:offline
+      - name: Android offline
+        run: npm run test:android:offline
+      - name: Football platform parity
+        run: npm run test:football-platforms
+      - name: Build MUIR evidence index
+        run: node scripts/build-muir-evidence.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: muir-p0-certification
+          path: |
+            analysis/muir/muir-baseline.json
+            analysis/muir/evidence/
+            playcanvas/manifest.json
+            android/app/src/main/assets/offline-manifest.json
