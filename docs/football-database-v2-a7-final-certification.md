@@ -18,7 +18,7 @@ Baseline under certification:
 |---|---|---|
 | C01 | TypeScript build and module graph compile | `npm run build` |
 | C02 | Catalog scope, stable identity, structural integrity, corruption rejection and name-risk lint | `test-football-catalog.mjs` |
-| C03 | Division hierarchy, coefficient variance and eight archetype families remain calibrated | `test-football-catalog-balance.mjs` |
+| C03 | Competitive bands, tier/league hierarchy, selector profiles and sampling distributions remain calibrated | `test-football-v2-balance.mjs` |
 | C04 | Fixtures select real catalog identities without new RNG authority | `test-catalog-fixture-opponents.mjs` |
 | C05 | Market destinations select catalog clubs with deterministic existing rolls | `test-catalog-market-destinations.mjs` |
 | C06 | Home/foreign/loan market routes remain covered by catalog identities | `test-catalog-world-market-routes.mjs` |
@@ -75,3 +75,15 @@ Because the predecessor #853 repository-integrity run reached 17/18 successful s
 Final A7 status is therefore:
 
 `15/15 PASS + STRATIFIED_CLOSURE PASS`.
+
+
+## Balance contract reconciliation
+
+Current main introduced the authoritative band-based balance layer in `src/catalog/football/balance.ts`.
+The repository's own `football-database-v2-main-reground.yml` and `football-database-v2-balance.yml`
+certify `scripts/test-football-v2-balance.mjs`.
+
+A7 therefore uses that current contract for C03. The older pre-reground test
+`test-football-catalog-balance.mjs` is not used as a final gate because its assumptions
+(minimum of every upper-tier attribute strictly exceeding every lower-tier maximum, plus the
+old archetype qualification model) are intentionally superseded by competitive club bands.
