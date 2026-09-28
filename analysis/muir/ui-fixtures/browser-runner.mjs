@@ -139,6 +139,13 @@ if(fixture.id==='contract-offer'){
   const labels=[...root.querySelectorAll('.choices button')].map(b=>b.textContent.trim());
   for(const expected of ['Aceptar oferta','Rechazar oferta','Delegar esta oferta'])if(!labels.includes(expected))throw Error('Contract offer detail is missing action: '+expected);
 }
+if(fixture.id==='player-actions-menu'&&!root.textContent.includes('¿Qué quieres hacer?'))throw Error('Player Actions menu did not render');
+if(fixture.id==='player-actions-category'&&!root.textContent.includes('Entrenamiento extra'))throw Error('Player Actions category did not render');
+if(fixture.id==='player-actions-detail'){
+  if(!root.textContent.includes('Entrenamiento extra'))throw Error('Player Actions detail title did not render');
+  if(![...root.querySelectorAll('button')].some(b=>b.textContent.trim()==='Trabajo técnico'))throw Error('Player Actions detail option did not render');
+}
+if(fixture.id==='player-actions-result'&&!root.querySelector('.player-action-result'))throw Error('Player Actions result did not render');
 if(fixture.id==='period-summary'&&!root.querySelector('.period-summary'))throw Error('Period summary fixture did not render the public period summary');
 if(fixture.id==='result'&&!root.querySelector('.decision-sheet'))throw Error('Result fixture did not render the detailed result surface');
 
