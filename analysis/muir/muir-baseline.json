@@ -60,9 +60,9 @@
     "status": "NOT_MEASURED"
   },
   "packageGraph": {
-    "status": "BLOCKED",
-    "finding": "web/game-ui.js imports ./cutscene-player.js; scripts/build-android-offline.mjs does not copy that module while PlayCanvas inlines it",
-    "reproduction": "node --test scripts/test-muir-package-graph.mjs",
+    "status": "REPAIRED_PENDING_EXECUTION",
+    "finding": "K-01 source defect repaired: Android offline builder now copies web/cutscene-player.js and Android/package-graph tests guard the dependency.",
+    "reproduction": "node --test scripts/test-muir-package-graph.mjs && npm run build:android:offline && npm run test:android:offline",
     "executed": false
   },
   "identityId01": {
@@ -72,10 +72,9 @@
     "gateImpact": "P3_BLOCKER"
   },
   "cinematics": {
-    "status": "BLOCKED",
-    "finding": "Web and PlayCanvas resolution/fallback paths are defined; Android offline cannot certify cinematics while K-01 omits cutscene-player.js from the package graph.",
-    "evidence": "analysis/muir/K-02_CINEMATIC_RESOLUTION.md",
-    "blockedBy": "MUIR-K-01"
+    "status": "REPAIRED_PENDING_EXECUTION",
+    "finding": "Web/PlayCanvas paths defined; Android transitive cutscene module now packaged and guarded; exact-head clean execution pending.",
+    "evidence": "analysis/muir/K-02_CINEMATIC_RESOLUTION.md"
   },
   "productChanges": "NONE",
   "gameplayChanges": "NONE",
@@ -96,5 +95,9 @@
   "screenDataActionMap": {
     "status": "DOCUMENTED",
     "evidence": "analysis/muir/P0_SCREEN_DATA_ACTION_MAP.md"
+  },
+  "platformPersistenceParity": {
+    "status": "SOURCE_PARITY_CONFIRMED_EXECUTION_PENDING",
+    "evidence": "analysis/muir/P0_PLATFORM_PERSISTENCE_PARITY.md"
   }
 }
