@@ -1,0 +1,82 @@
+name: Football Database V2 · Main reground
+
+on:
+  push:
+    branches:
+      - 'db-a3/runtime-football-v2-main-reground'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/catalog/football/**'
+      - 'src/narrative/resolver.ts'
+      - 'src/simulation/offers.ts'
+      - 'src/simulation/professional-adapter.ts'
+      - 'src/simulation/world-simulator-core.ts'
+      - 'scripts/test-football-v2-*.mjs'
+      - 'scripts/test-football-catalog.mjs'
+      - '.github/workflows/football-database-v2-main-reground.yml'
+
+concurrency:
+  group: football-v2-main-reground-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  certify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+
+      - name: Build current V2 candidate
+        run: npm run build
+
+      - name: Preserve current catalog and presentation regressions
+        run: |
+          node scripts/generate-club-catalog-names.mjs --check
+          node --test             scripts/test-football-catalog.mjs             scripts/test-catalog-fixture-opponents.mjs             scripts/test-catalog-market-destinations.mjs             scripts/test-catalog-world-market-routes.mjs             scripts/test-catalog-narrative-club-aliases.mjs             scripts/test-catalog-offer-fallbacks.mjs             scripts/test-t5-age18-market-authority.mjs             scripts/test-club-names.mjs
+
+      - name: V2 integrity and balance contracts
+        run: node --test scripts/test-football-v2-integrity.mjs scripts/test-football-v2-balance.mjs
+
+      - name: V2 runtime integration
+        run: node --test scripts/test-football-v2-runtime.mjs
+
+      - name: Player Actions authority
+        run: node --test scripts/test-player-actions-core.mjs scripts/test-player-actions-session.mjs scripts/test-player-actions-narrative-bridge.mjs
+
+      - name: Direct market mutation ownership audit
+        run: node scripts/audit-market-direct-mutations.mjs
+
+      - name: Market authority and late-career ownership
+        run: node --test scripts/test-t5-market-contract-authority.mjs scripts/test-market-posttest.mjs scripts/test-t5-a3-final-market.mjs
+
+      - name: Saves and auto-simulation
+        run: node --test scripts/test-saves.mjs scripts/test-t5-save-compat.mjs scripts/test-t55-auto-simulation.mjs
+
+      - name: Build PlayCanvas bundle with V2 names
+        run: node scripts/build-playcanvas.mjs
+
+      - name: Checkout current V1 main baseline
+        uses: actions/checkout@v4
+        with:
+          ref: 112bd95279f1397c54f69f3d17c25871035bba48
+          path: baseline-main
+
+      - name: Build V1 main baseline
+        run: |
+          npm ci --prefix baseline-main
+          npm --prefix baseline-main run build
+
+      - name: Zero-action equivalence V1 main to V2
+        env:
+          DB_A3_BASELINE_ROOT: baseline-main
+          DB_A3_CURRENT_ROOT: .
+        run: node --test scripts/test-football-v2-zero-action-equivalence.mjs
