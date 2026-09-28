@@ -16,7 +16,7 @@ export const MUIR_FIXTURES=[
   {id:'auto-running',surface:'AUTO_SIM',seed:1,route:'home',recipe:'auto-running'},
   {id:'auto-paused',surface:'AUTO_SIM',seed:777,route:'home',recipe:'auto-paused'},
   {id:'auto-interruption',surface:'AUTO_SIM',seed:42,route:'home',recipe:'auto-interruption'},
-  {id:'period-summary',surface:'PERIOD_SUMMARY',seed:1,route:'career',recipe:'period-summary'},
+  {id:'period-summary',surface:'PERIOD_SUMMARY',seed:1,route:'home',recipe:'period-summary'},
   {id:'player-actions-menu',surface:'PLAYER_ACTIONS',seed:424242,route:'career',recipe:'player-actions-menu'},
   {id:'player-actions-category',surface:'PLAYER_ACTIONS',seed:424242,route:'career',recipe:'player-actions-category'},
   {id:'player-actions-detail',surface:'PLAYER_ACTIONS',seed:424242,route:'career',recipe:'player-actions-detail'},
