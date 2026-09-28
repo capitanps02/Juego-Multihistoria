@@ -7,6 +7,7 @@ import { serializeSave } from "../dist/save/save.js";
 
 const count = Math.max(1, Number(process.env.DB_A7_CAREERS ?? 600));
 const baseSeed = Number(process.env.DB_A7_BASE_SEED ?? 7600000);
+const progressEvery = Math.max(1, Number(process.env.DB_A7_PROGRESS_EVERY ?? 25));
 
 const metrics = {
   careers: 0,
@@ -90,6 +91,19 @@ for (let i = 0; i < count; i += 1) {
     metrics.maxHistory = Math.max(metrics.maxHistory, state.history?.length ?? 0);
     metrics.maxFixtures = Math.max(metrics.maxFixtures, state.world?.sportMatchModel?.fixtures?.length ?? 0);
     metrics.maxPlayerActionFacts = Math.max(metrics.maxPlayerActionFacts, state.playerActions?.facts?.length ?? 0);
+
+    if ((i + 1) % progressEvery === 0 || i + 1 === count) {
+      console.log("DB-A7 LONG CAREER PROGRESS", JSON.stringify({
+        completed: i + 1,
+        total: count,
+        baseSeed,
+        crashes: metrics.crashes,
+        invalidReferences: metrics.invalidReferences,
+        syntheticLeaks: metrics.syntheticLeaks,
+        invalidOpponents: metrics.invalidOpponents,
+        maxSaveBytes: metrics.maxSaveBytes
+      }));
+    }
   } catch (error) {
     metrics.crashes += 1;
     console.error("DB-A7 long-career failure", { seed, error: String(error?.stack ?? error) });
