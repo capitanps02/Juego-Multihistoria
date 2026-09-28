@@ -61,9 +61,9 @@ test('unattached state survives save/load and can re-enter employment only by ac
   assert.equal(employmentStatus(state),'unattached');
   const rng=structuredClone(state.rngState);
   proposeCareerChange(state,'Oferta profesional tras quedar libre',draft=>{
-    draft.club='Reentry FC';
-    draft.professional.ownerClub='Reentry FC';
-    draft.professional.registrationClub='Reentry FC';
+    draft.club='ESP_MADRID';
+    draft.professional.ownerClub='ESP_MADRID';
+    draft.professional.registrationClub='ESP_MADRID';
     draft.professional.leagueTier=2;
     draft.professional.route='domestic';
     draft.tier=2;
@@ -81,7 +81,7 @@ test('unattached state survives save/load and can re-enter employment only by ac
   assert.deepEqual(state.rngState,rng);
   const restored=loadSave(serializeSave(state));
   assert.equal(employmentStatus(restored),'contracted');
-  assert.equal(restored.club,'Reentry FC');
+  assert.equal(restored.club,'ESP_MADRID');
 });
 
 test('legacy zero-month save without employment remains ambiguous/fail-closed',()=>{
