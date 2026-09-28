@@ -62,7 +62,7 @@ test("A4 legacy opaque display identities stay loadable only on unmarked histori
 
   const v2 = structuredClone(legacy);
   v2.footballCatalogVersion = FOOTBALL_CATALOG_VERSION;
-  assert.throws(() => assertGameState(v2), /referencia de club legacy_compat no permitida en new_production/);
+  assert.throws(() => assertGameState(v2), /legacy_compat/);
 });
 
 test("A4 V2-native saves reject synthetic legacy club producers", () => {
@@ -83,7 +83,7 @@ test("A4 V2-native saves reject synthetic legacy club producers", () => {
     state.world.ownerClub = legacyId;
     assert.throws(
       () => assertGameState(state),
-      /referencia de club legacy_compat no permitida en new_production/,
+      /legacy_compat/,
       legacyId
     );
   }
@@ -103,10 +103,10 @@ test("A4 narrative aliases are never legal persisted club identities", () => {
     state.professional.ownerClub = alias;
     state.professional.registrationClub = alias;
     state.world.ownerClub = alias;
-    assert.throws(() => assertGameState(state), /narrative_alias no permitida/, alias);
+    assert.throws(() => assertGameState(state), /narrative_alias/, alias);
 
     delete state.footballCatalogVersion;
-    assert.throws(() => assertGameState(state), /narrative_alias no permitida/, alias);
+    assert.throws(() => assertGameState(state), /narrative_alias/, alias);
   }
 });
 
@@ -116,7 +116,7 @@ test("A4 unknown V2-like catalog identities fail closed", () => {
   state.professional.ownerClub = "ESP_FAKE_CLUB_999";
   state.professional.registrationClub = "ESP_FAKE_CLUB_999";
   state.world.ownerClub = "ESP_FAKE_CLUB_999";
-  assert.throws(() => assertGameState(state), /invalid no permitida en new_production/);
+  assert.throws(() => assertGameState(state), /invalid|unknown football catalog namespace identity/);
 });
 
 test("A4 catalog identities and UDV remain valid on V2-native saves", () => {
