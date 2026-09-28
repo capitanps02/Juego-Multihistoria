@@ -178,15 +178,16 @@ switch(fixtureId){
     break;
   case 'auto-running':
     requireSurface(visibleText.includes('Simulando el siguiente tramo…'),'running auto-sim status');
-    requireSurface([...root.querySelectorAll('button')].some(b=>b.textContent.trim()==='Pausar'),'pause action');
+    requireSurface([...root.querySelectorAll('button')].some(b=>b.textContent.trim()==='Pausar simulación'),'pause auto-sim action');
     break;
   case 'auto-paused':
     requireSurface(visibleText.includes('Juego en pausa'),'paused status');
-    requireSurface([...root.querySelectorAll('button')].some(b=>b.textContent.trim()==='Reanudar'),'resume action');
+    requireSurface([...root.querySelectorAll('button')].some(b=>b.textContent.trim()==='Reanudar simulación'),'resume auto-sim action');
     break;
   case 'period-summary':
     requireSurface(Boolean(root.querySelector('.period-summary')),'period summary');
-    requireSurface(h1==='Tu carrera.','career route around period summary');
+    requireSurface(visibleText.includes('Resumen del periodo'),'period summary heading');
+    requireSurface([...root.querySelectorAll('button')].some(b=>b.textContent.trim()==='Seguir simulando'),'period summary continue action');
     break;
   case 'player-actions-menu':
     requireSurface(h1==='¿Qué quieres hacer?','player actions menu');
@@ -227,6 +228,7 @@ switch(fixtureId){
     break;
   case 'epilogue-retirement':
     requireSurface(Boolean(root.querySelector('.home-grid')),'epilogue home surface');
+    requireSurface(Boolean(root.querySelector('.retirement-panel')),'closed retirement panel');
     requireSurface(visibleText.includes('Una carrera para recordar'),'epilogue copy');
     break;
 }
