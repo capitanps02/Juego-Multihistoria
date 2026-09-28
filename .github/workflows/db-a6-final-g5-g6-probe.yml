@@ -1,0 +1,48 @@
+name: DB-A6 · Final G5/G6 probe
+
+on:
+  pull_request:
+    paths:
+      - 'src/catalog/football/**'
+      - 'src/save/**'
+      - 'src/simulation/**'
+      - 'src/narrative/**'
+      - 'src/player-actions/**'
+      - 'web/**'
+      - 'scripts/build-playcanvas.mjs'
+      - 'scripts/build-android-offline.mjs'
+      - 'scripts/test-football-*.mjs'
+      - 'scripts/test-club-names.mjs'
+      - 'scripts/test-playcanvas.mjs'
+      - 'scripts/test-android-offline.mjs'
+      - 'scripts/test-player-actions-content.mjs'
+      - 'package.json'
+      - '.github/workflows/db-a6-final-g5-g6-probe.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  final-g5-g6:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: G6 catalog and name quality
+        run: npm run test:football-catalog
+      - name: A2 balance
+        run: npm run test:football-balance
+      - name: A3 runtime
+        run: npm run test:football-runtime
+      - name: A4 save/versioning
+        run: npm run test:football-save
+      - name: A5 PlayCanvas and Android presentation
+        run: npm run test:football-platforms
+      - name: Player Actions content
+        run: npm run test:player-actions-content
