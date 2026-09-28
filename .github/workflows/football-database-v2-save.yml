@@ -1,0 +1,45 @@
+name: Football Database V2 · Save versioning
+
+on:
+  push:
+    branches:
+      - db-a4/save-catalog-versioning
+  pull_request:
+    branches:
+      - main
+      - db-a3/runtime-football-catalog
+    paths:
+      - 'src/save/**'
+      - 'src/core/types.ts'
+      - 'src/content/initial-state.ts'
+      - 'src/catalog/football/**'
+      - 'src/player-actions/**'
+      - 'src/simulation/**'
+      - 'scripts/test-football-save-versioning.mjs'
+      - 'scripts/test-football-catalog-save-version.mjs'
+      - 'scripts/test-saves.mjs'
+      - 'scripts/test-player-actions-session.mjs'
+      - 'package.json'
+      - '.github/workflows/football-database-v2-save.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  save-versioning:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: DB-A4 save/version/migration suite
+        run: npm run test:football-save
+      - name: Football catalog integrity
+        run: npm run test:football-catalog
+      - name: Runtime/catalog regression
+        run: npm run test:football-runtime
