@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {MUIR_BASE_SHA,MUIR_FIXTURES,MUIR_VIEWPORTS} from '../analysis/muir/ui-fixtures/fixtures.mjs';
+import {MUIR_BASE_SHA,MUIR_FIXTURES,MUIR_VIEWPORTS,MUIR_FIXTURE_EXPECTATIONS} from '../analysis/muir/ui-fixtures/fixtures.mjs';
 import {GameSession} from '../dist/session/game-session.js';
 import {buildFixtureSession,fixtureEventCatalog} from '../analysis/muir/ui-fixtures/session-recipes.mjs';
 
@@ -42,5 +42,19 @@ for(const fixture of MUIR_FIXTURES){
     const reopened=await GameSession.migrateFromSave(raw,{events:fixtureEventCatalog(fixture.id)});
     assert.equal(reopened.getView().sessionId,session.getView().sessionId);
     assert.equal(reopened.getView().screen,session.getView().screen);
+  });
+}
+
+
+for(const fixture of MUIR_FIXTURES){
+  test('fixture public expectation matches: '+fixture.id,async()=>{
+    const view=(await buildFixtureSession(fixture.id)).getView();
+    const expected=MUIR_FIXTURE_EXPECTATIONS[fixture.id];
+    assert.ok(expected,'Missing public expectation for '+fixture.id);
+    assert.equal(view.screen,expected.screen);
+    if(expected.simulationMode!==undefined)assert.equal(view.simulation?.mode,expected.simulationMode);
+    if(expected.interruptionType!==undefined)assert.equal(view.simulation?.interruption?.type,expected.interruptionType);
+    if(expected.offer===true)assert.ok(view.offer);
+    if(expected.cutsceneEventId!==undefined)assert.equal(view.cutscene?.eventId,expected.cutsceneEventId);
   });
 }
