@@ -9,7 +9,7 @@ import { DeterministicRng } from "../core/rng.js";
 import type { ChoiceDefinition, Effect, EventDefinition, GameState, OutcomeDefinition, ResolutionResult, SeedInstance, SeedTransition } from "../core/types.js";
 import { narrativeConditionRoot } from "../simulation/club-contract-intent.js";
 import { syncRetirementState } from "../simulation/late-career-engine.js";
-import { currentEmploymentClub, syncEmploymentAfterNarrativeClubChangeInPlace } from "../simulation/employment.js";
+import { currentEmploymentClub, setNarrativeLoanRegistrationInPlace, syncEmploymentAfterNarrativeClubChangeInPlace } from "../simulation/employment.js";
 import { isNarrativeClubAlias, materializeNarrativeClubAlias, materializeNarrativeLoanRegistration } from "../catalog/football/narrative-club-alias.js";
 import { certifyPlayerClubLeadershipInPlace } from "../simulation/player-leadership-authority.js";
 import {
