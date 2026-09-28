@@ -90,6 +90,7 @@ async function settle(){
   throw Error('MUIR harness did not settle');
 }
 await settle();
+if(root.textContent.includes('No se ha podido cargar el juego.'))throw Error('MUIR harness loaded fixture into the product save failure screen');
 
 if(fixture.route==='career')await clickText('Carrera');
 else if(fixture.route==='world')await clickText('Mundo');
