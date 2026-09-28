@@ -60,3 +60,18 @@ The only allowed legacy `Foreign_*` occurrences are two read-only compatibility 
 
 A7 is **15/15 only when every C01–C15 step is green on the exact A7 HEAD**.
 No partial score is considered certified, and A7 must not be merged before predecessor #853 is green and integrated.
+
+
+## Global repository closure
+
+The 15/15 matrix remains the Football Database V2 acceptance matrix.
+
+Because the predecessor #853 repository-integrity run reached 17/18 successful steps and was cancelled by its 60-minute timeout during the final `T5 stratified simulation`, A7 also requires an independent closure job:
+
+- build current `main` + A7;
+- run `node scripts/qa-t5-sim.mjs`;
+- require PASS independently of the 15/15 matrix.
+
+Final A7 status is therefore:
+
+`15/15 PASS + STRATIFIED_CLOSURE PASS`.
