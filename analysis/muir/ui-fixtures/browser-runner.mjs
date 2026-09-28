@@ -113,7 +113,7 @@ if(root.textContent.includes('No se ha podido cargar el juego.'))throw Error('MU
 // while result/contract-offer retain the detailed cinematic surface.
 if(fixture.id==='home-pending-decision'||fixture.id==='home-offer'){
   await clickText('Volver a Inicio');
-  await settle();
+  await waitForSurface(()=>Boolean(root.querySelector('.home-grid')),'home after closing cinematic');
 }
 
 if(fixture.route==='career')await clickText('Carrera');
