@@ -1,0 +1,18 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import crypto from 'node:crypto';
+
+const root=path.resolve(import.meta.dirname,'..');
+const stat=rel=>{const p=path.join(root,rel);return fs.existsSync(p)?{bytes:fs.statSync(p).size,sha256:crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex')}:null};
+const targets={
+  webUi:stat('web/game-ui.js'),
+  webCss:stat('web/game-ui.css'),
+  cutscenePlayer:stat('web/cutscene-player.js'),
+  playcanvasBundle:stat('playcanvas/multihistoria.js'),
+  playcanvasManifest:stat('playcanvas/manifest.json'),
+  androidOfflineManifest:stat('android/app/src/main/assets/offline-manifest.json')
+};
+const report={schema:'muir-bundle-metrics-v1',generatedAt:new Date().toISOString(),targets};
+const out=path.join(root,'analysis/muir/evidence');fs.mkdirSync(out,{recursive:true});
+fs.writeFileSync(path.join(out,'bundle-metrics.json'),JSON.stringify(report,null,2)+'\n');
+console.log(JSON.stringify(report));
