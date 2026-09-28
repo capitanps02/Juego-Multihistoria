@@ -1,6 +1,13 @@
 name: Football Database V2 · Runtime integration
 
+concurrency:
+  group: db-a3-runtime-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
+  push:
+    branches:
+      - 'db-a3/runtime-football-catalog-a2-full'
   pull_request:
     branches: [main]
     paths:
@@ -42,4 +49,4 @@ jobs:
       - name: Player Actions causal bridge regression
         run: node --test scripts/test-player-actions-narrative-bridge.mjs
       - name: Core catalog integrity
-        run: node --test scripts/test-football-catalog.mjs scripts/test-football-catalog-balance.mjs
+        run: node --test scripts/test-football-catalog.mjs scripts/test-football-balance.mjs
