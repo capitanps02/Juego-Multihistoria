@@ -1,10 +1,13 @@
 import { instantiateNpcStates, instantiateRelationships } from "../catalog/npcs.js";
+import { FOOTBALL_CATALOG_VERSION } from "../catalog/football/index.js";
 import { makeRngStream } from "../core/rng.js";
 export function createInitialState(saveSeed = 20260910) {
     return {
         schemaVersion: 8,
+        footballCatalogVersion: FOOTBALL_CATALOG_VERSION,
         ageMilestones: [],
         market: { version: 1, sequence: 0, pending: null, history: [] },
+        employment: { version: 1, status: "contracted", since: "2026-07-01", previous: null },
         date: "2026-07-01",
         age: 18,
         season: "2026-27",
@@ -27,7 +30,7 @@ export function createInitialState(saveSeed = 20260910) {
         selection: { level: "none" },
         reputation: { prestige: 8, mediaHeat: 3, marketHeat: 5 },
         control: { career: 8, agentDependency: 0 },
-        sport: { roleScore: 18, minutesShare: 0, form: 50, positionIdentity: "winger", appearances: 0 },
+        sport: { roleScore: 18, minutesShare: 0, form: 50, positionIdentity: "winger", appearances: 0, yellowCardAccumulation: 0, suspensionMatches: 0 },
         world: { udvCashGap: 1100000, clubPressure: 42, coachSecurity: 48, marketWindowOpen: false, ownerClub: "UDV", nextCyclePriority: null, udvSeasonResolved: false },
         personality: { reserve: 50, impulsivity: 50, ambition: 55, professionalism: 55 },
         relationships: instantiateRelationships(),

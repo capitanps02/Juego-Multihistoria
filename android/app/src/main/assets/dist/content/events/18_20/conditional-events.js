@@ -1,4 +1,4 @@
-import { ambiguousEvent as E, flag, n, seedCreate, set } from "./helpers.js";
+import { ambiguousEvent as E, flag, n, seedCreate, seedResolve, set } from "./helpers.js";
 /**
  * Baraja condicional 18–20. Los disparadores/títulos/función proceden del canon.
  * Las opciones son adaptaciones técnicas cuando la tabla canónica describe la escena
@@ -146,7 +146,7 @@ export const CONDITIONAL_EVENTS_18_20 = [
         choices: [
             { id: "APOLOGIZE", label: "Explicar por qué lo hiciste y pedir disculpas por no preguntar", intentTags: ["repair"], primaryMessage: "Nano separa el enfado del contacto y acepta que la relación necesita nuevos límites.", secondaryMessage: "La disculpa llega, pero para él confirma que asumiste que sabías qué necesitaba.", primaryEffects: [n("rel.NPC_PLR_14.trust", 8), n("rel.NPC_PLR_14.resentment", -8)], secondaryEffects: [n("rel.NPC_PLR_14.resentment", 4)], primarySeedTransitions: [seedCreate("SEED_NANO_SHADOW", 70, { help: "repaired" })] },
             { id: "DEFEND", label: "Defender que era una oportunidad y no una humillación", intentTags: ["defend"], primaryMessage: "El contacto acaba funcionando y Nano reconoce que la ayuda tenía valor.", secondaryMessage: "Que funcione profesionalmente no arregla la sensación de haber perdido autonomía.", primaryEffects: [flag("NANO_OPPORTUNITY", true), n("rel.NPC_PLR_14.affinity", 3)], secondaryEffects: [flag("NANO_OPPORTUNITY", true), n("rel.NPC_PLR_14.resentment", 10)] },
-            { id: "WITHDRAW", label: "Retirar el contacto si todavía es posible y dejar que decida él", intentTags: ["autonomy"], primaryMessage: "Recuperar su control rebaja el conflicto.", secondaryMessage: "Nano aprecia el límite, pero la oportunidad desaparece con él.", primaryEffects: [n("rel.NPC_PLR_14.trust", 6), flag("UNSOLICITED_NANO_HELP", false)], secondaryEffects: [n("rel.NPC_PLR_14.trust", 3), flag("NANO_OPPORTUNITY", false)] }
+            { id: "WITHDRAW", label: "Retirar el contacto si todavía es posible y dejar que decida él", intentTags: ["autonomy"], primaryMessage: "Recuperar su control rebaja el conflicto.", secondaryMessage: "Nano aprecia el límite, pero la oportunidad desaparece con él.", primaryEffects: [n("rel.NPC_PLR_14.trust", 6), flag("UNSOLICITED_NANO_HELP", false)], secondaryEffects: [n("rel.NPC_PLR_14.trust", 3), flag("NANO_OPPORTUNITY", false)], primarySeedTransitions: [seedResolve("SEED_NANO_SHADOW")], secondarySeedTransitions: [seedResolve("SEED_NANO_SHADOW")] }
         ]
     }),
     E({

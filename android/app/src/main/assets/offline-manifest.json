@@ -21,8 +21,8 @@
   "files": [
     {
       "path": "dist/build-manifest.json",
-      "bytes": 15118,
-      "sha256": "b2db6e321fdfbe863b5b48167d2da413ac76d51b00985ed4e68109e5323e3856"
+      "bytes": 45297,
+      "sha256": "b828420f47c3b8fd74f070cdcf83c6c0a082b3cf125f7c17d8aa97c3572d9f41"
     },
     {
       "path": "dist/catalog/canon-coverage.d.ts",
@@ -35,6 +35,136 @@
       "sha256": "bd6bcd96c790847fb168d200e535112940444a4f7a03647f7552760fd54c1fb5"
     },
     {
+      "path": "dist/catalog/football/balance.d.ts",
+      "bytes": 3659,
+      "sha256": "ba4e32860584c2b1de82dbb9521898f09d15f03021f53a7c40e37f01a9eabed8"
+    },
+    {
+      "path": "dist/catalog/football/balance.js",
+      "bytes": 7203,
+      "sha256": "bde0d8e2c385ebbcf06d734c9bff782130791f08b0d52ee09036a6a30141724d"
+    },
+    {
+      "path": "dist/catalog/football/fixture-opponent.d.ts",
+      "bytes": 1258,
+      "sha256": "417e9e2634d4adfef68eb2a4236296e5325fbcc707625b07b212f3cf472247ce"
+    },
+    {
+      "path": "dist/catalog/football/fixture-opponent.js",
+      "bytes": 3803,
+      "sha256": "8e1a4710bea5a4443d13fe4a8fc8f949ecfa286f51276fa8e02dd57044946642"
+    },
+    {
+      "path": "dist/catalog/football/identity.d.ts",
+      "bytes": 711,
+      "sha256": "11fd7c08cad6a7ac23a8a8ce42421653b645190b6fce0e9db4eeb33e11d7c1d7"
+    },
+    {
+      "path": "dist/catalog/football/identity.js",
+      "bytes": 1979,
+      "sha256": "ef5207b05d17eb67d0559161fb3e12be3ef305394ff833a8f793b4aa33ad868e"
+    },
+    {
+      "path": "dist/catalog/football/index.d.ts",
+      "bytes": 3258,
+      "sha256": "fc10682f71494d8dd87d64102b2ee484988a3d6df5594f31aa7384c5f8a06393"
+    },
+    {
+      "path": "dist/catalog/football/index.js",
+      "bytes": 9256,
+      "sha256": "9d2391b6975387fe7697850961d3337065f015b2fb7b3642ace2ee97efa81f77"
+    },
+    {
+      "path": "dist/catalog/football/integrity.d.ts",
+      "bytes": 1063,
+      "sha256": "1073776c5c984f0eb9c79aa9cd93d41e406fd8b0014ee71074a1fb268e1aadeb"
+    },
+    {
+      "path": "dist/catalog/football/integrity.js",
+      "bytes": 9141,
+      "sha256": "71311551e30437b54a49b772f11235ead9a756385721c568be71213432195a4d"
+    },
+    {
+      "path": "dist/catalog/football/market-destination.d.ts",
+      "bytes": 2179,
+      "sha256": "6c5d3001d1d3373a7e77ac26e3cd2b2e28eb964c2c626679543b2c80c25f7461"
+    },
+    {
+      "path": "dist/catalog/football/market-destination.js",
+      "bytes": 10593,
+      "sha256": "ad1dbc3ae982c4f752eabe0ada51716fadb8bd89e527ff1970881646cc96c43f"
+    },
+    {
+      "path": "dist/catalog/football/narrative-club-alias.d.ts",
+      "bytes": 1200,
+      "sha256": "6edbbfbefd70ba4365e79be8dd95fefad6e4cb7fb96c6adf322480019e345b2f"
+    },
+    {
+      "path": "dist/catalog/football/narrative-club-alias.js",
+      "bytes": 4098,
+      "sha256": "d048ad99296da5361f2439a73a2f03f32d74ee46f572c809216547d5ee85423c"
+    },
+    {
+      "path": "dist/catalog/football/types.d.ts",
+      "bytes": 2172,
+      "sha256": "cc1443439045fdb54b0c1b1cbb2b727b3ad47983be6246febde983d54a22b952"
+    },
+    {
+      "path": "dist/catalog/football/types.js",
+      "bytes": 11,
+      "sha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+    },
+    {
+      "path": "dist/catalog/football/world.d.ts",
+      "bytes": 272,
+      "sha256": "15334886da756e69e55c300a02d3086bb9ad26db2cf190acda0838f8fe3d3840"
+    },
+    {
+      "path": "dist/catalog/football/world.js",
+      "bytes": 32309,
+      "sha256": "41b79f956ed07a038c91867fd5aca91de934ce4f2517c6f0e80172c5b5c35961"
+    },
+    {
+      "path": "dist/catalog/npc-knowledge-backfill-v1.d.ts",
+      "bytes": 871,
+      "sha256": "c26b8ef4d0402880ae9da87e47f7d0426cf4ce9226fa423f8859ad1ffeddd4b2"
+    },
+    {
+      "path": "dist/catalog/npc-knowledge-backfill-v1.js",
+      "bytes": 5881,
+      "sha256": "91cf545cf873c855474e5a28f10017a5e358c40fb6e48e628ede84881f29b285"
+    },
+    {
+      "path": "dist/catalog/npc-knowledge-rules-18-23.d.ts",
+      "bytes": 235,
+      "sha256": "ccd9d414697ad5b734b851f8f765846d90b16e65451805412c83d7d54ec047b3"
+    },
+    {
+      "path": "dist/catalog/npc-knowledge-rules-18-23.js",
+      "bytes": 2345,
+      "sha256": "0a4e33dda3a5b794adc695438ea4930609d5fe21a9fc1792c94bcab54d96345b"
+    },
+    {
+      "path": "dist/catalog/npc-knowledge-rules-a5-k.d.ts",
+      "bytes": 143,
+      "sha256": "9e2a6c771f6ecf61bdb0d83656d08ad2bc2d144d20f51a4d16a5b058c2e5bc90"
+    },
+    {
+      "path": "dist/catalog/npc-knowledge-rules-a5-k.js",
+      "bytes": 2344,
+      "sha256": "5556257906e4b7104f0fc337fd225d40f1d9ff0e3acfd106228df2b143335f3a"
+    },
+    {
+      "path": "dist/catalog/npc-knowledge-rules.d.ts",
+      "bytes": 1705,
+      "sha256": "67e25d16b514b9858663b28d49e99aad46ea315f968725ecb70914ff22a827c5"
+    },
+    {
+      "path": "dist/catalog/npc-knowledge-rules.js",
+      "bytes": 5819,
+      "sha256": "e0e23eab2295e52c2da97f688a874446078b7902622ed9a7d211154bc64e0bec"
+    },
+    {
       "path": "dist/catalog/npcs.d.ts",
       "bytes": 286,
       "sha256": "0118a502660a15d0cf48fddec5d0bfd58a06265a73ead9e188e97c79c2c83b9a"
@@ -45,14 +175,44 @@
       "sha256": "a5fab850cd9702a843d7388ac25fc3218facc7ad6c13d07f982c27a9cd4c6614"
     },
     {
+      "path": "dist/catalog/seed-34plus.d.ts",
+      "bytes": 11706,
+      "sha256": "2d434f5bd74da87bfc565816068c3110469d52290b116017d106f47d210bf3d0"
+    },
+    {
+      "path": "dist/catalog/seed-34plus.js",
+      "bytes": 9977,
+      "sha256": "04e67f4c9a59f1416ac6639f66a7414cecd6a0ac4e10ed256837a54724e3170e"
+    },
+    {
+      "path": "dist/catalog/seed-scope.d.ts",
+      "bytes": 869,
+      "sha256": "1bf7ae3019f990a6677129ef74f373edb85dc0b7c510bce6d6b0bfc77304ef94"
+    },
+    {
+      "path": "dist/catalog/seed-scope.js",
+      "bytes": 695,
+      "sha256": "f532ce9365f7e06489454a1a392a9a16e722773bc96957a59a0c9a745b3f1a99"
+    },
+    {
       "path": "dist/catalog/seeds.d.ts",
       "bytes": 450,
       "sha256": "9d47791caf5c588cb5b5ee9d4f9db6b7a48cacf829fdd98f7e85d8b63b0a6df2"
     },
     {
       "path": "dist/catalog/seeds.js",
-      "bytes": 40333,
-      "sha256": "d3e247a4e01005265c9924dbdf2b6b276e6e0e76be5d43a7d145b8c7b427b1d5"
+      "bytes": 27577,
+      "sha256": "d730a1274fb7f210d890282bd5bc1a4d78fa2ba79f7c0aa924838fbde277271d"
+    },
+    {
+      "path": "dist/content/event-cutscenes.d.ts",
+      "bytes": 383,
+      "sha256": "80d9c5e0f39a8b4c246c572a6fbc8a2b4e93c321774cb297289bb3f3b8b3b48a"
+    },
+    {
+      "path": "dist/content/event-cutscenes.js",
+      "bytes": 5814,
+      "sha256": "e043511804f25f5138ac44a06efe4e5310595f99f0a336678a2fb6fb2f984c91"
     },
     {
       "path": "dist/content/events/18_20/canonical-events.d.ts",
@@ -71,18 +231,18 @@
     },
     {
       "path": "dist/content/events/18_20/conditional-events.js",
-      "bytes": 27899,
-      "sha256": "130b1c1300dd16e03422ddd34a7ec8ac127ca43800364e75520602d6a7365c9b"
+      "bytes": 28032,
+      "sha256": "e962bb1ea866647f5ef301ad8acc7d08aad1d2b5359948fbea6ef67ee815104e"
     },
     {
       "path": "dist/content/events/18_20/helpers.d.ts",
-      "bytes": 1710,
-      "sha256": "791c04a996574186a8034fce366de0be399ee3b1b917a984696055165786edbe"
+      "bytes": 2656,
+      "sha256": "9c313831c153282179d255e776c8d504a23c3dce2b3b4ac07314a56c08154190"
     },
     {
       "path": "dist/content/events/18_20/helpers.js",
-      "bytes": 2417,
-      "sha256": "6e7f3cc4c14da5916bd9a218aeebe09be7e191fd20788bb3e64bbc2565e3c4d4"
+      "bytes": 2859,
+      "sha256": "48fca8917c0274fd0b531942e803fafc9ccdade0077f59b9eb771981ea1c7622"
     },
     {
       "path": "dist/content/events/18_20/principal-additions.d.ts",
@@ -93,6 +253,116 @@
       "path": "dist/content/events/18_20/principal-additions.js",
       "bytes": 33894,
       "sha256": "f857885991fdc69c205122c905366cdd0ec7aa8b423dfe5310c683bd384f8f9b"
+    },
+    {
+      "path": "dist/content/events/18_20/t51-124-sport-context-repairs.d.ts",
+      "bytes": 724,
+      "sha256": "dc195b31b43f62a8d1bbf17cbc1e3bf720085924c0c69dd5e38d278657ab698c"
+    },
+    {
+      "path": "dist/content/events/18_20/t51-124-sport-context-repairs.js",
+      "bytes": 3710,
+      "sha256": "6cd9f9873a3f6de7f0e8d53d79b8699c6456e5e153200e1e9c10f6ddb8fe8899"
+    },
+    {
+      "path": "dist/content/events/18_20/t51-age18-market-offer-bridges.d.ts",
+      "bytes": 499,
+      "sha256": "5dd3007f2477acb468cca19ffecd8a7ea9bd99a110ad7bafc8a64c230655f18b"
+    },
+    {
+      "path": "dist/content/events/18_20/t51-age18-market-offer-bridges.js",
+      "bytes": 5383,
+      "sha256": "d30d0795d5dfff043e082dd6c9bd181bfeabd6081bf9c71b15ffec8663d23021"
+    },
+    {
+      "path": "dist/content/events/18_20/t51-b1a-intel-overrides.d.ts",
+      "bytes": 581,
+      "sha256": "39cec3822ed02c89316636a19112df56859fdf720341d1dfe735b6ba61397c51"
+    },
+    {
+      "path": "dist/content/events/18_20/t51-b1a-intel-overrides.js",
+      "bytes": 1743,
+      "sha256": "2ec78cb3b85f4c156df4eb3e0d3afa98049be8d35cecdd0fdc694c55b19da79e"
+    },
+    {
+      "path": "dist/content/events/18_20/t51-b1b-local-repairs.d.ts",
+      "bytes": 1074,
+      "sha256": "45f581243b030e5eea36035a478a9076fb0fc42aeab6da058a3cde76d45eee75"
+    },
+    {
+      "path": "dist/content/events/18_20/t51-b1b-local-repairs.js",
+      "bytes": 2204,
+      "sha256": "1f649d40c2d0526e690f288bc79697956ce37cca6fa026ce4ec0e641fe302207"
+    },
+    {
+      "path": "dist/content/events/18_20/t51-seed-consumer-repairs.d.ts",
+      "bytes": 171,
+      "sha256": "27ff8d87768ff9c9dc2550f328527c267bf4faf13bc48c33900b8c2ba7f062a5"
+    },
+    {
+      "path": "dist/content/events/18_20/t51-seed-consumer-repairs.js",
+      "bytes": 5981,
+      "sha256": "034c82a486ad8f77d1a85c5d94da644b6ee454e9845594cd45451c24ce0e747a"
+    },
+    {
+      "path": "dist/content/events/20_23/a5-agent-ready-external.d.ts",
+      "bytes": 741,
+      "sha256": "c92b062d3d5c926bfdbc2153ac33d89a5f1c73744a9ff1c3850436bf434ac475"
+    },
+    {
+      "path": "dist/content/events/20_23/a5-agent-ready-external.js",
+      "bytes": 15420,
+      "sha256": "6ed33dac398c94f94292343e826d7e2d1b74687fa803dd93f1d4a324801154a9"
+    },
+    {
+      "path": "dist/content/events/20_23/a5-market-external-staged.d.ts",
+      "bytes": 1001,
+      "sha256": "dd3ef6c2f864196b19895ebfd9c2af116fb240fce08507c457a6ff4263472a35"
+    },
+    {
+      "path": "dist/content/events/20_23/a5-market-external-staged.js",
+      "bytes": 20680,
+      "sha256": "d030e7133320f207f48774fe035f18aeca395354f4b6369b38b6f29e5c88612a"
+    },
+    {
+      "path": "dist/content/events/20_23/a5-ready-staged.d.ts",
+      "bytes": 177,
+      "sha256": "712dd80afc244b9deb4a322fe28b64af8c5566487a242840c3adff6a19a569d5"
+    },
+    {
+      "path": "dist/content/events/20_23/a5-ready-staged.js",
+      "bytes": 21506,
+      "sha256": "4affb27f2c484da6fd3ed9f524838101c4ef0889d4314d38e49ba3306483308f"
+    },
+    {
+      "path": "dist/content/events/20_23/canonical-t55-a.d.ts",
+      "bytes": 220,
+      "sha256": "c5abeb4e7a86692668b4f63e99cfb61db8aca3b9467847c8da327d98715d4c01"
+    },
+    {
+      "path": "dist/content/events/20_23/canonical-t55-a.js",
+      "bytes": 23478,
+      "sha256": "ec909996bbcf4d477b90db7ebe178be67872e3df7b8937494c646bc2d2b2a160"
+    },
+    {
+      "path": "dist/content/events/20_23/canonical-t55-b.d.ts",
+      "bytes": 120,
+      "sha256": "fc375b0eb1acf94c3ff9e2ec2ecd8af6c6c870c4835de66a9cfaa1ecacaabafd"
+    },
+    {
+      "path": "dist/content/events/20_23/canonical-t55-b.js",
+      "bytes": 21946,
+      "sha256": "c8614f8975a6d1e69bf9bdc83a7245cc442000e670512b8d4e6959815c3f9846"
+    },
+    {
+      "path": "dist/content/events/20_23/canonical-t56-a.d.ts",
+      "bytes": 120,
+      "sha256": "ed044fec5beef4742c75a91ab0817f36f151b1b0940d7108e2bbfdbd5c1a53d0"
+    },
+    {
+      "path": "dist/content/events/20_23/canonical-t56-a.js",
+      "bytes": 13129,
+      "sha256": "9ae5f462ddaee84a943198314bab7d2c1b082a83150b88594296afe1bad84fec"
     },
     {
       "path": "dist/content/events/20_23/conditional-events.d.ts",
@@ -106,13 +376,13 @@
     },
     {
       "path": "dist/content/events/20_23/index.d.ts",
-      "bytes": 87,
-      "sha256": "f2f0a5212df12dc40a4be7b43398e72ed08a008915db2bb064d3a36a982a45ba"
+      "bytes": 261,
+      "sha256": "c1d6f40c73a011751ee02f951fb216c4562d9babf0549134983d68c1bec7398c"
     },
     {
       "path": "dist/content/events/20_23/index.js",
-      "bytes": 218,
-      "sha256": "ef8aa9cea5a4ad8b4f649b528252ab931dcf119a82ce3e9c9b5877de0323a915"
+      "bytes": 1208,
+      "sha256": "555569d6aafabe874d01df1ec19e07909fa723d6ba350131af6471ca9eb9f0c7"
     },
     {
       "path": "dist/content/events/20_23/principal-events.d.ts",
@@ -121,8 +391,8 @@
     },
     {
       "path": "dist/content/events/20_23/principal-events.js",
-      "bytes": 14999,
-      "sha256": "daf0b98e68f7106f13bae1fb37854520c595c4f84120f6bd13483e7804d55a27"
+      "bytes": 21007,
+      "sha256": "2823aa05cafcdd8780db0dc6491b89488c3e066aea4228605e38c58a24224ff7"
     },
     {
       "path": "dist/content/events/23_26/conditional-events.d.ts",
@@ -131,8 +401,8 @@
     },
     {
       "path": "dist/content/events/23_26/conditional-events.js",
-      "bytes": 5775,
-      "sha256": "b45a30308cc66046cb47f4ba3a59565037458b2eca3bce3be4c038f718980e63"
+      "bytes": 8085,
+      "sha256": "2f369ba908a7a86e0b91e49f6f3530c432d0ac08bcb91c4ff3c8c8ec368dccd8"
     },
     {
       "path": "dist/content/events/23_26/index.d.ts",
@@ -141,8 +411,8 @@
     },
     {
       "path": "dist/content/events/23_26/index.js",
-      "bytes": 218,
-      "sha256": "1ac2c013cc318d328ad31543bee62046575a7395a8746d20ae119a6be3cabd9d"
+      "bytes": 1148,
+      "sha256": "f487e7e13177aa36042149e0bb285b1f5236c8c71c90804e49a06e2cbe81096c"
     },
     {
       "path": "dist/content/events/23_26/principal-events.d.ts",
@@ -151,8 +421,68 @@
     },
     {
       "path": "dist/content/events/23_26/principal-events.js",
-      "bytes": 24153,
-      "sha256": "2471dc6abe9e02d557bdb3fc3911f5938c8f8c7f1f463ddb36a7c19bc9a5624c"
+      "bytes": 30919,
+      "sha256": "9cfed29f348610663a77dffab714f0f7f1e626fd768fab7546b12b476dd092c8"
+    },
+    {
+      "path": "dist/content/events/23_26/t510-principal-events.d.ts",
+      "bytes": 129,
+      "sha256": "dde6c520639e29edf67960d819db2441dcd71d1ab01f79bdbf6baece2734f20b"
+    },
+    {
+      "path": "dist/content/events/23_26/t510-principal-events.js",
+      "bytes": 14102,
+      "sha256": "ccefe170738a47c7ce801900a0a89f10ddeaf0cc43ba450b5357e85e61f08f03"
+    },
+    {
+      "path": "dist/content/events/23_26/t511-principal-events.d.ts",
+      "bytes": 129,
+      "sha256": "77ca4c4062bf1067f4c5d00f4087ed5df52cb5e208b327fa4e143243cdbc8026"
+    },
+    {
+      "path": "dist/content/events/23_26/t511-principal-events.js",
+      "bytes": 16195,
+      "sha256": "32ea86f457a67f4b4c2b3dcc36df4a5341e809e59b6df878b2ffb9dbbb9b4d11"
+    },
+    {
+      "path": "dist/content/events/23_26/t511-prs-principal-events.d.ts",
+      "bytes": 133,
+      "sha256": "b98c17442ca83694876b9c8edcc97b12930a7708fd8073f7b819ae81c68af836"
+    },
+    {
+      "path": "dist/content/events/23_26/t511-prs-principal-events.js",
+      "bytes": 5053,
+      "sha256": "85afaf3acae5df8fa69842210f454116d05464e2bddf0d0b0ef1120d0874543b"
+    },
+    {
+      "path": "dist/content/events/23_26/t512-staged-market-principal-events.d.ts",
+      "bytes": 243,
+      "sha256": "12917c2e62dacca4d5ba39a03e2aee4c984bf87f03499d7db10cff63c7a7c070"
+    },
+    {
+      "path": "dist/content/events/23_26/t512-staged-market-principal-events.js",
+      "bytes": 4343,
+      "sha256": "86bb47053bf2c82ff502523363f1f3bc826ff0aaf7cbf61f99ca7eb144ee90ed"
+    },
+    {
+      "path": "dist/content/events/23_26/t513-staged-offer-principal-events.d.ts",
+      "bytes": 228,
+      "sha256": "8775aa1619e8612c746d2d514531eab22c3be2de4e29e161e3fab600ff9cf06a"
+    },
+    {
+      "path": "dist/content/events/23_26/t513-staged-offer-principal-events.js",
+      "bytes": 15908,
+      "sha256": "e4058105f3ea373faaebd2bc1a0738f27399ac408110a06e2b2a650c94153e9c"
+    },
+    {
+      "path": "dist/content/events/23_26/t514-staged-lock-principal-events.d.ts",
+      "bytes": 217,
+      "sha256": "5533616abe5bfc0790723a9381758d90fe5738cdcf849cb31fdd495972297775"
+    },
+    {
+      "path": "dist/content/events/23_26/t514-staged-lock-principal-events.js",
+      "bytes": 4846,
+      "sha256": "cc521ddad394e425e0307f9efc0ab5975ba3dafdacf085d899d5731a2483cb1a"
     },
     {
       "path": "dist/content/events/26_30/conditional-events.d.ts",
@@ -161,8 +491,8 @@
     },
     {
       "path": "dist/content/events/26_30/conditional-events.js",
-      "bytes": 6858,
-      "sha256": "4d94667191e5a6a932c6bd5e41c593fd6ac9fbe98932959f38a2da29be94a4be"
+      "bytes": 9216,
+      "sha256": "59ec232e0f028f5cd8134a4a7a8b6848509a4520b56a70127ae6db07e353d3a6"
     },
     {
       "path": "dist/content/events/26_30/index.d.ts",
@@ -171,8 +501,8 @@
     },
     {
       "path": "dist/content/events/26_30/index.js",
-      "bytes": 218,
-      "sha256": "bb2efa952229cb96661b22c447fc3d10c3c0023e45a0a6360c277ffeaa5463ef"
+      "bytes": 1041,
+      "sha256": "b9c640624cb1526b00c549a80926f636ae01a3f769fa3ff7bb68c10593038939"
     },
     {
       "path": "dist/content/events/26_30/principal-events.d.ts",
@@ -181,8 +511,128 @@
     },
     {
       "path": "dist/content/events/26_30/principal-events.js",
-      "bytes": 18012,
-      "sha256": "60a9d1cc3ce5d4f87dec82ed98ed585ff4c28f1c5445ef29991cd343f9d18a98"
+      "bytes": 24535,
+      "sha256": "77b82682142b03df55dc034e44146c4c1429c46453fe0fcf7d7c1d190b2065a2"
+    },
+    {
+      "path": "dist/content/events/26_30/t5-161-main-captain-final.d.ts",
+      "bytes": 395,
+      "sha256": "ab6bbd055d00d41b78c77aa1e8d10238731c060c35ac4c911b5287a01e1d68a8"
+    },
+    {
+      "path": "dist/content/events/26_30/t5-161-main-captain-final.js",
+      "bytes": 3085,
+      "sha256": "53f2a2cf805996ad5a99c83af94e086c1a22d75cbee3f9dcd242f8fb994a4cd8"
+    },
+    {
+      "path": "dist/content/events/26_30/t515-principal-events.d.ts",
+      "bytes": 374,
+      "sha256": "2bcb68779a186c86f8cea7ac628444dca1e70ace627e827789482332fe1c7679"
+    },
+    {
+      "path": "dist/content/events/26_30/t515-principal-events.js",
+      "bytes": 7468,
+      "sha256": "8cd7a47d34176941e3803dd5953b8ecea6333151894e7ab313fd4fe1e9e8cc8f"
+    },
+    {
+      "path": "dist/content/events/26_30/t518-staged-body-principal-events.d.ts",
+      "bytes": 237,
+      "sha256": "89cf89ad7e179bd9f9740aadb55cd53220445fc85bfb2c10e9c04b72b80b2ec7"
+    },
+    {
+      "path": "dist/content/events/26_30/t518-staged-body-principal-events.js",
+      "bytes": 5328,
+      "sha256": "9f229daf0710a87393a362211c0b9876b43ad14c9e4cc2c378caeabdb2cc6736"
+    },
+    {
+      "path": "dist/content/events/26_30/t521-staged-fin29-principal-events.d.ts",
+      "bytes": 365,
+      "sha256": "41ab0d2388c7962fedb6f64443ba8094cdb45a678bb11fcd81dc351fd48f2890"
+    },
+    {
+      "path": "dist/content/events/26_30/t521-staged-fin29-principal-events.js",
+      "bytes": 4233,
+      "sha256": "43eea9d293fea71ff66390cb80af75bb6baee88f4afa1d2a15b635c001fb8ff5"
+    },
+    {
+      "path": "dist/content/events/30_34/canonical-missing-principals.d.ts",
+      "bytes": 205,
+      "sha256": "2ec179b9e6e1f1ae07d22b8d96cdba6aec364b7530065bf50a02d701a38f2647"
+    },
+    {
+      "path": "dist/content/events/30_34/canonical-missing-principals.js",
+      "bytes": 37664,
+      "sha256": "8d72c2897a049a859817ac6b85e50ce7fbd8d307b479ae6ad976a874c41135c2"
+    },
+    {
+      "path": "dist/content/events/30_34/canonical-reimplementations-31b.d.ts",
+      "bytes": 136,
+      "sha256": "1ea0c361699694217617296deeee6b4c8be765562dac4b606ef33a66b92425cc"
+    },
+    {
+      "path": "dist/content/events/30_34/canonical-reimplementations-31b.js",
+      "bytes": 20616,
+      "sha256": "3dfb9c50cc0292c43b0fd4f00b147228c37373be6f12dcb1521a7fd5edf39429"
+    },
+    {
+      "path": "dist/content/events/30_34/canonical-reimplementations-32a.d.ts",
+      "bytes": 136,
+      "sha256": "38cfaba3ead3fe54e541805a6ddc579f0cfa07b861cca8482f551d8a8c495adc"
+    },
+    {
+      "path": "dist/content/events/30_34/canonical-reimplementations-32a.js",
+      "bytes": 17136,
+      "sha256": "ac2ae55edaaac65265ba16357a7c533ba58463e00bfd79f43b8b2fd47397f625"
+    },
+    {
+      "path": "dist/content/events/30_34/canonical-reimplementations-33a.d.ts",
+      "bytes": 136,
+      "sha256": "ef6e5bc1fa6d4465f12d90da300785e7ebd99879568e02aecfa1de72b9b9065f"
+    },
+    {
+      "path": "dist/content/events/30_34/canonical-reimplementations-33a.js",
+      "bytes": 14957,
+      "sha256": "41c227bf575360d98367c7ced7866c10ca28650aa4705cb8fbd8ed455d2b6d71"
+    },
+    {
+      "path": "dist/content/events/30_34/canonical-reimplementations.d.ts",
+      "bytes": 138,
+      "sha256": "73576aaff4a05880fcf9e9e5ab67b307574fb227d7217ffc32a13a75cd5d8f07"
+    },
+    {
+      "path": "dist/content/events/30_34/canonical-reimplementations.js",
+      "bytes": 14615,
+      "sha256": "40bf7920b1e6312af4474b882ea69d3a843dbc6065e8051f19d21fe6bb6a4ccf"
+    },
+    {
+      "path": "dist/content/events/30_34/canonical-shifted-prepared-a.d.ts",
+      "bytes": 135,
+      "sha256": "2622a980d570665d63012b0534668de3f473f73e4e1e111da81120522631e1c9"
+    },
+    {
+      "path": "dist/content/events/30_34/canonical-shifted-prepared-a.js",
+      "bytes": 19768,
+      "sha256": "6375cdcbfab1ff8b8d3e6c4872b747577e67f17ec50ecf8190503afe096ae6f3"
+    },
+    {
+      "path": "dist/content/events/30_34/canonical-shifted-prepared-b.d.ts",
+      "bytes": 135,
+      "sha256": "0e03081003f808e861deb16d173c381fbb028fb993dd78426234f00ee0052453"
+    },
+    {
+      "path": "dist/content/events/30_34/canonical-shifted-prepared-b.js",
+      "bytes": 19063,
+      "sha256": "7aa09698766abdb6fdd66f353822b634c1933a329873f16a5cd5b7108e2aed8c"
+    },
+    {
+      "path": "dist/content/events/30_34/canonical-shifted-prepared-c.d.ts",
+      "bytes": 135,
+      "sha256": "80dab9d4696e091b8bba6c8ed9f4c30c5e68473afe30b620490b467f4b6357f5"
+    },
+    {
+      "path": "dist/content/events/30_34/canonical-shifted-prepared-c.js",
+      "bytes": 14967,
+      "sha256": "9316343e2d0d66761905eaf72955878f6e0a4902c6d971ffd03c32a1fe285b05"
     },
     {
       "path": "dist/content/events/30_34/conditional-events.d.ts",
@@ -191,18 +641,18 @@
     },
     {
       "path": "dist/content/events/30_34/conditional-events.js",
-      "bytes": 7237,
-      "sha256": "bb8b3ba9c5683c32a3fd4d510a44052c53716e4285e91bed79b339815f125b90"
+      "bytes": 9575,
+      "sha256": "8ce0b05c344e5b7945b8856295349a60fad3d0b1c6de58f5fe3b48407fd1170b"
     },
     {
       "path": "dist/content/events/30_34/index.d.ts",
-      "bytes": 87,
-      "sha256": "5d9e833a3851b223aae05caa15676f197017a4eb715a4ab33fa917d158685fff"
+      "bytes": 117,
+      "sha256": "6ea21e918abc0981f178d8c3bb7f2af88ee3c2c8251919074895114d5a7171d3"
     },
     {
       "path": "dist/content/events/30_34/index.js",
-      "bytes": 218,
-      "sha256": "96e036e6151c19f4645aec54295cb4eb2111bc0701384a69f9544145f3fc8aec"
+      "bytes": 10170,
+      "sha256": "a704b1c8ac85f539163f212983dcf321ba63806a6f333ef9357a533a74c8ca50"
     },
     {
       "path": "dist/content/events/30_34/principal-events.d.ts",
@@ -211,8 +661,18 @@
     },
     {
       "path": "dist/content/events/30_34/principal-events.js",
-      "bytes": 17360,
-      "sha256": "061b6694b6841ef78eb5a9656a4a6ec0e42318db193c94a5e1ba7a6f28c19fde"
+      "bytes": 49605,
+      "sha256": "d72d6fc220a39afaa4662d9025eba91c7ce06a834ef01b5d0451816a3fb8b248"
+    },
+    {
+      "path": "dist/content/events/34_plus/agent9-handoff.d.ts",
+      "bytes": 2477,
+      "sha256": "9be923d390323aa5069795f02a2730def2d2e3aa021d178da5deb89ecb01f057"
+    },
+    {
+      "path": "dist/content/events/34_plus/agent9-handoff.js",
+      "bytes": 4004,
+      "sha256": "ab6ec560328d2698b64a7ee428f5924013503241e3d9dd41fb5c53a0ccfa51f5"
     },
     {
       "path": "dist/content/events/34_plus/conditional-events.d.ts",
@@ -226,13 +686,13 @@
     },
     {
       "path": "dist/content/events/34_plus/index.d.ts",
-      "bytes": 89,
-      "sha256": "2c69cf87f8f3ccbe6f7e7564506fb61537a8ee1f9e4758972eba191027006018"
+      "bytes": 732,
+      "sha256": "e06fcfc89d2f85d5e970583d6f8f43464f036de4eee708b0a17402085149ce3f"
     },
     {
       "path": "dist/content/events/34_plus/index.js",
-      "bytes": 228,
-      "sha256": "a035c79dbbb26d5d4d7e82e10df2e67ee1e0319113f6501d2c8d91e61baad72a"
+      "bytes": 2411,
+      "sha256": "8f854741a57f7410925cfa94bff5c57531562239afe1957b7d6692f283a396c5"
     },
     {
       "path": "dist/content/events/34_plus/principal-events.d.ts",
@@ -245,14 +705,194 @@
       "sha256": "00c515ccb1a9a5ad023a80dc1f4db744df7c4dc836d5cc86f107a5da7fd3482d"
     },
     {
+      "path": "dist/content/events/34_plus/retirement-terminal-canonical-guard.d.ts",
+      "bytes": 495,
+      "sha256": "a70788c502c00f270522b22f8c2b5ff4794da03924d803cc589405140cc64fed"
+    },
+    {
+      "path": "dist/content/events/34_plus/retirement-terminal-canonical-guard.js",
+      "bytes": 1790,
+      "sha256": "8866b7f150a08e2bc34c567361337c46d039f12e5a88a0464557e7c70f0cabb2"
+    },
+    {
+      "path": "dist/content/events/34_plus/retirement-terminal-overrides.d.ts",
+      "bytes": 686,
+      "sha256": "08bc3d208b6d729cfcb2ce00e813caa658d5ef70f9d904b5340e4c1846eb30f4"
+    },
+    {
+      "path": "dist/content/events/34_plus/retirement-terminal-overrides.js",
+      "bytes": 23845,
+      "sha256": "f4f5c160fab7386369375083363d5a9749f33204340229740711469405edbea1"
+    },
+    {
+      "path": "dist/content/events/34_plus/staged-conditional-effects.d.ts",
+      "bytes": 278,
+      "sha256": "92309c9609af6baafd942f9981556b48d7c658299b763fdef0b979cbe321770b"
+    },
+    {
+      "path": "dist/content/events/34_plus/staged-conditional-effects.js",
+      "bytes": 11196,
+      "sha256": "6d2a21bd2e4b24b344e5ee52ae5d9892e67453f845fd357721c11eb524e515d6"
+    },
+    {
+      "path": "dist/content/events/34_plus/staged-conditional-memory.d.ts",
+      "bytes": 459,
+      "sha256": "4f26fecc5000a8ce105875cd926f39f056be94955ba3e2fba623eb23b85bd67f"
+    },
+    {
+      "path": "dist/content/events/34_plus/staged-conditional-memory.js",
+      "bytes": 9067,
+      "sha256": "ad7ab807c578464b08477bcd18e93667a854bb0f3a419cee03540904b653d20e"
+    },
+    {
+      "path": "dist/content/events/34_plus/staged-conditional-ordinary.d.ts",
+      "bytes": 586,
+      "sha256": "79dcaaefd168b10ef1d9b42830530c1f2b7f88e7121187e7816ce137dd7346c6"
+    },
+    {
+      "path": "dist/content/events/34_plus/staged-conditional-ordinary.js",
+      "bytes": 25240,
+      "sha256": "88e34c90afc3cd11b396b299df536da23c3169364e11d52ed6523358ef35f325"
+    },
+    {
+      "path": "dist/content/events/34_plus/staged-conditional-sponsor-boom.d.ts",
+      "bytes": 429,
+      "sha256": "da52bc7756c89f0a5a06bc835ad243ee80f5ee98750701e1982edf8bd6631e58"
+    },
+    {
+      "path": "dist/content/events/34_plus/staged-conditional-sponsor-boom.js",
+      "bytes": 3667,
+      "sha256": "09db004e3997913c92873028c9ed6742a9a505aa0131be1afcdfced02e530811"
+    },
+    {
+      "path": "dist/content/events/34_plus/staged-conditional-udv-crisis.d.ts",
+      "bytes": 223,
+      "sha256": "c02c3db94e4f2d6f56da1881a8c7e538db1eda1045b9339c4da1d4667e0fa7b1"
+    },
+    {
+      "path": "dist/content/events/34_plus/staged-conditional-udv-crisis.js",
+      "bytes": 3682,
+      "sha256": "92b951e728fa7c26b5a138fe43aaf4bd22487bb4c47fb3c8e7ff4d6278c48e0a"
+    },
+    {
+      "path": "dist/content/events/34_plus/staged-principal-awaiting-external.d.ts",
+      "bytes": 879,
+      "sha256": "a94d1633a1988cd6d24199dfec23bc11602af8d7bea87725d05d6311489918fc"
+    },
+    {
+      "path": "dist/content/events/34_plus/staged-principal-awaiting-external.js",
+      "bytes": 54909,
+      "sha256": "e3593ddcb6b08219f295b908126aed8e10ca9fb3e2cbb6b73742282e2aa0a222"
+    },
+    {
+      "path": "dist/content/events/34_plus/staged-principal-external-actions.d.ts",
+      "bytes": 713,
+      "sha256": "49eedf943b2b84c86b5a82ba2650117b142613f7b6ffa793995b749a1d7732d0"
+    },
+    {
+      "path": "dist/content/events/34_plus/staged-principal-external-actions.js",
+      "bytes": 14099,
+      "sha256": "8f6ba9bddacfd6c64fe5aa366720e712dbbb9d11ff7ec7d5993a0621ce47755d"
+    },
+    {
+      "path": "dist/content/events/34_plus/staged-principal-market-batch-1.d.ts",
+      "bytes": 472,
+      "sha256": "41e8624f0511ca37739c00358c871e227f9422d13141efed198bed20aabc3e7d"
+    },
+    {
+      "path": "dist/content/events/34_plus/staged-principal-market-batch-1.js",
+      "bytes": 28226,
+      "sha256": "9df53ace9a2196f57cd62b0d57bec18f287f3c206b9bb57fb56b19ca92893117"
+    },
+    {
+      "path": "dist/content/events/34_plus/staged-principal-market-batch-2.d.ts",
+      "bytes": 268,
+      "sha256": "dc6f73039cf62219a02a65c8169d5a152447862ead5e7fe0f874d37b1e04fb1a"
+    },
+    {
+      "path": "dist/content/events/34_plus/staged-principal-market-batch-2.js",
+      "bytes": 19943,
+      "sha256": "8338fbeada82369e8764f5aced6ddb6abce5322a6ac361f492f179372b10c357"
+    },
+    {
+      "path": "dist/content/events/34_plus/staged-principal-role-batch.d.ts",
+      "bytes": 415,
+      "sha256": "63406a5cb93a4cfc79b5d70b64df08c16cb2125f4ed3ac1bdc11266ba091e8f1"
+    },
+    {
+      "path": "dist/content/events/34_plus/staged-principal-role-batch.js",
+      "bytes": 8873,
+      "sha256": "dc5d39d6fb35acd27638e0b1ed3d7367c7b06f7a50b54ad7307a7a5b1d06adcc"
+    },
+    {
+      "path": "dist/content/events/34_plus/staged-principal-shared-batch-3.d.ts",
+      "bytes": 246,
+      "sha256": "6ee37327df076de8a748071326c7371bfd863849ea8ef3449f617bc09bab38d3"
+    },
+    {
+      "path": "dist/content/events/34_plus/staged-principal-shared-batch-3.js",
+      "bytes": 14475,
+      "sha256": "6e3cdbbc9250867a53dcd4beffd2d4f74b1f6a343d030526a64839c673731cbb"
+    },
+    {
+      "path": "dist/content/events/34_plus/staged-principal-shared-batch-4.d.ts",
+      "bytes": 246,
+      "sha256": "12b7ba1f6c370ce1f04ff4114abae8e082468b471b29f9e59605e956f215a879"
+    },
+    {
+      "path": "dist/content/events/34_plus/staged-principal-shared-batch-4.js",
+      "bytes": 13827,
+      "sha256": "6944bfd6bd6bb2065546fa9c076102e3d520239ce111f185a551ec492d35a220"
+    },
+    {
+      "path": "dist/content/events/34_plus/staged-principal-sport-batch.d.ts",
+      "bytes": 442,
+      "sha256": "d79c2239e6d69fe22405eead652b8ec8b6ee112fc9211c7ca98f9977831821f9"
+    },
+    {
+      "path": "dist/content/events/34_plus/staged-principal-sport-batch.js",
+      "bytes": 13917,
+      "sha256": "bf3d5b6329b173a3238ee3e519971b5dd89630e54dde871201ae2fc1fe3c673c"
+    },
+    {
+      "path": "dist/content/events/34_plus/staged-principal-wave-a.d.ts",
+      "bytes": 442,
+      "sha256": "ad1967b9638dbf0cb227dff4562414caf50c082be5e88021694d3a8e7517ff3e"
+    },
+    {
+      "path": "dist/content/events/34_plus/staged-principal-wave-a.js",
+      "bytes": 18255,
+      "sha256": "3a82f512a6b416ed0d847e6da8cccb5f13ee93c5e5e9e80644a7a10ed18bd1e0"
+    },
+    {
+      "path": "dist/content/events/34_plus/staged-runtime.d.ts",
+      "bytes": 614,
+      "sha256": "895ffab0346968ce93fc613f2957faa5b9ff86118e725565f63ad3da9dffdc33"
+    },
+    {
+      "path": "dist/content/events/34_plus/staged-runtime.js",
+      "bytes": 1942,
+      "sha256": "9a8f902e0296901ca55c9f8ebae5fc606803b46d8104c9e176f5900e08e44054"
+    },
+    {
+      "path": "dist/content/events/34_plus/terminal-conditional-handoff.d.ts",
+      "bytes": 512,
+      "sha256": "18b22e0392f4b489b96d69b57c3fd8776bdc52fa22899fcd88b27ea67c4f9a7b"
+    },
+    {
+      "path": "dist/content/events/34_plus/terminal-conditional-handoff.js",
+      "bytes": 3067,
+      "sha256": "819af2b85d38287c6e80f66f5552b0272618a4684e208710dfc6e7d8d82083ed"
+    },
+    {
       "path": "dist/content/events/index.d.ts",
-      "bytes": 494,
-      "sha256": "af76d56313b12c55cc3eeebe98e98a7e82002db6440b48f4c22bec8537cf02ce"
+      "bytes": 515,
+      "sha256": "3c28860083668fcc7ea1e0c263e5838b0885fee8bf49a2565cb401c1ef5980cd"
     },
     {
       "path": "dist/content/events/index.js",
-      "bytes": 816,
-      "sha256": "c8475f3b06fa55a221eff193804fd3dcd2753f8a7b73333fe1efff48c8d0ac21"
+      "bytes": 2518,
+      "sha256": "7258ee42d27c56869aef577b12aef7c6af0132460710848c5825925cfa1d8e40"
     },
     {
       "path": "dist/content/initial-state.d.ts",
@@ -261,8 +901,8 @@
     },
     {
       "path": "dist/content/initial-state.js",
-      "bytes": 5931,
-      "sha256": "5979cbe416a2c6e824795444668cd6fec4fec313c512c3302e4cb93f9ff075a1"
+      "bytes": 6206,
+      "sha256": "1029a2efdd10613cdebc3486275b2af7c4ab35b0d9d659730c9371101d543652"
     },
     {
       "path": "dist/content/media-manifest.d.ts",
@@ -271,8 +911,8 @@
     },
     {
       "path": "dist/content/media-manifest.js",
-      "bytes": 989,
-      "sha256": "0e0e4ffd262f216952d3956d7de2978c07bc3c074240d2a3b9be99470c37ce67"
+      "bytes": 1149,
+      "sha256": "ab56af9c79df03c26537e629b869ae8c3477a6da00e42bc86c5297d10e23a306"
     },
     {
       "path": "dist/content/microfeeds/26_30.d.ts",
@@ -335,14 +975,34 @@
       "sha256": "8693a752816f68b08513c634cfe7f4c08292e129e4be342b2a4e198a04732164"
     },
     {
+      "path": "dist/core/npc-knowledge.d.ts",
+      "bytes": 1791,
+      "sha256": "ac1643bab37f908dd3302db7c64aa7c7aaa06706350805830aa2deb1c800df15"
+    },
+    {
+      "path": "dist/core/npc-knowledge.js",
+      "bytes": 9634,
+      "sha256": "a9157afcc3cb30fd2c5f56e15a775686e2d994eb4748cfee6ac4a5f0f341ac9e"
+    },
+    {
       "path": "dist/core/path.d.ts",
       "bytes": 201,
       "sha256": "b64df5f5afdaff6ac239a8f924ebf87a332824dc7950cf6553149ae378e4dca5"
     },
     {
       "path": "dist/core/path.js",
-      "bytes": 1602,
-      "sha256": "79da76e7f1911e85bfbd1b99daee657948c0f11d7ddf9a240f03f18f03e9009a"
+      "bytes": 2155,
+      "sha256": "8977b0041003f446590c518623ec86fa6a1e09c1be42439a2a5153a8384a3ad0"
+    },
+    {
+      "path": "dist/core/player-contacts.d.ts",
+      "bytes": 2247,
+      "sha256": "044a8ea5fd5fb670a903bb46d2db47ce6ecbb8024c96275912a160928fa48c54"
+    },
+    {
+      "path": "dist/core/player-contacts.js",
+      "bytes": 3264,
+      "sha256": "05c052d4682197b0c3ba06f7a1e3ff027938fe0acb64223aeb9472c16703a1a7"
     },
     {
       "path": "dist/core/rng.d.ts",
@@ -356,8 +1016,8 @@
     },
     {
       "path": "dist/core/types.d.ts",
-      "bytes": 13035,
-      "sha256": "e30bf649df651d4706f75ef8c14bcf9f318e3506e93f01d9147a7dacc895ac61"
+      "bytes": 13583,
+      "sha256": "1cc19aaf374cd2905f6635b5cf0740358e06b66ab2c26c1b3fc29dea57e50ad4"
     },
     {
       "path": "dist/core/types.js",
@@ -405,14 +1065,24 @@
       "sha256": "a2d060a462c8e7fa530292c42a6cfddad0cddae1f0448a0a65cef97737e8af75"
     },
     {
+      "path": "dist/epilogue/career-summary.d.ts",
+      "bytes": 1775,
+      "sha256": "574bcb25f546347f2eba6c70b86fe6b4d2c5bd373b200262dfb1049154272538"
+    },
+    {
+      "path": "dist/epilogue/career-summary.js",
+      "bytes": 5000,
+      "sha256": "de956789c48422064b702a620747e0b9adec6b92da71999cc23e5f029640b6ab"
+    },
+    {
       "path": "dist/epilogue/generator.d.ts",
-      "bytes": 185,
-      "sha256": "1a504afd644c0ede8857c3c7d7ee9f8bc60a7bbc48eaf69659ac649acdcd64f4"
+      "bytes": 844,
+      "sha256": "7e0d0c49e2afe6aea4b8626637099bb0380493357c31635a9953819e30fc3ba2"
     },
     {
       "path": "dist/epilogue/generator.js",
-      "bytes": 5703,
-      "sha256": "5c0c5c518c473846c1a6362f3c47c4a9d8b82472113172010113efcc5bb4f61c"
+      "bytes": 22034,
+      "sha256": "e3d104a0cdf85189706904b4c81d46243b48135113a51da7f286fa7f95de44b1"
     },
     {
       "path": "dist/media/media-manager.d.ts",
@@ -430,6 +1100,46 @@
       "sha256": "df3454ee4e832572a24aecfabb7b374f89a692f1402f487ba7572ae1d44ea2bb"
     },
     {
+      "path": "dist/narrative/a8-runtime-eligibility.d.ts",
+      "bytes": 641,
+      "sha256": "ff421ff4c9bcbf9718510fe64dce5d4cc390bf5c279d8183bf91af227b2e512f"
+    },
+    {
+      "path": "dist/narrative/a8-runtime-eligibility.js",
+      "bytes": 3922,
+      "sha256": "061ba50dc3cb73b89073f49523bd290e0d405a1ebac704d9af6792417bf9e0a4"
+    },
+    {
+      "path": "dist/narrative/choice-eligibility.d.ts",
+      "bytes": 1063,
+      "sha256": "dc0d1762e49b9275886debe1b74299b3367ce3a363b569f74ec07bd692d78fd6"
+    },
+    {
+      "path": "dist/narrative/choice-eligibility.js",
+      "bytes": 2379,
+      "sha256": "cbebf50b73772b9da1962e9740b00e958850bbc22e8b7adaec179be0b73900d4"
+    },
+    {
+      "path": "dist/narrative/consequences.d.ts",
+      "bytes": 2253,
+      "sha256": "7a3443e35eb31508d4f6187e895aa1567dfb96434fe9c024e32e945e39a0a613"
+    },
+    {
+      "path": "dist/narrative/consequences.js",
+      "bytes": 11552,
+      "sha256": "01a965c2c06134cf987d5f4ba390eb769df427826754f3ae58044b77b70e28fb"
+    },
+    {
+      "path": "dist/narrative/event-gates.d.ts",
+      "bytes": 894,
+      "sha256": "6997be44de41aeb8654545eb5a1268d0a0d61032dbcc27e857138787a647f4f3"
+    },
+    {
+      "path": "dist/narrative/event-gates.js",
+      "bytes": 831,
+      "sha256": "701f57c053644f8e3778bda395a921a844762dec27bbc43b32f9ecc0fd24c7b6"
+    },
+    {
       "path": "dist/narrative/event-index.d.ts",
       "bytes": 368,
       "sha256": "053efae6ecc675517fa8f311072a787b043ed1a0e93388e7b64a5268810a4253"
@@ -440,14 +1150,74 @@
       "sha256": "5f389ea1e74f16658c796e29548dcae741d9b4cd9b550c05a2b04a40f58a6970"
     },
     {
+      "path": "dist/narrative/narrative-guards.d.ts",
+      "bytes": 1657,
+      "sha256": "eceac96cb1e0a15d017e1a05a9d600df969ec96a862783df383b93b28093ef9c"
+    },
+    {
+      "path": "dist/narrative/narrative-guards.js",
+      "bytes": 9300,
+      "sha256": "4c17bfd99d2a04e99bcd9d359078adf75792d529334e550aa7dba011f2bc895a"
+    },
+    {
+      "path": "dist/narrative/npc-knowledge-reconciliation.d.ts",
+      "bytes": 1953,
+      "sha256": "93b5527973cc549270e31a925f340756dc9373cacfbb435cd69c88ccea3e8d92"
+    },
+    {
+      "path": "dist/narrative/npc-knowledge-reconciliation.js",
+      "bytes": 4699,
+      "sha256": "6306e6fa9b73005682ce16d3dde7c4d83ca8bf2513c67ab5d132ffc60661c691"
+    },
+    {
+      "path": "dist/narrative/npc-knowledge-targets.d.ts",
+      "bytes": 1124,
+      "sha256": "ebe98c71b1d5aa7fad9ff9ab931a3585f7a31c9710ceac0665c3f73553c5f883"
+    },
+    {
+      "path": "dist/narrative/npc-knowledge-targets.js",
+      "bytes": 1522,
+      "sha256": "5e17c23ff5445ff9a50356ada8ba3032dbad69830f07f2373a803fe72c98aaa6"
+    },
+    {
+      "path": "dist/narrative/offer-bridge.d.ts",
+      "bytes": 1004,
+      "sha256": "7388ae8cdef3296d47ad7beca87e9d632ab97af5c1ae866ba2ad63818e581626"
+    },
+    {
+      "path": "dist/narrative/offer-bridge.js",
+      "bytes": 3358,
+      "sha256": "807724b5dca1794fbdd2a61d2c72601e0965c4969e92234405d6d61d1ded350a"
+    },
+    {
+      "path": "dist/narrative/representation-bridge.d.ts",
+      "bytes": 1167,
+      "sha256": "d817355173da7a717109130c0380851f830f97f58a2cfd50c3b5c1729dba3df1"
+    },
+    {
+      "path": "dist/narrative/representation-bridge.js",
+      "bytes": 2798,
+      "sha256": "f72b9a7acbf21bdf85b611b155359cae2479fee0ab2a5f6b0e5eca31cefa4f00"
+    },
+    {
       "path": "dist/narrative/resolver.d.ts",
-      "bytes": 494,
-      "sha256": "b63282ad98ec791b279b32c09b986677d733b59f87a293e65d9db55b3332ec10"
+      "bytes": 835,
+      "sha256": "51eaaa14ca996a10cb22c4066a604195c83a5741f49ad4ab323f9aea9ba566e1"
     },
     {
       "path": "dist/narrative/resolver.js",
-      "bytes": 6067,
-      "sha256": "1d19ec77f8f4614230bc5c8a6018b4795a9326cc42e3345dff9f09d89d48ff82"
+      "bytes": 17399,
+      "sha256": "c8bd23c38e87417cc9e330f167ac1eeb3cd7e27a051fcffb5656da16bedce2c2"
+    },
+    {
+      "path": "dist/narrative/retirement-decision.d.ts",
+      "bytes": 705,
+      "sha256": "0153a9b40b8976569c6147914ba70140d0acdcc62ec2ce37a9e177b6b91f630a"
+    },
+    {
+      "path": "dist/narrative/retirement-decision.js",
+      "bytes": 2696,
+      "sha256": "3f7808228a9c22108fed13701e85adec4381bc81f663c05d96d20bb771f35918"
     },
     {
       "path": "dist/narrative/scheduler.d.ts",
@@ -456,8 +1226,18 @@
     },
     {
       "path": "dist/narrative/scheduler.js",
-      "bytes": 13608,
-      "sha256": "d009add99a54a10f56274bf8f3f08eedc2ce3fbb03b0c8a1700216cecfdb36c1"
+      "bytes": 15584,
+      "sha256": "c332b8b14c101a0cf0451c0097a81b90c7da214746c9924817dabab7298ed9ec"
+    },
+    {
+      "path": "dist/narrative/seed-memory.d.ts",
+      "bytes": 4131,
+      "sha256": "73156d67b71b4615f1c4438f794803a8cec3c1dffa6e8730de8016b9ef2425eb"
+    },
+    {
+      "path": "dist/narrative/seed-memory.js",
+      "bytes": 7683,
+      "sha256": "3eab2c376f1aa225d4b65b1ff30e81cf489fc6a7a0acd9b1434a402110d06c95"
     },
     {
       "path": "dist/narrative/tick.d.ts",
@@ -470,6 +1250,16 @@
       "sha256": "c2506d12cfec00aed3d239f0e98df604c80640d88aa03fff6b3a903cc6856db0"
     },
     {
+      "path": "dist/narrative/transition-priority.d.ts",
+      "bytes": 985,
+      "sha256": "e5102ef1021aacc1b3f03a78105397178c9b6dfe8e22fd71d91d67b5b6358f96"
+    },
+    {
+      "path": "dist/narrative/transition-priority.js",
+      "bytes": 1313,
+      "sha256": "69317d623280fe2b9f6422435165e74865d48ab89bb95ce95f5130591bdbaf5a"
+    },
+    {
       "path": "dist/narrative/validate.d.ts",
       "bytes": 254,
       "sha256": "a753ec427efaa14bd61531fef6200b94bcb8c9afb2f78d1f606ad45477fa449b"
@@ -478,6 +1268,166 @@
       "path": "dist/narrative/validate.js",
       "bytes": 970,
       "sha256": "f5c087d53e47fe798112ce28769033b6a9ccb6e4186af5b0e31839cf25de9c64"
+    },
+    {
+      "path": "dist/player-actions/action-state.d.ts",
+      "bytes": 1284,
+      "sha256": "3cb1aee1f0c362c41063678b4e994ff610386138ec3a2fd59b4fb1ea8312c6d9"
+    },
+    {
+      "path": "dist/player-actions/action-state.js",
+      "bytes": 3292,
+      "sha256": "7c12fb6f77651f1576fafe453a7f3c0f9d2854b32a5cbd8041ba9784dfb4acc8"
+    },
+    {
+      "path": "dist/player-actions/bridge.d.ts",
+      "bytes": 487,
+      "sha256": "7135895d888064184c9370787de695a5ca575cbe084284e5a711fba8596d9b30"
+    },
+    {
+      "path": "dist/player-actions/bridge.js",
+      "bytes": 718,
+      "sha256": "06a73dba46da3fbdedbd9614af74287a0ac6b341a08ee8d95b9fe23c3e82a195"
+    },
+    {
+      "path": "dist/player-actions/catalog.d.ts",
+      "bytes": 672,
+      "sha256": "88861359dcd1084eae755112b2a5fb730a2ad9da418e7529a1825594779d3112"
+    },
+    {
+      "path": "dist/player-actions/catalog.js",
+      "bytes": 2949,
+      "sha256": "d6f7ed071e15277979f79ebaeff799900e22f86cbc05528d8208e84284c3e1e3"
+    },
+    {
+      "path": "dist/player-actions/content-balance.d.ts",
+      "bytes": 1200,
+      "sha256": "ccfd462ee769fdc426ec7d1771dcc2657be8e6f459859d3a7bb77a87596c3a87"
+    },
+    {
+      "path": "dist/player-actions/content-balance.js",
+      "bytes": 6536,
+      "sha256": "fc80a994cff6d4c0f8155baf38a4325e5db14e97cd7f23c12944a4f79ecd2fc6"
+    },
+    {
+      "path": "dist/player-actions/content-cooldown-groups.d.ts",
+      "bytes": 524,
+      "sha256": "9a78506f1a67aa7fd9ac04953b4140201d206e94aded0b387f83476064698879"
+    },
+    {
+      "path": "dist/player-actions/content-cooldown-groups.js",
+      "bytes": 1981,
+      "sha256": "4c6fd14ef306ecfc05adc00b51caeec7272e64d21b8305f44770ddf732d0a849"
+    },
+    {
+      "path": "dist/player-actions/content-effect-plan.d.ts",
+      "bytes": 699,
+      "sha256": "76f8f5d9b7a07b52d9747c9b9075a44dd98b12233a808af10ab7de4e5b039f83"
+    },
+    {
+      "path": "dist/player-actions/content-effect-plan.js",
+      "bytes": 5300,
+      "sha256": "046eb11bb00c9102d5095b4625d6eee0ad8470e142cd802ff7a8f4c1ce7c8b04"
+    },
+    {
+      "path": "dist/player-actions/content-eligibility.d.ts",
+      "bytes": 519,
+      "sha256": "61959a48c063efd7fb28d715f340faffba34ee6311baed464aaebcc90958ec0c"
+    },
+    {
+      "path": "dist/player-actions/content-eligibility.js",
+      "bytes": 4812,
+      "sha256": "a71ba457ce80570d8508c0ad0d5cb3b52fc1781c4343bd5941773a7a80d75472"
+    },
+    {
+      "path": "dist/player-actions/content-plan.d.ts",
+      "bytes": 761,
+      "sha256": "170c527e4c391120cfa1096d29280b06cea19427634dc4ce1e5104903162fce2"
+    },
+    {
+      "path": "dist/player-actions/content-plan.js",
+      "bytes": 5577,
+      "sha256": "d725f2ae93190b0b66058b0cb26ab5a739e3d69e6a370f3f129c069d4c3b3da8"
+    },
+    {
+      "path": "dist/player-actions/content-spec.d.ts",
+      "bytes": 662,
+      "sha256": "5c2c89506deb7d5465139d7f0cdcc6b4bb6fe5a98f6b2016d0382cd17568344d"
+    },
+    {
+      "path": "dist/player-actions/content-spec.js",
+      "bytes": 9078,
+      "sha256": "bd0a723ec11f9e0339332aa55b941c98ff7694deaafb9d49f8958b8a3eb10263"
+    },
+    {
+      "path": "dist/player-actions/effects.d.ts",
+      "bytes": 566,
+      "sha256": "ebc377d33172cfa273876291ffdfc35ccffa56a0b4b38f42ffc51b4d6cc886de"
+    },
+    {
+      "path": "dist/player-actions/effects.js",
+      "bytes": 9087,
+      "sha256": "1410fbd280f03b544f71241ddbd3d23eb2c177e4b87cf3c0b14cdbbb7de8358e"
+    },
+    {
+      "path": "dist/player-actions/eligibility.d.ts",
+      "bytes": 1339,
+      "sha256": "ffaceb4e346d014f8b89c92fbfe1c7d33d6c0191073e3f76d19c6f6007299f4e"
+    },
+    {
+      "path": "dist/player-actions/eligibility.js",
+      "bytes": 8479,
+      "sha256": "3fde422bf9c075c5ea0dec9f9538faf797c6648eb571f18311a64c7f96c09b97"
+    },
+    {
+      "path": "dist/player-actions/executor.d.ts",
+      "bytes": 853,
+      "sha256": "df6f452c901425030294ce85a4a7dcfaa4d1918b369c1c9a2d9a1d0cf59f5736"
+    },
+    {
+      "path": "dist/player-actions/executor.js",
+      "bytes": 6522,
+      "sha256": "72a318527bfd4d6167b6687cb70d3f545ce4e57834cc8ceb2710c268e41f9d64"
+    },
+    {
+      "path": "dist/player-actions/facts.d.ts",
+      "bytes": 1704,
+      "sha256": "44df8194d803c20d3eb544a06c1b5c0bc7d1562d0d94793cef95253c81dc8325"
+    },
+    {
+      "path": "dist/player-actions/facts.js",
+      "bytes": 9280,
+      "sha256": "6be3548d281171fbb82d8f9d45aa94f07fde9ba296d96b8d2f35038f7b2ec485"
+    },
+    {
+      "path": "dist/player-actions/index.d.ts",
+      "bytes": 278,
+      "sha256": "57801e0256874535b31437062f181dae3d84891bd394f4530fa1e0283f9936eb"
+    },
+    {
+      "path": "dist/player-actions/index.js",
+      "bytes": 278,
+      "sha256": "57801e0256874535b31437062f181dae3d84891bd394f4530fa1e0283f9936eb"
+    },
+    {
+      "path": "dist/player-actions/types.d.ts",
+      "bytes": 4890,
+      "sha256": "82b0b3d0172b720be41bbab912b7bcaed39e22c5e0fe692001acadd9237fc415"
+    },
+    {
+      "path": "dist/player-actions/types.js",
+      "bytes": 11,
+      "sha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+    },
+    {
+      "path": "dist/player-actions/validation.d.ts",
+      "bytes": 279,
+      "sha256": "35188bfbe1032638c076dc04df1b7236ce5d37054da8a71bcb86ba3732d8e78f"
+    },
+    {
+      "path": "dist/player-actions/validation.js",
+      "bytes": 7573,
+      "sha256": "b5b79c387f7e3ef36e74311903a23482991cc9d457c1f878dd2422ba508da974"
     },
     {
       "path": "dist/save/save.d.ts",
@@ -500,34 +1450,144 @@
       "sha256": "fafad8743bdde6f6513c6200d614b3b16232c2f9d5e780727cb68fe1a64bc1db"
     },
     {
-      "path": "dist/save/validation.d.ts",
+      "path": "dist/save/validation-legacy.d.ts",
       "bytes": 1646,
       "sha256": "e6f9753abebdce47016a06889c71e24727df008fbfe61363563eea11a29ddd9b"
     },
     {
+      "path": "dist/save/validation-legacy.js",
+      "bytes": 34744,
+      "sha256": "bc9bd6d16f1f2b3da05fe668623f78ace18ea6d48c23d148184cf551c4f045be"
+    },
+    {
+      "path": "dist/save/validation.d.ts",
+      "bytes": 512,
+      "sha256": "db4ce88869ac2278df5d4626f6bf4d9fc7f1f58a5af3c0bf6a662f646b0a0276"
+    },
+    {
       "path": "dist/save/validation.js",
-      "bytes": 20480,
-      "sha256": "9ea31ae1000b8a566f831b3abac2e7dd0e3a668521c80291a0708e7179ce5682"
+      "bytes": 12533,
+      "sha256": "f7f88705465a2e7a2f40e67141253b1ab11ea3422aa056103d7a73fbc46ac28c"
+    },
+    {
+      "path": "dist/session/auto-simulation.d.ts",
+      "bytes": 3479,
+      "sha256": "3c5c9422beb51a09d1052cc5c3bfc893444b403cc6b1a01b06d821cf661eddc1"
+    },
+    {
+      "path": "dist/session/auto-simulation.js",
+      "bytes": 3398,
+      "sha256": "9c13add893f6ae387391d938f1c740ab114bff53cb952a6cd39fce44779c224c"
+    },
+    {
+      "path": "dist/session/content-identity.d.ts",
+      "bytes": 754,
+      "sha256": "1e5d2028feff8e7266f3f774da06805730a6b66097f1b04508f9fbf8d59354b5"
+    },
+    {
+      "path": "dist/session/content-identity.js",
+      "bytes": 1043,
+      "sha256": "25d0e731becdc64d28477ede5ebae7428bdd98c5d8c9c9d6379c7a88f5d7dfa3"
+    },
+    {
+      "path": "dist/session/content-migration.d.ts",
+      "bytes": 6407,
+      "sha256": "5b552bdf2f807d306c23bf474fa872b1b12e1a3aaea223dc69ccee95d6228afc"
+    },
+    {
+      "path": "dist/session/content-migration.js",
+      "bytes": 32729,
+      "sha256": "54ff89d57fd20027ccd43674c9ea14887984639eaf7b9a5b3e3dc6da85a727f6"
+    },
+    {
+      "path": "dist/session/decision-memories.d.ts",
+      "bytes": 466,
+      "sha256": "b49e6bd6dca14c3343a7b95b28aa6bb3ae28a15f1150d81b08908fb0b12e2e47"
+    },
+    {
+      "path": "dist/session/decision-memories.js",
+      "bytes": 1234,
+      "sha256": "7acf49a90959628dcdb58565da14cc72cf765e50a088c7fd20a7a54bb1811e30"
+    },
+    {
+      "path": "dist/session/frozen-offer-bridge-evidence.d.ts",
+      "bytes": 344,
+      "sha256": "7c41d4aa9fb064d363e497863f481cb39dd4658c709a949ff280a6784f3cbadd"
+    },
+    {
+      "path": "dist/session/frozen-offer-bridge-evidence.js",
+      "bytes": 28105,
+      "sha256": "87d9e4e37b05ede7303e2deeb819c62d5e4c8e77d224dacc6433c1c6e0574d8b"
     },
     {
       "path": "dist/session/game-session.d.ts",
-      "bytes": 4621,
-      "sha256": "2002639440374fb51f436dd5f9d9ff298f2ca6675d2f165d45d273c2e34d74b1"
+      "bytes": 8863,
+      "sha256": "454b279748a1df1aa6f0cbd2351d04cb2f9f330e861bc7d8ab4c8e0605e10113"
     },
     {
       "path": "dist/session/game-session.js",
-      "bytes": 12058,
-      "sha256": "9381d59d42841dac0518ba3afa745a3eb712f468769ee480d7659bc103de7d49"
+      "bytes": 42930,
+      "sha256": "fccf3b53e2f9ff2f1daf5459cfa1d0774fb039511c031dd97742a021a140eb6c"
+    },
+    {
+      "path": "dist/session/period-report.d.ts",
+      "bytes": 651,
+      "sha256": "f2a47bb3a7033fa8843a7bf4a4c957fd09d6b0c209f7f342f2e3415364a177b6"
+    },
+    {
+      "path": "dist/session/period-report.js",
+      "bytes": 2682,
+      "sha256": "033a90340b7a9f311f730c100ceea433fb8b7a67436eed0e4401b9e0330d25bd"
+    },
+    {
+      "path": "dist/session/player-contacts.d.ts",
+      "bytes": 475,
+      "sha256": "b163a61fba15207d9f8c99f36376e0869f7bcbfa002935608e6ff6bb9097397d"
+    },
+    {
+      "path": "dist/session/player-contacts.js",
+      "bytes": 475,
+      "sha256": "f572403ef215b66d8aa8b87b20cf6ae1ff3ea4169b20130d1446a7b9312a8705"
+    },
+    {
+      "path": "dist/session/post-t51-legacy-registry.d.ts",
+      "bytes": 379,
+      "sha256": "ad1cc48f88e2312ecbf95125eca738d9bb592c4246b15f9f9355c117159909e7"
+    },
+    {
+      "path": "dist/session/post-t51-legacy-registry.js",
+      "bytes": 5938767,
+      "sha256": "b9fe3c25c282fe255b0f934607da1d5e5ad0531720a66367b04f136c1e2019c9"
+    },
+    {
+      "path": "dist/session/pre-t41-legacy-registry.d.ts",
+      "bytes": 281,
+      "sha256": "b988ff73a2ca4f3e7d89359ed5749a3ef218cef05c9b7ef6d0372d7ac60c6394"
+    },
+    {
+      "path": "dist/session/pre-t41-legacy-registry.js",
+      "bytes": 275158,
+      "sha256": "fa7e12493d5ea8f9149f907cdef810a10d51f624e669c45491eff5fb9bebf699"
+    },
+    {
+      "path": "dist/session/pre-t51-legacy-registry.d.ts",
+      "bytes": 402,
+      "sha256": "bc8358ebc312014ba6b68c0bc6b595892696ccdb9b6a1134de922e9cb6aff96e"
+    },
+    {
+      "path": "dist/session/pre-t51-legacy-registry.js",
+      "bytes": 275198,
+      "sha256": "1500ebd805ea5458eee7e0f8cf036d782de427feb48480d86f8b6c8a800e2c66"
     },
     {
       "path": "dist/session/validate-session.d.ts",
-      "bytes": 239,
-      "sha256": "edb3a697bcb1675cc2ae41aa6b3c7e890174bcf9e4c8fc0b111fd2aaaf8c2c81"
+      "bytes": 571,
+      "sha256": "9cc24748c6a75312f8c3f633458974b9d7877e5a2a0176a1af26b8f3be435575"
     },
     {
       "path": "dist/session/validate-session.js",
-      "bytes": 7589,
-      "sha256": "5019873e82faa03cc8cc2eb11f091b67c66f9343913d187f6b8235532d25e367"
+      "bytes": 23492,
+      "sha256": "94af7f580e0c98f5639f1cbef792cfc4a69207377194b7f73edf5c588ee0eeeb"
     },
     {
       "path": "dist/simulation/adult-adapter.d.ts",
@@ -576,18 +1636,128 @@
     },
     {
       "path": "dist/simulation/career-simulator.js",
-      "bytes": 4726,
-      "sha256": "93abca55e06ab4bdb9325fd59f7d6465cb8b48f2312b45b1a0cf19040cdb5107"
+      "bytes": 7255,
+      "sha256": "59f976e86fa8632bef94d0a9ebee5671dc545766755faf0f365d7bcd5800a692"
+    },
+    {
+      "path": "dist/simulation/club-contract-intent.d.ts",
+      "bytes": 8160,
+      "sha256": "3d52dffafda62a9116c4ce6f1a3b18a44154e1cde2c326d0cc1144c15e50a1f2"
+    },
+    {
+      "path": "dist/simulation/club-contract-intent.js",
+      "bytes": 8836,
+      "sha256": "15152587f1094cb21c2bcd88f5c6ba41346e6ec052e13969894b1509dea26684"
+    },
+    {
+      "path": "dist/simulation/coach-change-authority.d.ts",
+      "bytes": 1414,
+      "sha256": "44207aa773cbbbd144d39efb1897fc5843674294ecf4bfa40aea30a41a56ff49"
+    },
+    {
+      "path": "dist/simulation/coach-change-authority.js",
+      "bytes": 3953,
+      "sha256": "c4b67156faf1cee8da04f8946deb5e752e0a6bcdcda07c87ca92ff2efcf2f81d"
+    },
+    {
+      "path": "dist/simulation/competition-context.d.ts",
+      "bytes": 3329,
+      "sha256": "7bdae93aebee66c7ac704f567f73ce1e59184de100db74887b29de1311ac9b25"
+    },
+    {
+      "path": "dist/simulation/competition-context.js",
+      "bytes": 12498,
+      "sha256": "8a683b4d5c41b156c77f482edf1efb017db23ee087c3e58341747b592474ebd4"
+    },
+    {
+      "path": "dist/simulation/early-career-market.d.ts",
+      "bytes": 861,
+      "sha256": "88cb2fa452768784ed9f47918c9054c18da5e8c98daa85fc0c4bab55dfdaba41"
+    },
+    {
+      "path": "dist/simulation/early-career-market.js",
+      "bytes": 8844,
+      "sha256": "0e2703fa9ee093ce3db31c243081965aeee1fd6a8d5ec0cb04e5b8dcac289c15"
+    },
+    {
+      "path": "dist/simulation/employment.d.ts",
+      "bytes": 2365,
+      "sha256": "14ced5e85f1db53b4063313109bf3e5705d9c449e7982abb1fdad90fefd701f9"
+    },
+    {
+      "path": "dist/simulation/employment.js",
+      "bytes": 4630,
+      "sha256": "ddb88be1eff4de468a040af363e0c7c4522d4cad6f20873ae579b29e4edacc58"
+    },
+    {
+      "path": "dist/simulation/football-moments.d.ts",
+      "bytes": 2647,
+      "sha256": "f422ae3fe2d57c55bcdfa2483352cbe4ab5bb910231e16bae15c2eb3ffc550b8"
+    },
+    {
+      "path": "dist/simulation/football-moments.js",
+      "bytes": 10101,
+      "sha256": "27885c2e09bbc80d61bfd9ee3c8ae831479b3e387cd34ca89d5ec71ee2b1cc5f"
+    },
+    {
+      "path": "dist/simulation/injury-episode-authority.d.ts",
+      "bytes": 1937,
+      "sha256": "398886c42d11b096e5713c638b7dcd56df02fcb6c8e06984736cc135de39bd74"
+    },
+    {
+      "path": "dist/simulation/injury-episode-authority.js",
+      "bytes": 9279,
+      "sha256": "3e6b8ed31990c4e3cc558264d5126b1357f7c9aca58bd1fa728c87c18bca3427"
     },
     {
       "path": "dist/simulation/late-career-engine.d.ts",
-      "bytes": 463,
-      "sha256": "b7eb75b7b18f22fd4924af3b3c2e81e6a5a88024c806cb4cdce107bcd67e497b"
+      "bytes": 1950,
+      "sha256": "9070d0da345a529ab5673e215256010f35a8ce34845d0010c0aff2225d91382a"
     },
     {
       "path": "dist/simulation/late-career-engine.js",
-      "bytes": 9744,
-      "sha256": "ec988dcebe020cda89a4e44189142d5f666b7b95d4ecfb57097f9c1c9fb41b07"
+      "bytes": 16805,
+      "sha256": "f37f18d9db6e63bf0c0a7e47b02e91e1b7e159a4739a934ccef7081359a84f01"
+    },
+    {
+      "path": "dist/simulation/locker-leadership.d.ts",
+      "bytes": 1423,
+      "sha256": "279b1b0ae9984819f457d95ae0d70b57ca2a8099ce640c6622987b98f3d61642"
+    },
+    {
+      "path": "dist/simulation/locker-leadership.js",
+      "bytes": 1928,
+      "sha256": "8ab79467dc1d46dd77b3f1c6a964010978cb95c111b39a4f0db03eccaf65b4c0"
+    },
+    {
+      "path": "dist/simulation/market-tuning.d.ts",
+      "bytes": 304,
+      "sha256": "b846b0eaf709dc909468059b2fcb0179d2bee2f94b7adb29026928d9498a8b1c"
+    },
+    {
+      "path": "dist/simulation/market-tuning.js",
+      "bytes": 296,
+      "sha256": "b49b474e12d277a1e8fc9062f75ba2779c7cf553944fcc8ec62e3eed9558268a"
+    },
+    {
+      "path": "dist/simulation/match-model.d.ts",
+      "bytes": 10185,
+      "sha256": "19333fad4ffcf7033dc6f53e9b373720bc5b6bccaed69137cdb60d42dadca13c"
+    },
+    {
+      "path": "dist/simulation/match-model.js",
+      "bytes": 52300,
+      "sha256": "73654ddf0bfb72e406e41040baae4b15c929759996f2cea234b27e7cd24afa99"
+    },
+    {
+      "path": "dist/simulation/match-penalty-context.d.ts",
+      "bytes": 1243,
+      "sha256": "e1af224838d06b488fb6314f41077f4c56f79de92b450fd14f6f89d456290f69"
+    },
+    {
+      "path": "dist/simulation/match-penalty-context.js",
+      "bytes": 9577,
+      "sha256": "100406f9db31d9bb5060d69cdb7fe390433476471652727ae8be071a40e221b9"
     },
     {
       "path": "dist/simulation/maturity-adapter.d.ts",
@@ -610,14 +1780,44 @@
       "sha256": "ef7a3ba1a295c00749e53edd391e16219868311df334a06c9ec3f38faa2dfded"
     },
     {
+      "path": "dist/simulation/national-selection-producer.d.ts",
+      "bytes": 646,
+      "sha256": "fd5b16acc739f8def9f52c6e28e53d001b377e4e821538f2fa716273883efdc8"
+    },
+    {
+      "path": "dist/simulation/national-selection-producer.js",
+      "bytes": 2278,
+      "sha256": "b35f1feceb5f0564fc0990391d6bd6af931d88605305362c60b581500886e7b4"
+    },
+    {
+      "path": "dist/simulation/national-team-authority.d.ts",
+      "bytes": 5041,
+      "sha256": "cff90193a7c946ec714acc4ffb9b3db5c14d5284cbc4eb04a0d2c9297df8dadc"
+    },
+    {
+      "path": "dist/simulation/national-team-authority.js",
+      "bytes": 12407,
+      "sha256": "d7fcd809bedaa140b36ef592ce99a734b66872bd03d11f172d60c10139c6a0b3"
+    },
+    {
+      "path": "dist/simulation/npc-authority.d.ts",
+      "bytes": 2433,
+      "sha256": "09079c6b21c659a4f3a511b5c500a6466a90eb7ed8cdd460a984f5acc8983f82"
+    },
+    {
+      "path": "dist/simulation/npc-authority.js",
+      "bytes": 5116,
+      "sha256": "aef5ff50925ad84396e7221364720d7d75006be14b0f1649cbd83f4ac0568e5d"
+    },
+    {
       "path": "dist/simulation/offers.d.ts",
-      "bytes": 1484,
-      "sha256": "f9e9da115b4d8c82c1eccecccf9b993f1fe7881f19e7f608b2af550abc1e811e"
+      "bytes": 8158,
+      "sha256": "abfa2e040b8f297476706edb7fbbd5f6736a4147f8c8de7bc53c553dd171c38f"
     },
     {
       "path": "dist/simulation/offers.js",
-      "bytes": 4019,
-      "sha256": "e5b9612baffb887584ae327f8525d34646d5beb18ba7fa556c01c54f76ec34bb"
+      "bytes": 22376,
+      "sha256": "0c1e7eb4db0fb8db1c4726be83fb35598c19245488f82bb15db3a8d0bdcbe9b9"
     },
     {
       "path": "dist/simulation/peak-adapter.d.ts",
@@ -630,14 +1830,64 @@
       "sha256": "7eea344f7c3e99d7b91f7e3853891bf95d8a983da3496cbb62ca4f31c2a71516"
     },
     {
+      "path": "dist/simulation/player-leadership-authority.d.ts",
+      "bytes": 3114,
+      "sha256": "3aec92049b4578de9aea545ccb60828e1b86e1b9d02e7dcbaa897d73b5b1a5c6"
+    },
+    {
+      "path": "dist/simulation/player-leadership-authority.js",
+      "bytes": 14460,
+      "sha256": "dc26f8274e57e9c631594d576bef2c46949d2dc8151cb825163dd476fd253805"
+    },
+    {
       "path": "dist/simulation/professional-adapter.d.ts",
       "bytes": 159,
       "sha256": "202c273fb0a78fe151d8045c199e4640ed94f7704bb43adb28cb1c9f6bc1abee"
     },
     {
       "path": "dist/simulation/professional-adapter.js",
-      "bytes": 5437,
-      "sha256": "e8d10813829609641522ecb00de15dc073ec4ccd0e1bb154659b5a7ae6827333"
+      "bytes": 5830,
+      "sha256": "0e3b726d449998022dfc0d752dbb8ae0b361ec3119811a283c3624a7fbd38084"
+    },
+    {
+      "path": "dist/simulation/representation-authority.d.ts",
+      "bytes": 2160,
+      "sha256": "00f6936dd86f05fa1631ef227ce683bd5bf6b9dbb376bef39a9dc26331d493ae"
+    },
+    {
+      "path": "dist/simulation/representation-authority.js",
+      "bytes": 7303,
+      "sha256": "d0612506ccf4e7aea43e1f7e04d0c923b9cf1016355dc57f9a0b3992df180a08"
+    },
+    {
+      "path": "dist/simulation/retirement-authority.d.ts",
+      "bytes": 1826,
+      "sha256": "3a92402687af952d3e8f5c09daeda260221bac671826f1582d2c604dca5e053f"
+    },
+    {
+      "path": "dist/simulation/retirement-authority.js",
+      "bytes": 5282,
+      "sha256": "9a1b7c8615e02bfbd617a1374f1ba29f5c64b4d1d2559995c848b5b1fb76a8f9"
+    },
+    {
+      "path": "dist/simulation/sport-achievement-authority.d.ts",
+      "bytes": 3220,
+      "sha256": "36b2baf6e0d7eae057795e277b3d82ebf0b3655fa95ed984a4b407eb105cf398"
+    },
+    {
+      "path": "dist/simulation/sport-achievement-authority.js",
+      "bytes": 14547,
+      "sha256": "1d7c086a294b93534a4487a1acbb725453c76063d9a4b9f53973402958685a4e"
+    },
+    {
+      "path": "dist/simulation/sport-context.d.ts",
+      "bytes": 6419,
+      "sha256": "ec06322541e796cbcde3ffddf4d189d26239f41ad6aa43e5890779074b92aa0e"
+    },
+    {
+      "path": "dist/simulation/sport-context.js",
+      "bytes": 10880,
+      "sha256": "471f9d72531ee5b51952d14452e4742029f1d0dea1cebe84b7c350376c753788"
     },
     {
       "path": "dist/simulation/state20-classifier.d.ts",
@@ -690,14 +1940,34 @@
       "sha256": "a07469502de3b708cc36315c398d34b4d3c1bbd1625d7da1a4f8be1eb7fa25ec"
     },
     {
+      "path": "dist/simulation/veteran-market.d.ts",
+      "bytes": 2318,
+      "sha256": "c0f48694cf8f36f65ab57bfe3568b0b1896d124b67fa4a9f494aac44bdfba449"
+    },
+    {
+      "path": "dist/simulation/veteran-market.js",
+      "bytes": 11360,
+      "sha256": "c173755c6996f4d1b20186744bcaf6f22dbde48f5714ceacffcdf82d3bc48fda"
+    },
+    {
+      "path": "dist/simulation/world-simulator-core.d.ts",
+      "bytes": 361,
+      "sha256": "65131abc975d0c103ab4041df57bc160f5f73bfb026676fc7e46c108403b9a39"
+    },
+    {
+      "path": "dist/simulation/world-simulator-core.js",
+      "bytes": 39095,
+      "sha256": "9e6199ef8091c9ef757dad41c19ff5787a90f55dd15e0ec18d78b36681b48a14"
+    },
+    {
       "path": "dist/simulation/world-simulator.d.ts",
-      "bytes": 197,
-      "sha256": "27ae6bdcadc0e89a0c39849ca582e932229b1b61b32fca56836fbbede3bc636e"
+      "bytes": 449,
+      "sha256": "6f3e17ddf9adf36d37a89aaa7f1e7a2bf808cf761ed398271da7e6ea3a859686"
     },
     {
       "path": "dist/simulation/world-simulator.js",
-      "bytes": 29803,
-      "sha256": "b4464979cdc3fe28dd6f760c0d1827a2c56928f5ba2d36cadfc2707f3a5dfa2f"
+      "bytes": 7774,
+      "sha256": "aacfa0467014157aa8c820e0c45c6098f36914030573fc042098046e196430ea"
     },
     {
       "path": "dist/validation/build-validation.d.ts",
@@ -715,14 +1985,24 @@
       "sha256": "8f6400c8ff1633ed1b1726c89e1ebba4b6551f51c58debef984f32df10d52940"
     },
     {
+      "path": "web/club-catalog-names.js",
+      "bytes": 19374,
+      "sha256": "eda25eaa6847342f68d0dc422e8bc60cebad403d8325b7ee359b7022230a2296"
+    },
+    {
+      "path": "web/club-names.js",
+      "bytes": 1522,
+      "sha256": "4258216e751822abeaffbd2db7eff0b0d4604d9d9a06bdb895a32db5b9c3aca4"
+    },
+    {
       "path": "web/game-ui.css",
-      "bytes": 13814,
-      "sha256": "c71bc37bbcce8c9ba8625eac000dd84636f57fb508400026d6ea1368a6c19f5f"
+      "bytes": 19717,
+      "sha256": "4cecff31839d940a247e7e7fef0a20301e1c8a74d978af2a70f8e396ba23e695"
     },
     {
       "path": "web/game-ui.js",
-      "bytes": 23783,
-      "sha256": "6af6fe5dfb9c21d7452823241fcc414ec9245d624c60e4da80884edb52cba6c9"
+      "bytes": 52636,
+      "sha256": "8af0280af4a547d5370df969847de191c0b81c6aabb73b0edbe400a066bc61b6"
     },
     {
       "path": "web/indexed-save-store.js",
@@ -731,8 +2011,8 @@
     },
     {
       "path": "web/local.js",
-      "bytes": 9160554,
-      "sha256": "42fc877aecbd811b05fb4fc827ba0f9eef994d3d0ea7c30f22d40cf1cba3ecd2"
+      "bytes": 9166502,
+      "sha256": "913e389aa0f83b221310cdcb1079dc468a9eb5cdbe10c1effe55822495c33fd4"
     },
     {
       "path": "web/page.css",
