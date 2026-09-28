@@ -2,9 +2,6 @@
 // Uses production GameSession commands/public views; no fixture field is shipped in release.
 import {GameSession} from '../../../dist/session/game-session.js';
 import {EVENTS} from '../../../dist/content/events/index.js';
-import {createInitialState} from '../../../dist/content/initial-state.js';
-import {recordOfficialMatchInPlace} from '../../../dist/simulation/match-model.js';
-import {getCurrentMatchContext} from '../../../dist/simulation/sport-context.js';
 import {fixtureById} from './fixtures.mjs';
 
 const command=(session,type,extra={})=>({type,commandId:'muir-'+type+'-'+session.getView().revision,expectedRevision:session.getView().revision,...extra});
@@ -17,32 +14,6 @@ async function decisionForEvent(f,eventId){
   await s.dispatch(command(s,'continue')); return s;
 }
 async function decision(f){return decisionForEvent(f,'EVT_18_PRE_001');}
-function canonicalDebutSeed(){
-  for(let seed=8800;seed<10000;seed++){
-    const state=createInitialState(seed);
-    state.date='2026-08-05';
-    state.runtime.day=35;
-    state.runtime.seasonDay=35;
-    recordOfficialMatchInPlace(state,{appeared:true,debutOccurred:true,injuryUnavailable:false});
-    if(getCurrentMatchContext(state).debutDecisionContext)return seed;
-  }
-  throw Error('Canonical minute-78 1-1 debut context did not materialize');
-}
-async function cinematicDecision(f){
-  const event=structuredClone(EVENTS.find(row=>row.id==='EVT_18_MATCH_001'));
-  if(!event)throw Error('Canonical cinematic fixture event missing: EVT_18_MATCH_001');
-  const seed=canonicalDebutSeed();
-  const base=await GameSession.create(seed,{events:[event],microfeeds:false,sessionId:'muir-'+f.id});
-  const snapshot=base.exportSnapshot();
-  snapshot.state.date='2026-08-05';
-  snapshot.state.runtime.day=35;
-  snapshot.state.runtime.seasonDay=35;
-  recordOfficialMatchInPlace(snapshot.state,{appeared:true,debutOccurred:true,injuryUnavailable:false});
-  if(!getCurrentMatchContext(snapshot.state).debutDecisionContext)throw Error('Produced debut context lost before session resume');
-  const s=await GameSession.resume(snapshot,{events:[event]});
-  await s.dispatch(command(s,'continue',{maxDays:1}));
-  return s;
-}
 async function result(f){
   const s=await decision(f),v=s.getView();
   await s.dispatch(command(s,'choose',{pendingInstanceId:v.decision.instanceId,choiceId:v.decision.choices[0].id}));
