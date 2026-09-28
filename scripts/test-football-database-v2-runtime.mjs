@@ -3,9 +3,9 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import { createInitialState } from "../dist/content/initial-state.js";
 import { EVENTS_18_20 } from "../dist/content/events/index.js";
-import { clubById } from "../dist/catalog/football/index.js";
+import { FOOTBALL_SELECTOR_PROFILE_CONTRACT, clubById, divisionById, footballClubBalanceMetadata, clubsForCountry } from "../dist/catalog/football/index.js";
 import { materializeNarrativeClubAlias } from "../dist/catalog/football/narrative-club-alias.js";
-import { selectMarketDestination } from "../dist/catalog/football/market-destination.js";
+import { isBigClubCandidate, selectBigClubDestination, selectHigherClubDestination, selectMarketDestination } from "../dist/catalog/football/market-destination.js";
 import {
   recordOfficialMatchInPlace,
   scheduledLeagueFixtures
@@ -17,6 +17,7 @@ import { careerTerms, proposeCareerChange } from "../dist/simulation/offers.js";
 import { resolveChoice } from "../dist/narrative/resolver.js";
 import { assertGameState } from "../dist/save/validation.js";
 import { executePlayerActionInPlace } from "../dist/player-actions/index.js";
+import { employmentStatus } from "../dist/simulation/employment.js";
 
 function matchDayState(seed = 19001) {
   const state = createInitialState(seed);
@@ -341,4 +342,99 @@ test("runtime source sentinel forbids new synthetic identity producers and prese
   assert.doesNotMatch(offers, /terms\.club=`Club /);
   assert.doesNotMatch(adapter, /state\.club\s*=\s*"Aurora CF"/);
   assert.match(early, /transferRequestExternalMarketThreshold\(state, 38\)/);
+});
+
+
+test("BIG_CLUB selector obeys the exact A2 contract instead of an ambitious percentile", () => {
+  const top = FOOTBALL_SELECTOR_PROFILE_CONTRACT.BIG_CLUB.topContinental;
+  const seen = new Set();
+  for (let roll = 0; roll < 256; roll += 1) {
+    const club = selectBigClubDestination({ countryCode: "ESP", roll });
+    const division = divisionById(club.divisionId);
+    assert.ok(division, club.divisionId);
+    const meta = footballClubBalanceMetadata(club, division);
+    assert.equal(club.tier, 1, club.id);
+    assert.ok(isBigClubCandidate(club), club.id);
+    assert.ok(
+      meta.band === "elite" || (
+        meta.band === "continental"
+        && club.prestige >= top.minPrestige
+        && club.internationalAttraction >= top.minInternationalAttraction
+        && division.strength >= top.minDivisionStrength
+      ),
+      `${club.id}: ${meta.band}`
+    );
+    seen.add(club.id);
+  }
+  assert.ok(seen.size >= 2, "BIG_CLUB selector should address more than one eligible club");
+});
+
+test("HIGHER_CLUB selector proves relative improvement under the A2 contract", () => {
+  const rank = { development: 0, lower: 1, mid: 2, upper: 3, continental: 4, elite: 5 };
+  const current = clubsForCountry("ESP").find(club => {
+    const division = divisionById(club.divisionId);
+    if (!division || club.tier < 2) return false;
+    const meta = footballClubBalanceMetadata(club, division);
+    return meta.band === "lower" || meta.band === "mid" || meta.band === "development";
+  });
+  assert.ok(current, "expected a non-top Spanish comparison club");
+  const currentDivision = divisionById(current.divisionId);
+  assert.ok(currentDivision);
+  const currentMeta = footballClubBalanceMetadata(current, currentDivision);
+
+  for (let roll = 0; roll < 64; roll += 1) {
+    const club = selectHigherClubDestination({
+      countryCode: "ESP",
+      currentClubId: current.id,
+      currentLeagueTier: current.tier,
+      targetLeagueTier: Math.max(1, current.tier - 1),
+      roll,
+      excludeClubIds: [current.id]
+    });
+    const division = divisionById(club.divisionId);
+    assert.ok(division);
+    const meta = footballClubBalanceMetadata(club, division);
+    const prestigeImprovement =
+      club.prestige >= current.prestige + FOOTBALL_SELECTOR_PROFILE_CONTRACT.HIGHER_CLUB.minPrestigeDelta;
+    const strongerBand = rank[meta.band] > rank[currentMeta.band];
+    const strongerLeagueContext =
+      division.tier < current.tier || division.strength > currentDivision.strength;
+    assert.ok(prestigeImprovement || (strongerBand && strongerLeagueContext), club.id);
+    assert.notEqual(club.id, current.id);
+  }
+});
+
+test("CEVT_19_BIG_01 preserves distinct parent and registration clubs on the loan outcome", () => {
+  const event = eventById("CEVT_19_BIG_01");
+  let certified = null;
+  for (let seed = 94000; seed < 95000 && !certified; seed += 1) {
+    const state = createInitialState(seed);
+    state.age = 19;
+    state.phase = "18_20";
+    state.date = "2028-05-24";
+    state.flags.BIG_CLUB_INTEREST = true;
+    state.reputation.marketHeat = 80;
+    const beforeFootball = structuredClone(state.rngState.football);
+    const beforeNarrativeDraws = state.rngState.narrative.draws;
+    const result = resolveChoice(state, event, "ACCEPT_MODEL");
+    if (result.state.flags.LOAN_ACTIVE !== true) continue;
+    certified = { result, beforeFootball, beforeNarrativeDraws };
+  }
+  assert.ok(certified, "expected a primary BIG_CLUB loan outcome");
+
+  const next = certified.result.state;
+  assert.equal(next.rngState.narrative.draws, certified.beforeNarrativeDraws + 1);
+  assert.deepEqual(next.rngState.football, certified.beforeFootball);
+  assert.equal(next.flags.LOAN_ACTIVE, true);
+  assert.equal(employmentStatus(next), "loaned");
+  assert.equal(next.club, next.professional.registrationClub);
+  assert.equal(next.world.ownerClub, next.professional.ownerClub);
+  assert.notEqual(next.professional.ownerClub, next.professional.registrationClub);
+
+  const owner = clubById(next.professional.ownerClub);
+  const registration = clubById(next.professional.registrationClub);
+  assert.ok(owner, next.professional.ownerClub);
+  assert.ok(registration, next.professional.registrationClub);
+  assert.ok(isBigClubCandidate(owner), owner.id);
+  assertGameState(next);
 });
