@@ -1,5 +1,5 @@
 import type { GameState } from "../core/types.js";
-import { selectMarketDestination } from "../catalog/football/market-destination.js";
+import { selectBigClubDestination, selectMarketDestination } from "../catalog/football/market-destination.js";
 import {
   activateEmploymentFromAcceptedTermsInPlace,
   employmentStatus
@@ -246,13 +246,21 @@ function materializeCareerOffer(
   if(sameCareerTerms(before,terms))return null;
   if(renewalWasRejectedFromSameTerms(market,reason,before))return null;
   if(terms.club===before.club&&(terms.leagueTier!==before.leagueTier||terms.prestigeTier!==before.prestigeTier)){
-    const destination=selectMarketDestination({
-      countryCode:"ESP",
-      leagueTier:terms.leagueTier,
-      roll:stableOfferRoll(s,reason,terms),
-      profile:terms.prestigeTier>=4?"ambitious":terms.prestigeTier<=1?"development":"balanced",
-      excludeClubIds:[before.club,before.ownerClub,before.registrationClub]
-    }).id;
+    const offerRoll=stableOfferRoll(s,reason,terms);
+    const exclusions=[before.club,before.ownerClub,before.registrationClub];
+    const destination=terms.leagueTier===1&&(terms.bigClub||terms.prestigeTier>=5)
+      ?selectBigClubDestination({
+        countryCode:"ESP",
+        roll:offerRoll,
+        excludeClubIds:exclusions
+      }).id
+      :selectMarketDestination({
+        countryCode:"ESP",
+        leagueTier:terms.leagueTier,
+        roll:offerRoll,
+        profile:terms.prestigeTier>=4?"ambitious":terms.prestigeTier<=1?"development":"balanced",
+        excludeClubIds:exclusions
+      }).id;
     terms.club=destination;terms.ownerClub=terms.registrationClub=destination;terms.loan=false;terms.abroad=false;terms.route="domestic";
   }
   if(terms.club!==before.club){
