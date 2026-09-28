@@ -49,7 +49,9 @@ for (const path of [
   "scripts/test-football-catalog.mjs",
   "scripts/test-football-database-v2-runtime.mjs",
   "scripts/test-football-save-versioning.mjs",
-  "scripts/test-football-presentation-platforms.mjs",
+  "scripts/test-club-names.mjs",
+  "scripts/test-playcanvas.mjs",
+  "scripts/test-android-offline.mjs",
   "web/club-names.js"
 ]) {
   if (!fs.existsSync(path)) blockers.push("required A7 prerequisite missing: " + path);
