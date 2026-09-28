@@ -1128,6 +1128,15 @@ const TIER_STRENGTH_PENALTY = [0, 0, 14, 25] as const;
 const EXPLICIT_MULTI_CLUB_IDS: Readonly<Record<string, string>> = Object.freeze({});
 
 /**
+ * Human-reviewed display-name overrides for duplicate-like generated identities.
+ * Identity and balance remain keyed exclusively by stable club ID.
+ */
+const EXPLICIT_NAME_MODIFIERS: Readonly<Record<string, string>> = Object.freeze({
+  "ENG|Chester": "Crown",
+  "CHN|Guangzhou": "Jade"
+});
+
+/**
  * Human-reviewed mobile labels for names that exceed the 22-character presentation budget.
  * Do not mechanically slice city/modifier tokens: future overflows must be reviewed explicitly.
  */
@@ -1301,7 +1310,9 @@ for (const [rawCode, config] of Object.entries(COUNTRY_CONFIGS)) {
       seenClubIds.add(id);
 
       const identitySeed = hashString(`${countryCode}|${city}|identity`);
-      const modifier = config.mods[identitySeed % config.mods.length]!;
+      const modifier =
+        EXPLICIT_NAME_MODIFIERS[`${countryCode}|${city}`] ??
+        config.mods[identitySeed % config.mods.length]!;
       const nameValue = `${city} ${modifier}`;
       const prestige = clamp(divisionStrength + variation(id, "prestige", 4));
       const financialPower = clamp(tierAdjusted(config.finance, tier) + variation(id, "finance", 5));
