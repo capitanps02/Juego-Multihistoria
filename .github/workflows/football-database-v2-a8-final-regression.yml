@@ -61,10 +61,9 @@ jobs:
         run: |
           node --test \
             scripts/test-football-database-v2-persistence.mjs \
-            scripts/test-football-save-versioning.mjs \
-            scripts/test-football-catalog-save-version.mjs \
-            scripts/test-football-catalog-save-versioning.mjs \
-            scripts/test-saves.mjs
+            scripts/test-saves.mjs \
+            scripts/test-persistence.mjs \
+            scripts/test-t5-save-compat.mjs
 
       - name: RNG isolation, determinism and zero-action equivalence
         run: |
