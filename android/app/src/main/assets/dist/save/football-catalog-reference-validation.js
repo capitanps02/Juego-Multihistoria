@@ -290,7 +290,7 @@ export function inspectFootballCatalogSaveReferences(value) {
         return null;
     const version = footballCatalogVersionOf(value.footballCatalogVersion);
     if (version === PRE_FOOTBALL_CATALOG_VERSION)
-        return null;
+        return compatibilityGenerationIssue(value);
     if (version !== CURRENT_FOOTBALL_CATALOG_VERSION)
         return compatibilityGenerationIssue(value);
     const professional = plainRecord(value.professional) ? value.professional : {};

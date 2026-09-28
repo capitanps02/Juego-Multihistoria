@@ -22,7 +22,7 @@
     {
       "path": "dist/build-manifest.json",
       "bytes": 45773,
-      "sha256": "b29e107b17de3bd81aef8573370075a1001e82721a6dd4a7ff9d8cff5acd3113"
+      "sha256": "8b5dfe2293bffdfcf61298333b91feb9dd77d0bc0ad4170c18c144654ccc7a09"
     },
     {
       "path": "dist/catalog/canon-coverage.d.ts",
@@ -1436,8 +1436,8 @@
     },
     {
       "path": "dist/save/football-catalog-reference-validation.js",
-      "bytes": 13300,
-      "sha256": "376b4be336189b9890c1dd74ce7db659f6b1e1106b0e38ad5a1d6c2e0178b23c"
+      "bytes": 13331,
+      "sha256": "b5154b807559d4998f762101c4218497d515593abb892f1d5454a215ec95c73c"
     },
     {
       "path": "dist/save/football-catalog-version.d.ts",

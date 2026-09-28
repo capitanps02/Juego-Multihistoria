@@ -27544,7 +27544,7 @@ function inspectFootballCatalogSaveReferences(value) {
         return null;
     const version = (0, football_catalog_version_js_1.footballCatalogVersionOf)(value.footballCatalogVersion);
     if (version === football_catalog_version_js_1.PRE_FOOTBALL_CATALOG_VERSION)
-        return null;
+        return compatibilityGenerationIssue(value);
     if (version !== football_catalog_version_js_1.CURRENT_FOOTBALL_CATALOG_VERSION)
         return compatibilityGenerationIssue(value);
     const professional = plainRecord(value.professional) ? value.professional : {};
