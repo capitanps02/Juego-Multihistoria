@@ -1,0 +1,78 @@
+name: Football Database V2 · Presentation / platforms
+
+on:
+  pull_request:
+    paths:
+      - 'src/catalog/football/**'
+      - 'web/game-ui.js'
+      - 'preview/app.js'
+      - 'web/club-names.js'
+      - 'web/indexed-save-store.js'
+      - 'scripts/local-esm-graph.mjs'
+      - 'scripts/build-playcanvas-db-a5.mjs'
+      - 'scripts/build-android-offline.mjs'
+      - 'scripts/finalize-android-offline-db-a5.mjs'
+      - 'scripts/test-club-names.mjs'
+      - 'scripts/test-football-presentation-platforms.mjs'
+      - 'scripts/test-playcanvas.mjs'
+      - 'scripts/test-android-offline.mjs'
+      - 'scripts/test-player-actions-ui-contract.mjs'
+      - 'package.json'
+      - 'docs/football-database-v2-a5-presentation.md'
+      - '.github/workflows/football-database-v2-presentation.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: football-db-a5-presentation-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  presentation-platforms:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Football presentation / PlayCanvas / Android offline
+        run: npm run test:football-presentation
+      - name: Confirm Android package has no missing relative modules
+        run: node --test scripts/test-football-presentation-platforms.mjs
+      - name: Preserve generated PlayCanvas artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: db-a5-generated-playcanvas
+          path: |
+            playcanvas/multihistoria.js
+            playcanvas/manifest.json
+            web/assets.json
+          if-no-files-found: error
+      - name: Verify versioned PlayCanvas artifact freshness
+        run: git diff --exit-code -- playcanvas/multihistoria.js playcanvas/manifest.json web/assets.json
+      - name: Attempt Android APK assemble
+        shell: bash
+        run: |
+          set +e
+          npm run android:apk
+          code=$?
+          set -e
+          if [ "$code" -ne 0 ] && [ "$code" -ne 2 ]; then exit "$code"; fi
+      - name: Validate APK result when toolchain is available
+        run: |
+          node -e "const fs=require('fs');const p='analysis/2026-09-15/T3.3-apk-build.json';if(!fs.existsSync(p)){console.log('APK report not produced');process.exit(0)}const r=JSON.parse(fs.readFileSync(p,'utf8'));const available=r.java?.available&&r.gradle?.available&&r.androidSdk?.exists;if(available&&r.status!=='pass'){console.error(JSON.stringify(r));process.exit(1)}console.log(available?'APK PASS':'APK NOT AVAILABLE');"
+      - name: Preserve APK build report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: db-a5-apk-report
+          path: analysis/2026-09-15/T3.3-apk-build.json
+          if-no-files-found: ignore
