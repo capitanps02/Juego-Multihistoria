@@ -4,6 +4,7 @@ import { createInitialState } from "../dist/content/initial-state.js";
 import { EVENTS_18_20 } from "../dist/content/events/index.js";
 import { clubById } from "../dist/catalog/football/index.js";
 import { resolveChoice } from "../dist/narrative/resolver.js";
+import { materializeNarrativeClubAlias } from "../dist/catalog/football/narrative-club-alias.js";
 import { assertGameState } from "../dist/save/validation.js";
 
 function eventById(id) {
@@ -85,4 +86,51 @@ test("legacy alias definitions remain physically present in canonical content", 
   assert.match(serialized, /DEVELOPMENT_CLUB/);
   assert.match(serialized, /HIGHER_CLUB/);
   assert.match(serialized, /NEW_CLUB/);
+});
+
+
+test("all six canonical aliases materialize deterministically without mutating state or RNG", () => {
+  const state = age19State(91041);
+  const before = structuredClone(state);
+  const aliases = [
+    "NEW_CLUB",
+    "DEVELOPMENT_CLUB",
+    "DEVELOPMENT_CLUB_2",
+    "HIGHER_CLUB",
+    "BIG_CLUB",
+    "FOREIGN_DEV_CLUB"
+  ];
+  for (const alias of aliases) {
+    const first = materializeNarrativeClubAlias(state, alias, {
+      eventId: "QA_ALIAS_EVENT",
+      choiceId: "QA",
+      targetTier: alias === "BIG_CLUB" ? 1 : 3
+    });
+    const replay = materializeNarrativeClubAlias(state, alias, {
+      eventId: "QA_ALIAS_EVENT",
+      choiceId: "QA",
+      targetTier: alias === "BIG_CLUB" ? 1 : 3
+    });
+    assert.equal(first, replay, alias);
+    const club = clubById(first);
+    assert.ok(club, `${alias}: ${first}`);
+    if (alias === "FOREIGN_DEV_CLUB") assert.notEqual(club.countryCode, "ESP");
+    else assert.equal(club.countryCode, "ESP");
+  }
+  assert.deepEqual(state, before);
+});
+
+test("CEVT_19_RETURN_01 materializes DEVELOPMENT_CLUB_2 instead of persisting the alias", () => {
+  const event = eventById("CEVT_19_RETURN_01");
+  const state = age19State(91042);
+  state.date = "2027-07-10";
+  state.flags.LOAN_RETURN = true;
+  const beforeFootball = structuredClone(state.rngState.football);
+  const next = resolveChoice(state, event, "NEW_LOAN").state;
+  assert.ok(clubById(next.club), next.club);
+  assert.notEqual(next.club, "DEVELOPMENT_CLUB_2");
+  assert.equal(next.professional.registrationClub, next.club);
+  assert.equal(next.flags.LOAN_ACTIVE, true);
+  assert.deepEqual(next.rngState.football, beforeFootball);
+  assertGameState(next);
 });
