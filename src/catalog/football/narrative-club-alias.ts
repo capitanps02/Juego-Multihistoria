@@ -1,13 +1,25 @@
 import type { GameState } from "../../core/types.js";
-import { selectMarketDestination, type MarketDestinationProfile } from "./market-destination.js";
+import {
+  selectForeignMarketDestination,
+  selectMarketDestination,
+  type MarketDestinationProfile
+} from "./market-destination.js";
 
-export type NarrativeClubAlias = "NEW_CLUB" | "DEVELOPMENT_CLUB" | "HIGHER_CLUB" | "BIG_CLUB";
+export type NarrativeClubAlias =
+  | "NEW_CLUB"
+  | "DEVELOPMENT_CLUB"
+  | "DEVELOPMENT_CLUB_2"
+  | "HIGHER_CLUB"
+  | "BIG_CLUB"
+  | "FOREIGN_DEV_CLUB";
 
 const ALIASES = new Set<NarrativeClubAlias>([
   "NEW_CLUB",
   "DEVELOPMENT_CLUB",
+  "DEVELOPMENT_CLUB_2",
   "HIGHER_CLUB",
-  "BIG_CLUB"
+  "BIG_CLUB",
+  "FOREIGN_DEV_CLUB"
 ]);
 
 export function isNarrativeClubAlias(value: unknown): value is NarrativeClubAlias {
@@ -24,7 +36,9 @@ function hashString(value: string): number {
 }
 
 function aliasProfile(alias: NarrativeClubAlias): MarketDestinationProfile {
-  if (alias === "DEVELOPMENT_CLUB") return "development";
+  if (alias === "DEVELOPMENT_CLUB" || alias === "DEVELOPMENT_CLUB_2" || alias === "FOREIGN_DEV_CLUB") {
+    return "development";
+  }
   if (alias === "HIGHER_CLUB" || alias === "BIG_CLUB") return "ambitious";
   return "balanced";
 }
@@ -35,7 +49,9 @@ function aliasTier(state: GameState, alias: NarrativeClubAlias, requestedTier: n
   }
   if (alias === "BIG_CLUB") return 1;
   if (alias === "HIGHER_CLUB") return Math.max(1, Math.trunc(state.tier) - 1);
-  if (alias === "DEVELOPMENT_CLUB") return Math.min(4, Math.max(1, Math.trunc(state.tier) + 1));
+  if (alias === "DEVELOPMENT_CLUB" || alias === "DEVELOPMENT_CLUB_2" || alias === "FOREIGN_DEV_CLUB") {
+    return Math.min(4, Math.max(1, Math.trunc(state.tier) + 1));
+  }
   return Math.max(1, Math.min(9, Math.trunc(state.tier)));
 }
 
@@ -46,10 +62,8 @@ export interface NarrativeClubAliasContext {
 }
 
 /**
- * Compatibility materializer for canonical legacy event aliases.
- *
- * Event definitions remain untouched, so contentIdentity/fingerprints do not change.
- * Selection is a pure hash projection and consumes zero narrative/football RNG draws.
+ * Canonical event definitions keep their historical alias strings. At resolution,
+ * aliases become catalog IDs via a pure hash projection with zero RNG draws.
  */
 export function materializeNarrativeClubAlias(
   state: GameState,
@@ -65,16 +79,26 @@ export function materializeNarrativeClubAlias(
     context.choiceId,
     alias
   ].join("|"));
+  const excludeClubIds = [
+    state.club,
+    state.professional.ownerClub,
+    state.professional.registrationClub
+  ];
+
+  if (alias === "FOREIGN_DEV_CLUB") {
+    return selectForeignMarketDestination({
+      leagueTier: tier,
+      roll,
+      profile: "development",
+      excludeClubIds
+    }).id;
+  }
 
   return selectMarketDestination({
     countryCode: "ESP",
     leagueTier: tier,
     roll,
     profile: aliasProfile(alias),
-    excludeClubIds: [
-      state.club,
-      state.professional.ownerClub,
-      state.professional.registrationClub
-    ]
+    excludeClubIds
   }).id;
 }
