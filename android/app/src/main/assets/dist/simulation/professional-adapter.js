@@ -1,4 +1,5 @@
 import { careerTerms, applyTerms, proposeCareerChange } from "./offers.js";
+import { selectBigClubDestination } from "../catalog/football/market-destination.js";
 const clamp = (x, min = 0, max = 100) => Math.min(max, Math.max(min, x));
 const num = (x, fallback = 0) => typeof x === "number" ? x : fallback;
 function adaptProfessionalContext(state, tags) {
@@ -14,9 +15,14 @@ function adaptProfessionalContext(state, tags) {
         clubPrestigeTier = has("STATE20_BIG_RESERVE") ? 5 : 4;
         clubPrestigeScore = has("STATE20_BIG_RESERVE") ? 88 : 76;
         if (has("STATE20_BIG_RESERVE")) {
-            state.club = "Aurora CF";
-            state.professional.ownerClub = "Aurora CF";
-            state.professional.registrationClub = "Aurora CF";
+            const destination = selectBigClubDestination({
+                countryCode: "ESP",
+                roll: ((state.rngState.narrative.seed >>> 0) ^ 0x51a20b1) >>> 0,
+                excludeClubIds: [state.club, state.professional.ownerClub, state.professional.registrationClub]
+            }).id;
+            state.club = destination;
+            state.professional.ownerClub = destination;
+            state.professional.registrationClub = destination;
             state.flags.BIG_CLUB = true;
         }
     }

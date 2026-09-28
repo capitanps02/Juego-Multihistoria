@@ -1,12 +1,89 @@
+import { knowledgeRulesFor } from "../catalog/npc-knowledge-rules.js";
+import { isCompatibilityOnly34PlusSeed } from "../catalog/seed-34plus.js";
+import { SEED_CATALOG } from "../catalog/seeds.js";
+import { getSeedScopePolicy } from "../catalog/seed-scope.js";
 import { conditionsPass } from "../core/conditions.js";
+import { forgetExpiredNpcKnowledgeInPlace, rememberNpcFactInPlace } from "../core/npc-knowledge.js";
 import { getPath, setPath } from "../core/path.js";
 import { DeterministicRng } from "../core/rng.js";
+import { narrativeConditionRoot } from "../simulation/club-contract-intent.js";
 import { syncRetirementState } from "../simulation/late-career-engine.js";
+import { currentEmploymentClub, setNarrativeLoanRegistrationInPlace, syncEmploymentAfterNarrativeClubChangeInPlace } from "../simulation/employment.js";
+import { isNarrativeClubAlias, materializeNarrativeClubAlias, materializeNarrativeLoanRegistration } from "../catalog/football/narrative-club-alias.js";
+import { certifyPlayerClubLeadershipInPlace } from "../simulation/player-leadership-authority.js";
+import { captureNpcKnowledgeTargetContext, resolveNpcKnowledgeTargets } from "./npc-knowledge-targets.js";
+const TERMINAL_SEED_STATES = new Set(["resolved", "expired"]);
+const SEED_DEFINITIONS = new Map(SEED_CATALOG.map(seed => [seed.id, seed]));
+const SCOPE_CLUB_PAYLOAD = "__t52OriginClub";
+const TERMINAL_REASON_PAYLOAD = "__t52TerminalReason";
+const TERMINAL_DATE_PAYLOAD = "__t52TerminalDate";
 function cloneState(state) { return structuredClone(state); }
-function applyEffect(state, effect) {
+function isLiveSeed(state, seedId) {
+    return state.seeds.some(seed => seed.id === seedId && !TERMINAL_SEED_STATES.has(seed.state));
+}
+const EMPLOYMENT_TERM_PATHS = new Set([
+    "club",
+    "professional.ownerClub",
+    "professional.registrationClub",
+    "world.ownerClub",
+    "professional.route",
+    "contract.monthsRemaining",
+    "contract.salaryMonthly",
+    "contract.releaseClause"
+]);
+const CLUB_ALIAS_PATHS = new Set([
+    "club",
+    "professional.ownerClub",
+    "professional.registrationClub",
+    "world.ownerClub"
+]);
+function targetTierFromEffects(state, effects) {
+    for (let index = effects.length - 1; index >= 0; index -= 1) {
+        const effect = effects[index];
+        if (effect.kind !== "set")
+            continue;
+        if ((effect.path === "tier" || effect.path === "professional.leagueTier")
+            && typeof effect.value === "number"
+            && Number.isFinite(effect.value)) {
+            return effect.value;
+        }
+    }
+    return Number.isFinite(state.tier) ? state.tier : null;
+}
+function materializeClubAliasEffect(state, effect, context) {
+    if (!context || effect.kind !== "set" || !CLUB_ALIAS_PATHS.has(effect.path) || !isNarrativeClubAlias(effect.value)) {
+        return effect;
+    }
+    let clubId = context.clubAliases.get(effect.value);
+    if (!clubId) {
+        clubId = materializeNarrativeClubAlias(state, effect.value, {
+            eventId: context.eventId,
+            choiceId: context.choiceId,
+            targetTier: context.targetTier
+        });
+        context.clubAliases.set(effect.value, clubId);
+    }
+    return { ...effect, value: clubId };
+}
+function applyEffect(state, rawEffect, context) {
+    const effect = materializeClubAliasEffect(state, rawEffect, context);
     if (effect.kind === "flag") {
+        if (currentEmploymentClub(state) === null && ["LOAN_ACTIVE", "ABROAD_ROUTE", "BIG_CLUB"].includes(effect.flag) && effect.value === true) {
+            throw new Error("Narrative effect cannot create club-employment flags while unattached.");
+        }
         state.flags[effect.flag] = effect.value;
         return;
+    }
+    if (currentEmploymentClub(state) === null && EMPLOYMENT_TERM_PATHS.has(effect.path)) {
+        const current = getPath(state, effect.path);
+        const next = effect.kind === "set"
+            ? effect.value
+            : typeof current === "number"
+                ? current + effect.delta
+                : current;
+        if (!Object.is(next, current)) {
+            throw new Error("Narrative effect cannot mutate unattached employment without formal market authority.");
+        }
     }
     if (effect.kind === "set") {
         setPath(state, effect.path, effect.value);
@@ -18,27 +95,65 @@ function applyEffect(state, effect) {
     const next = current + effect.delta;
     setPath(state, effect.path, Math.min(effect.max ?? Infinity, Math.max(effect.min ?? -Infinity, next)));
 }
+function bindScopeMetadata(state, seed) {
+    const policy = getSeedScopePolicy(seed.id);
+    if (policy.club === "origin_club" && typeof seed.payload[SCOPE_CLUB_PAYLOAD] !== "string") {
+        seed.payload[SCOPE_CLUB_PAYLOAD] = state.club;
+    }
+}
+function inferOriginClub(state, seed) {
+    const stored = seed.payload[SCOPE_CLUB_PAYLOAD];
+    if (typeof stored === "string")
+        return stored;
+    for (let i = state.history.length - 1; i >= 0; i -= 1) {
+        const entry = state.history[i];
+        if (entry.eventId === seed.originEvent && entry.season === seed.originSeason)
+            return entry.club;
+    }
+    return undefined;
+}
+function markSeedExpired(state, seed, reason) {
+    seed.state = "expired";
+    seed.lastTouchedDate = state.date;
+    seed.payload[TERMINAL_REASON_PAYLOAD] = reason;
+    seed.payload[TERMINAL_DATE_PAYLOAD] = state.date;
+}
 function applySeedTransition(state, t, event) {
-    const existing = state.seeds.find(s => s.id === t.seedId && !["resolved", "expired"].includes(s.state));
+    if (t.action === "create" && isCompatibilityOnly34PlusSeed(t.seedId)) {
+        throw new Error(`Compatibility-only seed ${t.seedId} cannot be newly created in ${event.id}`);
+    }
+    if (t.action === "create" && !SEED_DEFINITIONS.has(t.seedId)) {
+        throw new Error(`Unknown seed ${t.seedId} in ${event.id}`);
+    }
+    const existing = state.seeds.find(s => s.id === t.seedId && !TERMINAL_SEED_STATES.has(s.state));
     const presenceFlag = `HAS_${t.seedId}`;
     if (t.action === "create") {
-        if (!existing)
-            state.seeds.push({
+        if (!existing) {
+            const created = {
                 id: t.seedId, state: "dormant", intensity: t.intensity ?? 50,
                 originEvent: event.id, originSeason: state.season, npcRefs: event.npcRefs ?? [],
-                payload: t.payload ?? {}, lastTouchedDate: state.date
-            });
+                payload: { ...(t.payload ?? {}) }, expiresAfter: t.expiresAfter, lastTouchedDate: state.date
+            };
+            bindScopeMetadata(state, created);
+            state.seeds.push(created);
+        }
         else {
             existing.intensity = Math.max(existing.intensity, t.intensity ?? existing.intensity);
             Object.assign(existing.payload, t.payload ?? {});
+            if (t.expiresAfter !== undefined)
+                existing.expiresAfter = t.expiresAfter;
             existing.lastTouchedDate = state.date;
+            bindScopeMetadata(state, existing);
         }
         state.flags[presenceFlag] = true;
         return;
     }
+    // Missing/non-live targets are a safe no-op: terminal transitions are idempotent.
     if (!existing)
         return;
     existing.lastTouchedDate = state.date;
+    if (t.expiresAfter !== undefined)
+        existing.expiresAfter = t.expiresAfter;
     if (t.action === "activate")
         existing.state = "active";
     if (t.action === "intensify")
@@ -50,14 +165,67 @@ function applySeedTransition(state, t, event) {
     if (t.action === "resolve") {
         existing.state = "resolved";
         existing.consumedBy = event.id;
+        existing.payload[TERMINAL_REASON_PAYLOAD] = "resolved";
+        existing.payload[TERMINAL_DATE_PAYLOAD] = state.date;
         state.flags[presenceFlag] = false;
     }
     if (t.action === "expire") {
-        existing.state = "expired";
+        markSeedExpired(state, existing, "explicit_transition");
         state.flags[presenceFlag] = false;
     }
     if (!["resolve", "expire"].includes(t.action))
         state.flags[presenceFlag] = true;
+}
+export function syncSeedPresenceFlagsInPlace(state) {
+    // Persisted SeedInstances are authoritative for their own presence, including
+    // unknown future IDs. Existing known HAS_SEED_* flags are also reconciled so a
+    // stale truthy flag can be cleared even when the SeedInstance is missing.
+    // Do not materialize absent false flags for every catalog ID: that would change
+    // the serialized save shape without representing any narrative fact.
+    const ids = new Set(state.seeds.map(seed => seed.id));
+    for (const flag of Object.keys(state.flags)) {
+        if (!flag.startsWith("HAS_SEED_"))
+            continue;
+        const seedId = flag.slice(4);
+        if (SEED_DEFINITIONS.has(seedId))
+            ids.add(seedId);
+    }
+    for (const seedId of ids)
+        state.flags[`HAS_${seedId}`] = isLiveSeed(state, seedId);
+}
+/**
+ * Apply lifecycle scope after the clock or career context changes.
+ * Eligibility remains derived from event gates; it is intentionally not persisted as a second source of truth.
+ */
+export function expireDueSeedsInPlace(state) {
+    const expired = new Set();
+    for (const seed of state.seeds) {
+        if (TERMINAL_SEED_STATES.has(seed.state))
+            continue;
+        const definition = SEED_DEFINITIONS.get(seed.id);
+        const policy = getSeedScopePolicy(seed.id);
+        let reason;
+        if (seed.expiresAfter && seed.expiresAfter <= state.date)
+            reason = "explicit_date";
+        const maxAge = definition?.ageWindow[1];
+        if (!reason && policy.expireAtAgeWindowEnd && maxAge !== null && maxAge !== undefined && state.age > maxAge) {
+            reason = "age_window";
+        }
+        if (!reason && policy.season === "origin_season" && seed.originSeason !== state.season) {
+            reason = "season_scope";
+        }
+        if (!reason && policy.club === "origin_club") {
+            const originClub = inferOriginClub(state, seed);
+            if (originClub !== undefined && originClub !== state.club)
+                reason = "club_scope";
+        }
+        if (reason) {
+            markSeedExpired(state, seed, reason);
+            expired.add(seed.id);
+        }
+    }
+    syncSeedPresenceFlagsInPlace(state);
+    return [...expired];
 }
 function outcomeWeight(state, outcome) {
     let weight = outcome.baseWeight;
@@ -73,31 +241,100 @@ function outcomeWeight(state, outcome) {
     }
     return { weight: Math.max(0, weight), modifiers: reasons };
 }
+function resolvedNpcKnowledgeWrites(event, choiceId, outcomeId, targetContext) {
+    return knowledgeRulesFor(event.id, choiceId, outcomeId).map(rule => ({
+        rule,
+        npcIds: resolveNpcKnowledgeTargets(rule, targetContext)
+    }));
+}
+function recordResolvedNpcKnowledge(state, event, choiceId, outcomeId, eventClub, writes) {
+    forgetExpiredNpcKnowledgeInPlace(state);
+    for (const { rule, npcIds } of writes) {
+        for (const npcId of npcIds) {
+            rememberNpcFactInPlace(state, npcId, {
+                factId: rule.factId ?? event.id,
+                eventId: event.id,
+                choiceId,
+                outcomeId,
+                source: rule.source,
+                certainty: rule.certainty,
+                memory: rule.memory,
+                expiresAfterDays: rule.expiresAfterDays,
+                relationshipMemory: rule.relationshipMemory,
+                club: eventClub
+            });
+        }
+    }
+}
 function resolveChoiceCore(next, event, choiceId, qa = false) {
     const previousClub = next.club;
     const previousRetirementStatus = next.retirement?.status ?? "playing";
+    // Role-based knowledge recipients belong to the scene-entry context. Capture
+    // them before any immediate/outcome effect can move the player or an NPC.
+    const knowledgeTargetContext = captureNpcKnowledgeTargetContext(next);
     const choice = event.choices.find(c => c.id === choiceId);
     if (!choice)
         throw new Error(`Unknown choice ${choiceId} for ${event.id}`);
-    for (const e of choice.immediateEffects ?? [])
-        applyEffect(next, e);
+    const clubAliases = new Map();
+    const immediateEffects = choice.immediateEffects ?? [];
+    const immediateContext = {
+        eventId: event.id,
+        choiceId,
+        targetTier: targetTierFromEffects(next, immediateEffects),
+        clubAliases
+    };
+    for (const e of immediateEffects)
+        applyEffect(next, e, immediateContext);
+    // All declarative Condition surfaces resolve against the same read-only causal
+    // fact projection. Compute it after immediate effects so existing ordering is
+    // preserved while outcomes/modifiers gain the same facts as gates/eligibility.
+    const conditionRoot = narrativeConditionRoot(next);
     const possible = event.outcomes
         .filter(o => choice.outcomeIds.includes(o.id))
-        .filter(o => conditionsPass(next, o.conditions ?? []))
-        .map(o => ({ outcome: o, ...outcomeWeight(next, o) }))
+        .filter(o => conditionsPass(conditionRoot, o.conditions ?? []))
+        .map(o => ({ outcome: o, ...outcomeWeight(conditionRoot, o) }))
         .filter(o => o.weight > 0);
     if (!possible.length)
         throw new Error(`No plausible outcomes for ${event.id}/${choiceId}`);
     const rng = new DeterministicRng(next.rngState.narrative);
     const picked = rng.pickWeighted(possible.map(x => ({ item: x, weight: x.weight })));
     const selected = picked.item.outcome;
+    const selectedContext = {
+        eventId: event.id,
+        choiceId,
+        targetTier: targetTierFromEffects(next, selected.effects),
+        clubAliases
+    };
     for (const e of selected.effects)
-        applyEffect(next, e);
-    for (const e of choice.hiddenCosts ?? [])
-        applyEffect(next, e);
+        applyEffect(next, e, selectedContext);
+    const hiddenCosts = choice.hiddenCosts ?? [];
+    const hiddenContext = {
+        eventId: event.id,
+        choiceId,
+        targetTier: targetTierFromEffects(next, hiddenCosts),
+        clubAliases
+    };
+    for (const e of hiddenCosts)
+        applyEffect(next, e, hiddenContext);
     for (const t of selected.seedTransitions ?? [])
         applySeedTransition(next, t, event);
+    // #161: only explicit acceptance of the formal main-club appointment certifies captaincy.
+    if (event.id === "EVT_29_CAP_001" && choiceId === "ACCEPT_MAIN_CAPTAIN") {
+        certifyPlayerClubLeadershipInPlace(next, "captain", event.id, choiceId);
+    }
     // A club change authorized by a narrative choice is one coherent transaction.
+    // If canonical content expressed "sign parent + go on loan" using one alias for
+    // both identities, materialize a distinct registration club without consuming RNG.
+    if (next.club !== previousClub && next.flags.LOAN_ACTIVE === true) {
+        const owner = String(next.world.ownerClub ?? previousClub);
+        if (owner === next.club) {
+            setNarrativeLoanRegistrationInPlace(next, materializeNarrativeLoanRegistration(next, owner, {
+                eventId: event.id,
+                choiceId,
+                targetTier: Number.isFinite(next.tier) ? next.tier : null
+            }));
+        }
+    }
     if (next.club !== previousClub) {
         const p = next.professional;
         p.registrationClub = next.club;
@@ -105,19 +342,27 @@ function resolveChoiceCore(next, event, choiceId, qa = false) {
         p.ownerClub = next.flags.LOAN_ACTIVE ? String(next.world.ownerClub ?? previousClub) : next.club;
         next.world.ownerClub = p.ownerClub;
         p.route = next.flags.ABROAD_ROUTE ? "abroad" : next.flags.LOAN_ACTIVE ? "loan" : next.club === "UDV" ? "home" : "domestic";
+        syncEmploymentAfterNarrativeClubChangeInPlace(next);
+        expireDueSeedsInPlace(next);
     }
+    const knowledgeWrites = resolvedNpcKnowledgeWrites(event, choiceId, selected.id, knowledgeTargetContext);
+    const historyNpcRefs = [...new Set([
+            ...(event.npcRefs ?? []),
+            ...knowledgeWrites.flatMap(write => write.npcIds)
+        ])];
     next.eventCooldowns[event.id] = event.cooldown;
     next.flags[`SEEN_${event.id}`] = true;
     next.familyLastSeen[event.family] = next.runtime.day;
     next.runtime.daysSinceNarrative = 0;
     next.runtime.eventsThisSeason += 1;
-    syncRetirementState(next, previousRetirementStatus);
+    syncRetirementState(next, previousRetirementStatus, { eventId: event.id, choiceId });
     next.history.push({
         eventId: event.id, date: next.date, season: next.season, choiceId,
         outcomeId: selected.id, club: next.club,
-        snapshot: { family: event.family, npcRefs: event.npcRefs ?? [], tags: event.tags ?? [], age: next.age },
+        snapshot: { family: event.family, npcRefs: historyNpcRefs, tags: event.tags ?? [], age: next.age },
         salience: 70, visibility: "private"
     });
+    recordResolvedNpcKnowledge(next, event, choiceId, selected.id, previousClub, knowledgeWrites);
     return {
         state: next, eventId: event.id, choiceId, outcomeId: selected.id,
         messages: selected.messages, presentation: event.presentation,

@@ -1435,13 +1435,21 @@ function materializeCareerOffer(s, reason, propose, contextOrOptions, allowAnnou
     if (renewalWasRejectedFromSameTerms(market, reason, before))
         return null;
     if (terms.club === before.club && (terms.leagueTier !== before.leagueTier || terms.prestigeTier !== before.prestigeTier)) {
-        const destination = (0, market_destination_js_1.selectMarketDestination)({
-            countryCode: "ESP",
-            leagueTier: terms.leagueTier,
-            roll: stableOfferRoll(s, reason, terms),
-            profile: terms.prestigeTier >= 4 ? "ambitious" : terms.prestigeTier <= 1 ? "development" : "balanced",
-            excludeClubIds: [before.club, before.ownerClub, before.registrationClub]
-        }).id;
+        const offerRoll = stableOfferRoll(s, reason, terms);
+        const exclusions = [before.club, before.ownerClub, before.registrationClub];
+        const destination = terms.leagueTier === 1 && (terms.bigClub || terms.prestigeTier >= 5)
+            ? (0, market_destination_js_1.selectBigClubDestination)({
+                countryCode: "ESP",
+                roll: offerRoll,
+                excludeClubIds: exclusions
+            }).id
+            : (0, market_destination_js_1.selectMarketDestination)({
+                countryCode: "ESP",
+                leagueTier: terms.leagueTier,
+                roll: offerRoll,
+                profile: terms.prestigeTier >= 4 ? "ambitious" : terms.prestigeTier <= 1 ? "development" : "balanced",
+                excludeClubIds: exclusions
+            }).id;
         terms.club = destination;
         terms.ownerClub = terms.registrationClub = destination;
         terms.loan = false;
@@ -1689,73 +1697,183 @@ function activateFutureCareerAgreementsInPlace(s) {
 "src/catalog/football/market-destination.ts": function(module,exports,require){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.isBigClubCandidate = isBigClubCandidate;
 exports.selectMarketDestination = selectMarketDestination;
+exports.selectBigClubDestination = selectBigClubDestination;
+exports.selectHigherClubDestination = selectHigherClubDestination;
 exports.selectForeignMarketDestination = selectForeignMarketDestination;
+exports.selectForeignBigClubDestination = selectForeignBigClubDestination;
 const index_js_1 = require("./index.js");
-function shortlistScore(club, profile) {
+const BAND_RANK = Object.freeze({
+    development: 0,
+    lower: 1,
+    mid: 2,
+    upper: 3,
+    continental: 4,
+    elite: 5
+});
+function ambitionComposite(club) {
+    return (club.prestige + club.financialPower + club.internationalAttraction) / 3;
+}
+function divisionFor(club) {
+    const division = (0, index_js_1.divisionById)(club.divisionId);
+    if (!division)
+        throw new Error(`Football catalog club ${club.id} references unknown division ${club.divisionId}.`);
+    return division;
+}
+function profileScore(club, profile) {
     if (profile === "development") {
         return club.developmentBias * 0.45
             + club.youthQuality * 0.35
-            + (100 - club.prestige) * 0.20;
+            + (100 - club.pressure) * 0.15
+            + (100 - club.prestige) * 0.05;
     }
     if (profile === "ambitious") {
-        return club.prestige * 0.55
+        return club.prestige * 0.45
             + club.financialPower * 0.30
-            + club.internationalAttraction * 0.15;
+            + club.internationalAttraction * 0.25;
     }
-    return club.prestige * 0.35
+    return club.prestige * 0.30
         + club.developmentBias * 0.25
         + club.financialPower * 0.20
-        + club.youthQuality * 0.20;
+        + club.youthQuality * 0.20
+        + (100 - club.pressure) * 0.05;
 }
-const MARKET_PROFILES = Object.freeze(["development", "balanced", "ambitious"]);
-const RANKED_DIVISION_POOLS = new Map();
-for (const division of index_js_1.FOOTBALL_DIVISIONS) {
-    const divisionClubs = (0, index_js_1.clubsForDivision)(division.id);
-    for (const profile of MARKET_PROFILES) {
-        const ranked = [...divisionClubs].sort((a, b) => {
-            const delta = shortlistScore(b, profile) - shortlistScore(a, profile);
-            return delta !== 0 ? delta : a.id.localeCompare(b.id);
+function deterministicPick(pool, roll, score) {
+    if (pool.length === 0)
+        throw new Error("No football-catalog destination candidates.");
+    const ranked = [...pool].sort((a, b) => {
+        if (score) {
+            const delta = score(b) - score(a);
+            if (delta !== 0)
+                return delta;
+        }
+        return a.id.localeCompare(b.id);
+    });
+    return ranked[(roll >>> 0) % ranked.length];
+}
+function eligibleProfilePool(pool, profile) {
+    if (profile === "development") {
+        const strict = pool.filter(club => {
+            const division = divisionFor(club);
+            const meta = (0, index_js_1.footballClubBalanceMetadata)(club, division);
+            return meta.band === "development";
         });
-        RANKED_DIVISION_POOLS.set(`${division.id}|${profile}`, Object.freeze(ranked));
+        if (strict.length > 0)
+            return strict;
+        const profileMatches = pool.filter(club => (0, index_js_1.footballClubSelectorProfile)(club, divisionFor(club)) === "development");
+        return profileMatches.length > 0 ? profileMatches : pool;
     }
-}
-const FOREIGN_COUNTRY_CODES = Object.freeze([...new Set(index_js_1.FOOTBALL_DIVISIONS
-        .filter(division => division.countryCode !== "ESP")
-        .map(division => division.countryCode))]);
-const FOREIGN_COUNTRIES_BY_TIER = new Map();
-for (let requestedTier = 1; requestedTier <= 9; requestedTier += 1) {
-    const contexts = FOREIGN_COUNTRY_CODES
-        .map(countryCode => ({ countryCode, division: (0, index_js_1.nearestDivisionForCountry)(countryCode, requestedTier) }))
-        .filter((row) => row.division !== null);
-    if (contexts.length === 0) {
-        FOREIGN_COUNTRIES_BY_TIER.set(requestedTier, Object.freeze([]));
-        continue;
+    if (profile === "ambitious") {
+        const minimum = index_js_1.FOOTBALL_SELECTOR_PROFILE_CONTRACT.AMBITIOUS.minAmbitionComposite;
+        const strict = pool.filter(club => {
+            const division = divisionFor(club);
+            const meta = (0, index_js_1.footballClubBalanceMetadata)(club, division);
+            return (meta.selectorProfile === "ambitious"
+                && (meta.band === "continental" || meta.band === "upper")
+                && ambitionComposite(club) >= minimum
+                && !isBigClubCandidate(club));
+        });
+        if (strict.length > 0)
+            return strict;
+        const semanticFallback = pool.filter(club => {
+            const meta = (0, index_js_1.footballClubBalanceMetadata)(club, divisionFor(club));
+            return ((meta.band === "continental" || meta.band === "upper")
+                && ambitionComposite(club) >= minimum
+                && !isBigClubCandidate(club));
+        });
+        return semanticFallback.length > 0 ? semanticFallback : pool.filter(club => !isBigClubCandidate(club));
     }
-    const minimumDistance = Math.min(...contexts.map(row => Math.abs(row.division.tier - requestedTier)));
-    FOREIGN_COUNTRIES_BY_TIER.set(requestedTier, Object.freeze(contexts
-        .filter(row => Math.abs(row.division.tier - requestedTier) === minimumDistance)
-        .map(row => row.countryCode)));
+    const balanced = pool.filter(club => (0, index_js_1.footballClubSelectorProfile)(club, divisionFor(club)) === "balanced");
+    return balanced.length > 0 ? balanced : pool;
 }
 /**
- * Deterministic identity selector for formal market opportunities.
- * It chooses a club from the nearest represented division but does not alter the
- * offer's authoritative leagueTier: promotion/relegation state remains owned by the career.
+ * A2's BIG_CLUB semantic contract. A3 consumes it; it does not redefine it.
+ */
+function isBigClubCandidate(club) {
+    const division = divisionFor(club);
+    if (club.tier !== 1)
+        return false;
+    const meta = (0, index_js_1.footballClubBalanceMetadata)(club, division);
+    if (meta.band === "elite")
+        return true;
+    if (meta.band !== "continental")
+        return false;
+    const top = index_js_1.FOOTBALL_SELECTOR_PROFILE_CONTRACT.BIG_CLUB.topContinental;
+    return (club.prestige >= top.minPrestige
+        && club.internationalAttraction >= top.minInternationalAttraction
+        && division.strength >= top.minDivisionStrength);
+}
+/**
+ * Identity projection only. Opportunity existence, live tier, contract terms and
+ * acceptance remain owned by the calling market authority.
  */
 function selectMarketDestination(request) {
     const division = (0, index_js_1.nearestDivisionForCountry)(request.countryCode, request.leagueTier);
     if (!division)
         throw new Error(`No football-catalog division for ${request.countryCode}.`);
     const excluded = new Set(request.excludeClubIds ?? []);
-    const preRanked = RANKED_DIVISION_POOLS.get(`${division.id}|${request.profile}`) ?? [];
-    const ranked = preRanked.filter(club => !excluded.has(club.id));
-    if (ranked.length === 0)
+    const basePool = (0, index_js_1.clubsForDivision)(division.id).filter(club => !excluded.has(club.id));
+    if (basePool.length === 0)
         throw new Error(`No football-catalog market destination for ${division.id}.`);
-    const shortlistSize = request.profile === "balanced"
-        ? ranked.length
-        : Math.max(6, Math.ceil(ranked.length * 0.6));
-    const shortlist = ranked.slice(0, shortlistSize);
-    return shortlist[(request.roll >>> 0) % shortlist.length];
+    const pool = eligibleProfilePool(basePool, request.profile);
+    if (pool.length === 0)
+        throw new Error(`No ${request.profile} market destination for ${division.id}.`);
+    return deterministicPick(pool, request.roll, club => profileScore(club, request.profile));
+}
+function selectBigClubDestination(request) {
+    const excluded = new Set(request.excludeClubIds ?? []);
+    const pool = (0, index_js_1.clubsForCountry)(request.countryCode)
+        .filter(club => !excluded.has(club.id))
+        .filter(isBigClubCandidate);
+    if (pool.length === 0)
+        throw new Error(`No A2 BIG_CLUB candidate for ${request.countryCode}.`);
+    return deterministicPick(pool, request.roll, club => club.prestige * 0.50 + club.internationalAttraction * 0.30 + club.financialPower * 0.20);
+}
+/**
+ * HIGHER_CLUB is relative by A2 contract: >=5 prestige improvement, or a stronger
+ * competitive band backed by a stronger league/tier context.
+ */
+function selectHigherClubDestination(request) {
+    const targetDivision = (0, index_js_1.nearestDivisionForCountry)(request.countryCode, request.targetLeagueTier);
+    if (!targetDivision)
+        throw new Error(`No target division for HIGHER_CLUB in ${request.countryCode}.`);
+    const excluded = new Set(request.excludeClubIds ?? []);
+    const currentClub = (0, index_js_1.clubsForCountry)(request.countryCode).find(club => club.id === request.currentClubId) ?? null;
+    const currentDivision = currentClub
+        ? divisionFor(currentClub)
+        : (0, index_js_1.nearestDivisionForCountry)(request.countryCode, request.currentLeagueTier);
+    const currentMeta = currentClub && currentDivision
+        ? (0, index_js_1.footballClubBalanceMetadata)(currentClub, currentDivision)
+        : null;
+    const allowedBands = new Set(index_js_1.FOOTBALL_SELECTOR_PROFILE_CONTRACT.HIGHER_CLUB.expectedBands);
+    const minPrestigeDelta = index_js_1.FOOTBALL_SELECTOR_PROFILE_CONTRACT.HIGHER_CLUB.minPrestigeDelta;
+    const pool = (0, index_js_1.clubsForDivision)(targetDivision.id)
+        .filter(club => !excluded.has(club.id))
+        .filter(club => {
+        const meta = (0, index_js_1.footballClubBalanceMetadata)(club, targetDivision);
+        if (!allowedBands.has(meta.band))
+            return false;
+        const prestigeImprovement = currentClub
+            ? club.prestige >= currentClub.prestige + minPrestigeDelta
+            : false;
+        const strongerBand = currentMeta
+            ? BAND_RANK[meta.band] > BAND_RANK[currentMeta.band]
+            : false;
+        const strongerLeagueContext = currentDivision
+            ? targetDivision.tier < request.currentLeagueTier || targetDivision.strength > currentDivision.strength
+            : targetDivision.tier < request.currentLeagueTier;
+        return prestigeImprovement || (strongerBand && strongerLeagueContext) || (!currentClub && strongerLeagueContext);
+    });
+    if (pool.length === 0) {
+        throw new Error(`No A2 HIGHER_CLUB candidate improves ${request.currentClubId} at ${request.countryCode}/tier ${request.targetLeagueTier}.`);
+    }
+    return deterministicPick(pool, request.roll, club => {
+        const meta = (0, index_js_1.footballClubBalanceMetadata)(club, targetDivision);
+        const bandGain = currentMeta ? BAND_RANK[meta.band] - BAND_RANK[currentMeta.band] : 1;
+        const prestigeGain = currentClub ? club.prestige - currentClub.prestige : club.prestige;
+        return bandGain * 20 + prestigeGain + targetDivision.strength * 0.10;
+    });
 }
 function mix32(value) {
     let x = value >>> 0;
@@ -1767,19 +1885,24 @@ function mix32(value) {
     return x >>> 0;
 }
 /**
- * Select a foreign destination without any extra RNG draw.
- * Countries with an exact represented tier are preferred. If no foreign league
- * represents that tier, the closest represented depth is used.
+ * Equal-weight the represented country contexts first, so countries with more
+ * catalog clubs/divisions do not dominate merely because their arrays are larger.
  */
 function selectForeignMarketDestination(request) {
     const requestedTier = Number.isFinite(request.leagueTier)
         ? Math.max(1, Math.min(9, Math.trunc(request.leagueTier)))
         : 3;
-    const candidates = FOREIGN_COUNTRIES_BY_TIER.get(requestedTier) ?? [];
-    if (candidates.length === 0)
+    const countryCodes = [...new Set(index_js_1.FOOTBALL_DIVISIONS
+            .filter(division => division.countryCode !== "ESP")
+            .map(division => division.countryCode))].sort();
+    const contexts = countryCodes
+        .map(countryCode => ({ countryCode, division: (0, index_js_1.nearestDivisionForCountry)(countryCode, requestedTier) }))
+        .filter((row) => row.division !== null);
+    if (contexts.length === 0)
         throw new Error("Football catalog has no foreign market destinations.");
-    const countryRoll = mix32(request.roll ^ 0x9e3779b9);
-    const selectedCountry = candidates[countryRoll % candidates.length];
+    const minimumDistance = Math.min(...contexts.map(row => Math.abs(row.division.tier - requestedTier)));
+    const candidates = contexts.filter(row => Math.abs(row.division.tier - requestedTier) === minimumDistance);
+    const selectedCountry = candidates[mix32(request.roll ^ 0x9e3779b9) % candidates.length].countryCode;
     return selectMarketDestination({
         countryCode: selectedCountry,
         leagueTier: requestedTier,
@@ -1788,27 +1911,105 @@ function selectForeignMarketDestination(request) {
         excludeClubIds: request.excludeClubIds
     });
 }
+function selectForeignBigClubDestination(request) {
+    const excluded = new Set(request.excludeClubIds ?? []);
+    const countries = [...new Set(index_js_1.FOOTBALL_DIVISIONS
+            .filter(division => division.countryCode !== "ESP")
+            .map(division => division.countryCode))]
+        .filter(countryCode => (0, index_js_1.clubsForCountry)(countryCode).some(club => !excluded.has(club.id) && isBigClubCandidate(club)))
+        .sort();
+    if (countries.length === 0)
+        throw new Error("Football catalog has no foreign BIG_CLUB candidates.");
+    const countryCode = countries[mix32(request.roll ^ 0x27d4eb2f) % countries.length];
+    return selectBigClubDestination({
+        countryCode,
+        roll: mix32(request.roll ^ 0x165667b1),
+        excludeClubIds: request.excludeClubIds
+    });
+}
 
 },
 "src/catalog/football/index.ts": function(module,exports,require){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.FOOTBALL_CATALOG_VERSION = exports.FOOTBALL_DIVISIONS = exports.FOOTBALL_CLUBS = void 0;
+exports.inspectFootballCatalogData = exports.footballCatalogStructuralFingerprint = exports.assertFootballCatalogData = exports.FOOTBALL_COUNTRY_CODES = exports.FOOTBALL_CONFEDERATIONS = exports.FOOTBALL_CLUB_ARCHETYPES = exports.FOOTBALL_CLEARANCE_STATUSES = exports.stableCatalogClubId = exports.defaultCatalogClubId = exports.catalogMultiClubIdentityKey = exports.FOOTBALL_CATALOG_CLUB_ID_PATTERN = exports.FOOTBALL_CATALOG_VERSION = exports.FOOTBALL_DIVISIONS = exports.FOOTBALL_CLUBS = exports.footballStructuralCoefficient = exports.footballLeagueGroupForStrength = exports.footballClubSelectorProfile = exports.footballClubBandFor = exports.footballClubBalanceMetadata = exports.footballBandAttributeModifier = exports.FOOTBALL_SELECTOR_PROFILE_CONTRACT = exports.FOOTBALL_SELECTOR_PROFILES = exports.FOOTBALL_CLUB_BANDS = void 0;
 exports.clubById = clubById;
 exports.clubsForDivision = clubsForDivision;
 exports.clubsForCountry = clubsForCountry;
 exports.divisionsForCountry = divisionsForCountry;
 exports.nearestDivisionForCountry = nearestDivisionForCountry;
 exports.divisionById = divisionById;
+exports.canonicalSpecialClubIds = canonicalSpecialClubIds;
+exports.narrativeClubAliasIds = narrativeClubAliasIds;
+exports.legacyNamedClubIds = legacyNamedClubIds;
+exports.classifyFootballClubReference = classifyFootballClubReference;
+exports.isCatalogClubId = isCatalogClubId;
+exports.isCanonicalSpecialClubId = isCanonicalSpecialClubId;
+exports.isNarrativeClubAlias = isNarrativeClubAlias;
+exports.isLegacyClubReference = isLegacyClubReference;
+exports.isFootballClubReferenceAllowed = isFootballClubReferenceAllowed;
+exports.assertFootballClubReferenceForContext = assertFootballClubReferenceForContext;
+exports.isLoadableFootballClubReference = isLoadableFootballClubReference;
+exports.isNewFootballClubReference = isNewFootballClubReference;
+exports.assertLoadableFootballClubReference = assertLoadableFootballClubReference;
+exports.assertNewFootballClubReference = assertNewFootballClubReference;
+exports.inspectFootballCatalog = inspectFootballCatalog;
+var balance_js_1 = require("./balance.js");
+Object.defineProperty(exports, "FOOTBALL_CLUB_BANDS", { enumerable: true, get: function () { return balance_js_1.FOOTBALL_CLUB_BANDS; } });
+Object.defineProperty(exports, "FOOTBALL_SELECTOR_PROFILES", { enumerable: true, get: function () { return balance_js_1.FOOTBALL_SELECTOR_PROFILES; } });
+Object.defineProperty(exports, "FOOTBALL_SELECTOR_PROFILE_CONTRACT", { enumerable: true, get: function () { return balance_js_1.FOOTBALL_SELECTOR_PROFILE_CONTRACT; } });
+Object.defineProperty(exports, "footballBandAttributeModifier", { enumerable: true, get: function () { return balance_js_1.footballBandAttributeModifier; } });
+Object.defineProperty(exports, "footballClubBalanceMetadata", { enumerable: true, get: function () { return balance_js_1.footballClubBalanceMetadata; } });
+Object.defineProperty(exports, "footballClubBandFor", { enumerable: true, get: function () { return balance_js_1.footballClubBandFor; } });
+Object.defineProperty(exports, "footballClubSelectorProfile", { enumerable: true, get: function () { return balance_js_1.footballClubSelectorProfile; } });
+Object.defineProperty(exports, "footballLeagueGroupForStrength", { enumerable: true, get: function () { return balance_js_1.footballLeagueGroupForStrength; } });
+Object.defineProperty(exports, "footballStructuralCoefficient", { enumerable: true, get: function () { return balance_js_1.footballStructuralCoefficient; } });
 var world_js_1 = require("./world.js");
 Object.defineProperty(exports, "FOOTBALL_CLUBS", { enumerable: true, get: function () { return world_js_1.FOOTBALL_CLUBS; } });
 Object.defineProperty(exports, "FOOTBALL_DIVISIONS", { enumerable: true, get: function () { return world_js_1.FOOTBALL_DIVISIONS; } });
 Object.defineProperty(exports, "FOOTBALL_CATALOG_VERSION", { enumerable: true, get: function () { return world_js_1.FOOTBALL_CATALOG_VERSION; } });
+var identity_js_1 = require("./identity.js");
+Object.defineProperty(exports, "FOOTBALL_CATALOG_CLUB_ID_PATTERN", { enumerable: true, get: function () { return identity_js_1.FOOTBALL_CATALOG_CLUB_ID_PATTERN; } });
+Object.defineProperty(exports, "catalogMultiClubIdentityKey", { enumerable: true, get: function () { return identity_js_1.catalogMultiClubIdentityKey; } });
+Object.defineProperty(exports, "defaultCatalogClubId", { enumerable: true, get: function () { return identity_js_1.defaultCatalogClubId; } });
+Object.defineProperty(exports, "stableCatalogClubId", { enumerable: true, get: function () { return identity_js_1.stableCatalogClubId; } });
+var integrity_js_1 = require("./integrity.js");
+Object.defineProperty(exports, "FOOTBALL_CLEARANCE_STATUSES", { enumerable: true, get: function () { return integrity_js_1.FOOTBALL_CLEARANCE_STATUSES; } });
+Object.defineProperty(exports, "FOOTBALL_CLUB_ARCHETYPES", { enumerable: true, get: function () { return integrity_js_1.FOOTBALL_CLUB_ARCHETYPES; } });
+Object.defineProperty(exports, "FOOTBALL_CONFEDERATIONS", { enumerable: true, get: function () { return integrity_js_1.FOOTBALL_CONFEDERATIONS; } });
+Object.defineProperty(exports, "FOOTBALL_COUNTRY_CODES", { enumerable: true, get: function () { return integrity_js_1.FOOTBALL_COUNTRY_CODES; } });
+Object.defineProperty(exports, "assertFootballCatalogData", { enumerable: true, get: function () { return integrity_js_1.assertFootballCatalogData; } });
+Object.defineProperty(exports, "footballCatalogStructuralFingerprint", { enumerable: true, get: function () { return integrity_js_1.footballCatalogStructuralFingerprint; } });
+Object.defineProperty(exports, "inspectFootballCatalogData", { enumerable: true, get: function () { return integrity_js_1.inspectFootballCatalogData; } });
 const world_js_2 = require("./world.js");
+const integrity_js_2 = require("./integrity.js");
 const CLUB_BY_ID = new Map(world_js_2.FOOTBALL_CLUBS.map(club => [club.id, club]));
 const DIVISION_BY_ID = new Map(world_js_2.FOOTBALL_DIVISIONS.map(division => [division.id, division]));
 const EMPTY_CLUBS = Object.freeze([]);
 const EMPTY_DIVISIONS = Object.freeze([]);
+const CANONICAL_SPECIAL_CLUB_IDS = Object.freeze(["UDV"]);
+const NARRATIVE_CLUB_ALIASES = Object.freeze([
+    "NEW_CLUB",
+    "DEVELOPMENT_CLUB",
+    "DEVELOPMENT_CLUB_2",
+    "HIGHER_CLUB",
+    "BIG_CLUB",
+    "FOREIGN_DEV_CLUB"
+]);
+const LEGACY_NAMED_CLUB_IDS = Object.freeze(["Aurora CF"]);
+const CANONICAL_SPECIAL_SET = new Set(CANONICAL_SPECIAL_CLUB_IDS);
+const NARRATIVE_ALIAS_SET = new Set(NARRATIVE_CLUB_ALIASES);
+const LEGACY_NAMED_SET = new Set(LEGACY_NAMED_CLUB_IDS);
+const LEGACY_PATTERNS = Object.freeze([
+    /^SIM_OPP_(?:\d+_(?:\d+|TEST)|TEST)$/i,
+    /^(?:Development|Domestic|Summer|Foreign|Loan)_\d+_\d+$/i,
+    /^Club \d+ · \d+$/
+]);
+const ALLOWED_REFERENCE_KINDS = Object.freeze({
+    new_production: new Set(["catalog", "canonical_special"]),
+    historical_read: new Set(["catalog", "canonical_special", "legacy_compat"]),
+    canonical_content: new Set(["catalog", "canonical_special", "narrative_alias"])
+});
 function freezeGrouped(rows, keyOf) {
     const mutable = new Map();
     for (const row of rows) {
@@ -1863,12 +2064,358 @@ function nearestDivisionForCountry(countryCode, leagueTier) {
 function divisionById(id) {
     return DIVISION_BY_ID.get(id) ?? null;
 }
+function canonicalSpecialClubIds() {
+    return CANONICAL_SPECIAL_CLUB_IDS;
+}
+function narrativeClubAliasIds() {
+    return NARRATIVE_CLUB_ALIASES;
+}
+function legacyNamedClubIds() {
+    return LEGACY_NAMED_CLUB_IDS;
+}
+function classifyFootballClubReference(value) {
+    if (typeof value !== "string" || value.length === 0) {
+        return Object.freeze({
+            value: typeof value === "string" ? value : String(value ?? ""),
+            kind: "invalid",
+            club: null,
+            reason: "club reference must be a non-empty string"
+        });
+    }
+    const catalog = CLUB_BY_ID.get(value);
+    if (catalog)
+        return Object.freeze({ value, kind: "catalog", club: catalog, reason: "catalog identity" });
+    if (CANONICAL_SPECIAL_SET.has(value)) {
+        return Object.freeze({ value, kind: "canonical_special", club: null, reason: "canonical special identity" });
+    }
+    if (NARRATIVE_ALIAS_SET.has(value)) {
+        return Object.freeze({ value, kind: "narrative_alias", club: null, reason: "canonical narrative alias" });
+    }
+    if (LEGACY_NAMED_SET.has(value) || LEGACY_PATTERNS.some(pattern => pattern.test(value))) {
+        return Object.freeze({ value, kind: "legacy_compat", club: null, reason: "historical compatibility identity" });
+    }
+    // Reserve the V2-like country namespace: an unknown ABC_* identity is not
+    // silently accepted as legacy because that would hide catalog corruption.
+    if (/^[A-Z]{3}_[A-Z0-9_]+$/.test(value)) {
+        return Object.freeze({ value, kind: "invalid", club: null, reason: "unknown football catalog namespace identity" });
+    }
+    // Pre-V2 saves historically allowed display-like proper names. Keep only a
+    // narrow opaque-name compatibility lane: malformed IDs/underscored tokens still fail closed.
+    if (/^[A-ZÁÉÍÓÚÜÑ][A-Za-zÁÉÍÓÚÜÑáéíóúüñ0-9 .'-]{1,199}$/.test(value)) {
+        return Object.freeze({ value, kind: "legacy_compat", club: null, reason: "opaque historical club display identity" });
+    }
+    return Object.freeze({ value, kind: "invalid", club: null, reason: "unknown football club identity" });
+}
+function isCatalogClubId(value) {
+    return classifyFootballClubReference(value).kind === "catalog";
+}
+function isCanonicalSpecialClubId(value) {
+    return classifyFootballClubReference(value).kind === "canonical_special";
+}
+function isNarrativeClubAlias(value) {
+    return classifyFootballClubReference(value).kind === "narrative_alias";
+}
+function isLegacyClubReference(value) {
+    return classifyFootballClubReference(value).kind === "legacy_compat";
+}
+function isFootballClubReferenceAllowed(value, context) {
+    const kind = classifyFootballClubReference(value).kind;
+    return ALLOWED_REFERENCE_KINDS[context].has(kind);
+}
+function assertFootballClubReferenceForContext(value, context, path = "club") {
+    const classification = classifyFootballClubReference(value);
+    if (!ALLOWED_REFERENCE_KINDS[context].has(classification.kind)) {
+        throw new Error(`${path}: football club reference ${classification.value} classified as ${classification.kind} is not allowed in ${context}`);
+    }
+}
+function isLoadableFootballClubReference(value) {
+    return isFootballClubReferenceAllowed(value, "historical_read");
+}
+function isNewFootballClubReference(value) {
+    return isFootballClubReferenceAllowed(value, "new_production");
+}
+function assertLoadableFootballClubReference(value, path = "club") {
+    assertFootballClubReferenceForContext(value, "historical_read", path);
+}
+function assertNewFootballClubReference(value, path = "club") {
+    assertFootballClubReferenceForContext(value, "new_production", path);
+}
+function inspectFootballCatalog() {
+    const issues = [...(0, integrity_js_2.inspectFootballCatalogData)(world_js_2.FOOTBALL_CLUBS, world_js_2.FOOTBALL_DIVISIONS)];
+    for (const [index, club] of world_js_2.FOOTBALL_CLUBS.entries()) {
+        if (!Object.isFrozen(club))
+            issues.push({ path: `FOOTBALL_CLUBS[${index}]`, reason: "club object must be frozen" });
+        if (!Object.isFrozen(club.archetypes))
+            issues.push({ path: `FOOTBALL_CLUBS[${index}].archetypes`, reason: "archetypes must be frozen" });
+    }
+    for (const [index, division] of world_js_2.FOOTBALL_DIVISIONS.entries()) {
+        if (!Object.isFrozen(division))
+            issues.push({ path: `FOOTBALL_DIVISIONS[${index}]`, reason: "division object must be frozen" });
+    }
+    if (!Object.isFrozen(world_js_2.FOOTBALL_CLUBS))
+        issues.push({ path: "FOOTBALL_CLUBS", reason: "catalog array must be frozen" });
+    if (!Object.isFrozen(world_js_2.FOOTBALL_DIVISIONS))
+        issues.push({ path: "FOOTBALL_DIVISIONS", reason: "division array must be frozen" });
+    for (const value of [...CANONICAL_SPECIAL_CLUB_IDS, ...NARRATIVE_CLUB_ALIASES, ...LEGACY_NAMED_CLUB_IDS]) {
+        if (CLUB_BY_ID.has(value))
+            issues.push({ path: `identity:${value}`, reason: "compatibility identity collides with catalog id" });
+    }
+    return Object.freeze(issues.map(item => Object.freeze(item)));
+}
+
+},
+"src/catalog/football/balance.ts": function(module,exports,require){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.FOOTBALL_SELECTOR_PROFILE_CONTRACT = exports.FOOTBALL_SELECTOR_PROFILES = exports.FOOTBALL_CLUB_BANDS = void 0;
+exports.footballLeagueGroupForStrength = footballLeagueGroupForStrength;
+exports.footballStructuralCoefficient = footballStructuralCoefficient;
+exports.footballClubBandFor = footballClubBandFor;
+exports.footballBandAttributeModifier = footballBandAttributeModifier;
+exports.footballClubSelectorProfile = footballClubSelectorProfile;
+exports.footballClubBalanceMetadata = footballClubBalanceMetadata;
+exports.FOOTBALL_CLUB_BANDS = Object.freeze([
+    "elite",
+    "continental",
+    "upper",
+    "mid",
+    "lower",
+    "development"
+]);
+exports.FOOTBALL_SELECTOR_PROFILES = Object.freeze([
+    "elite",
+    "ambitious",
+    "balanced",
+    "development",
+    "lower_pressure",
+    "financial"
+]);
+const BAND_ATTRIBUTE_MODIFIERS = Object.freeze({
+    elite: Object.freeze({
+        prestige: 10,
+        financialPower: 10,
+        youthQuality: 0,
+        developmentBias: -7,
+        pressure: 10,
+        internationalAttraction: 10
+    }),
+    continental: Object.freeze({
+        prestige: 6,
+        financialPower: 6,
+        youthQuality: 1,
+        developmentBias: -3,
+        pressure: 6,
+        internationalAttraction: 6
+    }),
+    upper: Object.freeze({
+        prestige: 2,
+        financialPower: 2,
+        youthQuality: 2,
+        developmentBias: 0,
+        pressure: 2,
+        internationalAttraction: 3
+    }),
+    mid: Object.freeze({
+        prestige: -2,
+        financialPower: 0,
+        youthQuality: 1,
+        developmentBias: 1,
+        pressure: 0,
+        internationalAttraction: 0
+    }),
+    lower: Object.freeze({
+        prestige: -8,
+        financialPower: -4,
+        youthQuality: -1,
+        developmentBias: 3,
+        pressure: -5,
+        internationalAttraction: -5
+    }),
+    development: Object.freeze({
+        prestige: -2,
+        financialPower: -1,
+        youthQuality: 8,
+        developmentBias: 10,
+        pressure: -6,
+        internationalAttraction: -1
+    })
+});
+function hashString(value) {
+    let hash = 2166136261;
+    for (let i = 0; i < value.length; i += 1) {
+        hash ^= value.charCodeAt(i);
+        hash = Math.imul(hash, 16777619);
+    }
+    return hash >>> 0;
+}
+function stableBucket(id, channel, buckets = 100) {
+    return hashString(`${id}|${channel}`) % buckets;
+}
+function footballLeagueGroupForStrength(strength) {
+    if (strength >= 80)
+        return "A";
+    if (strength >= 72)
+        return "B";
+    if (strength >= 64)
+        return "C";
+    return "D";
+}
+/**
+ * Converts a league/division coefficient into a club-level structural baseline.
+ * The compression leaves room for explicit club bands so deterministic flavour
+ * cannot dominate the structural hierarchy.
+ */
+function footballStructuralCoefficient(value) {
+    return Math.min(100, Math.max(0, Math.round(32 + (0.58 * value))));
+}
+/**
+ * Stable competitive band assignment. It is deterministic, consumes no GameState
+ * RNG and is constrained first by tier and league group.
+ */
+function footballClubBandFor(clubId, tier, divisionStrength) {
+    const roll = stableBucket(clubId, "competitive-band");
+    const group = footballLeagueGroupForStrength(divisionStrength);
+    if (tier >= 3) {
+        if (roll < 28)
+            return "development";
+        if (roll < 78)
+            return "lower";
+        return "mid";
+    }
+    if (tier === 2) {
+        if (roll < 20)
+            return "development";
+        if (roll < 55)
+            return "lower";
+        if (roll < 88)
+            return "mid";
+        return "upper";
+    }
+    if (group === "A") {
+        if (roll < 12)
+            return "elite";
+        if (roll < 30)
+            return "continental";
+        if (roll < 55)
+            return "upper";
+        if (roll < 78)
+            return "mid";
+        if (roll < 90)
+            return "development";
+        return "lower";
+    }
+    if (group === "B") {
+        if (roll < 4)
+            return "elite";
+        if (roll < 16)
+            return "continental";
+        if (roll < 42)
+            return "upper";
+        if (roll < 70)
+            return "mid";
+        if (roll < 86)
+            return "development";
+        return "lower";
+    }
+    if (group === "C") {
+        if (roll < 8)
+            return "continental";
+        if (roll < 28)
+            return "upper";
+        if (roll < 60)
+            return "mid";
+        if (roll < 78)
+            return "development";
+        return "lower";
+    }
+    if (roll < 14)
+        return "upper";
+    if (roll < 50)
+        return "mid";
+    if (roll < 72)
+        return "development";
+    return "lower";
+}
+function footballBandAttributeModifier(band, attribute) {
+    return BAND_ATTRIBUTE_MODIFIERS[band][attribute];
+}
+function footballClubSelectorProfile(club, division) {
+    const band = footballClubBandFor(club.id, club.tier, division.strength);
+    const ambition = (club.prestige + club.financialPower + club.internationalAttraction) / 3;
+    if (band === "elite")
+        return "elite";
+    if (band === "development" ||
+        (club.developmentBias >= 88 && club.youthQuality >= 84 && club.pressure <= 78)) {
+        return "development";
+    }
+    if (club.financialPower >= 82 && club.financialPower - club.prestige >= 7)
+        return "financial";
+    if (club.pressure <= 58 && ambition < 78)
+        return "lower_pressure";
+    if (band === "continental" || (band === "upper" && ambition >= 76))
+        return "ambitious";
+    return "balanced";
+}
+function footballClubBalanceMetadata(club, division) {
+    const band = footballClubBandFor(club.id, club.tier, division.strength);
+    return Object.freeze({
+        band,
+        leagueGroup: footballLeagueGroupForStrength(division.strength),
+        selectorProfile: footballClubSelectorProfile(club, division)
+    });
+}
+/**
+ * Data contract for DB-A3. These are selector semantics only; no market runtime,
+ * offer creation or club comparison is performed in this layer.
+ */
+exports.FOOTBALL_SELECTOR_PROFILE_CONTRACT = Object.freeze({
+    BIG_CLUB: Object.freeze({
+        expectedBands: Object.freeze(["elite", "continental"]),
+        allowedTiers: Object.freeze([1]),
+        relative: false,
+        topContinental: Object.freeze({
+            minPrestige: 88,
+            minInternationalAttraction: 84,
+            minDivisionStrength: 78
+        }),
+        rule: "elite OR continental meeting every topContinental threshold"
+    }),
+    DEVELOPMENT_CLUB: Object.freeze({
+        expectedBands: Object.freeze(["development"]),
+        allowedTiers: Object.freeze([1, 2, 3]),
+        relative: false,
+        rule: "prioritize development band, youthQuality, developmentBias and moderate pressure"
+    }),
+    AMBITIOUS: Object.freeze({
+        expectedBands: Object.freeze(["continental", "upper"]),
+        allowedTiers: Object.freeze([1, 2]),
+        relative: false,
+        minAmbitionComposite: 76,
+        rule: "favor prestige + financialPower + internationalAttraction without becoming BIG_CLUB"
+    }),
+    BALANCED: Object.freeze({
+        expectedBands: Object.freeze(["upper", "mid", "lower", "development"]),
+        allowedTiers: Object.freeze([1, 2, 3]),
+        relative: false,
+        rule: "general-purpose profile with no single extreme"
+    }),
+    HIGHER_CLUB: Object.freeze({
+        expectedBands: Object.freeze(["elite", "continental", "upper", "mid"]),
+        allowedTiers: Object.freeze([1, 2, 3]),
+        relative: true,
+        minPrestigeDelta: 5,
+        rule: "A3 must compare against the current club and require >=5 prestige points or a stronger band plus league context"
+    })
+});
 
 },
 "src/catalog/football/world.ts": function(module,exports,require){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FOOTBALL_CATALOG_VERSION = exports.FOOTBALL_CLUBS = exports.FOOTBALL_DIVISIONS = void 0;
+const balance_js_1 = require("./balance.js");
+const integrity_js_1 = require("./integrity.js");
+const identity_js_1 = require("./identity.js");
 const COUNTRY_CONFIGS = {
     "ESP": {
         "country": "España",
@@ -2985,6 +3532,37 @@ const COUNTRY_CONFIGS = {
 };
 const MAX_SHORT_NAME_LENGTH = 22;
 const TIER_STRENGTH_PENALTY = [0, 0, 14, 25];
+/**
+ * Explicit immutable identities for additional clubs in an already represented city.
+ * Existing first-city IDs intentionally remain COUNTRY_CITY for save compatibility.
+ * Example future entry: "ESP|MADRID|2": "ESP_MADRID_02".
+ */
+const EXPLICIT_MULTI_CLUB_IDS = Object.freeze({});
+/**
+ * Human-reviewed display-name overrides for duplicate-like generated identities.
+ * Identity and balance remain keyed exclusively by stable club ID.
+ */
+const EXPLICIT_NAME_MODIFIERS = Object.freeze({
+    "ENG|Chester": "Crown",
+    "CHN|Guangzhou": "Jade"
+});
+/**
+ * Human-reviewed mobile labels for names that exceed the 22-character presentation budget.
+ * Do not mechanically slice city/modifier tokens: future overflows must be reviewed explicitly.
+ */
+const EXPLICIT_SHORT_NAMES = Object.freeze({
+    "Wolverhampton Riverside": "W'hampton Riverside",
+    "Clermont-Ferrand Étoile": "Clermont Étoile",
+    "Castelo Branco Navegante": "C. Branco Navegante",
+    "Viana do Castelo Ribeira": "Viana Castelo Ribeira",
+    "Alphen aan den Rijn Noord": "Alphen Rijn Noord",
+    "Ciudad de México Estrella": "México Estrella",
+    "San Miguel de Tucumán Plata": "Tucumán Plata",
+    "Santiago del Estero Central": "Sgo. Estero Central",
+    "San Salvador de Jujuy Cóndor": "Jujuy Cóndor",
+    "Comodoro Rivadavia Horizonte": "C. Rivadavia Horizonte",
+    "Pietermaritzburg Plains": "PMB Plains"
+});
 function hashString(value) {
     let hash = 2166136261;
     for (let i = 0; i < value.length; i += 1) {
@@ -2996,40 +3574,44 @@ function hashString(value) {
 function clamp(value, min = 0, max = 100) {
     return Math.min(max, Math.max(min, Math.round(value)));
 }
-function asciiToken(value) {
-    return value
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .toUpperCase()
-        .replace(/[^A-Z0-9]+/g, "_")
-        .replace(/^_+|_+$/g, "");
-}
-function clubId(countryCode, city) {
-    return `${countryCode}_${asciiToken(city)}`;
-}
-function variation(id, channel, radius = 7) {
+function variation(id, channel, radius = 3) {
     return (hashString(`${id}|${channel}`) % (radius * 2 + 1)) - radius;
 }
 function tierAdjusted(value, tier) {
     return clamp(value - (TIER_STRENGTH_PENALTY[tier] ?? 30));
 }
+function balancedAttribute(id, band, attribute, structuralValue, variationChannel) {
+    return clamp((0, balance_js_1.footballStructuralCoefficient)(structuralValue) +
+        (0, balance_js_1.footballBandAttributeModifier)(band, attribute) +
+        variation(id, variationChannel, 3));
+}
 function shortName(city, modifier) {
     const full = `${city} ${modifier}`;
     if (full.length <= MAX_SHORT_NAME_LENGTH)
         return full;
-    const modifierLength = Math.min(5, modifier.length);
-    const cityLength = Math.max(4, MAX_SHORT_NAME_LENGTH - modifierLength - 1);
-    return `${city.slice(0, cityLength).trim()} ${modifier.slice(0, modifierLength)}`.slice(0, MAX_SHORT_NAME_LENGTH).trim();
+    const explicit = EXPLICIT_SHORT_NAMES[full];
+    if (!explicit) {
+        throw new Error(`Football catalog shortName overflow requires an explicit reviewed label: ${full}`);
+    }
+    if (explicit.length > MAX_SHORT_NAME_LENGTH) {
+        throw new Error(`Football catalog explicit shortName exceeds ${MAX_SHORT_NAME_LENGTH} characters: ${explicit}`);
+    }
+    return explicit;
 }
-function archetypesFor(tier, prestige, seed) {
+function archetypesFor(seed, band) {
     const pool = ["development", "selling", "historic", "high_pressure", "community", "technical", "physical"];
-    const first = prestige >= 84 && tier === 1 ? "continental" : pool[seed % pool.length];
+    const first = band === "elite" || band === "continental"
+        ? "continental"
+        : band === "development"
+            ? "development"
+            : pool[seed % pool.length];
     const second = pool[(seed + 3) % pool.length];
     return Object.freeze(first === second ? [first] : [first, second]);
 }
 const divisions = [];
 const clubs = [];
 const seenClubIds = new Set();
+const cityOccurrences = new Map();
 for (const [rawCode, config] of Object.entries(COUNTRY_CONFIGS)) {
     const countryCode = rawCode;
     const confederation = config.confederation;
@@ -3054,15 +3636,21 @@ for (const [rawCode, config] of Object.entries(COUNTRY_CONFIGS)) {
         }));
         for (let index = 0; index < clubCount; index += 1) {
             const city = config.cities[cityOffset + index];
-            const id = clubId(countryCode, city);
+            const cityKey = (0, identity_js_1.defaultCatalogClubId)(countryCode, city);
+            const occurrence = (cityOccurrences.get(cityKey) ?? 0) + 1;
+            cityOccurrences.set(cityKey, occurrence);
+            const explicitId = EXPLICIT_MULTI_CLUB_IDS[(0, identity_js_1.catalogMultiClubIdentityKey)(countryCode, city, occurrence)];
+            const id = (0, identity_js_1.stableCatalogClubId)(countryCode, city, occurrence, explicitId);
             if (seenClubIds.has(id)) {
-                throw new Error(`Football catalog duplicate stable club id: ${id}. Add an explicit club identity before allowing multiple clubs in one city.`);
+                throw new Error(`Football catalog duplicate stable club id: ${id}.`);
             }
             seenClubIds.add(id);
             const identitySeed = hashString(`${countryCode}|${city}|identity`);
-            const modifier = config.mods[identitySeed % config.mods.length];
+            const modifier = EXPLICIT_NAME_MODIFIERS[`${countryCode}|${city}`] ??
+                config.mods[identitySeed % config.mods.length];
             const nameValue = `${city} ${modifier}`;
-            const prestige = clamp(divisionStrength + variation(id, "prestige"));
+            const balanceBand = (0, balance_js_1.footballClubBandFor)(id, tier, divisionStrength);
+            const prestige = balancedAttribute(id, balanceBand, "prestige", divisionStrength, "prestige");
             clubs.push(Object.freeze({
                 id,
                 name: nameValue,
@@ -3074,21 +3662,268 @@ for (const [rawCode, config] of Object.entries(COUNTRY_CONFIGS)) {
                 divisionId,
                 tier,
                 prestige,
-                financialPower: clamp(tierAdjusted(config.finance, tier) + variation(id, "finance")),
-                youthQuality: clamp(tierAdjusted(config.youth, tier) + variation(id, "youth")),
-                developmentBias: clamp(tierAdjusted(config.development, tier) + variation(id, "development")),
-                pressure: clamp(tierAdjusted(config.pressure, tier) + variation(id, "pressure")),
-                internationalAttraction: clamp(tierAdjusted(config.international, tier) + variation(id, "international")),
-                archetypes: archetypesFor(tier, prestige, identitySeed),
+                financialPower: balancedAttribute(id, balanceBand, "financialPower", tierAdjusted(config.finance, tier), "finance"),
+                youthQuality: balancedAttribute(id, balanceBand, "youthQuality", tierAdjusted(config.youth, tier), "youth"),
+                developmentBias: balancedAttribute(id, balanceBand, "developmentBias", tierAdjusted(config.development, tier), "development"),
+                pressure: balancedAttribute(id, balanceBand, "pressure", tierAdjusted(config.pressure, tier), "pressure"),
+                internationalAttraction: balancedAttribute(id, balanceBand, "internationalAttraction", tierAdjusted(config.international, tier), "international"),
+                archetypes: archetypesFor(identitySeed, balanceBand),
                 clearanceStatus: "working_name_unchecked"
             }));
         }
         cityOffset += clubCount;
     });
 }
-exports.FOOTBALL_DIVISIONS = Object.freeze(divisions);
-exports.FOOTBALL_CLUBS = Object.freeze(clubs);
-exports.FOOTBALL_CATALOG_VERSION = "world-v1-2026-09-26";
+const frozenDivisions = Object.freeze(divisions.slice());
+const frozenClubs = Object.freeze(clubs.slice());
+(0, integrity_js_1.assertFootballCatalogData)(frozenClubs, frozenDivisions, "Football Database V2 catalog");
+exports.FOOTBALL_DIVISIONS = frozenDivisions;
+exports.FOOTBALL_CLUBS = frozenClubs;
+exports.FOOTBALL_CATALOG_VERSION = "world-v2-a2-2026-09-28";
+
+},
+"src/catalog/football/integrity.ts": function(module,exports,require){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.FOOTBALL_CLEARANCE_STATUSES = exports.FOOTBALL_CLUB_ARCHETYPES = exports.FOOTBALL_CONFEDERATIONS = exports.FOOTBALL_COUNTRY_CODES = void 0;
+exports.inspectFootballCatalogData = inspectFootballCatalogData;
+exports.assertFootballCatalogData = assertFootballCatalogData;
+exports.footballCatalogStructuralFingerprint = footballCatalogStructuralFingerprint;
+const identity_js_1 = require("./identity.js");
+exports.FOOTBALL_COUNTRY_CODES = Object.freeze([
+    "ESP", "ENG", "ITA", "DEU", "FRA", "PRT", "NLD", "BEL", "USA", "MEX", "ARG", "JPN", "CHN", "TUR", "NOR", "MAR", "ZAF"
+]);
+exports.FOOTBALL_CONFEDERATIONS = Object.freeze([
+    "UEFA", "CONCACAF", "CONMEBOL", "AFC", "CAF"
+]);
+exports.FOOTBALL_CLUB_ARCHETYPES = Object.freeze([
+    "continental", "development", "selling", "historic", "high_pressure", "community", "technical", "physical"
+]);
+exports.FOOTBALL_CLEARANCE_STATUSES = Object.freeze(["working_name_unchecked"]);
+const COUNTRY_SET = new Set(exports.FOOTBALL_COUNTRY_CODES);
+const CONFEDERATION_SET = new Set(exports.FOOTBALL_CONFEDERATIONS);
+const ARCHETYPE_SET = new Set(exports.FOOTBALL_CLUB_ARCHETYPES);
+const CLEARANCE_SET = new Set(exports.FOOTBALL_CLEARANCE_STATUSES);
+const DIVISION_ID_PATTERN = /^[A-Z]{3}_D[1-9][0-9]*$/;
+function issue(issues, path, reason) {
+    issues.push(Object.freeze({ path, reason }));
+}
+function boundedInteger(value) {
+    return Number.isInteger(value) && Number(value) >= 0 && Number(value) <= 100;
+}
+function inspectFootballCatalogData(clubs, divisions) {
+    const issues = [];
+    const divisionIds = new Set();
+    const clubIds = new Set();
+    const clubNames = new Set();
+    const divisionById = new Map();
+    const countryConfederation = new Map();
+    for (const [index, division] of divisions.entries()) {
+        const path = `divisions[${index}]`;
+        if (typeof division.id !== "string" || division.id.length === 0)
+            issue(issues, `${path}.id`, "division id must be non-empty");
+        else if (!DIVISION_ID_PATTERN.test(division.id))
+            issue(issues, `${path}.id`, "malformed division id");
+        if (divisionIds.has(division.id))
+            issue(issues, `${path}.id`, "duplicate division id");
+        divisionIds.add(division.id);
+        divisionById.set(division.id, division);
+        if (!COUNTRY_SET.has(division.countryCode))
+            issue(issues, `${path}.countryCode`, "unknown country code");
+        if (typeof division.country !== "string" || division.country.trim().length === 0)
+            issue(issues, `${path}.country`, "country label must be non-empty");
+        if (!CONFEDERATION_SET.has(division.confederation))
+            issue(issues, `${path}.confederation`, "unknown confederation");
+        if (typeof division.name !== "string" || division.name.trim().length === 0)
+            issue(issues, `${path}.name`, "division name must be non-empty");
+        if (!Number.isInteger(division.tier) || division.tier < 1)
+            issue(issues, `${path}.tier`, "invalid tier");
+        if (!Number.isInteger(division.clubCount) || division.clubCount < 1)
+            issue(issues, `${path}.clubCount`, "invalid clubCount");
+        if (!boundedInteger(division.strength))
+            issue(issues, `${path}.strength`, "strength must be integer 0..100");
+        const priorConfederation = countryConfederation.get(division.countryCode);
+        if (priorConfederation && priorConfederation !== division.confederation) {
+            issue(issues, `${path}.confederation`, "country maps to multiple confederations");
+        }
+        else {
+            countryConfederation.set(division.countryCode, division.confederation);
+        }
+    }
+    for (const [index, club] of clubs.entries()) {
+        const path = `clubs[${index}]`;
+        if (typeof club.id !== "string" || club.id.length === 0)
+            issue(issues, `${path}.id`, "club id must be non-empty");
+        else if (!identity_js_1.FOOTBALL_CATALOG_CLUB_ID_PATTERN.test(club.id))
+            issue(issues, `${path}.id`, "malformed club id");
+        if (clubIds.has(club.id))
+            issue(issues, `${path}.id`, "duplicate club id");
+        clubIds.add(club.id);
+        if (typeof club.name !== "string" || club.name.trim().length === 0)
+            issue(issues, `${path}.name`, "club name must be non-empty");
+        else if (clubNames.has(club.name))
+            issue(issues, `${path}.name`, "duplicate club name");
+        clubNames.add(club.name);
+        if (typeof club.shortName !== "string" || club.shortName.length < 1 || club.shortName.length > 22) {
+            issue(issues, `${path}.shortName`, "shortName must be 1..22 characters");
+        }
+        if (typeof club.city !== "string" || club.city.trim().length === 0)
+            issue(issues, `${path}.city`, "city must be non-empty");
+        if (!COUNTRY_SET.has(club.countryCode))
+            issue(issues, `${path}.countryCode`, "unknown country code");
+        if (typeof club.country !== "string" || club.country.trim().length === 0)
+            issue(issues, `${path}.country`, "country label must be non-empty");
+        if (!CONFEDERATION_SET.has(club.confederation))
+            issue(issues, `${path}.confederation`, "unknown confederation");
+        if (!Number.isInteger(club.tier) || club.tier < 1)
+            issue(issues, `${path}.tier`, "invalid tier");
+        const division = divisionById.get(club.divisionId);
+        if (!division) {
+            issue(issues, `${path}.divisionId`, "unknown division");
+        }
+        else {
+            if (club.countryCode !== division.countryCode)
+                issue(issues, `${path}.countryCode`, "country mismatch");
+            if (club.country !== division.country)
+                issue(issues, `${path}.country`, "country label mismatch");
+            if (club.confederation !== division.confederation)
+                issue(issues, `${path}.confederation`, "confederation mismatch");
+            if (club.tier !== division.tier)
+                issue(issues, `${path}.tier`, "division tier mismatch");
+        }
+        for (const field of ["prestige", "financialPower", "youthQuality", "developmentBias", "pressure", "internationalAttraction"]) {
+            if (!boundedInteger(club[field]))
+                issue(issues, `${path}.${field}`, "club coefficient must be integer 0..100");
+        }
+        if (!Array.isArray(club.archetypes) || club.archetypes.length === 0) {
+            issue(issues, `${path}.archetypes`, "archetypes must be a non-empty array");
+        }
+        else {
+            const seen = new Set();
+            for (const archetype of club.archetypes) {
+                if (!ARCHETYPE_SET.has(archetype))
+                    issue(issues, `${path}.archetypes`, `invalid archetype: ${archetype}`);
+                if (seen.has(archetype))
+                    issue(issues, `${path}.archetypes`, `duplicate archetype: ${archetype}`);
+                seen.add(archetype);
+            }
+        }
+        if (!CLEARANCE_SET.has(club.clearanceStatus)) {
+            issue(issues, `${path}.clearanceStatus`, "invalid clearance status");
+        }
+    }
+    const indexedClubCounts = new Map();
+    for (const club of clubs)
+        indexedClubCounts.set(club.divisionId, (indexedClubCounts.get(club.divisionId) ?? 0) + 1);
+    for (const division of divisions) {
+        if ((indexedClubCounts.get(division.id) ?? 0) !== division.clubCount) {
+            issue(issues, `division:${division.id}.clubCount`, "clubCount does not match clubs");
+        }
+    }
+    return Object.freeze(issues);
+}
+function assertFootballCatalogData(clubs, divisions, label = "Football catalog") {
+    const issues = inspectFootballCatalogData(clubs, divisions);
+    if (issues.length === 0)
+        return;
+    const details = issues.slice(0, 12).map(item => `${item.path}: ${item.reason}`).join("; ");
+    throw new Error(`${label} integrity failure (${issues.length} issue${issues.length === 1 ? "" : "s"}): ${details}`);
+}
+function fnv1a(value) {
+    let hash = 2166136261;
+    for (let index = 0; index < value.length; index += 1) {
+        hash ^= value.charCodeAt(index);
+        hash = Math.imul(hash, 16777619);
+    }
+    return (hash >>> 0).toString(16).padStart(8, "0");
+}
+function footballCatalogStructuralFingerprint(clubs, divisions) {
+    const payload = JSON.stringify({
+        divisions: divisions.map(division => ({
+            id: division.id,
+            countryCode: division.countryCode,
+            country: division.country,
+            confederation: division.confederation,
+            name: division.name,
+            tier: division.tier,
+            clubCount: division.clubCount,
+            strength: division.strength
+        })),
+        clubs: clubs.map(club => ({
+            id: club.id,
+            name: club.name,
+            shortName: club.shortName,
+            city: club.city,
+            countryCode: club.countryCode,
+            country: club.country,
+            confederation: club.confederation,
+            divisionId: club.divisionId,
+            tier: club.tier,
+            prestige: club.prestige,
+            financialPower: club.financialPower,
+            youthQuality: club.youthQuality,
+            developmentBias: club.developmentBias,
+            pressure: club.pressure,
+            internationalAttraction: club.internationalAttraction,
+            archetypes: [...club.archetypes],
+            clearanceStatus: club.clearanceStatus
+        }))
+    });
+    return fnv1a(payload);
+}
+
+},
+"src/catalog/football/identity.ts": function(module,exports,require){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.FOOTBALL_CATALOG_CLUB_ID_PATTERN = void 0;
+exports.defaultCatalogClubId = defaultCatalogClubId;
+exports.catalogMultiClubIdentityKey = catalogMultiClubIdentityKey;
+exports.stableCatalogClubId = stableCatalogClubId;
+exports.FOOTBALL_CATALOG_CLUB_ID_PATTERN = /^[A-Z]{3}_[A-Z0-9]+(?:_[A-Z0-9]+)*$/;
+function asciiToken(value) {
+    return value
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toUpperCase()
+        .replace(/[^A-Z0-9]+/g, "_")
+        .replace(/^_+|_+$/g, "");
+}
+function defaultCatalogClubId(countryCode, city) {
+    const token = asciiToken(city);
+    if (!token)
+        throw new Error(`Cannot derive football club identity from empty city: ${city}`);
+    return `${countryCode}_${token}`;
+}
+function catalogMultiClubIdentityKey(countryCode, city, occurrence) {
+    if (!Number.isInteger(occurrence) || occurrence < 1) {
+        throw new Error(`Football club city occurrence must be a positive integer, got ${occurrence}`);
+    }
+    return `${countryCode}|${asciiToken(city)}|${occurrence}`;
+}
+/**
+ * Preserves every existing first-club city ID while requiring an explicit immutable ID
+ * for additional clubs in the same city. This prevents city-list edits from silently
+ * renumbering persisted identities.
+ */
+function stableCatalogClubId(countryCode, city, occurrence = 1, explicitId) {
+    const legacyCompatibleBase = defaultCatalogClubId(countryCode, city);
+    if (occurrence === 1 && explicitId === undefined)
+        return legacyCompatibleBase;
+    if (!Number.isInteger(occurrence) || occurrence < 1) {
+        throw new Error(`Football club city occurrence must be a positive integer, got ${occurrence}`);
+    }
+    if (!explicitId) {
+        throw new Error(`Multiple football clubs in ${city} require an explicit stable club id for occurrence ${occurrence}.`);
+    }
+    if (!exports.FOOTBALL_CATALOG_CLUB_ID_PATTERN.test(explicitId)) {
+        throw new Error(`Malformed explicit football club id: ${explicitId}`);
+    }
+    if (!explicitId.startsWith(`${countryCode}_`)) {
+        throw new Error(`Explicit football club id ${explicitId} does not match country ${countryCode}`);
+    }
+    return explicitId;
+}
 
 },
 "src/simulation/employment.ts": function(module,exports,require){
@@ -3102,6 +3937,7 @@ exports.ensureEmploymentStateInPlace = ensureEmploymentStateInPlace;
 exports.transitionNaturalExpiryInPlace = transitionNaturalExpiryInPlace;
 exports.activateEmploymentFromAcceptedTermsInPlace = activateEmploymentFromAcceptedTermsInPlace;
 exports.syncEmploymentAfterNarrativeClubChangeInPlace = syncEmploymentAfterNarrativeClubChangeInPlace;
+exports.setNarrativeLoanRegistrationInPlace = setNarrativeLoanRegistrationInPlace;
 function persisted(state) {
     return state.employment;
 }
@@ -3188,6 +4024,25 @@ function syncEmploymentAfterNarrativeClubChangeInPlace(state) {
     }
     employment.status = state.flags.LOAN_ACTIVE ? "loaned" : "contracted";
     employment.since = state.date;
+}
+/**
+ * Narrow employment authority for a narrative transition that has already
+ * established a loan owner but would otherwise persist the same identity as
+ * registration. It never creates loan authority; LOAN_ACTIVE must already exist.
+ */
+function setNarrativeLoanRegistrationInPlace(state, registrationClub) {
+    const employment = ensureEmploymentStateInPlace(state);
+    if (employment.status === "unattached" || employment.status === "expired_pending_resolution") {
+        throw new Error("Narrative loan registration cannot reactivate inactive employment.");
+    }
+    if (state.flags.LOAN_ACTIVE !== true) {
+        throw new Error("Narrative loan registration requires existing loan authority.");
+    }
+    const ownerClub = String(state.world.ownerClub ?? state.professional.ownerClub);
+    if (!registrationClub || registrationClub === ownerClub) {
+        throw new Error("Narrative loan registration must differ from the owner club.");
+    }
+    state.club = registrationClub;
 }
 
 },
@@ -18051,10 +18906,12 @@ function enforceRetirementTerminalCanonicalAccreditation(conditional) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createInitialState = createInitialState;
 const npcs_js_1 = require("../catalog/npcs.js");
+const index_js_1 = require("../catalog/football/index.js");
 const rng_js_1 = require("../core/rng.js");
 function createInitialState(saveSeed = 20260910) {
     return {
         schemaVersion: 8,
+        footballCatalogVersion: index_js_1.FOOTBALL_CATALOG_VERSION,
         ageMilestones: [],
         market: { version: 1, sequence: 0, pending: null, history: [] },
         employment: { version: 1, status: "contracted", since: "2026-07-01", previous: null },
@@ -22293,6 +23150,18 @@ function resolveChoiceCore(next, event, choiceId, qa = false) {
         (0, player_leadership_authority_js_1.certifyPlayerClubLeadershipInPlace)(next, "captain", event.id, choiceId);
     }
     // A club change authorized by a narrative choice is one coherent transaction.
+    // If canonical content expressed "sign parent + go on loan" using one alias for
+    // both identities, materialize a distinct registration club without consuming RNG.
+    if (next.club !== previousClub && next.flags.LOAN_ACTIVE === true) {
+        const owner = String(next.world.ownerClub ?? previousClub);
+        if (owner === next.club) {
+            (0, employment_js_1.setNarrativeLoanRegistrationInPlace)(next, (0, narrative_club_alias_js_1.materializeNarrativeLoanRegistration)(next, owner, {
+                eventId: event.id,
+                choiceId,
+                targetTier: Number.isFinite(next.tier) ? next.tier : null
+            }));
+        }
+    }
     if (next.club !== previousClub) {
         const p = next.professional;
         p.registrationClub = next.club;
@@ -22949,12 +23818,16 @@ function generateEpilogue(state) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.isNarrativeClubAlias = isNarrativeClubAlias;
 exports.materializeNarrativeClubAlias = materializeNarrativeClubAlias;
+exports.materializeNarrativeLoanRegistration = materializeNarrativeLoanRegistration;
+const index_js_1 = require("./index.js");
 const market_destination_js_1 = require("./market-destination.js");
 const ALIASES = new Set([
     "NEW_CLUB",
     "DEVELOPMENT_CLUB",
+    "DEVELOPMENT_CLUB_2",
     "HIGHER_CLUB",
-    "BIG_CLUB"
+    "BIG_CLUB",
+    "FOREIGN_DEV_CLUB"
 ]);
 function isNarrativeClubAlias(value) {
     return typeof value === "string" && ALIASES.has(value);
@@ -22967,13 +23840,6 @@ function hashString(value) {
     }
     return hash >>> 0;
 }
-function aliasProfile(alias) {
-    if (alias === "DEVELOPMENT_CLUB")
-        return "development";
-    if (alias === "HIGHER_CLUB" || alias === "BIG_CLUB")
-        return "ambitious";
-    return "balanced";
-}
 function aliasTier(state, alias, requestedTier) {
     if (requestedTier !== null && Number.isFinite(requestedTier)) {
         return Math.max(1, Math.min(9, Math.trunc(requestedTier)));
@@ -22982,32 +23848,89 @@ function aliasTier(state, alias, requestedTier) {
         return 1;
     if (alias === "HIGHER_CLUB")
         return Math.max(1, Math.trunc(state.tier) - 1);
-    if (alias === "DEVELOPMENT_CLUB")
+    if (alias === "DEVELOPMENT_CLUB" || alias === "DEVELOPMENT_CLUB_2" || alias === "FOREIGN_DEV_CLUB") {
         return Math.min(4, Math.max(1, Math.trunc(state.tier) + 1));
+    }
     return Math.max(1, Math.min(9, Math.trunc(state.tier)));
 }
-/**
- * Compatibility materializer for canonical legacy event aliases.
- *
- * Event definitions remain untouched, so contentIdentity/fingerprints do not change.
- * Selection is a pure hash projection and consumes zero narrative/football RNG draws.
- */
-function materializeNarrativeClubAlias(state, alias, context) {
-    const tier = aliasTier(state, alias, context.targetTier);
-    const roll = hashString([
+function aliasRoll(state, alias, context, extra = "") {
+    return hashString([
         state.rngState.narrative.seed,
         state.date,
         state.season,
         context.eventId,
         context.choiceId,
-        alias
+        alias,
+        extra
     ].join("|"));
+}
+/**
+ * Canonical event definitions keep their historical alias strings. At resolution,
+ * aliases become catalog IDs via a pure hash projection with zero RNG draws.
+ */
+function materializeNarrativeClubAlias(state, alias, context) {
+    const tier = aliasTier(state, alias, context.targetTier);
+    const roll = aliasRoll(state, alias, context);
+    const excludeClubIds = [
+        state.club,
+        state.professional.ownerClub,
+        state.professional.registrationClub
+    ];
+    if (alias === "BIG_CLUB") {
+        return (0, market_destination_js_1.selectBigClubDestination)({
+            countryCode: "ESP",
+            roll,
+            excludeClubIds
+        }).id;
+    }
+    if (alias === "HIGHER_CLUB") {
+        return (0, market_destination_js_1.selectHigherClubDestination)({
+            countryCode: "ESP",
+            currentClubId: state.club,
+            currentLeagueTier: state.professional.leagueTier,
+            targetLeagueTier: tier,
+            roll,
+            excludeClubIds
+        }).id;
+    }
+    if (alias === "FOREIGN_DEV_CLUB") {
+        return (0, market_destination_js_1.selectForeignMarketDestination)({
+            leagueTier: tier,
+            roll,
+            profile: "development",
+            excludeClubIds
+        }).id;
+    }
     return (0, market_destination_js_1.selectMarketDestination)({
         countryCode: "ESP",
         leagueTier: tier,
         roll,
-        profile: aliasProfile(alias),
+        profile: alias === "DEVELOPMENT_CLUB" || alias === "DEVELOPMENT_CLUB_2"
+            ? "development"
+            : "balanced",
+        excludeClubIds
+    }).id;
+}
+/**
+ * Some canonical choices model "sign for parent club, then go on loan" with the
+ * same alias in club + world.ownerClub. Once that alias becomes a concrete parent
+ * identity, A3 must still preserve loan authority: registration/playing club must
+ * be distinct from ownerClub. This pure projection resolves only that collision.
+ */
+function materializeNarrativeLoanRegistration(state, ownerClubId, context) {
+    const owner = (0, index_js_1.clubById)(ownerClubId);
+    const countryCode = owner?.countryCode ?? "ESP";
+    const tier = context.targetTier !== null && Number.isFinite(context.targetTier)
+        ? Math.max(1, Math.min(9, Math.trunc(context.targetTier)))
+        : Math.max(1, Math.min(9, Math.trunc(state.tier)));
+    const roll = aliasRoll(state, "LOAN_REGISTRATION", context, ownerClubId);
+    return (0, market_destination_js_1.selectMarketDestination)({
+        countryCode,
+        leagueTier: tier,
+        roll,
+        profile: "development",
         excludeClubIds: [
+            ownerClubId,
             state.club,
             state.professional.ownerClub,
             state.professional.registrationClub
@@ -24019,12 +24942,19 @@ function professionalWeek(state, rng) {
                 if (abroad) {
                     p.route = "abroad";
                     const destinationDraw = rng.next();
-                    const destination = (0, market_destination_js_1.selectForeignMarketDestination)({
-                        leagueTier: p.leagueTier,
-                        roll: drawToRoll(destinationDraw),
-                        profile: upward ? "ambitious" : "balanced",
-                        excludeClubIds: [state.club, p.ownerClub, p.registrationClub]
-                    }).id;
+                    const destinationRoll = drawToRoll(destinationDraw);
+                    const exclusions = [state.club, p.ownerClub, p.registrationClub];
+                    const destination = p.leagueTier === 1 && p.clubPrestigeTier >= 5
+                        ? (0, market_destination_js_1.selectForeignBigClubDestination)({
+                            roll: destinationRoll,
+                            excludeClubIds: exclusions
+                        }).id
+                        : (0, market_destination_js_1.selectForeignMarketDestination)({
+                            leagueTier: p.leagueTier,
+                            roll: destinationRoll,
+                            profile: upward ? "ambitious" : "balanced",
+                            excludeClubIds: exclusions
+                        }).id;
                     p.registrationClub = destination;
                     state.club = destination;
                     p.foreignAdaptation = Math.max(p.foreignAdaptation, 20);
@@ -24062,13 +24992,21 @@ function professionalWeek(state, rng) {
                     else if (levelChanged) {
                         // The old producer changed level/prestige without naming a destination and
                         // offer normalization invented "Club X · Y". Reuse existing draws instead.
-                        const destination = (0, market_destination_js_1.selectMarketDestination)({
-                            countryCode: "ESP",
-                            leagueTier: Math.max(1, p.leagueTier),
-                            roll: drawToRoll(abroadDraw) ^ drawToRoll(loanChanceDraw),
-                            profile: upward ? "ambitious" : "balanced",
-                            excludeClubIds: [state.club, p.ownerClub, p.registrationClub]
-                        }).id;
+                        const destinationRoll = drawToRoll(abroadDraw) ^ drawToRoll(loanChanceDraw);
+                        const exclusions = [state.club, p.ownerClub, p.registrationClub];
+                        const destination = p.leagueTier === 1 && p.clubPrestigeTier >= 5
+                            ? (0, market_destination_js_1.selectBigClubDestination)({
+                                countryCode: "ESP",
+                                roll: destinationRoll,
+                                excludeClubIds: exclusions
+                            }).id
+                            : (0, market_destination_js_1.selectMarketDestination)({
+                                countryCode: "ESP",
+                                leagueTier: Math.max(1, p.leagueTier),
+                                roll: destinationRoll,
+                                profile: upward ? "ambitious" : "balanced",
+                                excludeClubIds: exclusions
+                            }).id;
                         p.ownerClub = destination;
                         p.registrationClub = destination;
                         state.world.ownerClub = destination;
@@ -24368,11 +25306,9 @@ function adaptProfessionalContext(state, tags) {
         clubPrestigeTier = has("STATE20_BIG_RESERVE") ? 5 : 4;
         clubPrestigeScore = has("STATE20_BIG_RESERVE") ? 88 : 76;
         if (has("STATE20_BIG_RESERVE")) {
-            const destination = (0, market_destination_js_1.selectMarketDestination)({
+            const destination = (0, market_destination_js_1.selectBigClubDestination)({
                 countryCode: "ESP",
-                leagueTier: 1,
                 roll: ((state.rngState.narrative.seed >>> 0) ^ 0x51a20b1) >>> 0,
-                profile: "ambitious",
                 excludeClubIds: [state.club, state.professional.ownerClub, state.professional.registrationClub]
             }).id;
             state.club = destination;
@@ -25200,6 +26136,7 @@ const competition_context_js_1 = require("../simulation/competition-context.js")
 const match_penalty_context_js_1 = require("../simulation/match-penalty-context.js");
 const legacy = require("./validation-legacy.js");
 const veteran_market_js_1 = require("../simulation/veteran-market.js");
+const index_js_1 = require("../catalog/football/index.js");
 __exportStar(require("./validation-legacy.js"), exports);
 function assertCompetitionMoments(value) {
     const state = legacy.record(value, "state");
@@ -25240,6 +26177,131 @@ function assertVeteranMarketFacts(value) {
         }
     });
 }
+function assertFootballClubRef(value, path, context) {
+    const classification = (0, index_js_1.classifyFootballClubReference)(value);
+    legacy.ensure((0, index_js_1.isFootballClubReferenceAllowed)(value, context), path, `referencia de club ${classification.kind} no permitida en ${context}: ${classification.value}`);
+}
+function assertCareerTermsClubRefs(value, path, context) {
+    const terms = legacy.record(value, path);
+    for (const key of ["club", "ownerClub", "registrationClub"]) {
+        if (terms[key] !== undefined)
+            assertFootballClubRef(terms[key], `${path}.${key}`, context);
+    }
+}
+function assertCareerOfferClubRefs(value, path, context) {
+    const offer = legacy.record(value, path);
+    if (offer.before !== undefined)
+        assertCareerTermsClubRefs(offer.before, `${path}.before`, context);
+    if (offer.terms !== undefined)
+        assertCareerTermsClubRefs(offer.terms, `${path}.terms`, context);
+}
+function assertFootballCatalogPersistence(value, version) {
+    const state = legacy.record(value, "state");
+    const marker = state.footballCatalogVersion;
+    const context = marker === undefined ? "historical_read" : "new_production";
+    if (marker !== undefined) {
+        legacy.string(marker, "footballCatalogVersion");
+        legacy.ensure(version === 8, "footballCatalogVersion", "el marcador V2 solo es válido en schema 8");
+        legacy.ensure(marker === index_js_1.FOOTBALL_CATALOG_VERSION, "footballCatalogVersion", `versión de catálogo no compatible: ${String(marker)}`);
+    }
+    assertFootballClubRef(state.club, "club", context);
+    if (state.professional !== undefined) {
+        const professional = legacy.record(state.professional, "professional");
+        for (const key of ["ownerClub", "registrationClub"]) {
+            if (professional[key] !== undefined) {
+                assertFootballClubRef(professional[key], `professional.${key}`, context);
+            }
+        }
+    }
+    if (state.world !== undefined) {
+        const world = legacy.record(state.world, "world");
+        if (world.ownerClub !== undefined && world.ownerClub !== null) {
+            assertFootballClubRef(world.ownerClub, "world.ownerClub", context);
+        }
+    }
+    if (state.ageMilestones !== undefined) {
+        legacy.list(state.ageMilestones, "ageMilestones").forEach((row, index) => {
+            const milestone = legacy.record(row, `ageMilestones[${index}]`);
+            if (milestone.club !== undefined) {
+                assertFootballClubRef(milestone.club, `ageMilestones[${index}].club`, context);
+            }
+        });
+    }
+    if (state.history !== undefined) {
+        legacy.list(state.history, "history").forEach((row, index) => {
+            const history = legacy.record(row, `history[${index}]`);
+            if (history.club !== undefined) {
+                assertFootballClubRef(history.club, `history[${index}].club`, context);
+            }
+        });
+    }
+    if (state.npcs !== undefined) {
+        legacy.list(state.npcs, "npcs").forEach((row, index) => {
+            const npc = legacy.record(row, `npcs[${index}]`);
+            if (npc.club !== undefined && npc.club !== null) {
+                assertFootballClubRef(npc.club, `npcs[${index}].club`, context);
+            }
+        });
+    }
+    if (state.employment !== undefined) {
+        const employment = legacy.record(state.employment, "employment");
+        if (employment.previous !== undefined && employment.previous !== null) {
+            const previous = legacy.record(employment.previous, "employment.previous");
+            for (const key of ["club", "ownerClub", "registrationClub"]) {
+                if (previous[key] !== undefined) {
+                    assertFootballClubRef(previous[key], `employment.previous.${key}`, context);
+                }
+            }
+        }
+    }
+    if (state.market !== undefined) {
+        const market = legacy.record(state.market, "market");
+        if (market.pending !== undefined && market.pending !== null) {
+            assertCareerOfferClubRefs(market.pending, "market.pending", context);
+        }
+        if (market.openOffers !== undefined) {
+            legacy.list(market.openOffers, "market.openOffers").forEach((offer, index) => assertCareerOfferClubRefs(offer, `market.openOffers[${index}]`, context));
+        }
+        if (market.history !== undefined) {
+            legacy.list(market.history, "market.history").forEach((row, index) => {
+                const decision = legacy.record(row, `market.history[${index}]`);
+                if (decision.offer !== undefined) {
+                    assertCareerOfferClubRefs(decision.offer, `market.history[${index}].offer`, context);
+                }
+            });
+        }
+        if (market.systemClosures !== undefined) {
+            legacy.list(market.systemClosures, "market.systemClosures").forEach((row, index) => {
+                const closure = legacy.record(row, `market.systemClosures[${index}]`);
+                if (closure.offer !== undefined) {
+                    assertCareerOfferClubRefs(closure.offer, `market.systemClosures[${index}].offer`, context);
+                }
+            });
+        }
+        if (market.futureNegotiations !== undefined) {
+            legacy.list(market.futureNegotiations, "market.futureNegotiations").forEach((row, index) => {
+                const negotiation = legacy.record(row, `market.futureNegotiations[${index}]`);
+                if (negotiation.destination !== undefined) {
+                    assertFootballClubRef(negotiation.destination, `market.futureNegotiations[${index}].destination`, context);
+                }
+                if (negotiation.before !== undefined) {
+                    assertCareerTermsClubRefs(negotiation.before, `market.futureNegotiations[${index}].before`, context);
+                }
+                if (negotiation.terms !== undefined) {
+                    assertCareerTermsClubRefs(negotiation.terms, `market.futureNegotiations[${index}].terms`, context);
+                }
+            });
+        }
+        if (market.futureAgreements !== undefined) {
+            legacy.list(market.futureAgreements, "market.futureAgreements").forEach((row, index) => {
+                const agreement = legacy.record(row, `market.futureAgreements[${index}]`);
+                if (agreement.terms !== undefined) {
+                    assertCareerTermsClubRefs(agreement.terms, `market.futureAgreements[${index}].terms`, context);
+                }
+            });
+        }
+    }
+}
 function assertEmployment(value) {
     const state = legacy.record(value, "state");
     if (state.employment === undefined)
@@ -25277,6 +26339,7 @@ function assertEmployment(value) {
  */
 function validateGameSave(value, version) {
     legacy.validateGameSave(value, version);
+    assertFootballCatalogPersistence(value, version);
     assertSportMatchModel(value);
     assertCompetitionMoments(value);
     assertPenaltySetups(value);
@@ -25289,6 +26352,7 @@ function validateGameSave(value, version) {
 /** Common runtime/save boundary including market + football moment + match-model checks. */
 function assertGameState(value) {
     legacy.assertGameState(value);
+    assertFootballCatalogPersistence(value, 8);
     assertSportMatchModel(value);
     assertCompetitionMoments(value);
     assertPenaltySetups(value);
@@ -27457,7 +28521,7 @@ const CATALOG_CLUB_NAMES = Object.freeze({
   "CHN_CHENGDU": "Chengdu Horizon",
   "CHN_CHONGQING": "Chongqing Northern",
   "CHN_DALIAN": "Dalian Central",
-  "CHN_GUANGZHOU": "Guangzhou Northern",
+  "CHN_GUANGZHOU": "Guangzhou Jade",
   "CHN_HANGZHOU": "Hangzhou Northern",
   "CHN_JINAN": "Jinan Jade",
   "CHN_NANJING": "Nanjing Central",
@@ -27520,7 +28584,7 @@ const CATALOG_CLUB_NAMES = Object.freeze({
   "ENG_CANTERBURY": "Canterbury Meadow",
   "ENG_CARLISLE": "Carlisle Harbour",
   "ENG_CHELTENHAM": "Cheltenham Meadow",
-  "ENG_CHESTER": "Chester Riverside",
+  "ENG_CHESTER": "Chester Crown",
   "ENG_COLCHESTER": "Colchester Riverside",
   "ENG_COVENTRY": "Coventry Riverside",
   "ENG_DERBY": "Derby Riverside",
@@ -27928,9 +28992,13 @@ function formatClubName(value){
  const name=String(value??'');
  if(name==='UDV')return 'U. D. Valdoria';
  if(CATALOG_CLUB_NAMES[name])return CATALOG_CLUB_NAMES[name];
+ if(name==='NEW_CLUB')return 'Nuevo club';
+ if(name==='DEVELOPMENT_CLUB'||name==='DEVELOPMENT_CLUB_2')return 'Club de desarrollo';
+ if(name==='HIGHER_CLUB')return 'Club de categoría superior';
  if(name==='BIG_CLUB')return 'Gran club';
+ if(name==='FOREIGN_DEV_CLUB')return 'Club extranjero de desarrollo';
  const match=/^(Development|Foreign|Loan|Domestic|Summer|SIM_OPP)_(\d+)_(\d+)$/.exec(name);
- if(!match)return name;
+ if(!match)return /^[A-Z]{3}_[A-Z0-9_]+$/.test(name)?'Club desconocido':name;
  const [,family,tier,number]=match;
  const place=places[Number(number)];
  return (place?prefixes[family]+' '+place:'Club '+number)+' · categoría '+tier;

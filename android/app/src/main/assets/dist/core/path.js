@@ -1,3 +1,4 @@
+import { npcKnows } from "./npc-knowledge.js";
 function relationshipLookup(root, path) {
     if (!path.startsWith("rel."))
         return undefined;
@@ -10,9 +11,20 @@ function relationshipLookup(root, path) {
     const relation = relationships.find(r => r.npcId === npcId);
     return relation ? relation[axis] : undefined;
 }
+function knowledgeLookup(root, path) {
+    if (!path.startsWith("know."))
+        return undefined;
+    const [, npcId, ...factParts] = path.split(".");
+    const factId = factParts.join(".");
+    if (!npcId || !factId || !root || typeof root !== "object")
+        return undefined;
+    return npcKnows(root, npcId, factId);
+}
 export function getPath(root, path) {
     if (path.startsWith("rel."))
         return relationshipLookup(root, path);
+    if (path.startsWith("know."))
+        return knowledgeLookup(root, path);
     return path.split(".").reduce((acc, key) => {
         if (acc && typeof acc === "object" && key in acc) {
             return acc[key];
@@ -21,6 +33,8 @@ export function getPath(root, path) {
     }, root);
 }
 export function setPath(root, path, value) {
+    if (path.startsWith("know."))
+        throw new Error(`Knowledge paths are read-only: ${path}`);
     if (path.startsWith("rel.")) {
         const [, npcId, axis] = path.split(".");
         const relationships = root.relationships;

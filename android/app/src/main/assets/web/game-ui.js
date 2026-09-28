@@ -1,24 +1,51 @@
+import { createCutscenePlayer } from './cutscene-player.js';
+import { formatClubName } from './club-names.js';
 import { createIndexedSaveStore } from './indexed-save-store.js';
 // UI reads PlayerView only. All career mutations go through GameSession commands.
-export function mountGame({root, GameSession, assets, css, storageKey='historia-jugador.preview.session.v1', events}) {
+export function mountGame({root, GameSession, assets, css, storageKey='historia-jugador.preview.session.v1', events, cutsceneUrl=clip=>'/web/assets/cutscenes/'+clip.file}) {
   const KEY=storageKey;
-  let session=null, busy=false, paused=false, view='home', cinematic=false, message='', replacement=null, lastArt='stadium_bg';
-  let savedRaw=null;
+  let session=null, busy=false, busyLabel='Guardando tu historia…', paused=false, view='home', cinematic=false, message='', replacement=null, lastArt='stadium_bg', autoTimer=null;
+  let savedRaw=null, disposeCutscene=null;
+  const watchedKey=KEY+'.watched-cutscenes.v1';
+  let watchedScenes=new Set();
+  try{const items=JSON.parse(localStorage.getItem(watchedKey)||'[]');if(Array.isArray(items))watchedScenes=new Set(items.filter(x=>typeof x==='string'));}catch{}
+  function appendCutscene(v,target){
+    if(!v.cutscene)return;
+    const sceneKey=[v.sessionId,v.cutscene.file,v.screen,v.decisionsMade].join(':');
+    const player=createCutscenePlayer({document:doc,clip:v.cutscene,url:cutsceneUrl(v.cutscene),autoplay:!watchedScenes.has(sceneKey),onStarted(){watchedScenes.add(sceneKey);try{localStorage.setItem(watchedKey,JSON.stringify([...watchedScenes].slice(-512)));}catch{}}});
+    if(player){target.append(player.element);disposeCutscene=player.dispose;}
+  }
+  let playerActionUi={screen:'career',categoryId:null,actionId:null,targetId:null,resultExecutionId:null};
+
   const sessionOptions=events?{events}:{};
-  const store=createIndexedSaveStore({storage:localStorage,indexedDB:globalThis.indexedDB,key:KEY,validate:raw=>GameSession.fromSave(raw,sessionOptions)});
+  const store=createIndexedSaveStore({storage:localStorage,indexedDB:globalThis.indexedDB,key:KEY,validate:raw=>GameSession.migrateFromSave(raw,sessionOptions)});
   const doc=root.ownerDocument, win=doc.defaultView||globalThis, el=(tag,text,cls)=>{const n=doc.createElement(tag);if(text!==undefined)n.textContent=text;if(cls)n.className=cls;return n;};
   const style=el('style');style.textContent=css;root.append(style);
-  const shell=el('div',undefined,'mh');root.append(shell);
+  const shell=el('div',undefined,'mh');shell.dataset.release='2026-09-28-cinematicas-prologo';root.append(shell);
   const date=s=>new Intl.DateTimeFormat('es-ES',{day:'numeric',month:'short',year:'numeric',timeZone:'UTC'}).format(new Date(s+'T00:00:00Z'));
   const decisionCount=n=>`${n} ${n===1?'decisión':'decisiones'}`;
   const hasBackup=()=>store.hasPrevious();
   const money=n=>new Intl.NumberFormat('es-ES',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(n);
-  const clubName=name=>name==='UDV'?'U. D. Valdoria':name==='BIG_CLUB'?'Gran club':name.startsWith('Foreign_')?'Club extranjero':name.startsWith('Loan_')?'Club de cesión':name;
+  const clubName=formatClubName;
+  const decimal=n=>new Intl.NumberFormat('es-ES',{maximumFractionDigits:1}).format(n);
+  const deltaText=n=>{const rounded=Math.round(n*10)/10;return rounded===0&&n!==0?(n>0?'+':'−')+'<0,1':(rounded>0?'+':'')+decimal(rounded);};
   const club=v=>clubName(v.club);
   const position=v=>({winger:'Extremo',midfielder:'Centrocampista',striker:'Delantero',defender:'Defensa',goalkeeper:'Portero'})[v.position]||'Futbolista';
+  const bondType=role=>{
+    const r=String(role).toLocaleLowerCase('es-ES');
+    if(/madre|padre|hermana|hermano|familia/.test(r))return 'Familia';
+    if(/amigo/.test(r))return 'Amistad';
+    if(/agente/.test(r))return 'Representación';
+    if(/entrenador|técnico/.test(r))return 'Cuerpo técnico';
+    if(/fisioterapeuta|médic|fisio/.test(r))return 'Equipo médico';
+    if(/periodista|locutor|prensa/.test(r))return 'Prensa';
+    if(/jugador|portero|central|extremo|delantero|centrocampista|mediapunta|capitán|vicecapitán/.test(r))return 'Vestuario';
+    if(/president|director deportivo/.test(r))return 'Club';
+    return 'Entorno profesional';
+  };
   const svgPaths={home:'M3 10 12 3l9 7v11h-6v-7H9v7H3z',career:'M5 3h14v18H5z M8 8h8M8 12h8M8 16h5',world:'M3 12h18M12 3c-5 5-5 13 0 18 5-5 5-13 0-18 M12 3a9 9 0 1 0 0 18 9 9 0 1 0 0-18',relations:'M2 21c0-9 13-9 13 0M15 14c4-1 7 2 7 6 M8.5 3a4 4 0 1 0 0 8 4 4 0 1 0 0-8 M17 5a3 3 0 0 1 0 6',profile:'M4 21c0-10 16-10 16 0 M12 3a4 4 0 1 0 0 8 4 4 0 1 0 0-8',save:'M4 3h14l3 3v15H3V3h1 M7 3v7h10V3M7 21v-7h10v7',arrow:'M4 12h15M14 6l6 6-6 6'};
   function icon(name){const s=doc.createElementNS('http://www.w3.org/2000/svg','svg');s.setAttribute('viewBox','0 0 24 24');s.setAttribute('aria-hidden','true');const p=doc.createElementNS(s.namespaceURI,'path');p.setAttribute('d',svgPaths[name]||svgPaths.arrow);s.append(p);return s;}
-  function button(text,fn,cls='secondary',options={}){const b=el('button',undefined,cls);b.type='button';b.append(el('span',text));b.disabled=busy||(paused&&options.blockedWhenPaused===true);if(options.ariaLabel)b.setAttribute('aria-label',options.ariaLabel);if(options.pressed!==undefined)b.setAttribute('aria-pressed',String(options.pressed));b.addEventListener('click',fn);return b;}
+  function button(text,fn,cls='secondary',options={}){const b=el('button',undefined,cls);b.type='button';b.append(el('span',text));b.disabled=busy||options.disabled===true||(paused&&options.blockedWhenPaused===true);if(options.ariaLabel)b.setAttribute('aria-label',options.ariaLabel);if(options.pressed!==undefined)b.setAttribute('aria-pressed',String(options.pressed));b.addEventListener('click',fn);return b;}
   function photo(name,cls='photo'){const img=el('img',undefined,cls);img.src=assets[name]||assets.stadium_bg;img.alt='';img.draggable=false;return img;}
   function panel(title){const p=el('article',undefined,'panel');p.append(el('h2',title));return p;}
   const validViews=new Set(['home','career','world','relations','profile','save']);
@@ -26,50 +53,288 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
   function routeState(){return {mhOwner:true,mhView:view,mhCinematic:cinematic};}
   function replaceRouteState(){if(win.history?.replaceState)win.history.replaceState(routeState(),'');}
   function prepareHistory(){if(historyReady||!win.history?.replaceState)return;const initialCinematic=cinematic;win.history.replaceState({...routeState(),mhCinematic:false},'');historyReady=true;if(initialCinematic)win.history.pushState(routeState(),'');}
-  function navigate(name){view=validViews.has(name)?name:'home';cinematic=false;message='';if(historyReady)win.history.pushState(routeState(),'');else prepareHistory();render(true);}
+  function navigate(name){view=validViews.has(name)?name:'home';cinematic=false;message='';playerActionUi={screen:'career',categoryId:null,actionId:null,targetId:null,resultExecutionId:null};if(historyReady)win.history.pushState(routeState(),'');else prepareHistory();render(true);}
   function openCinematic(){if(!session)return;cinematic=true;if(historyReady)win.history.pushState(routeState(),'');else prepareHistory();render(true);}
   function closeCinematic(){if(historyReady&&win.history.state?.mhOwner&&win.history.state.mhCinematic){win.history.back();return;}cinematic=false;view='home';replaceRouteState();render(true);}
-  function goBack(){if(cinematic){closeCinematic();return;}if(historyReady&&win.history.state?.mhOwner&&view!=='home'){win.history.back();return;}if(view!=='home'){view='home';replaceRouteState();render(true);}}
-  function pauseToggle(){if(!session||busy)return;paused=!paused;render();}
+  function goBack(){
+    if(cinematic){closeCinematic();return;}
+    if(playerActionUi.screen!=='career'){
+      if(playerActionUi.screen==='player_action_result'||playerActionUi.screen==='player_action_detail')playerActionUi={screen:'player_action_category',categoryId:playerActionUi.categoryId,actionId:null,targetId:null,resultExecutionId:null};
+      else if(playerActionUi.screen==='player_action_category')playerActionUi={screen:'player_action_menu',categoryId:null,actionId:null,targetId:null,resultExecutionId:null};
+      else playerActionUi={screen:'career',categoryId:null,actionId:null,targetId:null,resultExecutionId:null};
+      render(true);return;
+    }
+    if(historyReady&&win.history.state?.mhOwner&&view!=='home'){win.history.back();return;}
+    if(view!=='home'){view='home';replaceRouteState();render(true);}
+  }
+  async function pauseToggle(){
+    if(!session||busy)return;
+    const mode=session.getView().simulation?.mode;
+    if(mode==='auto_simulating'){clearTimeout(autoTimer);await run('auto',{action:'pause'});return;}
+    if(mode==='paused'){await run('auto',{action:'resume'});return;}
+    paused=!paused;render();
+  }
   async function commit(next,previous){
     if(previous){const current=savedRaw&&JSON.parse(savedRaw);if(!current||current.sessionId!==previous.sessionId||current.revision!==previous.revision)throw Error('Recupera la partida guardada antes de continuar.');}
     await store.write(next,previous?savedRaw:replacement);
     savedRaw=JSON.stringify(next);
   }
   async function load(){
-    if(busy)return;busy=true;message='';render();
-    try{const raw=await store.read();savedRaw=raw;if(raw){session=await GameSession.fromSave(raw,{...sessionOptions,commit});cinematic=['decision','result','offer'].includes(session.getView().screen);}else{replacement=null;session=await GameSession.create(424242,{...sessionOptions,commit});}prepareHistory(); if(await store.legacyChanged())message='Otra pestaña ha cambiado la copia antigua. Puedes descargarla en Tu partida para revisarla antes de importar.'; }
-    catch(e){session=null;message='No se pudo abrir la partida. '+e.message+' La copia guardada se conserva.';view='save';}
-    finally{busy=false;render();}
+    if(busy)return;busy=true;busyLabel='Cargando tu historia…';message='';render();
+    try{const raw=await store.read();savedRaw=raw;if(raw){session=await GameSession.migrateFromSave(raw,{...sessionOptions,commit});cinematic=['decision','result','offer'].includes(session.getView().screen);}else{replacement=null;session=await GameSession.create(424242,{...sessionOptions,commit});}prepareHistory(); if(await store.legacyChanged())message='Otra pestaña ha cambiado la copia antigua. Puedes descargarla en Tu partida para revisarla antes de importar.'; }
+    catch(e){console.error('Multihistoria load failed',e);session=null;message='No se ha podido cargar el juego. Comprueba tu conexión o almacenamiento e inténtalo de nuevo. Tu copia guardada se conserva.';view='save';}
+    finally{busy=false;render();queueAutoStep();}
   }
-  async function run(type,extra={}){
-    if(busy||paused||!session)return;
+  function queueAutoStep(){
+    clearTimeout(autoTimer);
+    if(!session||paused||session.getView().simulation?.mode!=='auto_simulating')return;
+    autoTimer=setTimeout(()=>{
+      if(!busy&&!paused&&session?.getView().simulation?.mode==='auto_simulating')run('auto',{action:'step'});
+    },140);
+  }
+  async function run(type,extra={},onSuccess){
+    if(busy||!session)return;
+    if(type==='auto'&&extra.action==='pause')clearTimeout(autoTimer);
     const command={type,commandId:crypto.randomUUID(),expectedRevision:session.getView().revision,...extra};
-    busy=true;message='';render();
-    try{const wasCinematic=cinematic;await session.dispatch(command);cinematic=['decision','result','offer'].includes(session.getView().screen);view='home';if(cinematic&&!wasCinematic){if(historyReady)win.history.pushState(routeState(),'');else prepareHistory();}else if(!cinematic)replaceRouteState();}
-    catch(e){message=e.message+' Recupera la partida guardada antes de reintentar.';}
-    finally{busy=false;render(true);}
+    let completed=false;
+    busy=true;busyLabel='Guardando tu historia…';message='';render();
+    try{
+      const wasCinematic=cinematic;
+      await session.dispatch(command);
+      completed=true;
+      if(onSuccess)onSuccess(session.getView());
+      cinematic=['decision','result','offer'].includes(session.getView().screen);
+      if(type==='player_action'){
+        view='career';
+        cinematic=false;
+        replaceRouteState();
+      }else{
+        view='home';
+        if(cinematic&&!wasCinematic){if(historyReady)win.history.pushState(routeState(),'');else prepareHistory();}
+        else if(!cinematic)replaceRouteState();
+      }
+    }
+    catch(e){
+      clearTimeout(autoTimer);
+      if(type==='auto'&&['start','step'].includes(extra.action)&&session?.getView().simulation?.mode==='auto_simulating'){
+        try{await session.dispatch({type:'auto',action:'pause',commandId:crypto.randomUUID(),expectedRevision:session.getView().revision});}catch{}
+      }
+      if(e?.code==='STALE_REVISION')message='La situación de tu carrera ha cambiado. La pantalla se ha actualizado; vuelve a intentarlo.';
+      else if(type==='player_action')message=e?.message||'Esta acción ya no está disponible.';
+      else message=e.message+' La simulación se ha detenido en el último estado válido; puedes reintentar desde Tu partida.';
+    }
+    finally{busy=false;render(true);if(completed)queueAutoStep();}
+  }
+  const PLAYER_ACTION_CATEGORY_COPY={
+    career:'Habla con entrenador, representante o club cuando el sistema lo permita.',
+    training:'Trabaja aspectos concretos de tu preparación.',
+    representative:'Consulta y gestiona tu relación con la representación.',
+    relationships:'Interactúa voluntariamente con personas de tu carrera.',
+    image:'Gestiona tu exposición pública cuando haya opciones disponibles.',
+    life:'Descanso y decisiones personales fuera del campo.',
+    health:'Recuperación y cuidado personal cuando estén disponibles.'
+  };
+  function resetPlayerActions(){playerActionUi={screen:'career',categoryId:null,actionId:null,targetId:null,resultExecutionId:null};}
+  function cooldownText(v,a){
+    if(!a?.cooldownUntil)return a?.unavailableReason||'';
+    const days=Math.max(0,Math.ceil((new Date(a.cooldownUntil+'T00:00:00Z')-new Date(v.date+'T00:00:00Z'))/86400000));
+    if(days===0)return a.unavailableReason||'';
+    if(days===1)return 'Podrás volver a hacerlo mañana.';
+    if(days<=7)return 'Podrás volver a hacerlo la próxima semana.';
+    return 'Disponible en '+days+' días.';
+  }
+  function selectedPlayerAction(v){for(const c of v.actions?.categories??[]){const a=c.actions.find(row=>row.id===playerActionUi.actionId);if(a)return a;}return null;}
+  function openPlayerActions(){const v=session?.getView();if(!v||v.screen!=='career'||v.simulation?.mode!=='idle'||!v.actions?.available)return;view='career';cinematic=false;playerActionUi={screen:'player_action_menu',categoryId:null,actionId:null,targetId:null,resultExecutionId:null};render(true);}
+  function renderPlayerActions(v,main){
+    if(v.screen!=='career'||v.simulation?.mode!=='idle'||!v.actions?.available){resetPlayerActions();return false;}
+    if(playerActionUi.screen==='player_action_menu'){
+      main.append(el('span','GESTIONAR MI CARRERA','eyebrow'),el('h1','¿Qué quieres hacer?'),el('p','Estas acciones son opcionales. Puedes ignorarlas y volver a simular cuando quieras.','muted'));
+      const grid=el('div',undefined,'player-action-grid');
+      for(const c of v.actions.categories){
+        const p=panel(c.label);p.classList.add('player-action-card');p.append(el('p',PLAYER_ACTION_CATEGORY_COPY[c.id]||'Acciones voluntarias de tu carrera.','muted'),button('Ver acciones',()=>{playerActionUi={screen:'player_action_category',categoryId:c.id,actionId:null,targetId:null,resultExecutionId:null};render(true);},'secondary'));grid.append(p);
+      }
+      main.append(grid,button('Volver a carrera',()=>{resetPlayerActions();render(true);},'ghost'));
+      return true;
+    }
+    const category=v.actions.categories.find(c=>c.id===playerActionUi.categoryId);
+    if(!category){playerActionUi={screen:'player_action_menu',categoryId:null,actionId:null,targetId:null,resultExecutionId:null};return renderPlayerActions(v,main);}
+    if(playerActionUi.screen==='player_action_category'){
+      main.append(el('span','GESTIONAR MI CARRERA','eyebrow'),el('h1',category.label),el('p',PLAYER_ACTION_CATEGORY_COPY[category.id]||'Acciones voluntarias.','muted'));
+      const list=el('div',undefined,'player-action-list');
+      for(const a of category.actions){
+        const p=panel(a.label);p.classList.add('player-action-card');p.append(el('p',a.description,'muted'));
+        if(!a.available){const reasonSource=a.targetKind!=='none'?(a.targets?.find(target=>target.cooldownUntil)??a.targets?.find(target=>!target.available)??a):a;p.append(el('p',cooldownText(v,reasonSource)||reasonSource.unavailableReason||a.unavailableReason||'Ahora mismo no está disponible.','player-action-reason'));}
+        p.append(button('Abrir',()=>{playerActionUi={screen:'player_action_detail',categoryId:category.id,actionId:a.id,targetId:null,resultExecutionId:null};render(true);},'secondary',{disabled:!a.available}));
+        list.append(p);
+      }
+      main.append(list,button('Volver a categorías',()=>{playerActionUi={screen:'player_action_menu',categoryId:null,actionId:null,targetId:null,resultExecutionId:null};render(true);},'ghost'),button('Volver a carrera',()=>{resetPlayerActions();render(true);},'ghost'));
+      return true;
+    }
+    const a=selectedPlayerAction(v);
+    if(!a){playerActionUi={screen:'player_action_category',categoryId:category.id,actionId:null,targetId:null,resultExecutionId:null};return renderPlayerActions(v,main);}
+    if(playerActionUi.screen==='player_action_detail'){
+      main.append(el('span','ACCIÓN VOLUNTARIA','eyebrow'),el('h1',a.label),el('p',a.description,'muted'));
+      const requiresTarget=a.targetKind!=='none';
+      const targets=a.targets??[];
+      const selectedTarget=requiresTarget?(targets.find(target=>target.id===playerActionUi.targetId)??(targets.length===1?targets[0]:null)):null;
+      if(requiresTarget){
+        main.append(el('h2','¿Con quién?'));
+        const targetList=el('div',undefined,'player-action-targets');
+        for(const target of targets){
+          const p=el('div',undefined,'player-action-option player-action-target');
+          p.append(el('strong',target.label),el('p',target.role,'muted'));
+          const selected=selectedTarget?.id===target.id;
+          p.append(button(selected?'Seleccionado':'Elegir',()=>{playerActionUi={...playerActionUi,targetId:target.id};render(true);},selected?'primary':'secondary',{disabled:!target.available}));
+          if(!target.available)p.append(el('p',cooldownText(v,target)||target.unavailableReason||'Este objetivo no está disponible.','player-action-reason'));
+          targetList.append(p);
+        }
+        if(!targets.length)targetList.append(el('p',a.unavailableReason||'No hay un objetivo disponible.','player-action-reason'));
+        main.append(targetList);
+      }
+      const availabilitySource=selectedTarget??a;
+      if(!availabilitySource.available)main.append(el('p',cooldownText(v,availabilitySource)||availabilitySource.unavailableReason||'Ahora mismo no está disponible.','player-action-reason'));
+      const options=el('div',undefined,'player-action-options');
+      const availableOptions=requiresTarget?(selectedTarget?.options??[]):a.options;
+      for(const o of availableOptions){
+        const enabled=availabilitySource.available&&o.available;
+        const p=el('div',undefined,'player-action-option');
+        if(o.description)p.append(el('p',o.description,'muted'));
+        p.append(button(o.label,()=>run('player_action',{actionId:a.id,optionId:o.id,...(selectedTarget?{targetId:selectedTarget.id}:{})},()=>{
+          const latest=session.getView().actions?.lastResult;
+          playerActionUi={screen:'player_action_result',categoryId:category.id,actionId:a.id,targetId:selectedTarget?.id??null,resultExecutionId:latest?.executionId??null};
+        }),'secondary',{disabled:!enabled}));
+        if(!enabled&&o.unavailableReason&&o.unavailableReason!==availabilitySource.unavailableReason)p.append(el('p',o.unavailableReason,'player-action-reason'));
+        options.append(p);
+      }
+      if(requiresTarget&&!selectedTarget)options.append(el('p','Elige primero una persona para ver las opciones disponibles.','player-action-reason'));
+      main.append(options,button('Volver',()=>{playerActionUi={screen:'player_action_category',categoryId:category.id,actionId:null,targetId:null,resultExecutionId:null};render(true);},'ghost'));
+      return true;
+    }
+    if(playerActionUi.screen==='player_action_result'){
+      const latest=v.actions?.lastResult;
+      const p=panel(a.label);p.classList.add('player-action-result');p.prepend(el('span','ACCIÓN COMPLETADA','eyebrow'));p.append(el('p',latest?.executionId===playerActionUi.resultExecutionId?latest.text:'La acción se ha registrado correctamente.','story-text'));
+      const actions=el('div',undefined,'player-action-result-actions');actions.append(button('Realizar otra acción',()=>{playerActionUi={screen:'player_action_menu',categoryId:null,actionId:null,targetId:null,resultExecutionId:null};render(true);}),button('Volver a carrera',()=>navigate('home'),'primary'));p.append(actions);main.append(p);return true;
+    }
+    resetPlayerActions();return false;
   }
   function mainAction(v){
     if(v.screen==='offer')return button('Revisar oferta',openCinematic,'primary',{blockedWhenPaused:true});
     if(v.screen==='decision')return button('Una decisión te espera',openCinematic,'primary',{blockedWhenPaused:true});
     if(v.screen==='result')return button('Volver a tu decisión',openCinematic,'primary',{blockedWhenPaused:true});
     if(v.screen==='epilogue')return button('Ver mi carrera',()=>navigate('career'),'primary');
+    if(v.simulation){
+      if(v.screen==='summary')return button('Seguir simulando',()=>run('auto',{action:'start'}),'primary',{blockedWhenPaused:true});
+      if(v.simulation.mode==='auto_simulating')return button('Pausar simulación',()=>run('auto',{action:'pause'}),'primary',{blockedWhenPaused:true});
+      if(v.simulation.mode==='paused')return button('Reanudar simulación',()=>run('auto',{action:'resume'}),'primary',{blockedWhenPaused:true});
+      return button('Simular',()=>run('auto',{action:'start'}),'primary',{blockedWhenPaused:true});
+    }
     return button('Simular semana',()=>run('continue',{maxDays:7}),'primary',{blockedWhenPaused:true});
   }
   function hero(v){const h=el('article',undefined,'hero');h.append(photo('hero_player'));const c=el('div',undefined,'hero-copy');c.append(el('span','TU HISTORIA, POR ESCRIBIR','eyebrow'),el('h1','Una vida.\nMil decisiones.'),el('p',position(v)+' · '+v.age+' años'),el('p',club(v),'muted'));h.append(c);return h;}
-  function stats(v){const p=panel('Tu momento');for(const [label,value]of[['Forma',v.form],['Estado físico',v.fitness],['Fatiga',v.fatigue]]){const row=el('div',undefined,'meter');row.append(el('span',label),el('strong',Math.round(value)+' / 100'));const meter=el('progress');meter.max=100;meter.value=value;meter.setAttribute('aria-label',label);row.append(meter);p.append(row);}p.append(el('p',v.appearances+' partidos disputados','muted'));return p;}
-  function home(v,main){const grid=el('div',undefined,'home-grid');grid.append(hero(v));const next=panel(v.screen==='epilogue'?'El final de un capítulo':'Lo que viene ahora');next.classList.add('next');next.append(photo('stadium_bg','card-bg'));const content=el('div',undefined,'next-content');content.append(el('span',date(v.date),'eyebrow'),el('h2',v.offer?.reason||v.decision?.title||v.result?.title||(v.screen==='epilogue'?'Una carrera para recordar':'El siguiente paso.')),
-      el('p',v.offer?'Hay una propuesta de contrato que necesita tu respuesta.':v.decision?'Hay un momento que necesita tu respuesta.':v.result?'Tu decisión ya forma parte de esta historia.':v.screen==='epilogue'?'Mira atrás y recorre los momentos que te han traído hasta aquí.':'Entrenamientos, partidos y conversaciones. Avanza hasta que la vida te pida decidir.','muted'),mainAction(v));next.append(content);grid.append(next,stats(v));
+  function stats(v){
+    const p=panel('Tu momento');
+    const rows=[
+      ['Forma',v.form,'Rendimiento actual: refleja cómo estás compitiendo ahora.'],
+      ['Estado físico',v.fitness,'Condición corporal y disponibilidad física.'],
+      ['Fatiga',v.fatigue,'Desgaste acumulado: cuanto más alta, peor.']
+    ];
+    for(const [label,value,help] of rows){
+      const row=el('div',undefined,'meter');
+      const name=el('span',label);name.title=help;
+      row.append(name,el('strong',Math.round(value)+' / 100'));
+      const meter=el('progress');meter.max=100;meter.value=value;meter.setAttribute('aria-label',label+'. '+help);
+      row.append(meter,el('small',help,'meter-help'));p.append(row);
+    }
+    p.append(el('p',v.appearances+(v.appearances===1?' partido disputado':' partidos disputados'),'muted'));
+    return p;
+  }
+  function retirementPanel(v){
+    if(v.retirementStatus==='playing')return null;
+    const copy={
+      decided:['Considerando el futuro','Has decidido encarar el final de tu carrera. El juego conservará este estado hasta que la historia avance.'],
+      announced:['Retirada anunciada','Tu decisión ya es pública. La carrera continúa hasta su cierre según el estado del juego.'],
+      closed:['Carrera finalizada','La etapa como futbolista ha terminado. Recorre tu carrera y el epílogo.']
+    }[v.retirementStatus];
+    if(!copy)return null;
+    const p=panel(copy[0]);p.classList.add('retirement-panel');p.append(el('p',copy[1],'muted'));
+    if(v.retirementStatus==='closed'){
+      const totals=v.careerSeasons.reduce((acc,row)=>{acc.matches+=row.appearances;acc.goals+=row.goals;acc.assists+=row.assists;return acc;},{matches:0,goals:0,assists:0});
+      const summary=el('div',undefined,'retirement-summary');
+      for(const [label,value] of [['Partidos',totals.matches],['Goles',totals.goals],['Asistencias',totals.assists]]){const item=el('div');item.append(el('span',label),el('strong',String(value)));summary.append(item);}
+      p.append(summary);
+      const actions=el('div',undefined,'dialog-actions');
+      if(view!=='career')actions.append(button('Ver carrera',()=>navigate('career'),'primary'));
+      actions.append(button('Empezar otra historia',()=>navigate('save')));
+      p.append(actions);
+    }
+    return p;
+  }
+  function interruptionText(type){return ({decision:'Ha aparecido una decisión que necesita tu respuesta.',offer:'Ha llegado una oferta que necesita tu respuesta.',important_injury:'Una lesión importante requiere atención.',national_selection:'Hay novedades de selección internacional.',role_change:'Tu rol deportivo ha cambiado.',career_change:'Tu situación de club ha cambiado.',season_complete:'La temporada deportiva ha terminado.',season_transition:'Ha cambiado la temporada o una etapa de tu carrera.',retirement:'Tu carrera ha alcanzado su cierre.',max_auto_weeks:'El tramo automático ha llegado a su límite.'})[type]||'La simulación se ha detenido en un momento relevante.';}
+  function simulationSummary(v){
+    const s=v.simulation?.summary;if(!s)return null;
+    const p=panel('Resumen del periodo');p.classList.add('period-summary');
+    p.append(el('p',`${date(s.fromDate)} → ${date(s.toDate)} · ${s.daysSimulated} días simulados`,'muted'));
+    const rows=[['Partidos disputados',`+${s.matches.appearances}`],['Forma',`${s.playerChanges.form>=0?'+':''}${Math.round(s.playerChanges.form)}`],['Fatiga',`${s.playerChanges.fatigue>=0?'+':''}${Math.round(s.playerChanges.fatigue)}`],['Estado físico',`${s.playerChanges.fitness>=0?'+':''}${Math.round(s.playerChanges.fitness)}`]];
+    for(const [label,value] of rows){const row=el('div',undefined,'data-row');row.append(el('span',label),el('strong',value));p.append(row);}
+    if(s.careerChanges.clubFrom!==s.careerChanges.clubTo||s.careerChanges.roleFrom!==s.careerChanges.roleTo)p.append(el('p',`Carrera: ${clubName(s.careerChanges.clubFrom)} → ${clubName(s.careerChanges.clubTo)} · ${s.careerChanges.roleFrom} → ${s.careerChanges.roleTo}`,'muted'));
+    for(const text of s.worldHighlights.slice(-3))p.append(el('p',text,'muted'));
+    for(const line of s.report?.context??[])p.append(el('p',line,'story-text'));
+    if(s.report?.fixtures.length){
+      const matches=el('details',undefined,'period-fixtures');matches.append(el('summary','Partidos del periodo · '+s.report.fixtures.length));
+      for(const m of s.report.fixtures){
+        const row=el('article',undefined,'period-fixture');
+        const home=m.homeAway==='home'?clubName(m.club):clubName(m.opponent),away=m.homeAway==='home'?clubName(m.opponent):clubName(m.club);
+        row.append(el('time',date(m.date),'eyebrow'),el('p',m.homeGoals===null?`${home} · ${away}`:`${home} ${m.homeGoals} – ${m.awayGoals} ${away}`),el('p',`${m.participation} · ${m.minutes} min`+(m.rating===null?'':' · Nota '+decimal(m.rating)),'muted'));matches.append(row);
+      }
+      p.append(matches,button('Ver historial deportivo',()=>navigate('career')));
+    }
+    if(s.interruption)p.append(el('p',interruptionText(s.interruption.type),'period-interruption'));
+    return p;
+  }
+  function home(v,main){
+    if(v.screen==='epilogue'||v.cutscene?.eventId==='PROLOGUE')appendCutscene(v,main);
+    const grid=el('div',undefined,'home-grid');
+    grid.append(hero(v));
+    const next=panel(v.screen==='epilogue'?'El final de un capítulo':v.screen==='summary'?'Tu último tramo':'Lo que viene ahora');next.classList.add('next');next.append(photo('stadium_bg','card-bg'));
+    const content=el('div',undefined,'next-content');content.append(el('span',date(v.date),'eyebrow'),el('h2',v.offer?.reason||v.decision?.title||v.result?.title||(v.screen==='epilogue'?'Una carrera para recordar':v.screen==='summary'?'El tiempo ha avanzado.':'El siguiente paso.')),
+      el('p',v.offer?'Hay una propuesta de contrato que necesita tu respuesta.':v.decision?'Hay un momento que necesita tu respuesta.':v.result?'Tu decisión ya forma parte de esta historia.':v.screen==='epilogue'?'Mira atrás y recorre los momentos que te han traído hasta aquí.':v.screen==='summary'?'Revisa qué cambió en este tramo antes de seguir simulando.':'Entrenamientos, partidos y conversaciones. Avanza hasta que la vida te pida decidir.','muted'),mainAction(v));
+    if(v.screen==='career'&&v.simulation?.mode==='idle'&&v.actions?.available)content.append(button('Gestionar mi carrera',openPlayerActions,'secondary'));
+    if(v.screen==='career'&&v.simulation?.mode==='paused')content.append(button('Terminar simulación',()=>run('auto',{action:'stop'}),'secondary'));
+    next.append(content);grid.append(next,stats(v));
     const recent=panel('El último capítulo');recent.classList.add('recent');recent.append(photo('hero_player','news-thumb'));const row=v.journal.at(-1);recent.append(el('h3',row?.title||'Todo empieza en Valdoria'),el('p',row?.messages[0]||'Una oportunidad de acercarte al primer equipo. Todavía queda todo por decidir.','muted'),button('Recorrer mi historia',()=>navigate('career')));grid.append(recent);
-    const people=panel('Tu entorno');const contacts=v.contacts.filter(c=>['NPC_CCH_01','NPC_MED_01','NPC_FAM_01'].includes(c.id));for(const c of contacts){const r=el('div',undefined,'contact-row');r.append(photo(portrait(c.id),'avatar'));const info=el('div');info.append(el('strong',c.name),el('p',c.role,'muted'));r.append(info);people.append(r);}people.append(button('Ver relaciones',()=>navigate('relations')));grid.append(people);
-    const chapter=panel('Tu carrera');chapter.append(el('span',v.season.replace('-',' / 20'),'eyebrow'),el('div',String(v.decisionsMade),'big-number'),el('p',v.decisionsMade===1?'decisión que cuenta':'decisiones que cuentan','muted'),el('p','Tu recorrido se construye con lo que eliges.'),button('Ver recorrido',()=>navigate('career')));grid.append(chapter);main.append(grid);if(v.offerHistory.length){const h=v.offerHistory.at(-1),p=panel('Tu última respuesta de contrato');p.append(el('p',h.explanation));main.append(p);}}
+    const tutorial=panel('Cómo se juega');tutorial.classList.add('tutorial');
+    tutorial.append(el('p','Multihistoria es una novela y simulador narrativo de carrera futbolística: los partidos se resuelven automáticamente y tú intervienes cuando una decisión puede cambiar la trayectoria.','tutorial-lead'));
+    const rules=el('ul',undefined,'tutorial-rules');for(const text of ['Simula el tiempo: entrenamientos, partidos y mundo avanzan.','Decide cuando aparezca un momento importante.','Tus decisiones y relaciones dejan memoria en la carrera.'])rules.append(el('li',text));tutorial.append(rules);
+    const glossary=el('div',undefined,'tutorial-glossary');for(const [title,copy] of [['Forma','Rendimiento actual.'],['Estado físico','Condición corporal y disponibilidad.'],['Fatiga','Desgaste acumulado; valores altos son peores.']]){const item=el('div');item.append(el('strong',title),el('small',copy));glossary.append(item);}tutorial.append(glossary);grid.append(tutorial);
+    const people=panel('Tu entorno');const contacts=v.contacts.slice(0,3);for(const c of contacts){const r=el('div',undefined,'contact-row');r.append(photo(portrait(c.id),'avatar'));const info=el('div');info.append(el('strong',c.name),el('p',c.role,'muted'));r.append(info);people.append(r);}people.append(button('Ver relaciones',()=>navigate('relations')));grid.append(people);
+    const chapter=panel('Tu carrera');chapter.append(el('span',v.season.replace('-',' / 20'),'eyebrow'),el('div',String(v.decisionsMade),'big-number'),el('p',v.decisionsMade===1?'decisión que cuenta':'decisiones que cuentan','muted'),el('p','Tu recorrido se construye con lo que eliges y con lo que ocurre en el campo.'),button('Ver recorrido',()=>navigate('career')));grid.append(chapter);
+    const sim=simulationSummary(v);if(sim)main.append(sim);
+    const sport=latestMatchPanel(v);if(sport)grid.append(sport);
+    const clock=panel('Tu contrato');clock.append(el('p',v.contractMonths>0?Math.ceil(v.contractMonths)+' meses restantes':'Sin meses de contrato restantes'),el('p',v.contractMonths>0&&v.contractMonths<=6?'El contrato entra en su tramo final. Revisa las propuestas cuando lleguen.':'Las propuestas de contrato requieren tu respuesta.','muted'));grid.append(clock);
+    main.append(grid);
+    const retirement=retirementPanel(v);if(retirement)main.append(retirement);
+    if(v.offerHistory.length){const h=v.offerHistory.at(-1),p=panel('Tu última respuesta de contrato');p.append(el('p',h.explanation));main.append(p);}
+  }
   function portrait(id){return ({NPC_CCH_01:'portrait_coach',NPC_MED_01:'portrait_doctor',NPC_FAM_01:'portrait_mother',NPC_FAM_02:'portrait_father',NPC_AGT_01:'portrait_agent',NPC_AGT_02:'portrait_agent'})[id]||null;}
   function renderDecision(v,main){if(v.screen==='offer'){renderOffer(v,main);return;}const d=v.decision, result=v.screen==='result';if(d)lastArt=['preseason','sport','team','captaincy','tactical'].includes(d.family)?'prematch_scene':'stadium_bg';
     main.classList.add('cinema');main.append(photo(lastArt,'cinema-bg'));const top=el('div',undefined,'cinema-top');top.append(button('Volver a Inicio',closeCinematic,'glass'),el('span',date(v.date)+' · '+club(v),'eyebrow'));main.append(top);
     const sheet=el('section',undefined,'decision-sheet');sheet.append(el('span',result?'DESPUÉS DE TU DECISIÓN':'UN MOMENTO QUE CUENTA','eyebrow'),el('h1',result?v.result.title:d.title));
-    if(result){sheet.append(el('p',v.result.choiceLabel,'chosen'));v.result.messages.forEach(m=>sheet.append(el('p',m,'story-text')));sheet.append(button('Continuar',()=>run('acknowledge'),'primary',{blockedWhenPaused:true}));}
-    else{sheet.append(el('p',d.body,'story-text'));const intel=el('details',undefined,'intel');intel.append(el('summary','Lo que sabes · lo que queda por descubrir'));for(const [title,lines]of[['Lo que sabes',d.visible],['Lo que no está claro',d.uncertain]]){if(lines.length){intel.append(el('h3',title));lines.forEach(t=>intel.append(el('p',t)));}}sheet.append(intel);const choices=el('div',undefined,'choices');d.choices.forEach((c,i)=>{const b=button('',()=>run('choose',{pendingInstanceId:d.instanceId,choiceId:c.id}),'choice',{blockedWhenPaused:true});b.replaceChildren(el('span',String.fromCharCode(65+i),'choice-key'),el('span',c.label));choices.append(b);});sheet.append(choices);}
+    appendCutscene(v,sheet);
+    if(result){
+      sheet.append(el('p',v.result.choiceLabel,'chosen'));
+      const visible=v.result.visibleEffects??[], narrative=v.result.narrativeEffects??[], deferred=v.result.hiddenEffects??[];
+      if(visible.length||narrative.length||deferred.length){
+        const consequences=el('section',undefined,'consequence-summary');consequences.append(el('h2','Consecuencias'));
+        for(const effect of visible){const row=el('div',undefined,'consequence-row '+(effect.favorable===true?'favorable':effect.favorable===false?'unfavorable':'neutral'));row.append(el('span',effect.label),el('strong',deltaText(effect.delta)));consequences.append(row);}
+        narrative.forEach(message=>consequences.append(el('p',message,'story-text')));
+        const narrated=new Set(narrative);(v.result.messages??[]).filter(message=>!narrated.has(message)).forEach(message=>consequences.append(el('p',message,'story-text')));
+        deferred.forEach(message=>consequences.append(el('p',message,'muted')));
+        sheet.append(consequences);
+      }else v.result.messages.forEach(m=>sheet.append(el('p',m,'story-text')));
+      if(v.resultCategory==='match'){const summary=el('section',undefined,'match-summary');summary.append(el('h2','Resumen del partido'),el('p','Tu decisión queda registrada en el recorrido.','muted'));const rows=[['Fecha',date(v.date)],['Partidos disputados',String(v.appearances)],['Forma',`${Math.round(v.form)} / 100`],['Estado físico',`${Math.round(v.fitness)} / 100`]];for(const [label,value]of rows){const row=el('div',undefined,'data-row');row.append(el('span',label),el('strong',value));summary.append(row);}sheet.append(summary);}const next=button('Continuar',()=>run('acknowledge'),'primary',{blockedWhenPaused:true});next.setAttribute('data-result-continue','');sheet.append(next);}
+    else{sheet.append(el('p',d.body,'story-text'));
+      if(d.memories?.length){const memories=el('details',undefined,'intel decision-memories');memories.append(el('summary','De tu historia · '+d.memories.length));memories.append(el('p','Decisiones anteriores relacionadas con este capítulo.','muted'));for(const memory of d.memories){const row=el('div',undefined,'decision-memory');row.append(el('time',date(memory.date),'eyebrow'),el('h3',memory.title),el('p',memory.choiceLabel),button('Ver este capítulo',()=>{navigate('career');const target=root.querySelector('[data-journal-index="'+memory.journalIndex+'"]');if(target){target.scrollIntoView({block:'start'});target.focus({preventScroll:true});}}));memories.append(row);}sheet.append(memories);}
+      const intel=el('details',undefined,'intel');intel.open=true;intel.append(el('summary','Lo que sabes · lo que queda por descubrir'));for(const [title,lines]of[['Lo que sabes',d.visible],['Lo que no está claro',d.uncertain]]){if(lines.length){intel.append(el('h3',title));lines.forEach(t=>intel.append(el('p',t)));}}sheet.append(intel);const choices=el('div',undefined,'choices');d.choices.forEach((c,i)=>{const b=button('',()=>run('choose',{pendingInstanceId:d.instanceId,choiceId:c.id}),'choice',{blockedWhenPaused:true});b.replaceChildren(el('span',String.fromCharCode(65+i),'choice-key'),el('span',c.label));choices.append(b);});sheet.append(choices);}
     main.append(sheet);}
   function renderOffer(v,main){
     const o=v.offer,p=panel(o.reason);p.append(el('p','Una propuesta para tu carrera. Revisa las condiciones antes de decidir.','story-text'));
@@ -82,27 +347,114 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
     p.append(choices,button('Volver a Inicio',closeCinematic));main.append(p);
   }
   function offerHistory(v,main){for(const h of [...v.offerHistory].reverse()){const p=panel(h.offer.reason);p.append(el('time',date(h.offer.date),'eyebrow'),el('p',h.explanation),el('p',clubName(h.offer.terms.club)+' · '+money(h.offer.terms.salary)+' al mes · '+h.offer.terms.months+' meses','muted'));main.append(p);}}
-  function career(v,main){offerHistory(v,main);main.append(el('span','CADA DECISIÓN DEJA HUELLA','eyebrow'),el('h1','Tu carrera. Tu historia.'));if(v.ageMilestones.length){const milestones=panel('Hitos de edad');for(const m of v.ageMilestones)milestones.append(el('p',`${m.age} años · ${date(m.date)} · ${clubName(m.club)} · ${m.signature}`,'muted'));main.append(milestones);}const list=el('div',undefined,'timeline');if(!v.journal.length)list.append(el('p','El primer capítulo está a punto de empezar.','muted'));for(const row of [...v.journal].reverse()){const item=panel(row.title);item.prepend(el('time',date(row.date),'eyebrow'));item.append(el('p',row.choiceLabel,'chosen'));row.messages.forEach(m=>item.append(el('p',m,'muted')));list.append(item);}main.append(list);}
-  function world(v,main){main.append(el('span','MÁS ALLÁ DEL TERRENO DE JUEGO','eyebrow'),el('h1','El mundo sigue.'));const banner=el('article',undefined,'world-banner');banner.append(photo('stadium_bg'));banner.append(el('h2','El fútbol nunca se detiene.'));main.append(banner);const news=el('div',undefined,'news-grid');if(!v.news.length)news.append(el('p','Todavía no han llegado noticias a tu carrera. Las novedades aparecerán mientras avanzas.','muted'));for(const n of [...v.news].reverse().slice(0,30)){const p=panel(date(n.date));p.append(el('p',n.text));news.append(p);}main.append(news);}
-  function relations(v,main){main.append(el('span','NADIE LLEGA SOLO','eyebrow'),el('h1','Las personas de tu historia.'),el('p','Entrenadores, compañeros, familia. Lo que ocurra entre vosotros se recordará en tu recorrido.','muted'));const grid=el('div',undefined,'people-grid');for(const c of v.contacts){const p=panel(c.name);p.prepend(portrait(c.id)?photo(portrait(c.id),'person-portrait'):el('div',c.name.split(' ').map(x=>x[0]).slice(0,2).join(''),'initials'));p.append(el('p',c.role,'muted'));grid.append(p);}main.append(grid);}
+  function latestMatchPanel(v){
+    const m=v.latestMatch;if(!m)return null;
+    const p=panel('Último partido oficial');p.append(el('time',date(m.date),'eyebrow'));
+    const home=m.homeAway==='home'?clubName(m.club):clubName(m.opponent),away=m.homeAway==='home'?clubName(m.opponent):clubName(m.club);
+    p.append(el('p',m.result?`${home} ${m.result.homeGoals} – ${m.result.awayGoals} ${away}`:`${home} · ${away}`,'season-club'));
+    const participation=!m.available?'No disponible para este partido':!m.selected?'No convocado':m.minutes===0?'Suplente sin minutos':m.started?'Titular':'Entraste desde el banquillo';
+    p.append(el('p',participation,'muted'));
+    for(const [label,value] of [['Competición',m.competition==='league'?'Liga':m.competition],['Minutos',m.minutes],['Goles',m.goals],['Asistencias',m.assists],['Valoración',m.rating===null?'—':decimal(m.rating)]]){const row=el('div',undefined,'data-row');row.append(el('span',label),el('strong',String(value)));p.append(row);}
+    const labels={first_call_up:'primera convocatoria',first_bench:'primera suplencia',debut:'debut',first_start:'primera titularidad',first_full_match:'primer partido completo',first_goal:'primer gol',first_assist:'primera asistencia'};
+    const milestones=m.milestones.map(x=>labels[x]||(/^appearance_\d+$/.test(x)?x.replace('appearance_','partido nº '):null)).filter(Boolean);
+    if(milestones.length)p.append(el('p','Hitos: '+milestones.join(' · '),'career-milestone'));
+    return p;
+  }
+  function career(v,main){
+    if(playerActionUi.screen!=='career'&&renderPlayerActions(v,main))return;
+    main.append(el('span','HISTORIAL VIVO DE TU TRAYECTORIA','eyebrow'),el('h1','Tu carrera.'));
+    if(v.screen==='career'&&v.simulation?.mode==='idle'&&v.actions?.available){
+      const manage=panel('Gestionar mi carrera');manage.classList.add('player-actions-entry');manage.append(el('p','Opcional: entra si quieres hacer algo antes de seguir simulando. No hay acciones obligatorias ni contador pendiente.','muted'),button('Gestionar mi carrera',openPlayerActions,'secondary'));main.append(manage);
+    }
+    const retirement=retirementPanel(v);if(retirement)main.append(retirement);
+    const recentPeriod=simulationSummary(v);if(recentPeriod)main.append(recentPeriod);
+    if(!v.careerSeasons.length){
+      const empty=panel('Tu carrera empieza aquí');empty.classList.add('career-empty');
+      empty.append(el('p',v.age+' años · '+club(v)+' · Temporada '+v.season.replace('-',' / 20'),'career-start'));
+      empty.append(el('p',v.appearances===0?'Aún no has debutado. Los partidos, hitos y cambios importantes aparecerán aquí.':'Tu historial deportivo empezará a agruparse por temporada cuando existan registros oficiales.','muted'));
+      main.append(empty);
+    }else{
+      const seasons=el('div',undefined,'season-grid');
+      for(const s of [...v.careerSeasons].reverse()){
+        const p=panel('Temporada '+s.season.replace('-',' / 20'));
+        p.append(el('p',clubName(s.club),'season-club'));
+        for(const [label,value] of [['Partidos',s.appearances],['Titularidades',s.starts],['Minutos',s.minutes],['Goles',s.goals],['Asistencias',s.assists],['Valoración media',s.averageRating===null?'—':s.averageRating]]){const r=el('div',undefined,'data-row');r.append(el('span',label),el('strong',String(value)));p.append(r);}
+        seasons.append(p);
+      }
+      main.append(seasons);
+    }
+    if(v.careerMilestones?.historyComplete&&v.careerMilestones.appearances>0){
+      const m=v.careerMilestones,p=panel('Hitos deportivos');
+      const chips=el('div',undefined,'milestone-list');chips.append(el('span','Debut oficial','milestone-chip'));
+      for(const [flag,label] of [['appearance10','10 partidos'],['appearance50','50 partidos'],['appearance100','100 partidos'],['appearance500','500 partidos'],['appearance700','700 partidos']])if(m[flag]===true)chips.append(el('span',label,'milestone-chip'));
+      p.append(chips);
+      for(const [label,value] of [['Partidos',m.appearances],['Goles',m.goals],['Asistencias',m.assists]]){const r=el('div',undefined,'data-row');r.append(el('span',label),el('strong',String(value)));p.append(r);}
+      main.append(p);
+    }
+    const latest=latestMatchPanel(v);if(latest)main.append(latest);
+    if(v.ageMilestones.length){const milestones=panel('Hitos de edad');for(const m of v.ageMilestones)milestones.append(el('p',`${m.age} años · ${date(m.date)} · ${clubName(m.club)}`,'muted'));main.append(milestones);}
+    offerHistory(v,main);
+    const history=panel('Decisiones y acciones');const list=el('div',undefined,'timeline');
+    const actionHistory=v.actions?.history??[];
+    const timeline=[
+      ...v.journal.map((row,index)=>({kind:'decision',date:row.date,index,row})),
+      ...actionHistory.map((row,index)=>({kind:'action',date:row.date,index,row}))
+    ].sort((a,b)=>a.date.localeCompare(b.date)||(a.kind===b.kind?a.index-b.index:(a.kind==='decision'?-1:1)));
+    if(!timeline.length)list.append(el('p','Aún no hay decisiones ni acciones voluntarias registradas.','muted'));
+    for(const entry of [...timeline].reverse()){
+      if(entry.kind==='decision'){
+        const row=entry.row,item=panel(row.title);item.dataset.journalIndex=String(entry.index);item.tabIndex=-1;item.prepend(el('time',date(row.date),'eyebrow'));item.append(el('p',row.choiceLabel,'chosen'));row.messages.forEach(m=>item.append(el('p',m,'muted')));list.append(item);
+      }else{
+        const row=entry.row,item=panel(row.actionLabel);item.prepend(el('time',date(row.date),'eyebrow'));item.append(el('p','Acción voluntaria · '+row.optionLabel,'chosen'),el('p',row.text,'muted'));list.append(item);
+      }
+    }
+    history.append(list);main.append(history);
+  }
+  function world(v,main){
+    main.append(el('span','MÁS ALLÁ DEL TERRENO DE JUEGO','eyebrow'),el('h1','El mundo sigue.'),el('p','Resultados, movimientos y noticias pueden avanzar aunque no exista una decisión narrativa esta semana.','muted'));
+    const banner=el('article',undefined,'world-banner');banner.append(photo('stadium_bg'));banner.append(el('h2','El fútbol nunca se detiene.'));main.append(banner);
+    const news=el('div',undefined,'news-grid');if(!v.news.length)news.append(el('p','No hay noticias destacadas esta semana. Sigue simulando para ver cómo evoluciona el mundo.','muted'));for(const n of [...v.news].reverse().slice(0,30)){const p=panel(date(n.date));p.append(el('p',n.text));news.append(p);}main.append(news);
+  }
+  function relations(v,main){
+    main.append(el('span','NADIE LLEGA SOLO','eyebrow'),el('h1','Las personas de tu historia.'),el('p','Entrenadores, compañeros y familia. Cada tarjeta identifica el vínculo que forma parte de tu recorrido; no muestra métricas internas del sistema.','muted'));
+    const grid=el('div',undefined,'people-grid');
+    if(!v.contacts.length)grid.append(el('p','Aún no has creado vínculos relevantes.','muted'));
+    for(const c of v.contacts){
+      const p=panel(c.name);p.prepend(portrait(c.id)?photo(portrait(c.id),'person-portrait'):el('div',c.name.split(' ').map(x=>x[0]).slice(0,2).join(''),'initials'));
+      p.append(el('span',bondType(c.role),'relationship-label'),el('p',c.role,'muted'));grid.append(p);
+    }
+    main.append(grid);
+  }
   function profile(v,main){main.append(el('span','EL PROTAGONISTA ERES TÚ','eyebrow'),el('h1','Tu perfil.'));const grid=el('div',undefined,'profile-grid');grid.append(hero(v));const p=panel('En este momento');for(const [label,value]of[['Edad',v.age+' años'],['Posición',position(v)],['Club',club(v)],['Partidos',v.appearances],['Salario mensual',money(v.salaryMonthly)],['Contrato restante',v.contractMonths+' meses']]){const r=el('div',undefined,'data-row');r.append(el('span',label),el('strong',String(value)));p.append(r);}p.append(stats(v));grid.append(p);main.append(grid);}
   async function download(){try{const raw=await store.readRaw();if(!raw)throw Error('No hay una partida guardada.');downloadText(raw,'multihistoria-partida.json');}catch(e){message=e.message;render();}}
   function downloadText(raw,filename){if(win.AndroidBridge?.saveTextFile){win.AndroidBridge.saveTextFile(filename,raw);return;}const url=URL.createObjectURL(new Blob([raw],{type:'application/json'}));const a=el('a');a.href=url;a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(url),1500);}
-  async function importFile(file){if(!file||busy)return;busy=true;message='';render();try{if(file.size>8*1024*1024)throw Error('La copia supera 8 MiB.');const raw=await file.text();const candidate=await GameSession.fromSave(raw,{...sessionOptions,commit});const previous=await store.readRaw();busy=false;render();confirmReplace('Recuperar esta copia',`Partida del ${date(candidate.getView().date)}, con ${decisionCount(candidate.getView().decisionsMade)}. Se conservará una copia de la partida actual.`,async()=>{
+  async function importFile(file){if(!file||busy)return;busy=true;busyLabel='Comprobando la copia…';message='';render();try{if(file.size>8*1024*1024)throw Error('La copia supera 8 MiB.');const raw=await file.text();const candidate=await GameSession.migrateFromSave(raw,{...sessionOptions,commit});const previous=await store.readRaw();busy=false;render();confirmReplace('Recuperar esta copia',`Partida del ${date(candidate.getView().date)}, con ${decisionCount(candidate.getView().decisionsMade)}. Se conservará una copia de la partida actual.`,async()=>{
       await store.write(candidate.exportSnapshot(),previous);savedRaw=JSON.stringify(candidate.exportSnapshot());session=candidate;view='home';cinematic=false;replaceRouteState();
     });}catch(e){message='No se pudo importar. '+e.message;busy=false;render();}}
-  function confirmReplace(title,body,accept){const dialog=el('dialog',undefined,'dialog');dialog.append(el('h2',title),el('p',body));const actions=el('div',undefined,'dialog-actions');actions.append(button('Cancelar',()=>dialog.close()),button('Confirmar',async()=>{dialog.close();busy=true;message='';render();try{await accept();}catch(e){message=e.message;}finally{busy=false;render();}},'primary'));dialog.append(actions);shell.append(dialog);dialog.addEventListener('close',()=>dialog.remove());dialog.showModal();}
-  function saves(v,main){main.append(el('span','CONTINÚA DONDE LO DEJASTE','eyebrow'),el('h1','Tu partida.'));const p=panel('Guardada en este navegador');p.append(el('p',v?`${date(v.date)} · ${decisionCount(v.decisionsMade)}`:'Partida sin abrir','muted'),el('p','La partida local y PlayCanvas se guardan por separado. Descarga una copia aquí e impórtala en el otro navegador para continuar allí.'));const a=el('div',undefined,'save-actions');a.append(button('Descargar copia',download,'primary'),button('Recuperar partida guardada',load));const input=el('input');input.type='file';input.accept='.json,application/json';input.id='mh-import';input.setAttribute('aria-label','Importar copia de partida');input.addEventListener('change',()=>importFile(input.files[0]));const label=el('label','Importar copia de partida','file-label');label.append(input);a.append(label);p.append(a);p.append(el('p','Guardado transaccional · IndexedDB','muted'));a.append(button('Descargar copia antigua',()=>{try{const raw=store.legacyRaw();if(!raw)throw Error('No hay copia antigua.');downloadText(raw,'multihistoria-copia-antigua.json');}catch(e){message=e.message;render();}}));main.append(p);if(hasBackup()){const b=panel('Copia anterior');b.append(el('p','Último estado válido conservado antes de guardar un cambio.'),button('Recuperar copia anterior',async()=>{try{const raw=await store.previous();if(!raw)throw Error('No hay copia anterior.');await importFile(new File([raw],'anterior.json',{type:'application/json'}));}catch(e){message=e.message;render();}}));main.append(b);}const n=panel('Otra historia');n.append(el('p','Empieza de nuevo con otra semilla. Conservaremos una copia de tu carrera actual.','muted'));const seed=el('input');seed.type='number';seed.min='0';seed.max='4294967295';seed.value='424242';seed.setAttribute('aria-label','Semilla de la nueva carrera');n.append(seed,button('Empezar otra carrera',async()=>{const selected=Number(seed.value);if(!Number.isSafeInteger(selected)||selected<0||selected>4294967295){message='Introduce una semilla entre 0 y 4294967295.';render();return;}let old;try{old=await store.readRaw();}catch(e){message=e.message;render();return;}confirmReplace('Empezar otra carrera','La partida actual pasará a la copia anterior.',async()=>{replacement=old;session=await GameSession.create(selected,{...sessionOptions,commit});view='home';cinematic=false;replaceRouteState();});}));main.append(n);}
-  function render(focus=false){const v=session?.getView();shell.replaceChildren();shell.classList.toggle('immersive',cinematic&&!!v);const header=el('header',undefined,'topbar');const brand=el('div',undefined,'brand');brand.append(el('span','M','brand-mark'));const name=el('div');name.append(el('strong','Multihistoria'),el('small','Carrera de futbolista'));brand.append(name);const pause=v?button(paused?'Reanudar':'Pausar',pauseToggle,'secondary',{ariaLabel:paused?'Reanudar la partida':'Pausar la partida',pressed:paused}):null;if(pause)pause.classList.add('pause-button');header.append(brand,el('span',v?'Temporada '+v.season.replace('-',' / 20'):'Una vida. Mil decisiones.','chapter'),pause,button(v?date(v.date):'Tu partida',()=>navigate('save'),'date-button'));shell.append(header);
+  function confirmReplace(title,body,accept){const dialog=el('dialog',undefined,'dialog');dialog.append(el('h2',title),el('p',body));const actions=el('div',undefined,'dialog-actions');actions.append(button('Cancelar',()=>dialog.close()),button('Confirmar',async()=>{dialog.close();busy=true;busyLabel='Guardando tu historia…';message='';render();try{await accept();}catch(e){message=e.message;}finally{busy=false;render();}},'primary'));dialog.append(actions);shell.append(dialog);dialog.addEventListener('close',()=>dialog.remove());dialog.showModal();}
+  function saves(v,main){
+    main.append(el('span','CONTINÚA DONDE LO DEJASTE','eyebrow'),el('h1','Tu partida.'));
+    const p=panel('Partida actual');p.append(el('p',v?`${date(v.date)} · ${decisionCount(v.decisionsMade)}`:'Partida sin abrir','muted'),el('p','Es el último estado guardado de esta carrera. La partida local y PlayCanvas se guardan por separado; puedes descargar una copia e importarla en el otro navegador.'));
+    const a=el('div',undefined,'save-actions');a.append(button('Descargar copia',download,'primary'),button(v?'Recuperar partida actual':'Reintentar carga',load));
+    const input=el('input');input.type='file';input.accept='.json,application/json';input.id='mh-import';input.setAttribute('aria-label','Importar copia de partida');input.addEventListener('change',()=>importFile(input.files[0]));
+    const label=el('label','Importar copia de partida','file-label');label.append(input);a.append(label);p.append(a);
+    p.append(el('p','Guardado automático activo','muted'),el('p','La copia antigua procede del sistema de guardado anterior. Descargarla no restaura ni sustituye tu partida actual.','muted'));
+    a.append(button('Descargar copia antigua',()=>{try{const raw=store.legacyRaw();if(!raw)throw Error('No hay copia antigua.');downloadText(raw,'multihistoria-copia-antigua.json');}catch(e){message=e.message;render();}}));main.append(p);
+    if(hasBackup()){const b=panel('Copia anterior');b.append(el('p','Estado anterior de recuperación. Si lo restauras, volverás a ese punto y la partida actual quedará protegida durante la sustitución.'),button('Recuperar copia anterior',async()=>{try{const raw=await store.previous();if(!raw)throw Error('No hay copia anterior.');await importFile(new File([raw],'anterior.json',{type:'application/json'}));}catch(e){message=e.message;render();}}));main.append(b);}
+    const n=panel('Otra historia');n.append(el('p','Empieza una carrera distinta usando un código de historia. El mismo código permite reproducir esta historia desde el inicio. Conservaremos una copia de tu carrera actual.','muted'));
+    const codeLabel=el('label','Código de historia','file-label');const seed=el('input');seed.type='number';seed.min='0';seed.max='4294967295';seed.value='424242';seed.setAttribute('aria-label','Código de historia de la nueva carrera');codeLabel.append(seed);n.append(codeLabel,button('Empezar otra carrera',async()=>{const selected=Number(seed.value);if(!Number.isSafeInteger(selected)||selected<0||selected>4294967295){message='Introduce un código de historia entre 0 y 4294967295.';render();return;}let old;try{old=await store.readRaw();}catch(e){message=e.message;render();return;}confirmReplace('Empezar otra carrera','La partida actual pasará a la copia anterior.',async()=>{replacement=old;session=await GameSession.create(selected,{...sessionOptions,commit});view='home';cinematic=false;replaceRouteState();});}));
+    main.append(n);
+  }
+  function render(focus=false){disposeCutscene?.();disposeCutscene=null;const v=session?.getView();shell.replaceChildren();shell.classList.toggle('immersive',cinematic&&!!v);const header=el('header',undefined,'topbar');const brand=el('div',undefined,'brand');brand.append(el('span','M','brand-mark'));const name=el('div');name.append(el('strong','Multihistoria'),el('small','Carrera de futbolista'));brand.append(name);const simMode=v?.simulation?.mode;const pause=v&&['auto_simulating','paused'].includes(simMode)?button(simMode==='paused'?'Reanudar':'Pausar',pauseToggle,'secondary',{ariaLabel:simMode==='paused'?'Reanudar la simulación':'Pausar la simulación',pressed:simMode==='paused'}):null;if(pause)pause.classList.add('pause-button');header.append(brand,el('span',v?'Temporada '+v.season.replace('-',' / 20'):'Una vida. Mil decisiones.','chapter'),...(pause?[pause]:[]),button(v?date(v.date)+' · Partida':'Tu partida',()=>navigate('save'),'date-button',{ariaLabel:v?'Abrir Tu partida y el contexto de guardado de '+date(v.date):'Abrir Tu partida'}));shell.append(header);
     const nav=el('nav',undefined,'navigation');nav.setAttribute('aria-label','Navegación principal');for(const [key,label]of[['home','Inicio'],['career','Carrera'],['world','Mundo'],['relations','Relaciones'],['profile','Perfil'],['save','Tu partida']]){const b=button(label,()=>navigate(key),'nav-button');b.prepend(icon(key));if(key===view){b.classList.add('active');b.setAttribute('aria-current','page');}nav.append(b);}const foot=el('div',undefined,'nav-foot');foot.append(el('span','Cada elección cuenta.'),el('small','Una carrera de principio a fin.'));nav.append(foot);shell.append(nav);
     const main=el('main');main.tabIndex=-1;main.setAttribute('aria-busy',String(busy));shell.append(main);
     if(v){if(cinematic&&['decision','result','offer'].includes(v.screen))renderDecision(v,main);else({home,career,world,relations,profile,save:saves})[view](v,main);}else if(view==='save')saves(null,main);else main.append(el('h1','Tu historia está a punto de empezar.'));
     if(message){const alert=el('div',undefined,'alert');alert.setAttribute('role','alert');alert.append(el('p',message),button('Abrir guardados',()=>navigate('save')));shell.append(alert);}
-    if(busy){const status=el('div','Guardando tu historia…','busy-status');status.setAttribute('role','status');shell.append(status);}else if(paused){const status=el('div','Juego en pausa · pulsa Reanudar para continuar.','pause-status');status.setAttribute('role','status');status.setAttribute('aria-live','polite');shell.append(status);}else{const status=el('div',session?'Guardado automático · '+decisionCount(v?.decisionsMade||0):'','save-status');shell.append(status);}
-    if(focus){main.focus({preventScroll:true});main.scrollTop=0;}
+    if(busy){const status=el('div',busyLabel,'busy-status');status.setAttribute('role','status');shell.append(status);}else if(paused||v?.simulation?.mode==='paused'){const status=el('div','Juego en pausa · pulsa Reanudar para continuar.','pause-status');status.setAttribute('role','status');status.setAttribute('aria-live','polite');shell.append(status);}else if(v?.simulation?.mode==='auto_simulating'){const status=el('div','Simulando el siguiente tramo…','save-status');status.setAttribute('role','status');status.setAttribute('aria-live','polite');shell.append(status);}else{const status=el('div',session?'Guardado automático · '+decisionCount(v?.decisionsMade||0):'','save-status');shell.append(status);}
+    if(focus){const target=cinematic&&v?.screen==='result'?main.querySelector('[data-result-continue]'):main.querySelector('h1');if(target?.tagName==='H1')target.tabIndex=-1;(target||main).focus({preventScroll:true});main.scrollTop=0;}
   }
   function keyboard(e){if(e.key==='Escape'&&!shell.querySelector('dialog[open]')){e.preventDefault();goBack();}if(['ArrowDown','ArrowRight','ArrowUp','ArrowLeft'].includes(e.key)&&e.target.closest('.choices,.navigation')){const group=e.target.closest('.choices,.navigation'),buttons=[...group.querySelectorAll('button:not(:disabled)')],index=buttons.indexOf(e.target.closest('button'));e.preventDefault();buttons[(index+(['ArrowDown','ArrowRight'].includes(e.key)?1:buttons.length-1))%buttons.length]?.focus();}}
-  function popstate(e){const s=e.state;if(!s?.mhOwner){view='home';cinematic=false;message='';render(true);return;}view=validViews.has(s.mhView)?s.mhView:'home';cinematic=Boolean(s.mhCinematic)&&Boolean(session&&['decision','result','offer'].includes(session.getView().screen));message='';render(true);}
+  function popstate(e){const s=e.state;resetPlayerActions();if(!s?.mhOwner){view='home';cinematic=false;message='';render(true);return;}view=validViews.has(s.mhView)?s.mhView:'home';cinematic=Boolean(s.mhCinematic)&&Boolean(session&&['decision','result','offer'].includes(session.getView().screen));message='';render(true);}
   root.addEventListener('keydown',keyboard);win.addEventListener?.('popstate',popstate);load();
-  return ()=>{store.close().catch(()=>{});root.removeEventListener('keydown',keyboard);win.removeEventListener?.('popstate',popstate);shell.remove();style.remove();};
+  return ()=>{disposeCutscene?.();clearTimeout(autoTimer);store.close().catch(()=>{});root.removeEventListener('keydown',keyboard);win.removeEventListener?.('popstate',popstate);shell.remove();style.remove();};
 }

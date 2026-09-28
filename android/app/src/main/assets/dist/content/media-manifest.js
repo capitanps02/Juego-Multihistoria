@@ -1,3 +1,4 @@
+import { EVENT_CUTSCENES, PROLOGUE_CUTSCENE } from "./event-cutscenes.js";
 import { EVENTS } from "./events/index.js";
 const familyFallbacks = [...new Set(EVENTS.map(e => e.family))].map(family => ({
     id: `generic_${family}`,
@@ -15,13 +16,11 @@ const eventHeroes = EVENTS.map(e => ({
 export const MEDIA_MANIFEST = [
     ...familyFallbacks,
     ...eventHeroes,
-    {
-        id: "cutscene_evt_18_match_001_debut",
-        type: "video",
-        uri: "/assets/events/18_20/evt_18_match_001_debut.webm",
-        bytesHint: 1_800_000,
-        fallbackId: "hero_evt_18_match_001"
-    },
+    ...[PROLOGUE_CUTSCENE, ...EVENT_CUTSCENES].map(clip => ({
+        id: clip.file.replace(/\.webm$/, ""), type: "video",
+        uri: `/web/assets/cutscenes/${clip.file}`,
+        fallbackId: EVENTS.some(event => event.id === clip.eventId) ? `hero_${clip.eventId.toLowerCase()}` : "generic_life"
+    })),
     {
         id: "cutscene_evt_18_sum_001_contract",
         type: "video",
