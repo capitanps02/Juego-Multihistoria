@@ -9,7 +9,7 @@ It certifies the full current-main reconciliation stack from PR #862, not the re
 Baseline under certification:
 
 - predecessor: `db-v2/reconcile-main-full-stack-20260928` / PR #862;
-- predecessor HEAD at branch creation: `20c859ef28305ec48a6bb7ac9329066cd69a963f`;
+- predecessor HEAD synchronized: `4602df6df376c02ea50e8c5bba1c8b093d2c4770`;
 - catalog scope: 528 clubs, 17 countries, 27 divisions;
 - catalog version: `world-v2-a2-2026-09-28`;
 - full A2 contract: league groups, elite/continental/upper/mid/lower/development bands, selector profiles, BIG_CLUB and HIGHER_CLUB;
