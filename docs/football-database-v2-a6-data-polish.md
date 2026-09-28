@@ -20,6 +20,7 @@ Measured findings:
 
 - duplicate full names: 0;
 - duplicate short names: 0;
+- duplicate-like high-similarity pairs (threshold 0.84): 2 before polish, 0 after polish;
 - names above the 22-character mobile short-name budget: 11;
 - mechanically truncated / awkward short names: 11;
 - required multi-club review cities currently contain one catalog club each;
@@ -57,7 +58,11 @@ Reviewed labels:
 - Comodoro Rivadavia Horizonte → C. Rivadavia Horizonte
 - Pietermaritzburg Plains → PMB Plains
 
-No existing club ID, full display name, city, division, coefficient, archetype or selector contract is changed.
+Two duplicate-like visible names are explicitly disambiguated:
+- `Chester Riverside` → `Chester Crown`;
+- `Guangzhou Northern` → `Guangzhou Jade`.
+
+No club ID, city, division, coefficient, archetype or selector contract is changed. The 528-ID fingerprint remains identical.
 
 Multi-club candidates reviewed:
 
@@ -129,6 +134,7 @@ Independent G6 gate covers:
 - A1 catalog/integrity regression;
 - A2 balance regression;
 - G6 short-name regression;
+- duplicate-like name disambiguation regression;
 - stable existing-ID fingerprint;
 - legal-risk lint;
 - 0 GameState RNG draws;
