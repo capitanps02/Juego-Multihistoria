@@ -141,3 +141,15 @@ Independent G6 gate covers:
 - Player Actions content regression.
 
 Final G6 state remains `BLOCKED` until the correct G5 predecessor is available and final stacked CI is green.
+
+
+## Final-stack restack — 2026-09-28
+
+G6 has been reapplied on the exact G5 candidate `993cb1d69c2481515e1af3d273dbcfd5141745c0`.
+
+Verified before port:
+- `src/catalog/football/world.ts` blob was identical in A2 and G5;
+- `scripts/test-football-catalog.mjs` blob was identical in A2 and G5;
+- therefore the G6 patch does not overwrite A3/A4/A5-owned changes.
+
+Final-stack certification now reruns catalog, balance, runtime, saves, presentation/Android offline and Player Actions content before G6 can be declared ready.
