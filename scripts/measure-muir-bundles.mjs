@@ -15,4 +15,17 @@ const targets={
 const report={schema:'muir-bundle-metrics-v1',generatedAt:new Date().toISOString(),targets};
 const out=path.join(root,'analysis/muir/evidence');fs.mkdirSync(out,{recursive:true});
 fs.writeFileSync(path.join(out,'bundle-metrics.json'),JSON.stringify(report,null,2)+'\n');
+
+const baselinePath=path.join(root,'analysis','muir','muir-baseline.json');
+const baseline=JSON.parse(fs.readFileSync(baselinePath,'utf8'));
+baseline.performance={...baseline.performance,
+  uiBundleBytes:{
+    webUi:targets.webUi?.bytes??null,
+    webCss:targets.webCss?.bytes??null,
+    cutscenePlayer:targets.cutscenePlayer?.bytes??null,
+    playcanvasBundle:targets.playcanvasBundle?.bytes??null
+  },
+  bundleMetricsEvidence:'analysis/muir/evidence/bundle-metrics.json'
+};
+fs.writeFileSync(baselinePath,JSON.stringify(baseline,null,2)+'\n');
 console.log(JSON.stringify(report));
