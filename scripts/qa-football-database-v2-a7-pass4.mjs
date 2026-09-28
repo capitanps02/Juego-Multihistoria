@@ -6,7 +6,6 @@ import { materializeNarrativeClubAlias } from "../dist/catalog/football/narrativ
 import { advanceWorldDayInPlace } from "../dist/simulation/world-simulator.js";
 import { respondToOffer } from "../dist/simulation/offers.js";
 import { loadSave, serializeSave } from "../dist/save/save.js";
-import { materializeNarrativeClubAlias } from "../dist/catalog/football/narrative-club-alias.js";
 
 function settlePendingOffer(state) {
   const pending = state.market?.pending;
