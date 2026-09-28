@@ -21,8 +21,12 @@ for(const id of ['home-normal','home-pending-decision','result','auto-running','
   });
 }
 
-test('cinematic missing-asset recipe fails closed until browser adapter exists',async()=>{
-  await assert.rejects(()=>buildFixtureSession('cinematic-fallback'),/requires dedicated browser adapter/);
+test('cinematic fallback fixture exposes a canonical public cutscene for the browser adapter',async()=>{
+  const s=await buildFixtureSession('cinematic-fallback');
+  const view=s.getView();
+  assert.equal(view.screen,'decision');
+  assert.equal(view.cutscene?.eventId,'EVT_18_MATCH_001');
+  assert.match(view.cutscene?.file??'',/\.webm$/);
 });
 test('epilogue fixture uses the certified terminal public state',async()=>{
   const s=await buildFixtureSession('epilogue-retirement');
