@@ -2,6 +2,8 @@ import type { GameState } from "../core/types.js";
 import { resolveCurrentPlayerClubLeadership } from "../simulation/player-leadership-authority.js";
 
 export interface EventCutscene { eventId: string; file: string; title: string; }
+export const PROLOGUE_CUTSCENE: EventCutscene = { eventId: "PROLOGUE", file: "prologo_multihistoria_v3.webm", title: "Prólogo · Multihistoria" };
+
 // Presentation only: exact event identity, never a family/age fallback.
 export const EVENT_CUTSCENES: readonly EventCutscene[] = [
   ["EVT_18_MATCH_001", "18_match_001_debut", "El debut"],
@@ -36,6 +38,7 @@ export const EVENT_CUTSCENES: readonly EventCutscene[] = [
 ].map(([eventId, file, title]) => ({ eventId, file: `cutscene_${file.startsWith("generic_") ? file : "evt_" + file}.webm`, title }));
 
 export function eventCutscene(state: GameState, screen: string, pendingEventId?: string): EventCutscene | null {
+  if (screen === "prologue" && state.history.length === 0 && state.retirement.status === "playing") return { ...PROLOGUE_CUTSCENE };
   const last = state.history.at(-1);
   const eventId = screen === "epilogue" && state.retirement.status === "closed" ? "EPILOGUE" : screen === "decision" ? pendingEventId : screen === "result" ? last?.eventId : undefined;
   const clip = EVENT_CUTSCENES.find(item => item.eventId === eventId &&

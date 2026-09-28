@@ -37,3 +37,7 @@ Primera prensa v2 aparece después de una respuesta pública, no al elegir silen
 Cara del proyecto y gala también se reservan: los eventos activos hablan de jerarquía o campaña comercial, mientras los vídeos muestran presentación pública y recogida de premio. No se inventan esos logros. Quinientos partidos exige al menos 500 apariciones registradas. Algunas rutas tienen por tanto recursos preparados que aún no saltarán; esto es deliberado y se distingue de la reproducción técnica.
 
 Hay mezcla de realismo y anime (vestuario v2, radar v3, cara del proyecto v2, homenaje 500). No se hizo homogeneización visual ni doblaje. Se preservan audios originales y bandas negras.
+
+## Prólogo — 28 septiembre
+
+Prólogo completo v3 (60,19 s, 1280×720 VP9/Opus) antes del primer paso de una historia nueva (revisión 0, sin decisiones). Pantalla modal con reproducción con sonido por gesto explícito, salto y cierre automático al acabar. No aparece en carreras empezadas; visto/saltado se recuerda fuera del guardado. Original intacto.

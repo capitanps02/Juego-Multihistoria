@@ -407,7 +407,7 @@ export class GameSession {
       decision: p ? { memories: decisionMemories(s, p.event, this.#snapshot.journal), instanceId: p.instanceId, family: p.event.family, title: p.event.text.title, body: p.event.text.body,
         visible: p.event.intel.visible, uncertain: p.event.intel.uncertain,
         choices: eligibleChoices(s, p.event).map(c => ({ id: c.id, label: c.label })) } : null,
-      cutscene: eventCutscene(s, result ? "result" : p ? "decision" : s.retirement.status === "closed" ? "epilogue" : "other", p?.event.id),
+      cutscene: eventCutscene(s, result ? "result" : p ? "decision" : s.retirement.status === "closed" ? "epilogue" : this.#snapshot.revision === 0 ? "prologue" : "other", p?.event.id),
       result: publicResult, resultCategory: result ? (lastEvent?.family === "sport" ? "match" : "story") : null,
       journal: playerFacingJournal(this.#snapshot.journal),
       simulation

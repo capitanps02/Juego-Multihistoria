@@ -62,3 +62,11 @@ test('epilogue, 500 appearances and formal signing never arise from a title alon
  s.history=[{eventId:'EVT_34_CON_001',choiceId:'A'}];assert.equal(eventCutscene(s,'result'),null);
  for(const id of ['EVT_26_CLB_001','EVT_28_GALA_001','EVT_RET_LASTMATCH_001'])assert.equal(eventCutscene(s,'decision',id),null);
 });
+
+test('prologue is offered only before a new story and never replaces a pending chapter',async()=>{
+ const s=await GameSession.create(424242);assert.equal(s.getView().cutscene?.eventId,'PROLOGUE');
+ const before=s.exportSnapshot();s.getView();assert.deepEqual(s.exportSnapshot(),before);
+ await s.dispatch({type:'continue',commandId:'prologue-continue',expectedRevision:s.getView().revision});
+ assert.notEqual(s.getView().cutscene?.eventId,'PROLOGUE');
+ const restored=await GameSession.fromSave(JSON.stringify(s.exportSnapshot()));assert.notEqual(restored.getView().cutscene?.eventId,'PROLOGUE');
+});

@@ -19,7 +19,7 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
   const store=createIndexedSaveStore({storage:localStorage,indexedDB:globalThis.indexedDB,key:KEY,validate:raw=>GameSession.migrateFromSave(raw,sessionOptions)});
   const doc=root.ownerDocument, win=doc.defaultView||globalThis, el=(tag,text,cls)=>{const n=doc.createElement(tag);if(text!==undefined)n.textContent=text;if(cls)n.className=cls;return n;};
   const style=el('style');style.textContent=css;root.append(style);
-  const shell=el('div',undefined,'mh');shell.dataset.release='2026-09-27-cinematicas';root.append(shell);
+  const shell=el('div',undefined,'mh');shell.dataset.release='2026-09-28-cinematicas-prologo';root.append(shell);
   const date=s=>new Intl.DateTimeFormat('es-ES',{day:'numeric',month:'short',year:'numeric',timeZone:'UTC'}).format(new Date(s+'T00:00:00Z'));
   const decisionCount=n=>`${n} ${n===1?'decisión':'decisiones'}`;
   const hasBackup=()=>store.hasPrevious();
@@ -179,7 +179,7 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
     return p;
   }
   function home(v,main){
-    if(v.screen==='epilogue')appendCutscene(v,main);
+    if(v.screen==='epilogue'||v.cutscene?.eventId==='PROLOGUE')appendCutscene(v,main);
     const grid=el('div',undefined,'home-grid');
     grid.append(hero(v));
     const next=panel(v.screen==='epilogue'?'El final de un capítulo':v.screen==='summary'?'Tu último tramo':'Lo que viene ahora');next.classList.add('next');next.append(photo('stadium_bg','card-bg'));
