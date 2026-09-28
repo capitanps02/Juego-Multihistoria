@@ -1,0 +1,49 @@
+name: Football Database V2 · G6 final certification
+
+on:
+  pull_request:
+    paths:
+      - 'src/catalog/football/**'
+      - 'src/save/**'
+      - 'src/simulation/**'
+      - 'src/narrative/**'
+      - 'src/player-actions/**'
+      - 'web/**'
+      - 'scripts/build-playcanvas.mjs'
+      - 'scripts/build-android-offline.mjs'
+      - 'scripts/test-football-*.mjs'
+      - 'scripts/test-club-names.mjs'
+      - 'scripts/test-playcanvas.mjs'
+      - 'scripts/test-android-offline.mjs'
+      - 'scripts/test-player-actions-content.mjs'
+      - 'docs/football-database-v2-a6-data-polish.md'
+      - 'package.json'
+      - '.github/workflows/football-database-v2-data-polish.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  g6-final:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: G6 catalog and name quality
+        run: npm run test:football-catalog
+      - name: A2 balance regression
+        run: npm run test:football-balance
+      - name: A3 runtime regression
+        run: npm run test:football-runtime
+      - name: A4 save/versioning regression
+        run: npm run test:football-save
+      - name: A5 PlayCanvas and Android presentation regression
+        run: npm run test:football-platforms
+      - name: Player Actions content regression
+        run: npm run test:player-actions-content
