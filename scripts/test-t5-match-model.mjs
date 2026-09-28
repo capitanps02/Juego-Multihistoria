@@ -180,7 +180,7 @@ test('match model/13 milestones prove the earliest recorded qualifying fixture, 
   for (let week = 0; week < 520; week++) {
     state.date = new Date(Date.UTC(2026, 7, 5 + week * 7)).toISOString().slice(0, 10);
     state.runtime.day = 35 + week * 7;
-    if (week === 40) state.professional.registrationClub = 'TEST_OTHER_CLUB';
+    if (week === 40) state.professional.registrationClub = 'ESP_MADRID';
     recordOfficialMatchInPlace(state, { appeared: week % 3 !== 0, debutOccurred: false, injuryUnavailable: week % 3 === 0 });
   }
   const store = state.world.sportMatchModel;
