@@ -75,6 +75,20 @@ function withinProposalStaging(node) {
 function classify(file, node) {
   const p = rel(file);
   const fn = enclosingFunctionName(node);
+
+  // Football Database V2 narrative alias authority: when a canonical loan choice
+  // materializes parent and registration to the same concrete club, resolveChoiceCore
+  // deterministically projects a distinct registration club. This is not signing
+  // authority and consumes no RNG draw; it is an explicit alias-materialization bridge.
+  if (
+    p === 'src/narrative/resolver.ts'
+    && fn === 'resolveChoiceCore'
+    && ts.isBinaryExpression(node)
+    && node.left.getText() === 'next.club'
+    && ts.isCallExpression(node.right)
+    && ts.isIdentifier(node.right.expression)
+    && node.right.expression.text === 'materializeNarrativeLoanRegistration'
+  ) return 'narrative_alias_materialization';
   if (p === 'src/simulation/offers.ts') return 'valid_authority';
   if (p === 'src/simulation/employment.ts') return 'valid_authority';
   // Veteran offers are materialized only through proposeCareerChange /
