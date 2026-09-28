@@ -1,4 +1,6 @@
 import type { ClubArchetype, FootballConfederation, FootballCountryCode, FootballClub, FootballDivision } from "./types.js";
+import type { FootballClubBand, FootballBalanceAttribute } from "./balance.js";
+import { footballBandAttributeModifier, footballClubBandFor, footballStructuralCoefficient } from "./balance.js";
 import { assertFootballCatalogData } from "./integrity.js";
 import { catalogMultiClubIdentityKey, defaultCatalogClubId, stableCatalogClubId } from "./identity.js";
 
@@ -1127,33 +1129,6 @@ const TIER_STRENGTH_PENALTY = [0, 0, 14, 25] as const;
  */
 const EXPLICIT_MULTI_CLUB_IDS: Readonly<Record<string, string>> = Object.freeze({});
 
-/**
- * Human-reviewed display-name overrides for duplicate-like generated identities.
- * Identity and balance remain keyed exclusively by stable club ID.
- */
-const EXPLICIT_NAME_MODIFIERS: Readonly<Record<string, string>> = Object.freeze({
-  "ENG|Chester": "Crown",
-  "CHN|Guangzhou": "Jade"
-});
-
-/**
- * Human-reviewed mobile labels for names that exceed the 22-character presentation budget.
- * Do not mechanically slice city/modifier tokens: future overflows must be reviewed explicitly.
- */
-const EXPLICIT_SHORT_NAMES: Readonly<Record<string, string>> = Object.freeze({
-  "Wolverhampton Riverside": "W'hampton Riverside",
-  "Clermont-Ferrand Étoile": "Clermont Étoile",
-  "Castelo Branco Navegante": "C. Branco Navegante",
-  "Viana do Castelo Ribeira": "Viana Castelo Ribeira",
-  "Alphen aan den Rijn Noord": "Alphen Rijn Noord",
-  "Ciudad de México Estrella": "México Estrella",
-  "San Miguel de Tucumán Plata": "Tucumán Plata",
-  "Santiago del Estero Central": "Sgo. Estero Central",
-  "San Salvador de Jujuy Cóndor": "Jujuy Cóndor",
-  "Comodoro Rivadavia Horizonte": "C. Rivadavia Horizonte",
-  "Pietermaritzburg Plains": "PMB Plains"
-});
-
 function hashString(value: string): number {
   let hash = 2166136261;
   for (let i = 0; i < value.length; i += 1) {
@@ -1167,7 +1142,7 @@ function clamp(value: number, min = 0, max = 100): number {
   return Math.min(max, Math.max(min, Math.round(value)));
 }
 
-function variation(id: string, channel: string, radius: number): number {
+function variation(id: string, channel: string, radius = 3): number {
   return (hashString(`${id}|${channel}`) % (radius * 2 + 1)) - radius;
 }
 
@@ -1175,97 +1150,38 @@ function tierAdjusted(value: number, tier: number): number {
   return clamp(value - (TIER_STRENGTH_PENALTY[tier] ?? 30));
 }
 
+function balancedAttribute(
+  id: string,
+  band: FootballClubBand,
+  attribute: FootballBalanceAttribute,
+  structuralValue: number,
+  variationChannel: string
+): number {
+  return clamp(
+    footballStructuralCoefficient(structuralValue) +
+    footballBandAttributeModifier(band, attribute) +
+    variation(id, variationChannel, 3)
+  );
+}
+
 function shortName(city: string, modifier: string): string {
   const full = `${city} ${modifier}`;
   if (full.length <= MAX_SHORT_NAME_LENGTH) return full;
-
-  const explicit = EXPLICIT_SHORT_NAMES[full];
-  if (!explicit) {
-    throw new Error(
-      `Football catalog shortName overflow requires an explicit reviewed label: ${full}`
-    );
-  }
-  if (explicit.length > MAX_SHORT_NAME_LENGTH) {
-    throw new Error(
-      `Football catalog explicit shortName exceeds ${MAX_SHORT_NAME_LENGTH} characters: ${explicit}`
-    );
-  }
-  return explicit;
+  const modifierLength = Math.min(5, modifier.length);
+  const cityLength = Math.max(4, MAX_SHORT_NAME_LENGTH - modifierLength - 1);
+  return `${city.slice(0, cityLength).trim()} ${modifier.slice(0, modifierLength)}`.slice(0, MAX_SHORT_NAME_LENGTH).trim();
 }
 
-interface ClubProfile {
-  tier: number;
-  prestige: number;
-  financialPower: number;
-  youthQuality: number;
-  developmentBias: number;
-  pressure: number;
-  internationalAttraction: number;
-  seed: number;
-}
-
-function archetypesFor(profile: ClubProfile): readonly ClubArchetype[] {
-  const candidates: Array<{ archetype: ClubArchetype; score: number; qualified: boolean }> = [
-    {
-      archetype: "continental",
-      score: profile.prestige * 0.45 + profile.internationalAttraction * 0.35 + profile.financialPower * 0.20,
-      qualified: profile.tier === 1 && profile.prestige >= 80 && profile.internationalAttraction >= 76
-    },
-    {
-      archetype: "development",
-      score: profile.developmentBias * 0.55 + profile.youthQuality * 0.45,
-      qualified: profile.developmentBias >= 76 && profile.youthQuality >= 74
-    },
-    {
-      archetype: "selling",
-      score: profile.developmentBias * 0.35 + profile.youthQuality * 0.25
-        + (100 - profile.financialPower) * 0.25 + profile.internationalAttraction * 0.15,
-      qualified: profile.financialPower <= 70 && profile.developmentBias >= 70 && profile.youthQuality >= 68
-    },
-    {
-      archetype: "historic",
-      score: profile.prestige * 0.50 + profile.pressure * 0.30 + profile.internationalAttraction * 0.20,
-      qualified: profile.prestige >= 74 && profile.pressure >= 70
-    },
-    {
-      archetype: "high_pressure",
-      score: profile.pressure * 0.65 + profile.prestige * 0.35,
-      qualified: profile.pressure >= 78
-    },
-    {
-      archetype: "community",
-      score: (100 - profile.pressure) * 0.45 + profile.youthQuality * 0.30 + profile.developmentBias * 0.25,
-      qualified: profile.pressure <= 65 && profile.financialPower <= 72
-    },
-    {
-      archetype: "technical",
-      score: profile.developmentBias * 0.45 + profile.youthQuality * 0.35 + profile.prestige * 0.20,
-      qualified: profile.developmentBias >= 80 || profile.youthQuality >= 82
-    },
-    {
-      archetype: "physical",
-      score: profile.pressure * 0.40 + profile.financialPower * 0.25 + profile.prestige * 0.25
-        + ((profile.seed >>> 3) % 11),
-      qualified: profile.pressure >= 70 && profile.financialPower >= 62
-    }
-  ];
-
-  const deterministicOrder = (a: { archetype: ClubArchetype; score: number }, b: { archetype: ClubArchetype; score: number }) =>
-    b.score - a.score
-      || ((hashString(`${profile.seed}|${a.archetype}`) - hashString(`${profile.seed}|${b.archetype}`))
-        || a.archetype.localeCompare(b.archetype));
-
-  const selected = candidates.filter(row => row.qualified).sort(deterministicOrder).slice(0, 2);
-  if (selected.length < 2) {
-    const used = new Set(selected.map(row => row.archetype));
-    const fallback = candidates
-      .filter(row => row.archetype !== "continental" || row.qualified)
-      .filter(row => !used.has(row.archetype))
-      .sort(deterministicOrder);
-    selected.push(...fallback.slice(0, 2 - selected.length));
-  }
-
-  return Object.freeze(selected.map(row => row.archetype));
+function archetypesFor(seed: number, band: FootballClubBand): readonly ClubArchetype[] {
+  const pool: ClubArchetype[] = ["development","selling","historic","high_pressure","community","technical","physical"];
+  const first: ClubArchetype =
+    band === "elite" || band === "continental"
+      ? "continental"
+      : band === "development"
+        ? "development"
+        : pool[seed % pool.length]!;
+  const second = pool[(seed + 3) % pool.length]!;
+  return Object.freeze(first === second ? [first] : [first, second]);
 }
 
 const divisions: FootballDivision[] = [];
@@ -1310,16 +1226,10 @@ for (const [rawCode, config] of Object.entries(COUNTRY_CONFIGS)) {
       seenClubIds.add(id);
 
       const identitySeed = hashString(`${countryCode}|${city}|identity`);
-      const modifier =
-        EXPLICIT_NAME_MODIFIERS[`${countryCode}|${city}`] ??
-        config.mods[identitySeed % config.mods.length]!;
+      const modifier = config.mods[identitySeed % config.mods.length]!;
       const nameValue = `${city} ${modifier}`;
-      const prestige = clamp(divisionStrength + variation(id, "prestige", 4));
-      const financialPower = clamp(tierAdjusted(config.finance, tier) + variation(id, "finance", 5));
-      const youthQuality = clamp(tierAdjusted(config.youth, tier) + variation(id, "youth", 5));
-      const developmentBias = clamp(tierAdjusted(config.development, tier) + variation(id, "development", 5));
-      const pressure = clamp(tierAdjusted(config.pressure, tier) + variation(id, "pressure", 5));
-      const internationalAttraction = clamp(tierAdjusted(config.international, tier) + variation(id, "international", 4));
+      const balanceBand = footballClubBandFor(id, tier, divisionStrength);
+      const prestige = balancedAttribute(id, balanceBand, "prestige", divisionStrength, "prestige");
       clubs.push(Object.freeze({
         id,
         name: nameValue,
@@ -1331,21 +1241,42 @@ for (const [rawCode, config] of Object.entries(COUNTRY_CONFIGS)) {
         divisionId,
         tier,
         prestige,
-        financialPower,
-        youthQuality,
-        developmentBias,
-        pressure,
-        internationalAttraction,
-        archetypes: archetypesFor({
-          tier,
-          prestige,
-          financialPower,
-          youthQuality,
-          developmentBias,
-          pressure,
-          internationalAttraction,
-          seed: identitySeed
-        }),
+        financialPower: balancedAttribute(
+          id,
+          balanceBand,
+          "financialPower",
+          tierAdjusted(config.finance, tier),
+          "finance"
+        ),
+        youthQuality: balancedAttribute(
+          id,
+          balanceBand,
+          "youthQuality",
+          tierAdjusted(config.youth, tier),
+          "youth"
+        ),
+        developmentBias: balancedAttribute(
+          id,
+          balanceBand,
+          "developmentBias",
+          tierAdjusted(config.development, tier),
+          "development"
+        ),
+        pressure: balancedAttribute(
+          id,
+          balanceBand,
+          "pressure",
+          tierAdjusted(config.pressure, tier),
+          "pressure"
+        ),
+        internationalAttraction: balancedAttribute(
+          id,
+          balanceBand,
+          "internationalAttraction",
+          tierAdjusted(config.international, tier),
+          "international"
+        ),
+        archetypes: archetypesFor(identitySeed, balanceBand),
         clearanceStatus: "working_name_unchecked"
       }));
     }
