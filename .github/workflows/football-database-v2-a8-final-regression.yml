@@ -74,10 +74,25 @@ jobs:
             scripts/test-persistence.mjs \
             scripts/test-t5-save-compat.mjs
 
-      - name: RNG isolation, determinism and zero-action equivalence
+      - name: RNG isolation and determinism
+        run: node --test --test-name-pattern="T5 determinism" scripts/test-t5-regression.mjs
+
+      - name: Checkout V1 zero-action baseline
+        uses: actions/checkout@v4
+        with:
+          ref: 112bd95279f1397c54f69f3d17c25871035bba48
+          path: baseline-main
+
+      - name: Build V1 zero-action baseline
         run: |
-          node --test --test-name-pattern="T5 determinism" scripts/test-t5-regression.mjs
-          node --test scripts/test-football-v2-zero-action-equivalence.mjs
+          npm ci --prefix baseline-main
+          npm --prefix baseline-main run build
+
+      - name: Zero-action equivalence
+        env:
+          DB_A3_BASELINE_ROOT: baseline-main
+          DB_A3_CURRENT_ROOT: .
+        run: node --test scripts/test-football-v2-zero-action-equivalence.mjs
 
       - name: Presentation catalog names
         run: node scripts/generate-club-catalog-names.mjs --check
