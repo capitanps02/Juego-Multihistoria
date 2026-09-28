@@ -400,6 +400,8 @@ export interface GameState {
   /** Explicit employment truth; historical schema-8 saves may omit it. */
   employment?: import("../simulation/employment.js").EmploymentState;
   schemaVersion: number;
+  /** Independent football-world data version; pre-V2 saves may omit it. */
+  footballCatalogVersion?: string;
   date: string;
   age: number;
   season: string;

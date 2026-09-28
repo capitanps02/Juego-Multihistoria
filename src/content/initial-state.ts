@@ -1,10 +1,12 @@
 import { instantiateNpcStates, instantiateRelationships } from "../catalog/npcs.js";
 import { makeRngStream } from "../core/rng.js";
 import type { GameState } from "../core/types.js";
+import { CURRENT_FOOTBALL_CATALOG_VERSION } from "../save/football-catalog-version.js";
 
 export function createInitialState(saveSeed = 20260910): GameState {
   return {
     schemaVersion: 8,
+    footballCatalogVersion: CURRENT_FOOTBALL_CATALOG_VERSION,
     ageMilestones: [],
     market: {version:1,sequence:0,pending:null,history:[]},
     employment: { version: 1, status: "contracted", since: "2026-07-01", previous: null },
