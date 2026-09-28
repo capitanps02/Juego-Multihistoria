@@ -32,6 +32,30 @@ export const MUIR_FIXTURES=[
   {id:'epilogue-retirement',surface:'EPILOGUE',seed:424242,route:'home',recipe:'retirement'}
 ];
 
+export const MUIR_FIXTURE_EXPECTATIONS={
+  'home-normal':{screen:'career'},
+  'home-pending-decision':{screen:'decision'},
+  'home-offer':{screen:'offer',offer:true},
+  'result':{screen:'result'},
+  'auto-running':{screen:'career',simulationMode:'auto_simulating'},
+  'auto-paused':{screen:'career',simulationMode:'paused'},
+  'auto-interruption':{screen:'decision',interruptionType:'decision'},
+  'period-summary':{screen:'summary'},
+  'player-actions-menu':{screen:'career'},
+  'player-actions-category':{screen:'career'},
+  'player-actions-detail':{screen:'career'},
+  'player-actions-result':{screen:'career'},
+  'injury-public':{screen:'summary',interruptionType:'important_injury'},
+  'contract-offer':{screen:'offer',offer:true},
+  'career':{screen:'career'},
+  'world':{screen:'career'},
+  'relations':{screen:'career'},
+  'profile':{screen:'career'},
+  'save':{screen:'career'},
+  'cinematic-fallback':{screen:'career',cutsceneEventId:'PROLOGUE'},
+  'epilogue-retirement':{screen:'epilogue'}
+};
+
 export function fixtureById(id){
   const fixture=MUIR_FIXTURES.find(row=>row.id===id);
   if(!fixture)throw new Error('Unknown MUIR fixture: '+id);
