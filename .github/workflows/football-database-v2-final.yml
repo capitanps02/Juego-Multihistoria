@@ -44,8 +44,8 @@ jobs:
       - name: C02 · Catalog scope, identity, integrity and naming risk
         run: node --test scripts/test-football-catalog.mjs
 
-      - name: C03 · Balance hierarchy and archetype calibration
-        run: node --test scripts/test-football-catalog-balance.mjs
+      - name: C03 · Band hierarchy, selector profiles and balance stress
+        run: node --test scripts/test-football-v2-balance.mjs
 
       - name: C04 · Fixture opponent catalog authority
         run: node --test scripts/test-catalog-fixture-opponents.mjs
