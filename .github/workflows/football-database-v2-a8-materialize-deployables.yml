@@ -1,0 +1,101 @@
+name: Football Database V2 · A8 materialize deployables
+
+on:
+  push:
+    branches: ["db-a8/football-database-v2-release-main2"]
+    paths:
+      - '.github/workflows/football-database-v2-a8-materialize-deployables.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: football-db-v2-a8-materialize
+  cancel-in-progress: false
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: db-a8/football-database-v2-release-main2
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Verify clean checkout
+        run: test -z "$(git status --porcelain)"
+
+      - name: Generate exact release deployables
+        run: |
+          npm run build:playcanvas
+          npm run android:offline
+
+      - name: Verify generated packages
+        run: |
+          node --test scripts/test-playcanvas.mjs scripts/test-android-offline.mjs scripts/test-club-names.mjs
+          node scripts/generate-club-catalog-names.mjs --check
+
+      - name: Drop transient root build output
+        run: |
+          git restore --source=HEAD --worktree --staged -- dist || true
+          git clean -fd -- dist
+
+      - name: Stage only approved deployables
+        run: |
+          git add -A -- \
+            playcanvas/multihistoria.js \
+            playcanvas/manifest.json \
+            android/app/src/main/assets \
+            web/assets.json \
+            web/club-catalog-names.js \
+            web/club-names.js
+
+          git diff --cached --name-only > /tmp/a8-staged.txt
+          cat /tmp/a8-staged.txt
+
+          if [ ! -s /tmp/a8-staged.txt ]; then
+            echo "No generated deployable changes to materialize."
+            exit 0
+          fi
+
+          awk '
+            !/^playcanvas\/multihistoria\.js$/ &&
+            !/^playcanvas\/manifest\.json$/ &&
+            !/^android\/app\/src\/main\/assets\// &&
+            !/^web\/assets\.json$/ &&
+            !/^web\/club-catalog-names\.js$/ &&
+            !/^web\/club-names\.js$/ { bad=1; print "UNAPPROVED: " $0 }
+            END { exit bad }
+          ' /tmp/a8-staged.txt
+
+          test -z "$(git diff --name-only)"
+          test -z "$(git ls-files --others --exclude-standard)"
+
+      - name: Commit and push exact generated deployables
+        run: |
+          if git diff --cached --quiet; then
+            echo "Deployables already fresh."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git commit -m "DB-A8: materialize exact release deployables"
+
+          git fetch origin db-a8/football-database-v2-release-main2
+          REMOTE_HEAD="$(git rev-parse origin/db-a8/football-database-v2-release-main2)"
+          if [ "$REMOTE_HEAD" != "$GITHUB_SHA" ]; then
+            echo "Branch advanced concurrently: expected $GITHUB_SHA, found $REMOTE_HEAD"
+            exit 1
+          fi
+
+          git push origin HEAD:db-a8/football-database-v2-release-main2
