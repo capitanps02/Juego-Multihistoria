@@ -2,7 +2,7 @@
 
 Status: candidate for **G1 — CATALOG / SCHEMA / INTEGRITY CERTIFIED**  
 Owner: DB-A1  
-Depends on: DB-A0 / PR #826
+Depends on: DB-A0 / PR #860 (merged to `main` at `7b1026a0a11dc0e9192fa44476cf406b0e07dac9`)
 
 ## What A1 owns
 
@@ -12,12 +12,13 @@ It does **not** change market authority, fixtures, saves, Player Actions, narrat
 
 ## Active catalog
 
-- Catalog version: `world-v2-a1-2026-09-28`
+- Current integrated catalog version: `world-v2-a2-2026-09-28`
 - Clubs: 528
 - Countries: 17
 - Divisions: 27
 - Confederations: 5
 - GameState RNG draws added by A1: 0
+- A1 `identity.ts`, `integrity.ts` and reference types are already present on current `main`; A2 extends the catalog/balance layer without replacing the G1 identity contract.
 
 `UDV` remains outside the generated world array as a permanent `canonical_special` identity.
 
@@ -211,16 +212,16 @@ Catalog construction uses deterministic static configuration and pure hashing on
 4. If the city already exists, add an explicit immutable ID to the multi-club registry.
 5. Never renumber/recycle an existing ID.
 6. Keep attributes within 0..100 and archetypes/clearance on their allowlists.
-7. Run `npm run test:football-catalog`.
+7. Run `npm run build && node --test scripts/test-football-v2-integrity.mjs`.
 8. Do not change market/fixture/save behavior in the catalog layer.
 
 ## Handoff to A3
 
-A3 may consume the catalog and classifier after G1. It must preserve market/fixture authority and zero additional RNG draws. Narrative aliases must be materialized before a new persisted career identity is written.
+The current A3/runtime integration on `main` consumes the catalog and classifier. It must continue to preserve market/fixture authority and zero additional RNG draws. Narrative aliases must be materialized before a new persisted career identity is written.
 
 ## Handoff to A4
 
-A4 owns `footballCatalogVersion` persistence and migration. A1 deliberately does not modify GameState/save schema. A4 should validate old persisted references in `historical_read` mode and all newly produced V2 references in `new_production` mode.
+A4 owns `footballCatalogVersion` persistence and migration and is already present in the integrated V2 stack. A1 deliberately does not modify GameState/save schema. Historical persisted references remain validated in `historical_read` mode and newly produced V2 references in `new_production` mode.
 
 ## G1 boundary
 
