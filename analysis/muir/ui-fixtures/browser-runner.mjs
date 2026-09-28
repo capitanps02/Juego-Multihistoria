@@ -37,7 +37,7 @@ const deterministicCss=css+`
 }
 `;
 
-const session=await buildFixtureSession(fixtureId);
+const session=await buildFixtureSession(fixture.recipe==='cinematic-missing-asset'?'home-pending-decision':fixtureId);
 const snapshot=session.exportSnapshot();
 const storageKey='muir.p0.'+MUIR_BASE_SHA.slice(0,12)+'.'+fixtureId;
 localStorage.setItem(storageKey,JSON.stringify(snapshot));
