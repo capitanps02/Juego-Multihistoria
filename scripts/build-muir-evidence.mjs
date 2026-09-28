@@ -13,6 +13,10 @@ for(const rel of [
   'MUIR-RTM.md',
   'analysis/muir/P0_PREFLIGHT.md',
   'analysis/muir/P0_VISUAL_HARNESS.md',
+  'analysis/muir/P0_PACKAGE_GRAPH.md',
+  'analysis/muir/P0_TEST_RESULTS.md',
+  'analysis/muir/P0_HANDOFF.md',
+  'analysis/muir/muir-baseline.json',
   'analysis/muir/ID-01_PLAYER_IDENTITY.md',
   'analysis/muir/K-02_CINEMATIC_RESOLUTION.md',
   'analysis/muir/P0_SCREEN_DATA_ACTION_MAP.md',
@@ -25,7 +29,11 @@ for(const rel of [
   'scripts/test-muir-package-graph.mjs',
   'scripts/capture-muir-browser.mjs',
   'scripts/measure-muir-bundles.mjs',
-  '.github/workflows/muir-p0-certification.yml'
+  '.github/workflows/muir-p0-certification.yml',
+  'analysis/muir/evidence/browser-baseline.json',
+  'analysis/muir/evidence/bundle-metrics.json',
+  'playcanvas/manifest.json',
+  'android/app/src/main/assets/offline-manifest.json'
 ]){
  const file=path.join(root,rel);
  if(fs.existsSync(file))files.push({path:rel,bytes:fs.statSync(file).size,sha256:sha(file)});
