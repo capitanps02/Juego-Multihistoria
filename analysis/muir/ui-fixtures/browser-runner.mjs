@@ -2,7 +2,7 @@
 import {GameSession} from '/dist/session/game-session.js';
 import {mountGame} from '/web/game-ui.js';
 import {MUIR_BASE_SHA,MUIR_VIEWPORTS,fixtureById} from '/analysis/muir/ui-fixtures/fixtures.mjs';
-import {buildFixtureSession} from '/analysis/muir/ui-fixtures/session-recipes.mjs';
+import {buildFixtureSession,fixtureEventCatalog} from '/analysis/muir/ui-fixtures/session-recipes.mjs';
 
 const params=new URLSearchParams(location.search);
 const perf={renderSamples:[],longTasks:[],focusChanges:0,scrollEvents:0,uiMutationBatches:0,uiMutationRecords:0,startedAt:performance.now()};
@@ -57,7 +57,7 @@ const cutsceneUrl=clip=>{
   return '/web/assets/cutscenes/'+clip.file;
 };
 
-mountGame({root,GameSession,assets,css:deterministicCss,storageKey,cutsceneUrl});
+mountGame({root,GameSession,assets,css:deterministicCss,storageKey,cutsceneUrl,events:fixtureEventCatalog(fixtureId)});
 const mutationObserver=new MutationObserver(records=>{perf.uiMutationBatches++;perf.uiMutationRecords+=records.length;});
 mutationObserver.observe(root,{subtree:true,childList:true,characterData:true,attributes:true});
 
