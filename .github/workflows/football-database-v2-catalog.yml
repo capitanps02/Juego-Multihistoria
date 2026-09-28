@@ -1,0 +1,35 @@
+name: Football Database V2 · Catalog integrity
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/catalog/football/**'
+      - 'scripts/test-football-v2-integrity.mjs'
+      - 'scripts/test-t5-captain-gap-known-bug.mjs'
+      - 'scripts/test-t5-offer-context-known-bug.mjs'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/football-database-v2-catalog.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  catalog-integrity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Build engine
+        run: npm run build
+      - name: Validate V2 football catalog and references
+        run: node --test scripts/test-football-v2-integrity.mjs
+      - name: Validate V2 save fixtures against strict club identities
+        run: node --test scripts/test-t5-captain-gap-known-bug.mjs scripts/test-t5-offer-context-known-bug.mjs
