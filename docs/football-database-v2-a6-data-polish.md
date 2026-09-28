@@ -7,7 +7,7 @@
 - G2 / A2 regrounded: `26c4fa6c09e0fb1191dadf289f622be0604d9ba4`
 - G3 / A3 regrounded: `3d4c42e73115c664f6762ea2bc16ffb0cbe8a788`
 - G4 / A4 certified: `f93953d377d5203078cca0668330a522f8f65604`
-- G5 / A5 regrounded predecessor: `f7c33e44230604ecb3694de28f002d4a812708b0`
+- G5 / A5 exact-G4 regrounded predecessor: `993cb1d69c2481515e1af3d273dbcfd5141745c0`
 - G6 branch: `db-a6/football-data-polish-final-g5`
 
 Catalog scope before/after G6:
@@ -162,7 +162,7 @@ A6 QA probe #847 on certified G4 passed:
 - A4 save/versioning integration
 - Player Actions content
 
-The final G6 branch is stacked directly on the official regrounded G5 predecessor and runs those checks again plus:
+The final G6 branch is stacked directly on the official exact-G4 regrounded G5 predecessor and runs those checks again plus:
 
 - PlayCanvas presentation
 - Android offline presentation
