@@ -6,6 +6,12 @@ import { inspectPenaltySetupStore } from "../simulation/match-penalty-context.js
 import * as legacy from "./validation-legacy.js";
 import type { EmploymentStatus } from "../simulation/employment.js";
 import { isVeteranMarketApproach } from "../simulation/veteran-market.js";
+import {
+  FOOTBALL_CATALOG_VERSION,
+  classifyFootballClubReference,
+  isFootballClubReferenceAllowed,
+  type FootballClubReferenceContext
+} from "../catalog/football/index.js";
 
 export * from "./validation-legacy.js";
 
@@ -49,6 +55,163 @@ function assertVeteranMarketFacts(value: unknown): void {
   });
 }
 
+function assertFootballClubRef(
+  value: unknown,
+  path: string,
+  context: FootballClubReferenceContext
+): void {
+  const classification = classifyFootballClubReference(value);
+  legacy.ensure(
+    isFootballClubReferenceAllowed(value, context),
+    path,
+    `referencia de club ${classification.kind} no permitida en ${context}: ${classification.value}`
+  );
+}
+
+function assertCareerTermsClubRefs(
+  value: unknown,
+  path: string,
+  context: FootballClubReferenceContext
+): void {
+  const terms = legacy.record(value, path);
+  for (const key of ["club","ownerClub","registrationClub"]) {
+    if (terms[key] !== undefined) assertFootballClubRef(terms[key], `${path}.${key}`, context);
+  }
+}
+
+function assertCareerOfferClubRefs(
+  value: unknown,
+  path: string,
+  context: FootballClubReferenceContext
+): void {
+  const offer = legacy.record(value, path);
+  if (offer.before !== undefined) assertCareerTermsClubRefs(offer.before, `${path}.before`, context);
+  if (offer.terms !== undefined) assertCareerTermsClubRefs(offer.terms, `${path}.terms`, context);
+}
+
+function assertFootballCatalogPersistence(value: unknown, version: number): void {
+  const state = legacy.record(value, "state");
+  const marker = state.footballCatalogVersion;
+  const context: FootballClubReferenceContext = marker === undefined ? "historical_read" : "new_production";
+
+  if (marker !== undefined) {
+    legacy.string(marker, "footballCatalogVersion");
+    legacy.ensure(version === 8, "footballCatalogVersion", "el marcador V2 solo es válido en schema 8");
+    legacy.ensure(
+      marker === FOOTBALL_CATALOG_VERSION,
+      "footballCatalogVersion",
+      `versión de catálogo no compatible: ${String(marker)}`
+    );
+  }
+
+  assertFootballClubRef(state.club, "club", context);
+
+  if (state.professional !== undefined) {
+    const professional = legacy.record(state.professional, "professional");
+    for (const key of ["ownerClub","registrationClub"]) {
+      if (professional[key] !== undefined) {
+        assertFootballClubRef(professional[key], `professional.${key}`, context);
+      }
+    }
+  }
+
+  if (state.world !== undefined) {
+    const world = legacy.record(state.world, "world");
+    if (world.ownerClub !== undefined && world.ownerClub !== null) {
+      assertFootballClubRef(world.ownerClub, "world.ownerClub", context);
+    }
+  }
+
+  if (state.ageMilestones !== undefined) {
+    legacy.list(state.ageMilestones, "ageMilestones").forEach((row,index) => {
+      const milestone = legacy.record(row, `ageMilestones[${index}]`);
+      if (milestone.club !== undefined) {
+        assertFootballClubRef(milestone.club, `ageMilestones[${index}].club`, context);
+      }
+    });
+  }
+
+  if (state.history !== undefined) {
+    legacy.list(state.history, "history").forEach((row,index) => {
+      const history = legacy.record(row, `history[${index}]`);
+      if (history.club !== undefined) {
+        assertFootballClubRef(history.club, `history[${index}].club`, context);
+      }
+    });
+  }
+
+  if (state.npcs !== undefined) {
+    legacy.list(state.npcs, "npcs").forEach((row,index) => {
+      const npc = legacy.record(row, `npcs[${index}]`);
+      if (npc.club !== undefined && npc.club !== null) {
+        assertFootballClubRef(npc.club, `npcs[${index}].club`, context);
+      }
+    });
+  }
+
+  if (state.employment !== undefined) {
+    const employment = legacy.record(state.employment, "employment");
+    if (employment.previous !== undefined && employment.previous !== null) {
+      const previous = legacy.record(employment.previous, "employment.previous");
+      for (const key of ["club","ownerClub","registrationClub"]) {
+        if (previous[key] !== undefined) {
+          assertFootballClubRef(previous[key], `employment.previous.${key}`, context);
+        }
+      }
+    }
+  }
+
+  if (state.market !== undefined) {
+    const market = legacy.record(state.market, "market");
+    if (market.pending !== undefined && market.pending !== null) {
+      assertCareerOfferClubRefs(market.pending, "market.pending", context);
+    }
+    if (market.openOffers !== undefined) {
+      legacy.list(market.openOffers, "market.openOffers").forEach((offer,index) =>
+        assertCareerOfferClubRefs(offer, `market.openOffers[${index}]`, context)
+      );
+    }
+    if (market.history !== undefined) {
+      legacy.list(market.history, "market.history").forEach((row,index) => {
+        const decision = legacy.record(row, `market.history[${index}]`);
+        if (decision.offer !== undefined) {
+          assertCareerOfferClubRefs(decision.offer, `market.history[${index}].offer`, context);
+        }
+      });
+    }
+    if (market.systemClosures !== undefined) {
+      legacy.list(market.systemClosures, "market.systemClosures").forEach((row,index) => {
+        const closure = legacy.record(row, `market.systemClosures[${index}]`);
+        if (closure.offer !== undefined) {
+          assertCareerOfferClubRefs(closure.offer, `market.systemClosures[${index}].offer`, context);
+        }
+      });
+    }
+    if (market.futureNegotiations !== undefined) {
+      legacy.list(market.futureNegotiations, "market.futureNegotiations").forEach((row,index) => {
+        const negotiation = legacy.record(row, `market.futureNegotiations[${index}]`);
+        if (negotiation.destination !== undefined) {
+          assertFootballClubRef(negotiation.destination, `market.futureNegotiations[${index}].destination`, context);
+        }
+        if (negotiation.before !== undefined) {
+          assertCareerTermsClubRefs(negotiation.before, `market.futureNegotiations[${index}].before`, context);
+        }
+        if (negotiation.terms !== undefined) {
+          assertCareerTermsClubRefs(negotiation.terms, `market.futureNegotiations[${index}].terms`, context);
+        }
+      });
+    }
+    if (market.futureAgreements !== undefined) {
+      legacy.list(market.futureAgreements, "market.futureAgreements").forEach((row,index) => {
+        const agreement = legacy.record(row, `market.futureAgreements[${index}]`);
+        if (agreement.terms !== undefined) {
+          assertCareerTermsClubRefs(agreement.terms, `market.futureAgreements[${index}].terms`, context);
+        }
+      });
+    }
+  }
+}
+
 function assertEmployment(value: unknown): void {
   const state = legacy.record(value, "state");
   if (state.employment === undefined) return;
@@ -89,6 +252,7 @@ function assertEmployment(value: unknown): void {
  */
 export function validateGameSave(value: unknown, version: number): void {
   legacy.validateGameSave(value, version);
+  assertFootballCatalogPersistence(value, version);
   assertSportMatchModel(value);
   assertCompetitionMoments(value);
   assertPenaltySetups(value);
@@ -101,6 +265,7 @@ export function validateGameSave(value: unknown, version: number): void {
 /** Common runtime/save boundary including market + football moment + match-model checks. */
 export function assertGameState(value: unknown): asserts value is GameState {
   legacy.assertGameState(value);
+  assertFootballCatalogPersistence(value, 8);
   assertSportMatchModel(value);
   assertCompetitionMoments(value);
   assertPenaltySetups(value);
