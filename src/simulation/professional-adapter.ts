@@ -1,5 +1,5 @@
 import { careerTerms, applyTerms, proposeCareerChange } from "./offers.js";
-import { selectMarketDestination } from "../catalog/football/market-destination.js";
+import { selectBigClubDestination } from "../catalog/football/market-destination.js";
 import type { GameState, State20Tag } from "../core/types.js";
 
 const clamp = (x: number, min = 0, max = 100) => Math.min(max, Math.max(min, x));
@@ -19,11 +19,9 @@ function adaptProfessionalContext(state: GameState, tags: State20Tag[]): void {
     clubPrestigeTier = has("STATE20_BIG_RESERVE") ? 5 : 4;
     clubPrestigeScore = has("STATE20_BIG_RESERVE") ? 88 : 76;
     if (has("STATE20_BIG_RESERVE")) {
-      const destination = selectMarketDestination({
+      const destination = selectBigClubDestination({
         countryCode: "ESP",
-        leagueTier: 1,
         roll: ((state.rngState.narrative.seed >>> 0) ^ 0x51a20b1) >>> 0,
-        profile: "ambitious",
         excludeClubIds: [state.club, state.professional.ownerClub, state.professional.registrationClub]
       }).id;
       state.club = destination;
