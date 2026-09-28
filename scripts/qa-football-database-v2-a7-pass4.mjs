@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import crypto from "node:crypto";
 import { createInitialState } from "../dist/content/initial-state.js";
+import { materializeNarrativeClubAlias } from "../dist/catalog/football/narrative-club-alias.js";
 import { advanceWorldDayInPlace } from "../dist/simulation/world-simulator.js";
 import { respondToOffer } from "../dist/simulation/offers.js";
 import { loadSave, serializeSave } from "../dist/save/save.js";
@@ -29,7 +30,31 @@ const sourceAudit = [
   "src/catalog/football/market-destination.ts",
   "src/catalog/football/narrative-club-alias.ts"
 ].map(path => fs.readFileSync(path, "utf8")).join("\n");
-assert.doesNotMatch(sourceAudit, /Math\.random|rngState|GameStateRng|\.rng\.(?:next|float|int)\b/);
+assert.doesNotMatch(sourceAudit, /Math\.random|GameStateRng|\.rng\.(?:next|float|int)\b|nextRng|drawRng|consumeRng/);
+
+const aliasProbe = createInitialState(909090);
+const aliasBeforeRng = structuredClone(aliasProbe.rngState);
+for (const alias of [
+  "NEW_CLUB",
+  "DEVELOPMENT_CLUB",
+  "DEVELOPMENT_CLUB_2",
+  "HIGHER_CLUB",
+  "BIG_CLUB",
+  "FOREIGN_DEV_CLUB"
+]) {
+  const first = materializeNarrativeClubAlias(aliasProbe, alias, {
+    eventId: "DB_A7_RNG_PROBE",
+    choiceId: "A",
+    targetTier: alias === "BIG_CLUB" ? 1 : null
+  });
+  const second = materializeNarrativeClubAlias(aliasProbe, alias, {
+    eventId: "DB_A7_RNG_PROBE",
+    choiceId: "A",
+    targetTier: alias === "BIG_CLUB" ? 1 : null
+  });
+  assert.equal(first, second, `${alias}: deterministic alias materialization`);
+  assert.deepEqual(aliasProbe.rngState, aliasBeforeRng, `${alias}: RNG state mutated`);
+}
 
 const seeds = [1, 42, 777, 94001, 424242, 20260928];
 let replayCases = 0;
@@ -62,7 +87,8 @@ assert.deepEqual(zeroActionA, zeroActionB, "zero-action continuation diverged");
 assert.deepEqual(zeroActionA.rngState, zeroActionB.rngState, "zero-action RNG diverged");
 
 console.log("DB-A7 — PASS 4 RNG / DETERMINISM");
-console.log("SOURCE RNG AUDIT: PASS");
+console.log("SOURCE RNG DRAW AUDIT: PASS");
+console.log("ALIAS RNG PURITY: PASS");
 console.log("UNAUTHORIZED CATALOG RNG DRAWS: 0");
 console.log("SAVE/LOAD REPLAY CASES:", replayCases, "PASS");
 console.log("MULTI-RUN CASES:", multiRunCases, "PASS");
