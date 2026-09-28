@@ -1,7 +1,7 @@
 // MUIR P0 deterministic session recipes. TEST-ONLY.
 // Uses production GameSession commands/public views; no fixture field is shipped in release.
-import {GameSession} from '../../dist/session/game-session.js';
-import {EVENTS} from '../../dist/content/events/index.js';
+import {GameSession} from '../../../dist/session/game-session.js';
+import {EVENTS} from '../../../dist/content/events/index.js';
 import {fixtureById} from './fixtures.mjs';
 
 const command=(session,type,extra={})=>({type,commandId:'muir-'+type+'-'+session.getView().revision,expectedRevision:session.getView().revision,...extra});
