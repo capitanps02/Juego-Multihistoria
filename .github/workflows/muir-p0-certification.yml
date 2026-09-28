@@ -93,7 +93,7 @@ jobs:
         if: always()
         run: node scripts/build-muir-evidence.mjs
       - name: Final executable P0 gate
-        if: always()
+        if: success()
         run: node scripts/test-muir-gate.mjs
       - uses: actions/upload-artifact@v4
         if: always()
