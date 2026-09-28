@@ -1,7 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {MUIR_BASE_SHA,MUIR_FIXTURES,MUIR_VIEWPORTS} from '../analysis/muir/ui-fixtures/fixtures.mjs';
-import {buildFixtureSession} from '../analysis/muir/ui-fixtures/session-recipes.mjs';
+import {GameSession} from '../dist/session/game-session.js';
+import {buildFixtureSession,fixtureEventCatalog} from '../analysis/muir/ui-fixtures/session-recipes.mjs';
 
 test('MUIR fixtures are unique and tied to frozen baseline',()=>{
   assert.equal(MUIR_BASE_SHA,'36d3d1b0750b0ded877e55953f223e2de1169a46');
@@ -32,3 +33,14 @@ test('epilogue fixture uses the certified terminal public state',async()=>{
   assert.equal(s.getView().screen,'epilogue');
   assert.equal(s.getView().retirementStatus,'closed');
 });
+
+
+for(const fixture of MUIR_FIXTURES){
+  test('fixture snapshots reopen with the exact browser event catalog: '+fixture.id,async()=>{
+    const session=await buildFixtureSession(fixture.id);
+    const raw=JSON.stringify(session.exportSnapshot());
+    const reopened=await GameSession.migrateFromSave(raw,{events:fixtureEventCatalog(fixture.id)});
+    assert.equal(reopened.getView().sessionId,session.getView().sessionId);
+    assert.equal(reopened.getView().screen,session.getView().screen);
+  });
+}
