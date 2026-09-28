@@ -7,6 +7,13 @@ on:
       - '.github/workflows/football-database-v2-a8-final-regression.yml'
       - '.github/workflows/football-database-v2-a8-release-artifacts.yml'
       - 'docs/football-database-v2-a8-integration-manifest.md'
+      - 'playcanvas/multihistoria.js'
+      - 'playcanvas/manifest.json'
+      - 'android/app/src/main/assets/**'
+      - 'web/assets.json'
+      - 'web/club-catalog-names.js'
+      - 'web/club-names.js'
+      - '.github/workflows/football-database-v2-a8-materialize-deployables.yml'
   workflow_dispatch:
 
 permissions:
