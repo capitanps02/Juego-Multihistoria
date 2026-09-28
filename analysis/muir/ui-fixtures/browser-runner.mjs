@@ -5,7 +5,7 @@ import {MUIR_BASE_SHA,MUIR_VIEWPORTS,fixtureById} from '/analysis/muir/ui-fixtur
 import {buildFixtureSession} from '/analysis/muir/ui-fixtures/session-recipes.mjs';
 
 const params=new URLSearchParams(location.search);
-const perf={renderSamples:[],longTasks:[],focusChanges:0,scrollEvents:0,startedAt:performance.now()};
+const perf={renderSamples:[],longTasks:[],focusChanges:0,scrollEvents:0,uiMutationBatches:0,uiMutationRecords:0,startedAt:performance.now()};
 let lastFocus=document.activeElement;
 document.addEventListener('focusin',()=>{perf.focusChanges++;lastFocus=document.activeElement;},{capture:true});
 addEventListener('scroll',()=>{perf.scrollEvents++;},{capture:true,passive:true});
@@ -50,6 +50,8 @@ const cutsceneUrl=clip=>{
 const mountStarted=performance.now();
 mountGame({root,GameSession,assets,css:deterministicCss,storageKey,cutsceneUrl});
 perf.renderSamples.push(performance.now()-mountStarted);
+const mutationObserver=new MutationObserver(records=>{perf.uiMutationBatches++;perf.uiMutationRecords+=records.length;});
+mutationObserver.observe(root,{subtree:true,childList:true,characterData:true,attributes:true});
 
 // Navigation is performed through the same buttons a player uses.
 async function clickText(text){
@@ -116,6 +118,9 @@ const metrics={
   longTasks:perf.longTasks,
   focusChanges:perf.focusChanges,
   scrollEvents:perf.scrollEvents,
+  uiMutationBatches:perf.uiMutationBatches,
+  uiMutationRecords:perf.uiMutationRecords,
+  uiMutationBatchesPerSecond:0,
   hero:heroNode?rect(heroNode):null,
   firstPrimaryCta:primaryCta?{text:primaryCta.textContent.trim(),...rect(primaryCta)}:null,
   main:mainNode?{...rect(mainNode),scrollHeight:mainNode.scrollHeight,clientHeight:mainNode.clientHeight,scrollTop:mainNode.scrollTop}:null,
@@ -125,6 +130,16 @@ const metrics={
   undersizedTouchTargets,
   overflowX
 };
+const refreshDynamicMetrics=()=>{
+  metrics.elapsedMs=performance.now()-perf.startedAt;
+  metrics.focusChanges=perf.focusChanges;
+  metrics.scrollEvents=perf.scrollEvents;
+  metrics.uiMutationBatches=perf.uiMutationBatches;
+  metrics.uiMutationRecords=perf.uiMutationRecords;
+  metrics.uiMutationBatchesPerSecond=metrics.elapsedMs>0?perf.uiMutationBatches/(metrics.elapsedMs/1000):0;
+};
+refreshDynamicMetrics();
+setInterval(refreshDynamicMetrics,100);
 globalThis.__MUIR_METRICS__=metrics;
 globalThis.__MUIR_READY__={
   baseSha:MUIR_BASE_SHA,
