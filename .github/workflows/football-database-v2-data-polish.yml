@@ -1,0 +1,50 @@
+name: Football Database V2 · G6 data polish — final stack
+
+on:
+  push:
+    branches:
+      - db-a6/football-data-polish-g5-regrounded
+  pull_request:
+    branches:
+      - db-a5/football-presentation-g5-regrounded
+      - main
+    paths:
+      - 'src/catalog/football/**'
+      - 'scripts/test-football-catalog*.mjs'
+      - 'docs/football-database-v2-a6-data-polish.md'
+      - '.github/workflows/football-database-v2-data-polish.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: football-db-a6-final-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  g6-data-polish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Catalog structure and G6 data quality
+        run: npm run test:football-catalog
+      - name: A2 balance / selector distributions
+        run: npm run test:football-balance
+      - name: A3 runtime / market / Player Actions bridge
+        run: npm run test:football-runtime
+      - name: A4 save / versioning / migration
+        run: npm run test:football-save
+      - name: A5 presentation / PlayCanvas / Android offline
+        run: npm run test:football-platforms
+      - name: Player Actions content regression
+        run: npm run test:player-actions-content
