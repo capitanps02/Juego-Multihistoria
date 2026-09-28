@@ -24,6 +24,7 @@ import { certifyCoachChangeInPlace } from '../dist/simulation/coach-change-autho
 import { assertGameState } from '../dist/save/validation.js';
 import { loadSave, serializeSave } from '../dist/save/save.js';
 import { GameSession } from '../dist/session/game-session.js';
+import { FOOTBALL_CLUBS } from '../dist/catalog/football/index.js';
 
 const invalidSave = error => error?.code === 'INVALID_SAVE';
 
@@ -177,10 +178,13 @@ test('match model/12 impossible squad and appearance facts fail closed without m
 test('match model/13 milestones prove the earliest recorded qualifying fixture, including across clubs', () => {
   const state = matchDayState(8850);
   // Build a history through the real producer with repeated qualifiers and absences.
+  // Use a real catalog identity so the cross-club history remains valid under V2 save validation.
+  const alternateClub = FOOTBALL_CLUBS.find(club => club.id !== state.professional.registrationClub)?.id;
+  assert.ok(alternateClub);
   for (let week = 0; week < 520; week++) {
     state.date = new Date(Date.UTC(2026, 7, 5 + week * 7)).toISOString().slice(0, 10);
     state.runtime.day = 35 + week * 7;
-    if (week === 40) state.professional.registrationClub = 'TEST_OTHER_CLUB';
+    if (week === 40) state.professional.registrationClub = alternateClub;
     recordOfficialMatchInPlace(state, { appeared: week % 3 !== 0, debutOccurred: false, injuryUnavailable: week % 3 === 0 });
   }
   const store = state.world.sportMatchModel;
