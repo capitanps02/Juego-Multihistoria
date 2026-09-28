@@ -20,6 +20,8 @@ if(!viewportSpec)throw Error('Unknown viewport '+viewport);
 
 document.documentElement.dataset.muirVisualTest='true';
 const root=document.querySelector('#game').attachShadow({mode:'open'});
+const mutationObserver=new MutationObserver(()=>{perf.mutationBatches++;perf.mutationTimes.push(performance.now());});
+mutationObserver.observe(root,{subtree:true,childList:true,attributes:true,characterData:true});
 const [assets,css]=await Promise.all([
   fetch('/web/assets.json').then(r=>r.json()),
   fetch('/web/game-ui.css').then(r=>r.text())
@@ -58,7 +60,7 @@ async function clickText(text){
   for(let i=0;i<80;i++){
     const buttons=[...root.querySelectorAll('button')];
     const b=buttons.find(x=>x.textContent.trim()===text);
-    if(b&&!b.disabled){b.click();await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));return;}
+    if(b&&!b.disabled){const started=performance.now();b.click();await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));perf.renderSamples.push(performance.now()-started);return;}
     await new Promise(r=>setTimeout(r,25));
   }
   throw Error('MUIR harness could not find enabled button: '+text);
@@ -94,6 +96,9 @@ if(fixture.recipe==='player-actions-result'){
   await settle();
 }
 
+// For the dedicated performance probe only, let canonical auto-simulation update for a fixed interval.
+if(!freezeAuto&&fixture.recipe==='auto-running')await new Promise(r=>nativeSetTimeout(r,900));
+
 const q=s=>[...root.querySelectorAll(s)];
 const rect=n=>{const r=n.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height,bottom:r.bottom,right:r.right};};
 const buttons=q('button');
@@ -110,12 +115,16 @@ const navButtons=q('.nav-button');
 const navTypography=navButtons[0]?(()=>{const s=getComputedStyle(navButtons[0]);return {fontFamily:s.fontFamily,fontSize:s.fontSize,fontWeight:s.fontWeight,lineHeight:s.lineHeight};})():null;
 const renderSorted=[...perf.renderSamples].sort((a,b)=>a-b);
 const percentile=p=>renderSorted.length?renderSorted[Math.min(renderSorted.length-1,Math.ceil(renderSorted.length*p)-1)]:null;
+const elapsedMs=performance.now()-perf.startedAt;
 const metrics={
   capturedAt:new Date().toISOString(),
-  elapsedMs:performance.now()-perf.startedAt,
+  elapsedMs,
   domNodes:allNodes.length,
   render:{samplesMs:renderSorted,p50Ms:percentile(.5),p95Ms:percentile(.95),count:renderSorted.length},
   longTasks:perf.longTasks,
+  mutationBatches:perf.mutationBatches,
+  mutationRateHz:elapsedMs>0?perf.mutationBatches/(elapsedMs/1000):0,
+  autoSimUiUpdateRateHz:fixture.recipe==='auto-running'&&!freezeAuto&&elapsedMs>0?perf.mutationBatches/(elapsedMs/1000):null,
   focusChanges:perf.focusChanges,
   scrollEvents:perf.scrollEvents,
   uiMutationBatches:perf.uiMutationBatches,
@@ -151,3 +160,8 @@ globalThis.__MUIR_READY__={
   publicScreen:session.getView().screen,
   ready:true
 };
+const evidencePayload={ready:globalThis.__MUIR_READY__,metrics};
+const evidenceBytes=new TextEncoder().encode(JSON.stringify(evidencePayload));
+let evidenceBinary='';for(const byte of evidenceBytes)evidenceBinary+=String.fromCharCode(byte);
+const evidenceNode=document.querySelector('#muir-meta');if(evidenceNode)evidenceNode.textContent=btoa(evidenceBinary);
+mutationObserver.disconnect();

@@ -15,25 +15,25 @@ Baseline: `36d3d1b0750b0ded877e55953f223e2de1169a46`
 - Epilogue uses the same terminal-state recipe already exercised by T5.5 tests.
 - Cinematic missing-asset remains fail-closed until the browser path can inject a real cutscene-bearing public view without fabricating state.
 
-## Execution constraint discovered
+## Browser capture runner
 
-The repository currently has no Playwright/Puppeteer/Chromium screenshot dependency or screenshot runner. Existing project documentation also records that prior UI certification environments did not include a graphical browser.
+A dependency-free test-only runner now exists at `scripts/capture-muir-visuals.mjs`. It uses the Chrome/Chromium binary supplied by the execution environment, serves only repository files from an ephemeral localhost port, captures deterministic PNGs with a clean browser profile per probe, verifies exact PNG dimensions, and exports browser metrics to `analysis/muir/evidence/browser-metrics.json`.
 
-Therefore P0 must not claim screenshots as captured merely because a browser fixture page exists.
+The runner never ships in Web, PlayCanvas or Android product bundles. `cinematic-fallback` remains explicitly fail-closed rather than fabricating a public view; K-02 package/source probes stay authoritative for that path.
 
-The next reproducible step is to add a test-only screenshot runner/tooling dependency or run the harness in an environment that supplies a browser. This decision belongs to P0 infrastructure and must remain excluded from release packaging.
+Execution on the exact P0 head is still required before screenshot or performance requirements can be marked PASS.
 
 ## Required evidence before Pass 2 can close
 
 1. Run fixture contract tests at the exact P0 branch head.
 2. Run K-01 package graph probe.
-3. Serve the repository after build.
-4. Open the MUIR harness for every required fixture/viewport.
-5. Wait for `window.__MUIR_READY__.ready === true`.
-6. Capture PNG.
-7. SHA-256 every PNG.
-8. Record dimensions, fixture id, baseline SHA and tool versions.
-9. Capture primary surfaces at all three required phone widths.
-10. Record landscape/tablet severe-breakage checks.
+3. Run `node scripts/capture-muir-visuals.mjs` on the exact head.
+4. Verify `window.__MUIR_READY__.ready === true` from the encoded DOM evidence for metric probes.
+5. Capture PNG and verify its exact pixel dimensions.
+6. SHA-256 every PNG and rename it with the evidence hash.
+7. Record dimensions, fixture id, baseline SHA and Chrome version.
+8. Capture the primary 390x844 matrix plus representative primary surfaces at 360x800 and 412x915.
+9. Record landscape/tablet severe-breakage checks.
+10. Persist aggregate render, DOM, Long Task, auto-sim update, focus, scroll, touch-target and overflow metrics.
 
 Until those exist, screenshot status is `NOT_CAPTURED`, not PASS.

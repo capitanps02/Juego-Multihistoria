@@ -43,7 +43,7 @@
     "status": "IN_PROGRESS"
   },
   "screenshots": {
-    "status": "NOT_CAPTURED",
+    "status": "CAPTURE_RUNNER_IMPLEMENTED_EXECUTION_PENDING",
     "hashAlgorithm": "sha256",
     "naming": "<BASE_SHA_12>__<fixture-id>__<width>x<height>__<sha256-12>.png"
   },
@@ -57,7 +57,7 @@
     "autoSimUiUpdateRateHz": null,
     "focusChurn": null,
     "scrollChurn": null,
-    "status": "NOT_MEASURED"
+    "status": "CAPTURE_RUNNER_IMPLEMENTED_EXECUTION_PENDING"
   },
   "packageGraph": {
     "status": "REPAIRED_PENDING_EXECUTION",
@@ -84,9 +84,9 @@
   "tooling": {
     "node": null,
     "npm": null,
-    "browser": null,
-    "visualRunner": null,
-    "status": "PENDING_EXACT_HEAD_EXECUTION"
+    "browser": "Chrome/Chromium from execution environment",
+    "visualRunner": "scripts/capture-muir-visuals.mjs",
+    "status": "RUNNER_IMPLEMENTED_EXACT_HEAD_EXECUTION_PENDING"
   },
   "surfaceMap": {
     "status": "DOCUMENTED",
