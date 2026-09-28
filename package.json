@@ -74,7 +74,10 @@
     "test:player-actions-a3-regression": "npm run build && node --test scripts/test-player-actions-core.mjs scripts/test-player-actions-session.mjs scripts/test-player-actions-narrative-bridge.mjs scripts/test-t52-seed-memory.mjs scripts/test-t51-event-gates.mjs scripts/test-t5-market-contract-authority.mjs scripts/test-t5-representation-authority.mjs scripts/test-t53-reconciliation.mjs",
     "test:player-actions-content": "npm run build && node --test scripts/test-player-actions-content.mjs",
     "test:player-actions-balance": "npm run build && node scripts/stress-player-actions-content.mjs",
-    "test:player-actions-ui": "npm run build && node --test scripts/test-player-actions-ui-contract.mjs"
+    "test:player-actions-ui": "npm run build && node --test scripts/test-player-actions-ui-contract.mjs",
+    "test:football-balance": "npm run build && node --test scripts/test-football-catalog.mjs scripts/test-football-catalog-balance.mjs",
+    "test:football-persistence": "npm run build && node --test scripts/test-football-database-v2-persistence.mjs scripts/test-saves.mjs scripts/test-persistence.mjs",
+    "test:football-platforms": "npm run build:playcanvas && node --test scripts/test-club-names.mjs scripts/test-playcanvas.mjs && npm run android:offline && node --test scripts/test-android-offline.mjs"
   },
   "devDependencies": {
     "typescript": "5.8.3"
