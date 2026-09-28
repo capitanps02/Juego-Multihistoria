@@ -1129,6 +1129,33 @@ const TIER_STRENGTH_PENALTY = [0, 0, 14, 25] as const;
  */
 const EXPLICIT_MULTI_CLUB_IDS: Readonly<Record<string, string>> = Object.freeze({});
 
+/**
+ * Human-reviewed display-name overrides for duplicate-like generated identities.
+ * Identity and balance remain keyed exclusively by stable club ID.
+ */
+const EXPLICIT_NAME_MODIFIERS: Readonly<Record<string, string>> = Object.freeze({
+  "ENG|Chester": "Crown",
+  "CHN|Guangzhou": "Jade"
+});
+
+/**
+ * Human-reviewed mobile labels for names that exceed the 22-character presentation budget.
+ * Do not mechanically slice city/modifier tokens: future overflows must be reviewed explicitly.
+ */
+const EXPLICIT_SHORT_NAMES: Readonly<Record<string, string>> = Object.freeze({
+  "Wolverhampton Riverside": "W'hampton Riverside",
+  "Clermont-Ferrand Étoile": "Clermont Étoile",
+  "Castelo Branco Navegante": "C. Branco Navegante",
+  "Viana do Castelo Ribeira": "Viana Castelo Ribeira",
+  "Alphen aan den Rijn Noord": "Alphen Rijn Noord",
+  "Ciudad de México Estrella": "México Estrella",
+  "San Miguel de Tucumán Plata": "Tucumán Plata",
+  "Santiago del Estero Central": "Sgo. Estero Central",
+  "San Salvador de Jujuy Cóndor": "Jujuy Cóndor",
+  "Comodoro Rivadavia Horizonte": "C. Rivadavia Horizonte",
+  "Pietermaritzburg Plains": "PMB Plains"
+});
+
 function hashString(value: string): number {
   let hash = 2166136261;
   for (let i = 0; i < value.length; i += 1) {
@@ -1167,9 +1194,19 @@ function balancedAttribute(
 function shortName(city: string, modifier: string): string {
   const full = `${city} ${modifier}`;
   if (full.length <= MAX_SHORT_NAME_LENGTH) return full;
-  const modifierLength = Math.min(5, modifier.length);
-  const cityLength = Math.max(4, MAX_SHORT_NAME_LENGTH - modifierLength - 1);
-  return `${city.slice(0, cityLength).trim()} ${modifier.slice(0, modifierLength)}`.slice(0, MAX_SHORT_NAME_LENGTH).trim();
+
+  const explicit = EXPLICIT_SHORT_NAMES[full];
+  if (!explicit) {
+    throw new Error(
+      `Football catalog shortName overflow requires an explicit reviewed label: ${full}`
+    );
+  }
+  if (explicit.length > MAX_SHORT_NAME_LENGTH) {
+    throw new Error(
+      `Football catalog explicit shortName exceeds ${MAX_SHORT_NAME_LENGTH} characters: ${explicit}`
+    );
+  }
+  return explicit;
 }
 
 function archetypesFor(seed: number, band: FootballClubBand): readonly ClubArchetype[] {
@@ -1226,7 +1263,9 @@ for (const [rawCode, config] of Object.entries(COUNTRY_CONFIGS)) {
       seenClubIds.add(id);
 
       const identitySeed = hashString(`${countryCode}|${city}|identity`);
-      const modifier = config.mods[identitySeed % config.mods.length]!;
+      const modifier =
+        EXPLICIT_NAME_MODIFIERS[`${countryCode}|${city}`] ??
+        config.mods[identitySeed % config.mods.length]!;
       const nameValue = `${city} ${modifier}`;
       const balanceBand = footballClubBandFor(id, tier, divisionStrength);
       const prestige = balancedAttribute(id, balanceBand, "prestige", divisionStrength, "prestige");
