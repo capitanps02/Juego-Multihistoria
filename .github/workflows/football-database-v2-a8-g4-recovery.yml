@@ -1,0 +1,40 @@
+name: Football Database V2 · A8 G4 recovery
+
+on:
+  push:
+    branches: ["db-a8/football-database-v2-release"]
+    paths:
+      - 'src/save/football-catalog-version.ts'
+      - 'src/save/football-catalog-reference-validation.ts'
+      - 'src/save/validation.ts'
+      - 'scripts/test-football-save-versioning.mjs'
+      - 'scripts/test-football-catalog-save-version.mjs'
+      - 'scripts/test-football-catalog-save-versioning.mjs'
+      - '.github/workflows/football-database-v2-a8-g4-recovery.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  certify-g4-port:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Recovered certified G4 suites
+        run: |
+          node --test             scripts/test-football-save-versioning.mjs             scripts/test-football-catalog-save-version.mjs             scripts/test-football-catalog-save-versioning.mjs
+      - name: Current V2 persistence regression
+        run: node --test scripts/test-football-database-v2-persistence.mjs scripts/test-saves.mjs scripts/test-persistence.mjs
+      - name: Runtime and market regression
+        run: node --test scripts/test-football-v2-runtime.mjs scripts/test-t5-market-contract-authority.mjs
+      - name: Player Actions bridge regression
+        run: node --test scripts/test-player-actions-core.mjs scripts/test-player-actions-session.mjs scripts/test-player-actions-narrative-bridge.mjs
