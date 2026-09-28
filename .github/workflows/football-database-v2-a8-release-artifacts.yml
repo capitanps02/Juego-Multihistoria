@@ -12,6 +12,10 @@ on:
       - '.github/workflows/football-database-v2-a8-release-artifacts.yml'
       - '.github/workflows/football-database-v2-a8-final-regression.yml'
       - 'docs/football-database-v2-a8-integration-manifest.md'
+      - 'playcanvas/multihistoria.js'
+      - 'playcanvas/manifest.json'
+      - 'android/app/src/main/assets/**'
+      - '.github/workflows/football-database-v2-a8-materialize-deployables.yml'
   workflow_dispatch:
 
 permissions:
