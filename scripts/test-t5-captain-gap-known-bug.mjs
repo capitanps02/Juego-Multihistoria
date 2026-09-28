@@ -138,9 +138,9 @@ test('T5-QA-030c/#161: captain authority preserves provenance/save-load and neve
   assert.deepEqual(resolveCurrentPlayerClubLeadership(restored), resolveCurrentPlayerClubLeadership(state));
   assert.deepEqual(restored.rngState, beforeRng, 'captain authority save/load must consume 0 RNG');
 
-  restored.club = 'NEW_CLUB';
-  restored.professional.ownerClub = 'NEW_CLUB';
-  restored.professional.registrationClub = 'NEW_CLUB';
+  restored.club = 'ESP_MADRID';
+  restored.professional.ownerClub = 'ESP_MADRID';
+  restored.professional.registrationClub = 'ESP_MADRID';
   assert.equal(
     resolveCurrentPlayerClubLeadership(restored),
     null,
