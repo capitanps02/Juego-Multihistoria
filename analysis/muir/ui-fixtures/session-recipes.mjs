@@ -108,8 +108,9 @@ export async function buildFixtureSession(id){
     case 'player-actions-result': return initial(f);
     case 'offer': return offer(f);
     case 'important-injury': return importantInjury(f);
-    // Real canonical decision with a real public cutscene. The browser harness only overrides its media URL to a missing asset.
-    case 'cinematic-missing-asset': return cinematicDecision(f);
+    // A brand-new session exposes the canonical PROLOGUE through public PlayerView.cutscene.
+    // The browser harness overrides only that media URL to exercise the real missing-media fallback.
+    case 'cinematic-missing-asset': return initial(f);
     case 'retirement': {
       let s=await GameSession.create(f.seed,{events:[],microfeeds:false,sessionId:'muir-'+f.id});
       const snapshot=s.exportSnapshot();
