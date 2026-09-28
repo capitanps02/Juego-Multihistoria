@@ -1,0 +1,45 @@
+name: Football Database V2 · Runtime integration
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/catalog/football/**'
+      - 'src/simulation/match-model.ts'
+      - 'src/simulation/early-career-market.ts'
+      - 'src/simulation/world-simulator-core.ts'
+      - 'src/simulation/offers.ts'
+      - 'src/simulation/professional-adapter.ts'
+      - 'src/simulation/employment.ts'
+      - 'src/narrative/resolver.ts'
+      - 'scripts/test-football-database-v2-runtime.mjs'
+      - 'scripts/test-t5-age18-market-authority.mjs'
+      - 'scripts/test-player-actions-narrative-bridge.mjs'
+      - 'package.json'
+      - '.github/workflows/football-database-v2-runtime.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  runtime-integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Build
+        run: npm run build
+      - name: V2 runtime catalog regressions
+        run: node --test scripts/test-football-database-v2-runtime.mjs
+      - name: Age-18 market authority regression
+        run: node --test scripts/test-t5-age18-market-authority.mjs
+      - name: Player Actions causal bridge regression
+        run: node --test scripts/test-player-actions-narrative-bridge.mjs
+      - name: Core catalog integrity
+        run: node --test scripts/test-football-catalog.mjs scripts/test-football-catalog-balance.mjs
