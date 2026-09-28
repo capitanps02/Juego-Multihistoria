@@ -1,4 +1,8 @@
 import type { ClubArchetype, FootballConfederation, FootballCountryCode, FootballClub, FootballDivision } from "./types.js";
+import type { FootballClubBand, FootballBalanceAttribute } from "./balance.js";
+import { footballBandAttributeModifier, footballClubBandFor, footballStructuralCoefficient } from "./balance.js";
+import { assertFootballCatalogData } from "./integrity.js";
+import { catalogMultiClubIdentityKey, defaultCatalogClubId, stableCatalogClubId } from "./identity.js";
 
 const COUNTRY_CONFIGS = {
   "ESP": {
@@ -1118,6 +1122,13 @@ const COUNTRY_CONFIGS = {
 const MAX_SHORT_NAME_LENGTH = 22;
 const TIER_STRENGTH_PENALTY = [0, 0, 14, 25] as const;
 
+/**
+ * Explicit immutable identities for additional clubs in an already represented city.
+ * Existing first-city IDs intentionally remain COUNTRY_CITY for save compatibility.
+ * Example future entry: "ESP|MADRID|2": "ESP_MADRID_02".
+ */
+const EXPLICIT_MULTI_CLUB_IDS: Readonly<Record<string, string>> = Object.freeze({});
+
 function hashString(value: string): number {
   let hash = 2166136261;
   for (let i = 0; i < value.length; i += 1) {
@@ -1131,25 +1142,26 @@ function clamp(value: number, min = 0, max = 100): number {
   return Math.min(max, Math.max(min, Math.round(value)));
 }
 
-function asciiToken(value: string): string {
-  return value
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toUpperCase()
-    .replace(/[^A-Z0-9]+/g, "_")
-    .replace(/^_+|_+$/g, "");
-}
-
-function clubId(countryCode: FootballCountryCode, city: string): string {
-  return `${countryCode}_${asciiToken(city)}`;
-}
-
-function variation(id: string, channel: string, radius = 7): number {
+function variation(id: string, channel: string, radius = 3): number {
   return (hashString(`${id}|${channel}`) % (radius * 2 + 1)) - radius;
 }
 
 function tierAdjusted(value: number, tier: number): number {
   return clamp(value - (TIER_STRENGTH_PENALTY[tier] ?? 30));
+}
+
+function balancedAttribute(
+  id: string,
+  band: FootballClubBand,
+  attribute: FootballBalanceAttribute,
+  structuralValue: number,
+  variationChannel: string
+): number {
+  return clamp(
+    footballStructuralCoefficient(structuralValue) +
+    footballBandAttributeModifier(band, attribute) +
+    variation(id, variationChannel, 3)
+  );
 }
 
 function shortName(city: string, modifier: string): string {
@@ -1160,9 +1172,14 @@ function shortName(city: string, modifier: string): string {
   return `${city.slice(0, cityLength).trim()} ${modifier.slice(0, modifierLength)}`.slice(0, MAX_SHORT_NAME_LENGTH).trim();
 }
 
-function archetypesFor(tier: number, prestige: number, seed: number): readonly ClubArchetype[] {
+function archetypesFor(seed: number, band: FootballClubBand): readonly ClubArchetype[] {
   const pool: ClubArchetype[] = ["development","selling","historic","high_pressure","community","technical","physical"];
-  const first: ClubArchetype = prestige >= 84 && tier === 1 ? "continental" : pool[seed % pool.length]!;
+  const first: ClubArchetype =
+    band === "elite" || band === "continental"
+      ? "continental"
+      : band === "development"
+        ? "development"
+        : pool[seed % pool.length]!;
   const second = pool[(seed + 3) % pool.length]!;
   return Object.freeze(first === second ? [first] : [first, second]);
 }
@@ -1170,6 +1187,7 @@ function archetypesFor(tier: number, prestige: number, seed: number): readonly C
 const divisions: FootballDivision[] = [];
 const clubs: FootballClub[] = [];
 const seenClubIds = new Set<string>();
+const cityOccurrences = new Map<string, number>();
 
 for (const [rawCode, config] of Object.entries(COUNTRY_CONFIGS)) {
   const countryCode = rawCode as FootballCountryCode;
@@ -1197,16 +1215,21 @@ for (const [rawCode, config] of Object.entries(COUNTRY_CONFIGS)) {
 
     for (let index = 0; index < clubCount; index += 1) {
       const city = config.cities[cityOffset + index]!;
-      const id = clubId(countryCode, city);
+      const cityKey = defaultCatalogClubId(countryCode, city);
+      const occurrence = (cityOccurrences.get(cityKey) ?? 0) + 1;
+      cityOccurrences.set(cityKey, occurrence);
+      const explicitId = EXPLICIT_MULTI_CLUB_IDS[catalogMultiClubIdentityKey(countryCode, city, occurrence)];
+      const id = stableCatalogClubId(countryCode, city, occurrence, explicitId);
       if (seenClubIds.has(id)) {
-        throw new Error(`Football catalog duplicate stable club id: ${id}. Add an explicit club identity before allowing multiple clubs in one city.`);
+        throw new Error(`Football catalog duplicate stable club id: ${id}.`);
       }
       seenClubIds.add(id);
 
       const identitySeed = hashString(`${countryCode}|${city}|identity`);
       const modifier = config.mods[identitySeed % config.mods.length]!;
       const nameValue = `${city} ${modifier}`;
-      const prestige = clamp(divisionStrength + variation(id, "prestige"));
+      const balanceBand = footballClubBandFor(id, tier, divisionStrength);
+      const prestige = balancedAttribute(id, balanceBand, "prestige", divisionStrength, "prestige");
       clubs.push(Object.freeze({
         id,
         name: nameValue,
@@ -1218,12 +1241,42 @@ for (const [rawCode, config] of Object.entries(COUNTRY_CONFIGS)) {
         divisionId,
         tier,
         prestige,
-        financialPower: clamp(tierAdjusted(config.finance, tier) + variation(id, "finance")),
-        youthQuality: clamp(tierAdjusted(config.youth, tier) + variation(id, "youth")),
-        developmentBias: clamp(tierAdjusted(config.development, tier) + variation(id, "development")),
-        pressure: clamp(tierAdjusted(config.pressure, tier) + variation(id, "pressure")),
-        internationalAttraction: clamp(tierAdjusted(config.international, tier) + variation(id, "international")),
-        archetypes: archetypesFor(tier, prestige, identitySeed),
+        financialPower: balancedAttribute(
+          id,
+          balanceBand,
+          "financialPower",
+          tierAdjusted(config.finance, tier),
+          "finance"
+        ),
+        youthQuality: balancedAttribute(
+          id,
+          balanceBand,
+          "youthQuality",
+          tierAdjusted(config.youth, tier),
+          "youth"
+        ),
+        developmentBias: balancedAttribute(
+          id,
+          balanceBand,
+          "developmentBias",
+          tierAdjusted(config.development, tier),
+          "development"
+        ),
+        pressure: balancedAttribute(
+          id,
+          balanceBand,
+          "pressure",
+          tierAdjusted(config.pressure, tier),
+          "pressure"
+        ),
+        internationalAttraction: balancedAttribute(
+          id,
+          balanceBand,
+          "internationalAttraction",
+          tierAdjusted(config.international, tier),
+          "international"
+        ),
+        archetypes: archetypesFor(identitySeed, balanceBand),
         clearanceStatus: "working_name_unchecked"
       }));
     }
@@ -1231,6 +1284,11 @@ for (const [rawCode, config] of Object.entries(COUNTRY_CONFIGS)) {
   });
 }
 
-export const FOOTBALL_DIVISIONS: readonly FootballDivision[] = Object.freeze(divisions);
-export const FOOTBALL_CLUBS: readonly FootballClub[] = Object.freeze(clubs);
-export const FOOTBALL_CATALOG_VERSION = "world-v1-2026-09-26";
+const frozenDivisions: readonly FootballDivision[] = Object.freeze(divisions.slice());
+const frozenClubs: readonly FootballClub[] = Object.freeze(clubs.slice());
+
+assertFootballCatalogData(frozenClubs, frozenDivisions, "Football Database V2 catalog");
+
+export const FOOTBALL_DIVISIONS = frozenDivisions;
+export const FOOTBALL_CLUBS = frozenClubs;
+export const FOOTBALL_CATALOG_VERSION = "world-v2-a2-2026-09-28";
