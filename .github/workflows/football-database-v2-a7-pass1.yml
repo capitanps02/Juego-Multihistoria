@@ -53,3 +53,5 @@ jobs:
         run: npm run qa:football-db:a7:pass3
       - name: Pass 3 Player Actions content regression
         run: npm run test:player-actions-content
+      - name: Pass 4 RNG / determinism / replay
+        run: npm run qa:football-db:a7:pass4
