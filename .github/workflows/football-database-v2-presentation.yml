@@ -27,7 +27,7 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   presentation-platforms:
@@ -35,6 +35,9 @@ jobs:
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -53,6 +56,19 @@ jobs:
             playcanvas/manifest.json
             web/assets.json
           if-no-files-found: error
+      - name: Refresh versioned PlayCanvas artifacts
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        shell: bash
+        run: |
+          if git diff --quiet -- playcanvas/multihistoria.js playcanvas/manifest.json web/assets.json; then
+            echo "Versioned PlayCanvas artifacts are already fresh."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add playcanvas/multihistoria.js playcanvas/manifest.json web/assets.json
+          git commit -m "DB-A5: refresh generated PlayCanvas artifacts"
+          git push origin HEAD:${{ github.head_ref }}
       - name: Attempt Android APK assemble
         shell: bash
         run: |
