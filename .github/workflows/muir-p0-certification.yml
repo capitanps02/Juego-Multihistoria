@@ -28,32 +28,49 @@ jobs:
       - name: Build engine
         run: npm run build
       - name: MUIR fixture contracts
+        if: always()
         run: node --test scripts/test-muir-fixtures.mjs
       - name: MUIR package graph
+        if: always()
         run: node --test scripts/test-muir-package-graph.mjs
       - name: Session
+        if: always()
         run: npm run test:session
       - name: Saves
+        if: always()
         run: npm run test:saves
       - name: Persistence
+        if: always()
         run: npm run test:persistence
       - name: Player Actions UI
+        if: always()
         run: npm run test:player-actions-ui
       - name: Player Actions session
+        if: always()
         run: npm run test:player-actions-session
       - name: Auto-simulation
+        if: always()
         run: npm run test:t55:a14
       - name: Epilogue UI
+        if: always()
         run: npm run test:t55:a19
       - name: PlayCanvas
+        if: always()
         run: npm run test:playcanvas
       - name: Android offline clean package
+        if: always()
         run: npm run build:android:offline
       - name: Android offline
+        if: always()
         run: npm run test:android:offline
       - name: Football platform parity
+        if: always()
         run: npm run test:football-platforms
+      - name: Bundle byte metrics
+        if: always()
+        run: node scripts/measure-muir-bundles.mjs
       - name: Build MUIR evidence index
+        if: always()
         run: node scripts/build-muir-evidence.mjs
       - uses: actions/upload-artifact@v4
         if: always()
