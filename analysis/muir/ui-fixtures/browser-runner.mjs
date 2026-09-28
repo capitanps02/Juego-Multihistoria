@@ -12,6 +12,16 @@ addEventListener('scroll',()=>{perf.scrollEvents++;},{capture:true,passive:true}
 if(globalThis.PerformanceObserver){
   try{const po=new PerformanceObserver(list=>{for(const e of list.getEntries())perf.longTasks.push({startTime:e.startTime,duration:e.duration});});po.observe({type:'longtask',buffered:true});}catch{}
 }
+const nativeReplaceChildren=Element.prototype.replaceChildren;
+Element.prototype.replaceChildren=function(...nodes){
+  if(this.classList?.contains('mh')){
+    const started=performance.now();
+    const result=nativeReplaceChildren.apply(this,nodes);
+    perf.renderSamples.push(performance.now()-started);
+    return result;
+  }
+  return nativeReplaceChildren.apply(this,nodes);
+};
 const fixtureId=params.get('fixture')||'home-normal';
 const fixture=fixtureById(fixtureId);
 const viewport=params.get('viewport')||'phone-primary';
@@ -47,9 +57,7 @@ const cutsceneUrl=clip=>{
   return '/web/assets/cutscenes/'+clip.file;
 };
 
-const mountStarted=performance.now();
 mountGame({root,GameSession,assets,css:deterministicCss,storageKey,cutsceneUrl});
-perf.renderSamples.push(performance.now()-mountStarted);
 const mutationObserver=new MutationObserver(records=>{perf.uiMutationBatches++;perf.uiMutationRecords+=records.length;});
 mutationObserver.observe(root,{subtree:true,childList:true,characterData:true,attributes:true});
 
@@ -92,6 +100,14 @@ else if(fixture.route==='save')await clickText('Tu partida');
 if(fixture.recipe==='player-actions-menu')await clickText('Gestionar mi carrera');
 if(fixture.recipe==='player-actions-category'){await clickText('Gestionar mi carrera');await clickCardButton('Entrenamiento','Ver acciones');}
 if(fixture.recipe==='player-actions-detail'){await clickText('Gestionar mi carrera');await clickCardButton('Entrenamiento','Ver acciones');await clickCardButton('Entrenamiento extra','Abrir');}
+if(fixture.recipe==='cinematic-missing-asset'){
+  for(let i=0;i<160;i++){
+    if(root.textContent.includes('No se ha podido cargar la escena. Puedes seguir con tu decisión.'))break;
+    await new Promise(r=>setTimeout(r,25));
+    if(i===159)throw Error('MUIR cinematic fallback message did not appear');
+  }
+}
+
 if(fixture.recipe==='player-actions-result'){
   // Reproduce a known target-free action through real UI navigation.
   // Do not synthesize private playerActionUi state.
@@ -116,13 +132,12 @@ const overflowX=allNodes.filter(n=>n.scrollWidth>n.clientWidth+1).slice(0,50).ma
 const navStyles=navNode?getComputedStyle(navNode):null;
 const navButtons=q('.nav-button');
 const navTypography=navButtons[0]?(()=>{const s=getComputedStyle(navButtons[0]);return {fontFamily:s.fontFamily,fontSize:s.fontSize,fontWeight:s.fontWeight,lineHeight:s.lineHeight};})():null;
-const renderSorted=[...perf.renderSamples].sort((a,b)=>a-b);
-const percentile=p=>renderSorted.length?renderSorted[Math.min(renderSorted.length-1,Math.ceil(renderSorted.length*p)-1)]:null;
+const percentile=(samples,p)=>samples.length?samples[Math.min(samples.length-1,Math.ceil(samples.length*p)-1)]:null;
 const metrics={
   capturedAt:new Date().toISOString(),
   elapsedMs:performance.now()-perf.startedAt,
   domNodes:allNodes.length,
-  render:{samplesMs:renderSorted,p50Ms:percentile(.5),p95Ms:percentile(.95),count:renderSorted.length},
+  render:{samplesMs:[],p50Ms:null,p95Ms:null,count:0,frequencyHz:0},
   longTasks:perf.longTasks,
   focusChanges:perf.focusChanges,
   scrollEvents:perf.scrollEvents,
@@ -142,6 +157,8 @@ const metrics={
 };
 const refreshDynamicMetrics=()=>{
   metrics.elapsedMs=performance.now()-perf.startedAt;
+  const renderSorted=[...perf.renderSamples].sort((a,b)=>a-b);
+  metrics.render={samplesMs:renderSorted,p50Ms:percentile(renderSorted,.5),p95Ms:percentile(renderSorted,.95),count:renderSorted.length,frequencyHz:metrics.elapsedMs>0?renderSorted.length/(metrics.elapsedMs/1000):0};
   metrics.focusChanges=perf.focusChanges;
   metrics.scrollEvents=perf.scrollEvents;
   metrics.uiMutationBatches=perf.uiMutationBatches;
