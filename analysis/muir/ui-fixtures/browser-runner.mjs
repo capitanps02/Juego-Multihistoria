@@ -128,6 +128,85 @@ if(fixture.recipe==='player-actions-result'){
   await settle();
 }
 
+
+function requireSurface(condition,label){
+  if(!condition)throw Error('MUIR visible-surface assertion failed: '+fixtureId+' -> '+label);
+}
+const visibleText=root.textContent;
+const h1=root.querySelector('main h1')?.textContent.trim()??'';
+switch(fixtureId){
+  case 'home-normal':
+    requireSurface(Boolean(root.querySelector('.home-grid')),'home grid');
+    requireSurface(visibleText.includes('Lo que viene ahora'),'normal home next panel');
+    requireSurface(!root.querySelector('dialog[open]'),'no autoplay modal');
+    break;
+  case 'home-pending-decision':
+  case 'auto-interruption':
+    requireSurface(Boolean(root.querySelector('.decision-sheet')),'decision sheet');
+    requireSurface(visibleText.includes('UN MOMENTO QUE CUENTA'),'decision eyebrow');
+    break;
+  case 'home-offer':
+  case 'contract-offer':
+    requireSurface(visibleText.includes('Aceptar oferta')&&visibleText.includes('Rechazar oferta'),'offer actions');
+    break;
+  case 'result':
+    requireSurface(visibleText.includes('DESPUÉS DE TU DECISIÓN'),'result sheet');
+    requireSurface(Boolean(root.querySelector('[data-result-continue]')),'result continue action');
+    break;
+  case 'auto-running':
+    requireSurface(visibleText.includes('Simulando el siguiente tramo…'),'running auto-sim status');
+    requireSurface([...root.querySelectorAll('button')].some(b=>b.textContent.trim()==='Pausar'),'pause action');
+    break;
+  case 'auto-paused':
+    requireSurface(visibleText.includes('Juego en pausa'),'paused status');
+    requireSurface([...root.querySelectorAll('button')].some(b=>b.textContent.trim()==='Reanudar'),'resume action');
+    break;
+  case 'period-summary':
+    requireSurface(Boolean(root.querySelector('.period-summary')),'period summary');
+    requireSurface(h1==='Tu carrera.','career route around period summary');
+    break;
+  case 'player-actions-menu':
+    requireSurface(h1==='¿Qué quieres hacer?','player actions menu');
+    break;
+  case 'player-actions-category':
+    requireSurface(h1==='Entrenamiento','training category');
+    break;
+  case 'player-actions-detail':
+    requireSurface(h1==='Entrenamiento extra','training action detail');
+    break;
+  case 'player-actions-result':
+    requireSurface(Boolean(root.querySelector('.player-action-result')),'player action result card');
+    requireSurface(visibleText.includes('ACCIÓN COMPLETADA'),'player action result');
+    break;
+  case 'injury-public':
+    requireSurface(Boolean(root.querySelector('.period-summary')),'injury period summary');
+    requireSurface(visibleText.includes('Una lesión importante requiere atención.'),'important injury interruption');
+    break;
+  case 'career':
+    requireSurface(h1==='Tu carrera.','career screen');
+    break;
+  case 'world':
+    requireSurface(h1==='El mundo sigue.','world screen');
+    break;
+  case 'relations':
+    requireSurface(h1==='Las personas de tu historia.','relations screen');
+    break;
+  case 'profile':
+    requireSurface(h1==='Tu perfil.','profile screen');
+    break;
+  case 'save':
+    requireSurface(h1==='Tu partida.','save screen');
+    requireSurface(visibleText.includes('Partida actual'),'active save panel');
+    break;
+  case 'cinematic-fallback':
+    requireSurface(Boolean(root.querySelector('dialog.prologue-dialog[open]')),'open prologue dialog');
+    requireSurface(visibleText.includes('No se ha podido cargar el prólogo. Puedes continuar con tu historia.'),'prologue missing-media fallback');
+    break;
+  case 'epilogue-retirement':
+    requireSurface(Boolean(root.querySelector('.home-grid')),'epilogue home surface');
+    requireSurface(visibleText.includes('Una carrera para recordar'),'epilogue copy');
+    break;
+}
 const q=s=>[...root.querySelectorAll(s)];
 const rect=n=>{const r=n.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height,bottom:r.bottom,right:r.right};};
 const buttons=q('button');
