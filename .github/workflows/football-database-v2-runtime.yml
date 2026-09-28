@@ -20,6 +20,7 @@ on:
       - 'src/simulation/employment.ts'
       - 'src/narrative/resolver.ts'
       - 'scripts/test-football-database-v2-runtime.mjs'
+      - 'scripts/test-db-a3-zero-action-equivalence.mjs'
       - 'scripts/test-t5-age18-market-authority.mjs'
       - 'scripts/test-player-actions-narrative-bridge.mjs'
       - 'package.json'
@@ -56,3 +57,17 @@ jobs:
         run: node --test scripts/test-t55-auto-simulation.mjs
       - name: Core catalog integrity and balance
         run: node --test scripts/test-football-catalog.mjs scripts/test-football-balance.mjs
+      - name: Checkout pre-V2 baseline
+        uses: actions/checkout@v4
+        with:
+          ref: b72cb81f993634667ba699086ba8714240d8a27b
+          path: baseline-main
+      - name: Install pre-V2 baseline
+        run: npm ci --prefix baseline-main
+      - name: Build pre-V2 baseline
+        run: npm --prefix baseline-main run build
+      - name: Zero-action equivalence vs pre-V2 main
+        env:
+          DB_A3_BASELINE_ROOT: baseline-main
+          DB_A3_CURRENT_ROOT: .
+        run: node --test scripts/test-db-a3-zero-action-equivalence.mjs
