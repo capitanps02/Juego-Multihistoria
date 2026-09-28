@@ -9,6 +9,23 @@ export type {
   FootballClub,
   FootballDivision
 } from "./types.js";
+export type {
+  FootballBalanceAttribute,
+  FootballClubBand,
+  FootballLeagueGroup,
+  FootballSelectorProfile
+} from "./balance.js";
+export {
+  FOOTBALL_CLUB_BANDS,
+  FOOTBALL_SELECTOR_PROFILES,
+  FOOTBALL_SELECTOR_PROFILE_CONTRACT,
+  footballBandAttributeModifier,
+  footballClubBalanceMetadata,
+  footballClubBandFor,
+  footballClubSelectorProfile,
+  footballLeagueGroupForStrength,
+  footballStructuralCoefficient
+} from "./balance.js";
 export { FOOTBALL_CLUBS, FOOTBALL_DIVISIONS, FOOTBALL_CATALOG_VERSION } from "./world.js";
 export {
   FOOTBALL_CATALOG_CLUB_ID_PATTERN,
