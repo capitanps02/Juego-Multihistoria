@@ -1,0 +1,45 @@
+name: DB-A6 · G4 integration probe
+
+on:
+  pull_request:
+    paths:
+      - 'src/catalog/football/**'
+      - 'src/save/**'
+      - 'src/simulation/**'
+      - 'src/narrative/**'
+      - 'src/player-actions/**'
+      - 'scripts/test-football-*.mjs'
+      - 'scripts/test-player-actions-*.mjs'
+      - 'scripts/test-saves.mjs'
+      - 'scripts/test-offers.mjs'
+      - 'scripts/test-t5-market-contract-authority.mjs'
+      - 'package.json'
+      - '.github/workflows/db-a6-g4-integration-probe.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  g4-cross-agent:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Build
+        run: npm run build
+      - name: G6 catalog and name quality
+        run: node --test scripts/test-football-catalog.mjs
+      - name: A2 balance
+        run: node --test scripts/test-football-catalog-balance.mjs
+      - name: A3 runtime integration
+        run: npm run test:football-runtime
+      - name: A4 save/versioning integration
+        run: npm run test:football-save
+      - name: Player Actions content
+        run: node --test scripts/test-player-actions-content.mjs
