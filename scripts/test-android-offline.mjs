@@ -42,6 +42,8 @@ test('Android package has a complete local entrypoint and verified file manifest
   }
   assert.ok(manifest.files.some(file => file.path === 'dist/session/game-session.js'));
   assert.ok(manifest.files.some(file => file.path === 'web/local.js'));
+  assert.ok(manifest.files.some(file => file.path === 'web/club-catalog-names.js'));
+  assert.ok(manifest.files.some(file => file.path === 'web/club-names.js'));
 });
 
 test('Android entrypoint contains no absolute web paths or network fetches', () => {
@@ -67,6 +69,8 @@ test('Android entrypoint contains no absolute web paths or network fetches', () 
 
 test('Android bundle retains the production UI, engine and IndexedDB persistence modules', () => {
   assert.ok(read('web/game-ui.js').includes('createIndexedSaveStore'));
+  assert.ok(read('web/game-ui.js').includes("from './club-names.js'"));
+  assert.ok(read('web/club-names.js').includes("from './club-catalog-names.js'"));
   assert.ok(read('web/indexed-save-store.js').includes('multihistoria.saves.v1'));
   assert.ok(read('web/local.js').includes('android.offline.session.v1'));
   assert.ok(read('web/local.js').includes('data:image/png;base64,'));
