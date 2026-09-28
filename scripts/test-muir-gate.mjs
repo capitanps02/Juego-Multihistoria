@@ -95,6 +95,12 @@ assert(baseline.status==='READY_FOR_GATE','muir-baseline is not READY_FOR_GATE')
 assert(baseline.screenshots?.status==='CAPTURED','baseline screenshots are not CAPTURED');
 assert(baseline.screenshots?.count===expectedTargets,'baseline screenshot count mismatch');
 assert(baseline.performance?.status==='MEASURED','performance baseline not measured');
+for(const field of ['renderP50Ms','renderP95Ms','renderFrequencyHz','domNodes','longTasks','autoSimUiUpdateRateHz','focusChurn','scrollChurn']){
+  assert(typeof baseline.performance?.[field]==='number'&&Number.isFinite(baseline.performance[field]),'performance '+field+' missing');
+}
+for(const field of ['webUi','webCss','cutscenePlayer','playcanvasBundle']){
+  assert(Number.isSafeInteger(baseline.performance?.uiBundleBytes?.[field])&&baseline.performance.uiBundleBytes[field]>0,'uiBundleBytes '+field+' missing');
+}
 assert(baseline.instrumentation?.status==='EXECUTED','instrumentation not executed');
 assert(baseline.tooling?.status==='EXECUTED','tooling not executed');
 assert(baseline.productChanges==='NONE','unexpected productChanges declaration');
