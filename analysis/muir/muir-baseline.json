@@ -66,12 +66,16 @@
     "executed": false
   },
   "identityId01": {
-    "status": "IN_PROGRESS",
-    "finding": "PlayerView has no player-name field in initial interface audit; end-to-end save/state audit pending"
+    "status": "BLOCKED",
+    "finding": "Historical canon says editable name/surname, but current GameState, initial state, save validation, PlayerView and production UI expose no player identity contract.",
+    "evidence": "analysis/muir/ID-01_PLAYER_IDENTITY.md",
+    "gateImpact": "P3_BLOCKER"
   },
   "cinematics": {
-    "status": "IN_PROGRESS",
-    "finding": "cutscene player has explicit media error fallback; Android asset/module resolution still requires K-01 reproduction"
+    "status": "BLOCKED",
+    "finding": "Web and PlayCanvas resolution/fallback paths are defined; Android offline cannot certify cinematics while K-01 omits cutscene-player.js from the package graph.",
+    "evidence": "analysis/muir/K-02_CINEMATIC_RESOLUTION.md",
+    "blockedBy": "MUIR-K-01"
   },
   "productChanges": "NONE",
   "gameplayChanges": "NONE",
@@ -84,5 +88,13 @@
     "browser": null,
     "visualRunner": null,
     "status": "PENDING_EXACT_HEAD_EXECUTION"
+  },
+  "surfaceMap": {
+    "status": "DOCUMENTED",
+    "evidence": "analysis/muir/P0_SURFACE_MAP.md"
+  },
+  "screenDataActionMap": {
+    "status": "DOCUMENTED",
+    "evidence": "analysis/muir/P0_SCREEN_DATA_ACTION_MAP.md"
   }
 }
