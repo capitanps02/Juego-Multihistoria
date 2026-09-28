@@ -80,8 +80,19 @@ export async function buildFixtureSession(id){
     case 'important-injury': return importantInjury(f);
     // Visual-only recipes need the browser adapter to force missing-media/final-career presentation.
     // They intentionally fail closed here instead of fabricating PlayerView fields.
-    case 'cinematic-missing-asset':
-    case 'retirement': throw Error(f.recipe+' requires dedicated browser adapter; not yet certified');
+    case 'cinematic-missing-asset': throw Error(f.recipe+' requires dedicated browser adapter; not yet certified');
+    case 'retirement': {
+      let s=await GameSession.create(f.seed,{events:[],microfeeds:false,sessionId:'muir-'+f.id});
+      const snapshot=s.exportSnapshot();
+      snapshot.state.retirement.status='closed';
+      snapshot.state.retirement.decidedDate=snapshot.state.date;
+      snapshot.state.retirement.announcedDate=snapshot.state.date;
+      snapshot.state.retirement.closedDate=snapshot.state.date;
+      snapshot.state.retirement.decisionAge=snapshot.state.age;
+      snapshot.state.retirement.reason='qa_terminal';
+      snapshot.state.retirement.closureType='qa_terminal';
+      return GameSession.resume(snapshot,{events:[]});
+    }
     default: throw Error('Unsupported MUIR recipe: '+f.recipe);
   }
 }
