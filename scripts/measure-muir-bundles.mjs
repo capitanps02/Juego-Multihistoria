@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import {execFileSync} from 'node:child_process';
 
 const root=path.resolve(import.meta.dirname,'..');
 const stat=rel=>{const p=path.join(root,rel);return fs.existsSync(p)?{bytes:fs.statSync(p).size,sha256:crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex')}:null};
@@ -27,5 +28,6 @@ baseline.performance={...baseline.performance,
   },
   bundleMetricsEvidence:'analysis/muir/evidence/bundle-metrics.json'
 };
+baseline.tooling={...baseline.tooling,node:process.version,npm:execFileSync('npm',['--version'],{encoding:'utf8'}).trim()};
 fs.writeFileSync(baselinePath,JSON.stringify(baseline,null,2)+'\n');
 console.log(JSON.stringify(report));
