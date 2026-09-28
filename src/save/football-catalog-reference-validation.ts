@@ -268,7 +268,7 @@ function compatibilityGenerationIssue(value: unknown): FootballCatalogReferenceI
 export function inspectFootballCatalogSaveReferences(value: unknown): FootballCatalogReferenceIssue | null {
   if (!plainRecord(value)) return null;
   const version = footballCatalogVersionOf(value.footballCatalogVersion);
-  if (version === PRE_FOOTBALL_CATALOG_VERSION) return null;
+  if (version === PRE_FOOTBALL_CATALOG_VERSION) return compatibilityGenerationIssue(value);
   if (version !== CURRENT_FOOTBALL_CATALOG_VERSION) return compatibilityGenerationIssue(value);
 
   const professional = plainRecord(value.professional) ? value.professional : {};
