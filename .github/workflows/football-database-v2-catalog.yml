@@ -5,7 +5,7 @@ on:
     branches: [main]
     paths:
       - 'src/catalog/football/**'
-      - 'scripts/test-football-catalog.mjs'
+      - 'scripts/test-football-v2-integrity.mjs'
       - 'package.json'
       - 'package-lock.json'
       - '.github/workflows/football-database-v2-catalog.yml'
@@ -28,4 +28,4 @@ jobs:
       - name: Build engine
         run: npm run build
       - name: Validate V2 football catalog and references
-        run: node --test scripts/test-football-catalog.mjs
+        run: node --test scripts/test-football-v2-integrity.mjs
