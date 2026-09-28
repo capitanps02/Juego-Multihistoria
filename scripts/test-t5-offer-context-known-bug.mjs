@@ -9,9 +9,9 @@ const invalidSave = error => error?.code === 'INVALID_SAVE';
 function stateWithFormalOffer(seed = 17531) {
   const state = createInitialState(seed);
   proposeCareerChange(state, 'QA rich-offer context boundary', draft => {
-    draft.club = 'QA_RICH_FC';
-    draft.professional.ownerClub = 'QA_RICH_FC';
-    draft.professional.registrationClub = 'QA_RICH_FC';
+    draft.club = 'ESP_MADRID';
+    draft.professional.ownerClub = 'ESP_MADRID';
+    draft.professional.registrationClub = 'ESP_MADRID';
     draft.contract.monthsRemaining = 36;
     draft.contract.salaryMonthly += 25000;
   });
