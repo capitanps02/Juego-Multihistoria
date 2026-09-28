@@ -138,6 +138,8 @@ export interface SeedTransition {
     action: "create" | "activate" | "intensify" | "transform" | "resolve" | "expire";
     intensity?: number;
     payload?: Record<string, DataValue>;
+    /** ISO date at which this instance becomes terminal, when explicitly assigned. */
+    expiresAfter?: string;
 }
 export interface OutcomeModifier {
     id: string;
@@ -260,9 +262,15 @@ export interface RuntimeState {
     eventsThisSeason: number;
 }
 export interface GameState {
+    /** Present on Football Database V2-native saves; historical schema-8 saves may omit it. */
+    footballCatalogVersion?: string;
+    /** Optional/lazy V1 Player Actions store. Historical saves omit it. */
+    playerActions?: import("../player-actions/types.js").PlayerActionState;
     ageMilestones?: import("../simulation/age-milestones.js").AgeMilestone[];
     /** Absent in historical schema-8 saves; initialized without signing anything. */
     market?: import("../simulation/offers.js").MarketState;
+    /** Explicit employment truth; historical schema-8 saves may omit it. */
+    employment?: import("../simulation/employment.js").EmploymentState;
     schemaVersion: number;
     date: string;
     age: number;
