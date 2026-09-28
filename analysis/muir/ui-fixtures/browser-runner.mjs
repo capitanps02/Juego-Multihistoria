@@ -52,6 +52,15 @@ const snapshot=session.exportSnapshot();
 const storageKey='muir.p0.'+MUIR_BASE_SHA.slice(0,12)+'.'+fixtureId;
 localStorage.setItem(storageKey,JSON.stringify(snapshot));
 
+// Pre-mark the prologue as watched for non-cinematic fixtures so baseline screens
+// are not obscured by an autoplay presentation modal. This changes presentation
+// preference only; it does not mutate GameSession, saves, RNG or narrative state.
+const fixtureView=session.getView();
+if(fixture.recipe!=='cinematic-missing-asset'&&fixtureView.cutscene?.eventId==='PROLOGUE'){
+  const sceneKey=[fixtureView.sessionId,fixtureView.cutscene.file,fixtureView.screen,fixtureView.decisionsMade].join(':');
+  localStorage.setItem(storageKey+'.watched-cutscenes.v1',JSON.stringify([sceneKey]));
+}
+
 const cutsceneUrl=clip=>{
   if(fixture.recipe==='cinematic-missing-asset')return '/analysis/muir/__missing_cutscene__.webm';
   return '/web/assets/cutscenes/'+clip.file;
