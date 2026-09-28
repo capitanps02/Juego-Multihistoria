@@ -2,7 +2,7 @@
 
 Baseline: `36d3d1b0750b0ded877e55953f223e2de1169a46`
 
-Status: **BLOCKED_BY_K01_ANDROID / WEB_AND_PLAYCANVAS_PATHS_DEFINED**
+Status: **SOURCE_GRAPH_REPAIRED / EXECUTION_PENDING**
 
 ## Public authority
 
@@ -14,7 +14,7 @@ Status: **BLOCKED_BY_K01_ANDROID / WEB_AND_PLAYCANVAS_PATHS_DEFINED**
 |---|---|---|---|
 | Web | default `/web/assets/cutscenes/<file>` | player remains usable; explicit fallback copy | DEFINED |
 | PlayCanvas | `app.assets.find(clip.file)?.getFileUrl() ?? null` | null means player omitted; no invented URL | DEFINED |
-| Android offline | production `mountGame` default path would resolve against packaged local origin | cannot execute because imported `cutscene-player.js` is absent from Android builder graph | BLOCKED K-01 |
+| Android offline | production `mountGame` default path would resolve against packaged local origin | builder now copies `cutscene-player.js`; exact-head clean build/runtime execution remains pending | REPAIRED_PENDING_EXECUTION |
 | MUIR visual harness | injectable `cutsceneUrl` | dedicated missing-asset URL planned | IN_PROGRESS |
 
 ## Player behavior
@@ -41,4 +41,4 @@ Disposal pauses video, removes src and reloads the media element.
 
 ## Gate consequence
 
-K-02 cannot be PASS for Android until K-01 is fixed and the offline package contains the transitive cinematic module and media strategy required by the product. P0 must not generate narrative video or change story content.
+K-01 source graph has been repaired by packaging the already-required `cutscene-player.js` module and guarding it in the Android offline test. K-02 remains short of PASS until exact-head clean build/runtime execution confirms the packaged path. P0 must not generate narrative video or change story content.
