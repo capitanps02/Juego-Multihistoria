@@ -70,6 +70,7 @@ test('T5.36 schema-7 historical early-retirement flag is reconstructed, not newl
   state.flags.EARLY_RETIRED_30_34=true;
   const legacy=structuredClone(state);
   legacy.schemaVersion=7;
+  delete legacy.footballCatalogVersion;
   delete legacy.retirement;
   delete legacy.epilogue;
   const rng=structuredClone(legacy.rngState);
