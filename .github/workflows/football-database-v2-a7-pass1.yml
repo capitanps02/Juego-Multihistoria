@@ -1,0 +1,47 @@
+name: Football Database V2 · A7 Pass 1 — regrounded
+
+on:
+  push:
+    branches:
+      - db-a7/football-database-final-qa-regrounded
+  pull_request:
+    branches:
+      - db-a6/football-data-polish-g5-regrounded
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: football-db-a7-pass1-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  structural-certification:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Exact-head / ancestry preflight
+        env:
+          DB_A7_CANDIDATE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          DB_A7_A1_SHA: 1b0992bc6df38d05a4b8061c748ff17aa08a3d65
+          DB_A7_A2_SHA: 26c4fa6c09e0fb1191dadf289f622be0604d9ba4
+          DB_A7_A3_SHA: 3d4c42e73115c664f6762ea2bc16ffb0cbe8a788
+          DB_A7_A4_SHA: f93953d377d5203078cca0668330a522f8f65604
+          DB_A7_A5_SHA: 993cb1d69c2481515e1af3d273dbcfd5141745c0
+          DB_A7_A6_SHA: 14dcb9fabd8ed3ac1d5d4164492cadf1e2960616
+        run: npm run qa:football-db:a7:preflight
+      - name: Pass 1 structural certification
+        run: npm run qa:football-db:a7:pass1
+      - name: Catalog regression
+        run: npm run test:football-catalog
