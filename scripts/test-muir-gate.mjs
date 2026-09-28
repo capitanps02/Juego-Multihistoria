@@ -88,13 +88,19 @@ const requiredIndexed=[
 const indexedPaths=new Set((evidence.files??[]).map(row=>row.path));
 for(const rel of requiredIndexed)assert(indexedPaths.has(rel),'evidence index missing '+rel);
 
-for(const [name,value] of Object.entries(bundles.targets??{}))assert(value&&Number.isSafeInteger(value.bytes)&&value.bytes>0&&/^[0-9a-f]{64}$/.test(value.sha256), 'bundle metric missing for '+name);
+const requiredBundleTargets=['webUi','webCss','cutscenePlayer','playcanvasBundle','playcanvasManifest','androidOfflineManifest'];
+for(const name of requiredBundleTargets){const value=bundles.targets?.[name];assert(value&&Number.isSafeInteger(value.bytes)&&value.bytes>0&&/^[0-9a-f]{64}$/.test(value.sha256),'bundle metric missing for '+name);}
 
 assert(baseline.baseSha===MUIR_BASE_SHA,'muir-baseline SHA mismatch');
 assert(baseline.status==='READY_FOR_GATE','muir-baseline is not READY_FOR_GATE');
 assert(baseline.screenshots?.status==='CAPTURED','baseline screenshots are not CAPTURED');
 assert(baseline.screenshots?.count===expectedTargets,'baseline screenshot count mismatch');
 assert(baseline.performance?.status==='MEASURED','performance baseline not measured');
+for(const metric of ['renderP50Ms','renderP95Ms','renderFrequencyHz','domNodes','longTasks','autoSimUiUpdateRateHz','focusChurn','scrollChurn'])assert(Number.isFinite(baseline.performance?.[metric]),'performance metric missing: '+metric);
+for(const metric of ['webUi','webCss','cutscenePlayer','playcanvasBundle'])assert(Number.isSafeInteger(baseline.performance?.uiBundleBytes?.[metric])&&baseline.performance.uiBundleBytes[metric]>0,'UI bundle bytes missing: '+metric);
+assert(typeof baseline.tooling?.node==='string'&&baseline.tooling.node.length>0,'Node version missing');
+assert(typeof baseline.tooling?.npm==='string'&&baseline.tooling.npm.length>0,'npm version missing');
+assert(typeof baseline.tooling?.browser?.version==='string'&&baseline.tooling.browser.version.length>0,'browser version missing');
 for(const field of ['renderP50Ms','renderP95Ms','renderFrequencyHz','domNodes','longTasks','autoSimUiUpdateRateHz','focusChurn','scrollChurn']){
   assert(typeof baseline.performance?.[field]==='number'&&Number.isFinite(baseline.performance[field]),'performance '+field+' missing');
 }
