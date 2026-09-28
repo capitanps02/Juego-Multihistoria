@@ -99,5 +99,29 @@
   "platformPersistenceParity": {
     "status": "SOURCE_PARITY_CONFIRMED_EXECUTION_PENDING",
     "evidence": "analysis/muir/P0_PLATFORM_PERSISTENCE_PARITY.md"
+  },
+  "instrumentation": {
+    "status": "IMPLEMENTED_EXECUTION_PENDING",
+    "browserGlobal": "__MUIR_METRICS__",
+    "metrics": [
+      "hero geometry",
+      "first primary CTA geometry",
+      "main scroll geometry",
+      "navigation geometry",
+      "navigation typography",
+      "touch targets <44px",
+      "horizontal overflow",
+      "DOM node count",
+      "render samples/p50/p95",
+      "Long Tasks",
+      "focus churn",
+      "scroll churn"
+    ],
+    "note": "Instrumentation is loaded only by the MUIR test harness."
+  },
+  "evidenceIndex": {
+    "status": "BUILDER_IMPLEMENTED_EXECUTION_PENDING",
+    "command": "node scripts/build-muir-evidence.mjs",
+    "output": "analysis/muir/evidence/evidence-index.json"
   }
 }
