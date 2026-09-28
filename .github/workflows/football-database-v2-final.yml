@@ -2,7 +2,7 @@ name: Football Database V2 · Final 15/15 certification
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, "db-v2/reconcile-main-20260928"]
     paths:
       - 'src/catalog/football/**'
       - 'src/save/**'
