@@ -75,7 +75,7 @@ export async function buildFixtureSession(id){
     case 'player-actions-menu':
     case 'player-actions-category':
     case 'player-actions-detail': return initial(f);
-    case 'player-actions-result': return actionResult(f);
+    case 'player-actions-result': return initial(f);
     case 'offer': return offer(f);
     case 'important-injury': return importantInjury(f);
     // Visual-only recipes need the browser adapter to force missing-media/final-career presentation.
