@@ -18,7 +18,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: muir-p0-${{ github.event.pull_request.number || github.ref }}
+  group: muir-p0-final-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
