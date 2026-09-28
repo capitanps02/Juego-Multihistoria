@@ -78,19 +78,75 @@ jobs:
       - name: DB-GATE-15 full repository regression
         run: npm test
 
-  certification-careers:
+  pr-careers:
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
         shard:
-          - { name: shard-1, base: 8000000 }
-          - { name: shard-2, base: 8001000 }
-          - { name: shard-3, base: 8002000 }
-          - { name: shard-4, base: 8003000 }
-          - { name: shard-5, base: 8004000 }
-          - { name: shard-6, base: 8005000 }
+          - { name: pr-1, base: 8100000 }
+          - { name: pr-2, base: 8100100 }
+          - { name: pr-3, base: 8100200 }
+          - { name: pr-4, base: 8100300 }
+          - { name: pr-5, base: 8100400 }
+          - { name: pr-6, base: 8100500 }
+    name: pass5-pr-careers / ${{ matrix.shard.name }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Pass 5 PR shard — 100 full careers
+        env:
+          DB_A7_CAREERS: 100
+          DB_A7_BASE_SEED: ${{ matrix.shard.base }}
+          DB_A7_PROGRESS_EVERY: 20
+        run: node scripts/qa-football-database-v2-a7-pass5.mjs
+
+  certification-careers:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      max-parallel: 30
+      matrix:
+        shard:
+          - { name: cert-01, base: 8200000 }
+          - { name: cert-02, base: 8200200 }
+          - { name: cert-03, base: 8200400 }
+          - { name: cert-04, base: 8200600 }
+          - { name: cert-05, base: 8200800 }
+          - { name: cert-06, base: 8201000 }
+          - { name: cert-07, base: 8201200 }
+          - { name: cert-08, base: 8201400 }
+          - { name: cert-09, base: 8201600 }
+          - { name: cert-10, base: 8201800 }
+          - { name: cert-11, base: 8202000 }
+          - { name: cert-12, base: 8202200 }
+          - { name: cert-13, base: 8202400 }
+          - { name: cert-14, base: 8202600 }
+          - { name: cert-15, base: 8202800 }
+          - { name: cert-16, base: 8203000 }
+          - { name: cert-17, base: 8203200 }
+          - { name: cert-18, base: 8203400 }
+          - { name: cert-19, base: 8203600 }
+          - { name: cert-20, base: 8203800 }
+          - { name: cert-21, base: 8204000 }
+          - { name: cert-22, base: 8204200 }
+          - { name: cert-23, base: 8204400 }
+          - { name: cert-24, base: 8204600 }
+          - { name: cert-25, base: 8204800 }
+          - { name: cert-26, base: 8205000 }
+          - { name: cert-27, base: 8205200 }
+          - { name: cert-28, base: 8205400 }
+          - { name: cert-29, base: 8205600 }
+          - { name: cert-30, base: 8205800 }
     name: certification-careers / ${{ matrix.shard.name }}
     steps:
       - uses: actions/checkout@v4
@@ -101,17 +157,18 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
-      - name: Build
-        run: npm run build
-      - name: DB-GATE-13 1000 full careers
+      - run: npm run build
+      - name: DB-GATE-13 200 full careers
         env:
-          DB_A7_CAREERS: 1000
+          DB_A7_CAREERS: 200
           DB_A7_BASE_SEED: ${{ matrix.shard.base }}
+          DB_A7_PROGRESS_EVERY: 25
         run: node scripts/qa-football-database-v2-a7-pass5.mjs
 
   final-gates:
     needs:
       - full-regression
+      - pr-careers
       - certification-careers
     runs-on: ubuntu-latest
     steps:
@@ -130,7 +187,7 @@ jobs:
           DB-GATE-10 PLAYER ACTIONS        PASS
           DB-GATE-11 PLAYCANVAS            PASS
           DB-GATE-12 ANDROID               PASS
-          DB-GATE-13 LONG CAREERS          PASS (6000/6000)
+          DB-GATE-13 LONG CAREERS          PASS (600 PR + 6000 certification)
           DB-GATE-14 SAVE/LOAD REPLAY      PASS
           DB-GATE-15 FULL REGRESSION       PASS
           EOF
