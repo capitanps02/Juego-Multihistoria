@@ -6,6 +6,7 @@ on:
     paths:
       - 'src/catalog/football/**'
       - 'scripts/test-football-catalog*.mjs'
+      - 'scripts/test-football-v2-balance.mjs'
       - 'package.json'
       - '.github/workflows/football-database-v2-balance.yml'
   workflow_dispatch:
@@ -28,4 +29,4 @@ jobs:
       - name: Structural catalog regression
         run: node --test scripts/test-football-catalog.mjs
       - name: Football balance regression
-        run: node --test scripts/test-football-catalog-balance.mjs
+        run: node --test scripts/test-football-v2-balance.mjs
