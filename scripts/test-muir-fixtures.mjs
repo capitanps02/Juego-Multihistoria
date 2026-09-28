@@ -25,7 +25,7 @@ test('cinematic fallback fixture exposes a canonical public cutscene for the bro
   const s=await buildFixtureSession('cinematic-fallback');
   const view=s.getView();
   assert.equal(view.screen,'decision');
-  assert.equal(view.cutscene?.eventId,'EVT_18_MATCH_001');
+  assert.equal(view.cutscene?.eventId,'EVT_18_AGT_001');
   assert.match(view.cutscene?.file??'',/\.webm$/);
 });
 test('epilogue fixture uses the certified terminal public state',async()=>{
