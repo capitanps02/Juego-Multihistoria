@@ -76,9 +76,9 @@ test('delegation has deterministic limits and never grants authority to the next
  }
 });
 test('transfer acceptance changes registration, owner, contract and context together',()=>{
- const s=createInitialState(10);proposeCareerChange(s,'Fichaje',d=>{d.club='Destino';d.contract.salaryMonthly=4500;d.professional.route='abroad';d.flags.ABROAD_ROUTE=true;});
+ const s=createInitialState(10);proposeCareerChange(s,'Fichaje',d=>{d.club='ESP_MADRID';d.contract.salaryMonthly=4500;d.professional.route='abroad';d.flags.ABROAD_ROUTE=true;});
  const before=careerTerms(s),o=s.market.pending;assert.equal(s.club,'UDV');assert.deepEqual(careerTerms(s),before);
- respondToOffer(s,o.id,'accept');assert.equal(s.club,'Destino');assert.equal(s.professional.ownerClub,'Destino');assert.equal(s.world.ownerClub,'Destino');assert.equal(s.professional.registrationClub,'Destino');assert.equal(s.contract.monthsRemaining,24);assert.equal(s.flags.ABROAD_ROUTE,true);assertGameState(s);
+ respondToOffer(s,o.id,'accept');assert.equal(s.club,'ESP_MADRID');assert.equal(s.professional.ownerClub,'ESP_MADRID');assert.equal(s.world.ownerClub,'ESP_MADRID');assert.equal(s.professional.registrationClub,'ESP_MADRID');assert.equal(s.contract.monthsRemaining,24);assert.equal(s.flags.ABROAD_ROUTE,true);assertGameState(s);
 });
 test('authoritative offer queries classify formal offers without exposing mutable market state or RNG',()=>{
  const renewal=createInitialState(101),renewalRng=structuredClone(renewal.rngState);
@@ -89,11 +89,11 @@ test('authoritative offer queries classify formal offers without exposing mutabl
  assert.notEqual(renewal.market.pending.terms.salary,1);assert.deepEqual(renewal.rngState,renewalRng);
 
  const transfer=createInitialState(102);
- proposeCareerChange(transfer,'Fichaje',d=>{d.club='Destino';d.contract.salaryMonthly=5000;});
+ proposeCareerChange(transfer,'Fichaje',d=>{d.club='ESP_MADRID';d.contract.salaryMonthly=5000;});
  assert.equal(careerOfferKind(transfer.market.pending),'transfer');assert.equal(getEligibleTransferOffers(transfer).length,1);
 
  const loan=createInitialState(103);
- proposeCareerChange(loan,'Cesión',d=>{d.club='Development Club';d.flags.LOAN_ACTIVE=true;d.professional.route='loan';});
+ proposeCareerChange(loan,'Cesión',d=>{d.club='ESP_VALENCIA';d.flags.LOAN_ACTIVE=true;d.professional.route='loan';});
  assert.equal(careerOfferKind(loan.market.pending),'loan');assert.equal(getEligibleLoanOffers(loan).length,1);
 });
 test('contract expiry is exposed as pending resolution, never silently relabelled free agency',()=>{
@@ -123,7 +123,7 @@ test('v1 migration preserves pending narrative, history and RNG and grants no de
 test('world renewal, summer moves and loan continuity remain proposals across seeds',()=>{
  const reasons=new Set();
  for(let seed=1;seed<=30;seed++){
-  const s=createInitialState(seed);s.age=21;s.phase='20_23';s.professional.initializedAt20=true;s.contract.monthsRemaining=3;s.reputation.marketHeat=90;s.sport.roleScore=65;s.professional.ownerClub='Propietario';s.world.ownerClub='Propietario';s.flags.LOAN_ACTIVE=true;s.date='2029-05-01';
+  const s=createInitialState(seed);s.age=21;s.phase='20_23';s.professional.initializedAt20=true;s.contract.monthsRemaining=3;s.reputation.marketHeat=90;s.sport.roleScore=65;s.professional.ownerClub='ESP_BARCELONA';s.world.ownerClub='ESP_BARCELONA';s.flags.LOAN_ACTIVE=true;s.date='2029-05-01';
   for(let i=0;i<140;i++){
    const before=careerTerms(s);advanceWorldDayInPlace(s);
    assert.equal(s.club,before.club);
