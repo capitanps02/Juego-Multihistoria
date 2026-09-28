@@ -29,6 +29,7 @@ for(const rel of [
   'scripts/test-muir-package-graph.mjs',
   'scripts/capture-muir-browser.mjs',
   'scripts/measure-muir-bundles.mjs',
+  'scripts/test-muir-gate.mjs',
   '.github/workflows/muir-p0-certification.yml',
   'analysis/muir/evidence/browser-baseline.json',
   'analysis/muir/evidence/bundle-metrics.json',
