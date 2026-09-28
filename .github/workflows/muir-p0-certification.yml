@@ -41,9 +41,6 @@ jobs:
       - name: MUIR package graph
         if: always()
         run: node --test scripts/test-muir-package-graph.mjs
-      - name: MUIR deterministic browser baseline
-        if: always()
-        run: node scripts/capture-muir-visuals.mjs
       - name: Session
         if: always()
         run: npm run test:session

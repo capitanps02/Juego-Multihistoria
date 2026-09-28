@@ -28,10 +28,13 @@ await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
 const port=server.address().port;
 
 const browser=await chromium.launch({headless:true});
+const browserVersion=browser.version();
 const phoneIds=new Set(['phone-360','phone-primary','phone-412']);
 const auxFixtureIds=new Set(['home-normal','result','player-actions-menu']);
+const excludedFixtureIds=new Set(['cinematic-fallback']);
 const targets=[];
 for(const fixture of MUIR_FIXTURES){
+  if(excludedFixtureIds.has(fixture.id))continue;
   for(const viewport of MUIR_VIEWPORTS){
     if(phoneIds.has(viewport.id)||auxFixtureIds.has(fixture.id))targets.push({fixture,viewport});
   }
@@ -46,11 +49,12 @@ for(const {fixture,viewport} of targets){
   try{
     await page.goto(url,{waitUntil:'networkidle',timeout:30000});
     await page.waitForFunction(()=>globalThis.__MUIR_READY__?.ready===true,null,{timeout:30000});
-    if(fixture.id==='auto-running')await page.waitForTimeout(1500);
-    else await page.waitForTimeout(150);
+    await page.waitForTimeout(150);
     const ready=await page.evaluate(()=>globalThis.__MUIR_READY__);
+    const png=await page.screenshot({fullPage:false,type:'png'});
+    if(png.readUInt32BE(16)!==viewport.width||png.readUInt32BE(20)!==viewport.height)throw Error(`Viewport screenshot mismatch: ${png.readUInt32BE(16)}x${png.readUInt32BE(20)} != ${viewport.width}x${viewport.height}`);
+    if(fixture.id==='auto-running')await page.waitForTimeout(1500);
     const metrics=await page.evaluate(()=>globalThis.__MUIR_METRICS__);
-    const png=await page.screenshot({fullPage:true,type:'png'});
     const hash=crypto.createHash('sha256').update(png).digest('hex');
     const name=`${MUIR_BASE_SHA.slice(0,12)}__${fixture.id}__${viewport.width}x${viewport.height}__${hash.slice(0,12)}.png`;
     fs.writeFileSync(path.join(outDir,name),png);
@@ -64,15 +68,31 @@ for(const {fixture,viewport} of targets){
 await browser.close();
 server.close();
 
-const phoneCount=MUIR_FIXTURES.length*3;
+const phoneCount=(MUIR_FIXTURES.length-excludedFixtureIds.size)*3;
+const renderSamples=records.flatMap(row=>row.metrics?.render?.samplesMs??[]).filter(Number.isFinite).sort((a,b)=>a-b);
+const percentile=p=>renderSamples.length?renderSamples[Math.min(renderSamples.length-1,Math.ceil(renderSamples.length*p)-1)]:null;
 const report={
   schema:'muir-browser-baseline-v1',
   baseSha:MUIR_BASE_SHA,
   generatedAt:new Date().toISOString(),
+  browser:{name:'Playwright Chromium',version:browserVersion},
   targetCount:targets.length,
   expectedPhoneCaptures:phoneCount,
   captured:records.length,
+  skipped:[{fixtureId:'cinematic-fallback',status:'N/A_JUSTIFIED',reason:'The fixture remains fail-closed until a real cutscene-bearing public view is reproducible; K-02 source/package probes cover the missing/fallback path without fabricating PlayerView state.'}],
   errors,
+  aggregate:{
+    renderSampleCount:renderSamples.length,
+    renderP50Ms:percentile(.5),
+    renderP95Ms:percentile(.95),
+    maxDomNodes:Math.max(0,...records.map(row=>row.metrics?.domNodes??0)),
+    maxLongTaskMs:Math.max(0,...records.flatMap(row=>row.metrics?.longTasks??[]).map(x=>x.duration??0)),
+    undersizedTouchTargetCount:records.reduce((sum,row)=>sum+(row.metrics?.undersizedTouchTargets?.length??0),0),
+    horizontalOverflowFindingCount:records.reduce((sum,row)=>sum+(row.metrics?.overflowX?.length??0),0),
+    autoSimUiUpdateRateHz:records.find(row=>row.fixtureId==='auto-running'&&row.viewportId==='phone-primary')?.metrics?.autoSimUiUpdateRateHz??null,
+    totalFocusChanges:records.reduce((sum,row)=>sum+(row.metrics?.focusChanges??0),0),
+    totalScrollEvents:records.reduce((sum,row)=>sum+(row.metrics?.scrollEvents??0),0)
+  },
   records
 };
 fs.writeFileSync(path.join(evidenceDir,'browser-baseline.json'),JSON.stringify(report,null,2)+'\n');

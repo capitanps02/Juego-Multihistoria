@@ -17,9 +17,9 @@ Baseline: `36d3d1b0750b0ded877e55953f223e2de1169a46`
 
 ## Browser capture runner
 
-A dependency-free test-only runner now exists at `scripts/capture-muir-visuals.mjs`. It uses the Chrome/Chromium binary supplied by the execution environment, serves only repository files from an ephemeral localhost port, captures deterministic PNGs with a clean browser profile per probe, verifies exact PNG dimensions, and exports browser metrics to `analysis/muir/evidence/browser-metrics.json`.
+The canonical test-only runner is `scripts/capture-muir-browser.mjs`. CI installs Playwright Chromium only inside the certification job, serves repository files from an ephemeral localhost port, opens a fresh browser context per target, captures viewport-sized PNGs, verifies exact PNG dimensions, and writes metrics to `analysis/muir/evidence/browser-baseline.json`.
 
-The runner never ships in Web, PlayCanvas or Android product bundles. `cinematic-fallback` remains explicitly fail-closed rather than fabricating a public view; K-02 package/source probes stay authoritative for that path.
+The runner never ships in Web, PlayCanvas or Android product bundles. `cinematic-fallback` is recorded as `N/A_JUSTIFIED` for screenshot capture because its session recipe deliberately fails closed rather than fabricating a public view; K-02 package/source probes stay authoritative for the missing/fallback path.
 
 Execution on the exact P0 head is still required before screenshot or performance requirements can be marked PASS.
 
@@ -27,8 +27,8 @@ Execution on the exact P0 head is still required before screenshot or performanc
 
 1. Run fixture contract tests at the exact P0 branch head.
 2. Run K-01 package graph probe.
-3. Run `node scripts/capture-muir-visuals.mjs` on the exact head.
-4. Verify `window.__MUIR_READY__.ready === true` from the encoded DOM evidence for metric probes.
+3. Run `node scripts/capture-muir-browser.mjs` on the exact head.
+4. Verify `window.__MUIR_READY__.ready === true` directly in Playwright before every capture.
 5. Capture PNG and verify its exact pixel dimensions.
 6. SHA-256 every PNG and rename it with the evidence hash.
 7. Record dimensions, fixture id, baseline SHA and Chrome version.
