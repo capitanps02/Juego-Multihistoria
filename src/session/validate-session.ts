@@ -212,13 +212,13 @@ export async function assertSessionSnapshot(value: unknown, context: SessionVali
   }
 
   const ids = new Set<string>();
-  let previousType: unknown = null, choiceIndex = 0, offerIndex = 0;
+  let previousType: unknown = null, choiceIndex = 0, offerIndex = 0, playerActionIndex = 0;
   if ((s.sessionVersion as number) >= 2) ensure(state.market !== undefined, "market", "falta el estado de ofertas");
   receipts.forEach((x, i) => {
     const r = record(x, `receipts[${i}]`), path = `receipts[${i}]`;
     string(r.commandId, `${path}.commandId`); ensure(r.commandId.length <= 200 && !ids.has(r.commandId), path, "identificador excesivo o duplicado"); ids.add(r.commandId);
     integer(r.revision, `${path}.revision`, 1); ensure(r.revision === i + 1, `${path}.revision`, "orden de revisiones incorrecto");
-    oneOf(r.type, ["continue", "auto", "choose", "acknowledge", "offer"], `${path}.type`); string(r.fingerprint, `${path}.fingerprint`);
+    oneOf(r.type, ["continue", "auto", "player_action", "choose", "acknowledge", "offer"], `${path}.type`); string(r.fingerprint, `${path}.fingerprint`);
     const f = list(parseSaveJson(r.fingerprint), `${path}.fingerprint`);
     ensure(f[0] === r.type && f[1] === i, `${path}.fingerprint`, "comando y revisión no coinciden");
     if (r.type === "continue") {
@@ -227,7 +227,7 @@ export async function assertSessionSnapshot(value: unknown, context: SessionVali
     }
     if (r.type === "auto") {
       ensure(f.length === 4, path, "comando automático incorrecto");
-      oneOf(f[2], ["start","step","pause","resume"], `${path}.action`);
+      oneOf(f[2], ["start","step","pause","resume","stop"], `${path}.action`);
       if (f[2] === "start") integer(f[3], `${path}.maxWeeks`, 1, 12);
       else ensure(f[3] === null, `${path}.maxWeeks`, "sólo start puede definir semanas");
     }
@@ -245,6 +245,18 @@ export async function assertSessionSnapshot(value: unknown, context: SessionVali
       const h = commandOfferHistory[offerIndex++];
       ensure(h && h.offer.id === f[2] && h.action === f[3], path, "respuesta distinta de la oferta registrada");
     }
+    if (r.type === "player_action") {
+      ensure(f.length === 5 && previousType !== "choose", path, "acción de jugador incorrecta");
+      string(f[2], `${path}.actionId`); string(f[3], `${path}.optionId`);
+      ensure(f[2].length <= 200 && f[3].length <= 200, path, "identificador excesivo");
+      ensure(f[4] === null || (typeof f[4] === "string" && f[4].length > 0 && f[4].length <= 200), `${path}.targetId`, "objetivo incorrecto");
+      const h = state.playerActions?.history[playerActionIndex++];
+      ensure(
+        h && h.actionId === f[2] && h.optionId === f[3] && (h.targetId ?? null) === f[4],
+        path,
+        "acción distinta de la registrada en Player Action history"
+      );
+    }
     if (r.type === "acknowledge") {
       ensure(previousType === "choose", path, "lectura sin resultado anterior");
       ensure(f.length === 2, path, "comando incorrecto");
@@ -253,6 +265,7 @@ export async function assertSessionSnapshot(value: unknown, context: SessionVali
     previousType = r.type;
   });
   ensure(offerIndex === commandOfferHistory.length, "market.history", "faltan recibos de ofertas directas");
+  ensure(playerActionIndex === (state.playerActions?.history.length ?? 0), "playerActions.history", "faltan recibos de Player Actions");
   ensure([...narrativeOfferHistory.keys()].every(index => index < choiceIndex), "market.history", "oferta narrativa sin recibo de elección");
 
   let pendingOfferBridgeMarker = false;

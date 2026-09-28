@@ -3,6 +3,15 @@ import { decisionMemories, type DecisionMemory } from "./decision-memories.js";
 import { careerTerms, marketState, respondToOffer, type CareerOffer, type OfferAction, type OfferDecision } from "../simulation/offers.js";
 import type { AgeMilestone } from "../simulation/age-milestones.js";
 import type { EventDefinition, GameState } from "../core/types.js";
+import {
+  PLAYER_ACTION_CATALOG,
+  evaluatePlayerAction,
+  executePlayerActionInPlace,
+  listPlayerActions,
+  validatePlayerActionTarget,
+  type PlayerActionCategory,
+  type PlayerActionDefinition
+} from "../player-actions/index.js";
 import { EVENTS } from "../content/events/index.js";
 import { createInitialState } from "../content/initial-state.js";
 import { EventIndex } from "../narrative/event-index.js";
@@ -28,6 +37,7 @@ import { ENGINE_BUILD } from "../core/build.js";
 import { assertGameState, parseSaveJson, record, validateData } from "../save/validation.js";
 import { assertSessionSnapshot } from "./validate-session.js";
 import { knownPlayerContacts } from "../core/player-contacts.js";
+import { NPC_CATALOG } from "../catalog/npcs.js";
 import { contentIdentity } from "./content-identity.js";
 import {
   applyMigrationPathInPlace,
@@ -61,7 +71,8 @@ export const SESSION_BUILD = ENGINE_BUILD;
 interface CommandBase { commandId: string; expectedRevision: number; }
 export type SessionCommand =
   | (CommandBase & { type: "continue"; maxDays?: number })
-  | (CommandBase & { type: "auto"; action: "start" | "step" | "pause" | "resume"; maxWeeks?: number })
+  | (CommandBase & { type: "auto"; action: "start" | "step" | "pause" | "resume" | "stop"; maxWeeks?: number })
+  | (CommandBase & { type: "player_action"; actionId: string; optionId: string; targetId?: string })
   | (CommandBase & { type: "choose"; pendingInstanceId: string; choiceId: string })
   | (CommandBase & { type: "acknowledge" })
   | (CommandBase & { type: "offer"; offerId: string; action: OfferAction });
@@ -145,6 +156,54 @@ function publicOffer(o: CareerOffer): PublicOffer {
   const terms=(t: CareerOffer["terms"]):PublicTerms=>({club:t.club,ownerClub:t.ownerClub,registrationClub:t.registrationClub,leagueTier:t.leagueTier,months:t.months,salary:t.salary,releaseClause:t.releaseClause,loan:t.loan});
   return {id:o.id,date:o.date,reason:o.reason,before:terms(o.before),terms:terms(o.terms)};
 }
+export interface PublicPlayerActionOptionView {
+  id: string;
+  label: string;
+  description?: string;
+  available: boolean;
+  unavailableReason: string | null;
+}
+export interface PublicPlayerActionTargetView {
+  id: string;
+  label: string;
+  role: string;
+  available: boolean;
+  unavailableReason: string | null;
+  cooldownUntil: string | null;
+  options: PublicPlayerActionOptionView[];
+}
+export interface PublicPlayerActionView {
+  id: string;
+  label: string;
+  description: string;
+  targetKind: "none" | "coach" | "agent" | "teammate";
+  available: boolean;
+  unavailableReason: string | null;
+  cooldownUntil: string | null;
+  options: PublicPlayerActionOptionView[];
+  targets: PublicPlayerActionTargetView[];
+}
+export interface PublicPlayerActionCategoryView {
+  id: PlayerActionCategory;
+  label: string;
+  actions: PublicPlayerActionView[];
+}
+export interface PublicPlayerActionHistoryView {
+  executionId: string;
+  date: string;
+  actionId: string;
+  actionLabel: string;
+  optionLabel: string;
+  text: string;
+}
+export interface PublicPlayerActionsView {
+  available: boolean;
+  unavailableReason: string | null;
+  categories: PublicPlayerActionCategoryView[];
+  history: PublicPlayerActionHistoryView[];
+  lastResult: { executionId: string; date: string; text: string } | null;
+}
+
 export interface PlayerView {
   sessionId: string;
   revision: number;
@@ -177,6 +236,7 @@ export interface PlayerView {
   resultCategory: "match" | "story" | null;
   journal: SessionSnapshot["journal"];
   simulation: PublicAutoSimulationState;
+  actions: PublicPlayerActionsView;
 }
 export class SessionError extends Error {
   constructor(public readonly code: string, message: string) { super(message); this.name = "SessionError"; }
@@ -195,7 +255,7 @@ function commandFingerprint(c: SessionCommand): string {
     return JSON.stringify([c.type, c.expectedRevision, days]);
   }
   if (c.type === "auto") {
-    requireThat(["start","step","pause","resume"].includes(c.action), "INVALID_COMMAND", "Acción de simulación no válida.");
+    requireThat(["start","step","pause","resume","stop"].includes(c.action), "INVALID_COMMAND", "Acción de simulación no válida.");
     const maxWeeks = c.action === "start" ? (c.maxWeeks ?? DEFAULT_MAX_AUTO_WEEKS) : null;
     if (c.action === "start") {
       requireThat(Number.isInteger(maxWeeks) && Number(maxWeeks) >= MIN_AUTO_WEEKS && Number(maxWeeks) <= MAX_CONFIGURABLE_AUTO_WEEKS,
@@ -207,12 +267,148 @@ function commandFingerprint(c: SessionCommand): string {
     requireThat(validId(c.offerId) && ["accept","reject","delegate"].includes(c.action), "INVALID_COMMAND", "Oferta o respuesta no válida.");
     return JSON.stringify([c.type,c.expectedRevision,c.offerId,c.action]);
   }
+  if (c.type === "player_action") {
+    requireThat(validId(c.actionId) && validId(c.optionId), "INVALID_COMMAND", "Acción u opción de jugador no válida.");
+    requireThat(c.targetId === undefined || validId(c.targetId), "INVALID_COMMAND", "Objetivo de acción no válido.");
+    return JSON.stringify([c.type, c.expectedRevision, c.actionId, c.optionId, c.targetId ?? null]);
+  }
   if (c.type === "choose") {
     requireThat(validId(c.pendingInstanceId) && validId(c.choiceId), "INVALID_COMMAND", "Falta la escena o elección.");
     return JSON.stringify([c.type, c.expectedRevision, c.pendingInstanceId, c.choiceId]);
   }
   requireThat(c.type === "acknowledge", "INVALID_COMMAND", "Tipo de comando desconocido.");
   return JSON.stringify([c.type, c.expectedRevision]);
+}
+
+const PLAYER_ACTION_CATEGORY_LABELS: Record<PlayerActionCategory, string> = {
+  career: "Carrera",
+  training: "Entrenamiento",
+  health: "Salud",
+  representative: "Representante",
+  relationships: "Relaciones",
+  image: "Imagen",
+  life: "Vida"
+};
+
+function playerActionSessionBlock(snapshot: SessionSnapshot): { code: string; message: string } | null {
+  if (snapshot.state.retirement.status === "closed") {
+    return { code: "CAREER_CLOSED", message: "La carrera ya ha terminado." };
+  }
+  if (snapshot.pendingDecision || snapshot.pendingResult || snapshot.state.market?.pending) {
+    return { code: "PLAYER_ACTION_STATE", message: "Resuelve la situación pendiente antes de realizar una acción." };
+  }
+  const mode = snapshot.autoSimulation?.mode ?? "idle";
+  if (mode !== "idle") {
+    return { code: "PLAYER_ACTION_STATE", message: "Finaliza el bloque de simulación automática antes de realizar una acción." };
+  }
+  return null;
+}
+
+export function canExecutePlayerAction(snapshot: SessionSnapshot): boolean {
+  return playerActionSessionBlock(snapshot) === null;
+}
+
+function publicPlayerActionTargets(
+  state: GameState,
+  definition: PlayerActionDefinition,
+  block: { code: string; message: string } | null
+): PublicPlayerActionTargetView[] {
+  if (definition.targetKind === "none") return [];
+  const publicNpcById = new Map(NPC_CATALOG.map(npc => [npc.id, { name: npc.name, role: npc.role }]));
+  const targets: PublicPlayerActionTargetView[] = [];
+  for (const npc of state.npcs) {
+    if (!validatePlayerActionTarget(state, definition, npc.id).valid) continue;
+    const availability = evaluatePlayerAction(state, definition, npc.id);
+    const publicNpc = publicNpcById.get(npc.id);
+    targets.push({
+      id: npc.id,
+      label: publicNpc?.name ?? npc.id,
+      role: publicNpc?.role ?? npc.role,
+      available: block === null && availability.available,
+      unavailableReason: block?.message ?? availability.unavailableReason,
+      cooldownUntil: availability.cooldownUntil,
+      options: availability.options.map(option => ({
+        id: option.id,
+        label: option.label,
+        ...(option.description ? { description: option.description } : {}),
+        available: block === null && option.available,
+        unavailableReason: block?.message ?? option.unavailableReason
+      }))
+    });
+  }
+  return targets;
+}
+
+function publicPlayerActionsView(snapshot: SessionSnapshot): PublicPlayerActionsView {
+  const block = playerActionSessionBlock(snapshot);
+  const availability = new Map(listPlayerActions(snapshot.state, PLAYER_ACTION_CATALOG).map(row => [row.actionId, row]));
+  const byCategory = new Map<PlayerActionCategory, PublicPlayerActionView[]>();
+  for (const definition of PLAYER_ACTION_CATALOG) {
+    const row = availability.get(definition.id);
+    const targets = publicPlayerActionTargets(snapshot.state, definition, block);
+    const targetRequired = definition.targetKind !== "none";
+    const targetAvailable = targets.some(target => target.available);
+    const targetReason = targets.length === 0
+      ? "No hay un objetivo válido disponible para esta acción."
+      : targets.find(target => !target.available)?.unavailableReason ?? null;
+    const unavailableReason = block?.message
+      ?? (targetRequired ? (targetAvailable ? null : targetReason) : row?.unavailableReason ?? null);
+    const available = block === null
+      && (targetRequired ? targetAvailable : Boolean(row?.available));
+    const actions = byCategory.get(definition.category) ?? [];
+    actions.push({
+      id: definition.id,
+      label: definition.label,
+      description: definition.description,
+      targetKind: definition.targetKind,
+      available,
+      unavailableReason,
+      cooldownUntil: targetRequired ? null : row?.cooldownUntil ?? null,
+      options: definition.options.map(option => {
+        const optionAvailability = row?.options.find(candidate => candidate.id === option.id);
+        const targetOptionAvailability = targets
+          .map(target => target.options.find(candidate => candidate.id === option.id))
+          .filter((candidate): candidate is PublicPlayerActionOptionView => Boolean(candidate));
+        const targetOptionAvailable = targetOptionAvailability.some(candidate => candidate.available);
+        return {
+          id: option.id,
+          label: option.label,
+          ...(option.description ? { description: option.description } : {}),
+          available: block === null && (targetRequired ? targetOptionAvailable : Boolean(optionAvailability?.available)),
+          unavailableReason: block?.message
+            ?? (targetRequired
+              ? (targetOptionAvailable ? null : targetOptionAvailability[0]?.unavailableReason ?? targetReason)
+              : optionAvailability?.unavailableReason ?? null)
+        };
+      }),
+      targets
+    });
+    byCategory.set(definition.category, actions);
+  }
+  const history = (snapshot.state.playerActions?.history ?? []).map(entry => {
+    const definition = PLAYER_ACTION_CATALOG.find(candidate => candidate.id === entry.actionId);
+    const option = definition?.options.find(candidate => candidate.id === entry.optionId);
+    return {
+      executionId: entry.executionId,
+      date: entry.date,
+      actionId: entry.actionId,
+      actionLabel: definition?.label ?? entry.actionId,
+      optionLabel: option?.label ?? entry.optionId,
+      text: entry.visibleResult
+    };
+  });
+  const last = history.at(-1) ?? null;
+  return {
+    available: block === null,
+    unavailableReason: block?.message ?? null,
+    categories: [...byCategory.entries()].map(([id, actions]) => ({
+      id,
+      label: PLAYER_ACTION_CATEGORY_LABELS[id],
+      actions
+    })),
+    history,
+    lastResult: last ? { executionId: last.executionId, date: last.date, text: last.text } : null
+  };
 }
 
 function requireEvidence(
@@ -410,7 +606,8 @@ export class GameSession {
       cutscene: eventCutscene(s, result ? "result" : p ? "decision" : s.retirement.status === "closed" ? "epilogue" : this.#snapshot.revision === 0 ? "prologue" : "other", p?.event.id),
       result: publicResult, resultCategory: result ? (lastEvent?.family === "sport" ? "match" : "story") : null,
       journal: playerFacingJournal(this.#snapshot.journal),
-      simulation
+      simulation,
+      actions: publicPlayerActionsView(this.#snapshot)
     });
   }
 
@@ -450,11 +647,23 @@ export class GameSession {
       } else if (command.action === "pause") {
         requireThat(flow.mode === "auto_simulating", "AUTO_STATE", "Sólo se puede pausar una simulación activa.");
         flow.mode = "paused";
-      } else {
+      } else if (command.action === "resume") {
         requireThat(flow.mode === "paused", "AUTO_STATE", "La simulación no está pausada.");
         flow.mode = "auto_simulating";
         flow.interruption = null;
+      } else {
+        requireThat(flow.mode === "paused", "AUTO_STATE", "Sólo se puede abandonar un bloque automático pausado.");
+        next.autoSimulation = idleAutoSimulationState();
       }
+    } else if (command.type === "player_action") {
+      const block = playerActionSessionBlock(next);
+      if (block) throw new SessionError(block.code, block.message);
+      const result = executePlayerActionInPlace(next.state, {
+        actionId: command.actionId,
+        optionId: command.optionId,
+        ...(command.targetId === undefined ? {} : { targetId: command.targetId })
+      });
+      if (!result.ok) throw new SessionError(result.code, result.message);
     } else if (command.type === "offer") {
       requireThat(!next.pendingDecision && !next.pendingResult, "PENDING_SCREEN", "Resuelve primero la escena pendiente.");
       requireThat(next.state.market?.pending?.id===command.offerId, "STALE_OFFER", "Esta oferta ya no está pendiente.");

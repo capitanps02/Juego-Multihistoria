@@ -1,4 +1,5 @@
 import type { GameState } from "../core/types.js";
+import { playerActionFacts, type PlayerActionFacts } from "../player-actions/facts.js";
 import { earlyCareerSeedFacts, type EarlyCareerSeedFacts } from "../narrative/seed-memory.js";
 import { lockerSlotAffinity } from "./locker-leadership.js";
 import {
@@ -202,6 +203,8 @@ export function coachPromiseWaitFacts(state: GameState): CoachPromiseWaitFacts |
 }
 
 export interface NarrativeCausalFacts extends EarlyCareerSeedFacts {
+  /** Read-only voluntary-player-action history/live projection. */
+  playerActions: PlayerActionFacts;
   clubWantsRenewal: boolean;
   lockerCaptainAffinity: number | null;
   lockerStarAffinity: number | null;
@@ -250,6 +253,7 @@ export interface NarrativeCausalFacts extends EarlyCareerSeedFacts {
 export function narrativeCausalFacts(state: GameState): NarrativeCausalFacts {
   return {
     ...earlyCareerSeedFacts(state),
+    playerActions: playerActionFacts(state),
     clubWantsRenewal: clubWantsRenewal(state),
     lockerCaptainAffinity: lockerSlotAffinity(state, "captain"),
     lockerStarAffinity: lockerSlotAffinity(state, "star"),

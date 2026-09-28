@@ -43,6 +43,9 @@ jobs:
       - name: Run project validation
         run: npm test
 
+      - name: Persistence regression
+        run: npm run test:persistence
+
       - name: PlayCanvas integration regression
         run: npm run test:playcanvas
 

@@ -392,6 +392,8 @@ export interface RuntimeState {
 }
 
 export interface GameState {
+  /** Optional/lazy V1 Player Actions store. Historical saves omit it. */
+  playerActions?: import("../player-actions/types.js").PlayerActionState;
   ageMilestones?: import("../simulation/age-milestones.js").AgeMilestone[];
   /** Absent in historical schema-8 saves; initialized without signing anything. */
   market?: import("../simulation/offers.js").MarketState;
