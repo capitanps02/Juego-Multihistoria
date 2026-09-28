@@ -90,8 +90,8 @@ else if(fixture.route==='profile')await clickText('Perfil');
 else if(fixture.route==='save')await clickText('Tu partida');
 
 if(fixture.recipe==='player-actions-menu')await clickText('Gestionar mi carrera');
-if(fixture.recipe==='player-actions-category'){await clickText('Gestionar mi carrera');await clickText('Ver acciones');}
-if(fixture.recipe==='player-actions-detail'){await clickText('Gestionar mi carrera');await clickText('Ver acciones');await clickText('Abrir');}
+if(fixture.recipe==='player-actions-category'){await clickText('Gestionar mi carrera');await clickCardButton('Entrenamiento','Ver acciones');}
+if(fixture.recipe==='player-actions-detail'){await clickText('Gestionar mi carrera');await clickCardButton('Entrenamiento','Ver acciones');await clickCardButton('Entrenamiento extra','Abrir');}
 if(fixture.recipe==='player-actions-result'){
   // Reproduce a known target-free action through real UI navigation.
   // Do not synthesize private playerActionUi state.
