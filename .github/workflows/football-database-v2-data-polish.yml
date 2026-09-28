@@ -1,0 +1,36 @@
+name: Football Database V2 · G6 data polish
+
+on:
+  pull_request:
+    paths:
+      - 'src/catalog/football/**'
+      - 'scripts/test-football-catalog*.mjs'
+      - 'scripts/test-football-v2-balance.mjs'
+      - 'scripts/test-player-actions-content.mjs'
+      - 'docs/football-database-v2-a6-data-polish.md'
+      - 'package.json'
+      - '.github/workflows/football-database-v2-data-polish.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  g6-data-polish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Build engine
+        run: npm run build
+      - name: Catalog and G6 data-quality regression
+        run: node --test scripts/test-football-catalog.mjs
+      - name: A2 football balance regression
+        run: node --test scripts/test-football-v2-balance.mjs
+      - name: Player Actions content regression
+        run: node --test scripts/test-player-actions-content.mjs

@@ -9,8 +9,8 @@ import { DeterministicRng } from "../core/rng.js";
 import type { ChoiceDefinition, Effect, EventDefinition, GameState, OutcomeDefinition, ResolutionResult, SeedInstance, SeedTransition } from "../core/types.js";
 import { narrativeConditionRoot } from "../simulation/club-contract-intent.js";
 import { syncRetirementState } from "../simulation/late-career-engine.js";
-import { currentEmploymentClub, syncEmploymentAfterNarrativeClubChangeInPlace } from "../simulation/employment.js";
-import { isNarrativeClubAlias, materializeNarrativeClubAlias } from "../catalog/football/narrative-club-alias.js";
+import { currentEmploymentClub, setNarrativeLoanRegistrationInPlace, syncEmploymentAfterNarrativeClubChangeInPlace } from "../simulation/employment.js";
+import { isNarrativeClubAlias, materializeNarrativeClubAlias, materializeNarrativeLoanRegistration } from "../catalog/football/narrative-club-alias.js";
 import { certifyPlayerClubLeadershipInPlace } from "../simulation/player-leadership-authority.js";
 import {
   captureNpcKnowledgeTargetContext,
@@ -355,6 +355,21 @@ function resolveChoiceCore(next: GameState, event: EventDefinition, choiceId: st
   }
 
   // A club change authorized by a narrative choice is one coherent transaction.
+  // If canonical content expressed "sign parent + go on loan" using one alias for
+  // both identities, materialize a distinct registration club without consuming RNG.
+  if(next.club!==previousClub && next.flags.LOAN_ACTIVE===true){
+    const owner=String(next.world.ownerClub ?? previousClub);
+    if(owner===next.club){
+      setNarrativeLoanRegistrationInPlace(
+        next,
+        materializeNarrativeLoanRegistration(next,owner,{
+          eventId:event.id,
+          choiceId,
+          targetTier:Number.isFinite(next.tier)?next.tier:null
+        })
+      );
+    }
+  }
   if(next.club!==previousClub){
     const p=next.professional;
     p.registrationClub=next.club;p.leagueTier=next.tier;

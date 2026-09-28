@@ -44,7 +44,7 @@ test('formal offer queries are detached, deterministic and distinguish renewal/t
 
   const transfer = createInitialState(302);
   proposeCareerChange(transfer, 'Propuesta de mercado', draft => {
-    draft.club = 'Destino FC';
+    draft.club = 'ENG_LONDON';
     draft.contract.salaryMonthly = 5000;
   });
   assert.equal(careerOfferKind(transfer.market.pending), 'transfer');
@@ -55,7 +55,7 @@ test('formal offer queries are detached, deterministic and distinguish renewal/t
   assert.equal(transferFacts.pendingCareerOffer.id, transfer.market.pending.id);
   assert.equal(transferFacts.pendingCareerOffer.date, transfer.market.pending.date);
   assert.equal(transferFacts.pendingCareerOffer.reason, 'Propuesta de mercado');
-  assert.equal(transferFacts.pendingCareerOffer.terms.club, 'Destino FC');
+  assert.equal(transferFacts.pendingCareerOffer.terms.club, 'ENG_LONDON');
   assert.equal(transferFacts.pendingCareerOffer.terms.salary, 5000);
   transferFacts.pendingCareerOffer.terms.salary = 1;
   assert.equal(transfer.market.pending.terms.salary, 5000, 'narrative projection must not mutate pending offer');
@@ -63,9 +63,9 @@ test('formal offer queries are detached, deterministic and distinguish renewal/t
 
   const loan = createInitialState(303);
   proposeCareerChange(loan, 'Cesión', draft => {
-    draft.club = 'Development Club';
+    draft.club = 'ESP_MADRID';
     draft.professional.ownerClub = 'UDV';
-    draft.professional.registrationClub = 'Development Club';
+    draft.professional.registrationClub = 'ESP_MADRID';
     draft.professional.route = 'loan';
     draft.flags.LOAN_ACTIVE = true;
   });
@@ -75,7 +75,7 @@ test('formal offer queries are detached, deterministic and distinguish renewal/t
   assert.equal(loanFacts.pendingCareerOfferKind, 'loan');
   assert.equal(loanFacts.pendingCareerOffer.kind, 'loan');
   assert.equal(loanFacts.pendingCareerOffer.terms.ownerClub, 'UDV');
-  assert.equal(loanFacts.pendingCareerOffer.terms.registrationClub, 'Development Club');
+  assert.equal(loanFacts.pendingCareerOffer.terms.registrationClub, 'ESP_MADRID');
   assert.equal(getEligibleLoanOffers(loan).length, 1);
 });
 
@@ -83,14 +83,14 @@ test('eligible queries fail closed when live CareerTerms no longer match the off
   const state = createInitialState(308);
   const rng = rngSnapshot(state);
   proposeCareerChange(state, 'Propuesta de mercado', draft => {
-    draft.club = 'Destino FC';
+    draft.club = 'ENG_LONDON';
     draft.contract.salaryMonthly = 5000;
   });
   assert.equal(getActiveCareerOffers(state).length, 1, 'the pending proposal remains inspectable');
   assert.equal(getEligibleTransferOffers(state).length, 1);
   assert.equal(eligibleCareerOfferKind(state), 'transfer');
   assert.equal(narrativeConditionRoot(state).facts.pendingCareerOfferKind, 'transfer');
-  assert.equal(narrativeConditionRoot(state).facts.pendingCareerOffer?.terms.club, 'Destino FC');
+  assert.equal(narrativeConditionRoot(state).facts.pendingCareerOffer?.terms.club, 'ENG_LONDON');
   state.contract.salaryMonthly += 1;
   assert.equal(getActiveCareerOffers(state).length, 1, 'read-only active query does not erase stale evidence');
   assert.equal(getEligibleCareerOffers(state).length, 0, 'generic eligible query also fails closed');
@@ -105,7 +105,7 @@ test('eligible queries fail closed when live CareerTerms no longer match the off
 test('pending formal offer survives save/load without mutating its terms or RNG', () => {
   const state = createInitialState(307);
   proposeCareerChange(state, 'Propuesta de mercado', draft => {
-    draft.club = 'Destino FC';
+    draft.club = 'ENG_LONDON';
     draft.contract.salaryMonthly = 5000;
   });
   const before = structuredClone(state.market.pending);
@@ -124,9 +124,9 @@ test('loan start keeps parent club through save/load and accepted return is dete
   let state = createInitialState(304);
   const rngBefore = rngSnapshot(state);
   proposeCareerChange(state, 'Cesión', draft => {
-    draft.club = 'Development Club';
+    draft.club = 'ESP_MADRID';
     draft.professional.ownerClub = 'UDV';
-    draft.professional.registrationClub = 'Development Club';
+    draft.professional.registrationClub = 'ESP_MADRID';
     draft.professional.route = 'loan';
     draft.flags.LOAN_ACTIVE = true;
     draft.contract.monthsRemaining = 12;
@@ -134,17 +134,17 @@ test('loan start keeps parent club through save/load and accepted return is dete
   const start = structuredClone(state.market.pending);
   assert.equal(careerOfferKind(start), 'loan');
   respondToOffer(state, start.id, 'accept');
-  assert.equal(state.club, 'Development Club');
+  assert.equal(state.club, 'ESP_MADRID');
   assert.equal(state.professional.ownerClub, 'UDV');
-  assert.equal(state.professional.registrationClub, 'Development Club');
+  assert.equal(state.professional.registrationClub, 'ESP_MADRID');
   assert.equal(state.world.ownerClub, 'UDV');
   assert.equal(state.flags.LOAN_ACTIVE, true);
   assert.deepEqual(state.rngState, rngBefore);
 
   state = loadSave(serializeSave(state));
-  assert.equal(state.club, 'Development Club');
+  assert.equal(state.club, 'ESP_MADRID');
   assert.equal(state.professional.ownerClub, 'UDV');
-  assert.equal(state.professional.registrationClub, 'Development Club');
+  assert.equal(state.professional.registrationClub, 'ESP_MADRID');
   assert.equal(state.world.ownerClub, 'UDV');
   assert.equal(state.flags.LOAN_ACTIVE, true);
 
@@ -174,17 +174,17 @@ test('loan start keeps parent club through save/load and accepted return is dete
 
 test('loan permanent conversion moves ownership only through accepted CareerOffer', () => {
   const state = createInitialState(305);
-  state.club = 'Loan Club';
-  state.professional.ownerClub = 'Parent Club';
-  state.professional.registrationClub = 'Loan Club';
-  state.world.ownerClub = 'Parent Club';
+  state.club = 'ESP_MADRID';
+  state.professional.ownerClub = 'ESP_BARCELONA';
+  state.professional.registrationClub = 'ESP_MADRID';
+  state.world.ownerClub = 'ESP_BARCELONA';
   state.professional.route = 'loan';
   state.flags.LOAN_ACTIVE = true;
   const before = careerTerms(state);
 
   proposeCareerChange(state, 'Conversión permanente de cesión', draft => {
-    draft.professional.ownerClub = 'Loan Club';
-    draft.world.ownerClub = 'Loan Club';
+    draft.professional.ownerClub = 'ESP_MADRID';
+    draft.world.ownerClub = 'ESP_MADRID';
     draft.professional.route = 'domestic';
     draft.flags.LOAN_ACTIVE = false;
     draft.contract.monthsRemaining = 24;
@@ -193,15 +193,15 @@ test('loan permanent conversion moves ownership only through accepted CareerOffe
   assert.equal(careerOfferKind(offer), 'loan_conversion');
   assert.deepEqual(careerTerms(state), before, 'proposal must not change live terms');
   respondToOffer(state, offer.id, 'accept');
-  assert.equal(state.club, 'Loan Club');
-  assert.equal(state.professional.ownerClub, 'Loan Club');
-  assert.equal(state.professional.registrationClub, 'Loan Club');
-  assert.equal(state.world.ownerClub, 'Loan Club');
+  assert.equal(state.club, 'ESP_MADRID');
+  assert.equal(state.professional.ownerClub, 'ESP_MADRID');
+  assert.equal(state.professional.registrationClub, 'ESP_MADRID');
+  assert.equal(state.world.ownerClub, 'ESP_MADRID');
   assert.equal(state.flags.LOAN_ACTIVE, false);
 
   const restored = loadSave(serializeSave(state));
-  assert.equal(restored.professional.ownerClub, 'Loan Club');
-  assert.equal(restored.professional.registrationClub, 'Loan Club');
+  assert.equal(restored.professional.ownerClub, 'ESP_MADRID');
+  assert.equal(restored.professional.registrationClub, 'ESP_MADRID');
   assert.equal(restored.flags.LOAN_ACTIVE, false);
 });
 

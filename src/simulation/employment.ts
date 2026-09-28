@@ -108,3 +108,24 @@ export function syncEmploymentAfterNarrativeClubChangeInPlace(state: GameState):
   employment.status = state.flags.LOAN_ACTIVE ? "loaned" : "contracted";
   employment.since = state.date;
 }
+
+
+/**
+ * Narrow employment authority for a narrative transition that has already
+ * established a loan owner but would otherwise persist the same identity as
+ * registration. It never creates loan authority; LOAN_ACTIVE must already exist.
+ */
+export function setNarrativeLoanRegistrationInPlace(state: GameState, registrationClub: string): void {
+  const employment = ensureEmploymentStateInPlace(state);
+  if (employment.status === "unattached" || employment.status === "expired_pending_resolution") {
+    throw new Error("Narrative loan registration cannot reactivate inactive employment.");
+  }
+  if (state.flags.LOAN_ACTIVE !== true) {
+    throw new Error("Narrative loan registration requires existing loan authority.");
+  }
+  const ownerClub = String(state.world.ownerClub ?? state.professional.ownerClub);
+  if (!registrationClub || registrationClub === ownerClub) {
+    throw new Error("Narrative loan registration must differ from the owner club.");
+  }
+  state.club = registrationClub;
+}

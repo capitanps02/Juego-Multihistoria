@@ -31,3 +31,18 @@ test('representative world catalog IDs render as fictional club names rather tha
    assert.doesNotMatch(label,/_/);
  }
 });
+
+test('V2 presentation hides unknown internal IDs and labels all canonical aliases',()=>{
+ const aliases={
+   NEW_CLUB:'Nuevo club',
+   DEVELOPMENT_CLUB:'Club de desarrollo',
+   DEVELOPMENT_CLUB_2:'Club de desarrollo',
+   HIGHER_CLUB:'Club de categoría superior',
+   BIG_CLUB:'Gran club',
+   FOREIGN_DEV_CLUB:'Club extranjero de desarrollo'
+ };
+ for(const [id,label] of Object.entries(aliases))assert.equal(formatClubName(id),label,id);
+ assert.equal(formatClubName('ESP_FAKE_CLUB_999'),'Club desconocido');
+ assert.equal(formatClubName('ENG_CHESTER'),'Chester Crown');
+ assert.equal(formatClubName('CHN_GUANGZHOU'),'Guangzhou Jade');
+});

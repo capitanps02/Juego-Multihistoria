@@ -41,7 +41,7 @@ const EXPECTED_CONFEDERATION_COUNTS = Object.freeze({
 test("world football catalog has the expected first-wave scope", () => {
   assert.equal(FOOTBALL_CLUBS.length, 528);
   assert.equal(FOOTBALL_DIVISIONS.length, 27);
-  assert.equal(FOOTBALL_CATALOG_VERSION, "world-v1-2026-09-26");
+  assert.equal(FOOTBALL_CATALOG_VERSION, "world-v2-a2-2026-09-28");
 
   for (const [countryCode, count] of Object.entries(EXPECTED_COUNTRY_COUNTS)) {
     assert.equal(clubsForCountry(countryCode).length, count, countryCode);

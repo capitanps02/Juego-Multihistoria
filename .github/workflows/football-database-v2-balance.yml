@@ -1,0 +1,32 @@
+name: Football Database V2 · Balance
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/catalog/football/**'
+      - 'scripts/test-football-catalog*.mjs'
+      - 'scripts/test-football-v2-balance.mjs'
+      - 'package.json'
+      - '.github/workflows/football-database-v2-balance.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  catalog-balance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Structural catalog regression
+        run: node --test scripts/test-football-catalog.mjs
+      - name: Football balance regression
+        run: node --test scripts/test-football-v2-balance.mjs

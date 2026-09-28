@@ -20,7 +20,7 @@ function createRichOffer(seed = 17501) {
   const state = createInitialState(seed);
   const rng = structuredClone(state.rngState);
   proposeCareerChange(state, 'Oferta internacional de final de carrera', draft => {
-    draft.club = 'Global City FC';
+    draft.club = 'USA_NEW_YORK';
     draft.professional.route = 'abroad';
     draft.flags.ABROAD_ROUTE = true;
     draft.contract.monthsRemaining = 36;
@@ -43,7 +43,7 @@ test('late rich offer context is explicit, detached and never inferred from sala
 
   const ordinary = createInitialState(17502);
   proposeCareerChange(ordinary, 'Oferta internacional enorme', draft => {
-    draft.club = 'Very Rich FC';
+    draft.club = 'ENG_LONDON';
     draft.contract.monthsRemaining = 36;
     draft.contract.salaryMonthly = 999999;
     draft.professional.route = 'abroad';
@@ -119,7 +119,7 @@ test('invalid or heuristic context fails closed', () => {
   assert.equal(state.market?.pending ?? null, null);
 
   proposeCareerChange(state, 'ordinary offer', draft => {
-    draft.club = 'Destination FC';
+    draft.club = 'ESP_MADRID';
     draft.contract.salaryMonthly += 1000;
   });
   state.market.pending.context = {

@@ -6,9 +6,13 @@ export function formatClubName(value){
  const name=String(value??'');
  if(name==='UDV')return 'U. D. Valdoria';
  if(CATALOG_CLUB_NAMES[name])return CATALOG_CLUB_NAMES[name];
+ if(name==='NEW_CLUB')return 'Nuevo club';
+ if(name==='DEVELOPMENT_CLUB'||name==='DEVELOPMENT_CLUB_2')return 'Club de desarrollo';
+ if(name==='HIGHER_CLUB')return 'Club de categoría superior';
  if(name==='BIG_CLUB')return 'Gran club';
+ if(name==='FOREIGN_DEV_CLUB')return 'Club extranjero de desarrollo';
  const match=/^(Development|Foreign|Loan|Domestic|Summer|SIM_OPP)_(\d+)_(\d+)$/.exec(name);
- if(!match)return name;
+ if(!match)return /^[A-Z]{3}_[A-Z0-9_]+$/.test(name)?'Club desconocido':name;
  const [,family,tier,number]=match;
  const place=places[Number(number)];
  return (place?prefixes[family]+' '+place:'Club '+number)+' · categoría '+tier;
