@@ -4,6 +4,7 @@ import {
 } from "../catalog/football/index.js";
 import {
   CURRENT_FOOTBALL_CATALOG_VERSION,
+  PRE_FOOTBALL_CATALOG_VERSION,
   footballCatalogVersionOf
 } from "./football-catalog-version.js";
 
