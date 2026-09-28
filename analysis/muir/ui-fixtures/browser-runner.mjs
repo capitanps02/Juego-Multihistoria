@@ -102,9 +102,9 @@ if(fixture.recipe==='player-actions-category'){await clickText('Gestionar mi car
 if(fixture.recipe==='player-actions-detail'){await clickText('Gestionar mi carrera');await clickCardButton('Entrenamiento','Ver acciones');await clickCardButton('Entrenamiento extra','Abrir');}
 if(fixture.recipe==='cinematic-missing-asset'){
   for(let i=0;i<160;i++){
-    if(root.textContent.includes('No se ha podido cargar la escena. Puedes seguir con tu decisión.'))break;
+    if(root.textContent.includes('No se ha podido cargar el prólogo. Puedes continuar con tu historia.'))break;
     await new Promise(r=>setTimeout(r,25));
-    if(i===159)throw Error('MUIR cinematic fallback message did not appear');
+    if(i===159)throw Error('MUIR prologue fallback message did not appear');
   }
 }
 
