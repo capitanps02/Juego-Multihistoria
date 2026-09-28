@@ -47,3 +47,9 @@ jobs:
         run: npm run test:football-catalog
       - name: Pass 2 save / migration / replay certification
         run: npm run test:football-save
+      - name: Pass 3 runtime / fixture / market regression
+        run: npm run test:football-runtime
+      - name: Pass 3 high-volume selector stress
+        run: npm run qa:football-db:a7:pass3
+      - name: Pass 3 Player Actions content regression
+        run: npm run test:player-actions-content
