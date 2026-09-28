@@ -21,6 +21,8 @@ jobs:
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -34,7 +36,7 @@ jobs:
         run: node --test scripts/test-playcanvas.mjs scripts/test-android-offline.mjs
       - name: Capture generated diff
         run: |
-          git status --short
+          git status --short | tee generated-status.txt
           git diff -- playcanvas/multihistoria.js playcanvas/manifest.json web/assets.json android/app/src/main/assets > generated-diff.patch
           git diff --stat -- playcanvas/multihistoria.js playcanvas/manifest.json web/assets.json android/app/src/main/assets > generated-diff-stat.txt
       - name: Commit generated deployables to A8 branch
@@ -47,6 +49,8 @@ jobs:
             echo "Generated deployables already synchronized."
           else
             git commit -m "DB-A8: regenerate certified PlayCanvas and Android deployables"
+            git fetch origin "$GITHUB_HEAD_REF"
+            git rebase "origin/$GITHUB_HEAD_REF"
             git push origin HEAD:"$GITHUB_HEAD_REF"
           fi
       - uses: actions/upload-artifact@v4
@@ -57,6 +61,7 @@ jobs:
           path: |
             generated-diff.patch
             generated-diff-stat.txt
+            generated-status.txt
             playcanvas/multihistoria.js
             playcanvas/manifest.json
             web/assets.json
