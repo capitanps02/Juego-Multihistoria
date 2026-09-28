@@ -113,3 +113,20 @@ P0 correction:
 The superseded 66-image artifact is therefore useful for diagnosing the harness but is **not accepted as the final P0 visual baseline**.
 
 The final visual gate requires a fresh exact-head browser run after this correction.
+
+
+### Browser harness repair — prologue missing-media trigger
+
+Exact-head browser diagnosis found a deterministic harness defect in the cinematic fallback fixture:
+
+- the PROLOGUE player deliberately uses `preload="none"`;
+- the harness opened the prologue dialog but did not press `Reproducir prólogo con sonido`;
+- therefore the deliberately missing WebM URL was not guaranteed to be requested;
+- the expected missing-media fallback could time out even though production behavior was correct.
+
+P0 correction:
+- the browser fixture now presses the real product button `Reproducir prólogo con sonido`;
+- only then does it wait for `No se ha podido cargar el prólogo. Puedes continuar con tu historia.`;
+- no production cutscene code, gameplay, save, RNG or UI styling is changed.
+
+This explains a three-target failure pattern because `cinematic-fallback` is captured at the three required phone widths.
