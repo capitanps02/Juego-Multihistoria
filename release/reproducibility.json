@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "status": "FUNCTIONAL_REPRODUCIBILITY_PROTOCOL_READY",
+  "sourceOfTruth": [
+    "exact Git SHA",
+    "package-lock.json with npm ci",
+    "TypeScript 5.8.3",
+    "JDK 17",
+    "Android Gradle Plugin 8.10.0",
+    "Gradle 8.11.1",
+    "Android compile/target SDK 36",
+    "build-manifest manifestIdentity",
+    "SOURCE_DATE_EPOCH derived from exact commit"
+  ],
+  "expectedInvariantAcrossEquivalentBuilds": [
+    "same gitSha",
+    "same contentIdentity",
+    "same save/session schema",
+    "same versionCode/versionName when supplied identically",
+    "same webBundleIdentity",
+    "same packaged logical resources and offline policy",
+    "same gameplay behavior and deterministic simulation for equal saves/seeds"
+  ],
+  "byteIdentityNotYetClaimed": true,
+  "knownByteNondeterminismSources": [
+    "APK/AAB ZIP container metadata may vary by build tooling",
+    "cryptographic signatures include signer-dependent metadata",
+    "toolchain packaging may emit timestamps not fully normalized by SOURCE_DATE_EPOCH"
+  ],
+  "rule": "Do not call two Android artifacts byte-reproducible until a two-clean-build experiment compares their SHA-256 and explains every difference. Functional equivalence is verified independently of byte identity."
+}

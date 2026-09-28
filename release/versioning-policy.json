@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "status": "TECHNICALLY_READY",
+  "applicationId": "com.multihistoria",
+  "rules": [
+    "versionCode es un entero positivo y debe ser mayor que cualquier versionCode ya publicado/subido que deba sustituir.",
+    "No se inventa el siguiente versionCode sin consultar primero el estado real de Play Console.",
+    "Cada AAB nuevo que reemplace a otro usa un versionCode estrictamente mayor.",
+    "Promover exactamente el mismo artefacto entre internal, closed y production conserva su versionCode.",
+    "Un rollback de código se publica reconstruyendo el source antiguo como un nuevo hotfix con versionCode mayor; nunca se intenta instalar un versionCode menor.",
+    "versionName es legible por humanos y no sustituye a versionCode como orden de actualización.",
+    "Todo RC registra SHA, manifestIdentity, versionCode y versionName antes de compilar Android."
+  ],
+  "inputsRequiredForStoreCandidate": {
+    "highestVersionCodeObservedInPlayConsole": "EXTERNAL_ACTION_REQUIRED",
+    "nextVersionCode": "MUST_BE_GREATER_THAN_HIGHEST_OBSERVED",
+    "versionName": "PRODUCT_RELEASE_DECISION"
+  },
+  "injection": {
+    "versionCode": "MULTIHISTORIA_VERSION_CODE",
+    "versionName": "MULTIHISTORIA_VERSION_NAME"
+  }
+}

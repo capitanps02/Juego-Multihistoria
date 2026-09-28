@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "status": "MEASUREMENT_PROTOCOL_READY_RESULTS_PENDING",
+  "principle": "Medir antes de optimizar; no se declaran umbrales de producto como aprobados sin baseline físico.",
+  "metrics": [
+    {"id":"cold_start_ms","unit":"ms","start":"launch intent","end":"first interactive career/home UI","result":null},
+    {"id":"first_interaction_ms","unit":"ms","start":"launch intent","end":"first accepted user command","result":null},
+    {"id":"screen_transition_ms","unit":"ms","start":"navigation action","end":"target view painted","result":null},
+    {"id":"save_load_ms","unit":"ms","start":"IndexedDB read","end":"validated GameSession ready","result":null},
+    {"id":"migration_ms","unit":"ms","start":"legacy/content migration begins","end":"validated migrated snapshot","result":null},
+    {"id":"save_write_ms","unit":"ms","start":"commit requested","end":"IndexedDB transaction committed","result":null},
+    {"id":"export_ms","unit":"ms","start":"export requested","end":"document write completed/confirmed","result":null},
+    {"id":"webview_pss_mb","unit":"MiB","source":"adb shell dumpsys meminfo <package>","result":null},
+    {"id":"app_data_mb","unit":"MiB","source":"device settings/adb package data inspection","result":null},
+    {"id":"web_bundle_bytes","unit":"bytes","source":"build manifest/release assets","result":null},
+    {"id":"apk_bytes","unit":"bytes","source":"android release report","result":null},
+    {"id":"aab_bytes","unit":"bytes","source":"android release report","result":null}
+  ],
+  "captureRules": [
+    "registrar build manifest identity y dispositivo con cada muestra",
+    "hacer al menos una ejecución fría después de force-stop",
+    "separar instalación limpia, save corto y save largo",
+    "no mezclar emulador y teléfono físico en la misma baseline",
+    "guardar valores brutos; calcular agregados después"
+  ]
+}

@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "auditDate": "2026-09-16",
+  "status": "TECHNICAL_GAPS_IDENTIFIED",
+  "source": {
+    "branch": "main",
+    "gitSha": "1d7e51ef821cbcb7b3bbe84ca8cac013ac3f8751",
+    "releaseBranch": "release/beta-readiness"
+  },
+  "build": {
+    "packageVersion": "0.8.0",
+    "engineBuild": "0.8.0-t2.5",
+    "sessionSchema": 3,
+    "typescript": "5.8.3",
+    "existingBuildManifest": "dist/build-manifest.json",
+    "existingManifestScope": "typescript-source-and-output-integrity-only",
+    "releaseBuildIdentity": "MISSING"
+  },
+  "android": {
+    "applicationId": "com.multihistoria",
+    "namespace": "com.multihistoria",
+    "versionCode": 1,
+    "versionName": "0.8.0",
+    "minSdk": 23,
+    "targetSdk": 35,
+    "compileSdk": 35,
+    "androidGradlePlugin": "8.7.2",
+    "gradleExpectedByBuildScript": "8.9",
+    "gradleWrapperCommitted": false,
+    "permissions": [],
+    "internetPermission": false,
+    "allowBackup": false,
+    "usesCleartextTraffic": false,
+    "orientation": "portrait",
+    "offlineOrigin": "https://appassets.androidplatform.net/assets/",
+    "apk": {
+      "debugBuildScript": "scripts/build-android-apk.mjs",
+      "debugOutput": "android/app/build/outputs/apk/debug/app-debug.apk",
+      "releasePipeline": "MISSING"
+    },
+    "aab": {
+      "gradleCapability": "AVAILABLE_VIA_ANDROID_APPLICATION_PLUGIN",
+      "releaseScript": "MISSING",
+      "verification": "MISSING"
+    },
+    "signing": {
+      "releaseConfig": "MISSING",
+      "secretExternalization": "MISSING",
+      "keystoreInGit": false
+    }
+  },
+  "webPackaging": {
+    "builder": "scripts/build-android-offline.mjs",
+    "assetManifest": "android/app/src/main/assets/offline-manifest.json",
+    "networkPolicy": "OFFLINE_CONNECT_NONE",
+    "storage": {
+      "type": "IndexedDB",
+      "key": "historia-jugador.android.offline.session.v1",
+      "legacyMigration": "localStorage"
+    },
+    "contentIdentityInRuntimeManifest": false,
+    "gitShaInRuntimeManifest": false
+  },
+  "persistence": {
+    "indexedDb": true,
+    "previousValidCopy": true,
+    "importExport": true,
+    "contentMigration": true,
+    "sessionMigration": true,
+    "upgradeAcrossInstalledAndroidVersions": "NOT_YET_EVIDENCED"
+  },
+  "diagnostics": {
+    "exportableReleaseDiagnostics": "MISSING_ON_MAIN",
+    "buildIdentityIncluded": false,
+    "saveSeparatedFromDiagnostics": false,
+    "remoteAnalytics": false,
+    "remoteCrashReporting": false
+  },
+  "ci": {
+    "repositoryIntegrityWorkflow": ".github/workflows/repository-integrity.yml",
+    "node": "20",
+    "npmCi": true,
+    "npmTest": true,
+    "androidReleaseCandidateWorkflow": "MISSING"
+  },
+  "agent9Dependency": {
+    "pullRequest": 14,
+    "branch": "presentation/android-playcanvas",
+    "stateAtAudit": "OPEN_DRAFT_NOT_MERGEABLE_AGAINST_CURRENT_MAIN",
+    "consumedAsDependencyOnly": true
+  },
+  "t7": {
+    "state": "AWAITING_TECHNICAL_PREPARATION_AND_PHYSICAL_EVIDENCE",
+    "gaps": [
+      "release build identity",
+      "diagnostic package",
+      "release APK/AAB verification",
+      "upgrade/save preservation matrix",
+      "device matrix execution on physical devices",
+      "performance measurements",
+      "human full-career beta evidence"
+    ]
+  },
+  "t8": {
+    "state": "AWAITING_TECHNICAL_PREPARATION_AND_STORE_ACTION",
+    "gaps": [
+      "AAB release pipeline",
+      "externalized signing configuration",
+      "monotonic versionCode release policy",
+      "Google Play readiness checklist",
+      "store metadata/assets",
+      "Data Safety declaration based on final SDK set",
+      "content rating and target audience",
+      "internal/closed testing execution",
+      "Google Play review"
+    ]
+  }
+}

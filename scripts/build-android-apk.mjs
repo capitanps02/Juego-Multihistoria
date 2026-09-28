@@ -10,7 +10,7 @@ const toolsDir = path.join(root, '.android-tools');
 const localJava = path.join(toolsDir, 'jdk', 'Contents', 'Home');
 if (fs.existsSync(localJava)) process.env.JAVA_HOME = localJava;
 process.env.GRADLE_USER_HOME ||= path.join(toolsDir, 'gradle-cache');
-const bundledGradle = path.join(toolsDir, 'gradle-8.9', 'bin', 'gradle');
+const bundledGradle = path.join(toolsDir, 'gradle-8.11.1', 'bin', 'gradle');
 const tool = fs.existsSync(bundledGradle) ? bundledGradle : process.platform === 'win32' ? 'gradle.bat' : 'gradle';
 if (process.env.JAVA_HOME) process.env.PATH = path.join(process.env.JAVA_HOME, 'bin') + path.delimiter + process.env.PATH;
 const java = spawnSync('java', ['-version'], { encoding: 'utf8' });

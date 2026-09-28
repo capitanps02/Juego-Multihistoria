@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "auditDate": "2026-09-16",
+  "status": "TECHNICAL_PREPARATION_IN_PROGRESS_EXTERNAL_STORE_ACTION_REQUIRED",
+  "sources": {
+    "targetApi": "https://support.google.com/googleplay/android-developer/answer/11926878",
+    "appSetupAndBundles": "https://support.google.com/googleplay/android-developer/answer/9859152",
+    "dataSafety": "https://support.google.com/googleplay/android-developer/answer/10787469",
+    "userDataPrivacyPolicy": "https://support.google.com/googleplay/android-developer/answer/10144311",
+    "personalAccountTesting": "https://support.google.com/googleplay/android-developer/answer/14151465",
+    "previewAssets": "https://support.google.com/googleplay/android-developer/answer/9866151"
+  },
+  "technical": [
+    {"item":"applicationId com.multihistoria","state":"OWNER_CONFIRMATION_REQUIRED_BEFORE_FIRST_PLAY_UPLOAD","note":"El package name de Play es una identidad permanente; confirmar antes del primer alta."},
+    {"item":"targetSdk 36","state":"READY_ON_BRANCH_PENDING_CI","note":"Requisito de nuevas apps/updates móviles desde 2026-08-31."},
+    {"item":"compileSdk 36 + compatible toolchain","state":"READY_ON_BRANCH_PENDING_CI","note":"AGP 8.10.0 + Gradle 8.11.1 + JDK 17."},
+    {"item":"AAB release build","state":"READY_ON_BRANCH_PENDING_CI"},
+    {"item":"APK release build for direct beta evidence","state":"READY_ON_BRANCH_PENDING_CI"},
+    {"item":"externalized signing","state":"READY","note":"No keystore/passwords in Git; actual signing secrets remain external."},
+    {"item":"signed AAB suitable for upload","state":"EXTERNAL_SECRET_AND_CI_RUN_REQUIRED"},
+    {"item":"monotonic versionCode policy","state":"READY","note":"Next code must be chosen after checking Play Console highest observed code."},
+    {"item":"no INTERNET permission","state":"READY_IF_FINAL_BINARY_UNCHANGED"},
+    {"item":"offline assets packaged","state":"READY_ON_BRANCH_PENDING_CI"},
+    {"item":"build identity + hashes","state":"READY_ON_BRANCH_PENDING_CI"}
+  ],
+  "storeListing": [
+    {"item":"app name","state":"PRODUCT_CONFIRMATION_REQUIRED","currentCandidate":"Multihistoria · Carrera de futbolista"},
+    {"item":"short description","state":"EXTERNAL_ACTION_REQUIRED"},
+    {"item":"long description","state":"EXTERNAL_ACTION_REQUIRED"},
+    {"item":"Play icon 512x512 PNG","state":"HANDOFF_AGENT_9_OR_DESIGN"},
+    {"item":"feature graphic 1024x500 JPEG/PNG","state":"HANDOFF_AGENT_9_OR_DESIGN"},
+    {"item":"phone screenshots","state":"AWAITING_FINAL_UI_AND_PHYSICAL_CAPTURE"},
+    {"item":"content rating questionnaire","state":"EXTERNAL_ACTION_REQUIRED"},
+    {"item":"target audience","state":"EXTERNAL_ACTION_REQUIRED"},
+    {"item":"ads declaration","state":"READY_IF_FINAL_BINARY_UNCHANGED","candidate":"No ads / no advertising SDK currently observed"},
+    {"item":"App Access","state":"READY_IF_FINAL_BINARY_UNCHANGED","candidate":"No login or restricted access currently observed"}
+  ],
+  "privacy": [
+    {"item":"Data Safety technical audit","state":"TECHNICALLY_READY","evidence":"release/privacy-audit.json"},
+    {"item":"Data Safety Play Console form","state":"EXTERNAL_ACTION_REQUIRED"},
+    {"item":"privacy policy public URL","state":"EXTERNAL_ACTION_REQUIRED"},
+    {"item":"privacy policy accessible in app","state":"HANDOFF_AGENT_9"}
+  ],
+  "testingTracks": [
+    {"item":"internal testing","state":"AWAITING_STORE_ACTION","note":"Upload signed AAB and configure testers in Play Console."},
+    {"item":"closed testing","state":"AWAITING_STORE_ACTION"},
+    {"item":"12 testers / 14 continuous days","state":"CONDITIONAL_EXTERNAL_ACTION_REQUIRED","appliesWhen":"personal developer account created after 2023-11-13"},
+    {"item":"production access/review","state":"AWAITING_STORE_ACTION"}
+  ],
+  "notClaimed": [
+    "Google Play upload completed",
+    "internal testing completed",
+    "closed testing completed",
+    "12 testers retained for 14 days",
+    "review passed",
+    "production stabilized"
+  ]
+}
