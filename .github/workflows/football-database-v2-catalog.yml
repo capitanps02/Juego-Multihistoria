@@ -6,6 +6,8 @@ on:
     paths:
       - 'src/catalog/football/**'
       - 'scripts/test-football-v2-integrity.mjs'
+      - 'scripts/test-t5-captain-gap-known-bug.mjs'
+      - 'scripts/test-t5-offer-context-known-bug.mjs'
       - 'package.json'
       - 'package-lock.json'
       - '.github/workflows/football-database-v2-catalog.yml'
@@ -29,3 +31,5 @@ jobs:
         run: npm run build
       - name: Validate V2 football catalog and references
         run: node --test scripts/test-football-v2-integrity.mjs
+      - name: Validate V2 save fixtures against strict club identities
+        run: node --test scripts/test-t5-captain-gap-known-bug.mjs scripts/test-t5-offer-context-known-bug.mjs
