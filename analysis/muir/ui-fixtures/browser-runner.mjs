@@ -101,6 +101,14 @@ async function settle(){
 await settle();
 if(root.textContent.includes('No se ha podido cargar el juego.'))throw Error('MUIR harness loaded fixture into the product save failure screen');
 
+// The product intentionally reopens pending decision/offer/result in cinematic mode.
+// Home-specific fixtures explicitly return to Inicio so they baseline the Home shell,
+// while result/contract-offer retain the detailed cinematic surface.
+if(fixture.id==='home-pending-decision'||fixture.id==='home-offer'){
+  await clickText('Volver a Inicio');
+  await settle();
+}
+
 if(fixture.route==='career')await clickText('Carrera');
 else if(fixture.route==='world')await clickText('Mundo');
 else if(fixture.route==='relations')await clickText('Relaciones');
@@ -117,6 +125,12 @@ if(fixture.recipe==='cinematic-missing-asset'){
     if(i===159)throw Error('MUIR prologue fallback message did not appear');
   }
 }
+
+// Assert the DOM surface, not just the underlying PlayerView, before capture.
+if(fixture.id==='home-pending-decision'&&!root.querySelector('.home-grid'))throw Error('Home pending-decision fixture did not render Home');
+if(fixture.id==='home-offer'&&!root.querySelector('.home-grid'))throw Error('Home offer fixture did not render Home');
+if(fixture.id==='period-summary'&&!root.querySelector('.period-summary'))throw Error('Period summary fixture did not render the public period summary');
+if(fixture.id==='result'&&!root.querySelector('.decision-sheet'))throw Error('Result fixture did not render the detailed result surface');
 
 if(fixture.recipe==='player-actions-result'){
   // Reproduce a known target-free action through real UI navigation.
