@@ -360,11 +360,14 @@ function resolveChoiceCore(next: GameState, event: EventDefinition, choiceId: st
   if(next.club!==previousClub && next.flags.LOAN_ACTIVE===true){
     const owner=String(next.world.ownerClub ?? previousClub);
     if(owner===next.club){
-      next.club=materializeNarrativeLoanRegistration(next,owner,{
-        eventId:event.id,
-        choiceId,
-        targetTier:Number.isFinite(next.tier)?next.tier:null
-      });
+      setNarrativeLoanRegistrationInPlace(
+        next,
+        materializeNarrativeLoanRegistration(next,owner,{
+          eventId:event.id,
+          choiceId,
+          targetTier:Number.isFinite(next.tier)?next.tier:null
+        })
+      );
     }
   }
   if(next.club!==previousClub){
