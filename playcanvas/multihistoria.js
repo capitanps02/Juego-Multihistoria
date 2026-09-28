@@ -26136,7 +26136,8 @@ const competition_context_js_1 = require("../simulation/competition-context.js")
 const match_penalty_context_js_1 = require("../simulation/match-penalty-context.js");
 const legacy = require("./validation-legacy.js");
 const veteran_market_js_1 = require("../simulation/veteran-market.js");
-const index_js_1 = require("../catalog/football/index.js");
+const football_catalog_version_js_1 = require("./football-catalog-version.js");
+const football_catalog_reference_validation_js_1 = require("./football-catalog-reference-validation.js");
 __exportStar(require("./validation-legacy.js"), exports);
 function assertCompetitionMoments(value) {
     const state = legacy.record(value, "state");
@@ -26177,130 +26178,14 @@ function assertVeteranMarketFacts(value) {
         }
     });
 }
-function assertFootballClubRef(value, path, context) {
-    const classification = (0, index_js_1.classifyFootballClubReference)(value);
-    legacy.ensure((0, index_js_1.isFootballClubReferenceAllowed)(value, context), path, `referencia de club ${classification.kind} no permitida en ${context}: ${classification.value}`);
-}
-function assertCareerTermsClubRefs(value, path, context) {
-    const terms = legacy.record(value, path);
-    for (const key of ["club", "ownerClub", "registrationClub"]) {
-        if (terms[key] !== undefined)
-            assertFootballClubRef(terms[key], `${path}.${key}`, context);
-    }
-}
-function assertCareerOfferClubRefs(value, path, context) {
-    const offer = legacy.record(value, path);
-    if (offer.before !== undefined)
-        assertCareerTermsClubRefs(offer.before, `${path}.before`, context);
-    if (offer.terms !== undefined)
-        assertCareerTermsClubRefs(offer.terms, `${path}.terms`, context);
-}
-function assertFootballCatalogPersistence(value, version) {
+function assertFootballCatalogReferences(value) {
     const state = legacy.record(value, "state");
-    const marker = state.footballCatalogVersion;
-    const context = marker === undefined ? "historical_read" : "new_production";
-    if (marker !== undefined) {
-        legacy.string(marker, "footballCatalogVersion");
-        legacy.ensure(version === 8, "footballCatalogVersion", "el marcador V2 solo es válido en schema 8");
-        legacy.ensure(marker === index_js_1.FOOTBALL_CATALOG_VERSION, "footballCatalogVersion", `versión de catálogo no compatible: ${String(marker)}`);
+    if (state.footballCatalogVersion !== undefined) {
+        legacy.ensure((0, football_catalog_version_js_1.isSupportedFootballCatalogVersion)(state.footballCatalogVersion), "footballCatalogVersion", "versión de catálogo no compatible");
     }
-    assertFootballClubRef(state.club, "club", context);
-    if (state.professional !== undefined) {
-        const professional = legacy.record(state.professional, "professional");
-        for (const key of ["ownerClub", "registrationClub"]) {
-            if (professional[key] !== undefined) {
-                assertFootballClubRef(professional[key], `professional.${key}`, context);
-            }
-        }
-    }
-    if (state.world !== undefined) {
-        const world = legacy.record(state.world, "world");
-        if (world.ownerClub !== undefined && world.ownerClub !== null) {
-            assertFootballClubRef(world.ownerClub, "world.ownerClub", context);
-        }
-    }
-    if (state.ageMilestones !== undefined) {
-        legacy.list(state.ageMilestones, "ageMilestones").forEach((row, index) => {
-            const milestone = legacy.record(row, `ageMilestones[${index}]`);
-            if (milestone.club !== undefined) {
-                assertFootballClubRef(milestone.club, `ageMilestones[${index}].club`, context);
-            }
-        });
-    }
-    if (state.history !== undefined) {
-        legacy.list(state.history, "history").forEach((row, index) => {
-            const history = legacy.record(row, `history[${index}]`);
-            if (history.club !== undefined) {
-                assertFootballClubRef(history.club, `history[${index}].club`, context);
-            }
-        });
-    }
-    if (state.npcs !== undefined) {
-        legacy.list(state.npcs, "npcs").forEach((row, index) => {
-            const npc = legacy.record(row, `npcs[${index}]`);
-            if (npc.club !== undefined && npc.club !== null) {
-                assertFootballClubRef(npc.club, `npcs[${index}].club`, context);
-            }
-        });
-    }
-    if (state.employment !== undefined) {
-        const employment = legacy.record(state.employment, "employment");
-        if (employment.previous !== undefined && employment.previous !== null) {
-            const previous = legacy.record(employment.previous, "employment.previous");
-            for (const key of ["club", "ownerClub", "registrationClub"]) {
-                if (previous[key] !== undefined) {
-                    assertFootballClubRef(previous[key], `employment.previous.${key}`, context);
-                }
-            }
-        }
-    }
-    if (state.market !== undefined) {
-        const market = legacy.record(state.market, "market");
-        if (market.pending !== undefined && market.pending !== null) {
-            assertCareerOfferClubRefs(market.pending, "market.pending", context);
-        }
-        if (market.openOffers !== undefined) {
-            legacy.list(market.openOffers, "market.openOffers").forEach((offer, index) => assertCareerOfferClubRefs(offer, `market.openOffers[${index}]`, context));
-        }
-        if (market.history !== undefined) {
-            legacy.list(market.history, "market.history").forEach((row, index) => {
-                const decision = legacy.record(row, `market.history[${index}]`);
-                if (decision.offer !== undefined) {
-                    assertCareerOfferClubRefs(decision.offer, `market.history[${index}].offer`, context);
-                }
-            });
-        }
-        if (market.systemClosures !== undefined) {
-            legacy.list(market.systemClosures, "market.systemClosures").forEach((row, index) => {
-                const closure = legacy.record(row, `market.systemClosures[${index}]`);
-                if (closure.offer !== undefined) {
-                    assertCareerOfferClubRefs(closure.offer, `market.systemClosures[${index}].offer`, context);
-                }
-            });
-        }
-        if (market.futureNegotiations !== undefined) {
-            legacy.list(market.futureNegotiations, "market.futureNegotiations").forEach((row, index) => {
-                const negotiation = legacy.record(row, `market.futureNegotiations[${index}]`);
-                if (negotiation.destination !== undefined) {
-                    assertFootballClubRef(negotiation.destination, `market.futureNegotiations[${index}].destination`, context);
-                }
-                if (negotiation.before !== undefined) {
-                    assertCareerTermsClubRefs(negotiation.before, `market.futureNegotiations[${index}].before`, context);
-                }
-                if (negotiation.terms !== undefined) {
-                    assertCareerTermsClubRefs(negotiation.terms, `market.futureNegotiations[${index}].terms`, context);
-                }
-            });
-        }
-        if (market.futureAgreements !== undefined) {
-            legacy.list(market.futureAgreements, "market.futureAgreements").forEach((row, index) => {
-                const agreement = legacy.record(row, `market.futureAgreements[${index}]`);
-                if (agreement.terms !== undefined) {
-                    assertCareerTermsClubRefs(agreement.terms, `market.futureAgreements[${index}].terms`, context);
-                }
-            });
-        }
-    }
+    const issue = (0, football_catalog_reference_validation_js_1.inspectFootballCatalogSaveReferences)(value);
+    if (issue)
+        legacy.ensure(false, issue.path, issue.reason);
 }
 function assertEmployment(value) {
     const state = legacy.record(value, "state");
@@ -26339,7 +26224,7 @@ function assertEmployment(value) {
  */
 function validateGameSave(value, version) {
     legacy.validateGameSave(value, version);
-    assertFootballCatalogPersistence(value, version);
+    assertFootballCatalogReferences(value);
     assertSportMatchModel(value);
     assertCompetitionMoments(value);
     assertPenaltySetups(value);
@@ -26352,7 +26237,7 @@ function validateGameSave(value, version) {
 /** Common runtime/save boundary including market + football moment + match-model checks. */
 function assertGameState(value) {
     legacy.assertGameState(value);
-    assertFootballCatalogPersistence(value, 8);
+    assertFootballCatalogReferences(value);
     assertSportMatchModel(value);
     assertCompetitionMoments(value);
     assertPenaltySetups(value);
@@ -27204,6 +27089,487 @@ function resolvePenaltyMomentInPlace(state, inputValue) {
         replayed: false,
         draw
     };
+}
+
+},
+"src/save/football-catalog-version.ts": function(module,exports,require){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.FOOTBALL_CATALOG_MIGRATION_STEPS = exports.SUPPORTED_FOOTBALL_CATALOG_VERSIONS = exports.PRE_FOOTBALL_CATALOG_VERSION = exports.CURRENT_FOOTBALL_CATALOG_VERSION = void 0;
+exports.isSupportedFootballCatalogVersion = isSupportedFootballCatalogVersion;
+exports.footballCatalogVersionOf = footballCatalogVersionOf;
+exports.normalizeFootballCatalogVersion = normalizeFootballCatalogVersion;
+exports.migrateFootballClubReferenceExplicitly = migrateFootballClubReferenceExplicitly;
+exports.migrateFootballStateReferencesExplicitlyInPlace = migrateFootballStateReferencesExplicitlyInPlace;
+exports.migrateFootballCatalogVersionInPlace = migrateFootballCatalogVersionInPlace;
+const index_js_1 = require("../catalog/football/index.js");
+exports.CURRENT_FOOTBALL_CATALOG_VERSION = index_js_1.FOOTBALL_CATALOG_VERSION;
+exports.PRE_FOOTBALL_CATALOG_VERSION = "pre-football-catalog";
+/**
+ * Input generations whose stable identity space is understood by V2.
+ * PRE is a compatibility generation: load/read never upgrades it implicitly.
+ */
+exports.SUPPORTED_FOOTBALL_CATALOG_VERSIONS = Object.freeze([
+    exports.PRE_FOOTBALL_CATALOG_VERSION,
+    "world-v2-a1-2026-09-28",
+    exports.CURRENT_FOOTBALL_CATALOG_VERSION
+]);
+const SUPPORTED = new Set(exports.SUPPORTED_FOOTBALL_CATALOG_VERSIONS);
+function isSupportedFootballCatalogVersion(value) {
+    return typeof value === "string" && SUPPORTED.has(value);
+}
+/** Read the declared input generation without mutating source data. */
+function footballCatalogVersionOf(value) {
+    if (value === undefined)
+        return exports.PRE_FOOTBALL_CATALOG_VERSION;
+    if (!isSupportedFootballCatalogVersion(value)) {
+        throw new Error(`footballCatalogVersion: versión de catálogo no compatible: ${String(value)}`);
+    }
+    return value;
+}
+/**
+ * Compatibility reader retained for callers that used the original helper name.
+ * This function validates but never migrates. Version changes belong exclusively
+ * to migrateFootballCatalogVersionInPlace.
+ */
+function normalizeFootballCatalogVersion(value) {
+    return footballCatalogVersionOf(value);
+}
+/**
+ * Pure future-migration primitive. It applies only an exact manifest entry.
+ * There is deliberately no matching by name, city, shortName or array position.
+ * A null entry is a tombstone and fails closed instead of inventing a club.
+ */
+function migrateFootballClubReferenceExplicitly(value, mapping) {
+    if (!Object.prototype.hasOwnProperty.call(mapping, value))
+        return value;
+    const replacement = mapping[value];
+    if (replacement === null) {
+        throw new Error(`Football club identity ${value} is tombstoned without replacement`);
+    }
+    const classification = (0, index_js_1.classifyFootballClubReference)(replacement);
+    if (classification.kind !== "catalog" && classification.kind !== "canonical_special") {
+        throw new Error(`Explicit football migration target ${replacement} is not a current football identity`);
+    }
+    return replacement;
+}
+const MIGRATABLE_REFERENCE_KEYS = new Set([
+    "club",
+    "ownerClub",
+    "registrationClub",
+    "clubId",
+    "destination",
+    "opponentClubId"
+]);
+function plainRecord(value) {
+    return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+/**
+ * Apply one explicit identity manifest to every persisted football-reference surface.
+ * The traversal is structural only; it never uses display names or football metadata.
+ */
+function migrateFootballStateReferencesExplicitlyInPlace(state, mapping) {
+    const planned = [];
+    const ancestors = new Set();
+    let nodes = 0;
+    const visit = (value, depth) => {
+        if (++nodes > 300_000 || depth > 64) {
+            throw new Error("Football catalog migration state is too large or deep");
+        }
+        if (value === null || typeof value !== "object")
+            return;
+        if (ancestors.has(value))
+            throw new Error("Football catalog migration state contains a cycle");
+        ancestors.add(value);
+        try {
+            if (Array.isArray(value)) {
+                for (const child of value)
+                    visit(child, depth + 1);
+                return;
+            }
+            if (!plainRecord(value))
+                throw new Error("Football catalog migration encountered a non-plain object");
+            for (const [key, child] of Object.entries(value)) {
+                if (MIGRATABLE_REFERENCE_KEYS.has(key) && typeof child === "string") {
+                    // Validate every manifest entry before mutating any state. A tombstone or
+                    // invalid target therefore fails atomically instead of leaking a half-migration.
+                    const replacement = migrateFootballClubReferenceExplicitly(child, mapping);
+                    if (replacement !== child)
+                        planned.push({ parent: value, key, replacement });
+                }
+                else if (child !== null && typeof child === "object") {
+                    visit(child, depth + 1);
+                }
+            }
+        }
+        finally {
+            ancestors.delete(value);
+        }
+    };
+    visit(state, 0);
+    for (const change of planned)
+        change.parent[change.key] = change.replacement;
+    return planned.length;
+}
+/**
+ * Stable V2 IDs did not change between A1 and A2. Keeping the step explicit means
+ * a future ID change must ship a reviewed manifest instead of a heuristic mapper.
+ */
+exports.FOOTBALL_CATALOG_MIGRATION_STEPS = Object.freeze([
+    Object.freeze({
+        from: "world-v2-a1-2026-09-28",
+        to: exports.CURRENT_FOOTBALL_CATALOG_VERSION,
+        clubIds: Object.freeze({})
+    })
+]);
+function migrateFootballCatalogVersionInPlace(state, targetVersion = exports.CURRENT_FOOTBALL_CATALOG_VERSION) {
+    let version = footballCatalogVersionOf(state.footballCatalogVersion);
+    if (version === exports.PRE_FOOTBALL_CATALOG_VERSION) {
+        throw new Error("Pre-football-catalog saves require an audited explicit legacy manifest before upgrade");
+    }
+    if (!isSupportedFootballCatalogVersion(targetVersion)) {
+        throw new Error(`Unsupported football catalog migration target: ${targetVersion}`);
+    }
+    let changed = false;
+    const visited = new Set();
+    while (version !== targetVersion) {
+        if (visited.has(version))
+            throw new Error(`Football catalog migration cycle at ${version}`);
+        visited.add(version);
+        const step = exports.FOOTBALL_CATALOG_MIGRATION_STEPS.find(row => row.from === version);
+        if (!step)
+            throw new Error(`No explicit football catalog migration path from ${version} to ${targetVersion}`);
+        migrateFootballStateReferencesExplicitlyInPlace(state, step.clubIds);
+        state.footballCatalogVersion = step.to;
+        version = step.to;
+        changed = true;
+    }
+    return changed;
+}
+
+},
+"src/save/football-catalog-reference-validation.ts": function(module,exports,require){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.inspectFootballCatalogSaveReferences = inspectFootballCatalogSaveReferences;
+const index_js_1 = require("../catalog/football/index.js");
+const football_catalog_version_js_1 = require("./football-catalog-version.js");
+function plainRecord(value) {
+    return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+function rows(value) {
+    return Array.isArray(value) ? value : [];
+}
+const NEW_KINDS = ["catalog", "canonical_special"];
+const HISTORICAL_KINDS = ["catalog", "canonical_special", "legacy_compat"];
+function referenceIssue(value, path, allowed) {
+    const classified = (0, index_js_1.classifyFootballClubReference)(value);
+    if (allowed.includes(classified.kind))
+        return null;
+    return {
+        path,
+        reason: `football reference ${classified.value} is ${classified.kind}: ${classified.reason}`
+    };
+}
+const newReference = (value, path) => referenceIssue(value, path, NEW_KINDS);
+const historicalReference = (value, path) => referenceIssue(value, path, HISTORICAL_KINDS);
+function catalogOpponent(value, path) {
+    const classified = (0, index_js_1.classifyFootballClubReference)(value);
+    return classified.kind === "catalog"
+        ? null
+        : { path, reason: `V2 fixture opponent must be catalog identity, got ${classified.kind}: ${classified.value}` };
+}
+function termsIssue(value, path, historical) {
+    if (!plainRecord(value))
+        return null;
+    const inspect = historical ? historicalReference : newReference;
+    for (const key of ["club", "ownerClub", "registrationClub"]) {
+        const issue = inspect(value[key], `${path}.${key}`);
+        if (issue)
+            return issue;
+    }
+    return null;
+}
+function offerIssue(value, path, historical) {
+    if (!plainRecord(value))
+        return null;
+    return termsIssue(value.before, `${path}.before`, historical)
+        ?? termsIssue(value.terms, `${path}.terms`, historical);
+}
+function marketIssue(value) {
+    if (!plainRecord(value))
+        return null;
+    if (value.pending !== null && value.pending !== undefined) {
+        const issue = offerIssue(value.pending, "market.pending", false);
+        if (issue)
+            return issue;
+    }
+    for (const [index, offer] of rows(value.openOffers).entries()) {
+        const issue = offerIssue(offer, `market.openOffers[${index}]`, false);
+        if (issue)
+            return issue;
+    }
+    for (const [index, decision] of rows(value.history).entries()) {
+        if (!plainRecord(decision))
+            continue;
+        const issue = offerIssue(decision.offer, `market.history[${index}].offer`, true);
+        if (issue)
+            return issue;
+    }
+    for (const [index, closure] of rows(value.systemClosures).entries()) {
+        if (!plainRecord(closure))
+            continue;
+        const issue = offerIssue(closure.offer, `market.systemClosures[${index}].offer`, true);
+        if (issue)
+            return issue;
+    }
+    for (const [index, negotiation] of rows(value.futureNegotiations).entries()) {
+        if (!plainRecord(negotiation))
+            continue;
+        const destination = newReference(negotiation.destination, `market.futureNegotiations[${index}].destination`);
+        if (destination)
+            return destination;
+        const before = termsIssue(negotiation.before, `market.futureNegotiations[${index}].before`, false);
+        if (before)
+            return before;
+        const terms = termsIssue(negotiation.terms, `market.futureNegotiations[${index}].terms`, false);
+        if (terms)
+            return terms;
+    }
+    for (const [index, agreement] of rows(value.futureAgreements).entries()) {
+        if (!plainRecord(agreement))
+            continue;
+        const issue = termsIssue(agreement.terms, `market.futureAgreements[${index}].terms`, false);
+        if (issue)
+            return issue;
+    }
+    return null;
+}
+function historicalIssue(state) {
+    for (const [index, entry] of rows(state.history).entries()) {
+        if (!plainRecord(entry))
+            continue;
+        const issue = historicalReference(entry.club, `history[${index}].club`);
+        if (issue)
+            return issue;
+    }
+    for (const [index, milestone] of rows(state.ageMilestones).entries()) {
+        if (!plainRecord(milestone))
+            continue;
+        const issue = historicalReference(milestone.club, `ageMilestones[${index}].club`);
+        if (issue)
+            return issue;
+    }
+    if (plainRecord(state.employment) && plainRecord(state.employment.previous)) {
+        for (const key of ["club", "ownerClub", "registrationClub"]) {
+            const issue = historicalReference(state.employment.previous[key], `employment.previous.${key}`);
+            if (issue)
+                return issue;
+        }
+    }
+    for (const [npcIndex, npc] of rows(state.npcs).entries()) {
+        if (!plainRecord(npc) || !plainRecord(npc.knowledge))
+            continue;
+        for (const [factId, fact] of Object.entries(npc.knowledge)) {
+            if (!plainRecord(fact))
+                continue;
+            const issue = historicalReference(fact.club, `npcs[${npcIndex}].knowledge.${factId}.club`);
+            if (issue)
+                return issue;
+        }
+    }
+    return null;
+}
+function worldIssue(world) {
+    const matchStore = plainRecord(world.sportMatchModel) ? world.sportMatchModel : null;
+    if (matchStore) {
+        for (const [index, fixture] of rows(matchStore.fixtures).entries()) {
+            if (!plainRecord(fixture))
+                continue;
+            const club = historicalReference(fixture.club, `world.sportMatchModel.fixtures[${index}].club`);
+            if (club)
+                return club;
+            if (fixture.opponentClubId !== undefined) {
+                const opponent = catalogOpponent(fixture.opponentClubId, `world.sportMatchModel.fixtures[${index}].opponentClubId`);
+                if (opponent)
+                    return opponent;
+            }
+        }
+        if (plainRecord(matchStore.objective)) {
+            const issue = newReference(matchStore.objective.club, "world.sportMatchModel.objective.club");
+            if (issue)
+                return issue;
+        }
+    }
+    const competition = plainRecord(world.sportCompetitionMoments) ? world.sportCompetitionMoments : null;
+    if (competition)
+        for (const [index, moment] of rows(competition.moments).entries()) {
+            if (!plainRecord(moment))
+                continue;
+            const issue = newReference(moment.club, `world.sportCompetitionMoments.moments[${index}].club`);
+            if (issue)
+                return issue;
+        }
+    const penalties = plainRecord(world.sportPenaltySetups) ? world.sportPenaltySetups : null;
+    if (penalties)
+        for (const [index, setup] of rows(penalties.contexts).entries()) {
+            if (!plainRecord(setup))
+                continue;
+            const issue = newReference(setup.club, `world.sportPenaltySetups.contexts[${index}].club`);
+            if (issue)
+                return issue;
+        }
+    for (const [index, approach] of rows(world.veteranMarketApproaches).entries()) {
+        if (!plainRecord(approach))
+            continue;
+        const issue = newReference(approach.club, `world.veteranMarketApproaches[${index}].club`);
+        if (issue)
+            return issue;
+    }
+    const leadership = plainRecord(world.playerClubLeadershipAuthority) ? world.playerClubLeadershipAuthority : null;
+    if (leadership) {
+        if (plainRecord(leadership.currentLeadership)) {
+            const issue = newReference(leadership.currentLeadership.clubId, "world.playerClubLeadershipAuthority.currentLeadership.clubId");
+            if (issue)
+                return issue;
+        }
+        for (const [index, row] of rows(leadership.history).entries()) {
+            if (!plainRecord(row))
+                continue;
+            const issue = historicalReference(row.clubId, `world.playerClubLeadershipAuthority.history[${index}].clubId`);
+            if (issue)
+                return issue;
+        }
+        if (plainRecord(leadership.successor)) {
+            const issue = newReference(leadership.successor.clubId, "world.playerClubLeadershipAuthority.successor.clubId");
+            if (issue)
+                return issue;
+        }
+    }
+    const coachChanges = plainRecord(world.coachChangeAuthority) ? world.coachChangeAuthority : null;
+    if (coachChanges)
+        for (const [index, row] of rows(coachChanges.history).entries()) {
+            if (!plainRecord(row))
+                continue;
+            const issue = historicalReference(row.clubId, `world.coachChangeAuthority.history[${index}].clubId`);
+            if (issue)
+                return issue;
+        }
+    const injuries = plainRecord(world.injuryEpisodes) ? world.injuryEpisodes : null;
+    if (injuries)
+        for (const [index, episode] of rows(injuries.episodes).entries()) {
+            if (!plainRecord(episode))
+                continue;
+            const issue = newReference(episode.registrationClub, `world.injuryEpisodes.episodes[${index}].registrationClub`);
+            if (issue)
+                return issue;
+        }
+    return null;
+}
+function playerActionsIssue(value) {
+    if (!plainRecord(value))
+        return null;
+    for (const [index, fact] of rows(value.facts).entries()) {
+        if (!plainRecord(fact) || !plainRecord(fact.payload) || fact.payload.club === undefined)
+            continue;
+        const issue = newReference(fact.payload.club, `playerActions.facts[${index}].payload.club`);
+        if (issue)
+            return issue;
+    }
+    return null;
+}
+const COMPATIBILITY_REFERENCE_KEYS = new Set([
+    "club",
+    "ownerClub",
+    "registrationClub",
+    "clubId",
+    "destination"
+]);
+function compatibilityGenerationIssue(value) {
+    let nodes = 0;
+    const ancestors = new Set();
+    const visit = (node, path, depth) => {
+        if (++nodes > 300_000 || depth > 64) {
+            return { path, reason: "football reference graph is too large or deep" };
+        }
+        if (node === null || typeof node !== "object")
+            return null;
+        if (ancestors.has(node))
+            return { path, reason: "football reference graph contains a cycle" };
+        ancestors.add(node);
+        try {
+            if (Array.isArray(node)) {
+                for (let index = 0; index < node.length; index += 1) {
+                    const issue = visit(node[index], `${path}[${index}]`, depth + 1);
+                    if (issue)
+                        return issue;
+                }
+                return null;
+            }
+            if (!plainRecord(node))
+                return { path, reason: "football reference graph contains a non-plain object" };
+            for (const [key, child] of Object.entries(node)) {
+                const childPath = path ? `${path}.${key}` : key;
+                if (COMPATIBILITY_REFERENCE_KEYS.has(key) && child !== null && child !== undefined) {
+                    const issue = historicalReference(child, childPath);
+                    if (issue)
+                        return issue;
+                }
+                else if (key === "opponentClubId" && child !== null && child !== undefined) {
+                    const issue = catalogOpponent(child, childPath);
+                    if (issue)
+                        return issue;
+                }
+                if (child !== null && typeof child === "object") {
+                    const issue = visit(child, childPath, depth + 1);
+                    if (issue)
+                        return issue;
+                }
+            }
+            return null;
+        }
+        finally {
+            ancestors.delete(node);
+        }
+    };
+    return visit(value, "", 0);
+}
+/**
+ * Referential integrity is intentionally version-gated. Missing/pre-catalog saves
+ * retain frozen legacy semantics; current V2 saves fail closed on every active/new
+ * football identity while historical provenance may retain explicit legacy IDs.
+ */
+function inspectFootballCatalogSaveReferences(value) {
+    if (!plainRecord(value))
+        return null;
+    const version = (0, football_catalog_version_js_1.footballCatalogVersionOf)(value.footballCatalogVersion);
+    if (version === football_catalog_version_js_1.PRE_FOOTBALL_CATALOG_VERSION)
+        return null;
+    if (version !== football_catalog_version_js_1.CURRENT_FOOTBALL_CATALOG_VERSION)
+        return compatibilityGenerationIssue(value);
+    const professional = plainRecord(value.professional) ? value.professional : {};
+    const world = plainRecord(value.world) ? value.world : {};
+    for (const [path, reference] of [
+        ["club", value.club],
+        ["professional.ownerClub", professional.ownerClub],
+        ["professional.registrationClub", professional.registrationClub],
+        ["world.ownerClub", world.ownerClub]
+    ]) {
+        const issue = newReference(reference, path);
+        if (issue)
+            return issue;
+    }
+    for (const [index, npc] of rows(value.npcs).entries()) {
+        if (!plainRecord(npc) || npc.club === null || npc.club === undefined)
+            continue;
+        const issue = newReference(npc.club, `npcs[${index}].club`);
+        if (issue)
+            return issue;
+    }
+    return historicalIssue(value)
+        ?? marketIssue(value.market)
+        ?? worldIssue(world)
+        ?? playerActionsIssue(value.playerActions);
 }
 
 },

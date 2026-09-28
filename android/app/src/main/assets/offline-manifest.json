@@ -21,8 +21,8 @@
   "files": [
     {
       "path": "dist/build-manifest.json",
-      "bytes": 45297,
-      "sha256": "b828420f47c3b8fd74f070cdcf83c6c0a082b3cf125f7c17d8aa97c3572d9f41"
+      "bytes": 45773,
+      "sha256": "b29e107b17de3bd81aef8573370075a1001e82721a6dd4a7ff9d8cff5acd3113"
     },
     {
       "path": "dist/catalog/canon-coverage.d.ts",
@@ -1430,6 +1430,26 @@
       "sha256": "b5b79c387f7e3ef36e74311903a23482991cc9d457c1f878dd2422ba508da974"
     },
     {
+      "path": "dist/save/football-catalog-reference-validation.d.ts",
+      "bytes": 461,
+      "sha256": "62804cee3e756a7684afd9b8c67fe929f0483d618e16a4d0fd47f0d282b24274"
+    },
+    {
+      "path": "dist/save/football-catalog-reference-validation.js",
+      "bytes": 13300,
+      "sha256": "376b4be336189b9890c1dd74ce7db659f6b1e1106b0e38ad5a1d6c2e0178b23c"
+    },
+    {
+      "path": "dist/save/football-catalog-version.d.ts",
+      "bytes": 2353,
+      "sha256": "3d1c33e84c4c5d97988b6ce9cf3c3530a2f05adaf1866f7279aa911830a89c13"
+    },
+    {
+      "path": "dist/save/football-catalog-version.js",
+      "bytes": 6190,
+      "sha256": "16d241f58fdc939011924839ce447a5bd12a3fd71cda0fdb3166cac243f1430e"
+    },
+    {
       "path": "dist/save/save.d.ts",
       "bytes": 241,
       "sha256": "e2e68039e6e6985d98cb1a3a93df472763167766176801581a63a6a8c7f1e52e"
@@ -1466,8 +1486,8 @@
     },
     {
       "path": "dist/save/validation.js",
-      "bytes": 12533,
-      "sha256": "f7f88705465a2e7a2f40e67141253b1ab11ea3422aa056103d7a73fbc46ac28c"
+      "bytes": 6526,
+      "sha256": "62521aa2b823267c075a45cdc627894c39c5f1d1fc0aec89b158e3059889f04f"
     },
     {
       "path": "dist/session/auto-simulation.d.ts",
