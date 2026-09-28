@@ -7,12 +7,14 @@ import {fixtureById} from './fixtures.mjs';
 const command=(session,type,extra={})=>({type,commandId:'muir-'+type+'-'+session.getView().revision,expectedRevision:session.getView().revision,...extra});
 
 async function initial(f){return GameSession.create(f.seed,{sessionId:'muir-'+f.id,microfeeds:false});}
-async function decision(f){
-  const event=structuredClone(EVENTS.find(row=>row.id==='EVT_18_PRE_001'));
-  if(!event)throw Error('Canonical decision fixture event missing');
+async function decisionForEvent(f,eventId){
+  const event=structuredClone(EVENTS.find(row=>row.id===eventId));
+  if(!event)throw Error('Canonical decision fixture event missing: '+eventId);
   const s=await GameSession.create(f.seed,{events:[event],microfeeds:false,sessionId:'muir-'+f.id});
   await s.dispatch(command(s,'continue')); return s;
 }
+async function decision(f){return decisionForEvent(f,'EVT_18_PRE_001');}
+async function cinematicDecision(f){return decisionForEvent(f,'EVT_18_MATCH_001');}
 async function result(f){
   const s=await decision(f),v=s.getView();
   await s.dispatch(command(s,'choose',{pendingInstanceId:v.decision.instanceId,choiceId:v.decision.choices[0].id}));
@@ -78,9 +80,8 @@ export async function buildFixtureSession(id){
     case 'player-actions-result': return initial(f);
     case 'offer': return offer(f);
     case 'important-injury': return importantInjury(f);
-    // Visual-only recipes need the browser adapter to force missing-media/final-career presentation.
-    // They intentionally fail closed here instead of fabricating PlayerView fields.
-    case 'cinematic-missing-asset': throw Error(f.recipe+' requires dedicated browser adapter; not yet certified');
+    // Real canonical decision with a real public cutscene. The browser harness only overrides its media URL to a missing asset.
+    case 'cinematic-missing-asset': return cinematicDecision(f);
     case 'retirement': {
       let s=await GameSession.create(f.seed,{events:[],microfeeds:false,sessionId:'muir-'+f.id});
       const snapshot=s.exportSnapshot();
