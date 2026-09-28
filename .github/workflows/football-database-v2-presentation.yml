@@ -44,6 +44,15 @@ jobs:
         run: npm run test:football-presentation
       - name: Confirm Android package has no missing relative modules
         run: node --test scripts/test-football-presentation-platforms.mjs
+      - name: Preserve generated PlayCanvas artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: db-a5-generated-playcanvas
+          path: |
+            playcanvas/multihistoria.js
+            playcanvas/manifest.json
+            web/assets.json
+          if-no-files-found: error
       - name: Attempt Android APK assemble
         shell: bash
         run: |
