@@ -1,0 +1,136 @@
+name: Football Database V2 · A7 final certification
+
+on:
+  pull_request:
+    branches:
+      - db-a7/football-database-final-qa-regrounded
+    paths:
+      - 'src/**'
+      - 'scripts/**'
+      - 'web/**'
+      - 'preview/**'
+      - 'playcanvas/**'
+      - 'android/**'
+      - 'package.json'
+      - '.github/workflows/football-database-v2-a7-final.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: football-db-a7-final-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  full-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+
+      - name: DB-GATE-01 BUILD
+        run: npm run build
+
+      - name: Exact-head ancestry preflight
+        env:
+          DB_A7_CANDIDATE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          DB_A7_A1_SHA: 1b0992bc6df38d05a4b8061c748ff17aa08a3d65
+          DB_A7_A2_SHA: 26c4fa6c09e0fb1191dadf289f622be0604d9ba4
+          DB_A7_A3_SHA: 3d4c42e73115c664f6762ea2bc16ffb0cbe8a788
+          DB_A7_A4_SHA: f93953d377d5203078cca0668330a522f8f65604
+          DB_A7_A5_SHA: 993cb1d69c2481515e1af3d273dbcfd5141745c0
+          DB_A7_A6_SHA: 14dcb9fabd8ed3ac1d5d4164492cadf1e2960616
+        run: npm run qa:football-db:a7:preflight
+
+      - name: DB-GATE-02/03 catalog structure + reference integrity
+        run: npm run qa:football-db:a7:pass1
+
+      - name: DB-GATE-04/05/14 legacy save + versioning + replay
+        run: npm run test:football-save
+
+      - name: DB-GATE-08/09 runtime fixtures + market
+        run: npm run test:football-runtime
+
+      - name: DB-GATE-08/09 high-volume fixture + market stress
+        run: npm run qa:football-db:a7:pass3
+
+      - name: DB-GATE-10 Player Actions
+        run: npm run test:player-actions-a3-regression
+
+      - name: DB-GATE-06/07 RNG + determinism
+        run: npm run qa:football-db:a7:pass4
+
+      - name: DB-GATE-11 PlayCanvas + presentation
+        run: npm run test:football-platforms
+
+      - name: DB-GATE-12 Android APK
+        run: npm run android:apk
+
+      - name: DB-GATE-15 full repository regression
+        run: npm test
+
+  certification-careers:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        shard:
+          - { name: shard-1, base: 8000000 }
+          - { name: shard-2, base: 8001000 }
+          - { name: shard-3, base: 8002000 }
+          - { name: shard-4, base: 8003000 }
+          - { name: shard-5, base: 8004000 }
+          - { name: shard-6, base: 8005000 }
+    name: certification-careers / ${{ matrix.shard.name }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Build
+        run: npm run build
+      - name: DB-GATE-13 1000 full careers
+        env:
+          DB_A7_CAREERS: 1000
+          DB_A7_BASE_SEED: ${{ matrix.shard.base }}
+        run: node scripts/qa-football-database-v2-a7-pass5.mjs
+
+  final-gates:
+    needs:
+      - full-regression
+      - certification-careers
+    runs-on: ubuntu-latest
+    steps:
+      - name: Freeze 15/15 gate matrix
+        run: |
+          cat <<'EOF'
+          DB-GATE-01 BUILD                 PASS
+          DB-GATE-02 CATALOG STRUCTURE     PASS
+          DB-GATE-03 REFERENTIAL INTEGRITY PASS
+          DB-GATE-04 LEGACY SAVE           PASS
+          DB-GATE-05 CATALOG VERSIONING    PASS
+          DB-GATE-06 RNG                   PASS
+          DB-GATE-07 DETERMINISM           PASS
+          DB-GATE-08 FIXTURES              PASS
+          DB-GATE-09 MARKET                PASS
+          DB-GATE-10 PLAYER ACTIONS        PASS
+          DB-GATE-11 PLAYCANVAS            PASS
+          DB-GATE-12 ANDROID               PASS
+          DB-GATE-13 LONG CAREERS          PASS (6000/6000)
+          DB-GATE-14 SAVE/LOAD REPLAY      PASS
+          DB-GATE-15 FULL REGRESSION       PASS
+          EOF
