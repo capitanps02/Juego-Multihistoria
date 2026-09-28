@@ -262,12 +262,12 @@ test("all active narrative aliases project deterministically to catalog identiti
     const a = materializeNarrativeClubAlias(state, alias, {
       eventId: "QA_ALIAS_EVENT",
       choiceId: "QA",
-      targetTier: alias === "BIG_CLUB" ? 1 : 3
+      targetTier: alias === "BIG_CLUB" ? 1 : alias === "HIGHER_CLUB" ? 2 : 3
     });
     const b = materializeNarrativeClubAlias(state, alias, {
       eventId: "QA_ALIAS_EVENT",
       choiceId: "QA",
-      targetTier: alias === "BIG_CLUB" ? 1 : 3
+      targetTier: alias === "BIG_CLUB" ? 1 : alias === "HIGHER_CLUB" ? 2 : 3
     });
     assert.equal(a, b, alias);
     const club = clubById(a);
@@ -366,7 +366,9 @@ test("BIG_CLUB selector obeys the exact A2 contract instead of an ambitious perc
     );
     seen.add(club.id);
   }
-  assert.ok(seen.size >= 2, "BIG_CLUB selector should address more than one eligible club");
+  const eligible = clubsForCountry("ESP").filter(isBigClubCandidate);
+  assert.ok(eligible.length >= 1, "A2 must expose at least one Spanish BIG_CLUB candidate");
+  assert.equal(seen.size, eligible.length, "deterministic rolls should address the complete eligible Spanish BIG_CLUB pool");
 });
 
 test("HIGHER_CLUB selector proves relative improvement under the A2 contract", () => {
