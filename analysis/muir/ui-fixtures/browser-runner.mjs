@@ -83,14 +83,12 @@ if(fixture.recipe==='player-actions-menu')await clickText('Gestionar mi carrera'
 if(fixture.recipe==='player-actions-category'){await clickText('Gestionar mi carrera');await clickText('Ver acciones');}
 if(fixture.recipe==='player-actions-detail'){await clickText('Gestionar mi carrera');await clickText('Ver acciones');await clickText('Abrir');}
 if(fixture.recipe==='player-actions-result'){
-  // Reproduce the ephemeral UI result through real player interaction.
+  // Reproduce a known target-free action through real UI navigation.
   // Do not synthesize private playerActionUi state.
   await clickText('Gestionar mi carrera');
-  await clickText('Ver acciones');
-  await clickText('Abrir');
-  const actionButton=[...root.querySelectorAll('button')].find(b=>!b.disabled&&['Trabajo técnico','Trabajo físico','Sesión extra'].includes(b.textContent.trim()));
-  if(!actionButton)throw Error('No deterministic executable Player Action option found');
-  actionButton.click();
+  await clickCardButton('Entrenamiento','Ver acciones');
+  await clickCardButton('Entrenamiento extra','Abrir');
+  await clickText('Trabajo técnico');
   await settle();
 }
 
