@@ -31,10 +31,8 @@ const browser=await chromium.launch({headless:true});
 const browserVersion=browser.version();
 const phoneIds=new Set(['phone-360','phone-primary','phone-412']);
 const auxFixtureIds=new Set(['home-normal','result','player-actions-menu']);
-const excludedFixtureIds=new Set(['cinematic-fallback']);
 const targets=[];
 for(const fixture of MUIR_FIXTURES){
-  if(excludedFixtureIds.has(fixture.id))continue;
   for(const viewport of MUIR_VIEWPORTS){
     if(phoneIds.has(viewport.id)||auxFixtureIds.has(fixture.id))targets.push({fixture,viewport});
   }
@@ -68,7 +66,7 @@ for(const {fixture,viewport} of targets){
 await browser.close();
 server.close();
 
-const phoneCount=(MUIR_FIXTURES.length-excludedFixtureIds.size)*3;
+const phoneCount=MUIR_FIXTURES.length*3;
 const renderSamples=records.flatMap(row=>row.metrics?.render?.samplesMs??[]).filter(Number.isFinite).sort((a,b)=>a-b);
 const percentile=p=>renderSamples.length?renderSamples[Math.min(renderSamples.length-1,Math.ceil(renderSamples.length*p)-1)]:null;
 const report={
@@ -79,7 +77,7 @@ const report={
   targetCount:targets.length,
   expectedPhoneCaptures:phoneCount,
   captured:records.length,
-  skipped:[{fixtureId:'cinematic-fallback',status:'N/A_JUSTIFIED',reason:'The fixture remains fail-closed until a real cutscene-bearing public view is reproducible; K-02 source/package probes cover the missing/fallback path without fabricating PlayerView state.'}],
+  skipped:[],
   errors,
   aggregate:{
     renderSampleCount:renderSamples.length,
@@ -105,7 +103,7 @@ for(const viewport of baseline.viewports??[]){
   else viewport.status=capturedForViewport>0?'CHECKED':'MISSING';
 }
 baseline.status=errors.length?'BLOCKED':'READY_FOR_GATE';
-baseline.screenshots={...baseline.screenshots,status:errors.length?'CAPTURE_FAILED':'CAPTURED',count:records.length,skippedNATargets:report.skipped.length,evidence:'analysis/muir/evidence/browser-baseline.json'};
+baseline.screenshots={...baseline.screenshots,status:errors.length?'CAPTURE_FAILED':'CAPTURED',count:records.length,skippedNATargets:0,evidence:'analysis/muir/evidence/browser-baseline.json'};
 baseline.performance={...baseline.performance,
   renderP50Ms:report.aggregate.renderP50Ms,
   renderP95Ms:report.aggregate.renderP95Ms,
