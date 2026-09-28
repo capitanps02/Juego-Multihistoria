@@ -379,6 +379,54 @@ test("catalog exposes no real-club equivalence field", () => {
 });
 
 
+test("G6 duplicate-like generated names are explicitly disambiguated", () => {
+  assert.equal(clubById("ENG_CHESTER")?.name, "Chester Crown");
+  assert.equal(clubById("CHN_GUANGZHOU")?.name, "Guangzhou Jade");
+
+  const normalize = value => value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+
+  const bigramCounts = value => {
+    const normalized = ` ${normalize(value)} `;
+    const counts = new Map();
+    for (let index = 0; index < normalized.length - 1; index += 1) {
+      const pair = normalized.slice(index, index + 2);
+      counts.set(pair, (counts.get(pair) ?? 0) + 1);
+    }
+    return counts;
+  };
+
+  const signatures = FOOTBALL_CLUBS.map(club => ({
+    club,
+    grams: bigramCounts(club.name)
+  }));
+
+  const similarity = (left, right) => {
+    let overlap = 0;
+    let total = 0;
+    for (const count of left.values()) total += count;
+    for (const count of right.values()) total += count;
+    for (const [pair, count] of left) overlap += Math.min(count, right.get(pair) ?? 0);
+    return total === 0 ? 0 : (2 * overlap) / total;
+  };
+
+  for (let leftIndex = 0; leftIndex < signatures.length; leftIndex += 1) {
+    for (let rightIndex = leftIndex + 1; rightIndex < signatures.length; rightIndex += 1) {
+      const left = signatures[leftIndex];
+      const right = signatures[rightIndex];
+      const score = similarity(left.grams, right.grams);
+      assert.ok(
+        score < 0.84,
+        `duplicate-like club names: ${left.club.name} / ${right.club.name} (${score.toFixed(3)})`
+      );
+    }
+  }
+});
+
 test("G6 long club names use explicit human-reviewed mobile labels", () => {
   const expected = new Map(Object.entries({
     "Wolverhampton Riverside": "W'hampton Riverside",
