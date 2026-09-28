@@ -7,6 +7,9 @@ on:
       - 'analysis/muir/**'
       - 'scripts/test-muir-*.mjs'
       - 'scripts/build-muir-evidence.mjs'
+      - 'scripts/capture-muir-browser.mjs'
+      - 'scripts/measure-muir-bundles.mjs'
+      - '.github/workflows/muir-p0-certification.yml'
       - 'scripts/build-android-offline.mjs'
       - 'scripts/test-android-offline.mjs'
       - 'web/**'
@@ -21,7 +24,7 @@ concurrency:
 jobs:
   certify:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -45,6 +48,9 @@ jobs:
       - name: MUIR package graph
         if: always()
         run: node --test scripts/test-muir-package-graph.mjs
+      - name: Event cutscene assets
+        if: always()
+        run: node --test scripts/test-event-cutscenes.mjs
       - name: Session
         if: always()
         run: npm run test:session
