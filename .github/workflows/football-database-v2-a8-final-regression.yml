@@ -27,7 +27,7 @@ jobs:
 
       - name: Catalog structure, referential integrity and balance
         run: |
-          node --test             scripts/test-football-catalog.mjs             scripts/test-football-v2-integrity.mjs             scripts/test-football-catalog-balance.mjs
+          node --test             scripts/test-football-catalog.mjs             scripts/test-football-v2-integrity.mjs             scripts/test-football-v2-balance.mjs
 
       - name: Fixtures
         run: |
