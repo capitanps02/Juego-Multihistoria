@@ -32,7 +32,7 @@ async function cinematicDecision(f){
   const event=structuredClone(EVENTS.find(row=>row.id==='EVT_18_MATCH_001'));
   if(!event)throw Error('Canonical cinematic fixture event missing: EVT_18_MATCH_001');
   const seed=canonicalDebutSeed();
-  const base=await GameSession.create(seed,{events:[],microfeeds:false,sessionId:'muir-'+f.id});
+  const base=await GameSession.create(seed,{events:[event],microfeeds:false,sessionId:'muir-'+f.id});
   const snapshot=base.exportSnapshot();
   snapshot.state.date='2026-08-05';
   snapshot.state.runtime.day=35;
