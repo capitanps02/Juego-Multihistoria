@@ -5,6 +5,13 @@ import {MUIR_BASE_SHA,MUIR_VIEWPORTS,fixtureById} from '/analysis/muir/ui-fixtur
 import {buildFixtureSession} from '/analysis/muir/ui-fixtures/session-recipes.mjs';
 
 const params=new URLSearchParams(location.search);
+const perf={renderSamples:[],longTasks:[],focusChanges:0,scrollEvents:0,startedAt:performance.now()};
+let lastFocus=document.activeElement;
+document.addEventListener('focusin',()=>{perf.focusChanges++;lastFocus=document.activeElement;},{capture:true});
+addEventListener('scroll',()=>{perf.scrollEvents++;},{capture:true,passive:true});
+if(globalThis.PerformanceObserver){
+  try{const po=new PerformanceObserver(list=>{for(const e of list.getEntries())perf.longTasks.push({startTime:e.startTime,duration:e.duration});});po.observe({type:'longtask',buffered:true});}catch{}
+}
 const fixtureId=params.get('fixture')||'home-normal';
 const fixture=fixtureById(fixtureId);
 const viewport=params.get('viewport')||'phone-primary';
@@ -40,7 +47,9 @@ const cutsceneUrl=clip=>{
   return '/web/assets/cutscenes/'+clip.file;
 };
 
+const mountStarted=performance.now();
 mountGame({root,GameSession,assets,css:deterministicCss,storageKey,cutsceneUrl});
+perf.renderSamples.push(performance.now()-mountStarted);
 
 // Navigation is performed through the same buttons a player uses.
 async function clickText(text){
@@ -83,6 +92,40 @@ if(fixture.recipe==='player-actions-result'){
   await settle();
 }
 
+const q=s=>[...root.querySelectorAll(s)];
+const rect=n=>{const r=n.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height,bottom:r.bottom,right:r.right};};
+const buttons=q('button');
+const touchTargets=buttons.map(b=>({text:b.textContent.trim().slice(0,80),disabled:b.disabled,...rect(b)}));
+const undersizedTouchTargets=touchTargets.filter(x=>!x.disabled&&(x.width<44||x.height<44));
+const heroNode=root.querySelector('.hero');
+const primaryCta=buttons.find(b=>b.classList.contains('primary'));
+const navNode=root.querySelector('.navigation');
+const mainNode=root.querySelector('main');
+const allNodes=q('*');
+const overflowX=allNodes.filter(n=>n.scrollWidth>n.clientWidth+1).slice(0,50).map(n=>({tag:n.tagName,className:n.className,clientWidth:n.clientWidth,scrollWidth:n.scrollWidth}));
+const navStyles=navNode?getComputedStyle(navNode):null;
+const navButtons=q('.nav-button');
+const navTypography=navButtons[0]?(()=>{const s=getComputedStyle(navButtons[0]);return {fontFamily:s.fontFamily,fontSize:s.fontSize,fontWeight:s.fontWeight,lineHeight:s.lineHeight};})():null;
+const renderSorted=[...perf.renderSamples].sort((a,b)=>a-b);
+const percentile=p=>renderSorted.length?renderSorted[Math.min(renderSorted.length-1,Math.ceil(renderSorted.length*p)-1)]:null;
+const metrics={
+  capturedAt:new Date().toISOString(),
+  elapsedMs:performance.now()-perf.startedAt,
+  domNodes:allNodes.length,
+  render:{samplesMs:renderSorted,p50Ms:percentile(.5),p95Ms:percentile(.95),count:renderSorted.length},
+  longTasks:perf.longTasks,
+  focusChanges:perf.focusChanges,
+  scrollEvents:perf.scrollEvents,
+  hero:heroNode?rect(heroNode):null,
+  firstPrimaryCta:primaryCta?{text:primaryCta.textContent.trim(),...rect(primaryCta)}:null,
+  main:mainNode?{...rect(mainNode),scrollHeight:mainNode.scrollHeight,clientHeight:mainNode.clientHeight,scrollTop:mainNode.scrollTop}:null,
+  nav:navNode?{...rect(navNode),position:navStyles.position,paddingBottom:navStyles.paddingBottom}:null,
+  navTypography,
+  touchTargets,
+  undersizedTouchTargets,
+  overflowX
+};
+globalThis.__MUIR_METRICS__=metrics;
 globalThis.__MUIR_READY__={
   baseSha:MUIR_BASE_SHA,
   fixtureId,
