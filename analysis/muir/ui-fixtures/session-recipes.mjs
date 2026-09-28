@@ -63,6 +63,28 @@ async function importantInjury(f){
   throw Error('Important-injury fixture did not materialize');
 }
 
+export function fixtureEventCatalog(id){
+  const f=fixtureById(id);
+  switch(f.recipe){
+    case 'pending-decision':
+    case 'result':
+    case 'auto-interruption': {
+      const event=EVENTS.find(row=>row.id==='EVT_18_PRE_001');
+      if(!event)throw Error('Canonical fixture event missing: EVT_18_PRE_001');
+      return [structuredClone(event)];
+    }
+    case 'auto-running':
+    case 'auto-paused':
+    case 'period-summary':
+    case 'offer':
+    case 'important-injury':
+    case 'retirement':
+      return [];
+    default:
+      return structuredClone(EVENTS);
+  }
+}
+
 export async function buildFixtureSession(id){
   const f=fixtureById(id);
   switch(f.recipe){
