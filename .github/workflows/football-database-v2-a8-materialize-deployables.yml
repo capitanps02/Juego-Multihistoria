@@ -1,0 +1,81 @@
+name: Football Database V2 · A8 materialize deployables
+
+on:
+  push:
+    branches: ["db-a8/football-database-v2-release-main2"]
+    paths:
+      - '.github/workflows/football-database-v2-a8-materialize-deployables.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Regenerate approved deployables
+        run: |
+          npm run build:playcanvas
+          npm run android:offline
+          node --test scripts/test-playcanvas.mjs scripts/test-android-offline.mjs scripts/test-club-names.mjs
+          node scripts/generate-club-catalog-names.mjs --check
+
+      - name: Stage only A8-owned deployables
+        run: |
+          git add -A -- \
+            playcanvas/multihistoria.js \
+            playcanvas/manifest.json \
+            android/app/src/main/assets \
+            web/assets.json \
+            web/club-catalog-names.js \
+            web/club-names.js
+
+          staged="$(git diff --cached --name-only)"
+          if [ -z "$staged" ]; then
+            echo "Deployables already fresh."
+            exit 0
+          fi
+
+          echo "$staged"
+          if echo "$staged" | grep -Ev '^(playcanvas/(multihistoria\.js|manifest\.json)|android/app/src/main/assets/|web/(assets\.json|club-catalog-names\.js|club-names\.js))$'; then
+            echo "Disallowed staged path detected."
+            exit 1
+          fi
+
+      - name: Commit with concurrency guard
+        run: |
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+
+          git fetch origin "db-a8/football-database-v2-release-main2"
+          remote_before="$(git rev-parse FETCH_HEAD)"
+          if [ "$remote_before" != "$GITHUB_SHA" ]; then
+            echo "Branch advanced concurrently: $remote_before != $GITHUB_SHA"
+            exit 1
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "DB-A8: refresh generated release deployables"
+
+          git fetch origin "db-a8/football-database-v2-release-main2"
+          remote_after="$(git rev-parse FETCH_HEAD)"
+          if [ "$remote_after" != "$GITHUB_SHA" ]; then
+            echo "Branch advanced before push: $remote_after != $GITHUB_SHA"
+            exit 1
+          fi
+
+          git push origin "HEAD:db-a8/football-database-v2-release-main2"
