@@ -377,3 +377,88 @@ test("catalog exposes no real-club equivalence field", () => {
     }
   }
 });
+
+
+test("G6 long club names use explicit human-reviewed mobile labels", () => {
+  const expected = new Map(Object.entries({
+    "Wolverhampton Riverside": "W'hampton Riverside",
+    "Clermont-Ferrand Étoile": "Clermont Étoile",
+    "Castelo Branco Navegante": "C. Branco Navegante",
+    "Viana do Castelo Ribeira": "Viana Castelo Ribeira",
+    "Alphen aan den Rijn Noord": "Alphen Rijn Noord",
+    "Ciudad de México Estrella": "México Estrella",
+    "San Miguel de Tucumán Plata": "Tucumán Plata",
+    "Santiago del Estero Central": "Sgo. Estero Central",
+    "San Salvador de Jujuy Cóndor": "Jujuy Cóndor",
+    "Comodoro Rivadavia Horizonte": "C. Rivadavia Horizonte",
+    "Pietermaritzburg Plains": "PMB Plains"
+  }));
+
+  const longNames = FOOTBALL_CLUBS.filter(club => club.name.length > 22);
+  assert.equal(longNames.length, expected.size);
+
+  for (const club of longNames) {
+    assert.equal(club.shortName, expected.get(club.name), club.name);
+    assert.ok(club.shortName.length <= 22, club.name);
+    assert.notEqual(club.shortName, club.name.slice(0, 22), club.name);
+  }
+});
+
+test("G6 existing catalog identities remain byte-for-byte stable", () => {
+  function fnv1a(value) {
+    let hash = 2166136261;
+    for (let index = 0; index < value.length; index += 1) {
+      hash ^= value.charCodeAt(index);
+      hash = Math.imul(hash, 16777619);
+    }
+    return (hash >>> 0).toString(16).padStart(8, "0");
+  }
+
+  const ids = FOOTBALL_CLUBS.map(club => club.id).sort();
+  assert.equal(ids.length, 528);
+  assert.equal(fnv1a(ids.join("\n")), "0de3b9f6");
+});
+
+test("G6 legal-name lint covers normalized club, competition, sponsor and governing-body risks", () => {
+  const normalize = value => value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+
+  const forbiddenPhrases = [
+    "real madrid","fc barcelona","atletico de madrid","athletic club",
+    "manchester united","manchester city","liverpool fc","arsenal","chelsea","tottenham hotspur",
+    "juventus","inter milan","ac milan","bayern munich","borussia dortmund","paris saint germain",
+    "benfica","sporting clube","ajax","inter miami","la galaxy","new york city fc",
+    "club america","chivas de guadalajara","cf monterrey","boca juniors","river plate",
+    "urawa reds","kashima antlers","vissel kobe","beijing guoan","shanghai port",
+    "galatasaray","fenerbahce","besiktas","rosenborg","bodo glimt","wydad","raja casablanca",
+    "kaizer chiefs","orlando pirates","mamelodi sundowns",
+    "champions league","europa league","conference league","copa libertadores","copa sudamericana",
+    "fifa","uefa","conmebol","concacaf","red bull","emirates","etihad","spotify","qatar airways"
+  ].map(normalize);
+
+  const risksFor = value => {
+    const normalized = ` ${normalize(value)} `;
+    return forbiddenPhrases.filter(phrase => normalized.includes(` ${phrase} `));
+  };
+
+  for (const club of FOOTBALL_CLUBS) {
+    assert.deepEqual(risksFor(club.name), [], club.name);
+    assert.equal(club.clearanceStatus, "working_name_unchecked", club.id);
+  }
+  for (const division of FOOTBALL_DIVISIONS) {
+    assert.deepEqual(risksFor(division.name), [], division.name);
+  }
+
+  assert.ok(risksFor("Madrid Red Bull").includes("red bull"));
+  assert.ok(risksFor("UEFA Horizonte").includes("uefa"));
+  assert.ok(risksFor("Copa Libertadores Aurora").includes("copa libertadores"));
+});
+
+test("G6 catalog construction adds no GameState RNG draws", () => {
+  const source = readFileSync(new URL("../src/catalog/football/world.ts", import.meta.url), "utf8");
+  assert.doesNotMatch(source, /Math\.random|\brng\.(?:next|float|int)\b|GameStateRng/);
+});
