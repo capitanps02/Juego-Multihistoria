@@ -3,160 +3,220 @@
 ## Status
 
 - Main baseline: `b72cb81f993634667ba699086ba8714240d8a27b`
-- Branch: `db-a5-football-presentation-platforms`
-- PR: #836
-- A5 HEAD at this report: `3b9d89b7b4a680a97047a3f48819f9a1378d061d`
-- DB-A3 current head: `b39c0ebab0f302d1db5bda515694318c5ce7f1e9`
-- DB-A4 current head: `7a2060c3ea099cb1d0d49264fdcb3765e18e72ce`
-- G5: **BLOCKED / NOT CERTIFIED**
-- Android P0: **resolved in code; certification pending**
-- P0 open owned by A5: **0 known**
-- P1 open owned by A5: **0 known**
+- G4 predecessor branch: `db-a4/save-catalog-versioning`
+- G4 predecessor HEAD used for the clean stack: `6020d6450581797845ffa5ee6cd1920a7abaf11e`
+- Branch: `db-a5/football-presentation-g4`
+- PR: #842
+- G5 state: **FINAL CERTIFICATION PENDING**
+- Implementation progress: **92%**
+- Completed functional passes: **4 / 5**
+- Estimated remaining: **1 final certification pass**
+- Known open A5-owned P0: **0**
+- Known open A5-owned P1: **0**
 
 ## Progress calculation
 
-Current implementation progress: **71%**.
+Weighted workstream state:
 
-This is derived from the workstream weights, not estimated by feel:
+- Pass 1 — audit / platform graph: **20 / 20**
+- Pass 2 — presentation formatter / catalog / legacy: **22 / 22**
+- Pass 3 — PlayCanvas integration: **22 / 23**
+  - catalog-aware builder: complete
+  - browser UI inlining: complete
+  - local-import fail-closed protection: complete
+  - artifact generated and frozen: complete
+  - exact-final-HEAD diff-zero certification: pending
+- Pass 4 — Android/offline/platform execution: **20 / 20**
+  - recursive ESM packaging: complete
+  - missing-module P0: closed structurally
+  - offline suite: PASS on clean G4-based stack
+  - Android SDK/Gradle APK build: PASS
+- Pass 5 — final certification / handoff: **8 / 15**
+  - clean G4 ancestry: complete
+  - PR mergeable: complete
+  - Player Actions regression evidence: available
+  - P0/P1 audit: clear
+  - exact-final-HEAD CI + freshness gate: pending
 
-- Pass 1: 20/20
-  - presentation inventory 6/6
-  - PlayCanvas map 5/5
-  - Android graph audit 6/6
-  - legacy surface audit 3/3
-- Pass 2: 22/22
-  - formatter 7/7
-  - catalog presentation 5/5
-  - legacy fallback 4/4
-  - short-name contexts 3/3
-  - tests authored 3/3
-- Pass 3: 17/23
-  - PlayCanvas build implementation 7/7
-  - catalog wiring 5/5
-  - freshness metadata/build-time regeneration 2/4
-  - regressions authored but exact-HEAD execution pending 3/7
-- Pass 4: 12/20
-  - recursive import graph 7/7
-  - packaging fix 5/5
-  - offline execution pending 0/4
-  - APK/platform execution pending 0/4
-- Pass 5: 0/15
-  - blocked on exact-HEAD CI, A4 integration and final platform certification
+Total: **92 / 100**.
 
-Completed passes: **2/5**.
-Passes in validation: **Pass 3 + Pass 4**.
-Estimated remaining certification passes: **2–3**, depending on CI findings and A4 re-ground.
+## Clean serialized stack
 
-## Closed implementation items
+The first A5 branch was superseded because it had a divergent history relative to the moving G4 branch.
 
-### Unified presentation
+The final candidate is rebuilt directly from DB-A4:
 
-`web/club-names.js` now:
+`DB-A4/G4 -> db-a5/football-presentation-g4 -> PR #842`
 
-- resolves catalog IDs from the authoritative Football Database V2 catalog;
-- uses explicit `shortName` for compact contexts;
-- presents UDV as a canonical special;
-- keeps narrative aliases presentation-only;
-- keeps known legacy IDs readable;
+At creation of the clean stack:
+
+- G4 was an actual Git ancestor;
+- A5 was 11 commits ahead / 0 behind;
+- the PR was mergeable;
+- the diff contained only G5-owned presentation/platform files plus the package-script reconciliation.
+
+The old divergent #836 and temporary sync #841 were closed without merge.
+
+## Unified presentation
+
+`web/club-names.js` is the presentation authority.
+
+It:
+
+- resolves Football Database V2 catalog IDs through the authoritative catalog;
+- displays catalog `name`;
+- uses catalog `shortName` explicitly in compact contexts;
+- presents `UDV` as the canonical special;
+- presents narrative aliases without turning them into persisted identity;
+- keeps known legacy compatibility IDs readable;
 - fails visually closed for invalid/unknown internal IDs as `Club desconocido`;
-- never writes display names back as identity.
+- never maps display names back into identity.
 
-### Browser
+## Browser surfaces
 
-`web/game-ui.js` continues to use the shared formatter.
-Compact match surfaces use catalog `shortName`.
+The main UI uses the shared formatter in `web/game-ui.js`.
 
-The browser dependency graph test requires:
+Compact match labels use `shortName`.
 
-- `web/game-ui.js`;
-- `web/indexed-save-store.js`;
-- `web/club-names.js`;
-- `dist/catalog/football/index.js`;
+The auxiliary `/classic` preview was also audited. A P1 was found because it printed raw structured club fields in:
 
-to resolve recursively.
+- current club;
+- offer before/after clubs;
+- career change summaries.
 
-### PlayCanvas
+That P1 is closed: `preview/app.js` now uses `formatClubName`.
+
+QA interfaces that render the production UI reuse `web/game-ui.js` and do not maintain a second club-name table.
+
+## PlayCanvas
 
 `scripts/build-playcanvas-db-a5.mjs`:
 
-- packages GameSession;
-- explicitly packages the football catalog presentation authority;
-- inlines the shared browser UI;
-- rejects unhandled ESM imports in inlined web modules;
-- records the catalog presentation source and input hashes in the manifest.
+- packages `GameSession`;
+- packages the Football Database V2 catalog presentation authority;
+- shares the browser formatter/UI;
+- rejects unhandled local ESM dependencies;
+- rejects future dynamic/re-exported local dependencies that are not explicitly inlined;
+- fingerprints runtime, UI and packaging inputs;
+- writes a deterministic PlayCanvas manifest.
 
-`package.json` routes `build:playcanvas` through the DB-A5 builder.
+Frozen generated artifact:
 
-### Android offline P0
+- integration: `DB-A5-G5`
+- target scene: `2593315`
+- modules: **168**
+- bundle bytes: **17,623,225**
+- bundle SHA-256: `bdb33ba521dc42c6a2f3e9a8286ea7cad3565d34048ed823af1ea606d1b0d034`
 
-The historical issue was real:
+The artifact was generated by GitHub Actions from the clean G4-based candidate and committed back once. The temporary write-enabled freeze step was then removed.
+
+The final workflow is read-only and requires:
+
+`git diff --exit-code -- playcanvas/multihistoria.js playcanvas/manifest.json web/assets.json`
+
+after rebuilding.
+
+## Android offline
+
+Historical P0:
 
 `web/game-ui.js -> web/club-names.js`
 
-while the old Android copy list omitted `web/club-names.js`.
+while the old Android package used a hand-maintained copy list that omitted `club-names.js`.
 
-A5 resolves this structurally with:
+A5 closes this structurally with:
 
-- `scripts/local-esm-graph.mjs`;
-- `scripts/finalize-android-offline-db-a5.mjs`.
+- `scripts/local-esm-graph.mjs`
+- `scripts/finalize-android-offline-db-a5.mjs`
 
 The finalizer:
 
-1. walks the real browser UI relative-import graph;
-2. copies all required local modules;
-3. walks again from the packaged `web/local.js` entrypoint;
+1. walks the real relative-import graph;
+2. copies every required local module;
+3. re-walks from packaged `web/local.js`;
 4. fails if any relative dependency is missing;
-5. records the packaged import graph in the offline manifest.
+5. records the packaged import graph;
+6. fingerprints presentation packaging inputs.
 
-The normal `android:offline` command now runs this finalization automatically.
+Tests include a deliberate missing-module fixture to prove the gate fails closed.
+
+## APK evidence
+
+On the certified pre-freeze G5 implementation run, the GitHub runner had the full Android toolchain:
+
+- Java: available
+- Gradle: available
+- Android SDK: available at `/usr/local/lib/android/sdk`
+- `assembleDebug`: exit code **0**
+- APK status: **PASS**
+- APK size: **12,154,217 bytes**
+- APK SHA-256: `c16a05343cb52b851fd5b89ecce54abd594556cf08b9dd3a1589e3ec3d9028ef`
+- Android runtime evidence: verified
+
+The final exact-HEAD workflow repeats the APK attempt.
 
 ## Regression coverage
 
-Dedicated tests cover:
+Dedicated G5 coverage includes:
 
-- catalog name + shortName;
+- catalog full name;
+- catalog short name;
 - UDV;
 - narrative aliases;
 - legacy generated IDs;
 - legacy opaque display-compatible IDs;
-- invalid V2 IDs;
+- invalid V2 namespace IDs;
 - malformed/unknown values;
-- static imports;
+- browser dependency graph;
+- main UI compact-name contract;
+- classic preview raw-ID leak contract;
+- static relative imports;
 - side-effect imports;
 - re-exports;
 - dynamic local imports;
 - deliberate missing-module failure;
-- browser dependency graph;
 - PlayCanvas catalog packaging;
+- PlayCanvas unhandled-import rejection;
 - Android recursive graph;
 - offline/no-network contract;
+- packaging-input fingerprints;
 - Player Actions UI regression.
 
-## Dependency status
+## G4 compatibility
 
-DB-A4 explicitly preserves stable identity and does not remap display names. That contract is compatible with A5.
+DB-A4 is green on its current predecessor HEAD for:
 
-Final G5 still requires:
+- Football Database V2 save/versioning;
+- Player Actions content;
+- T51 A5 K;
+- offer-session bridge.
 
-1. DB-A4 to be integrated/frozen on the serialized predecessor chain;
-2. A5 to be tested on the exact resulting base;
-3. PlayCanvas + Android offline exact-HEAD CI green;
-4. artifact freshness gate finalized;
-5. APK/Gradle execution if infrastructure is available;
-6. final cross-platform matrix.
+A5 preserves `test:football-save` while adding its own presentation build/test scripts.
 
-## Current blockers
+A5 does not:
 
-- GitHub Actions runs for #836 are queued behind a large repository-wide workflow backlog.
-- DB-A4 is still draft.
-- The serialized G0–G4 dependency train is not frozen.
-- Versioned PlayCanvas artifact freshness has not yet been certified as diff-zero.
+- bump save schema;
+- remap persisted IDs by display name;
+- change market authority;
+- change balance;
+- consume new RNG;
+- change Player Actions authority.
 
-## Next
+## Final gate
 
-1. consume exact-HEAD CI results for #836;
-2. fix any A5-owned failures;
-3. re-ground on final DB-A4/G4;
-4. regenerate/freeze artifacts;
-5. execute Android/APK and cross-platform matrix;
-6. only then declare `G5 — PRESENTATION / PLAYCANVAS / ANDROID CERTIFIED`.
+G5 can be declared certified only when the final candidate HEAD has:
+
+1. presentation/platform workflow PASS;
+2. PlayCanvas rebuild PASS;
+3. versioned artifact freshness diff-zero PASS;
+4. Android recursive package PASS;
+5. APK validation PASS when the toolchain is available;
+6. Player Actions A5 Content PASS;
+7. T51 A5 K PASS;
+8. T5.1 offer-session bridge PASS;
+9. PR mergeable against the same G4 predecessor;
+10. no open A5-owned P0/P1.
+
+Until all ten are true on the exact final HEAD, the correct state remains:
+
+**FINAL CERTIFICATION PENDING — 92%**.
