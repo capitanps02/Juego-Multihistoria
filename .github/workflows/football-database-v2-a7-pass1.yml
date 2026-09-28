@@ -20,7 +20,7 @@ permissions:
 jobs:
   structural-certification:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
         with:
@@ -55,3 +55,12 @@ jobs:
         run: npm run test:player-actions-content
       - name: Pass 4 RNG / determinism / replay
         run: npm run qa:football-db:a7:pass4
+      - name: Pass 5 long-career PR suite (600 careers)
+        env:
+          DB_A7_CAREERS: 600
+          DB_A7_BASE_SEED: 7600000
+        run: npm run qa:football-db:a7:pass5
+      - name: Pass 5 PlayCanvas / Android offline
+        run: npm run test:football-platforms
+      - name: Pass 5 Android APK
+        run: npm run android:apk
