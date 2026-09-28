@@ -90,6 +90,13 @@ async function clickCardButton(cardTitle,buttonText){
   }
   throw Error('MUIR harness could not find enabled '+buttonText+' in card '+cardTitle);
 }
+async function waitForSurface(predicate,label){
+  for(let i=0;i<120;i++){
+    if(predicate()){await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));return;}
+    await new Promise(r=>setTimeout(r,25));
+  }
+  throw Error('MUIR harness did not reach surface: '+label);
+}
 async function settle(){
   for(let i=0;i<80;i++){
     const busy=root.querySelector('main')?.getAttribute('aria-busy');
