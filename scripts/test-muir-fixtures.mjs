@@ -10,7 +10,7 @@ test('MUIR fixtures are unique and tied to frozen baseline',()=>{
   assert.deepEqual(MUIR_VIEWPORTS.slice(0,3).map(v=>[v.width,v.height]),[[360,800],[390,844],[412,915]]);
 });
 
-for(const id of ['home-normal','home-pending-decision','result','auto-running','auto-paused','auto-interruption','period-summary','player-actions-result','contract-offer']){
+for(const id of ['home-normal','home-pending-decision','result','auto-running','auto-paused','auto-interruption','period-summary','player-actions-result','contract-offer','epilogue-retirement']){
   test('fixture recipe materializes: '+id,async()=>{
     const session=await buildFixtureSession(id);
     const view=session.getView();
@@ -21,7 +21,11 @@ for(const id of ['home-normal','home-pending-decision','result','auto-running','
   });
 }
 
-test('visual-only recipes fail closed instead of inventing public state',async()=>{
+test('cinematic missing-asset recipe fails closed until browser adapter exists',async()=>{
   await assert.rejects(()=>buildFixtureSession('cinematic-fallback'),/requires dedicated browser adapter/);
-  await assert.rejects(()=>buildFixtureSession('epilogue-retirement'),/requires dedicated browser adapter/);
+});
+test('epilogue fixture uses the certified terminal public state',async()=>{
+  const s=await buildFixtureSession('epilogue-retirement');
+  assert.equal(s.getView().screen,'epilogue');
+  assert.equal(s.getView().retirementStatus,'closed');
 });
