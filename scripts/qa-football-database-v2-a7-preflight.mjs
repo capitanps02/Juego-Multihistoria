@@ -44,9 +44,13 @@ for (const [label, sha] of Object.entries(generations)) {
 for (const path of [
   "package.json",
   "src/catalog/football/index.ts",
+  "src/catalog/football/integrity.ts",
   "src/save/football-catalog-version.ts",
   "scripts/test-football-catalog.mjs",
-  "scripts/test-football-database-v2-runtime.mjs"
+  "scripts/test-football-database-v2-runtime.mjs",
+  "scripts/test-football-save-versioning.mjs",
+  "scripts/test-football-presentation-platforms.mjs",
+  "web/club-names.js"
 ]) {
   if (!fs.existsSync(path)) blockers.push("required A7 prerequisite missing: " + path);
 }
@@ -57,8 +61,11 @@ for (const scriptName of [
   "test:football-catalog",
   "test:football-balance",
   "test:football-runtime",
+  "test:football-save",
+  "test:football-presentation",
   "test:playcanvas",
   "test:android:offline",
+  "android:apk",
   "test:player-actions-core",
   "test:player-actions-session",
   "test:player-actions-narrative-bridge"
