@@ -95,3 +95,17 @@ export function activateEmploymentFromAcceptedTermsInPlace(state: GameState): vo
   employment.status = state.flags.LOAN_ACTIVE ? "loaned" : "contracted";
   employment.since = state.date;
 }
+
+
+/**
+ * Narrative club changes are legacy-authorized career transitions, not CareerOffer acceptances.
+ * Keep explicit employment coherent with the already-authoritative narrative transition.
+ */
+export function syncEmploymentAfterNarrativeClubChangeInPlace(state: GameState): void {
+  const employment = ensureEmploymentStateInPlace(state);
+  if (employment.status === "unattached" || employment.status === "expired_pending_resolution") {
+    throw new Error("Narrative club change cannot reactivate inactive employment.");
+  }
+  employment.status = state.flags.LOAN_ACTIVE ? "loaned" : "contracted";
+  employment.since = state.date;
+}
