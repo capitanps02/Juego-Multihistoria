@@ -46,7 +46,13 @@ jobs:
         run: node --test scripts/test-football-database-v2-runtime.mjs
       - name: Age-18 market authority regression
         run: node --test scripts/test-t5-age18-market-authority.mjs
-      - name: Player Actions causal bridge regression
-        run: node --test scripts/test-player-actions-narrative-bridge.mjs
-      - name: Core catalog integrity
+      - name: Player Actions certified regressions
+        run: node --test scripts/test-player-actions-core.mjs scripts/test-player-actions-session.mjs scripts/test-player-actions-narrative-bridge.mjs
+      - name: Market and late-career authority regressions
+        run: node --test scripts/test-t5-market-contract-authority.mjs scripts/test-market-posttest.mjs scripts/test-t5-a3-final-market.mjs
+      - name: Save compatibility
+        run: node --test scripts/test-saves.mjs scripts/test-t5-save-compat.mjs
+      - name: Auto-simulation
+        run: node --test scripts/test-t55-auto-simulation.mjs
+      - name: Core catalog integrity and balance
         run: node --test scripts/test-football-catalog.mjs scripts/test-football-balance.mjs
