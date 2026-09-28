@@ -156,6 +156,14 @@ function liveProjection(state) {
 
 function normalizeExpectedFixtureIdentity(state) {
   const copy = structuredClone(state);
+  // V2-native saves deliberately carry a catalog-version marker while the V1
+  // baseline cannot. It is persistence metadata, not gameplay state, so exclude
+  // it from zero-action behavioral equivalence.
+  delete copy.footballCatalogVersion;
+  // A4 intentionally adds persistence metadata to V2-native saves. Zero-action
+  // equivalence compares gameplay/state authority, while the marker is certified
+  // separately by persistence tests.
+  delete copy.footballCatalogVersion;
   const fixtures = copy.world?.sportMatchModel?.fixtures;
   if (Array.isArray(fixtures)) {
     for (const fixture of fixtures) {
@@ -195,6 +203,9 @@ test("zero-action quiet career is state-identical to pre-V2 main for four months
     baseline.advanceWorldDayInPlace(baselineState);
     current.advanceWorldDayInPlace(currentState);
   }
+
+  assert.equal(currentState.footballCatalogVersion, "world-v2-a2-2026-09-28");
+  assert.equal(baselineState.footballCatalogVersion, undefined);
 
   assert.deepEqual(
     normalizeExpectedFixtureIdentity(currentState),
