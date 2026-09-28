@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const assets=new Map([['/','index.html'],['/index.html','index.html'],['/style.css','style.css'],['/app.js','app.js']]);
 const port=Number(process.env.PREVIEW_PORT ?? 4173);
-const types={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.json':'application/json; charset=utf-8'};
+const types={'.webm':'video/webm','.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.json':'application/json; charset=utf-8'};
 await fs.access(path.join(root,'dist/session/game-session.js'));
 const server=http.createServer(async(req,res)=>{
   try {
@@ -17,7 +17,7 @@ const server=http.createServer(async(req,res)=>{
     else if(pathname==='/classic') file=path.join(root,'preview/index.html');
     else if(pathname.startsWith('/web/')) {
       file=path.resolve(root,pathname.slice(1));
-      if(!file.startsWith(path.join(root,'web')+path.sep) || !['.html','.css','.js','.json'].includes(path.extname(file))) file=null;
+      if(!file.startsWith(path.join(root,'web')+path.sep) || !['.html','.css','.js','.json','.webm'].includes(path.extname(file))) file=null;
     }
     else if(assets.has(pathname)) file=path.join(root,'preview',assets.get(pathname));
     else if(pathname.startsWith('/dist/')) {
