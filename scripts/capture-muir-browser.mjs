@@ -96,5 +96,30 @@ const report={
   records
 };
 fs.writeFileSync(path.join(evidenceDir,'browser-baseline.json'),JSON.stringify(report,null,2)+'\n');
-console.log(JSON.stringify({targetCount:targets.length,captured:records.length,errors:errors.length,output:'analysis/muir/evidence/browser-baseline.json'}));
+
+const baselinePath=path.join(root,'analysis','muir','muir-baseline.json');
+const baseline=JSON.parse(fs.readFileSync(baselinePath,'utf8'));
+for(const viewport of baseline.viewports??[]){
+  const capturedForViewport=records.filter(row=>row.viewportId===viewport.id).length;
+  if(viewport.id.startsWith('phone-'))viewport.status=capturedForViewport>0?'CAPTURED':'MISSING';
+  else viewport.status=capturedForViewport>0?'CHECKED':'MISSING';
+}
+baseline.status=errors.length?'BLOCKED':'READY_FOR_GATE';
+baseline.screenshots={...baseline.screenshots,status:errors.length?'CAPTURE_FAILED':'CAPTURED',count:records.length,skippedNATargets:report.skipped.length,evidence:'analysis/muir/evidence/browser-baseline.json'};
+baseline.performance={...baseline.performance,
+  renderP50Ms:report.aggregate.renderP50Ms,
+  renderP95Ms:report.aggregate.renderP95Ms,
+  renderFrequencyHz:records.length?records.reduce((sum,row)=>sum+(row.metrics?.uiMutationBatchesPerSecond??0),0)/records.length:null,
+  domNodes:report.aggregate.maxDomNodes,
+  longTasks:report.aggregate.maxLongTaskMs,
+  autoSimUiUpdateRateHz:report.aggregate.autoSimUiUpdateRateHz,
+  focusChurn:report.aggregate.totalFocusChanges,
+  scrollChurn:report.aggregate.totalScrollEvents,
+  status:errors.length?'MEASUREMENT_FAILED':'MEASURED',
+  evidence:'analysis/muir/evidence/browser-baseline.json'
+};
+baseline.instrumentation={...baseline.instrumentation,status:errors.length?'EXECUTED_WITH_ERRORS':'EXECUTED'};
+baseline.tooling={...baseline.tooling,browser:report.browser,visualRunner:'scripts/capture-muir-browser.mjs',status:errors.length?'EXECUTED_WITH_ERRORS':'EXECUTED'};
+fs.writeFileSync(baselinePath,JSON.stringify(baseline,null,2)+'\n');
+console.log(JSON.stringify({targetCount:targets.length,captured:records.length,errors:errors.length,browser:report.browser,aggregate:report.aggregate,output:'analysis/muir/evidence/browser-baseline.json'}));
 if(errors.length)process.exitCode=1;
