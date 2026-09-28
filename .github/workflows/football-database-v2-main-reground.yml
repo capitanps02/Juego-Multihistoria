@@ -52,6 +52,9 @@ jobs:
       - name: Player Actions authority
         run: node --test scripts/test-player-actions-core.mjs scripts/test-player-actions-session.mjs scripts/test-player-actions-narrative-bridge.mjs
 
+      - name: Direct market mutation ownership audit
+        run: node scripts/audit-market-direct-mutations.mjs
+
       - name: Market authority and late-career ownership
         run: node --test scripts/test-t5-market-contract-authority.mjs scripts/test-market-posttest.mjs scripts/test-t5-a3-final-market.mjs
 
