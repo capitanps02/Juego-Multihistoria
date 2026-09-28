@@ -47,3 +47,27 @@ export interface FootballClub {
   /** Working identity only. Every final commercial name still requires trademark clearance. */
   readonly clearanceStatus: "working_name_unchecked";
 }
+
+export type FootballClubReferenceKind =
+  | "catalog"
+  | "canonical_special"
+  | "narrative_alias"
+  | "legacy_compat"
+  | "invalid";
+
+export type FootballClubReferenceContext =
+  | "new_production"
+  | "historical_read"
+  | "canonical_content";
+
+export interface FootballClubReferenceClassification {
+  readonly value: string;
+  readonly kind: FootballClubReferenceKind;
+  readonly club: FootballClub | null;
+  readonly reason: string;
+}
+
+export interface FootballCatalogIssue {
+  readonly path: string;
+  readonly reason: string;
+}
