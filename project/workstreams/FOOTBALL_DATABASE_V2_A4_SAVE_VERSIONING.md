@@ -1,10 +1,10 @@
 # DB-A4 — Pass 1 persistence inventory
 
-Status: REGROUNDED IMPLEMENTATION COMPLETE — EXACT-HEAD CI PENDING
-Progress: 95%
-Passes certified: 3 / 5
+Status: G4 CERTIFIED — STACK READY
+Progress: 100%
+Passes certified: 5 / 5
 Passes implemented: 5 / 5
-Estimated remaining: 1 exact-head certification sweep
+Estimated remaining: 0 within DB-A4; merge-order only
 
 ## Baseline
 
@@ -128,7 +128,7 @@ Implement:
 - Player Actions schema is unchanged; existing club-scoped fact payloads are validated only for V2 saves.
 - no RNG stream is touched by versioning/migration.
 
-## Pass 4 — validation / save-load replay — IMPLEMENTED, EXACT-HEAD CI PENDING
+## Pass 4 — validation / save-load replay — COMPLETE — EXACT-HEAD CI GREEN
 
 Committed QA now covers:
 - schema 2..8 frozen migration/round-trip baselines;
@@ -145,7 +145,7 @@ Committed QA now covers:
 
 No versioning or migration path consumes RNG.
 
-## Pass 5 — minimum compatibility matrix — IMPLEMENTED, REGROUNDED CERTIFICATION PENDING
+## Pass 5 — minimum compatibility matrix — COMPLETE — G4 CERTIFIED
 
 | Matrix row | Evidence |
 | --- | --- |
@@ -165,6 +165,19 @@ Important fixture rule: a migrated historical row may predate `opponentClubId`; 
 
 ## Current QA status
 
-- Historical A4 HEAD `6020d6450581797845ffa5ee6cd1920a7abaf11e` passed the full A4 workflow: 236/236 save-versioning tests, 6/6 catalog tests and 41/41 runtime tests.
-- The regrounded branch reuses the same A4 production/test blobs wherever the A3 base is unchanged; only `package.json` is reconciled to preserve the regrounded A3 main test script.
-- G4 remains uncertified until this regrounded exact HEAD passes the same workflow with zero skipped/todo tests.
+- Serialized ancestry is clean with `behind=0` at every edge: main→G0→G1→G2-regrounded→G3-regrounded→G4-regrounded.
+- Regrounded code-bearing HEAD `760f6ad849bfdc342a1df050bf526e260245a66e` passed both A4 save/versioning workflows:
+  - push run `36399590439`: SUCCESS;
+  - PR run `36399633775`: SUCCESS.
+- Exact integrated counts on the regrounded stack:
+  - save/version/migration: 236/236;
+  - football catalog: 11/11;
+  - runtime/catalog regression: 41/41;
+  - skipped: 0;
+  - todo: 0.
+- Player Actions A5 Content run `36399633795`: SUCCESS, including one-year anti-grind stress.
+- T51 A5 K certification run `36399633637`: SUCCESS.
+- T5.1 offer session bridge run `36399633676`: SUCCESS.
+- P0: 0 known.
+- P1: 0 known in DB-A4.
+- G4 is technically certified and stack-ready. Merge remains serialized behind predecessor PRs; this is merge-order, not an A4 implementation blocker.
