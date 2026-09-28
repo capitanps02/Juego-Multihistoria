@@ -1,21 +1,22 @@
 # DB-A4 — Pass 1 persistence inventory
 
-Status: IMPLEMENTATION COMPLETE — G4 CERTIFICATION PENDING
-Progress: 90%
+Status: REGROUNDED IMPLEMENTATION COMPLETE — EXACT-HEAD CI PENDING
+Progress: 95%
 Passes certified: 3 / 5
 Passes implemented: 5 / 5
-Estimated remaining: 1 certification sweep
+Estimated remaining: 1 exact-head certification sweep
 
 ## Baseline
 
 - main baseline: `b72cb81f993634667ba699086ba8714240d8a27b`
 - A0 contract: `eb6289594930f4419d42aa65a17ba11a4c98f1cb`
-- A1 contract: `9ef7369db5a0adc7bafc6c7b3ee0a81b8a725e66`
-- A3 stacked runtime line: `db-a3/runtime-football-catalog`
+- A1 final contract: `1b0992bc6df38d05a4b8061c748ff17aa08a3d65`
+- A2 regrounded balance: `26c4fa6c09e0fb1191dadf289f622be0604d9ba4`
+- A3 regrounded runtime: `3d4c42e73115c664f6762ea2bc16ffb0cbe8a788`
 - save schema: `8`
 - supported raw save schemas: `2..8`
 - catalog version authority: `FOOTBALL_CATALOG_VERSION = "world-v2-a2-2026-09-28"`
-- DB-A4 branch: `db-a4/save-catalog-versioning`
+- DB-A4 branch: `db-a4/save-catalog-versioning-regrounded`
 
 ## Compatibility rule
 
@@ -81,9 +82,18 @@ Unknown V2-shaped IDs are reserved and invalid rather than silently accepted as 
 - Player Actions schema is not changed; only the already-existing club-scoped payload is subject to reference validation.
 - No RNG mutation is required for versioning or validation.
 
-## Dependency risk
+## Dependency / serialization status
 
-There are parallel A2 lines (#828 and #829). PR #830 currently declares #828 as its G2 dependency, while #829 is a later calibration line. DB-A4 must remain stacked on the exact A3/G3 line that is ultimately certified; final G4 certification is blocked until the serialized predecessor choice is resolved. This does not block implementing the additive save-version contract on the current stack.
+The predecessor ambiguity has been resolved without rewriting old staging branches.
+
+Canonical staged chain:
+- G0: `db-a0/football-database-v2-architecture` @ `eb6289594930f4419d42aa65a17ba11a4c98f1cb`;
+- G1: `db-a1/football-catalog-integrity` @ `1b0992bc6df38d05a4b8061c748ff17aa08a3d65`;
+- G2: `db-a2/football-balance-regrounded` / PR #839 @ `26c4fa6c09e0fb1191dadf289f622be0604d9ba4`;
+- G3: `db-a3/runtime-football-catalog-regrounded` / PR #840 @ `3d4c42e73115c664f6762ea2bc16ffb0cbe8a788`;
+- G4: this regrounded A4 branch.
+
+PRs #839 and #840 supersede the divergent historical A2/A3 staging PRs. The old A4 branch/PR #832 remains evidence of the first exact-head green implementation, but final G4 sign-off must come from this serialized regrounded branch. Merge to `main` still occurs in predecessor order.
 
 ## Pass 2 handoff
 
@@ -118,7 +128,7 @@ Implement:
 - Player Actions schema is unchanged; existing club-scoped fact payloads are validated only for V2 saves.
 - no RNG stream is touched by versioning/migration.
 
-## Pass 4 — validation / save-load replay — IMPLEMENTED, CI PENDING
+## Pass 4 — validation / save-load replay — IMPLEMENTED, EXACT-HEAD CI PENDING
 
 Committed QA now covers:
 - schema 2..8 frozen migration/round-trip baselines;
@@ -135,7 +145,7 @@ Committed QA now covers:
 
 No versioning or migration path consumes RNG.
 
-## Pass 5 — minimum compatibility matrix — IMPLEMENTED, CERTIFICATION PENDING
+## Pass 5 — minimum compatibility matrix — IMPLEMENTED, REGROUNDED CERTIFICATION PENDING
 
 | Matrix row | Evidence |
 | --- | --- |
@@ -154,3 +164,7 @@ No versioning or migration path consumes RNG.
 Important fixture rule: a migrated historical row may predate `opponentClubId`; the migration never fabricates one. New V2 fixture production is separately required and tested to write a stable catalog opponent ID.
 
 ## Current QA status
+
+- Historical A4 HEAD `6020d6450581797845ffa5ee6cd1920a7abaf11e` passed the full A4 workflow: 236/236 save-versioning tests, 6/6 catalog tests and 41/41 runtime tests.
+- The regrounded branch reuses the same A4 production/test blobs wherever the A3 base is unchanged; only `package.json` is reconciled to preserve the regrounded A3 main test script.
+- G4 remains uncertified until this regrounded exact HEAD passes the same workflow with zero skipped/todo tests.

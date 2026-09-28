@@ -4,10 +4,12 @@ on:
   push:
     branches:
       - db-a4/save-catalog-versioning
+      - db-a4/save-catalog-versioning-regrounded
   pull_request:
     branches:
       - main
       - db-a3/runtime-football-catalog
+      - db-a3/runtime-football-catalog-regrounded
     paths:
       - 'src/save/**'
       - 'src/core/types.ts'
@@ -17,8 +19,14 @@ on:
       - 'src/simulation/**'
       - 'scripts/test-football-save-versioning.mjs'
       - 'scripts/test-football-catalog-save-version.mjs'
+      - 'scripts/test-football-catalog-save-versioning.mjs'
+      - 'scripts/test-football-save-versioning.mjs'
       - 'scripts/test-saves.mjs'
       - 'scripts/test-player-actions-session.mjs'
+      - 'scripts/test-t536-t537-retirement.mjs'
+      - 'scripts/test-offers.mjs'
+      - 'scripts/test-t5-market-contract-authority.mjs'
+      - 'scripts/test-t5-match-model.mjs'
       - 'package.json'
       - '.github/workflows/football-database-v2-save.yml'
   workflow_dispatch:
