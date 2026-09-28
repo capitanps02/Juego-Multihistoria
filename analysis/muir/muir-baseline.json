@@ -5,20 +5,84 @@
   "capturedAt": "2026-09-28",
   "status": "IN_PROGRESS",
   "viewports": [
-    {"id":"phone-360","width":360,"height":800,"status":"PENDING_CAPTURE"},
-    {"id":"phone-primary","width":390,"height":844,"status":"PENDING_CAPTURE"},
-    {"id":"phone-412","width":412,"height":915,"status":"PENDING_CAPTURE"},
-    {"id":"landscape-check","width":844,"height":390,"status":"PENDING_CHECK"},
-    {"id":"tablet-check","width":768,"height":1024,"status":"PENDING_CHECK"}
+    {
+      "id": "phone-360",
+      "width": 360,
+      "height": 800,
+      "status": "PENDING_CAPTURE"
+    },
+    {
+      "id": "phone-primary",
+      "width": 390,
+      "height": 844,
+      "status": "PENDING_CAPTURE"
+    },
+    {
+      "id": "phone-412",
+      "width": 412,
+      "height": 915,
+      "status": "PENDING_CAPTURE"
+    },
+    {
+      "id": "landscape-check",
+      "width": 844,
+      "height": 390,
+      "status": "PENDING_CHECK"
+    },
+    {
+      "id": "tablet-check",
+      "width": 768,
+      "height": 1024,
+      "status": "PENDING_CHECK"
+    }
   ],
-  "fixtures": {"declared":21,"sessionRecipesImplemented":9,"visualOnlyFailClosed":2,"status":"IN_PROGRESS"},
-  "screenshots": {"status":"NOT_CAPTURED","hashAlgorithm":"sha256","naming":"<BASE_SHA_12>__<fixture-id>__<width>x<height>__<sha256-12>.png"},
-  "performance": {"renderP50Ms":null,"renderP95Ms":null,"renderFrequencyHz":null,"domNodes":null,"uiBundleBytes":null,"longTasks":null,"autoSimUiUpdateRateHz":null,"focusChurn":null,"scrollChurn":null,"status":"NOT_MEASURED"},
-  "packageGraph": {"status":"BLOCKED","finding":"web/game-ui.js imports ./cutscene-player.js; scripts/build-android-offline.mjs does not copy that module while PlayCanvas inlines it","reproduction":"node --test scripts/test-muir-package-graph.mjs","executed":false},
-  "identityId01": {"status":"IN_PROGRESS","finding":"PlayerView has no player-name field in initial interface audit; end-to-end save/state audit pending"},
-  "cinematics": {"status":"IN_PROGRESS","finding":"cutscene player has explicit media error fallback; Android asset/module resolution still requires K-01 reproduction"},
+  "fixtures": {
+    "declared": 21,
+    "sessionRecipesImplemented": 10,
+    "visualOnlyFailClosed": 1,
+    "status": "IN_PROGRESS"
+  },
+  "screenshots": {
+    "status": "NOT_CAPTURED",
+    "hashAlgorithm": "sha256",
+    "naming": "<BASE_SHA_12>__<fixture-id>__<width>x<height>__<sha256-12>.png"
+  },
+  "performance": {
+    "renderP50Ms": null,
+    "renderP95Ms": null,
+    "renderFrequencyHz": null,
+    "domNodes": null,
+    "uiBundleBytes": null,
+    "longTasks": null,
+    "autoSimUiUpdateRateHz": null,
+    "focusChurn": null,
+    "scrollChurn": null,
+    "status": "NOT_MEASURED"
+  },
+  "packageGraph": {
+    "status": "BLOCKED",
+    "finding": "web/game-ui.js imports ./cutscene-player.js; scripts/build-android-offline.mjs does not copy that module while PlayCanvas inlines it",
+    "reproduction": "node --test scripts/test-muir-package-graph.mjs",
+    "executed": false
+  },
+  "identityId01": {
+    "status": "IN_PROGRESS",
+    "finding": "PlayerView has no player-name field in initial interface audit; end-to-end save/state audit pending"
+  },
+  "cinematics": {
+    "status": "IN_PROGRESS",
+    "finding": "cutscene player has explicit media error fallback; Android asset/module resolution still requires K-01 reproduction"
+  },
   "productChanges": "NONE",
   "gameplayChanges": "NONE",
-  "evidenceHashes": {"status":"PENDING_GENERATION"},
-  "tooling": {"node":null,"npm":null,"browser":null,"visualRunner":null,"status":"PENDING_EXACT_HEAD_EXECUTION"}
+  "evidenceHashes": {
+    "status": "PENDING_GENERATION"
+  },
+  "tooling": {
+    "node": null,
+    "npm": null,
+    "browser": null,
+    "visualRunner": null,
+    "status": "PENDING_EXACT_HEAD_EXECUTION"
+  }
 }
