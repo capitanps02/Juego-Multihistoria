@@ -29,7 +29,7 @@ export const MUIR_FIXTURES=[
   {id:'profile',surface:'PERFIL',seed:424242,route:'profile',recipe:'initial'},
   {id:'save',surface:'TU_PARTIDA',seed:424242,route:'save',recipe:'initial'},
   {id:'cinematic-fallback',surface:'CINEMATIC',seed:42,route:'home',recipe:'cinematic-missing-asset'},
-  {id:'epilogue-retirement',surface:'EPILOGUE',seed:424242,route:'career',recipe:'retirement'}
+  {id:'epilogue-retirement',surface:'EPILOGUE',seed:424242,route:'home',recipe:'retirement'}
 ];
 
 export function fixtureById(id){
