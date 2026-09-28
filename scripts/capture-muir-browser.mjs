@@ -107,7 +107,7 @@ baseline.screenshots={...baseline.screenshots,status:errors.length?'CAPTURE_FAIL
 baseline.performance={...baseline.performance,
   renderP50Ms:report.aggregate.renderP50Ms,
   renderP95Ms:report.aggregate.renderP95Ms,
-  renderFrequencyHz:records.length?records.reduce((sum,row)=>sum+(row.metrics?.uiMutationBatchesPerSecond??0),0)/records.length:null,
+  renderFrequencyHz:records.length?records.reduce((sum,row)=>sum+(row.metrics?.render?.frequencyHz??0),0)/records.length:null,
   domNodes:report.aggregate.maxDomNodes,
   longTasks:report.aggregate.maxLongTaskMs,
   autoSimUiUpdateRateHz:report.aggregate.autoSimUiUpdateRateHz,
