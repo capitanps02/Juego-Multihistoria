@@ -94,7 +94,7 @@ test('A3-2 loyal/512000 expiry becomes unattached, stops old-club sport, preserv
   assert.equal(employmentStatus(s),'unattached');
   const beforeRng=structuredClone(s.rngState);
   proposeCareerChange(s,'Oferta de reenganche',d=>{
-    d.club='Reentry FC';d.tier=2;d.professional.ownerClub='Reentry FC';d.professional.registrationClub='Reentry FC';
+    d.club='ESP_MADRID';d.tier=2;d.professional.ownerClub='ESP_MADRID';d.professional.registrationClub='ESP_MADRID';
     d.professional.leagueTier=2;d.professional.route='domestic';d.contract.monthsRemaining=18;d.contract.salaryMonthly=6500;
   });
   assert.ok(s.market.pending);
@@ -102,8 +102,8 @@ test('A3-2 loyal/512000 expiry becomes unattached, stops old-club sport, preserv
   const id=s.market.pending.id;
   respondToOffer(s,id,'accept');
   assert.equal(employmentStatus(s),'contracted');
-  assert.equal(s.club,'Reentry FC');
-  assert.equal(s.professional.registrationClub,'Reentry FC');
+  assert.equal(s.club,'ESP_MADRID');
+  assert.equal(s.professional.registrationClub,'ESP_MADRID');
   assert.deepEqual(s.rngState,beforeRng);
   assert.equal(loadSave(serializeSave(s)).employment.status,'contracted');
 });
@@ -150,7 +150,7 @@ test('A3-3 lifecycle records expiry/withdrawal/supersession without mutating Car
   const s=createInitialState(16501);
   const termsBefore=structuredClone({club:s.club,contract:s.contract,professional:s.professional});
   const rng=structuredClone(s.rngState);
-  proposeCareerChange(s,'Oferta con deadline',d=>{d.club='Deadline FC';d.contract.salaryMonthly=5000;},{validThrough:'2026-07-02'});
+  proposeCareerChange(s,'Oferta con deadline',d=>{d.club='ESP_BARCELONA';d.contract.salaryMonthly=5000;},{validThrough:'2026-07-02'});
   const first=structuredClone(s.market.pending);
   assert.throws(()=>closePendingOfferBySystem(s,'expired','calendar'),/todavía no ha alcanzado/);
   assert.equal(s.market.pending.id,first.id);
@@ -163,7 +163,7 @@ test('A3-3 lifecycle records expiry/withdrawal/supersession without mutating Car
   assert.deepEqual(s.rngState,rng);
   assert.equal(loadSave(serializeSave(s)).market.systemClosures.at(-1).reason,'expired');
 
-  proposeCareerChange(s,'Oferta retirada',d=>{d.club='Withdraw FC';d.contract.salaryMonthly=5100;});
+  proposeCareerChange(s,'Oferta retirada',d=>{d.club='ESP_VALENCIA';d.contract.salaryMonthly=5100;});
   const withdrawnId=s.market.pending.id;
   withdrawCareerOffer(s,withdrawnId);
   assert.equal(offerLifecycleStatus(s,withdrawnId),'withdrawn');
@@ -213,10 +213,10 @@ test('A3-5 Bosman eligibility is exact: January, active employment, final six mo
 test('A3-5 Bosman-specific negotiation API refuses non-canonical windows',()=>{
   const s=createInitialState(17809);
   s.age=32;s.phase='30_34';s.date='2039-02-10';s.contract.monthsRemaining=5;
-  assert.throws(()=>registerBosmanNegotiation(s,'Fuera de ventana','Future X',d=>{d.club='Future X';d.contract.monthsRemaining=24;}),/Bosman no elegible/);
+  assert.throws(()=>registerBosmanNegotiation(s,'Fuera de ventana','ESP_SEVILLA',d=>{d.club='ESP_SEVILLA';d.contract.monthsRemaining=24;}),/Bosman no elegible/);
   s.date='2039-01-10';
-  const row=registerBosmanNegotiation(s,'Bosman válido','Future X',d=>{d.club='Future X';d.professional.ownerClub='Future X';d.professional.registrationClub='Future X';d.contract.monthsRemaining=24;});
-  assert.equal(row.destination,'Future X');
+  const row=registerBosmanNegotiation(s,'Bosman válido','ESP_SEVILLA',d=>{d.club='ESP_SEVILLA';d.professional.ownerClub='ESP_SEVILLA';d.professional.registrationClub='ESP_SEVILLA';d.contract.monthsRemaining=24;});
+  assert.equal(row.destination,'ESP_SEVILLA');
   assert.equal(s.club,'UDV');
 });
 
@@ -224,11 +224,11 @@ test('A3-5 Bosman parallel negotiations are distinct; signing is future-effectiv
   const s=createInitialState(17801);
   s.age=32;s.phase='30_34';s.date='2039-01-10';s.contract.monthsRemaining=6;s.contract.salaryMonthly=14000;
   const current={club:s.club,owner:s.professional.ownerClub,registration:s.professional.registrationClub,salary:s.contract.salaryMonthly};
-  const a=registerFutureEmploymentNegotiation(s,'Bosman A','Future A',d=>{
-    d.club='Future A';d.tier=1;d.professional.ownerClub='Future A';d.professional.registrationClub='Future A';d.professional.leagueTier=1;d.professional.route='domestic';d.contract.monthsRemaining=24;d.contract.salaryMonthly=18000;
+  const a=registerFutureEmploymentNegotiation(s,'Bosman A','ESP_MADRID',d=>{
+    d.club='ESP_MADRID';d.tier=1;d.professional.ownerClub='ESP_MADRID';d.professional.registrationClub='ESP_MADRID';d.professional.leagueTier=1;d.professional.route='domestic';d.contract.monthsRemaining=24;d.contract.salaryMonthly=18000;
   });
-  const b=registerFutureEmploymentNegotiation(s,'Bosman B','Future B',d=>{
-    d.club='Future B';d.tier=1;d.professional.ownerClub='Future B';d.professional.registrationClub='Future B';d.professional.leagueTier=1;d.professional.route='abroad';d.flags.ABROAD_ROUTE=true;d.contract.monthsRemaining=36;d.contract.salaryMonthly=20000;
+  const b=registerFutureEmploymentNegotiation(s,'Bosman B','ENG_LONDON',d=>{
+    d.club='ENG_LONDON';d.tier=1;d.professional.ownerClub='ENG_LONDON';d.professional.registrationClub='ENG_LONDON';d.professional.leagueTier=1;d.professional.route='abroad';d.flags.ABROAD_ROUTE=true;d.contract.monthsRemaining=36;d.contract.salaryMonthly=20000;
   });
   assert.notEqual(a.id,b.id);
   assert.equal(getOpenFutureEmploymentNegotiations(s).length,2);
@@ -243,8 +243,8 @@ test('A3-5 Bosman parallel negotiations are distinct; signing is future-effectiv
   restored.date='2039-06-30';restored.contract.monthsRemaining=1;
   advanceWorldDayInPlace(restored);
   assert.equal(restored.date,'2039-07-01');
-  assert.equal(restored.club,'Future A');
-  assert.equal(restored.professional.registrationClub,'Future A');
+  assert.equal(restored.club,'ESP_MADRID');
+  assert.equal(restored.professional.registrationClub,'ESP_MADRID');
   assert.equal(employmentStatus(restored),'contracted');
   assert.equal(getFutureCareerAgreements(restored)[0].status,'activated');
   const once=serializeSave(restored);
@@ -257,7 +257,7 @@ test('A3-5 negotiation rejection does not sign or alter current employment',()=>
   const s=createInitialState(17802);
   s.age=32;s.phase='30_34';s.date='2039-01-10';s.contract.monthsRemaining=6;
   const before={club:s.club,salary:s.contract.salaryMonthly};
-  const n=registerFutureEmploymentNegotiation(s,'Bosman','Future C',d=>{d.club='Future C';d.contract.monthsRemaining=24;d.contract.salaryMonthly=12000;});
+  const n=registerFutureEmploymentNegotiation(s,'Bosman','FRA_PARIS',d=>{d.club='FRA_PARIS';d.contract.monthsRemaining=24;d.contract.salaryMonthly=12000;});
   closeFutureEmploymentNegotiation(s,n.id,'rejected');
   assert.equal(getOpenFutureEmploymentNegotiations(s).length,0);
   assert.deepEqual({club:s.club,salary:s.contract.salaryMonthly},before);
@@ -267,9 +267,9 @@ test('A3-5 negotiation rejection does not sign or alter current employment',()=>
 test('A3-4 veteran opportunity materializes a real CareerOffer; short-term requires unattached',()=>{
   const s=createInitialState(17601);
   s.age=35;s.phase='34_plus';s.contract.monthsRemaining=5;s.contract.salaryMonthly=9000;
-  recordVeteranMarketApproachInPlace(s,{id:'veteran-external-1',club:'Veteran FC',context:'Contacto formal de proyecto veterano'});
+  recordVeteranMarketApproachInPlace(s,{id:'veteran-external-1',club:'ESP_ZARAGOZA',context:'Contacto formal de proyecto veterano'});
   const offer=materializeVeteranCareerOfferFromOpportunity(s,{
-    id:'veteran-external-1',reason:'Proyecto veterano',opportunity:'leadership_project',club:'Veteran FC',leagueTier:2,months:12,salary:8000,route:'domestic',abroad:false,sportingRole:'Liderazgo veterano',ancillaryRole:null
+    id:'veteran-external-1',reason:'Proyecto veterano',opportunity:'leadership_project',club:'ESP_ZARAGOZA',leagueTier:2,months:12,salary:8000,route:'domestic',abroad:false,sportingRole:'Liderazgo veterano',ancillaryRole:null
   });
   assert.ok(offer);
   assert.equal(s.market.pending.id,offer.id);
@@ -277,21 +277,21 @@ test('A3-4 veteran opportunity materializes a real CareerOffer; short-term requi
   assert.equal(s.market.pending.context.approachId,'veteran-external-1');
   assert.equal(s.club,'UDV','materialization is not signing');
   const restored=loadSave(serializeSave(s));
-  assert.equal(restored.market.pending.terms.club,'Veteran FC');
+  assert.equal(restored.market.pending.terms.club,'ESP_ZARAGOZA');
 
   const free=createInitialState(17602);
   free.age=37;free.phase='34_plus';free.contract.monthsRemaining=0;free.contract.salaryMonthly=0;free.professional.route='free_agent';free.employment.status='unattached';
-  recordVeteranMarketApproachInPlace(free,{id:'short-1',club:'Short FC',context:'Oferta corta tras agencia libre'});
+  recordVeteranMarketApproachInPlace(free,{id:'short-1',club:'ESP_VALENCIA',context:'Oferta corta tras agencia libre'});
   const short=materializeVeteranCareerOfferFromOpportunity(free,{
-    id:'short-1',reason:'Contrato corto',opportunity:'short_term',club:'Short FC',leagueTier:2,months:3,salary:3000,route:'domestic',abroad:false
+    id:'short-1',reason:'Contrato corto',opportunity:'short_term',club:'ESP_VALENCIA',leagueTier:2,months:3,salary:3000,route:'domestic',abroad:false
   });
   assert.ok(short);
   assert.equal(short.terms.months,3);
 
   const contracted=createInitialState(17603);contracted.age=37;contracted.phase='34_plus';
-  recordVeteranMarketApproachInPlace(contracted,{id:'short-2',club:'Short FC',context:'Interés por contrato corto'});
+  recordVeteranMarketApproachInPlace(contracted,{id:'short-2',club:'ESP_VALENCIA',context:'Interés por contrato corto'});
   assert.equal(materializeVeteranCareerOfferFromOpportunity(contracted,{
-    id:'short-2',reason:'Contrato corto',opportunity:'short_term',club:'Short FC',leagueTier:2,months:3,salary:3000,route:'domestic',abroad:false
+    id:'short-2',reason:'Contrato corto',opportunity:'short_term',club:'ESP_VALENCIA',leagueTier:2,months:3,salary:3000,route:'domestic',abroad:false
   }),null);
 });
 
@@ -335,10 +335,10 @@ test('A3-4 no veteran market never decides retirement and synthetic offer payloa
 test('A3-4 post-announcement emergency can materialize an offer without mutating retirement state',()=>{
   const s=createInitialState(17605);
   s.age=37;s.phase='34_plus';s.retirement.status='announced';s.retirement.announcedDate=s.date;
-  recordVeteranMarketApproachInPlace(s,{id:'emergency-1',club:'Emergency FC',context:'Contacto factual posterior al anuncio'});
+  recordVeteranMarketApproachInPlace(s,{id:'emergency-1',club:'ESP_MURCIA',context:'Contacto factual posterior al anuncio'});
   const before=structuredClone(s.retirement);
   const offer=materializePostAnnouncementEmergencyOffer(s,{
-    id:'emergency-1',reason:'Emergencia de mercado',opportunity:'transfer',club:'Emergency FC',leagueTier:2,months:12,salary:7000,route:'domestic',abroad:false,validThrough:'2026-07-08'
+    id:'emergency-1',reason:'Emergencia de mercado',opportunity:'transfer',club:'ESP_MURCIA',leagueTier:2,months:12,salary:7000,route:'domestic',abroad:false,validThrough:'2026-07-08'
   });
   assert.ok(offer);
   assert.deepEqual(s.retirement,before);
@@ -349,22 +349,22 @@ test('A3-4 post-announcement emergency can materialize an offer without mutating
 test('A3-4 home return requires factual prior-club context and medical approach remains non-signable',()=>{
   const s=createInitialState(17606);
   s.age=36;s.phase='34_plus';s.contract.monthsRemaining=5;
-  recordVeteranMarketApproachInPlace(s,{id:'home-no-history',club:'Old Club',context:'Contacto de antiguo club'});
+  recordVeteranMarketApproachInPlace(s,{id:'home-no-history',club:'ESP_BILBAO',context:'Contacto de antiguo club'});
   assert.equal(materializeVeteranCareerOfferFromOpportunity(s,{
-    id:'home-no-history',reason:'Regreso',opportunity:'home_return',club:'Old Club',leagueTier:2,months:12,salary:5000,route:'domestic',abroad:false
+    id:'home-no-history',reason:'Regreso',opportunity:'home_return',club:'ESP_BILBAO',leagueTier:2,months:12,salary:5000,route:'domestic',abroad:false
   }),null);
   s.history.push({
     eventId:'TEST_PRIOR_CLUB',date:'2026-06-01',season:'2025-26',choiceId:'A',outcomeId:'A',
-    club:'Old Club',snapshot:{},salience:1,visibility:'private'
+    club:'ESP_BILBAO',snapshot:{},salience:1,visibility:'private'
   });
-  recordVeteranMarketApproachInPlace(s,{id:'home-with-history',club:'Old Club',context:'Contacto factual de regreso con historial previo'});
+  recordVeteranMarketApproachInPlace(s,{id:'home-with-history',club:'ESP_BILBAO',context:'Contacto factual de regreso con historial previo'});
   const home=materializeVeteranCareerOfferFromOpportunity(s,{
-    id:'home-with-history',reason:'Regreso',opportunity:'home_return',club:'Old Club',leagueTier:2,months:12,salary:5000,route:'domestic',abroad:false
+    id:'home-with-history',reason:'Regreso',opportunity:'home_return',club:'ESP_BILBAO',leagueTier:2,months:12,salary:5000,route:'domestic',abroad:false
   });
   assert.ok(home);
   respondToOffer(s,home.id,'reject');
 
-  const approach=recordVeteranMarketApproachInPlace(s,{id:'medical-1',club:'Medical FC',context:'Evaluación previa a una posible oferta'});
+  const approach=recordVeteranMarketApproachInPlace(s,{id:'medical-1',club:'ESP_PALMA',context:'Evaluación previa a una posible oferta'});
   assert.ok(approach);
   assert.equal(s.market.pending,null,'an approach is not a CareerOffer');
   recordVeteranMedicalEvaluationInPlace(s,'medical-1','failed');
@@ -373,7 +373,7 @@ test('A3-4 home return requires factual prior-club context and medical approach 
   assert.ok(medical);
   assert.equal(medical.medicalEvaluation.result,'failed');
   medical.club='mutated';
-  assert.equal(getVeteranMarketApproaches(s).find(row=>row.id==='medical-1')?.club,'Medical FC');
+  assert.equal(getVeteranMarketApproaches(s).find(row=>row.id==='medical-1')?.club,'ESP_PALMA');
   const restoredMedical=loadSave(serializeSave(s)).world.veteranMarketApproaches.find(row=>row.id==='medical-1');
   assert.ok(restoredMedical);
   assert.equal(restoredMedical.medicalEvaluation.result,'failed');
@@ -383,7 +383,7 @@ test('A3-4 home return requires factual prior-club context and medical approach 
 test('A3-1 malformed persisted offer context fails closed at save boundaries while absent context remains compatible',()=>{
   const malformed=createInitialState(17590);
   proposeCareerChange(malformed,'Oferta rica corrupta',d=>{
-    d.club='Broken Rich FC';d.professional.ownerClub='Broken Rich FC';d.professional.registrationClub='Broken Rich FC';
+    d.club='ENG_LONDON';d.professional.ownerClub='ENG_LONDON';d.professional.registrationClub='ENG_LONDON';
     d.contract.monthsRemaining=24;d.contract.salaryMonthly=25000;
   });
   malformed.market.pending.context={
@@ -412,7 +412,7 @@ test('A3-4 malformed veteran approach fails closed at read and save boundaries',
   const s=createInitialState(17690);
   s.age=35;s.phase='34_plus';
   s.world.veteranMarketApproaches=[{
-    id:'bad',club:'Broken FC',date:s.date,context:'malformed',
+    id:'bad',club:'ESP_MADRID',date:s.date,context:'malformed',
     medicalEvaluation:{occurred:false,result:'failed',date:null}
   }];
   assert.deepEqual(getVeteranMarketApproaches(s),[]);
