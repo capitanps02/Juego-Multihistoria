@@ -30,6 +30,14 @@ jobs:
       - name: MUIR fixture contracts
         if: always()
         run: node --test scripts/test-muir-fixtures.mjs
+      - name: Install browser certification tooling
+        if: always()
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+      - name: MUIR browser baseline
+        if: always()
+        run: node scripts/capture-muir-browser.mjs
       - name: MUIR package graph
         if: always()
         run: node --test scripts/test-muir-package-graph.mjs
@@ -79,5 +87,6 @@ jobs:
           path: |
             analysis/muir/muir-baseline.json
             analysis/muir/evidence/
+            analysis/muir/screenshots/
             playcanvas/manifest.json
             android/app/src/main/assets/offline-manifest.json
