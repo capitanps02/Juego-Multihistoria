@@ -4,6 +4,8 @@ on:
   push:
     branches: ["db-a8/football-database-v2-release-main2"]
     paths:
+      - 'playcanvas/**'
+      - 'android/app/src/main/assets/**'
       - 'src/**'
       - 'web/**'
       - 'scripts/build-playcanvas.mjs'
