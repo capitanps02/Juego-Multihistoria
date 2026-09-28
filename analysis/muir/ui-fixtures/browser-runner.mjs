@@ -126,29 +126,6 @@ if(fixture.recipe==='cinematic-missing-asset'){
   }
 }
 
-// Assert the DOM surface, not just the underlying PlayerView, before capture.
-if(fixture.id==='home-pending-decision'){
-  if(!root.querySelector('.home-grid'))throw Error('Home pending-decision fixture did not render Home');
-  if(![...root.querySelectorAll('button')].some(b=>b.textContent.trim()==='Una decisión te espera'))throw Error('Home pending-decision CTA is missing');
-}
-if(fixture.id==='home-offer'){
-  if(!root.querySelector('.home-grid'))throw Error('Home offer fixture did not render Home');
-  if(![...root.querySelectorAll('button')].some(b=>b.textContent.trim()==='Revisar oferta'))throw Error('Home offer CTA is missing');
-}
-if(fixture.id==='contract-offer'){
-  const labels=[...root.querySelectorAll('.choices button')].map(b=>b.textContent.trim());
-  for(const expected of ['Aceptar oferta','Rechazar oferta','Delegar esta oferta'])if(!labels.includes(expected))throw Error('Contract offer detail is missing action: '+expected);
-}
-if(fixture.id==='player-actions-menu'&&!root.textContent.includes('¿Qué quieres hacer?'))throw Error('Player Actions menu did not render');
-if(fixture.id==='player-actions-category'&&!root.textContent.includes('Entrenamiento extra'))throw Error('Player Actions category did not render');
-if(fixture.id==='player-actions-detail'){
-  if(!root.textContent.includes('Entrenamiento extra'))throw Error('Player Actions detail title did not render');
-  if(![...root.querySelectorAll('button')].some(b=>b.textContent.trim()==='Trabajo técnico'))throw Error('Player Actions detail option did not render');
-}
-if(fixture.id==='player-actions-result'&&!root.querySelector('.player-action-result'))throw Error('Player Actions result did not render');
-if(fixture.id==='period-summary'&&!root.querySelector('.period-summary'))throw Error('Period summary fixture did not render the public period summary');
-if(fixture.id==='result'&&!root.querySelector('.decision-sheet'))throw Error('Result fixture did not render the detailed result surface');
-
 if(fixture.recipe==='player-actions-result'){
   // Reproduce a known target-free action through real UI navigation.
   // Do not synthesize private playerActionUi state.
@@ -172,14 +149,22 @@ switch(fixtureId){
     requireSurface(!root.querySelector('dialog[open]'),'no autoplay modal');
     break;
   case 'home-pending-decision':
+    requireSurface(Boolean(root.querySelector('.home-grid')),'home grid with pending decision');
+    requireSurface([...root.querySelectorAll('button')].some(b=>b.textContent.trim()==='Una decisión te espera'),'pending-decision Home CTA');
+    break;
   case 'auto-interruption':
-    requireSurface(Boolean(root.querySelector('.decision-sheet')),'decision sheet');
-    requireSurface(visibleText.includes('UN MOMENTO QUE CUENTA'),'decision eyebrow');
+    requireSurface(Boolean(root.querySelector('.decision-sheet')),'decision interruption sheet');
+    requireSurface(visibleText.includes('UN MOMENTO QUE CUENTA'),'decision interruption eyebrow');
     break;
   case 'home-offer':
-  case 'contract-offer':
-    requireSurface(visibleText.includes('Aceptar oferta')&&visibleText.includes('Rechazar oferta'),'offer actions');
+    requireSurface(Boolean(root.querySelector('.home-grid')),'home grid with offer');
+    requireSurface([...root.querySelectorAll('button')].some(b=>b.textContent.trim()==='Revisar oferta'),'offer Home CTA');
     break;
+  case 'contract-offer': {
+    const offerLabels=[...root.querySelectorAll('.choices button')].map(b=>b.textContent.trim());
+    for(const expected of ['Aceptar oferta','Rechazar oferta','Delegar esta oferta'])requireSurface(offerLabels.includes(expected),'contract action '+expected);
+    break;
+  }
   case 'result':
     requireSurface(visibleText.includes('DESPUÉS DE TU DECISIÓN'),'result sheet');
     requireSurface(Boolean(root.querySelector('[data-result-continue]')),'result continue action');
