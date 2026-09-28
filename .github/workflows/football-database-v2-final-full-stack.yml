@@ -1,0 +1,85 @@
+name: Football Database V2 · Final 15/15 certification — full stack
+
+on:
+  pull_request:
+    branches: ["db-v2/reconcile-main-full-stack-20260928"]
+    paths:
+      - 'src/catalog/football/**'
+      - 'src/save/**'
+      - 'src/simulation/**'
+      - 'src/narrative/resolver.ts'
+      - 'src/player-actions/**'
+      - 'src/content/initial-state.ts'
+      - 'src/core/types.ts'
+      - 'web/club-catalog-names.js'
+      - 'web/club-names.js'
+      - 'scripts/audit-football-v2-producers.mjs'
+      - 'scripts/test-football-v2-*.mjs'
+      - 'scripts/test-football-catalog.mjs'
+      - 'scripts/test-catalog-*.mjs'
+      - 'scripts/test-club-names.mjs'
+      - 'scripts/test-playcanvas.mjs'
+      - 'scripts/test-android-offline.mjs'
+      - 'scripts/test-football-database-v2-persistence.mjs'
+      - '.github/workflows/football-database-v2-final-full-stack.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  certify-15-of-15:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+
+      - name: C01 · Build and type contract
+        run: npm run build
+
+      - name: C02 · Catalog scope, stable identity, integrity and naming risk
+        run: node --test scripts/test-football-v2-integrity.mjs scripts/test-football-catalog.mjs
+
+      - name: C03 · Full A2 hierarchy, bands and selector profiles
+        run: node --test scripts/test-football-v2-balance.mjs
+
+      - name: C04 · Fixture opponent catalog authority
+        run: node --test scripts/test-catalog-fixture-opponents.mjs
+
+      - name: C05 · Market destination catalog authority
+        run: node --test scripts/test-catalog-market-destinations.mjs
+
+      - name: C06 · World market route coverage
+        run: node --test scripts/test-catalog-world-market-routes.mjs
+
+      - name: C07 · Six canonical narrative aliases
+        run: node --test scripts/test-catalog-narrative-club-aliases.mjs
+
+      - name: C08 · Runtime, offers and age-18 market authority
+        run: node --test scripts/test-football-v2-runtime.mjs scripts/test-catalog-offer-fallbacks.mjs scripts/test-t5-age18-market-authority.mjs scripts/test-offers.mjs
+
+      - name: C09 · Zero synthetic runtime producers
+        run: node scripts/audit-football-v2-producers.mjs
+
+      - name: C10 · V2 persistence marker and fail-closed references
+        run: node --test scripts/test-football-database-v2-persistence.mjs
+
+      - name: C11 · Historical save compatibility
+        run: node --test scripts/test-saves.mjs scripts/test-persistence.mjs
+
+      - name: C12 · Player Actions narrative and market bridge compatibility
+        run: node --test scripts/test-player-actions-narrative-bridge.mjs
+
+      - name: C13 · Shared UI catalog labels
+        run: node --test scripts/test-club-names.mjs
+
+      - name: C14 · PlayCanvas package equivalence
+        run: npm run build:playcanvas && node --test scripts/test-playcanvas.mjs
+
+      - name: C15 · Android offline package equivalence
+        run: npm run android:offline && node --test scripts/test-android-offline.mjs
