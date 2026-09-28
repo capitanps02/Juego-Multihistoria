@@ -1,0 +1,56 @@
+name: Football Database V2 · Presentation / platforms — regrounded
+
+on:
+  push:
+    branches:
+      - db-a5/football-presentation-g5-regrounded
+  pull_request:
+    branches:
+      - db-a4/save-catalog-versioning-regrounded
+      - main
+    paths:
+      - 'src/catalog/football/**'
+      - 'web/club-names.js'
+      - 'web/game-ui.js'
+      - 'scripts/build-playcanvas.mjs'
+      - 'scripts/build-android-offline.mjs'
+      - 'scripts/test-club-names.mjs'
+      - 'scripts/test-playcanvas.mjs'
+      - 'scripts/test-android-offline.mjs'
+      - 'package.json'
+      - '.github/workflows/football-database-v2-platforms.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: football-db-a5-regrounded-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  presentation-platforms:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: G5 presentation, PlayCanvas and Android offline
+        run: npm run test:football-platforms
+      - name: Player Actions UI regression
+        run: npm run test:player-actions-ui
+      - name: Android APK assemble
+        shell: bash
+        run: |
+          set +e
+          npm run android:apk
+          code=$?
+          set -e
+          if [ "$code" -ne 0 ] && [ "$code" -ne 2 ]; then exit "$code"; fi
