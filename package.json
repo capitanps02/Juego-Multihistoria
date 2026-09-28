@@ -75,7 +75,8 @@
     "test:football-presentation": "npm run test:football-platforms",
     "qa:football-db:a7:preflight": "node scripts/qa-football-database-v2-a7-preflight.mjs",
     "qa:football-db:a7:pass1": "npm run build && node scripts/qa-football-database-v2-a7-pass1.mjs",
-    "qa:football-db:a7:pass3": "npm run build && node scripts/qa-football-database-v2-a7-pass3.mjs"
+    "qa:football-db:a7:pass3": "npm run build && node scripts/qa-football-database-v2-a7-pass3.mjs",
+    "qa:football-db:a7:pass4": "npm run build && node scripts/qa-football-database-v2-a7-pass4.mjs"
   },
   "devDependencies": {
     "typescript": "5.8.3"
