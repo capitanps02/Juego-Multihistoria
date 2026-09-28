@@ -392,6 +392,8 @@ export interface RuntimeState {
 }
 
 export interface GameState {
+  /** Present on Football Database V2-native saves; historical schema-8 saves may omit it. */
+  footballCatalogVersion?: string;
   /** Optional/lazy V1 Player Actions store. Historical saves omit it. */
   playerActions?: import("../player-actions/types.js").PlayerActionState;
   ageMilestones?: import("../simulation/age-milestones.js").AgeMilestone[];
