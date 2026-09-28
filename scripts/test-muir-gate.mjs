@@ -116,6 +116,9 @@ for(const v of baseline.viewports??[]){
   if(auxIds.includes(v.id))assert(v.status==='CHECKED','aux viewport not checked: '+v.id);
 }
 
+const actualHead=execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim();
+const expectedHead=process.env.MUIR_P0_EXPECTED_HEAD_SHA?.trim();
+if(expectedHead)assert(actualHead===expectedHead,'exact-head checkout mismatch: '+actualHead+' != '+expectedHead);
 execFileSync('git',['merge-base','--is-ancestor',MUIR_BASE_SHA,'HEAD'],{cwd:root,stdio:'pipe'});
 const changed=execFileSync('git',['diff','--name-only',MUIR_BASE_SHA+'...HEAD'],{cwd:root,encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
 const forbidden=changed.filter(rel=>rel.startsWith('src/')||rel==='web/game-ui.js'||rel==='web/game-ui.css');
@@ -131,6 +134,7 @@ assert(nonP0.length===0,'unexpected files in P0 scope: '+nonP0.join(', '));
 console.log(JSON.stringify({
   gate:'PASS',
   baseSha:MUIR_BASE_SHA,
+  certifiedHead:actualHead,
   fixtureCount:MUIR_FIXTURES.length,
   screenshotCount:browser.captured,
   responsiveChecks:auxFixtures.length*auxIds.length,

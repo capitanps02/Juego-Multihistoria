@@ -25,9 +25,12 @@ jobs:
   certify:
     runs-on: ubuntu-latest
     timeout-minutes: 120
+    env:
+      MUIR_P0_EXPECTED_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
