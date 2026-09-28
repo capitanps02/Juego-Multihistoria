@@ -91,3 +91,25 @@ P0 harness repair:
 - every browser fixture asserts its expected visible production surface before the PNG is accepted.
 
 Therefore no screenshot or metric from artifact `10998674539` is eligible for the final P0 gate. Only evidence produced by the repaired exact-head harness may certify P0.
+
+
+### Browser artifact audit — contentIdentity visual false-positive
+
+A superseded browser artifact generated 66 PNGs and initially reported capture success, but manual inspection found that multiple fixtures rendered the product's "Tu partida" load-failure surface rather than their intended screens.
+
+Root cause:
+- several deterministic session recipes intentionally use a reduced event catalog (`[]` or `[EVT_18_PRE_001]`);
+- the browser harness originally reloaded every exported snapshot through `mountGame` without passing the same event catalog;
+- production `GameSession.migrateFromSave` correctly rejected those snapshots because `contentIdentity` differed;
+- the harness captured the resulting save-failure screen.
+
+P0 correction:
+- `fixtureEventCatalog(id)` now exposes the exact event catalog used to create each fixture;
+- browser `mountGame` receives that exact catalog;
+- fixture tests re-open every exported snapshot through `GameSession.migrateFromSave` with the same catalog;
+- the browser harness fails immediately if the product save-failure copy appears;
+- per-fixture visible-surface assertions verify the expected screen before a screenshot can count as evidence.
+
+The superseded 66-image artifact is therefore useful for diagnosing the harness but is **not accepted as the final P0 visual baseline**.
+
+The final visual gate requires a fresh exact-head browser run after this correction.
