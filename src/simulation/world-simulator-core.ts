@@ -19,7 +19,7 @@ import { expireDueSeedsInPlace } from "../narrative/resolver.js";
 import { hasActiveClubEmployment, transitionNaturalExpiryInPlace } from "./employment.js";
 import { previousOfficialMatch } from "./match-model.js";
 import { clubById } from "../catalog/football/index.js";
-import { selectForeignMarketDestination, selectMarketDestination } from "../catalog/football/market-destination.js";
+import { selectBigClubDestination, selectForeignBigClubDestination, selectForeignMarketDestination, selectMarketDestination } from "../catalog/football/market-destination.js";
 
 const clamp = (x: number, min = 0, max = 100) => Math.min(max, Math.max(min, x));
 const num = (x: unknown, fallback = 0) => typeof x === "number" ? x : fallback;
@@ -388,12 +388,19 @@ function professionalWeek(state: GameState, rng: DeterministicRng): void {
     if (abroad) {
       p.route = "abroad";
       const destinationDraw = rng.next();
-      const destination = selectForeignMarketDestination({
-        leagueTier: p.leagueTier,
-        roll: drawToRoll(destinationDraw),
-        profile: upward ? "ambitious" : "balanced",
-        excludeClubIds: [state.club, p.ownerClub, p.registrationClub]
-      }).id;
+      const destinationRoll = drawToRoll(destinationDraw);
+      const exclusions = [state.club, p.ownerClub, p.registrationClub];
+      const destination = p.leagueTier === 1 && p.clubPrestigeTier >= 5
+        ? selectForeignBigClubDestination({
+          roll: destinationRoll,
+          excludeClubIds: exclusions
+        }).id
+        : selectForeignMarketDestination({
+          leagueTier: p.leagueTier,
+          roll: destinationRoll,
+          profile: upward ? "ambitious" : "balanced",
+          excludeClubIds: exclusions
+        }).id;
       p.registrationClub = destination;
       state.club = destination;
       p.foreignAdaptation = Math.max(p.foreignAdaptation, 20);
@@ -428,13 +435,21 @@ function professionalWeek(state: GameState, rng: DeterministicRng): void {
       } else if (levelChanged) {
         // Baseline changed level/prestige without naming a destination and offer
         // normalization invented "Club X · Y". Reuse already-consumed draws instead.
-        const destination = selectMarketDestination({
-          countryCode: "ESP",
-          leagueTier: Math.max(1, p.leagueTier),
-          roll: drawToRoll(abroadDraw) ^ drawToRoll(loanChanceDraw),
-          profile: upward ? "ambitious" : "balanced",
-          excludeClubIds: [state.club, p.ownerClub, p.registrationClub]
-        }).id;
+        const destinationRoll = drawToRoll(abroadDraw) ^ drawToRoll(loanChanceDraw);
+        const exclusions = [state.club, p.ownerClub, p.registrationClub];
+        const destination = p.leagueTier === 1 && p.clubPrestigeTier >= 5
+          ? selectBigClubDestination({
+            countryCode: "ESP",
+            roll: destinationRoll,
+            excludeClubIds: exclusions
+          }).id
+          : selectMarketDestination({
+            countryCode: "ESP",
+            leagueTier: Math.max(1, p.leagueTier),
+            roll: destinationRoll,
+            profile: upward ? "ambitious" : "balanced",
+            excludeClubIds: exclusions
+          }).id;
         p.ownerClub = destination;
         p.registrationClub = destination;
         state.world.ownerClub = destination;
