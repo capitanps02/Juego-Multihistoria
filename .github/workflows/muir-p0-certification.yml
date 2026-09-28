@@ -71,7 +71,7 @@ jobs:
         run: npm run test:playcanvas
       - name: Android offline clean package
         if: always()
-        run: npm run build:android:offline
+        run: npm run android:offline
       - name: Android offline
         if: always()
         run: npm run test:android:offline
