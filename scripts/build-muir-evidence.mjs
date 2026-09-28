@@ -22,7 +22,10 @@ for(const rel of [
   'analysis/muir/ui-fixtures/session-recipes.mjs',
   'analysis/muir/ui-fixtures/browser-runner.mjs',
   'scripts/test-muir-fixtures.mjs',
-  'scripts/test-muir-package-graph.mjs'
+  'scripts/test-muir-package-graph.mjs',
+  'scripts/capture-muir-browser.mjs',
+  'scripts/measure-muir-bundles.mjs',
+  '.github/workflows/muir-p0-certification.yml'
 ]){
  const file=path.join(root,rel);
  if(fs.existsSync(file))files.push({path:rel,bytes:fs.statSync(file).size,sha256:sha(file)});
