@@ -126,6 +126,9 @@ if(fixture.recipe==='player-actions-menu')await clickText('Gestionar mi carrera'
 if(fixture.recipe==='player-actions-category'){await clickText('Gestionar mi carrera');await clickCardButton('Entrenamiento','Ver acciones');}
 if(fixture.recipe==='player-actions-detail'){await clickText('Gestionar mi carrera');await clickCardButton('Entrenamiento','Ver acciones');await clickCardButton('Entrenamiento extra','Abrir');}
 if(fixture.recipe==='cinematic-missing-asset'){
+  // PROLOGUE uses preload="none"; explicitly start playback so the missing URL is actually requested.
+  // Without this, the dialog can open correctly while never exercising the media-error fallback.
+  await clickText('Reproducir prólogo con sonido');
   for(let i=0;i<160;i++){
     if(root.textContent.includes('No se ha podido cargar el prólogo. Puedes continuar con tu historia.'))break;
     await new Promise(r=>setTimeout(r,25));
