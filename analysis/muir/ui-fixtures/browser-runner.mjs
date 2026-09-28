@@ -127,8 +127,18 @@ if(fixture.recipe==='cinematic-missing-asset'){
 }
 
 // Assert the DOM surface, not just the underlying PlayerView, before capture.
-if(fixture.id==='home-pending-decision'&&!root.querySelector('.home-grid'))throw Error('Home pending-decision fixture did not render Home');
-if(fixture.id==='home-offer'&&!root.querySelector('.home-grid'))throw Error('Home offer fixture did not render Home');
+if(fixture.id==='home-pending-decision'){
+  if(!root.querySelector('.home-grid'))throw Error('Home pending-decision fixture did not render Home');
+  if(![...root.querySelectorAll('button')].some(b=>b.textContent.trim()==='Una decisión te espera'))throw Error('Home pending-decision CTA is missing');
+}
+if(fixture.id==='home-offer'){
+  if(!root.querySelector('.home-grid'))throw Error('Home offer fixture did not render Home');
+  if(![...root.querySelectorAll('button')].some(b=>b.textContent.trim()==='Revisar oferta'))throw Error('Home offer CTA is missing');
+}
+if(fixture.id==='contract-offer'){
+  const labels=[...root.querySelectorAll('.choices button')].map(b=>b.textContent.trim());
+  for(const expected of ['Aceptar oferta','Rechazar oferta','Delegar esta oferta'])if(!labels.includes(expected))throw Error('Contract offer detail is missing action: '+expected);
+}
 if(fixture.id==='period-summary'&&!root.querySelector('.period-summary'))throw Error('Period summary fixture did not render the public period summary');
 if(fixture.id==='result'&&!root.querySelector('.decision-sheet'))throw Error('Result fixture did not render the detailed result surface');
 
