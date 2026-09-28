@@ -60,3 +60,34 @@ No pending or skipped command is counted as PASS.
 No screenshot is counted until a PNG exists in the workflow artifact with its SHA-256.
 No browser metric is counted until `browser-baseline.json` records it.
 No P0 gate is declared from source inspection alone when the RTM requires executed evidence.
+
+
+## Superseded browser artifact integrity finding
+
+Artifact `10998674539` from the superseded P0 run on head `9678ad2bf9d19c74cb649a89b9438fcdafed0b51` is **INVALID AS A VISUAL BASELINE**.
+
+Post-run inspection found that 27 of its 66 PNGs were not the requested product surfaces. Nine fixture ids produced an identical save-load failure screen at each of the three phone viewports:
+
+- home-pending-decision;
+- home-offer;
+- result;
+- auto-running;
+- auto-paused;
+- auto-interruption;
+- injury-public;
+- contract-offer;
+- epilogue-retirement.
+
+Root cause:
+
+The test recipes intentionally use different event catalogs (full catalog, empty catalog, or the isolated `EVT_18_PRE_001` catalog). The browser harness persisted the snapshot correctly but mounted production UI without passing the matching fixture event catalog. Production `GameSession.migrateFromSave()` therefore correctly rejected mismatched `contentIdentity` and rendered the save-load failure screen.
+
+P0 harness repair:
+
+- `fixtureEventCatalog(id)` now exposes the exact catalog that created each fixture;
+- browser `mountGame()` receives that exact catalog;
+- all 21 fixtures have a reopen contract through `GameSession.migrateFromSave(...,{events:fixtureEventCatalog(id)})`;
+- the browser harness hard-fails if the product save-load failure text appears;
+- every browser fixture asserts its expected visible production surface before the PNG is accepted.
+
+Therefore no screenshot or metric from artifact `10998674539` is eligible for the final P0 gate. Only evidence produced by the repaired exact-head harness may certify P0.
