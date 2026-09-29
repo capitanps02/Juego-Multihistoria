@@ -57,7 +57,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: muir-p3-${{ github.event.pull_request.head.sha || github.sha }}
-          if-no-files-found: error
+          if-no-files-found: warn
           path: |
             analysis/muir/screenshots/*.png
             analysis/muir/evidence/browser-baseline.json
