@@ -54,7 +54,7 @@ const expected=process.env.MUIR_P2_EXPECTED_HEAD_SHA?.trim();
 if(expected)assert.equal(actualHead,expected,'exact-head checkout mismatch');
 
 const changed=execFileSync('git',['diff','--name-only',P1+'...HEAD'],{cwd:root,encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
-const allowed=p=>p==='web/game-ui.css'||p==='MUIR-RTM.md'||p==='scripts/test-muir-p2-shell.mjs'||p==='.github/workflows/muir-p2-shell.yml'||p.startsWith('analysis/muir/p2/');
+const allowed=p=>p==='web/game-ui.css'||p==='MUIR-RTM.md'||p==='scripts/test-muir-p2-shell.mjs'||p==='scripts/test-muir-p2-final-gate.mjs'||p==='.github/workflows/muir-p2-shell.yml'||p==='docs/muir/P2_GATE.md'||p==='docs/muir/decisions/VDR-NAV-001.md'||p.startsWith('analysis/muir/p2/');
 const forbidden=changed.filter(p=>!allowed(p));
 assert.deepEqual(forbidden,[],'P2 shell changed out-of-scope files: '+forbidden.join(', '));
 assert(!changed.some(p=>p==='web/game-ui.js'||p.startsWith('src/')||p.startsWith('android/')||p.startsWith('playcanvas/')),'P2 shell altered gameplay/runtime/platform authority');
