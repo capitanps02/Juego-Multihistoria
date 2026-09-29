@@ -1,0 +1,292 @@
+{
+  "schema": "muir-p7-semantic-fixtures-v1",
+  "note": "TEST-ONLY public-shape fixtures. They never enter GameSession or production saves.",
+  "clubs": {
+    "short": {
+      "id": "ESP_LEON",
+      "expected": "León Norte"
+    },
+    "medium": {
+      "id": "DEU_MONCHENGLADBACH",
+      "expected": "Mönchengladbach Spree"
+    },
+    "long": {
+      "id": "ARG_SAN_MIGUEL_DE_TUCUMAN",
+      "expected": "San Miguel de Tucumán Plata"
+    }
+  },
+  "people": {
+    "short": {
+      "name": "Ana Rey",
+      "role": "Agente",
+      "portrait": false
+    },
+    "long": {
+      "name": "Alejandra María de los Ángeles Fernández-Rodríguez",
+      "role": "Directora deportiva internacional",
+      "portrait": false
+    },
+    "noPortrait": {
+      "name": "María O'Neill-Sáez",
+      "role": "Periodista",
+      "portrait": false
+    },
+    "knownPortrait": {
+      "name": "Contacto de prueba",
+      "role": "Entrenador",
+      "portrait": true
+    }
+  },
+  "news": {
+    "short": {
+      "date": "2026-09-29",
+      "text": "El club completa la sesión del día."
+    },
+    "long": {
+      "date": "2026-09-29",
+      "text": "La actualidad del entorno futbolístico continúa con una información deliberadamente extensa para comprobar saltos de línea, lectura móvil y ausencia de desbordamiento horizontal sin añadir ningún dato deportivo nuevo."
+    },
+    "empty": null
+  },
+  "latestMatch": {
+    "complete": {
+      "date": "2026-09-27",
+      "homeAway": "home",
+      "result": {
+        "homeGoals": 2,
+        "awayGoals": 1
+      },
+      "season": "2026-27",
+      "club": "ARG_SAN_MIGUEL_DE_TUCUMAN",
+      "competition": "league",
+      "opponent": "DEU_MONCHENGLADBACH",
+      "available": true,
+      "selected": true,
+      "started": true,
+      "minutes": 90,
+      "rating": 8.1,
+      "goals": 1,
+      "assists": 0,
+      "milestones": [
+        "first_goal"
+      ]
+    },
+    "partial": {
+      "date": "2026-09-20",
+      "homeAway": "away",
+      "result": null,
+      "season": "2026-27",
+      "club": "ESP_LEON",
+      "competition": "league",
+      "opponent": "ARG_SAN_MIGUEL_DE_TUCUMAN",
+      "available": true,
+      "selected": false,
+      "started": false,
+      "minutes": 0,
+      "rating": null,
+      "goals": 0,
+      "assists": 0,
+      "milestones": []
+    },
+    "empty": null
+  },
+  "seasons": {
+    "early": [],
+    "complete": {
+      "season": "2026-27",
+      "club": "ARG_SAN_MIGUEL_DE_TUCUMAN",
+      "appearances": 31,
+      "starts": 22,
+      "minutes": 2070,
+      "goals": 8,
+      "assists": 6,
+      "averageRating": 7.2
+    },
+    "partial": {
+      "season": "2027-28",
+      "club": "DEU_MONCHENGLADBACH",
+      "appearances": 3,
+      "starts": 1,
+      "minutes": 107,
+      "goals": 0,
+      "assists": 1,
+      "averageRating": null
+    },
+    "many": [
+      {
+        "season": "2026-27",
+        "club": "ARG_SAN_MIGUEL_DE_TUCUMAN",
+        "appearances": 20,
+        "starts": 10,
+        "minutes": 1200,
+        "goals": 0,
+        "assists": 0,
+        "averageRating": null
+      },
+      {
+        "season": "2027-28",
+        "club": "ESP_LEON",
+        "appearances": 21,
+        "starts": 11,
+        "minutes": 1290,
+        "goals": 1,
+        "assists": 0,
+        "averageRating": 6.6
+      },
+      {
+        "season": "2028-29",
+        "club": "ARG_SAN_MIGUEL_DE_TUCUMAN",
+        "appearances": 22,
+        "starts": 12,
+        "minutes": 1380,
+        "goals": 2,
+        "assists": 1,
+        "averageRating": 6.7
+      },
+      {
+        "season": "2029-30",
+        "club": "ESP_LEON",
+        "appearances": 23,
+        "starts": 13,
+        "minutes": 1470,
+        "goals": 3,
+        "assists": 1,
+        "averageRating": null
+      },
+      {
+        "season": "2030-31",
+        "club": "ARG_SAN_MIGUEL_DE_TUCUMAN",
+        "appearances": 24,
+        "starts": 14,
+        "minutes": 1560,
+        "goals": 4,
+        "assists": 2,
+        "averageRating": 6.9
+      },
+      {
+        "season": "2031-32",
+        "club": "ESP_LEON",
+        "appearances": 25,
+        "starts": 15,
+        "minutes": 1650,
+        "goals": 5,
+        "assists": 2,
+        "averageRating": 7
+      },
+      {
+        "season": "2032-33",
+        "club": "ARG_SAN_MIGUEL_DE_TUCUMAN",
+        "appearances": 26,
+        "starts": 16,
+        "minutes": 1740,
+        "goals": 6,
+        "assists": 3,
+        "averageRating": null
+      },
+      {
+        "season": "2033-34",
+        "club": "ESP_LEON",
+        "appearances": 27,
+        "starts": 17,
+        "minutes": 1830,
+        "goals": 7,
+        "assists": 3,
+        "averageRating": 7.2
+      }
+    ]
+  },
+  "contract": {
+    "complete": {
+      "club": "ARG_SAN_MIGUEL_DE_TUCUMAN",
+      "salaryMonthly": 24000,
+      "contractMonths": 30
+    },
+    "partial": {
+      "club": "ESP_LEON",
+      "salaryMonthly": 0,
+      "contractMonths": 4
+    },
+    "zeroMonths": {
+      "club": "ESP_LEON",
+      "salaryMonthly": 0,
+      "contractMonths": 0
+    }
+  },
+  "offer": {
+    "complete": {
+      "id": "qa-offer",
+      "date": "2026-09-29",
+      "reason": "Oferta de prueba",
+      "before": {
+        "club": "ESP_LEON",
+        "ownerClub": "ESP_LEON",
+        "registrationClub": "ESP_LEON",
+        "leagueTier": 2,
+        "months": 8,
+        "salary": 9000,
+        "releaseClause": null,
+        "loan": false
+      },
+      "terms": {
+        "club": "ARG_SAN_MIGUEL_DE_TUCUMAN",
+        "ownerClub": "ARG_SAN_MIGUEL_DE_TUCUMAN",
+        "registrationClub": "ARG_SAN_MIGUEL_DE_TUCUMAN",
+        "leagueTier": 1,
+        "months": 36,
+        "salary": 24000,
+        "releaseClause": 1800000,
+        "loan": false
+      }
+    },
+    "loan": {
+      "id": "qa-loan",
+      "date": "2026-09-29",
+      "reason": "Cesión de prueba",
+      "before": {
+        "club": "DEU_MONCHENGLADBACH",
+        "ownerClub": "DEU_MONCHENGLADBACH",
+        "registrationClub": "DEU_MONCHENGLADBACH",
+        "leagueTier": 1,
+        "months": 24,
+        "salary": 18000,
+        "releaseClause": null,
+        "loan": false
+      },
+      "terms": {
+        "club": "ARG_SAN_MIGUEL_DE_TUCUMAN",
+        "ownerClub": "DEU_MONCHENGLADBACH",
+        "registrationClub": "ARG_SAN_MIGUEL_DE_TUCUMAN",
+        "leagueTier": 1,
+        "months": 12,
+        "salary": 18000,
+        "releaseClause": null,
+        "loan": true
+      }
+    },
+    "partial": {
+      "id": "qa-partial",
+      "date": "2026-09-29",
+      "reason": "Oferta parcial de prueba",
+      "before": {
+        "club": "ESP_LEON",
+        "ownerClub": "ESP_LEON",
+        "registrationClub": "ESP_LEON",
+        "leagueTier": 2,
+        "months": 2,
+        "salary": 5000,
+        "releaseClause": null,
+        "loan": false
+      },
+      "terms": {
+        "club": "ESP_LEON",
+        "ownerClub": "ESP_LEON",
+        "registrationClub": "ESP_LEON",
+        "leagueTier": 2,
+        "months": 12,
+        "salary": 5000,
+        "releaseClause": null,
+        "loan": false
+      }
+    }
+  }
+}

@@ -39,23 +39,107 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
   }
   const club=v=>clubName(v.club);
   const position=v=>({winger:'Extremo',midfielder:'Centrocampista',striker:'Delantero',defender:'Defensa',goalkeeper:'Portero'})[v.position]||'Futbolista';
-  const bondType=role=>{
-    const r=String(role).toLocaleLowerCase('es-ES');
-    if(/madre|padre|hermana|hermano|familia/.test(r))return 'Familia';
-    if(/amigo/.test(r))return 'Amistad';
-    if(/agente/.test(r))return 'Representación';
-    if(/entrenador|técnico/.test(r))return 'Cuerpo técnico';
-    if(/fisioterapeuta|médic|fisio/.test(r))return 'Equipo médico';
-    if(/periodista|locutor|prensa/.test(r))return 'Prensa';
-    if(/jugador|portero|central|extremo|delantero|centrocampista|mediapunta|capitán|vicecapitán/.test(r))return 'Vestuario';
-    if(/president|director deportivo/.test(r))return 'Club';
-    return 'Entorno profesional';
-  };
   const svgPaths={home:'M3 10 12 3l9 7v11h-6v-7H9v7H3z',career:'M5 3h14v18H5z M8 8h8M8 12h8M8 16h5',world:'M3 12h18M12 3c-5 5-5 13 0 18 5-5 5-13 0-18 M12 3a9 9 0 1 0 0 18 9 9 0 1 0 0-18',relations:'M2 21c0-9 13-9 13 0M15 14c4-1 7 2 7 6 M8.5 3a4 4 0 1 0 0 8 4 4 0 1 0 0-8 M17 5a3 3 0 0 1 0 6',profile:'M4 21c0-10 16-10 16 0 M12 3a4 4 0 1 0 0 8 4 4 0 1 0 0-8',save:'M4 3h14l3 3v15H3V3h1 M7 3v7h10V3M7 21v-7h10v7',arrow:'M4 12h15M14 6l6 6-6 6','pa-training':'M7 8v8M17 8v8M4 10v4M20 10v4M7 12h10','pa-health':'M12 20s-7-4.4-7-10a4 4 0 0 1 7-2 4 4 0 0 1 7 2c0 5.6-7 10-7 10z','pa-representative':'M4 8h16v11H4z M9 8V5h6v3 M4 12h16 M10 12v2h4v-2','pa-image':'M4 7h4l2-2h4l2 2h4v12H4z M12 10a4 4 0 1 0 0 8 4 4 0 1 0 0-8','pa-life':'M12 3a9 9 0 1 0 0 18 9 9 0 1 0 0-18 M12 7v5l3 2'};
   function icon(name){const s=doc.createElementNS('http://www.w3.org/2000/svg','svg');s.setAttribute('viewBox','0 0 24 24');s.setAttribute('aria-hidden','true');const p=doc.createElementNS(s.namespaceURI,'path');p.setAttribute('d',svgPaths[name]||svgPaths.arrow);s.append(p);return s;}
   function button(text,fn,cls='secondary',options={}){const b=el('button',undefined,cls);b.type='button';b.append(el('span',text));b.disabled=busy||options.disabled===true||(paused&&options.blockedWhenPaused===true);if(options.ariaLabel)b.setAttribute('aria-label',options.ariaLabel);if(options.pressed!==undefined)b.setAttribute('aria-pressed',String(options.pressed));b.addEventListener('click',fn);return b;}
   function photo(name,cls='photo'){const img=el('img',undefined,cls);img.src=assets[name]||assets.stadium_bg;img.alt='';img.draggable=false;return img;}
   function panel(title){const p=el('article',undefined,'panel');p.append(el('h2',title));return p;}
+  function semanticRow(label,value,cls='data-row'){
+    if(value===undefined||value===null||value==='')return null;
+    const row=el('div',undefined,cls);row.append(el('span',label),el('strong',String(value)));return row;
+  }
+  function appendSemanticRows(target,rows){for(const [label,value] of rows){const row=semanticRow(label,value);if(row)target.append(row);}return target;}
+  function seasonText(value){const raw=String(value??'').trim();return raw?raw.replace('-',' / 20'):'';}
+  function initials(name){return String(name??'').trim().split(/\s+/).filter(Boolean).map(part=>part[0]).slice(0,2).join('').toLocaleUpperCase('es-ES');}
+  function newsCard(item){
+    if(!item||!item.date||!item.text)return null;
+    const card=el('article',undefined,'panel semantic-card news-card');
+    card.setAttribute('aria-label','Noticia del '+date(item.date));
+    card.append(el('time',date(item.date),'eyebrow'),el('p',item.text,'news-copy'));
+    return card;
+  }
+  function latestMatchCard(m,{empty=false}={}){
+    if(!m){
+      if(!empty)return null;
+      const p=panel('Último partido oficial');p.classList.add('semantic-card','latest-match-card','semantic-empty');
+      p.append(el('p','Todavía no hay un último partido oficial registrado.','muted'));return p;
+    }
+    const p=panel('Último partido oficial');p.classList.add('semantic-card','latest-match-card');p.append(el('time',date(m.date),'eyebrow'));
+    const home=m.homeAway==='home'?clubName(m.club):clubName(m.opponent),away=m.homeAway==='home'?clubName(m.opponent):clubName(m.club);
+    p.append(el('p',m.result?`${home} ${m.result.homeGoals} – ${m.result.awayGoals} ${away}`:`${home} · ${away}`,'season-club semantic-club-name'));
+    const participation=!m.available?'No disponible para este partido':!m.selected?'No convocado':m.minutes===0?'Suplente sin minutos':m.started?'Titular':'Entraste desde el banquillo';
+    p.append(el('p',participation,'muted'));
+    const rows=[['Competición',m.competition==='league'?'Liga':null],['Minutos',Number.isFinite(m.minutes)?m.minutes:null],['Goles',Number.isFinite(m.goals)?m.goals:null],['Asistencias',Number.isFinite(m.assists)?m.assists:null],['Valoración',typeof m.rating==='number'?decimal(m.rating):null]];
+    appendSemanticRows(p,rows);
+    const labels={first_call_up:'primera convocatoria',first_bench:'primera suplencia',debut:'debut',first_start:'primera titularidad',first_full_match:'primer partido completo',first_goal:'primer gol',first_assist:'primera asistencia'};
+    const milestones=(m.milestones??[]).map(x=>labels[x]||(/^appearance_\d+$/.test(x)?x.replace('appearance_','partido nº '):null)).filter(Boolean);
+    if(milestones.length)p.append(el('p','Hitos: '+milestones.join(' · '),'career-milestone'));
+    return p;
+  }
+  function careerSeasonCard(s){
+    if(!s||!s.season)return null;
+    const p=panel('Temporada '+seasonText(s.season));p.classList.add('semantic-card','career-season-card');
+    const clubLabel=clubName(s.club);if(clubLabel)p.append(el('p',clubLabel,'season-club semantic-club-name'));
+    appendSemanticRows(p,[['Partidos',Number.isFinite(s.appearances)?s.appearances:null],['Titularidades',Number.isFinite(s.starts)?s.starts:null],['Minutos',Number.isFinite(s.minutes)?s.minutes:null],['Goles',Number.isFinite(s.goals)?s.goals:null],['Asistencias',Number.isFinite(s.assists)?s.assists:null],['Valoración media',typeof s.averageRating==='number'?decimal(s.averageRating):null]]);
+    return p;
+  }
+  function contractSummary(v,{compact=false}={}){
+    const p=panel('Tu contrato');p.classList.add('semantic-card','contract-summary');
+    if(!compact){
+      const clubLabel=clubName(v?.club);if(clubLabel)p.append(semanticRow('Club',clubLabel));
+      if(Number.isFinite(v?.salaryMonthly))p.append(semanticRow('Salario mensual',money(v.salaryMonthly)));
+    }
+    const months=Number(v?.contractMonths);
+    if(Number.isFinite(months))p.append(semanticRow('Duración restante',months>0?Math.ceil(months)+' meses':'Sin meses de contrato restantes'));
+    if(months>0&&months<=6)p.append(el('p','El contrato está en su tramo final.','muted'));
+    return p;
+  }
+  function offerTermValue(key,value){
+    if(key==='club'||key==='ownerClub'||key==='registrationClub')return value?clubName(value):null;
+    if(key==='leagueTier')return Number.isFinite(value)?'Categoría '+value:null;
+    if(key==='salary')return Number.isFinite(value)?money(value):null;
+    if(key==='months')return Number.isFinite(value)?value+' meses':null;
+    if(key==='releaseClause')return value===null?'Sin cláusula':Number.isFinite(value)?money(value):null;
+    return null;
+  }
+  function offerCard(o,{actions=null,explanation=null,delegateHelp=false}={}){
+    if(!o?.reason)return null;
+    const p=panel(o.reason);p.classList.add('semantic-card','offer-card');
+    if(o.date)p.prepend(el('time',date(o.date),'eyebrow'));
+    const specs=[['Club','club'],['Club propietario','ownerClub'],['Categoría','leagueTier'],['Salario mensual','salary'],['Duración','months'],['Cláusula','releaseClause']];
+    if(o.before&&o.terms){
+      for(const [label,key] of specs){
+        const before=offerTermValue(key,o.before[key]),after=offerTermValue(key,o.terms[key]);
+        if(before===null&&after===null)continue;
+        const row=semanticRow(label,(before??'')+' → '+(after??''),'data-row offer-comparison');if(row)p.append(row);
+      }
+      if(o.before.loan||o.terms.loan){
+        const before=offerTermValue('registrationClub',o.before.registrationClub),after=offerTermValue('registrationClub',o.terms.registrationClub);
+        const row=semanticRow('Club de inscripción',(before??'')+' → '+(after??''),'data-row offer-comparison');if(row)p.append(row);
+      }
+      p.append(el('p',o.terms.loan?'La propuesta es una cesión.':'La propuesta no es una cesión.','muted offer-loan-state'));
+    }
+    if(explanation)p.append(el('p',explanation,'story-text'));
+    if(delegateHelp)p.append(el('p','Si delegas esta oferta, tu representante solo aceptará si no baja el salario ni la categoría y asegura al menos 12 meses. La delegación termina con esta respuesta.','story-text'));
+    if(actions){
+      const choices=el('div',undefined,'choices');
+      for(const [action,label] of actions)choices.append(button(label,()=>run('offer',{offerId:o.id,action}),'choice',{blockedWhenPaused:true}));
+      p.append(choices);
+    }
+    return p;
+  }
+  function personCard(c,{compact=false}={}){
+    if(!c?.name)return null;
+    const portraitKey=portrait(c.id);
+    if(compact){
+      const row=el('div',undefined,'contact-row semantic-card person-card person-card-compact');
+      row.append(portraitKey?photo(portraitKey,'avatar'):el('div',initials(c.name)||'·','avatar initials person-initials'));
+      const info=el('div',undefined,'person-copy');info.append(el('strong',c.name));if(c.role)info.append(el('p',c.role,'muted'));row.append(info);return row;
+    }
+    const p=panel(c.name);p.classList.add('semantic-card','person-card');
+    p.prepend(portraitKey?photo(portraitKey,'person-portrait'):el('div',initials(c.name)||'·','initials person-initials'));
+    if(c.role)p.append(el('p',c.role,'muted'));return p;
+  }
   const validViews=new Set(['home','career','world','relations','profile','save']);
   let historyReady=false;
   function routeState(){return {mhOwner:true,mhView:view,mhCinematic:cinematic};}
@@ -424,11 +508,11 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
     else grid.append(identity,next);
     grid.append(stats(v,true));
 
-    const sport=latestMatchPanel(v);if(sport){sport.classList.add('home-sport');grid.append(sport);}
+    const sport=latestMatchCard(v.latestMatch);if(sport){sport.classList.add('home-sport');grid.append(sport);}
     const recent=panel('El último capítulo');recent.classList.add('recent');recent.append(photo('hero_player','news-thumb'));const row=v.journal.at(-1);recent.append(el('h3',row?.title||'Todo empieza en Valdoria'),el('p',row?.messages[0]||'Una oportunidad de acercarte al primer equipo. Todavía queda todo por decidir.','muted'),button('Recorrer mi historia',()=>navigate('career')));grid.append(recent);
     const chapter=panel('Tu carrera');chapter.classList.add('home-career');chapter.append(el('span',v.season.replace('-',' / 20'),'eyebrow'),el('div',String(v.decisionsMade),'big-number'),el('p',v.decisionsMade===1?'decisión que cuenta':'decisiones que cuentan','muted'),el('p','Tu carrera cambia con tus decisiones y lo que pasa en el campo.'),button('Ver recorrido',()=>navigate('career')));grid.append(chapter);
-    const people=panel('Tu entorno');people.classList.add('home-people');const contacts=v.contacts.slice(0,3);for(const c of contacts){const r=el('div',undefined,'contact-row');r.append(photo(portrait(c.id),'avatar'));const info=el('div');info.append(el('strong',c.name),el('p',c.role,'muted'));r.append(info);people.append(r);}people.append(button('Ver relaciones',()=>navigate('relations')));grid.append(people);
-    const clock=panel('Tu contrato');clock.classList.add('home-contract');clock.append(el('p',v.contractMonths>0?Math.ceil(v.contractMonths)+' meses restantes':'Sin meses de contrato restantes'),el('p',v.contractMonths>0&&v.contractMonths<=6?'El contrato entra en su tramo final. Revisa las propuestas cuando lleguen.':'Las propuestas de contrato requieren tu respuesta.','muted'));grid.append(clock);
+    const people=panel('Tu entorno');people.classList.add('home-people');const contacts=v.contacts.slice(0,3);for(const c of contacts){const card=personCard(c,{compact:true});if(card)people.append(card);}people.append(button('Ver relaciones',()=>navigate('relations')));grid.append(people);
+    const clock=contractSummary(v,{compact:true});clock.classList.add('home-contract');grid.append(clock);
     const tutorial=el('details',undefined,'tutorial home-help');
     tutorial.append(el('summary','Cómo se juega'));
     const tutorialBody=el('div',undefined,'tutorial-body');
@@ -463,29 +547,10 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
       const intel=el('details',undefined,'intel');intel.open=true;intel.append(el('summary','Lo que sabes · lo que queda por descubrir'));for(const [title,lines]of[['Lo que sabes',d.visible],['Lo que no está claro',d.uncertain]]){if(lines.length){intel.append(el('h3',title));lines.forEach(t=>intel.append(el('p',t)));}}sheet.append(intel);const choices=el('div',undefined,'choices');d.choices.forEach((c,i)=>{const b=button('',()=>run('choose',{pendingInstanceId:d.instanceId,choiceId:c.id}),'choice',{blockedWhenPaused:true});b.replaceChildren(el('span',String.fromCharCode(65+i),'choice-key'),el('span',c.label));choices.append(b);});sheet.append(choices);}
     main.append(sheet);}
   function renderOffer(v,main){
-    const o=v.offer,p=panel(o.reason);p.append(el('p','Una propuesta para tu carrera. Revisa las condiciones antes de decidir.','story-text'));
-    for(const [label,before,after] of [['Club',clubName(o.before.club),clubName(o.terms.club)],['Club propietario',clubName(o.before.ownerClub),clubName(o.terms.ownerClub)],['Categoría',o.before.leagueTier,o.terms.leagueTier],['Salario mensual',money(o.before.salary),money(o.terms.salary)],['Duración',o.before.months+' meses',o.terms.months+' meses'],['Cláusula',o.before.releaseClause===null?'Sin cláusula':money(o.before.releaseClause),o.terms.releaseClause===null?'Sin cláusula':money(o.terms.releaseClause)]]){
-      const row=el('div',undefined,'data-row');row.append(el('span',label),el('strong',before+' → '+after));p.append(row);
-    }
-    p.append(el('p',o.terms.loan?'La propuesta es una cesión.':'La propuesta no es una cesión.','muted'));
-    p.append(el('p','Si delegas esta oferta, tu representante solo aceptará si no baja el salario ni la categoría y asegura al menos 12 meses. La delegación termina con esta respuesta.','story-text'));
-    const choices=el('div',undefined,'choices');for(const [action,label]of [['accept','Aceptar oferta'],['reject','Rechazar oferta'],['delegate','Delegar esta oferta']])choices.append(button(label,()=>run('offer',{offerId:o.id,action}),'choice',{blockedWhenPaused:true}));
-    p.append(choices,button('Volver a Inicio',closeCinematic));main.append(p);
+    const o=v.offer,p=offerCard(o,{actions:[['accept','Aceptar oferta'],['reject','Rechazar oferta'],['delegate','Delegar esta oferta']],explanation:'Una propuesta para tu carrera. Revisa las condiciones antes de decidir.',delegateHelp:true});
+    p.append(button('Volver a Inicio',closeCinematic));main.append(p);
   }
-  function offerHistory(v,main){for(const h of [...v.offerHistory].reverse()){const p=panel(h.offer.reason);p.append(el('time',date(h.offer.date),'eyebrow'),el('p',h.explanation),el('p',clubName(h.offer.terms.club)+' · '+money(h.offer.terms.salary)+' al mes · '+h.offer.terms.months+' meses','muted'));main.append(p);}}
-  function latestMatchPanel(v){
-    const m=v.latestMatch;if(!m)return null;
-    const p=panel('Último partido oficial');p.append(el('time',date(m.date),'eyebrow'));
-    const home=m.homeAway==='home'?clubName(m.club):clubName(m.opponent),away=m.homeAway==='home'?clubName(m.opponent):clubName(m.club);
-    p.append(el('p',m.result?`${home} ${m.result.homeGoals} – ${m.result.awayGoals} ${away}`:`${home} · ${away}`,'season-club'));
-    const participation=!m.available?'No disponible para este partido':!m.selected?'No convocado':m.minutes===0?'Suplente sin minutos':m.started?'Titular':'Entraste desde el banquillo';
-    p.append(el('p',participation,'muted'));
-    for(const [label,value] of [['Competición',m.competition==='league'?'Liga':m.competition],['Minutos',m.minutes],['Goles',m.goals],['Asistencias',m.assists],['Valoración',m.rating===null?'—':decimal(m.rating)]]){const row=el('div',undefined,'data-row');row.append(el('span',label),el('strong',String(value)));p.append(row);}
-    const labels={first_call_up:'primera convocatoria',first_bench:'primera suplencia',debut:'debut',first_start:'primera titularidad',first_full_match:'primer partido completo',first_goal:'primer gol',first_assist:'primera asistencia'};
-    const milestones=m.milestones.map(x=>labels[x]||(/^appearance_\d+$/.test(x)?x.replace('appearance_','partido nº '):null)).filter(Boolean);
-    if(milestones.length)p.append(el('p','Hitos: '+milestones.join(' · '),'career-milestone'));
-    return p;
-  }
+  function offerHistory(v,main){for(const h of [...v.offerHistory].reverse()){const p=offerCard(h.offer,{explanation:h.explanation});if(p)main.append(p);}}
   function career(v,main){
     if(playerActionUi.screen!=='career'&&renderPlayerActions(v,main))return;
     main.append(el('span','HISTORIAL VIVO DE TU TRAYECTORIA','eyebrow'),el('h1','Tu carrera.'));
@@ -501,12 +566,7 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
       main.append(empty);
     }else{
       const seasons=el('div',undefined,'season-grid');
-      for(const s of [...v.careerSeasons].reverse()){
-        const p=panel('Temporada '+s.season.replace('-',' / 20'));
-        p.append(el('p',clubName(s.club),'season-club'));
-        for(const [label,value] of [['Partidos',s.appearances],['Titularidades',s.starts],['Minutos',s.minutes],['Goles',s.goals],['Asistencias',s.assists],['Valoración media',s.averageRating===null?'—':s.averageRating]]){const r=el('div',undefined,'data-row');r.append(el('span',label),el('strong',String(value)));p.append(r);}
-        seasons.append(p);
-      }
+      for(const s of [...v.careerSeasons].reverse()){const card=careerSeasonCard(s);if(card)seasons.append(card);}
       main.append(seasons);
     }
     if(v.careerMilestones?.historyComplete&&v.careerMilestones.appearances>0){
@@ -517,7 +577,7 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
       for(const [label,value] of [['Partidos',m.appearances],['Goles',m.goals],['Asistencias',m.assists]]){const r=el('div',undefined,'data-row');r.append(el('span',label),el('strong',String(value)));p.append(r);}
       main.append(p);
     }
-    const latest=latestMatchPanel(v);if(latest)main.append(latest);
+    const latest=latestMatchCard(v.latestMatch,{empty:true});if(latest)main.append(latest);
     if(v.ageMilestones.length){const milestones=panel('Hitos de edad');for(const m of v.ageMilestones)milestones.append(el('p',`${m.age} años · ${date(m.date)} · ${clubName(m.club)}`,'muted'));main.append(milestones);}
     offerHistory(v,main);
     const history=panel('Decisiones y acciones');const list=el('div',undefined,'timeline');
@@ -539,16 +599,13 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
   function world(v,main){
     main.append(el('span','MÁS ALLÁ DEL TERRENO DE JUEGO','eyebrow'),el('h1','El mundo sigue.'),el('p','Resultados, movimientos y noticias pueden avanzar aunque no exista una decisión narrativa esta semana.','muted'));
     const banner=el('article',undefined,'world-banner');banner.append(photo('stadium_bg'));banner.append(el('h2','El fútbol nunca se detiene.'));main.append(banner);
-    const news=el('div',undefined,'news-grid');if(!v.news.length)news.append(el('p','No hay noticias destacadas esta semana. Sigue simulando para ver cómo evoluciona el mundo.','muted'));for(const n of [...v.news].reverse().slice(0,30)){const p=panel(date(n.date));p.append(el('p',n.text));news.append(p);}main.append(news);
+    const news=el('div',undefined,'news-grid');if(!v.news.length)news.append(el('p','No hay noticias destacadas esta semana. Sigue simulando para ver cómo evoluciona el mundo.','muted semantic-empty'));for(const n of [...v.news].reverse().slice(0,30)){const card=newsCard(n);if(card)news.append(card);}main.append(news);
   }
   function relations(v,main){
-    main.append(el('span','NADIE LLEGA SOLO','eyebrow'),el('h1','Las personas de tu historia.'),el('p','Entrenadores, compañeros y familia. Cada tarjeta identifica el vínculo que forma parte de tu recorrido; no muestra métricas internas del sistema.','muted'));
+    main.append(el('span','NADIE LLEGA SOLO','eyebrow'),el('h1','Las personas de tu historia.'),el('p','Entrenadores, compañeros y familia. Cada tarjeta muestra únicamente el nombre y el rol públicos del contacto; no muestra métricas internas del sistema.','muted'));
     const grid=el('div',undefined,'people-grid');
     if(!v.contacts.length)grid.append(el('p','Aún no has creado vínculos relevantes.','muted'));
-    for(const c of v.contacts){
-      const p=panel(c.name);p.prepend(portrait(c.id)?photo(portrait(c.id),'person-portrait'):el('div',c.name.split(' ').map(x=>x[0]).slice(0,2).join(''),'initials'));
-      p.append(el('span',bondType(c.role),'relationship-label'),el('p',c.role,'muted'));grid.append(p);
-    }
+    for(const c of v.contacts){const card=personCard(c);if(card)grid.append(card);}
     main.append(grid);
   }
   function profile(v,main){
@@ -558,8 +615,8 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
     identityInput.type='text';identityInput.value=v.player.displayName;identityInput.autocomplete='name';identityInput.setAttribute('aria-describedby','mh-player-name-help');
     const identityHelp=el('small','Entre 2 y 32 caracteres visibles. Se admiten tildes, apóstrofos y guiones.','muted');identityHelp.id='mh-player-name-help';
     identityLabel.append(identityInput,identityHelp);p.append(identityLabel,button('Guardar nombre',()=>run('identity',{displayName:identityInput.value}),'secondary'));
-    for(const [label,value]of[['Edad',v.age+' años'],['Posición',position(v)],['Club',club(v)],['Partidos',v.appearances],['Salario mensual',money(v.salaryMonthly)],['Contrato restante',v.contractMonths+' meses']]){const r=el('div',undefined,'data-row');r.append(el('span',label),el('strong',String(value)));p.append(r);}
-    p.append(stats(v));grid.append(p);main.append(grid);
+    for(const [label,value]of[['Edad',v.age+' años'],['Posición',position(v)],['Partidos',v.appearances]]){const r=semanticRow(label,value);if(r)p.append(r);}
+    p.append(stats(v));grid.append(p,contractSummary(v));main.append(grid);
   }
   async function download(){try{const raw=await store.readRaw();if(!raw)throw Error('No hay una partida guardada.');downloadText(raw,'multihistoria-partida.json');}catch(e){message=e.message;render();}}
   function downloadText(raw,filename){if(win.AndroidBridge?.saveTextFile){win.AndroidBridge.saveTextFile(filename,raw);return;}const url=URL.createObjectURL(new Blob([raw],{type:'application/json'}));const a=el('a');a.href=url;a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(url),1500);}
@@ -584,7 +641,7 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
   }
   function render(focus=false){disposeCutscene?.();disposeCutscene=null;if(autoVisualTimer!==null){clearTimeout(autoVisualTimer);autoVisualTimer=null;}const v=session?.getView();shell.replaceChildren();shell.classList.toggle('immersive',cinematic&&!!v);const header=el('header',undefined,'topbar');const brand=el('div',undefined,'brand');brand.append(el('span','M','brand-mark'));const name=el('div');name.append(el('strong','Multihistoria'),el('small','Carrera de futbolista'));brand.append(name);const simMode=v?.simulation?.mode;const pause=v&&['auto_simulating','paused'].includes(simMode)?button(simMode==='paused'?'Reanudar':'Pausar',pauseToggle,'secondary',{ariaLabel:simMode==='paused'?'Reanudar la simulación':'Pausar la simulación',pressed:simMode==='paused'}):null;if(pause)pause.classList.add('pause-button');header.append(brand,el('span',v?'Temporada '+v.season.replace('-',' / 20'):'Una vida. Mil decisiones.','chapter'),...(pause?[pause]:[]),button(v?date(v.date)+' · Partida':'Tu partida',()=>navigate('save'),'date-button',{ariaLabel:v?'Abrir Tu partida y el contexto de guardado de '+date(v.date):'Abrir Tu partida'}));shell.append(header);
     const nav=el('nav',undefined,'navigation');nav.setAttribute('aria-label','Navegación principal');for(const [key,label]of[['home','Inicio'],['career','Carrera'],['world','Mundo'],['relations','Relaciones'],['profile','Perfil'],['save','Tu partida']]){const b=button(label,()=>navigate(key),'nav-button');b.prepend(icon(key));if(key===view){b.classList.add('active');b.setAttribute('aria-current','page');}nav.append(b);}const foot=el('div',undefined,'nav-foot');foot.append(el('span','Cada elección cuenta.'),el('small','De principio a fin.'));nav.append(foot);shell.append(nav);
-    const main=el('main');main.tabIndex=-1;main.setAttribute('aria-busy',String(busy));shell.append(main);
+    const main=el('main');main.tabIndex=0;main.setAttribute('aria-busy',String(busy));shell.append(main);
     if(v){if(cinematic&&['decision','result','offer'].includes(v.screen))renderDecision(v,main);else({home,career,world,relations,profile,save:saves})[view](v,main);}else if(view==='save')saves(null,main);else main.append(el('h1','Tu historia está a punto de empezar.'));
     if(message){const alert=el('div',undefined,'alert');alert.setAttribute('role','alert');alert.append(el('p',message),button('Tu partida',()=>navigate('save')));shell.append(alert);}
     if(busy){const status=el('div',busyLabel,'busy-status');status.setAttribute('role','status');shell.append(status);}else if(paused||v?.simulation?.mode==='paused'){const status=el('div','Juego en pausa · reanuda cuando quieras.','pause-status');status.setAttribute('role','status');shell.append(status);}else if(v?.simulation?.mode==='auto_simulating'){const status=el('div','Simulando el siguiente tramo…','save-status');shell.append(status);}else{const status=el('div',session?'Guardado automático · '+decisionCount(v?.decisionsMade||0):'','save-status');shell.append(status);}

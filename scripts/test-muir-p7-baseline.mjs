@@ -1,0 +1,23 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import assert from 'node:assert/strict';
+import {execFileSync} from 'node:child_process';
+
+const root=path.resolve(import.meta.dirname,'..');
+const P6='e2b54ec654a32b8665925bec7811363003e482ed';
+const git=(...args)=>execFileSync('git',args,{cwd:root,encoding:'utf8'}).trim();
+const head=git('rev-parse','HEAD');
+execFileSync('git',['merge-base','--is-ancestor',P6,head],{cwd:root});
+const srcDiff=git('diff','--name-only',P6+'..'+head,'--','src');
+assert.equal(srcDiff,'','P7 changed runtime/authority files under src/: '+srcDiff);
+const world=fs.readFileSync(path.join(root,'src/catalog/football/world.ts'),'utf8');
+const version=/FOOTBALL_CATALOG_VERSION\s*=\s*"([^"]+)"/.exec(world)?.[1];
+assert.equal(version,'world-v2-a2-2026-09-28','Football Database V2 version drift');
+const session=fs.readFileSync(path.join(root,'src/session/game-session.ts'),'utf8');
+assert(session.includes('type PublicTerms = Pick<CareerOffer["terms"]'),'PublicOffer public projection missing');
+assert(session.includes('knownPlayerContacts(s, this.#snapshot.decisionProvenance)'),'known public contact adapter missing');
+assert(session.includes('latestMatch: latestCareerMatchResult(s)'),'latest public match projection missing');
+const evidence={gate:'PASS',p6CertifiedSha:P6,head,dbV2Status:'INTEGRATED',footballCatalogVersion:version,srcAuthorityDiff:[],contracts:['PlayerView','Football Database V2','PublicOffer','CareerMatchResult','CareerSeasonRecord','PublicPlayerContact']};
+const dir=path.join(root,'analysis','muir','p7','evidence');fs.mkdirSync(dir,{recursive:true});
+fs.writeFileSync(path.join(dir,'p7-baseline.json'),JSON.stringify(evidence,null,2)+'\n');
+console.log(JSON.stringify(evidence));

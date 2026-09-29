@@ -1,0 +1,88 @@
+name: MUIR P7 Semantic Football DB
+
+on:
+  push:
+    branches:
+      - ui-a5/muir-p7-semantic-db
+  pull_request:
+    branches:
+      - ui-a4/muir-p6-player-actions
+      - ui-a5/muir-p7-ci-base
+    paths:
+      - 'web/game-ui.js'
+      - 'web/game-ui.css'
+      - 'MUIR-RTM.md'
+      - 'docs/muir/P7_*.md'
+      - 'analysis/muir/p7/**'
+      - 'scripts/test-muir-p7-*.mjs'
+      - '.github/workflows/muir-p7-semantic-db.yml'
+
+concurrency:
+  group: muir-p7-semantic-db-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  certify-p7:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    env:
+      MUIR_P7_EXPECTED_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Build engine
+        run: npm run build
+      - name: Exact P6 predecessor and Football DB V2 baseline
+        run: node scripts/test-muir-p7-baseline.mjs
+      - name: P7 semantic component and authority contract
+        run: node scripts/test-muir-p7-semantic-components.mjs
+      - name: Exact P6 vs P7 runtime and public-view equivalence
+        run: |
+          git worktree add --detach /tmp/muir-p6 e2b54ec654a32b8665925bec7811363003e482ed
+          ln -s "$GITHUB_WORKSPACE/node_modules" /tmp/muir-p6/node_modules
+          (cd /tmp/muir-p6 && node scripts/build.mjs)
+          MUIR_P7_PREDECESSOR_ROOT=/tmp/muir-p6 node scripts/test-muir-p7-equivalence.mjs
+      - name: Football DB V2 and public sports regressions
+        run: node --test scripts/test-football-catalog.mjs scripts/test-football-v2-integrity.mjs scripts/test-football-database-v2-persistence.mjs scripts/test-posttest-feedback.mjs
+      - name: Compatible A19 UI regressions
+        run: node --test --test-name-pattern='A19 (onboarding|consumes factual|exposes real|has explicit|consumes A14|retirement stays|career renders)' scripts/test-t55-a19-ui.mjs
+      - name: Public offer regressions
+        run: node --test scripts/test-t51-agent6-offers23-25.mjs scripts/test-t51-offer-bridge-provenance.mjs
+      - name: Install browser certification tooling
+        run: |
+          npm install --no-save playwright@1.55.0 axe-core@4
+          npx playwright install --with-deps chromium
+      - name: P7 semantic responsive accessibility matrix
+        run: node analysis/muir/p7/browser-semantic-probe.mjs
+      - name: P6 Player Actions visual regression
+        run: node analysis/muir/p6/browser-player-actions-probe.mjs
+      - name: Shared UI package graph
+        run: node --test scripts/test-muir-package-graph.mjs
+      - name: PlayCanvas package
+        timeout-minutes: 10
+        run: npm run test:playcanvas
+      - name: Android offline clean package
+        timeout-minutes: 6
+        run: npm run android:offline
+      - name: Android offline regression
+        timeout-minutes: 6
+        run: npm run test:android:offline
+      - name: P7 exact-head final executable gate
+        run: node scripts/test-muir-p7-final-gate.mjs
+      - name: Upload P7 evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: muir-p7-${{ github.event.pull_request.head.sha || github.sha }}
+          if-no-files-found: warn
+          path: |
+            analysis/muir/p7/evidence/*.json
+            analysis/muir/p7/screenshots/*.png
+            analysis/muir/p6/evidence/*.json
