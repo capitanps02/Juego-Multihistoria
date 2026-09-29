@@ -275,6 +275,10 @@ export function validateGameSave(value: unknown, version: number): void {
 }
 
 /** Common runtime/save boundary including market + football moment + match-model checks. */
+export function assertRuntimePlayerIdentity(value: unknown): void {
+  assertPlayerIdentity(value, true);
+}
+
 export function assertGameState(value: unknown): asserts value is GameState {
   legacy.assertGameState(value);
   assertFootballCatalogPersistence(value, 8);
