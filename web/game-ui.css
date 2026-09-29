@@ -96,6 +96,7 @@ button.player-action-back{min-height:48px;white-space:normal;overflow-wrap:anywh
 .news-card .eyebrow{margin-bottom:8px}
 .news-card .news-copy{margin:0;white-space:normal;overflow-wrap:anywhere}
 .latest-match-card .season-club,.career-season-card .season-club{font-size:15px;line-height:1.45}
+.semantic-card .data-row span{min-width:0}
 .semantic-card .data-row strong{min-width:0;overflow-wrap:anywhere}
 .contract-summary .data-row:first-of-type{padding-top:0}
 .offer-card .offer-comparison{align-items:flex-start}
