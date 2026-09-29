@@ -232,10 +232,13 @@ button.player-action-back{min-height:48px;white-space:normal;overflow-wrap:anywh
 .cinema-top{margin-bottom:0;flex:0 0 auto;padding:18px 22px 10px}
 .cinema-top .glass{min-height:48px}
 .decision-sheet{margin:auto 24px 24px;width:min(1100px,calc(100% - 48px));max-height:calc(100% - 82px);padding:clamp(22px,3vw,32px);scrollbar-gutter:stable;overscroll-behavior:contain}
-.decision-choice-sheet{border-color:#ffffff2e}
+.decision-choice-sheet{border-color:#ffffff2e;min-width:0}
+.decision-choice-sheet>*{min-width:0;max-width:100%}
+.decision-choice-sheet h1{max-width:100%;overflow-wrap:anywhere;word-break:normal}
 .decision-choice-sheet .story-text{max-width:72ch}
-.decision-choices{align-items:stretch}
-.decision-choices .choice{min-height:64px}
+.decision-choices{align-items:stretch;min-width:0;max-width:100%}
+.decision-choices .choice{min-height:64px;min-width:0;max-width:100%}
+.decision-choices .choice>span:last-child{min-width:0;max-width:100%;overflow-wrap:anywhere;word-break:normal}
 .decision-memories button{min-height:48px}
 .immersive .navigation{opacity:.52}
 @media(max-width:1150px){
