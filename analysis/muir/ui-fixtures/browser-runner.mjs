@@ -47,7 +47,7 @@ function releaseAutoTimer(){
   globalThis.clearTimeout=nativeClearTimeout;
   const callback=frozenAutoCallback;
   frozenAutoCallback=null;
-  if(callback)nativeSetTimeout(callback,140);
+  if(callback)callback();
 }
 
 document.documentElement.dataset.muirVisualTest='true';
