@@ -27,6 +27,7 @@ assert(session.includes('{ type: "identity"; displayName: string }'),'identity s
 assert(session.includes('player: { displayName: string }'),'public PlayerView identity missing');
 assert(session.includes('player: { displayName: ensurePlayerIdentityInPlace(s).displayName }'),'PlayerView identity projection missing');
 assert(session.includes('ensurePlayerIdentityInPlace(header.state)'),'legacy session identity upgrade missing');
+assert(session.includes('assertRuntimePlayerIdentity(header.state)'),'GameSession must enforce identity after legacy upgrade');
 assert(sessionValidation.includes('"identity"'),'identity receipt validation missing');
 assert(contract.includes('Status: **IMPLEMENTED_PENDING_CERTIFICATION**'),'ID-01 contract status mismatch');
 
