@@ -4,7 +4,6 @@ import {GameSession} from '../../../dist/session/game-session.js';
 import {EVENTS} from '../../../dist/content/events/index.js';
 import {fixtureById} from './fixtures.mjs';
 import {certifyRepresentationInPlace} from '../../../dist/simulation/representation-authority.js';
-import {recordOfficialMatchInPlace} from '../../../dist/simulation/match-model.js';
 
 const command=(session,type,extra={})=>({type,commandId:'muir-'+type+'-'+session.getView().revision,expectedRevision:session.getView().revision,...extra});
 
@@ -61,24 +60,6 @@ async function offer(f){
   if(s.getView().screen!=='offer')throw Error('Deterministic offer fixture did not materialize');
   return s;
 }
-async function p7NewsLong(f){
-  const base=await initial(f),snapshot=base.exportSnapshot();
-  snapshot.state.microfeeds=[
-    {id:'MUIR_P7_NEWS_SHORT',date:snapshot.state.date,family:'press',text:'El club completa la sesión del día.'},
-    {id:'MUIR_P7_NEWS_LONG',date:snapshot.state.date,family:'press',text:'La actualidad del entorno futbolístico continúa con una información deliberadamente extensa para comprobar saltos de línea, lectura móvil, tildes, apóstrofos y ausencia de desbordamiento horizontal sin añadir ningún dato deportivo nuevo.'}
-  ];
-  return GameSession.resume(snapshot);
-}
-async function p7Sport(f){
-  const base=await initial(f),snapshot=base.exportSnapshot();
-  snapshot.state.date='2026-08-05';
-  snapshot.state.runtime.day=35;
-  snapshot.state.runtime.seasonDay=35;
-  const row=recordOfficialMatchInPlace(snapshot.state,{appeared:true,debutOccurred:true,injuryUnavailable:false});
-  if(!row)throw Error('P7 sport fixture did not materialize a canonical match');
-  return GameSession.resume(snapshot);
-}
-
 async function importantInjury(f){
   for(let seed=1;seed<=120;seed++){
     const base=await GameSession.create(seed,{events:[],microfeeds:false,sessionId:'muir-'+f.id+'-'+seed});
@@ -137,8 +118,6 @@ export async function buildFixtureSession(id){
     case 'player-actions-detail-agent': return playerActionAgent(f);
     case 'offer': return offer(f);
     case 'important-injury': return importantInjury(f);
-    case 'p7-news-long': return p7NewsLong(f);
-    case 'p7-sport': return p7Sport(f);
     // A brand-new session exposes the canonical PROLOGUE through public PlayerView.cutscene. The browser harness overrides only its media URL.
     case 'cinematic-missing-asset': return initial(f);
     case 'retirement': {
