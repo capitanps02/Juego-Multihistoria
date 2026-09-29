@@ -67,7 +67,7 @@ try{
       assert.equal(base.summary,'Cómo se juega',viewport.id+' help accessible label mismatch');
       assert(base.summaryHeight>=48,viewport.id+' help summary touch target below 48px');
       assert(base.summaryTabIndex>=0,viewport.id+' help summary is not keyboard focusable');
-      assert.equal(base.bodyVisible,false,viewport.id+' help body occupies permanent Home space');
+      assert(base.helpHeight<=base.summaryHeight+4,viewport.id+' closed help occupies permanent Home space: '+JSON.stringify({helpHeight:base.helpHeight,summaryHeight:base.summaryHeight,bodyVisibility:base.bodyVisibility}));
       assert.equal(base.glossaryExists,false,viewport.id+' duplicated glossary remains in Home help');
       assert.deepEqual(base.serious,[],viewport.id+' serious/critical AXE violations: '+JSON.stringify(base.serious));
       await page.evaluate(()=>{
@@ -89,10 +89,10 @@ try{
         const root=document.querySelector('#game').shadowRoot;
         const help=root.querySelector('.home-help');
         const body=help.querySelector('.tutorial-body');
-        return {open:help.open,bodyVisible:getComputedStyle(body).display!=='none'&&body.getClientRects().length>0,text:body.textContent.trim()};
+        return {open:help.open,helpHeight:help.getBoundingClientRect().height,summaryHeight:help.querySelector('summary').getBoundingClientRect().height,bodyVisibility:body.checkVisibility?.()??null,text:body.textContent.trim()};
       });
       assert.equal(opened.open,true,viewport.id+' contextual help did not open');
-      assert.equal(opened.bodyVisible,true,viewport.id+' contextual help content unavailable');
+      assert(opened.helpHeight>opened.summaryHeight+20,viewport.id+' contextual help content unavailable: '+JSON.stringify(opened));
       assert(opened.text.includes('Decide cuando aparezca un momento importante.'),viewport.id+' core help meaning missing');
 
       const scales=[];
