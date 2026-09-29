@@ -74,6 +74,17 @@ try{
         if(!snapshot)throw Error('persisted auto-running snapshot is unavailable');
         const metrics=globalThis.__MUIR_METRICS__;
         const sampleCount=globalThis.__P5_PROBE__?.shellReplaceDurationsMs?.length??0;
+        globalThis.__P5_VISUAL_PATCHES__=0;
+        globalThis.__P5_VISUAL_OBSERVER__?.disconnect?.();
+        const progressNode=root.querySelector('[data-p5-auto-progress]');
+        const progressTextNode=root.querySelector('[data-p5-auto-progress-text]');
+        const watched=[progressNode,progressTextNode].filter(Boolean);
+        if(watched.length){
+          globalThis.__P5_VISUAL_OBSERVER__=new MutationObserver(records=>{
+            if(records.length)globalThis.__P5_VISUAL_PATCHES__++;
+          });
+          for(const node of watched)globalThis.__P5_VISUAL_OBSERVER__.observe(node,{attributes:true,childList:true,characterData:true,subtree:true});
+        }
         const result={
           now:performance.now(),
           revision:snapshot.revision,
@@ -91,7 +102,13 @@ try{
           activeText:root.activeElement?.textContent?.trim()??''
         };
         globalThis.__MUIR_RELEASE_AUTO_TIMER__?.();
-        return result;
+        return new Promise(resolve=>setTimeout(()=>{
+          const refreshed=globalThis.__MUIR_METRICS__;
+          result.focusChanges=refreshed?.focusChanges??result.focusChanges;
+          result.scrollEvents=refreshed?.scrollEvents??result.scrollEvents;
+          result.visualPatches=globalThis.__P5_VISUAL_PATCHES__??0;
+          resolve(result);
+        },120));
       });
 
       await page.waitForTimeout(450);
@@ -115,14 +132,16 @@ try{
           shellReplaceDurationsMs:[...(globalThis.__P5_PROBE__?.shellReplaceDurationsMs??[])],
           scrollTop:main.scrollTop,
           maxScroll:Math.max(0,main.scrollHeight-main.clientHeight),
-          activeText:root.activeElement?.textContent?.trim()??''
+          activeText:root.activeElement?.textContent?.trim()??'',
+          visualPatches:globalThis.__P5_VISUAL_PATCHES__??0
         };
       });
 
       const durationMs=end.now-start.now;
       const logicTicks=end.revision-start.revision;
       const daysAdvanced=(end.elapsedDays??0)-(start.elapsedDays??0);
-      const visualUpdates=end.shellReplacements-start.shellReplacements;
+      const fullRenders=end.shellReplacements-start.shellReplacements;
+      const visualUpdates=Math.max(0,(end.visualPatches??0)-(start.visualPatches??0));
       const mutationBatches=end.mutationBatches-start.mutationBatches;
       const focusChurn=end.focusChanges-start.focusChanges;
       const scrollEvents=end.scrollEvents-start.scrollEvents;
@@ -144,10 +163,11 @@ try{
         logicRateHz,
         visualUpdates,
         visualRateHz,
+        fullRenders,
         mutationBatches,
         mutationRateHz,
         renderCountDelta:end.renderCount-start.renderCount,
-        domReplacements:visualUpdates,
+        domReplacements:fullRenders,
         renderP50Ms:percentile(durations,.5),
         renderP95Ms:percentile(durations,.95),
         focusChurn,
@@ -181,6 +201,7 @@ const report={
     renderP50Ms:primary?.renderP50Ms??null,
     renderP95Ms:primary?.renderP95Ms??null,
     domReplacements:primary?.domReplacements??null,
+    visualUpdates:primary?.visualUpdates??null,
     focusChurn:primary?.focusChurn??null,
     scrollPreserved:primary?.scrollPreserved??null
   }
