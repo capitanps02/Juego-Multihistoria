@@ -15,6 +15,7 @@ const save=read('src/save/save.ts');
 const session=read('src/session/game-session.ts');
 const sessionValidation=read('src/session/validate-session.ts');
 const ui=read('web/game-ui.js');
+const ui=read('web/game-ui.js');
 const contract=read('analysis/muir/ID-01_PLAYER_IDENTITY.md');
 
 assert(types.includes('playerIdentity?: import("./player-identity.js").PlayerIdentity'),'legacy-compatible GameState identity contract missing');
@@ -32,6 +33,10 @@ assert(session.includes('player: { displayName: ensurePlayerIdentityInPlace(s).d
 assert(session.includes('ensurePlayerIdentityInPlace(header.state)'),'legacy session identity upgrade missing');
 assert(session.includes('assertRuntimePlayerIdentity(header.state)'),'GameSession must enforce identity after legacy upgrade');
 assert(sessionValidation.includes('"identity"'),'identity receipt validation missing');
+assert(ui.includes("run('identity',{displayName:identityInput.value})"),'profile edit must dispatch authoritative identity command');
+assert(ui.includes('playerDisplayName:displayName'),'new-career flow must pass identity into GameSession.create');
+assert(ui.includes('identityInput.value=v.player.displayName'),'profile input must derive from public PlayerView identity');
+assert(ui.includes('n.textContent=text'),'presentation helper must render supplied identity as text, not HTML');
 assert(ui.includes("run('identity',{displayName:identityInput.value})"),'production edit flow missing');
 assert(ui.includes('playerDisplayName:displayName'),'production creation flow missing');
 assert(contract.includes('Status: **IMPLEMENTED_PENDING_CERTIFICATION**'),'ID-01 contract status mismatch');
@@ -54,7 +59,8 @@ const allowed=new Set([
   'scripts/test-muir-id01-gate.mjs',
   'analysis/muir/ID-01_PLAYER_IDENTITY.md',
   'web/game-ui.js',
-  '.github/workflows/muir-id01-player-identity.yml'
+  '.github/workflows/muir-id01-player-identity.yml',
+  'web/game-ui.js'
 ]);
 const forbidden=changed.filter(p=>!allowed.has(p));
 assert.deepEqual(forbidden,[],'ID-01 changed out-of-scope files: '+forbidden.join(', '));
