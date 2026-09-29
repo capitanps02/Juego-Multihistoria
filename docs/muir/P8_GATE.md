@@ -40,24 +40,49 @@ Certified Mundo evidence:
 - PlayCanvas package smoke: PASS
 - DB/PlayerView/gameplay/save authority changes: 0
 
+## Pass 3 — Carrera
+
+P8 Pass 3: **PASS** on SHA `cc56708c95a53a7876be3c3cac25e1fc26dcbc69`.
+
+Workflow: `36608026921` = **SUCCESS**  
+Artifact: `muir-p8-3d9ce88f98eb84550ed1415806380ce049ea4055`  
+Artifact digest: `sha256:02678e17a575bd50a8ba1e72fa99f38fe64e6c53a2564239a3181e5caade3cd1`
+
+Certified Carrera evidence:
+
+- early career / one season / 20-season long career: PASS
+- `LatestMatchCard` before season history: PASS
+- factual public `MilestoneCard`: PASS
+- public offer history through `OfferCard`: PASS
+- decisions + voluntary actions timeline, 60 entries: PASS
+- panel-inside-panel findings: 0
+- retirement closed state with 20 seasons: PASS
+- artificial XP/levels/loot: 0
+- 360×800 / 390×844 / 412×915 / tablet / landscape: PASS
+- text scale 100/130/180%: PASS
+- horizontal overflow findings: 0
+- AXE serious/critical: 0
+- P7 semantic / Football DB / save-import / package graph / PlayCanvas: PASS
+- DB/PlayerView/gameplay/save authority changes: 0
+
 ## Current state
 
-**IN_PROGRESS — PASS 3 CARRERA**
+**IN_PROGRESS — PASS 4 RELACIONES / PERFIL**
 
 Authorized product files remain presentation-only:
 
 - `web/game-ui.js`
 - `web/game-ui.css`
 
-Pass 3 must prove:
+Pass 4 must prove:
 
-- `LatestMatchCard` is identifiable before season history;
-- `CareerSeasonCard` supports early, one-season and long-career states;
-- presentation-only `MilestoneCard` uses factual public milestones only;
-- `OfferCard` remains the offer-history renderer;
-- decisions and Player Actions share a factual timeline without panel-inside-panel;
-- retirement/history remains usable with a 20-season test career;
-- no XP/levels/artificial progression is introduced;
+- Relaciones renders only public contact name/role via P7 `PersonCard`;
+- no trust/affinity/reliability/influence/probability or inferred bond type is exposed;
+- empty, one, long Unicode and many-contact states remain usable;
+- Perfil renders only public identity, age, position, appearances, condition and contract fields;
+- Perfil contains no nested panel for `Tu momento`;
+- GRL, artificial attributes, fake tabs, nationality and market value introduced: 0;
+- long names and long formatted club names remain usable;
 - required phone/tablet/landscape viewports and 100/130/180% text remain usable;
 - AXE serious/critical remains 0;
 - P7 DB/market/gameplay authority remains unchanged.
