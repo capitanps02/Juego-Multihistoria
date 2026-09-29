@@ -250,3 +250,47 @@ P7 scope: presentation-only; no `src/**`, DB, market, offer authority, gameplay,
 | P7-MKTAUTH-001 | Market state/results/gameplay remain unchanged because P7 modifies no runtime authority | UI-A5 | P7.1–P7.5 | no src changes | exact diff + football/match regressions | baseline + workflow | MUIR-P7 | revert out-of-scope diff | PASS |
 
 P7 candidate SHA `fc65d9b5c6da31b687ad855a3e3b56623af4a64b` completed exact-head workflow `36599864443` with **SUCCESS**, including semantic browser matrix, P6 regression, PlayCanvas, Android offline and executable final gate. Artifact: `muir-p7-fc65d9b5c6da31b687ad855a3e3b56623af4a64b` · `sha256:822e2c583c7aca99003f8169d6caa6a9af3bf02ca856c1f57f07742a1b99cf68`. The RTM-closing commit must itself repeat the exact-head workflow successfully; that closing run is authoritative for final P7 certification.
+
+
+## P8 — Mundo y Carrera / secundarias
+
+P8 authorized predecessor: `3f93206903441029d692eaa76def890ddc7a0cc0` · P7 exact-head workflow `36601414020` SUCCESS  
+P8 branch: `ui-a5/muir-p8-world-career`  
+P8 PR: #882  
+Scope: presentation-only for Mundo, Carrera, Relaciones, Perfil and Tu partida. No PlayerView/Football DB/GameSession/RNG/save-schema/gameplay changes.
+
+| REQ_ID | Description | Owner | Pass | Implementation | Test | Evidence | Gate | Rollback | Status |
+|---|---|---|---|---|---|---|---|---|---|
+| P8-WORLD-001 | Mundo renders the real public news feed only | UI-A5 | P8.2 | P8 factual news feed + P7 NewsCard | world static + browser matrix | p8-world.json · workflow 36606402032 | MUIR-P8 | revert P8 world presentation | PASS |
+| P8-WORLD-002 | Mundo has a truthful empty-news state | UI-A5 | P8.2 | P8 semantic empty state | world-empty fixture | p8-world.json · workflow 36606402032 | MUIR-P8 | restore P7 empty state | PASS |
+| P8-CAREER-001 | CareerSeasonCard presents long career seasons | UI-A5 | P8.3 | P7 CareerSeasonCard + P8 hierarchy | 20-season browser fixture | p8-career.json · workflow 36608026921 | MUIR-P8 | revert P8 career layout | PASS |
+| P8-CAREER-002 | LatestMatchCard remains factual and identifiable | UI-A5 | P8.3 | P7 LatestMatchCard promoted before seasons | latest-match fixture | p8-career.json · workflow 36608026921 | MUIR-P8 | revert P8 career layout | PASS |
+| P8-CAREER-003 | Public milestones remain visible without artificial progression | UI-A5 | P8.3 | presentation-only MilestoneCard | milestone fixtures | p8-career.json · workflow 36608026921 | MUIR-P8 | revert P8 milestone presentation | PASS |
+| P8-CAREER-004 | Public offer history uses OfferCard | UI-A5 | P8.3 | P7 OfferCard in factual offer section | offer-history fixture | p8-career.json · workflow 36608026921 | MUIR-P8 | restore P7 order | PASS |
+| P8-CAREER-005 | Public decisions/actions remain a factual timeline | UI-A5 | P8.3 | semantic section + 0 nested-panel wrapper | 60-entry timeline fixture | p8-career.json · workflow 36608026921 | MUIR-P8 | restore P7 timeline | PASS |
+| P8-REL-001 | Relationships show public contact name/role plus presentation portrait/initials only | UI-A5 | P8.4 | P7 PersonCard + P8 responsive public-contact layout | empty/one/long/many fixtures | p8-relations-profile.json · workflow 36610621251 | MUIR-P8 | revert P8 relations layout | PASS |
+| P8-PROFILE-001 | Profile renders only public PlayerView identity, contract and condition fields | UI-A5 | P8.4 | public identity + sibling stats/contract stack | profile/long-club/zero-contract fixtures | p8-relations-profile.json · workflow 36610621251 | MUIR-P8 | revert P8 profile layout | PASS |
+| P8-SAVE-001 | Local/current save UI remains available | UI-A5 | P8.5 | grouped local current-save presentation | save static + browser + persistence stress | p8-save.json · workflow 36612633876 | MUIR-P8 | revert P8 save presentation | PASS |
+| P8-SAVE-002 | Existing import/export remains available and semantically unchanged | UI-A5 | P8.5 | existing download/import with confirmation | browser interaction + save regressions | p8-save.json · workflow 36612633876 | MUIR-P8 | revert P8 save presentation | PASS |
+| P8-SAVE-003 | Existing previous/legacy recovery remains available and semantically unchanged | UI-A5 | P8.5 | conditional previous + legacy support cards | browser interaction + persistence stress | p8-save.json · workflow 36612633876 | MUIR-P8 | revert P8 save presentation | PASS |
+| P8-LONG-001 | Long lists/names remain usable without horizontal overflow | UI-A5 | P8.6 | untruncated long-state renderers + responsive guards | long/responsive + browser matrices | P8.5 workflow 36612633876 · hardening 36614679011 | MUIR-P8 | revert offending styles | PASS |
+| P8-EMPTY-001 | All five surfaces use truthful empty states where the public contract permits emptiness | UI-A5 | P8.2–P8.6 | factual empty/early states only | world/career/relations/save fixtures | P8.2–P8.5 evidence · hardening 36614679011 | MUIR-P8 | restore factual empty copy | PASS |
+| P8-RESP-001 | Required phone/tablet/landscape viewports remain usable | UI-A5 | P8.1–P8.7 | P8 responsive surface rules | 360/390/412/tablet/landscape Chromium matrices | workflows 36604587742 / 36606402032 / 36608026921 / 36610621251 / 36612633876 | MUIR-P8 | revert offending layout | PASS |
+| P8-A11Y-001 | Secondary surfaces remain keyboard/focus/AXE/text-scale accessible | UI-A5 | P8.1–P8.7 | semantic sections + focusable main + responsive text | AXE/keyboard/100-130-180% matrices | certified P8 browser evidence through workflow 36612633876 | MUIR-P8 | revert offending semantic/style change | PASS |
+| P8-AUTH-001 | DB, PlayerView, save schema and gameplay authority remain unchanged | UI-A5 | P8.1–P8.7 | exact-predecessor scope guard | diff + equivalence + public regressions | P8.5 certified SHA + P8.6 product-equivalence diff | MUIR-P8 | revert out-of-scope change | PASS |
+
+### P8 final certification state
+
+- Exact P7 predecessor remains `3f93206903441029d692eaa76def890ddc7a0cc0`.
+- Pass 1 baseline: PASS · workflow `36604587742`.
+- Pass 2 Mundo: PASS · workflow `36606402032`.
+- Pass 3 Carrera: PASS · workflow `36608026921`.
+- Pass 4 Relaciones/Perfil: PASS · workflow `36610621251`.
+- Pass 5 Tu partida: PASS · workflow `36612633876`.
+- Pass 6 hardening: PASS by product equivalence from P8.5 plus cross-surface hardening contract PASS in workflow `36614679011`.
+- Pass 7 pre-certification full gate: PASS · workflow `36615705748` on SHA `1e1fb61b72efda45720f34c249ae1c4cc14630ef`.
+- Certification commit changes evidence/RTM/final-contract only; product bytes remain unchanged from the certified P8 product.
+- Public Relationships/Profile contracts remain unchanged.
+- Save schema, IndexedSaveStore, Football DB, PlayerView and GameSession authority remain unchanged.
+- P8 status: **PASS**, conditional on the full MUIR P8 workflow remaining SUCCESS on the current branch HEAD.
+- P9 remains unauthorized and has not been started.

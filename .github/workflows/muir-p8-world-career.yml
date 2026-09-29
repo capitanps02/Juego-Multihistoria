@@ -1,0 +1,82 @@
+name: MUIR P8 World Career
+
+on:
+  push:
+    branches:
+      - ui-a5/muir-p8-world-career
+      - ui-a5/muir-p8-ci-baseline-v2
+  pull_request:
+    branches:
+      - ui-a5/muir-p7-semantic-db
+      - ui-a5/muir-p8-world-career
+
+concurrency:
+  group: muir-p8-world-career-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  p8-baseline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Build engine
+        run: npm run build
+      - name: Exact P7 predecessor and P8 scope guard
+        run: node --test scripts/test-muir-p8-baseline.mjs
+      - name: P8 Mundo static contract
+        run: node --test scripts/test-muir-p8-world.mjs
+      - name: P8 Carrera static contract
+        run: node --test scripts/test-muir-p8-career.mjs
+      - name: P8 Relaciones y Perfil static contract
+        run: node --test scripts/test-muir-p8-relations-profile.mjs
+      - name: P8 Tu partida static contract
+        run: node --test scripts/test-muir-p8-save.mjs
+      - name: P8 cross-surface hardening contract
+        run: node --test scripts/test-muir-p8-hardening.mjs
+      - name: P8 long-state responsive contract
+        run: node --test scripts/test-muir-p8-long-responsive.mjs
+      - name: P8 final exact-head contract
+        run: node --test scripts/test-muir-p8-final.mjs
+      - name: P7 semantic regression
+        run: node scripts/test-muir-p7-semantic-components.mjs
+      - name: Football DB public regressions
+        run: node --test scripts/test-football-catalog.mjs scripts/test-football-v2-integrity.mjs scripts/test-football-database-v2-persistence.mjs
+      - name: Save/import regressions
+        run: node --test scripts/test-saves.mjs scripts/test-t5-save-compat.mjs scripts/test-t55-a19-ui.mjs
+      - name: P8 persistence interruption stress
+        run: node --test scripts/test-persistence.mjs
+      - name: Install browser tooling
+        run: |
+          npm install --no-save playwright@1.55.0 axe-core@4
+          npx playwright install --with-deps chromium
+      - name: P8 secondary-surface regression matrix
+        run: node analysis/muir/p8/browser-baseline-probe.mjs
+      - name: P8 Mundo semantic browser matrix
+        run: node analysis/muir/p8/browser-world-probe.mjs
+      - name: P8 Carrera long-history browser matrix
+        run: node analysis/muir/p8/browser-career-probe.mjs
+      - name: P8 Relaciones y Perfil browser matrix
+        run: node analysis/muir/p8/browser-relations-profile-probe.mjs
+      - name: P8 Tu partida browser matrix
+        run: node analysis/muir/p8/browser-save-probe.mjs
+      - name: Shared UI package graph
+        run: node --test scripts/test-muir-package-graph.mjs
+      - name: PlayCanvas package smoke
+        run: npm run test:playcanvas
+      - name: Upload P8 baseline evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: muir-p8-${{ github.sha }}
+          if-no-files-found: warn
+          path: |
+            analysis/muir/p8/evidence/*.json
+            analysis/muir/p8/screenshots/*.png

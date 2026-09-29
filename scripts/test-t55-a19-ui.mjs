@@ -24,8 +24,10 @@ test('A19 player-facing micro UX uses clear history, save and relationship langu
   assert.match(ui,/Aún no has debutado/);
   assert.match(ui,/No hay noticias destacadas esta semana/);
   assert.doesNotMatch(ui,/bondType/,'relationship family must not be inferred from public contact role');
-  assert.match(ui,/Cada tarjeta muestra únicamente el nombre y el rol públicos del contacto/);
-  assert.match(ui,/no muestra métricas internas del sistema/);
+  const relations=ui.slice(ui.indexOf('function relations(v,main)'),ui.indexOf('function profile(v,main)'));
+  assert.match(relations,/Personas que ya forman parte de tu carrera/);
+  assert.doesNotMatch(relations,/métricas internas|Cada tarjeta muestra únicamente el nombre y el rol públicos/i,'P8 relationship copy should stay player-facing');
+  for(const forbidden of ['trust','affinity','reliability','influence','probability'])assert.doesNotMatch(relations,new RegExp(forbidden,'i'),'private relationship metric leaked: '+forbidden);
   assert.match(ui,/Partida actual/);
   assert.match(ui,/Copia anterior/);
   assert.match(ui,/Código de historia/);

@@ -140,6 +140,14 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
     p.prepend(portraitKey?photo(portraitKey,'person-portrait'):el('div',initials(c.name)||'·','initials person-initials'));
     if(c.role)p.append(el('p',c.role,'muted'));return p;
   }
+  function milestoneCard(title,{dateValue=null,summary=null,chips=[],rows=[]}={}){
+    const p=panel(title);p.classList.add('semantic-card','milestone-card');
+    if(dateValue){const t=el('time',date(dateValue),'eyebrow');t.dateTime=dateValue;p.prepend(t);}
+    if(summary)p.append(el('p',summary,'milestone-summary'));
+    if(chips.length){const list=el('div',undefined,'milestone-list');for(const label of chips)list.append(el('span',label,'milestone-chip'));p.append(list);}
+    appendSemanticRows(p,rows);
+    return p;
+  }
   const validViews=new Set(['home','career','world','relations','profile','save']);
   let historyReady=false;
   function routeState(){return {mhOwner:true,mhView:view,mhCinematic:cinematic};}
@@ -409,15 +417,16 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
     }
     return button('Simular semana',()=>run('continue',{maxDays:7}),'primary',{blockedWhenPaused:true});
   }
-  function hero(v){const h=el('article',undefined,'hero');h.append(photo('hero_player'));const c=el('div',undefined,'hero-copy');c.append(el('span','TU HISTORIA, POR ESCRIBIR','eyebrow'),el('h1','Una vida.\nMil decisiones.'),el('p',position(v)+' · '+v.age+' años'),el('p',club(v),'muted'));h.append(c);return h;}
+  function hero(v){const h=el('article',undefined,'hero profile-hero');h.append(photo('hero_player'));const c=el('div',undefined,'hero-copy');c.append(el('span','TU PERFIL','eyebrow'),el('h1',v.player.displayName,'player-name'),el('p',position(v)+' · '+v.age+' años'),el('p',club(v),'muted'));h.append(c);return h;}
   function homeHero(v){
     const h=el('article',undefined,'hero home-hero');h.append(photo('hero_player'));
     const c=el('div',undefined,'hero-copy');
     c.append(el('span','MI CARRERA','eyebrow'),el('h1',v.player.displayName,'player-name'),el('p',position(v)+' · '+v.age+' años'),el('p',club(v),'muted'));
     h.append(c);return h;
   }
-  function stats(v,compact=false){
-    const p=panel('Tu momento');if(compact)p.classList.add('moment-compact');
+  function stats(v,compact=false,embedded=false){
+    const p=embedded?el('section',undefined,'panel profile-moment'):panel('Tu momento');
+    if(embedded)p.append(el('h2','Tu momento'));if(compact)p.classList.add('moment-compact');
     const rows=[
       ['Forma',v.form,'Rendimiento actual: refleja cómo estás compitiendo ahora.'],
       ['Estado físico',v.fitness,'Condición corporal y disponibilidad física.'],
@@ -553,40 +562,58 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
   function offerHistory(v,main){for(const h of [...v.offerHistory].reverse()){const p=offerCard(h.offer,{explanation:h.explanation});if(p)main.append(p);}}
   function career(v,main){
     if(playerActionUi.screen!=='career'&&renderPlayerActions(v,main))return;
-    main.append(el('span','HISTORIAL VIVO DE TU TRAYECTORIA','eyebrow'),el('h1','Tu carrera.'));
+    main.classList.add('p8-career');
+    const intro=el('header',undefined,'career-intro');intro.append(el('span','HISTORIAL VIVO DE TU TRAYECTORIA','eyebrow'),el('h1','Tu carrera.'),el('p','Partidos, temporadas, hitos y decisiones que ya forman parte de tu historia.','muted'));main.append(intro);
     if(v.screen==='career'&&v.simulation?.mode==='idle'&&v.actions?.available){
       const manage=panel('Gestionar mi carrera');manage.classList.add('player-actions-entry');manage.append(el('p','Opcional: puedes hacer algo antes de simular. Nada es obligatorio.','muted'),button('Gestionar mi carrera',openPlayerActions,'secondary'));main.append(manage);
     }
     const retirement=retirementPanel(v);if(retirement)main.append(retirement);
     const recentPeriod=simulationSummary(v);if(recentPeriod)main.append(recentPeriod);
+
+    const latest=latestMatchCard(v.latestMatch,{empty:true});if(latest){latest.classList.add('career-latest');main.append(latest);}
+
+    const seasonsSection=el('section',undefined,'career-section career-seasons-section');seasonsSection.setAttribute('aria-labelledby','career-seasons-title');
+    const seasonsHead=el('div',undefined,'career-section-head'),seasonsTitle=el('h2','Temporadas');seasonsTitle.id='career-seasons-title';seasonsHead.append(seasonsTitle);seasonsSection.append(seasonsHead);
     if(!v.careerSeasons.length){
-      const empty=panel('Tu carrera empieza aquí');empty.classList.add('career-empty');
+      const empty=panel('Tu carrera empieza aquí');empty.classList.add('career-empty','semantic-empty');
       empty.append(el('p',v.age+' años · '+club(v)+' · Temporada '+v.season.replace('-',' / 20'),'career-start'));
       empty.append(el('p',v.appearances===0?'Aún no has debutado. Los partidos, hitos y cambios importantes aparecerán aquí.':'Tu historial deportivo empezará a agruparse por temporada cuando existan registros oficiales.','muted'));
-      main.append(empty);
+      seasonsSection.append(empty);
     }else{
       const seasons=el('div',undefined,'season-grid');
       for(const s of [...v.careerSeasons].reverse()){const card=careerSeasonCard(s);if(card)seasons.append(card);}
-      main.append(seasons);
+      seasonsSection.append(seasons);
     }
+    main.append(seasonsSection);
+
+    const milestoneCards=[];
     if(v.careerMilestones?.historyComplete&&v.careerMilestones.appearances>0){
-      const m=v.careerMilestones,p=panel('Hitos deportivos');
-      const chips=el('div',undefined,'milestone-list');chips.append(el('span','Debut oficial','milestone-chip'));
-      for(const [flag,label] of [['appearance10','10 partidos'],['appearance50','50 partidos'],['appearance100','100 partidos'],['appearance500','500 partidos'],['appearance700','700 partidos']])if(m[flag]===true)chips.append(el('span',label,'milestone-chip'));
-      p.append(chips);
-      for(const [label,value] of [['Partidos',m.appearances],['Goles',m.goals],['Asistencias',m.assists]]){const r=el('div',undefined,'data-row');r.append(el('span',label),el('strong',String(value)));p.append(r);}
-      main.append(p);
+      const m=v.careerMilestones,chips=['Debut oficial'];
+      for(const [flag,label] of [['appearance10','10 partidos'],['appearance50','50 partidos'],['appearance100','100 partidos'],['appearance500','500 partidos'],['appearance700','700 partidos']])if(m[flag]===true)chips.push(label);
+      milestoneCards.push(milestoneCard('Hitos deportivos',{chips,rows:[['Partidos',m.appearances],['Goles',m.goals],['Asistencias',m.assists]]}));
     }
-    const latest=latestMatchCard(v.latestMatch,{empty:true});if(latest)main.append(latest);
-    if(v.ageMilestones.length){const milestones=panel('Hitos de edad');for(const m of v.ageMilestones)milestones.append(el('p',`${m.age} años · ${date(m.date)} · ${clubName(m.club)}`,'muted'));main.append(milestones);}
-    offerHistory(v,main);
-    const history=panel('Decisiones y acciones');const list=el('div',undefined,'timeline');
+    for(const m of v.ageMilestones)milestoneCards.push(milestoneCard(m.age+' años',{dateValue:m.date,summary:clubName(m.club)}));
+    if(milestoneCards.length){
+      const milestones=el('section',undefined,'career-section career-milestones-section');milestones.setAttribute('aria-labelledby','career-milestones-title');
+      const head=el('div',undefined,'career-section-head'),title=el('h2','Hitos');title.id='career-milestones-title';head.append(title);milestones.append(head);
+      const grid=el('div',undefined,'career-milestone-grid');for(const card of milestoneCards)grid.append(card);milestones.append(grid);main.append(milestones);
+    }
+
+    if(v.offerHistory.length){
+      const offers=el('section',undefined,'career-section career-offers-section');offers.setAttribute('aria-labelledby','career-offers-title');
+      const head=el('div',undefined,'career-section-head'),title=el('h2','Historial de ofertas');title.id='career-offers-title';head.append(title);offers.append(head);
+      const list=el('div',undefined,'career-offer-list');offerHistory(v,list);offers.append(list);main.append(offers);
+    }
+
+    const history=el('section',undefined,'career-section career-history-section');history.setAttribute('aria-labelledby','career-history-title');
+    const historyHead=el('div',undefined,'career-section-head'),historyTitle=el('h2','Decisiones y acciones');historyTitle.id='career-history-title';historyHead.append(historyTitle);history.append(historyHead);
+    const list=el('div',undefined,'timeline');
     const actionHistory=v.actions?.history??[];
     const timeline=[
       ...v.journal.map((row,index)=>({kind:'decision',date:row.date,index,row})),
       ...actionHistory.map((row,index)=>({kind:'action',date:row.date,index,row}))
     ].sort((a,b)=>a.date.localeCompare(b.date)||(a.kind===b.kind?a.index-b.index:(a.kind==='decision'?-1:1)));
-    if(!timeline.length)list.append(el('p','Aún no hay decisiones ni acciones voluntarias registradas.','muted'));
+    if(!timeline.length)list.append(el('p','Aún no hay decisiones ni acciones voluntarias registradas.','muted semantic-empty'));
     for(const entry of [...timeline].reverse()){
       if(entry.kind==='decision'){
         const row=entry.row,item=panel(row.title);item.dataset.journalIndex=String(entry.index);item.tabIndex=-1;item.prepend(el('time',date(row.date),'eyebrow'));item.append(el('p',row.choiceLabel,'chosen'));row.messages.forEach(m=>item.append(el('p',m,'muted')));list.append(item);
@@ -597,26 +624,44 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
     history.append(list);main.append(history);
   }
   function world(v,main){
-    main.append(el('span','MÁS ALLÁ DEL TERRENO DE JUEGO','eyebrow'),el('h1','El mundo sigue.'),el('p','Resultados, movimientos y noticias pueden avanzar aunque no exista una decisión narrativa esta semana.','muted'));
-    const banner=el('article',undefined,'world-banner');banner.append(photo('stadium_bg'));banner.append(el('h2','El fútbol nunca se detiene.'));main.append(banner);
-    const news=el('div',undefined,'news-grid');if(!v.news.length)news.append(el('p','No hay noticias destacadas esta semana. Sigue simulando para ver cómo evoluciona el mundo.','muted semantic-empty'));for(const n of [...v.news].reverse().slice(0,30)){const card=newsCard(n);if(card)news.append(card);}main.append(news);
+    main.classList.add('p8-world');
+    const intro=el('header',undefined,'world-intro');
+    const currentDate=el('time',date(v.date),'eyebrow world-current-date');currentDate.dateTime=v.date;
+    intro.append(el('span','ACTUALIDAD DE TU MUNDO','eyebrow'),el('h1','El mundo sigue.'),currentDate,el('p','Noticias públicas que aparecen en tu carrera, ordenadas desde la más reciente.','muted'));
+    main.append(intro);
+    const feed=el('section',undefined,'world-feed');feed.setAttribute('aria-labelledby','world-news-title');
+    const heading=el('div',undefined,'world-feed-header'),title=el('h2','Noticias');title.id='world-news-title';heading.append(title,el('span','Más recientes primero','muted'));feed.append(heading);
+    const news=el('div',undefined,'news-grid');
+    if(!v.news.length){
+      const empty=el('div',undefined,'world-empty semantic-empty');
+      empty.append(el('strong','No hay noticias destacadas esta semana.'),el('p','Sigue simulando para ver las noticias públicas que genere tu historia.','muted'));news.append(empty);
+    }
+    for(const n of [...v.news].reverse()){const card=newsCard(n);if(card)news.append(card);}
+    feed.append(news);main.append(feed);
   }
   function relations(v,main){
-    main.append(el('span','NADIE LLEGA SOLO','eyebrow'),el('h1','Las personas de tu historia.'),el('p','Entrenadores, compañeros y familia. Cada tarjeta muestra únicamente el nombre y el rol públicos del contacto; no muestra métricas internas del sistema.','muted'));
-    const grid=el('div',undefined,'people-grid');
-    if(!v.contacts.length)grid.append(el('p','Aún no has creado vínculos relevantes.','muted'));
+    main.classList.add('p8-relations');
+    const intro=el('header',undefined,'relations-intro');
+    intro.append(el('span','NADIE LLEGA SOLO','eyebrow'),el('h1','Las personas de tu historia.'),el('p','Personas que ya forman parte de tu carrera y el papel que ocupan en ella.','muted'));main.append(intro);
+    const grid=el('div',undefined,'people-grid relations-grid');
+    if(!v.contacts.length)grid.append(el('p','Aún no hay personas registradas en esta etapa de tu historia.','muted semantic-empty relations-empty'));
     for(const c of v.contacts){const card=personCard(c);if(card)grid.append(card);}
     main.append(grid);
   }
   function profile(v,main){
-    main.append(el('span','EL PROTAGONISTA ERES TÚ','eyebrow'),el('h1','Tu perfil.'));
-    const grid=el('div',undefined,'profile-grid');grid.append(hero(v));const p=panel('En este momento');
+    main.classList.add('p8-profile');
+    const intro=el('header',undefined,'profile-intro');
+    intro.append(el('span','EL PROTAGONISTA ERES TÚ','eyebrow'),el('h1','Tu perfil.'),el('p','Tu identidad, tu situación actual y tu contrato, usando únicamente datos de tu carrera.','muted'));main.append(intro);
+    const grid=el('div',undefined,'profile-grid');grid.append(hero(v));
+    const details=el('div',undefined,'profile-details');
+    const identity=panel('En este momento');identity.classList.add('profile-identity');
     const identityLabel=el('label','Nombre y apellido','file-label'),identityInput=el('input');
     identityInput.type='text';identityInput.value=v.player.displayName;identityInput.autocomplete='name';identityInput.setAttribute('aria-describedby','mh-player-name-help');
     const identityHelp=el('small','Entre 2 y 32 caracteres visibles. Se admiten tildes, apóstrofos y guiones.','muted');identityHelp.id='mh-player-name-help';
-    identityLabel.append(identityInput,identityHelp);p.append(identityLabel,button('Guardar nombre',()=>run('identity',{displayName:identityInput.value}),'secondary'));
-    for(const [label,value]of[['Edad',v.age+' años'],['Posición',position(v)],['Partidos',v.appearances]]){const r=semanticRow(label,value);if(r)p.append(r);}
-    p.append(stats(v));grid.append(p,contractSummary(v));main.append(grid);
+    identityLabel.append(identityInput,identityHelp);identity.append(identityLabel,button('Guardar nombre',()=>run('identity',{displayName:identityInput.value}),'secondary'));
+    for(const [label,value]of[['Edad',v.age+' años'],['Posición',position(v)],['Partidos',v.appearances]]){const r=semanticRow(label,value);if(r)identity.append(r);}
+    const moment=stats(v,false,true),contract=contractSummary(v);
+    details.append(identity,moment,contract);grid.append(details);main.append(grid);
   }
   async function download(){try{const raw=await store.readRaw();if(!raw)throw Error('No hay una partida guardada.');downloadText(raw,'multihistoria-partida.json');}catch(e){message=e.message;render();}}
   function downloadText(raw,filename){if(win.AndroidBridge?.saveTextFile){win.AndroidBridge.saveTextFile(filename,raw);return;}const url=URL.createObjectURL(new Blob([raw],{type:'application/json'}));const a=el('a');a.href=url;a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(url),1500);}
@@ -625,18 +670,40 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
     });}catch(e){message='No se pudo importar. '+e.message;busy=false;render();}}
   function confirmReplace(title,body,accept){const dialog=el('dialog',undefined,'dialog');dialog.append(el('h2',title),el('p',body));const actions=el('div',undefined,'dialog-actions');actions.append(button('Cancelar',()=>dialog.close()),button('Confirmar',async()=>{dialog.close();busy=true;busyLabel='Guardando tu historia…';message='';render();try{await accept();}catch(e){message=e.message;}finally{busy=false;render();}},'primary'));dialog.append(actions);shell.append(dialog);dialog.addEventListener('close',()=>dialog.remove());dialog.showModal();}
   function saves(v,main){
-    main.append(el('span','CONTINÚA DONDE LO DEJASTE','eyebrow'),el('h1','Tu partida.'));
-    const p=panel('Partida actual');p.append(el('p',v?`${date(v.date)} · ${decisionCount(v.decisionsMade)}`:'Partida sin abrir','muted'),el('p','Es el último estado guardado de esta carrera. La partida local y PlayCanvas se guardan por separado; puedes descargar una copia e importarla en el otro navegador.'));
-    const a=el('div',undefined,'save-actions');a.append(button('Descargar copia',download,'primary'),button(v?'Recuperar partida actual':'Reintentar carga',load));
+    main.classList.add('p8-save');
+    const intro=el('header',undefined,'save-intro');
+    intro.append(el('span','CONTINÚA DONDE LO DEJASTE','eyebrow'),el('h1','Tu partida.'),el('p','Gestiona la copia local de esta carrera, recupera una copia existente o empieza otra historia.','muted'));main.append(intro);
+
+    const current=panel('Partida actual');current.classList.add('save-current');
+    current.append(el('p',v?`${date(v.date)} · ${decisionCount(v.decisionsMade)}`:'Partida sin abrir','save-current-meta'),el('p','Es el último estado guardado de esta carrera.','muted'));
+    const currentActions=el('div',undefined,'save-actions save-current-actions');
+    currentActions.append(button('Descargar copia',download,'primary'),button(v?'Recuperar partida actual':'Reintentar carga',load));
+    current.append(currentActions,el('p','Guardado automático activo','save-auto-status'));main.append(current);
+
+    const recovery=panel('Copias y recuperación');recovery.classList.add('save-recovery');
+    recovery.append(el('p','Estas opciones trabajan únicamente con copias locales de tu partida. Antes de sustituirla se mostrará una confirmación.','muted'));
+    const support=el('div',undefined,'save-support-grid');
+
+    const importBlock=el('section',undefined,'save-support-card save-import');
+    importBlock.append(el('h3','Importar una copia'),el('p','Selecciona una copia JSON compatible para recuperarla en este dispositivo.','muted'));
     const input=el('input');input.type='file';input.accept='.json,application/json';input.id='mh-import';input.setAttribute('aria-label','Importar copia de partida');input.addEventListener('change',()=>importFile(input.files[0]));
-    const label=el('label','Importar copia de partida','file-label');label.append(input);a.append(label);p.append(a);
-    p.append(el('p','Guardado automático activo','muted'),el('p','La copia antigua procede del sistema de guardado anterior. Descargarla no restaura ni sustituye tu partida actual.','muted'));
-    a.append(button('Descargar copia antigua',()=>{try{const raw=store.legacyRaw();if(!raw)throw Error('No hay copia antigua.');downloadText(raw,'multihistoria-copia-antigua.json');}catch(e){message=e.message;render();}}));main.append(p);
-    if(hasBackup()){const b=panel('Copia anterior');b.append(el('p','Estado anterior de recuperación. Si lo restauras, volverás a ese punto y la partida actual quedará protegida durante la sustitución.'),button('Recuperar copia anterior',async()=>{try{const raw=await store.previous();if(!raw)throw Error('No hay copia anterior.');await importFile(new File([raw],'anterior.json',{type:'application/json'}));}catch(e){message=e.message;render();}}));main.append(b);}
-    const n=panel('Otra historia');n.append(el('p','Empieza una carrera distinta usando un nombre y un código de historia. El mismo código permite reproducir esta historia desde el inicio; tu identidad se guarda con la partida. Conservaremos una copia de tu carrera actual.','muted'));
+    const label=el('label','Importar copia de partida','file-label');label.append(input);importBlock.append(label);support.append(importBlock);
+
+    if(hasBackup()){
+      const previous=el('section',undefined,'save-support-card save-backup');previous.append(el('h3','Copia anterior'),el('p','Estado anterior de recuperación. Si lo restauras, volverás a ese punto y la partida actual quedará protegida durante la sustitución.','muted'),button('Recuperar copia anterior',async()=>{try{const raw=await store.previous();if(!raw)throw Error('No hay copia anterior.');await importFile(new File([raw],'anterior.json',{type:'application/json'}));}catch(e){message=e.message;render();}}));support.append(previous);
+    }
+
+    const legacy=store.legacyRaw();
+    if(legacy){
+      const old=el('section',undefined,'save-support-card save-legacy');old.append(el('h3','Copia antigua'),el('p','Procede del sistema de guardado anterior. Descargarla no restaura ni sustituye tu partida actual.','muted'),button('Descargar copia antigua',()=>downloadText(legacy,'multihistoria-copia-antigua.json')));support.append(old);
+    }
+    recovery.append(support);main.append(recovery);
+
+    const n=panel('Otra historia');n.classList.add('save-new-story');n.append(el('p','Empieza una carrera distinta usando un nombre y un código de historia. El mismo código permite reproducir esta historia desde el inicio; tu identidad se guarda con la partida. Conservaremos una copia de tu carrera actual.','muted'));
+    const fields=el('div',undefined,'save-new-fields');
     const nameLabel=el('label','Nombre y apellido','file-label'),newPlayerName=el('input');newPlayerName.type='text';newPlayerName.autocomplete='name';newPlayerName.setAttribute('aria-label','Nombre y apellido de la nueva carrera');nameLabel.append(newPlayerName);
     const codeLabel=el('label','Código de historia','file-label');const seed=el('input');seed.type='number';seed.min='0';seed.max='4294967295';seed.value='424242';seed.setAttribute('aria-label','Código de historia de la nueva carrera');codeLabel.append(seed);
-    n.append(nameLabel,codeLabel,button('Empezar otra carrera',async()=>{const displayName=newPlayerName.value;if(!displayName.trim()){message='Introduce el nombre del jugador para empezar otra carrera.';render();return;}const selected=Number(seed.value);if(!Number.isSafeInteger(selected)||selected<0||selected>4294967295){message='Introduce un código de historia entre 0 y 4294967295.';render();return;}let old;try{old=await store.readRaw();}catch(e){message=e.message;render();return;}confirmReplace('Empezar otra carrera','La partida actual pasará a la copia anterior.',async()=>{replacement=old;session=await GameSession.create(selected,{...sessionOptions,commit,playerDisplayName:displayName});view='home';cinematic=false;replaceRouteState();});}));
+    fields.append(nameLabel,codeLabel);n.append(fields,button('Empezar otra carrera',async()=>{const displayName=newPlayerName.value;if(!displayName.trim()){message='Introduce el nombre del jugador para empezar otra carrera.';render();return;}const selected=Number(seed.value);if(!Number.isSafeInteger(selected)||selected<0||selected>4294967295){message='Introduce un código de historia entre 0 y 4294967295.';render();return;}let old;try{old=await store.readRaw();}catch(e){message=e.message;render();return;}confirmReplace('Empezar otra carrera','La partida actual pasará a la copia anterior.',async()=>{replacement=old;session=await GameSession.create(selected,{...sessionOptions,commit,playerDisplayName:displayName});view='home';cinematic=false;replaceRouteState();});}));
     main.append(n);
   }
   function render(focus=false){disposeCutscene?.();disposeCutscene=null;if(autoVisualTimer!==null){clearTimeout(autoVisualTimer);autoVisualTimer=null;}const v=session?.getView();shell.replaceChildren();shell.classList.toggle('immersive',cinematic&&!!v);const header=el('header',undefined,'topbar');const brand=el('div',undefined,'brand');brand.append(el('span','M','brand-mark'));const name=el('div');name.append(el('strong','Multihistoria'),el('small','Carrera de futbolista'));brand.append(name);const simMode=v?.simulation?.mode;const pause=v&&['auto_simulating','paused'].includes(simMode)?button(simMode==='paused'?'Reanudar':'Pausar',pauseToggle,'secondary',{ariaLabel:simMode==='paused'?'Reanudar la simulación':'Pausar la simulación',pressed:simMode==='paused'}):null;if(pause)pause.classList.add('pause-button');header.append(brand,el('span',v?'Temporada '+v.season.replace('-',' / 20'):'Una vida. Mil decisiones.','chapter'),...(pause?[pause]:[]),button(v?date(v.date)+' · Partida':'Tu partida',()=>navigate('save'),'date-button',{ariaLabel:v?'Abrir Tu partida y el contexto de guardado de '+date(v.date):'Abrir Tu partida'}));shell.append(header);
