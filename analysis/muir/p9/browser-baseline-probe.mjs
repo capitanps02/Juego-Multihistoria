@@ -5,7 +5,7 @@ import crypto from 'node:crypto';
 import assert from 'node:assert/strict';
 import {chromium} from 'playwright';
 
-const rootDir=path.resolve(import.meta.dirname,'../../..');
+const rootDir=process.env.MUIR_ROOT?path.resolve(process.env.MUIR_ROOT):path.resolve(import.meta.dirname,'../../..');
 const axePath=path.join(rootDir,'node_modules','axe-core','axe.min.js');
 assert(fs.existsSync(axePath),'axe-core is not installed');
 const outDir=path.join(rootDir,'analysis','muir','p9','screenshots');
@@ -37,7 +37,7 @@ async function open(page,scenario){
  await page.waitForFunction(()=>globalThis.__P9_READY__?.ready===true,null,{timeout:30000});
  await page.addScriptTag({path:axePath});
  if(scenario==='decision-error'){
-   await page.evaluate(()=>{const r=globalThis.__P9_ROOT__;r.querySelector('.event-cutscene button')?.click();r.querySelector('.event-cutscene video')?.dispatchEvent(new Event('error'));});
+   await page.evaluate(()=>{const r=globalThis.__P9_ROOT__;r.querySelector('.event-cutscene video')?.dispatchEvent(new Event('error'));});
  }
 }
 async function inspect(page,scale=1){
