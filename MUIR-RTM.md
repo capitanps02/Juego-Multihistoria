@@ -279,7 +279,7 @@ Scope: presentation-only for Mundo, Carrera, Relaciones, Perfil and Tu partida. 
 | P8-A11Y-001 | Secondary surfaces remain keyboard/focus/AXE/text-scale accessible | UI-A5 | P8.1–P8.7 | semantic sections + focusable main + responsive text | AXE/keyboard/100-130-180% matrices | certified P8 browser evidence through workflow 36612633876 | MUIR-P8 | revert offending semantic/style change | PASS |
 | P8-AUTH-001 | DB, PlayerView, save schema and gameplay authority remain unchanged | UI-A5 | P8.1–P8.7 | exact-predecessor scope guard | diff + equivalence + public regressions | P8.5 certified SHA + P8.6 product-equivalence diff | MUIR-P8 | revert out-of-scope change | PASS |
 
-### P8 certified state through Pass 6
+### P8 final certification state
 
 - Exact P7 predecessor remains `3f93206903441029d692eaa76def890ddc7a0cc0`.
 - Pass 1 baseline: PASS · workflow `36604587742`.
@@ -288,6 +288,9 @@ Scope: presentation-only for Mundo, Carrera, Relaciones, Perfil and Tu partida. 
 - Pass 4 Relaciones/Perfil: PASS · workflow `36610621251`.
 - Pass 5 Tu partida: PASS · workflow `36612633876`.
 - Pass 6 hardening: PASS by product equivalence from P8.5 plus cross-surface hardening contract PASS in workflow `36614679011`.
+- Pass 7 pre-certification full gate: PASS · workflow `36615705748` on SHA `1e1fb61b72efda45720f34c249ae1c4cc14630ef`.
+- Certification commit changes evidence/RTM/final-contract only; product bytes remain unchanged from the certified P8 product.
 - Public Relationships/Profile contracts remain unchanged.
 - Save schema, IndexedSaveStore, Football DB, PlayerView and GameSession authority remain unchanged.
-- Pass 7 final exact-head gate is READY_FOR_GATE; no P9 work is authorized.
+- P8 status: **PASS**, conditional on the full MUIR P8 workflow remaining SUCCESS on the current branch HEAD.
+- P9 remains unauthorized and has not been started.
