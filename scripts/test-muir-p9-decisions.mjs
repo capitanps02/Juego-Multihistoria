@@ -56,4 +56,7 @@ test('P9.2 overrides the fragile cinema margin and uses one-column mobile decisi
   assert.match(css,/\.cinema\{overflow:hidden;min-width:0\}/);
   assert.match(css,/\.cinema-top \.glass\{min-height:48px\}/);
   assert.match(css,/\.decision-choices \.choice\{min-height:56px/);
+  assert.match(css,/\.decision-choice-sheet h1\{[^}]*overflow-wrap:anywhere/);
+  assert.match(css,/\.decision-choices \.choice>span:last-child\{[^}]*overflow-wrap:anywhere/);
+  assert.match(css,/\.decision-choices\{[^}]*min-width:0/);
 });
