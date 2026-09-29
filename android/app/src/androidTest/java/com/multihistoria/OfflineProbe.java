@@ -19,11 +19,13 @@ public class OfflineProbe extends Instrumentation {
     @Override public void onCreate(Bundle args) {
         super.onCreate(args); phase = args.getString("phase", "create"); start();
     }
+    private String lastStep = "init";
+    private void step(String value) { lastStep=value; }
     private String js(String source) throws Exception {
         CountDownLatch done = new CountDownLatch(1);
         AtomicReference<String> value = new AtomicReference<>();
         runOnMainSync(() -> web.evaluateJavascript(source, result -> { value.set(result); done.countDown(); }));
-        if (!done.await(10, TimeUnit.SECONDS)) throw new Exception("JavaScript timeout");
+        if (!done.await(10, TimeUnit.SECONDS)) throw new Exception("JavaScript timeout at "+lastStep+" source="+source);
         return value.get();
     }
     private void until(String expression) throws Exception {
@@ -56,26 +58,26 @@ public class OfflineProbe extends Instrumentation {
             if(!"true".equals(js("typeof AndroidBridge==='object' && typeof AndroidBridge.saveTextFile==='function'"))) throw new Exception("Missing Android file bridge");
             android.content.SharedPreferences prefs=getTargetContext().getSharedPreferences("offline-probe",0);
             if("p9back".equals(phase)) {
-                js("[..."+ROOT+".querySelectorAll('button')].find(b=>b.textContent.trim().startsWith('Simular'))?.click()");
-                until(ROOT+"?.querySelector('.choice:not(:disabled)')");
-                String decisionBefore=snapshot();
+                step("decision-click-simulate"); js("[..."+ROOT+".querySelectorAll('button')].find(b=>b.textContent.trim().startsWith('Simular'))?.click()");
+                step("decision-wait-choice"); until(ROOT+"?.querySelector('.choice:not(:disabled)')");
+                step("decision-snapshot-before"); String decisionBefore=snapshot();
                 JSONObject decisionSave=new JSONObject(decisionBefore);
                 if(decisionSave.isNull("pendingDecision") || decisionSave.getJSONArray("journal").length()!=0) throw new Exception("Decision baseline invalid");
-                runOnMainSync(activity::onBackPressed);
-                until(ROOT+"?.querySelector('.mh') && !"+ROOT+"?.querySelector('.mh').classList.contains('immersive')");
-                if(!decisionBefore.equals(snapshot())) throw new Exception("Android Back changed pending decision/save");
+                step("decision-native-back"); report.putBoolean("decisionCanGoBack", web.canGoBack()); report.putInt("decisionHistoryLength", new org.json.JSONArray("["+js("history.length")+"]").getInt(0)); runOnMainSync(activity::onBackPressed);
+                step("decision-after-back-wait"); until(ROOT+"?.querySelector('.mh') && !"+ROOT+"?.querySelector('.mh').classList.contains('immersive')");
+                step("decision-snapshot-after"); if(!decisionBefore.equals(snapshot())) throw new Exception("Android Back changed pending decision/save");
                 if(!"true".equals(js("[..."+ROOT+".querySelectorAll('button')].some(b=>b.textContent.includes('Una decisión te espera'))"))) throw new Exception("Decision safe return missing");
 
-                js("[..."+ROOT+".querySelectorAll('button')].find(b=>b.textContent.includes('Una decisión te espera'))?.click()");
+                step("result-reopen-decision"); js("[..."+ROOT+".querySelectorAll('button')].find(b=>b.textContent.includes('Una decisión te espera'))?.click()");
                 until(ROOT+"?.querySelector('.choice:not(:disabled)')");
-                js(ROOT+".querySelector('.choice:not(:disabled)').click()");
-                until(ROOT+"?.querySelector('[data-result-continue]')");
-                String resultBefore=snapshot();
+                step("result-choose"); js(ROOT+".querySelector('.choice:not(:disabled)').click()");
+                step("result-wait"); until(ROOT+"?.querySelector('[data-result-continue]')");
+                step("result-snapshot-before"); String resultBefore=snapshot();
                 JSONObject resultSave=new JSONObject(resultBefore);
                 if(resultSave.isNull("pendingResult") || resultSave.getJSONArray("journal").length()!=1) throw new Exception("Result baseline invalid");
-                runOnMainSync(activity::onBackPressed);
-                until(ROOT+"?.querySelector('.mh') && !"+ROOT+"?.querySelector('.mh').classList.contains('immersive')");
-                if(!resultBefore.equals(snapshot())) throw new Exception("Android Back acknowledged or changed pending Result");
+                step("result-native-back"); report.putBoolean("resultCanGoBack", web.canGoBack()); report.putInt("resultHistoryLength", new org.json.JSONArray("["+js("history.length")+"]").getInt(0)); runOnMainSync(activity::onBackPressed);
+                step("result-after-back-wait"); until(ROOT+"?.querySelector('.mh') && !"+ROOT+"?.querySelector('.mh').classList.contains('immersive')");
+                step("result-snapshot-after"); if(!resultBefore.equals(snapshot())) throw new Exception("Android Back acknowledged or changed pending Result");
                 if(!"true".equals(js("[..."+ROOT+".querySelectorAll('button')].some(b=>b.textContent.includes('Volver a tu decisión'))"))) throw new Exception("Result safe return missing");
                 report.putString("stream", "PASS p9back: native MainActivity Back preserved pending Decision and Result without dispatch/acknowledge; startupMs=" + startupMs + "\n");
                 finish(Activity.RESULT_OK, report);
@@ -97,7 +99,7 @@ public class OfflineProbe extends Instrumentation {
             report.putString("stream", "PASS " + phase + ": secure origin, IndexedDB, UI result and exact save verified; startupMs=" + startupMs + "\n");
             finish(Activity.RESULT_OK, report);
         } catch(Exception e) {
-            report.putString("stream", "FAIL " + phase + ": " + e.toString()+"\n");
+            report.putString("stream", "FAIL " + phase + " at " + lastStep + ": " + e.toString()+"\n");
             finish(Activity.RESULT_CANCELED, report);
         }
     }
