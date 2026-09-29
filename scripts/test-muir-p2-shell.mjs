@@ -17,6 +17,7 @@ assert(css.includes('calc(8px + var(--muir-safe-top))'), 'mobile shell top safe-
 assert(css.includes('calc(8px + var(--muir-safe-right))'), 'mobile shell right safe-area not applied');
 assert(css.includes('calc(8px + var(--muir-safe-bottom))'), 'mobile shell bottom safe-area not applied');
 assert(css.includes('calc(8px + var(--muir-safe-left))'), 'mobile shell left safe-area not applied');
+assert(css.includes('@media(min-width:1600px){.mh{padding:calc(24px + var(--muir-safe-top)) calc(24px + var(--muir-safe-right)) calc(24px + var(--muir-safe-bottom)) calc(24px + var(--muir-safe-left))'), 'wide shell breakpoint must preserve safe-area insets');
 assert(css.includes('.date-button{background:none;color:#d1d1d6;border:0;font-size:12px;min-height:48px}'), 'date control must be at least 48px');
 assert(css.includes('.pause-button{min-width:88px;min-height:48px}'), 'pause control must be at least 48px');
 assert(css.includes('min-height:53px;padding:4px 1px;font-size:10px;line-height:1.1'), 'mobile nav must retain >=53px hitbox and >=10px label');
