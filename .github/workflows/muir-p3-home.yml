@@ -1,0 +1,72 @@
+name: MUIR P3 Home
+
+on:
+  pull_request:
+    branches:
+      - shared/muir-id01-player-identity
+    paths:
+      - 'web/game-ui.js'
+      - 'web/game-ui.css'
+      - 'MUIR-RTM.md'
+      - 'scripts/test-muir-p3-home.mjs'
+      - 'scripts/test-muir-p3-final-gate.mjs'
+      - 'docs/muir/P3_GATE.md'
+      - '.github/workflows/muir-p3-home.yml'
+      - 'analysis/muir/p3/**'
+
+concurrency:
+  group: muir-p3-home-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  certify-home:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      MUIR_P3_EXPECTED_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Build engine
+        run: npm run build
+      - name: P3 Home scope and command-equivalence guard
+        run: node scripts/test-muir-p3-home.mjs
+      - name: Install browser certification tooling
+        run: |
+          npm install --no-save playwright@1.55.0 axe-core@4
+          npx playwright install --with-deps chromium
+      - name: P3 deterministic viewport matrix
+        run: node scripts/capture-muir-browser.mjs
+      - name: P3 Home identity and core-loop probe
+        run: node analysis/muir/p3/browser-home-probe.mjs
+      - name: P2 shell regression
+        run: |
+          node analysis/muir/p2/browser-safe-area-probe.mjs
+          node analysis/muir/p2/browser-a11y-probe.mjs
+          node analysis/muir/p2/browser-axe-probe.mjs
+          node analysis/muir/p2/browser-topbar-probe.mjs
+      - name: Upload P3 visual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: muir-p3-${{ github.event.pull_request.head.sha || github.sha }}
+          if-no-files-found: error
+          path: |
+            analysis/muir/screenshots/*.png
+            analysis/muir/evidence/browser-baseline.json
+            analysis/muir/p3/evidence/*.json
+      - name: Shared UI package graph
+        run: node --test scripts/test-muir-package-graph.mjs
+      - name: PlayCanvas package
+        run: npm run test:playcanvas
+      - name: Android offline clean package
+        run: npm run android:offline
+      - name: Android offline
+        run: npm run test:android-offline
