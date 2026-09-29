@@ -26,10 +26,14 @@ try{
   try{call('shell','pm','clear','com.multihistoria');}catch{}
   const output=call('shell','am','instrument','-r','-w','-e','phase','p9back','com.multihistoria.test/com.multihistoria.OfflineProbe');
   report.output=output;
-  if(!output.includes('PASS p9back:')||!output.includes('INSTRUMENTATION_CODE: -1'))throw Error('Android P9 Back instrumentation failed');
+  if(!output.includes('PASS p9back:')||!output.includes('INSTRUMENTATION_CODE: -1'))throw Error('Android P9 Back instrumentation failed\n'+output);
   report.passed=true;
 }catch(error){
   report.error=error.message;
+  report.stdout=error?.stdout?.toString?.()??null;
+  report.stderr=error?.stderr?.toString?.()??null;
+  if(report.stdout)console.error('ANDROID_BACK_STDOUT\n'+report.stdout);
+  if(report.stderr)console.error('ANDROID_BACK_STDERR\n'+report.stderr);
   process.exitCode=1;
 }finally{
   const dir=path.join(root,'analysis','muir','p9','evidence');fs.mkdirSync(dir,{recursive:true});
