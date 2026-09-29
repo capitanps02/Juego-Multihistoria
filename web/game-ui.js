@@ -236,8 +236,14 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
     return button('Simular semana',()=>run('continue',{maxDays:7}),'primary',{blockedWhenPaused:true});
   }
   function hero(v){const h=el('article',undefined,'hero');h.append(photo('hero_player'));const c=el('div',undefined,'hero-copy');c.append(el('span','TU HISTORIA, POR ESCRIBIR','eyebrow'),el('h1','Una vida.\nMil decisiones.'),el('p',position(v)+' · '+v.age+' años'),el('p',club(v),'muted'));h.append(c);return h;}
-  function stats(v){
-    const p=panel('Tu momento');
+  function homeHero(v){
+    const h=el('article',undefined,'hero home-hero');h.append(photo('hero_player'));
+    const c=el('div',undefined,'hero-copy');
+    c.append(el('span','MI CARRERA','eyebrow'),el('h1',v.player.displayName,'player-name'),el('p',position(v)+' · '+v.age+' años'),el('p',club(v),'muted'));
+    h.append(c);return h;
+  }
+  function stats(v,compact=false){
+    const p=panel('Tu momento');if(compact)p.classList.add('moment-compact');
     const rows=[
       ['Forma',v.form,'Rendimiento actual: refleja cómo estás compitiendo ahora.'],
       ['Estado físico',v.fitness,'Condición corporal y disponibilidad física.'],
@@ -248,7 +254,14 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
       const name=el('span',label);name.title=help;
       row.append(name,el('strong',Math.round(value)+' / 100'));
       const meter=el('progress');meter.max=100;meter.value=value;meter.setAttribute('aria-label',label+'. '+help);
-      row.append(meter,el('small',help,'meter-help'));p.append(row);
+      row.append(meter);
+      if(!compact)row.append(el('small',help,'meter-help'));
+      p.append(row);
+    }
+    if(compact){
+      const help=el('details',undefined,'moment-help');help.append(el('summary','Qué significan estos datos'));
+      help.append(el('p','Forma mide tu rendimiento actual. Estado físico refleja disponibilidad corporal. Fatiga es el desgaste acumulado: cuanto más alta, peor.','muted'));
+      p.append(help);
     }
     p.append(el('p',v.appearances+(v.appearances===1?' partido disputado':' partidos disputados'),'muted'));
     return p;
@@ -298,24 +311,36 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
   }
   function home(v,main){
     if(v.screen==='epilogue'||v.cutscene?.eventId==='PROLOGUE')appendCutscene(v,main);
-    const grid=el('div',undefined,'home-grid');
-    grid.append(hero(v));
+    const grid=el('div',undefined,'home-grid p3-home');
+    const identity=homeHero(v);
     const next=panel(v.screen==='epilogue'?'El final de un capítulo':v.screen==='summary'?'Tu último tramo':'Lo que viene ahora');next.classList.add('next');next.append(photo('stadium_bg','card-bg'));
-    const content=el('div',undefined,'next-content');content.append(el('span',date(v.date),'eyebrow'),el('h2',v.offer?.reason||v.decision?.title||v.result?.title||(v.screen==='epilogue'?'Una carrera para recordar':v.screen==='summary'?'El tiempo ha avanzado.':'El siguiente paso.')),
-      el('p',v.offer?'Hay una propuesta de contrato que necesita tu respuesta.':v.decision?'Hay un momento que necesita tu respuesta.':v.result?'Tu decisión ya forma parte de esta historia.':v.screen==='epilogue'?'Mira atrás y recorre los momentos que te han traído hasta aquí.':v.screen==='summary'?'Revisa qué cambió en este tramo antes de seguir simulando.':'Entrenamientos, partidos y conversaciones. Avanza hasta que la vida te pida decidir.','muted'),mainAction(v));
+    const content=el('div',undefined,'next-content');
+    content.append(
+      el('span',date(v.date),'eyebrow'),
+      el('h2',v.offer?.reason||v.decision?.title||v.result?.title||(v.screen==='epilogue'?'Una carrera para recordar':v.screen==='summary'?'El tiempo ha avanzado.':'El siguiente paso.')),
+      el('p',v.offer?'Hay una propuesta de contrato que necesita tu respuesta.':v.decision?'Hay un momento que necesita tu respuesta.':v.result?'Tu decisión ya forma parte de esta historia.':v.screen==='epilogue'?'Mira atrás y recorre los momentos que te han traído hasta aquí.':v.screen==='summary'?'Revisa qué cambió en este tramo antes de seguir simulando.':'Avanza tu carrera hasta el siguiente momento que requiera tu atención.','muted'),
+      mainAction(v)
+    );
     if(v.screen==='career'&&v.simulation?.mode==='idle'&&v.actions?.available)content.append(button('Gestionar mi carrera',openPlayerActions,'secondary'));
     if(v.screen==='career'&&v.simulation?.mode==='paused')content.append(button('Terminar simulación',()=>run('auto',{action:'stop'}),'secondary'));
-    next.append(content);grid.append(next,stats(v));
+    next.append(content);
+
+    const urgent=['offer','decision','result'].includes(v.screen);
+    if(urgent){grid.classList.add('has-pending');grid.append(next,identity);}
+    else grid.append(identity,next);
+    grid.append(stats(v,true));
+
+    const sport=latestMatchPanel(v);if(sport){sport.classList.add('home-sport');grid.append(sport);}
     const recent=panel('El último capítulo');recent.classList.add('recent');recent.append(photo('hero_player','news-thumb'));const row=v.journal.at(-1);recent.append(el('h3',row?.title||'Todo empieza en Valdoria'),el('p',row?.messages[0]||'Una oportunidad de acercarte al primer equipo. Todavía queda todo por decidir.','muted'),button('Recorrer mi historia',()=>navigate('career')));grid.append(recent);
-    const tutorial=panel('Cómo se juega');tutorial.classList.add('tutorial');
+    const chapter=panel('Tu carrera');chapter.classList.add('home-career');chapter.append(el('span',v.season.replace('-',' / 20'),'eyebrow'),el('div',String(v.decisionsMade),'big-number'),el('p',v.decisionsMade===1?'decisión que cuenta':'decisiones que cuentan','muted'),el('p','Tu recorrido se construye con lo que eliges y con lo que ocurre en el campo.'),button('Ver recorrido',()=>navigate('career')));grid.append(chapter);
+    const people=panel('Tu entorno');people.classList.add('home-people');const contacts=v.contacts.slice(0,3);for(const c of contacts){const r=el('div',undefined,'contact-row');r.append(photo(portrait(c.id),'avatar'));const info=el('div');info.append(el('strong',c.name),el('p',c.role,'muted'));r.append(info);people.append(r);}people.append(button('Ver relaciones',()=>navigate('relations')));grid.append(people);
+    const clock=panel('Tu contrato');clock.classList.add('home-contract');clock.append(el('p',v.contractMonths>0?Math.ceil(v.contractMonths)+' meses restantes':'Sin meses de contrato restantes'),el('p',v.contractMonths>0&&v.contractMonths<=6?'El contrato entra en su tramo final. Revisa las propuestas cuando lleguen.':'Las propuestas de contrato requieren tu respuesta.','muted'));grid.append(clock);
+    const tutorial=panel('Cómo se juega');tutorial.classList.add('tutorial','home-help');
     tutorial.append(el('p','Multihistoria es una novela y simulador narrativo de carrera futbolística: los partidos se resuelven automáticamente y tú intervienes cuando una decisión puede cambiar la trayectoria.','tutorial-lead'));
     const rules=el('ul',undefined,'tutorial-rules');for(const text of ['Simula el tiempo: entrenamientos, partidos y mundo avanzan.','Decide cuando aparezca un momento importante.','Tus decisiones y relaciones dejan memoria en la carrera.'])rules.append(el('li',text));tutorial.append(rules);
-    const glossary=el('div',undefined,'tutorial-glossary');for(const [title,copy] of [['Forma','Rendimiento actual.'],['Estado físico','Condición corporal y disponibilidad.'],['Fatiga','Desgaste acumulado; valores altos son peores.']]){const item=el('div');item.append(el('strong',title),el('small',copy));glossary.append(item);}tutorial.append(glossary);grid.append(tutorial);
-    const people=panel('Tu entorno');const contacts=v.contacts.slice(0,3);for(const c of contacts){const r=el('div',undefined,'contact-row');r.append(photo(portrait(c.id),'avatar'));const info=el('div');info.append(el('strong',c.name),el('p',c.role,'muted'));r.append(info);people.append(r);}people.append(button('Ver relaciones',()=>navigate('relations')));grid.append(people);
-    const chapter=panel('Tu carrera');chapter.append(el('span',v.season.replace('-',' / 20'),'eyebrow'),el('div',String(v.decisionsMade),'big-number'),el('p',v.decisionsMade===1?'decisión que cuenta':'decisiones que cuentan','muted'),el('p','Tu recorrido se construye con lo que eliges y con lo que ocurre en el campo.'),button('Ver recorrido',()=>navigate('career')));grid.append(chapter);
+    const glossary=el('div',undefined,'tutorial-glossary');for(const [title,copy]of[['Forma','Rendimiento actual.'],['Estado físico','Condición corporal y disponibilidad.'],['Fatiga','Desgaste acumulado; valores altos son peores.']]){const item=el('div');item.append(el('strong',title),el('small',copy));glossary.append(item);}tutorial.append(glossary);grid.append(tutorial);
+
     const sim=simulationSummary(v);if(sim)main.append(sim);
-    const sport=latestMatchPanel(v);if(sport)grid.append(sport);
-    const clock=panel('Tu contrato');clock.append(el('p',v.contractMonths>0?Math.ceil(v.contractMonths)+' meses restantes':'Sin meses de contrato restantes'),el('p',v.contractMonths>0&&v.contractMonths<=6?'El contrato entra en su tramo final. Revisa las propuestas cuando lleguen.':'Las propuestas de contrato requieren tu respuesta.','muted'));grid.append(clock);
     main.append(grid);
     const retirement=retirementPanel(v);if(retirement)main.append(retirement);
     if(v.offerHistory.length){const h=v.offerHistory.at(-1),p=panel('Tu última respuesta de contrato');p.append(el('p',h.explanation));main.append(p);}
