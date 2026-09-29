@@ -498,12 +498,14 @@ export class GameSession {
     requireThat(Number.isSafeInteger(seed) && seed >= 0 && seed <= 0xffffffff, "INVALID_SEED", "La semilla debe ser un entero entre 0 y 4294967295.");
     const sessionId = options.sessionId ?? globalThis.crypto.randomUUID();
     requireThat(validId(sessionId), "INVALID_SESSION", "Identificador de partida no válido.");
+    const initialDisplayName = options.playerDisplayName === undefined ? undefined : normalizePlayerDisplayName(options.playerDisplayName);
+    requireThat(options.playerDisplayName === undefined || initialDisplayName !== null, "INVALID_IDENTITY", "El nombre del jugador no es válido.");
     const events = structuredClone(options.events ?? EVENTS);
     const activeContentIdentity = await contentIdentity(events);
     const activeEvidence = await buildActiveEventEvidence(events);
     const snapshot: SessionSnapshot = {
       sessionVersion: SESSION_VERSION, build: SESSION_BUILD, contentIdentity: activeContentIdentity,
-      sessionId, revision: 0, microfeeds: options.microfeeds ?? true, state: createInitialState(seed, options.playerDisplayName),
+      sessionId, revision: 0, microfeeds: options.microfeeds ?? true, state: createInitialState(seed, initialDisplayName ?? undefined),
       pendingDecision: null, pendingResult: null, receipts: [], journal: [], decisionProvenance: [], needsWorldAdvance: false,
       autoSimulation: idleAutoSimulationState()
     };
