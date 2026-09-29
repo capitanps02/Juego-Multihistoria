@@ -31,6 +31,8 @@ jobs:
         run: node --test scripts/test-muir-p9-baseline.mjs
       - name: P9 Decision presentation contract
         run: node --test scripts/test-muir-p9-decisions.mjs
+      - name: P9 Result presentation contract
+        run: node --test scripts/test-muir-p9-results.mjs
       - name: P8 certified exact-head regression contract
         run: |
           git worktree add /tmp/muir-p8-certified ecc72b9abebbc64533c86b1f3cf7009a127c0c02
@@ -68,6 +70,8 @@ jobs:
           git worktree remove --force /tmp/muir-p9-pass1
       - name: P9 Decision responsive and accessibility matrix
         run: node analysis/muir/p9/browser-decisions-probe.mjs
+      - name: P9 Result responsive and accessibility matrix
+        run: node analysis/muir/p9/browser-results-probe.mjs
       - name: Upload P9 baseline evidence
         if: always()
         uses: actions/upload-artifact@v4
