@@ -670,18 +670,39 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
     });}catch(e){message='No se pudo importar. '+e.message;busy=false;render();}}
   function confirmReplace(title,body,accept){const dialog=el('dialog',undefined,'dialog');dialog.append(el('h2',title),el('p',body));const actions=el('div',undefined,'dialog-actions');actions.append(button('Cancelar',()=>dialog.close()),button('Confirmar',async()=>{dialog.close();busy=true;busyLabel='Guardando tu historia…';message='';render();try{await accept();}catch(e){message=e.message;}finally{busy=false;render();}},'primary'));dialog.append(actions);shell.append(dialog);dialog.addEventListener('close',()=>dialog.remove());dialog.showModal();}
   function saves(v,main){
-    main.append(el('span','CONTINÚA DONDE LO DEJASTE','eyebrow'),el('h1','Tu partida.'));
-    const p=panel('Partida actual');p.append(el('p',v?`${date(v.date)} · ${decisionCount(v.decisionsMade)}`:'Partida sin abrir','muted'),el('p','Es el último estado guardado de esta carrera. La partida local y PlayCanvas se guardan por separado; puedes descargar una copia e importarla en el otro navegador.'));
-    const a=el('div',undefined,'save-actions');a.append(button('Descargar copia',download,'primary'),button(v?'Recuperar partida actual':'Reintentar carga',load));
+    main.classList.add('p8-save');
+    const intro=el('header',undefined,'save-intro');
+    intro.append(el('span','CONTINÚA DONDE LO DEJASTE','eyebrow'),el('h1','Tu partida.'),el('p','Guarda, recupera o mueve esta carrera sin cambiar lo que ocurre dentro de ella.','muted'));main.append(intro);
+
+    const p=panel('Partida actual');p.classList.add('save-current');
+    p.append(el('p',v?`${date(v.date)} · ${decisionCount(v.decisionsMade)}`:'Partida sin abrir','save-current-meta'),el('p','Esta carrera se guarda localmente. Para moverla entre navegadores, descarga una copia e impórtala cuando la necesites.','muted'));
+    const currentActions=el('div',undefined,'save-actions save-primary-actions');
+    currentActions.append(button('Descargar copia',download,'primary'),button(v?'Recuperar partida actual':'Reintentar carga',load));
+    p.append(currentActions);
+
+    const importBlock=el('section',undefined,'save-import-block');importBlock.setAttribute('aria-labelledby','save-import-title');
+    const importTitle=el('h3','Importar una copia');importTitle.id='save-import-title';
+    importBlock.append(importTitle,el('p','Selecciona un archivo JSON de Multihistoria. Se comprobará antes de sustituir la partida actual.','muted'));
     const input=el('input');input.type='file';input.accept='.json,application/json';input.id='mh-import';input.setAttribute('aria-label','Importar copia de partida');input.addEventListener('change',()=>importFile(input.files[0]));
-    const label=el('label','Importar copia de partida','file-label');label.append(input);a.append(label);p.append(a);
-    p.append(el('p','Guardado automático activo','muted'),el('p','La copia antigua procede del sistema de guardado anterior. Descargarla no restaura ni sustituye tu partida actual.','muted'));
-    a.append(button('Descargar copia antigua',()=>{try{const raw=store.legacyRaw();if(!raw)throw Error('No hay copia antigua.');downloadText(raw,'multihistoria-copia-antigua.json');}catch(e){message=e.message;render();}}));main.append(p);
-    if(hasBackup()){const b=panel('Copia anterior');b.append(el('p','Estado anterior de recuperación. Si lo restauras, volverás a ese punto y la partida actual quedará protegida durante la sustitución.'),button('Recuperar copia anterior',async()=>{try{const raw=await store.previous();if(!raw)throw Error('No hay copia anterior.');await importFile(new File([raw],'anterior.json',{type:'application/json'}));}catch(e){message=e.message;render();}}));main.append(b);}
-    const n=panel('Otra historia');n.append(el('p','Empieza una carrera distinta usando un nombre y un código de historia. El mismo código permite reproducir esta historia desde el inicio; tu identidad se guarda con la partida. Conservaremos una copia de tu carrera actual.','muted'));
+    const label=el('label','Importar copia de partida','file-label');label.append(input);importBlock.append(label);p.append(importBlock);
+    const auto=el('p','Guardado automático activo','save-local-status');auto.setAttribute('role','status');p.append(auto);main.append(p);
+
+    if(hasBackup()){
+      const b=panel('Copia anterior');b.classList.add('save-backup');
+      b.append(el('p','Estado anterior de recuperación. Si lo restauras, volverás a ese punto y la partida actual quedará protegida durante la sustitución.','muted'),button('Recuperar copia anterior',async()=>{try{const raw=await store.previous();if(!raw)throw Error('No hay copia anterior.');await importFile(new File([raw],'anterior.json',{type:'application/json'}));}catch(e){message=e.message;render();}}));
+      main.append(b);
+    }
+
+    const legacy=panel('Copia antigua');legacy.classList.add('save-legacy');
+    legacy.append(el('p','Copia del sistema de guardado anterior. Descargarla no restaura ni sustituye tu partida actual.','muted'),button('Descargar copia antigua',()=>{try{const raw=store.legacyRaw();if(!raw)throw Error('No hay copia antigua.');downloadText(raw,'multihistoria-copia-antigua.json');}catch(e){message=e.message;render();}}));
+    main.append(legacy);
+
+    const n=panel('Otra historia');n.classList.add('save-new-story');
+    n.append(el('p','Empieza una carrera distinta usando un nombre y un código de historia. El mismo código permite reproducir esta historia desde el inicio; tu identidad se guarda con la partida. Conservaremos una copia de tu carrera actual.','muted'));
+    const fields=el('div',undefined,'save-new-story-fields');
     const nameLabel=el('label','Nombre y apellido','file-label'),newPlayerName=el('input');newPlayerName.type='text';newPlayerName.autocomplete='name';newPlayerName.setAttribute('aria-label','Nombre y apellido de la nueva carrera');nameLabel.append(newPlayerName);
-    const codeLabel=el('label','Código de historia','file-label');const seed=el('input');seed.type='number';seed.min='0';seed.max='4294967295';seed.value='424242';seed.setAttribute('aria-label','Código de historia de la nueva carrera');codeLabel.append(seed);
-    n.append(nameLabel,codeLabel,button('Empezar otra carrera',async()=>{const displayName=newPlayerName.value;if(!displayName.trim()){message='Introduce el nombre del jugador para empezar otra carrera.';render();return;}const selected=Number(seed.value);if(!Number.isSafeInteger(selected)||selected<0||selected>4294967295){message='Introduce un código de historia entre 0 y 4294967295.';render();return;}let old;try{old=await store.readRaw();}catch(e){message=e.message;render();return;}confirmReplace('Empezar otra carrera','La partida actual pasará a la copia anterior.',async()=>{replacement=old;session=await GameSession.create(selected,{...sessionOptions,commit,playerDisplayName:displayName});view='home';cinematic=false;replaceRouteState();});}));
+    const codeLabel=el('label','Código de historia','file-label');const seed=el('input');seed.type='number';seed.min='0';seed.max='4294967295';seed.value='424242';seed.setAttribute('aria-label','Código de historia de la nueva carrera');codeLabel.append(seed);fields.append(nameLabel,codeLabel);n.append(fields);
+    n.append(button('Empezar otra carrera',async()=>{const displayName=newPlayerName.value;if(!displayName.trim()){message='Introduce el nombre del jugador para empezar otra carrera.';render();return;}const selected=Number(seed.value);if(!Number.isSafeInteger(selected)||selected<0||selected>4294967295){message='Introduce un código de historia entre 0 y 4294967295.';render();return;}let old;try{old=await store.readRaw();}catch(e){message=e.message;render();return;}confirmReplace('Empezar otra carrera','La partida actual pasará a la copia anterior.',async()=>{replacement=old;session=await GameSession.create(selected,{...sessionOptions,commit,playerDisplayName:displayName});view='home';cinematic=false;replaceRouteState();});}));
     main.append(n);
   }
   function render(focus=false){disposeCutscene?.();disposeCutscene=null;if(autoVisualTimer!==null){clearTimeout(autoVisualTimer);autoVisualTimer=null;}const v=session?.getView();shell.replaceChildren();shell.classList.toggle('immersive',cinematic&&!!v);const header=el('header',undefined,'topbar');const brand=el('div',undefined,'brand');brand.append(el('span','M','brand-mark'));const name=el('div');name.append(el('strong','Multihistoria'),el('small','Carrera de futbolista'));brand.append(name);const simMode=v?.simulation?.mode;const pause=v&&['auto_simulating','paused'].includes(simMode)?button(simMode==='paused'?'Reanudar':'Pausar',pauseToggle,'secondary',{ariaLabel:simMode==='paused'?'Reanudar la simulación':'Pausar la simulación',pressed:simMode==='paused'}):null;if(pause)pause.classList.add('pause-button');header.append(brand,el('span',v?'Temporada '+v.season.replace('-',' / 20'):'Una vida. Mil decisiones.','chapter'),...(pause?[pause]:[]),button(v?date(v.date)+' · Partida':'Tu partida',()=>navigate('save'),'date-button',{ariaLabel:v?'Abrir Tu partida y el contexto de guardado de '+date(v.date):'Abrir Tu partida'}));shell.append(header);
