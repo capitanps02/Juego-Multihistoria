@@ -31,11 +31,18 @@ test('P8 Tu partida preserves all existing local persistence operations',()=>{
   assert.match(ui,/store\.write\(candidate\.exportSnapshot\(\),previous\)/);
 });
 
-test('P8 Tu partida reorganizes, but does not invent remote save features',()=>{
-  for(const cls of ['p8-save','save-current','save-import','save-backup','save-legacy','save-new-story','save-support-grid'])assert.ok(save.includes(cls),cls);
-  for(const copy of ['Partida actual','Importar una copia','Copia anterior','Copia antigua','Otra historia','Guardado automático activo','Código de historia'])assert.ok(save.includes(copy),copy);
+test('P8 Tu partida groups local save and recovery without inventing remote features',()=>{
+  for(const cls of ['p8-saves','save-current','save-recovery','save-import-block','save-previous','save-legacy','save-new-story','save-new-fields'])assert.ok(save.includes(cls),cls);
+  for(const copy of ['Partida actual','Copias y recuperación','Importar copia de partida','Copia anterior','Copia antigua','Otra historia','Guardado automático activo','Código de historia'])assert.ok(save.includes(copy),copy);
   for(const forbidden of [/cloud/i,/nube/i,/login/i,/iniciar sesión/i,/sincroniz/i,/remote slot/i,/slot remoto/i,/cuenta online/i])assert.doesNotMatch(save,forbidden);
   assert.doesNotMatch(save,/Semilla/);
+});
+
+test('P8 Tu partida displays previous and legacy blocks only when real local copies exist',()=>{
+  assert.match(save,/if\(hasBackup\(\)\)/);
+  assert.match(save,/const legacy=store\.legacyRaw\(\);/);
+  assert.match(save,/if\(legacy\)/);
+  assert.match(save,/downloadText\(legacy,'multihistoria-copia-antigua\.json'\)/);
 });
 
 test('P8 Tu partida keeps the existing story-code validation and replacement protection',()=>{
@@ -47,13 +54,14 @@ test('P8 Tu partida keeps the existing story-code validation and replacement pro
   assert.match(save,/La partida actual pasará a la copia anterior/);
 });
 
-test('P8 Tu partida responsive styles separate support actions cleanly',()=>{
-  assert.match(css,/\.p8-save \.save-support-grid\{display:grid;grid-template-columns:repeat\(auto-fit,minmax\(280px,1fr\)\)/);
-  assert.match(css,/\.p8-save \.save-import input\[type=file\]\{width:100%;min-width:0/);
-  assert.match(css,/\.p8-save \.save-new-story input\{width:100%;min-width:0/);
-  assert.match(css,/@media\(max-width:430px\)[\s\S]*\.p8-save \.save-support-grid\{grid-template-columns:minmax\(0,1fr\)/);
+test('P8 Tu partida responsive styles match the final recovery hierarchy',()=>{
+  assert.match(css,/\.p8-saves \.save-current,\.p8-saves \.save-new-story\{max-width:920px\}/);
+  assert.match(css,/\.p8-saves \.save-import-block input\{width:100%;min-width:0\}/);
+  assert.match(css,/\.p8-saves \.save-new-fields\{display:grid;grid-template-columns:minmax\(0,1fr\) minmax\(180px,\.55fr\)/);
+  assert.match(css,/@media\(max-width:430px\)[\s\S]*\.p8-saves \.save-new-fields\{grid-template-columns:minmax\(0,1fr\)/);
 });
 
-test('P8.5 workflow reserves the full persistence stress gate',()=>{
-  assert.match(workflow,/test-persistence\.mjs/,'P8.5 must execute the reserved 100-cycle persistence stress test');
+test('P8.5 workflow executes the reserved full persistence stress gate',()=>{
+  assert.match(workflow,/P8 persistence interruption stress/);
+  assert.match(workflow,/node --test scripts\/test-persistence\.mjs/);
 });
