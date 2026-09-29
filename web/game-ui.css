@@ -64,6 +64,6 @@ button.ghost{min-height:44px;margin-top:10px;background:transparent;border:1px s
 .auto-sim-progress::-webkit-progress-bar{background:#ffffff12}
 .auto-sim-progress::-webkit-progress-value{background:#0a84ff;border-radius:999px}
 .auto-sim-progress::-moz-progress-bar{background:#0a84ff;border-radius:999px}
-.p5-live-status{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
+.p5-live-status{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;clip-path:inset(50%)!important;white-space:normal!important;overflow-wrap:anywhere!important;word-break:break-all!important;border:0!important}
 .period-summary>.muted:first-of-type{margin-bottom:14px}
 @media(max-width:390px){.auto-sim-state{padding:12px}.auto-sim-state-row{align-items:flex-start;flex-direction:column;gap:3px}}
