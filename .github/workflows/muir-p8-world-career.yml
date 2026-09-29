@@ -59,6 +59,8 @@ jobs:
         run: node analysis/muir/p8/browser-career-probe.mjs
       - name: P8 Relaciones y Perfil browser matrix
         run: node analysis/muir/p8/browser-relations-profile-probe.mjs
+      - name: P8 Tu partida browser matrix
+        run: node analysis/muir/p8/browser-save-probe.mjs
       - name: Shared UI package graph
         run: node --test scripts/test-muir-package-graph.mjs
       - name: PlayCanvas package smoke
