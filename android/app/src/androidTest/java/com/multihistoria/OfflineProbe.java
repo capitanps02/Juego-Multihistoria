@@ -55,6 +55,32 @@ public class OfflineProbe extends Instrumentation {
             if(!"true".equals(js("isSecureContext && !!crypto.subtle && !!indexedDB"))) throw new Exception("Missing web APIs");
             if(!"true".equals(js("typeof AndroidBridge==='object' && typeof AndroidBridge.saveTextFile==='function'"))) throw new Exception("Missing Android file bridge");
             android.content.SharedPreferences prefs=getTargetContext().getSharedPreferences("offline-probe",0);
+            if("p9back".equals(phase)) {
+                js("[..."+ROOT+".querySelectorAll('button')].find(b=>b.textContent.trim().startsWith('Simular'))?.click()");
+                until(ROOT+"?.querySelector('.choice:not(:disabled)')");
+                String decisionBefore=snapshot();
+                JSONObject decisionSave=new JSONObject(decisionBefore);
+                if(decisionSave.isNull("pendingDecision") || decisionSave.getJSONArray("journal").length()!=0) throw new Exception("Decision baseline invalid");
+                runOnMainSync(activity::onBackPressed);
+                until(ROOT+"?.querySelector('.mh') && !"+ROOT+"?.querySelector('.mh').classList.contains('immersive')");
+                if(!decisionBefore.equals(snapshot())) throw new Exception("Android Back changed pending decision/save");
+                if(!"true".equals(js("[..."+ROOT+".querySelectorAll('button')].some(b=>b.textContent.includes('Una decisión te espera'))"))) throw new Exception("Decision safe return missing");
+
+                js("[..."+ROOT+".querySelectorAll('button')].find(b=>b.textContent.includes('Una decisión te espera'))?.click()");
+                until(ROOT+"?.querySelector('.choice:not(:disabled)')");
+                js(ROOT+".querySelector('.choice:not(:disabled)').click()");
+                until(ROOT+"?.querySelector('[data-result-continue]')");
+                String resultBefore=snapshot();
+                JSONObject resultSave=new JSONObject(resultBefore);
+                if(resultSave.isNull("pendingResult") || resultSave.getJSONArray("journal").length()!=1) throw new Exception("Result baseline invalid");
+                runOnMainSync(activity::onBackPressed);
+                until(ROOT+"?.querySelector('.mh') && !"+ROOT+"?.querySelector('.mh').classList.contains('immersive')");
+                if(!resultBefore.equals(snapshot())) throw new Exception("Android Back acknowledged or changed pending Result");
+                if(!"true".equals(js("[..."+ROOT+".querySelectorAll('button')].some(b=>b.textContent.includes('Volver a tu decisión'))"))) throw new Exception("Result safe return missing");
+                report.putString("stream", "PASS p9back: native MainActivity Back preserved pending Decision and Result without dispatch/acknowledge; startupMs=" + startupMs + "\n");
+                finish(Activity.RESULT_OK, report);
+                return;
+            }
             if("create".equals(phase)) {
                 js("[..."+ROOT+".querySelectorAll('button')].find(b=>b.textContent.includes('Simular semana')).click()");
                 until(ROOT+"?.querySelector('.choice:not(:disabled)')");
