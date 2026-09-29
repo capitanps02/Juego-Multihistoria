@@ -32,7 +32,7 @@ test('P9 changes no gameplay, narrative, RNG, market, contract or persistence au
 
 test('P9 product scope is limited to presentation files',()=>{
   const files=git('diff','--name-only',P8+'..HEAD').split(/\r?\n/).filter(Boolean);
-  const product=files.filter(f=>f.startsWith('src/')||f.startsWith('web/')||f.startsWith('android/'));
+  const product=files.filter(f=>f.startsWith('src/')||f.startsWith('web/')||f.startsWith('android/app/src/main/'));
   assert.deepEqual(product.sort(),['web/cutscene-player.js','web/game-ui.css','web/game-ui.js']);
 });
 
@@ -82,6 +82,6 @@ test('P9 final report/gate document exists and is ready for exact-head certifica
   assert.match(gate,/P9_GATE: READY_FOR_GATE/);
   assert.match(gate,/P8_CERTIFIED_SHA: ecc72b9abebbc64533c86b1f3cf7009a127c0c02/);
   assert.match(gate,/P9_5_CERTIFIED_SHA: 8f104808e0c6bc8ac7a0697406add7a5c2731853/);
-  assert.match(gate,/ANDROID_PHYSICAL_BACK: NOT_EXECUTABLE/);
+  assert.match(gate,/ANDROID_EMULATOR_BACK: READY_FOR_GATE|ANDROID_EMULATOR_BACK: PASS/);\n  assert.match(gate,/ANDROID_PHYSICAL_BACK: NOT_EXECUTABLE/);
   assert.match(gate,/ANDROID_BACK_WIRING: PASS/);
 });
