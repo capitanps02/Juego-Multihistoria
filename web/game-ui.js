@@ -642,7 +642,7 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
   function relations(v,main){
     main.classList.add('p8-relations');
     const intro=el('header',undefined,'relations-intro');
-    intro.append(el('span','NADIE LLEGA SOLO','eyebrow'),el('h1','Las personas de tu historia.'),el('p','Personas que aparecen en tu carrera y el papel que ocupan en ella.','muted'));main.append(intro);
+    intro.append(el('span','NADIE LLEGA SOLO','eyebrow'),el('h1','Las personas de tu historia.'),el('p','Personas que ya forman parte de tu carrera y el papel que ocupan en ella.','muted'));main.append(intro);
     const grid=el('div',undefined,'people-grid relations-grid');
     if(!v.contacts.length)grid.append(el('p','Aún no hay personas registradas en esta etapa de tu historia.','muted semantic-empty relations-empty'));
     for(const c of v.contacts){const card=personCard(c);if(card)grid.append(card);}
