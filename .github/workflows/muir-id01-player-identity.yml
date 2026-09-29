@@ -1,0 +1,55 @@
+name: MUIR ID-01 player identity
+
+on:
+  pull_request:
+    branches:
+      - ui-a1/muir-p2-shell
+    paths:
+      - 'src/core/player-identity.ts'
+      - 'src/core/types.ts'
+      - 'src/content/initial-state.ts'
+      - 'src/save/validation.ts'
+      - 'src/save/save.ts'
+      - 'src/session/game-session.ts'
+      - 'src/session/validate-session.ts'
+      - 'scripts/test-muir-id01-player-identity.mjs'
+      - 'scripts/test-muir-id01-gate.mjs'
+      - 'analysis/muir/ID-01_PLAYER_IDENTITY.md'
+      - '.github/workflows/muir-id01-player-identity.yml'
+
+concurrency:
+  group: muir-id01-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  certify-player-identity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      MUIR_ID01_EXPECTED_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Build engine
+        run: npm run build
+      - name: ID-01 directed identity matrix
+        run: node --test scripts/test-muir-id01-player-identity.mjs
+      - name: Save/load regression
+        run: npm run test:saves
+      - name: Session regression
+        run: npm run test:session
+      - name: PlayCanvas regression
+        run: npm run test:playcanvas
+      - name: Android offline build
+        run: npm run android:offline
+      - name: Android offline regression
+        run: npm run test:android:offline
+      - name: Final executable ID-01 gate
+        run: node scripts/test-muir-id01-gate.mjs
