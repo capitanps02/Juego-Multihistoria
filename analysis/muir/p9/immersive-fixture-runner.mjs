@@ -46,7 +46,7 @@ function apply(view){
     if(suffix==='long')v.decision.body=long;
     if(suffix==='memory'){v.decision.memories=[{date:'2029-02-14',title:'La primera conversación',choiceLabel:'Esperar y observar',journalIndex:0}];}
     if(suffix==='uncertainty'){v.decision.visible=['El club ha confirmado la reunión.',long.slice(0,240)];v.decision.uncertain=['No conoces la propuesta final.','No sabes qué otros clubes han preguntado por ti.'];}
-    if(suffix==='video'||suffix==='error')v.cutscene={eventId:'EVT_P9_FIXTURE',file:suffix==='error'?'missing-p9-cutscene.webm':'missing-p9-baseline.webm',title:'Escena de prueba P9'};
+    if(['video','poster','missing','error'].includes(suffix))v.cutscene={eventId:'EVT_P9_FIXTURE',file:['video','poster'].includes(suffix)?'cutscene_evt_18_match_001_debut.webm':'missing-p9-cutscene.webm',title:'Escena de prueba P9'};
     return v;
   }
   if(scenario.startsWith('result-')){
@@ -61,7 +61,7 @@ function apply(view){
     v.screen='offer';v.offer=publicOffer({loan:scenario==='offer-loan',longClub:scenario==='offer-long-club',partial:scenario==='offer-partial'});return v;
   }
   if(scenario==='prologue'){v.screen='career';v.cutscene={eventId:'PROLOGUE',file:'missing-p9-prologue.webm',title:'Prólogo · Multihistoria'};return v;}
-  if(scenario==='epilogue'){v.screen='epilogue';v.retirementStatus='closed';v.cutscene={eventId:'EPILOGUE',file:'missing-p9-epilogue.webm',title:'Después del ruido'};v.careerSeasons=[];return v;}
+  if(scenario==='epilogue'){v.screen='epilogue';v.retirementStatus='closed';v.cutscene={eventId:'EPILOGUE',file:'cutscene_evt_ret_epilogue_despues_ruido.webm',title:'Después del ruido'};v.careerSeasons=[];return v;}
   throw Error('Unknown P9 scenario '+scenario);
 }
 GameSession.prototype.getView=function(){
@@ -70,9 +70,19 @@ GameSession.prototype.getView=function(){
 };
 const base=await GameSession.create(424242,{events:[],microfeeds:false,sessionId});
 localStorage.setItem(storageKey,JSON.stringify(base.exportSnapshot()));
+const fixtureView=base.getView();
+if(['decision-poster','epilogue'].includes(scenario)&&fixtureView.cutscene){
+  const sceneKey=[fixtureView.sessionId,fixtureView.cutscene.file,fixtureView.screen,fixtureView.decisionsMade].join(':');
+  localStorage.setItem(storageKey+'.watched-cutscenes.v1',JSON.stringify([sceneKey]));
+}
 const root=document.querySelector('#game').attachShadow({mode:'open'});
 const [assets,css]=await Promise.all([fetch('/web/assets.json').then(r=>r.json()),fetch('/web/game-ui.css').then(r=>r.text())]);
-mountGame({root,GameSession,assets,css,storageKey,events:[],cutsceneUrl:clip=>'/analysis/muir/p9/missing/'+clip.file});
+const cutsceneUrl=clip=>{
+  if(['decision-video','decision-poster'].includes(scenario))return '/web/assets/cutscenes/cutscene_evt_18_match_001_debut.webm';
+  if(scenario==='epilogue')return '/web/assets/cutscenes/cutscene_evt_ret_epilogue_despues_ruido.webm';
+  return '/analysis/muir/p9/missing/'+clip.file;
+};
+mountGame({root,GameSession,assets,css,storageKey,events:[],cutsceneUrl});
 for(let i=0;i<180;i++){
   const main=root.querySelector('main');
   if(main&&main.getAttribute('aria-busy')==='false')break;
