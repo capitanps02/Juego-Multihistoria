@@ -600,7 +600,7 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
     main.classList.add('p8-world');
     const intro=el('header',undefined,'world-intro');
     const currentDate=el('time',date(v.date),'eyebrow world-current-date');currentDate.dateTime=v.date;
-    intro.append(el('span','ACTUALIDAD DE TU MUNDO','eyebrow'),el('h1','El mundo sigue.'),currentDate,el('p','Noticias públicas de tu entorno futbolístico, sin añadir resultados, clasificaciones ni mercado.','muted'));
+    intro.append(el('span','ACTUALIDAD DE TU MUNDO','eyebrow'),el('h1','El mundo sigue.'),currentDate,el('p','Noticias públicas que aparecen en tu carrera, ordenadas desde la más reciente.','muted'));
     main.append(intro);
     const feed=el('section',undefined,'world-feed');feed.setAttribute('aria-labelledby','world-news-title');
     const heading=el('div',undefined,'world-feed-header'),title=el('h2','Noticias');title.id='world-news-title';heading.append(title,el('span','Más recientes primero','muted'));feed.append(heading);
