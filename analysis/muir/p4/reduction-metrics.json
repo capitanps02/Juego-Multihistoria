@@ -1,0 +1,116 @@
+{
+  "baseline": "3bb551e0701626d909cd42ffaa35b74e41d159b5",
+  "operational": {
+    "characters": {
+      "before": 561,
+      "after": 366,
+      "reductionPercent": 34.8
+    },
+    "words": {
+      "before": 91,
+      "after": 61,
+      "reductionPercent": 33
+    },
+    "rows": [
+      {
+        "before": "Guardando tu historia…",
+        "after": "Guardando…",
+        "occurrences": 2,
+        "charsBefore": 44,
+        "charsAfter": 20,
+        "wordsBefore": 6,
+        "wordsAfter": 2
+      },
+      {
+        "before": "Cargando tu historia…",
+        "after": "Cargando…",
+        "occurrences": 1,
+        "charsBefore": 21,
+        "charsAfter": 9,
+        "wordsBefore": 3,
+        "wordsAfter": 1
+      },
+      {
+        "before": "Estas acciones son opcionales. Puedes ignorarlas y volver a simular cuando quieras.",
+        "after": "Opcional: entra sólo si quieres hacer algo antes de simular.",
+        "occurrences": 1,
+        "charsBefore": 83,
+        "charsAfter": 60,
+        "wordsBefore": 12,
+        "wordsAfter": 10
+      },
+      {
+        "before": "Opcional: entra si quieres hacer algo antes de seguir simulando. No hay acciones obligatorias ni contador pendiente.",
+        "after": "Opcional: puedes hacer algo antes de simular. Nada es obligatorio.",
+        "occurrences": 1,
+        "charsBefore": 116,
+        "charsAfter": 66,
+        "wordsBefore": 17,
+        "wordsAfter": 10
+      },
+      {
+        "before": "Avanza tu carrera hasta el siguiente momento que requiera tu atención.",
+        "after": "Simula hasta el siguiente momento importante.",
+        "occurrences": 1,
+        "charsBefore": 70,
+        "charsAfter": 45,
+        "wordsBefore": 11,
+        "wordsAfter": 6
+      },
+      {
+        "before": "Revisa qué cambió en este tramo antes de seguir simulando.",
+        "after": "Revisa este tramo antes de seguir.",
+        "occurrences": 1,
+        "charsBefore": 58,
+        "charsAfter": 34,
+        "wordsBefore": 10,
+        "wordsAfter": 6
+      },
+      {
+        "before": "Tu recorrido se construye con lo que eliges y con lo que ocurre en el campo.",
+        "after": "Tu carrera cambia con tus decisiones y lo que pasa en el campo.",
+        "occurrences": 1,
+        "charsBefore": 76,
+        "charsAfter": 63,
+        "wordsBefore": 16,
+        "wordsAfter": 13
+      },
+      {
+        "before": "Juego en pausa · pulsa Reanudar para continuar.",
+        "after": "Juego en pausa · reanuda cuando quieras.",
+        "occurrences": 1,
+        "charsBefore": 47,
+        "charsAfter": 40,
+        "wordsBefore": 8,
+        "wordsAfter": 7
+      },
+      {
+        "before": "Una carrera de principio a fin.",
+        "after": "De principio a fin.",
+        "occurrences": 1,
+        "charsBefore": 31,
+        "charsAfter": 19,
+        "wordsBefore": 6,
+        "wordsAfter": 4
+      },
+      {
+        "before": "Abrir guardados",
+        "after": "Tu partida",
+        "occurrences": 1,
+        "charsBefore": 15,
+        "charsAfter": 10,
+        "wordsBefore": 2,
+        "wordsAfter": 2
+      }
+    ]
+  },
+  "homeHelpPermanentFootprint": {
+    "charactersBefore": 467,
+    "charactersAfter": 13,
+    "reductionPercent": 97.2,
+    "helpStillAvailable": true,
+    "mechanism": "native details/summary"
+  },
+  "protectedNarrativeReduced": 0,
+  "gameplayChanges": 0
+}
