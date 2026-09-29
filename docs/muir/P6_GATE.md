@@ -33,6 +33,10 @@ The final gate requires the exact checked-out SHA to equal `MUIR_P6_EXPECTED_HEA
 
 The workflow certifies the shared browser UI plus PlayCanvas/Android-offline package regressions. Physical-device TalkBack/Android lifecycle behavior is not claimed unless separately executed on a physical or emulator environment with those facilities.
 
-## Final-state rule
+## Certification state
 
-This document and the RTM may describe a candidate as READY_FOR_GATE. P6 is PASS only when the workflow for the exact final HEAD completes SUCCESS. P7 must not start before that condition is met.
+Candidate code SHA `435caa6546b303e5977547f09663260cf9ca823c` completed workflow `36589963173` with **SUCCESS** across the full P6 chain, including the exact-head executable gate.
+
+The RTM-closing commit that contains this document must repeat the same workflow successfully before the branch is formally certified. If that exact-head run fails, the branch returns to READY_FOR_GATE and the RTM PASS rows are not authoritative.
+
+P7 must not start before the exact final HEAD run completes SUCCESS.
