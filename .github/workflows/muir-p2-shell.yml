@@ -37,7 +37,7 @@ jobs:
         run: node scripts/test-muir-p2-shell.mjs
       - name: Install browser certification tooling
         run: |
-          npm install --no-save playwright@1.55.0
+          npm install --no-save playwright@1.55.0 axe-core@4
           npx playwright install --with-deps chromium
       - name: P2 deterministic viewport matrix
         run: node scripts/capture-muir-browser.mjs
@@ -45,6 +45,8 @@ jobs:
         run: node analysis/muir/p2/browser-safe-area-probe.mjs
       - name: P2 keyboard focus and ARIA probe
         run: node analysis/muir/p2/browser-a11y-probe.mjs
+      - name: P2 AXE shell audit
+        run: node analysis/muir/p2/browser-axe-probe.mjs
       - name: P2 navigation five-vs-six A/B probe
         run: node analysis/muir/p2/nav-ab-probe.mjs
       - name: Shared UI package graph
