@@ -70,4 +70,8 @@ try{
   server.close();
 }
 
-console.log(JSON.stringify({gate:'PASS',viewports:reports.length,reports}));
+const evidence={gate:'PASS',viewports:reports.length,reports};
+const evidenceDir=path.join(root,'analysis','muir','p2','evidence');
+fs.mkdirSync(evidenceDir,{recursive:true});
+fs.writeFileSync(path.join(evidenceDir,'axe.json'),JSON.stringify(evidence,null,2)+'\n');
+console.log(JSON.stringify(evidence));
