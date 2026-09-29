@@ -149,4 +149,8 @@ for(const viewport of ['phone-360','phone-primary','phone-412']){
     accessibleNameB:b.access.accessibleSaveName
   });
 }
-console.log(JSON.stringify({gate:'PASS',rows:rows.length,comparisons}));
+const report={gate:'PASS',rows:rows.length,comparisons};
+const evidenceDir=path.join(root,'analysis','muir','p2','evidence');
+fs.mkdirSync(evidenceDir,{recursive:true});
+fs.writeFileSync(path.join(evidenceDir,'nav-ab.json'),JSON.stringify(report,null,2)+'\n');
+console.log(JSON.stringify(report));
