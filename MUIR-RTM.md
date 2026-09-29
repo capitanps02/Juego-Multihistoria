@@ -71,7 +71,7 @@ No requirement may be marked PASS without reproducible evidence tied to the base
 
 P2 implementation evidence: run #31 / `36541438067` · head `1a4d18ae9d784c0573ab40e2617764dec5c21ec3` · SUCCESS  
 P2 visual artifact: `muir-p2-1a4d18ae9d784c0573ab40e2617764dec5c21ec3`  
-P2 final certified SHA: PENDING FINAL GATE
+P2 final certified SHA: emitted by the exact-head Final executable P2 gate (non-self-referential record)
 
 | REQ_ID | Description | Owner | Pass | Implementation | Test | Evidence | Gate | Rollback | Status |
 |---|---|---|---|---|---|---|---|---|---|
