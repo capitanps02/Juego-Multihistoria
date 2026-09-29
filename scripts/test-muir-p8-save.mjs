@@ -32,7 +32,7 @@ test('P8 Tu partida preserves all existing local persistence operations',()=>{
 });
 
 test('P8 Tu partida groups local save and recovery without inventing remote features',()=>{
-  for(const cls of ['p8-saves','save-current','save-recovery','save-import-block','save-previous','save-legacy','save-new-story','save-new-fields'])assert.ok(save.includes(cls),cls);
+  for(const cls of ['p8-save','save-current','save-recovery','save-support-grid','save-import','save-backup','save-legacy','save-new-story','save-new-fields'])assert.ok(save.includes(cls),cls);
   for(const copy of ['Partida actual','Copias y recuperación','Importar copia de partida','Copia anterior','Copia antigua','Otra historia','Guardado automático activo','Código de historia'])assert.ok(save.includes(copy),copy);
   for(const forbidden of [/cloud/i,/nube/i,/login/i,/iniciar sesión/i,/sincroniz/i,/remote slot/i,/slot remoto/i,/cuenta online/i])assert.doesNotMatch(save,forbidden);
   assert.doesNotMatch(save,/Semilla/);
@@ -55,10 +55,11 @@ test('P8 Tu partida keeps the existing story-code validation and replacement pro
 });
 
 test('P8 Tu partida responsive styles match the final recovery hierarchy',()=>{
-  assert.match(css,/\.p8-saves \.save-current,\.p8-saves \.save-new-story\{max-width:920px\}/);
-  assert.match(css,/\.p8-saves \.save-import-block input\{width:100%;min-width:0\}/);
-  assert.match(css,/\.p8-saves \.save-new-fields\{display:grid;grid-template-columns:minmax\(0,1fr\) minmax\(180px,\.55fr\)/);
-  assert.match(css,/@media\(max-width:430px\)[\s\S]*\.p8-saves \.save-new-fields\{grid-template-columns:minmax\(0,1fr\)/);
+  assert.match(css,/\.p8-save \.save-support-grid\{display:grid;grid-template-columns:repeat\(auto-fit,minmax\(280px,1fr\)\)/);
+  assert.match(css,/\.p8-save \.save-import input\[type=file\]\{width:100%;min-width:0/);
+  assert.match(css,/\.p8-save \.save-new-fields\{display:grid;grid-template-columns:minmax\(0,1fr\) minmax\(180px,\.55fr\)/);
+  assert.match(css,/@media\(max-width:430px\)[\s\S]*\.p8-save \.save-support-grid\{grid-template-columns:minmax\(0,1fr\)/);
+  assert.match(css,/@media\(max-width:430px\)[\s\S]*\.p8-save \.save-new-fields\{grid-template-columns:minmax\(0,1fr\)/);
 });
 
 test('P8.5 workflow executes the reserved full persistence stress gate',()=>{
