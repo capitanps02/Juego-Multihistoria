@@ -606,7 +606,7 @@ export class GameSession {
       screen: result ? "result" : p ? "decision" : s.market?.pending ? "offer" : summaryScreen ? "summary" : s.retirement.status === "closed" ? "epilogue" : "career",
       offer: s.market?.pending ? publicOffer(s.market.pending) : null, offerHistory: (s.market?.history ?? []).map(h=>({...h,offer:publicOffer(h.offer)})),
       ageMilestones: s.ageMilestones ? structuredClone(s.ageMilestones) : [],
-      player: { displayName: s.playerIdentity.displayName },
+      player: { displayName: ensurePlayerIdentityInPlace(s).displayName },
       careerSeasons: careerSeasonRecords(s), careerMilestones: careerSportMilestones(s), latestMatch: latestCareerMatchResult(s), retirementStatus: s.retirement.status,
       date: s.date, age: s.age, club: s.club, appearances: Number(s.sport.appearances ?? 0),
       salaryMonthly: Number(s.contract.salaryMonthly ?? 0), decisionsMade: s.history.length,
