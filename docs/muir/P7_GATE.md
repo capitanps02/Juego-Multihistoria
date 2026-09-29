@@ -57,8 +57,8 @@ P7 PR: #879
 
 ## Current certification state
 
-**IN_PROGRESS / READY_FOR_CI**
+**PASS CANDIDATE / FINAL EXACT-HEAD CLOSURE REQUIRED**
 
-No P7 RTM row may be treated as PASS until the exact current HEAD workflow completes successfully.
+Candidate SHA `fc65d9b5c6da31b687ad855a3e3b56623af4a64b` completed workflow `36599864443` with **SUCCESS**. Artifact `muir-p7-fc65d9b5c6da31b687ad855a3e3b56623af4a64b` has digest `sha256:822e2c583c7aca99003f8169d6caa6a9af3bf02ca856c1f57f07742a1b99cf68`.
 
-P8 must not begin before a final exact-head P7 workflow is SUCCESS and this document is closed to PASS.
+All P7 requirements are promoted to PASS in the RTM. P7 is final only after the exact-head workflow on the RTM/gate-closing commit also completes with SUCCESS. P8 must not begin before that final closure run succeeds.
