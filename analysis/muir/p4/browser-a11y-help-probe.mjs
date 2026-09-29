@@ -53,6 +53,8 @@ try{
         return {
           helpExists:Boolean(help),
           helpOpen:help?.open??null,
+          helpHeight:help?.getBoundingClientRect().height??0,
+          bodyVisibility:body?.checkVisibility?.()??null,
           summary:summary?.textContent.trim()??'',
           summaryHeight:summary?.getBoundingClientRect().height??0,
           summaryTabIndex:summary?.tabIndex??-1,
