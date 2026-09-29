@@ -13,7 +13,8 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
   function appendCutscene(v,target){
     if(!v.cutscene)return;
     const sceneKey=[v.sessionId,v.cutscene.file,v.screen,v.decisionsMade].join(':');
-    const player=createCutscenePlayer({document:doc,clip:v.cutscene,url:cutsceneUrl(v.cutscene),posterUrl:assets.stadium_bg||assets.prematch_scene||null,autoplay:!watchedScenes.has(sceneKey),onStarted(){watchedScenes.add(sceneKey);try{localStorage.setItem(watchedKey,JSON.stringify([...watchedScenes].slice(-512)));}catch{}}});
+    const posterKey=v.cutscene.eventId==='PROLOGUE'?'hero_player':v.cutscene.eventId==='EPILOGUE'?'stadium_bg':lastArt;
+    const player=createCutscenePlayer({document:doc,clip:v.cutscene,url:cutsceneUrl(v.cutscene),posterUrl:assets[posterKey]||assets.stadium_bg||assets.prematch_scene||null,autoplay:!watchedScenes.has(sceneKey),onStarted(){watchedScenes.add(sceneKey);try{localStorage.setItem(watchedKey,JSON.stringify([...watchedScenes].slice(-512)));}catch{}}});
     if(player){player.element.dataset.cutsceneKind=v.cutscene.eventId==='PROLOGUE'?'prologue':v.cutscene.eventId==='EPILOGUE'?'epilogue':'event';target.append(player.element);disposeCutscene=player.dispose;}
   }
   let playerActionUi={screen:'career',categoryId:null,actionId:null,targetId:null,resultExecutionId:null};
