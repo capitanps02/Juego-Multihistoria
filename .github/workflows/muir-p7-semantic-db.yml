@@ -51,6 +51,8 @@ jobs:
           MUIR_P7_PREDECESSOR_ROOT=/tmp/muir-p6 node scripts/test-muir-p7-equivalence.mjs
       - name: Football DB V2 and public sports regressions
         run: node --test scripts/test-football-catalog.mjs scripts/test-football-v2-integrity.mjs scripts/test-football-database-v2-persistence.mjs scripts/test-posttest-feedback.mjs
+      - name: Compatible A19 UI regressions
+        run: node --test --test-name-pattern='A19 (onboarding|consumes factual|exposes real|has explicit|consumes A14|retirement stays|career renders)' scripts/test-t55-a19-ui.mjs
       - name: Public offer regressions
         run: node --test scripts/test-t51-agent6-offers23-25.mjs scripts/test-t51-offer-bridge-provenance.mjs
       - name: Install browser certification tooling
