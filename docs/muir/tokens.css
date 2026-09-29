@@ -1,0 +1,99 @@
+/* MUIR P1 semantic token proposal.
+   DOCUMENTATION-ONLY in P1: this file is NOT imported by production.
+   Every value is derived from current web/game-ui.css on P0 certified base. */
+
+:root {
+  /* Typography */
+  --muir-font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+
+  --muir-type-display-size: clamp(28px, 3.1vw, 45px);
+  --muir-type-display-line: 1.08;
+  --muir-type-display-tracking: -0.045em;
+
+  --muir-type-title-size: 26px;
+  --muir-type-title-line: 1.18;
+  --muir-type-title-tracking: -0.035em;
+
+  --muir-type-heading-size: 18px;
+  --muir-type-heading-tracking: -0.02em;
+
+  --muir-type-body-size: 14px;
+  --muir-type-body-line: 1.65;
+
+  --muir-type-body-small-size: 13px;
+  --muir-type-label-size: 12px;
+  --muir-type-caption-size: 10px;
+
+  /* Spacing — selected from current production values */
+  --muir-space-1: 6px;
+  --muir-space-2: 8px;
+  --muir-space-3: 10px;
+  --muir-space-4: 12px;
+  --muir-space-5: 14px;
+  --muir-space-6: 16px;
+  --muir-space-7: 20px;
+  --muir-space-8: 24px;
+
+  /* Radius */
+  --muir-radius-small: 10px;
+  --muir-radius-control: 14px;
+  --muir-radius-medium: 18px;
+  --muir-radius-panel: 24px;
+  --muir-radius-immersive: 27px;
+  --muir-radius-pill: 999px;
+  --muir-radius-circle: 50%;
+
+  /* Surface hierarchy */
+  --muir-surface-background: #09090b;
+  --muir-surface-1: #141416;
+  --muir-surface-2: #202023;
+  --muir-surface-elevated: #17171be8;
+  --muir-surface-overlay: #111114e8;
+  --muir-surface-glass: #1a1a1d89;
+
+  /* Borders / neutral text */
+  --muir-border-subtle: #ffffff10;
+  --muir-border-control: #ffffff20;
+  --muir-text-primary: #f5f5f7;
+  --muir-text-secondary: #a1a1a6;
+  --muir-text-tertiary: #77777d;
+
+  /* Accents */
+  --muir-accent-primary: #0a84ff;
+  --muir-accent-primary-focus: #409cff;
+  --muir-accent-primary-gradient-start: #2594ff;
+  --muir-accent-primary-gradient-end: #087aee;
+  --muir-accent-prestige: #d6b86a;
+  --muir-accent-positive: #7ddf9a;
+  --muir-accent-progress: #30d158;
+  --muir-accent-warning: #f0d895;
+  --muir-accent-danger: #ff8a82;
+  --muir-accent-neutral: #a1a1a6;
+
+  /* Semantic backgrounds */
+  --muir-bg-danger: #382224;
+  --muir-bg-warning: #3a3020e8;
+  --muir-bg-primary-soft: #0a84ff14;
+  --muir-bg-prestige-soft: #d6b86a14;
+
+  /* Glass / blur */
+  --muir-blur-low: 20px;
+  --muir-blur-medium: 26px;
+  --muir-blur-high: 30px;
+  --muir-blur-backdrop: 8px;
+
+  /* Elevation */
+  --muir-elevation-none: none;
+  --muir-elevation-low: 0 7px 22px #0a84ff26;
+  --muir-elevation-medium: 0 15px 50px #0008;
+  --muir-elevation-high: 0 24px 120px #000a;
+  --muir-elevation-immersive: 0 20px 70px #0005;
+
+  /* Focus */
+  --muir-focus-outline: 3px solid #409cff;
+  --muir-focus-halo: 0 0 0 7px #0a84ff28;
+  --muir-focus-offset: 5px;
+
+  /* Motion */
+  --muir-motion-control: 180ms;
+}
