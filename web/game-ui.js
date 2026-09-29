@@ -103,8 +103,8 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
     return null;
   }
   function offerCard(o,{actions=null,explanation=null,delegateHelp=false}={}){
-    if(!o)return null;
-    const p=panel(o.reason||'Oferta de contrato');p.classList.add('semantic-card','offer-card');
+    if(!o?.reason)return null;
+    const p=panel(o.reason);p.classList.add('semantic-card','offer-card');
     if(o.date)p.prepend(el('time',date(o.date),'eyebrow'));
     const specs=[['Club','club'],['Club propietario','ownerClub'],['Categoría','leagueTier'],['Salario mensual','salary'],['Duración','months'],['Cláusula','releaseClause']];
     if(o.before&&o.terms){
@@ -134,7 +134,7 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
     if(compact){
       const row=el('div',undefined,'contact-row semantic-card person-card person-card-compact');
       row.append(portraitKey?photo(portraitKey,'avatar'):el('div',initials(c.name)||'·','avatar initials person-initials'));
-      const info=el('div',undefined,'person-copy');info.append(el('strong',c.name),el('p',c.role||'Contacto','muted'));row.append(info);return row;
+      const info=el('div',undefined,'person-copy');info.append(el('strong',c.name));if(c.role)info.append(el('p',c.role,'muted'));row.append(info);return row;
     }
     const p=panel(c.name);p.classList.add('semantic-card','person-card');
     p.prepend(portraitKey?photo(portraitKey,'person-portrait'):el('div',initials(c.name)||'·','initials person-initials'));
