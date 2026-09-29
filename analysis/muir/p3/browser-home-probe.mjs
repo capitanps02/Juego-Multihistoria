@@ -48,6 +48,7 @@ async function homeMetrics(page){
     const root=document.querySelector('#game').shadowRoot;
     const rect=n=>{const r=n.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height,right:r.right,bottom:r.bottom};};
     const main=root.querySelector('main');
+    const nav=root.querySelector('.navigation');
     const grid=root.querySelector('.p3-home');
     const hero=root.querySelector('.home-hero');
     const name=root.querySelector('.home-hero .player-name');
@@ -58,7 +59,7 @@ async function homeMetrics(page){
     const children=[...grid?.children??[]].map(n=>({tag:n.tagName,className:n.className,title:n.querySelector('h2')?.textContent.trim()??null}));
     const overflow=[...root.querySelectorAll('*')].filter(n=>n.scrollWidth>n.clientWidth+1).slice(0,20).map(n=>({tag:n.tagName,className:n.className,clientWidth:n.clientWidth,scrollWidth:n.scrollWidth,text:n.textContent.trim().slice(0,80)}));
     return {
-      main:rect(main),gridClass:grid?.className??null,hero:rect(hero),name:{text:name?.textContent.trim()??'',scrollWidth:name?.scrollWidth??0,clientWidth:name?.clientWidth??0,...rect(name)},
+      main:rect(main),nav:rect(nav),gridClass:grid?.className??null,hero:rect(hero),name:{text:name?.textContent.trim()??'',scrollWidth:name?.scrollWidth??0,clientWidth:name?.clientWidth??0,...rect(name)},
       next:rect(next),cta:{text:cta?.textContent.trim()??'',...rect(cta)},secondary:secondary?{text:secondary.textContent.trim(),className:secondary.className,...rect(secondary)}:null,
       context:copy,children,overflow
     };
@@ -76,7 +77,7 @@ try{
       assert(!/Una vida|Mil decisiones/.test(m.name.text),viewport.id+' still uses generic hero title');
       assert(m.context.length>=2,viewport.id+' missing position/age/club context');
       assert(m.cta.text.startsWith('Simular'),viewport.id+' normal core CTA is not Simular');
-      assert(m.cta.top<=m.main.bottom+viewport.ctaTolerance,viewport.id+' primary CTA is too far below the first useful viewport');
+      assert(m.cta.bottom<=m.nav.y+viewport.ctaTolerance,viewport.id+' primary CTA is not visible before the bottom navigation: '+JSON.stringify({cta:m.cta,nav:m.nav,main:m.main}));
       assert(m.cta.height>=48,viewport.id+' primary CTA below 48px');
       assert(m.secondary&&m.secondary.className.includes('secondary'),viewport.id+' Player Actions access is not secondary/optional');
       assert.deepEqual(m.overflow,[],viewport.id+' horizontal overflow before long-name edit: '+JSON.stringify(m.overflow));
@@ -114,7 +115,7 @@ try{
       const m=await homeMetrics(page);
       assert(m.gridClass.includes('has-pending'),fixture+' must mark pending priority');
       assert(m.children[0]?.className.includes('next'),fixture+' pending action must be first Home block');
-      assert(m.cta.top<=m.main.bottom,fixture+' pending CTA must be visible in first useful viewport');
+      assert(m.cta.bottom<=m.nav.y,fixture+' pending CTA must be fully visible before the bottom navigation');
       if(fixture==='home-pending-decision')assert.equal(m.cta.text,'Una decisión te espera');
       if(fixture==='home-offer')assert.equal(m.cta.text,'Revisar oferta');
       assert.deepEqual(m.overflow,[],fixture+' horizontal overflow: '+JSON.stringify(m.overflow));
