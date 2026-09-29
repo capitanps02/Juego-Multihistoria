@@ -2,10 +2,12 @@ import { instantiateNpcStates, instantiateRelationships } from "../catalog/npcs.
 import { FOOTBALL_CATALOG_VERSION } from "../catalog/football/index.js";
 import { makeRngStream } from "../core/rng.js";
 import type { GameState } from "../core/types.js";
+import { makePlayerIdentity } from "../core/player-identity.js";
 
-export function createInitialState(saveSeed = 20260910): GameState {
+export function createInitialState(saveSeed = 20260910, playerDisplayName?: string): GameState {
   return {
     schemaVersion: 8,
+    playerIdentity: makePlayerIdentity(playerDisplayName),
     footballCatalogVersion: FOOTBALL_CATALOG_VERSION,
     ageMilestones: [],
     market: {version:1,sequence:0,pending:null,history:[]},
