@@ -60,6 +60,12 @@ jobs:
         run: node scripts/capture-muir-browser.mjs
       - name: P6 Player Actions browser accessibility text-scale and double-submit
         run: node analysis/muir/p6/browser-player-actions-probe.mjs
+      - name: P3 Home regression probe
+        run: node analysis/muir/p3/browser-home-probe.mjs
+      - name: P3 Home accessibility regression probe
+        run: node analysis/muir/p3/browser-a11y-probe.mjs
+      - name: P4 contextual help regression probe
+        run: node analysis/muir/p4/browser-a11y-help-probe.mjs
       - name: Shared UI package graph
         run: node --test scripts/test-muir-package-graph.mjs
       - name: PlayCanvas package
@@ -81,3 +87,5 @@ jobs:
             analysis/muir/screenshots/*.png
             analysis/muir/evidence/browser-baseline.json
             analysis/muir/p6/evidence/*.json
+            analysis/muir/p3/evidence/*.json
+            analysis/muir/p4/evidence/*.json
