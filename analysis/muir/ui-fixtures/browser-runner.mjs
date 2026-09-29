@@ -89,6 +89,18 @@ const cutsceneUrl=clip=>{
   return '/web/assets/cutscenes/'+clip.file;
 };
 
+const p5CommandLog=[];
+const nativeSessionDispatch=GameSession.prototype.dispatch;
+GameSession.prototype.dispatch=function(command){
+  p5CommandLog.push({
+    type:command?.type??null,
+    action:command?.action??null,
+    maxWeeks:command?.maxWeeks??null,
+    expectedRevision:command?.expectedRevision??null
+  });
+  return nativeSessionDispatch.call(this,command);
+};
+globalThis.__MUIR_COMMAND_LOG__=p5CommandLog;
 mountGame({root,GameSession,assets,css:deterministicCss,storageKey,cutsceneUrl,events:fixtureEventCatalog(fixtureId)});
 const p5ProbeStore=createIndexedSaveStore({storage:localStorage,indexedDB,key:storageKey,validate:async()=>{}});
 globalThis.__MUIR_READ_SAVED_SNAPSHOT__=async()=>{
