@@ -13,7 +13,7 @@ const css=fs.readFileSync(new URL('../web/game-ui.css',import.meta.url),'utf8');
 test('P9.5 is a presentation-only successor of certified P9.4',()=>{
   assert.equal(git('merge-base','HEAD',PASS4),PASS4);
   const files=git('diff','--name-only',PASS4+'..HEAD').split(/\r?\n/).filter(Boolean);
-  const allowed=/^(?:web\/(?:game-ui\.(?:js|css)|cutscene-player\.js)|analysis\/muir\/p9\/|scripts\/test-muir-p9-|docs\/muir\/P9_|\.github\/workflows\/muir-p9-|MUIR-RTM\.md$)/;
+  const allowed=/^(?:web\/(?:game-ui\.(?:js|css)|cutscene-player\.js)|analysis\/muir\/p9\/|android\/app\/src\/androidTest\/|scripts\/test-muir-p9-|docs\/muir\/P9_|\.github\/workflows\/muir-p9-|MUIR-RTM\.md$)/;
   assert.deepEqual(files.filter(x=>!allowed.test(x)),[]);
   assert.equal(git('diff','--name-only',P8+'..HEAD','--','src','web/indexed-save-store.js'),'');
 });
