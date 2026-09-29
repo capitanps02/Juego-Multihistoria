@@ -186,3 +186,40 @@ Final exact-head workflow on the RTM/gate-closing commit is authoritative for th
 | MUIR-P5-A11Y-001 | Controls/progress/live status remain keyboard-usable, visible-focus compatible and free of serious/critical AXE regressions | UI-A3 | P5.5 | native controls/progress/live region | AXE + geometry + regression probes | p5-states-a11y.json | MUIR-P5 | revert P5 a11y change | PASS |
 | MUIR-P5-PARITY-001 | Shared UI packages for PlayCanvas and Android offline still build/test from the same web authority | UI-A3 | P5.5 | web/game-ui shared authority | package graph + PlayCanvas + Android offline | exact-head CI | MUIR-P5 | revert P5 shared UI | PASS |
 | MUIR-P5-SCOPE-001 | P5 changes no src runtime/gameplay/RNG/DB/market/contracts/Player Actions authority | UI-A3 | P5.1–P5.5 | UI/tests/docs/workflow only | exact diff/static guard | scripts/test-muir-p5-autosim.mjs | MUIR-P5 | revert out-of-scope change | PASS |
+
+
+## P6 — Player Actions: integración visual y opcionalidad
+
+P6 authorized predecessor: `603797a9b9bae15bfb7382603111673573f873cc` · P5 exact-head workflow `36572560420` SUCCESS  
+P6 branch: `ui-a4/muir-p6-player-actions`  
+Runtime/GameSession/RNG/persistence/catalog/balance changes: **NONE**  
+Canonical public categories preserved: **7** · canonical actions preserved: **20** · target kinds: `none`, `coach`, `agent`, `teammate`.  
+P6 exact-head workflow and `scripts/test-muir-p6-final-gate.mjs` are authoritative for final certification.
+
+| REQ_ID | Description | Owner | Pass | Implementation | Test | Evidence | Gate | Rollback | Status |
+|---|---|---|---|---|---|---|---|---|---|
+| P6-CAT-001 | Preserve the seven public Player Actions categories exactly as projected by PlayerView | UI-A4 | P6.1–P6.5 | existing PublicPlayerActionsView only | baseline + static contract + deterministic menu fixture | baseline-audit.json + screenshots | MUIR-P6 | revert P6 UI commits | PASS |
+| P6-CAT-002 | Category presentation uses the P1 SVG icon family and moderate accents without emoji/resource semantics | UI-A4 | P6.2 | web/game-ui.js + CSS | static guard + visual matrix | browser-baseline + screenshots | MUIR-P6 | restore predecessor category cards | PASS |
+| P6-ACT-001 | ActionCard remains one-column/mobile-scannable and contains public data only | UI-A4 | P6.3 | shared web Player Actions renderer | static + browser + viewport matrix | screenshots + p6 browser evidence | MUIR-P6 | restore predecessor ActionCard | PASS |
+| P6-AVAIL-001 | Available/unavailable state is textual and never color-only; runtime availability is unchanged | UI-A4 | P6.3–P6.5 | presentation status labels only | P5↔P6 equivalence + browser states | equivalence-report.json + browser evidence | MUIR-P6 | remove status decoration | PASS |
+| P6-COOL-001 | Exact public cooldown expiry is shown without approximation or duplicated ISO reason; cooldown authority is unchanged | UI-A4 | P6.3–P6.5 | cooldownText presentation only | equivalence + cooldown fixture | equivalence-report.json + screenshots | MUIR-P6 | restore exact raw reason only | PASS |
+| P6-REASON-001 | Public unavailableReason is preserved when it carries non-duplicate meaning | UI-A4 | P6.3 | public reason rendering | browser/state/static guard | screenshots + browser evidence | MUIR-P6 | restore predecessor reason presentation | PASS |
+| P6-TGT-001 | none/coach/agent/teammate flows use only canonical public targets and selected semantics | UI-A4 | P6.4–P6.5 | target renderer + test fixtures | target fixtures + AXE + equivalence | p6 browser evidence + screenshots | MUIR-P6 | revert target presentation | PASS |
+| P6-OPT-001 | Options preserve public wording/order/disabled state and canonical action payload | UI-A4 | P6.4–P6.5 | existing option loop/command path | static command guard + equivalence | equivalence-report.json | MUIR-P6 | restore predecessor option presentation | PASS |
+| P6-RES-001 | Result screen renders exact public lastResult with no invented success/reward copy | UI-A4 | P6.4–P6.5 | result h1 + public lastResult | result fixture + static guard | screenshot + browser evidence | MUIR-P6 | restore predecessor result surface | PASS |
+| P6-NAV-001 | Back/another-action/Home flows have no dead ends and Player Actions navigation targets are >=48px | UI-A4 | P6.4–P6.5 | presentation navigation only | geometry + focus + browser flow | p6 browser evidence | MUIR-P6 | revert navigation CSS | PASS |
+| P6-OPTNL-001 | SIMULAR stays primary; Player Actions stays explicitly optional and secondary | UI-A4 | P6.1–P6.5 | no core-loop authority changes | P3 regression + static guard | Home P3 evidence + P6 evidence | MUIR-P6 | revert P6 UI | PASS |
+| P6-ZERO-001 | Never opening Player Actions yields the exact same P5 snapshot sequence | UI-A4 | P6.5 | no runtime changes | exact P5 worktree comparison | equivalence-report.json | MUIR-P6 | revert P6 | PASS |
+| P6-CMD-001 | Same action/target/options emits the same SessionCommand and final snapshot as P5 | UI-A4 | P6.5 | existing run('player_action') | exact P5 worktree comparison + double-submit probe | equivalence-report.json + p6 browser evidence | MUIR-P6 | revert P6 | PASS |
+| P6-A11Y-001 | Player Actions supports focus return, selected semantics, >=48px controls, AXE and 100/130/180% text | UI-A4 | P6.3–P6.5 | native controls + P6 responsive CSS | dedicated Chromium/AXE/text probe | p6-browser-player-actions.json | MUIR-P6 | revert offending P6 style | PASS |
+| P6-RESP-001 | 360x800, 390x844, 412x915 and landscape remain usable without horizontal overflow | UI-A4 | P6.2–P6.5 | shared responsive CSS | 90-capture matrix + dedicated P6 probe | browser-baseline.json + screenshots | MUIR-P6 | revert offending P6 layout rule | PASS |
+
+### P6 candidate gate state
+
+- P3 certified SHA: `3bb551e0701626d909cd42ffaa35b74e41d159b5`.
+- P4 certified SHA: `45371a41908e2ecdac71cfc5f2bf855f086f7866`.
+- P5 certified SHA: `603797a9b9bae15bfb7382603111673573f873cc`.
+- P6 branch was created directly from the exact P5 certified SHA.
+- Gameplay/balance/catalog/availability/cooldown/facts/intents/save-schema changes: **0**.
+- Invented counters/resources/consequences: **0**.
+- Candidate code SHA `435caa6546b303e5977547f09663260cf9ca823c` completed workflow `36589963173` with SUCCESS, including the executable final gate. The RTM-closing commit must itself repeat that exact-head workflow successfully; until then the branch-level certification is still pending.

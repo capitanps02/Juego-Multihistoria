@@ -43,6 +43,8 @@ const errors=[];
 for(const {fixture,viewport} of targets){
   const context=await browser.newContext({viewport:{width:viewport.width,height:viewport.height},reducedMotion:'reduce'});
   const page=await context.newPage();
+  const pageErrors=[];
+  page.on('pageerror',error=>pageErrors.push(String(error?.stack||error)));
   const url=`http://127.0.0.1:${port}/analysis/muir/ui-fixtures/index.html?fixture=${encodeURIComponent(fixture.id)}&viewport=${encodeURIComponent(viewport.id)}`;
   try{
     await page.goto(url,{waitUntil:'networkidle',timeout:30000});

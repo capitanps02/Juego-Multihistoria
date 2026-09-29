@@ -88,13 +88,14 @@ test('A4-006 CATEGORY: UI renders public categories/actions dynamically',async()
   assert.ok(!web.includes("if(age===23"));
 });
 
-test('A4-007 COOLDOWN: action becomes disabled and UI humanizes cooldown',async()=>{
+test('A4-007 COOLDOWN: action becomes disabled and web UI preserves exact public cooldown expiry',async()=>{
   const session=await GameSession.create(424242);
   await session.dispatch(command(session,'player_action',{actionId:'PA_TRAIN_EXTRA',optionId:'TECHNIQUE'}));
   const training=actionById(session.getView(),'PA_TRAIN_EXTRA');
   assert.equal(training.available,false);
   assert.ok(training.cooldownUntil);
-  assert.match(web,/Podrás volver a hacerlo mañana|Disponible en/);
+  assert.match(web,/Disponible de nuevo el/);
+  assert.doesNotMatch(web,/Podrás volver a hacerlo mañana|próxima semana|Disponible en '+days/);
   assert.match(preview,/Podrás volver a hacerlo mañana|Disponible en/);
 });
 
@@ -245,9 +246,10 @@ test('A4-019 TARGET RESET: navigation never carries a selected target into anoth
 });
 
 
-test('A4-019 RESULT BACK: web result returns to simulation home, not career history',()=>{
+test('A4-019 RESULT BACK: web result labels the real simulation-home destination',()=>{
   assert.match(
     web,
-    /player_action_result[\s\S]*Volver a carrera'[\s\S]*navigate\('home'\)/
+    /player_action_result[\s\S]*Volver a Inicio'[\s\S]*navigate\('home'\)/
   );
+  assert.doesNotMatch(web,/player_action_result[\s\S]*La acción se ha registrado correctamente\./);
 });

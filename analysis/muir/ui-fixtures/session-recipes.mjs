@@ -3,6 +3,7 @@
 import {GameSession} from '../../../dist/session/game-session.js';
 import {EVENTS} from '../../../dist/content/events/index.js';
 import {fixtureById} from './fixtures.mjs';
+import {certifyRepresentationInPlace} from '../../../dist/simulation/representation-authority.js';
 
 const command=(session,type,extra={})=>({type,commandId:'muir-'+type+'-'+session.getView().revision,expectedRevision:session.getView().revision,...extra});
 
@@ -43,6 +44,15 @@ async function actionResult(f){
   const s=await initial(f);
   await s.dispatch(command(s,'player_action',{actionId:'PA_TRAIN_EXTRA',optionId:'TECHNIQUE'}));
   return s;
+}
+async function playerActionAgent(f){
+  const base=await initial(f),snapshot=base.exportSnapshot();
+  certifyRepresentationInPlace(snapshot.state,'NPC_AGT_01',{
+    commissionPct:10,
+    services:['market'],
+    contactPolicy:'inform_first'
+  },'muir-p6-test-fixture');
+  return GameSession.resume(snapshot);
 }
 async function offer(f){
   const s=await GameSession.create(f.seed,{events:[],microfeeds:false,sessionId:'muir-'+f.id});
@@ -97,8 +107,15 @@ export async function buildFixtureSession(id){
     case 'period-summary': return periodSummary(f);
     case 'player-actions-menu':
     case 'player-actions-category':
-    case 'player-actions-detail': return initial(f);
+    case 'player-actions-detail':
+    case 'player-actions-category-unavailable':
+    case 'player-actions-detail-none':
+    case 'player-actions-detail-coach':
+    case 'player-actions-detail-teammate':
+    case 'player-actions-options':
     case 'player-actions-result': return initial(f);
+    case 'player-actions-cooldown': return actionResult(f);
+    case 'player-actions-detail-agent': return playerActionAgent(f);
     case 'offer': return offer(f);
     case 'important-injury': return importantInjury(f);
     // A brand-new session exposes the canonical PROLOGUE through public PlayerView.cutscene. The browser harness overrides only its media URL.

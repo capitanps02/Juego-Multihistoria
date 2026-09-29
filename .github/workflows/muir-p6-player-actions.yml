@@ -1,0 +1,93 @@
+name: MUIR P6 Player Actions
+
+on:
+  push:
+    branches:
+      - ui-a4/muir-p6-player-actions
+  pull_request:
+    branches:
+      - ui-a3/muir-p5-autosim
+    paths:
+      - 'web/game-ui.js'
+      - 'web/game-ui.css'
+      - 'MUIR-RTM.md'
+      - 'docs/muir/P6_GATE.md'
+      - 'analysis/muir/p6/**'
+      - 'analysis/muir/ui-fixtures/**'
+      - 'scripts/test-muir-p6-*.mjs'
+      - 'scripts/test-player-actions-ui-contract.mjs'
+      - '.github/workflows/muir-p6-player-actions.yml'
+
+concurrency:
+  group: muir-p6-player-actions-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  certify-p6:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    env:
+      MUIR_P6_EXPECTED_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Build engine
+        run: npm run build
+      - name: P6 predecessor and public-contract baseline
+        run: node scripts/test-muir-p6-baseline.mjs
+      - name: Player Actions core session narrative content and UI regressions
+        run: node --test scripts/test-player-actions-core.mjs scripts/test-player-actions-session.mjs scripts/test-player-actions-narrative-bridge.mjs scripts/test-player-actions-content.mjs scripts/test-player-actions-ui-contract.mjs scripts/test-muir-p6-player-actions.mjs
+      - name: Exact P5 vs P6 runtime equivalence
+        run: |
+          git worktree add --detach /tmp/muir-p5 603797a9b9bae15bfb7382603111673573f873cc
+          ln -s "$GITHUB_WORKSPACE/node_modules" /tmp/muir-p5/node_modules
+          (cd /tmp/muir-p5 && node scripts/build.mjs)
+          MUIR_P6_PREDECESSOR_ROOT=/tmp/muir-p5 node scripts/test-muir-p6-equivalence.mjs
+      - name: Auto-simulation regression
+        run: node --test scripts/test-t55-auto-simulation.mjs
+      - name: Install browser certification tooling
+        run: |
+          npm install --no-save playwright@1.55.0 axe-core@4
+          npx playwright install --with-deps chromium
+      - name: Deterministic viewport baseline
+        run: node scripts/capture-muir-browser.mjs
+      - name: P6 Player Actions browser accessibility text-scale and double-submit
+        run: node analysis/muir/p6/browser-player-actions-probe.mjs
+      - name: P3 Home regression probe
+        run: node analysis/muir/p3/browser-home-probe.mjs
+      - name: P3 Home accessibility regression probe
+        run: node analysis/muir/p3/browser-a11y-probe.mjs
+      - name: P4 contextual help regression probe
+        run: node analysis/muir/p4/browser-a11y-help-probe.mjs
+      - name: Shared UI package graph
+        run: node --test scripts/test-muir-package-graph.mjs
+      - name: PlayCanvas package
+        timeout-minutes: 10
+        run: npm run test:playcanvas
+      - name: Android offline clean package
+        timeout-minutes: 6
+        run: npm run android:offline
+      - name: Android offline regression
+        timeout-minutes: 6
+        run: npm run test:android:offline
+      - name: P6 exact-head final executable gate
+        run: node scripts/test-muir-p6-final-gate.mjs
+      - name: Upload P6 evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: muir-p6-${{ github.event.pull_request.head.sha || github.sha }}
+          if-no-files-found: warn
+          path: |
+            analysis/muir/screenshots/*.png
+            analysis/muir/evidence/browser-baseline.json
+            analysis/muir/p6/evidence/*.json
+            analysis/muir/p3/evidence/*.json
+            analysis/muir/p4/evidence/*.json
