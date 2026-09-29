@@ -23,10 +23,9 @@ test('A19 player-facing micro UX uses clear history, save and relationship langu
   assert.match(ui,/Tu carrera empieza aquí/);
   assert.match(ui,/Aún no has debutado/);
   assert.match(ui,/No hay noticias destacadas esta semana/);
-  assert.match(ui,/bondType/);
-  assert.match(ui,/Familia/);
-  assert.match(ui,/Amistad/);
-  assert.match(ui,/Vestuario/);
+  assert.doesNotMatch(ui,/bondType/,'relationship family must not be inferred from public contact role');
+  assert.match(ui,/Cada tarjeta identifica el vínculo que forma parte de tu recorrido/);
+  assert.match(ui,/no muestra métricas internas del sistema/);
   assert.match(ui,/Partida actual/);
   assert.match(ui,/Copia anterior/);
   assert.match(ui,/Código de historia/);
