@@ -35,6 +35,8 @@ jobs:
         run: node --test scripts/test-muir-p8-world.mjs
       - name: P8 Carrera static contract
         run: node --test scripts/test-muir-p8-career.mjs
+      - name: P8 Relaciones y Perfil static contract
+        run: node --test scripts/test-muir-p8-relations-profile.mjs
       - name: P7 semantic regression
         run: node scripts/test-muir-p7-semantic-components.mjs
       - name: Football DB public regressions
@@ -51,6 +53,8 @@ jobs:
         run: node analysis/muir/p8/browser-world-probe.mjs
       - name: P8 Carrera long-history browser matrix
         run: node analysis/muir/p8/browser-career-probe.mjs
+      - name: P8 Relaciones y Perfil browser matrix
+        run: node analysis/muir/p8/browser-relations-profile-probe.mjs
       - name: Shared UI package graph
         run: node --test scripts/test-muir-package-graph.mjs
       - name: PlayCanvas package smoke
