@@ -118,22 +118,40 @@ Certified Tu partida evidence:
 - AXE serious/critical: 0
 - package graph / PlayCanvas: PASS
 
+## Pass 6 — Hardening global
+
+P8 Pass 6: **PASS by product equivalence + hardening contract** on SHA `400ad9912549c2becd6a0096162dded657a3d55e`.
+
+Evidence chain:
+
+- certified product/evidence predecessor for P8.6: P8.5 SHA `c9402fd317786d2d109d89435a1ccb3316fc603b`;
+- P8.5 workflow `36612633876`: full persistence stress, all browser matrices, package graph and PlayCanvas = PASS;
+- diff `c9402fd3… → 400ad991…`: only workflow / RTM / gate docs / P8 hardening tests; product `web/game-ui.js` and `web/game-ui.css` are byte-identical;
+- P8 cross-surface hardening contract on workflow `36614679011`: PASS;
+- long-state coverage: 80-news Mundo, 20-season Carrera, 60-entry timeline, 24-contact Relaciones, long Profile and full save support;
+- empty/early states: Mundo, Carrera and Relaciones covered where public contracts permit emptiness;
+- 360×800 / 390×844 / 412×915 / tablet / landscape: previously certified on identical product bytes;
+- 100/130/180% text scale: previously certified on identical product bytes;
+- horizontal overflow / AXE serious-critical / internal IDs / private metrics / invented fields / cloud features: 0 on the certified product bytes;
+- authority changes: 0.
+
+The companion long/responsive static contract is included in the final P8.7 exact-head gate.
+
 ## Current state
 
-**IN_PROGRESS — PASS 6 HARDENING GLOBAL**
+**READY_FOR_GATE — PASS 7 FINAL EXACT-HEAD**
 
-Pass 6 consolidates the already-certified long/empty/responsive/a11y coverage across all five P8 surfaces. No new gameplay or data is authorized.
+Pass 7 must run on the final branch HEAD and prove:
 
-Pass 6 must prove:
+- exact P7 certified predecessor;
+- all P8 static contracts including long/responsive and final contract;
+- P7 semantic + Football DB public regressions;
+- save/import regressions + 100-cycle persistence stress;
+- all five browser matrices;
+- required viewports and text scales;
+- AXE / overflow / keyboard-focus semantics;
+- package graph + PlayCanvas;
+- no DB / PlayerView / save schema / gameplay authority changes;
+- no P9 work included.
 
-- long Mundo feed, long Carrera, long Relaciones/Perfil and full save support remain usable together;
-- truthful empty states remain valid where the public contract permits emptiness;
-- 360×800 / 390×844 / 412×915 / tablet / landscape remain usable across P8;
-- 100/130/180% text scale remains usable on the long-state scenarios;
-- horizontal overflow findings remain 0;
-- AXE serious/critical remains 0;
-- keyboard/focus semantics remain intact;
-- internal IDs / private metrics / invented fields / cloud features remain 0;
-- authority files remain unchanged.
-
-P8 remains IN_PROGRESS. P9 is not authorized.
+P8 becomes PASS only after that exact-head workflow is SUCCESS. P9 remains unauthorized until then.
