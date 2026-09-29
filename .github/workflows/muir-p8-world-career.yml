@@ -39,6 +39,8 @@ jobs:
         run: node --test scripts/test-muir-p8-relations-profile.mjs
       - name: P8 Tu partida static contract
         run: node --test scripts/test-muir-p8-save.mjs
+      - name: P8 cross-surface hardening contract
+        run: node --test scripts/test-muir-p8-hardening.mjs
       - name: P7 semantic regression
         run: node scripts/test-muir-p7-semantic-components.mjs
       - name: Football DB public regressions
