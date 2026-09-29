@@ -26,6 +26,7 @@ fs.rmSync(path.join(assetsRoot, 'dist', '.DS_Store'), { force: true });
 copy(path.join(root, 'web', 'page.css'), path.join(assetsRoot, 'web', 'page.css'));
 copy(path.join(root, 'web', 'game-ui.css'), path.join(assetsRoot, 'web', 'game-ui.css'));
 copy(path.join(root, 'web', 'game-ui.js'), path.join(assetsRoot, 'web', 'game-ui.js'));
+copy(path.join(root, 'web', 'cutscene-player.js'), path.join(assetsRoot, 'web', 'cutscene-player.js'));
 copy(path.join(root, 'web', 'club-catalog-names.js'), path.join(assetsRoot, 'web', 'club-catalog-names.js'));
 copy(path.join(root, 'web', 'club-names.js'), path.join(assetsRoot, 'web', 'club-names.js'));
 copy(path.join(root, 'web', 'indexed-save-store.js'), path.join(assetsRoot, 'web', 'indexed-save-store.js'));

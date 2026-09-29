@@ -1,0 +1,127 @@
+{
+  "schema": "muir-baseline-v1",
+  "baseSha": "36d3d1b0750b0ded877e55953f223e2de1169a46",
+  "branch": "ui-a0/muir-p0-baseline",
+  "capturedAt": "2026-09-28",
+  "status": "IN_PROGRESS",
+  "viewports": [
+    {
+      "id": "phone-360",
+      "width": 360,
+      "height": 800,
+      "status": "PENDING_CAPTURE"
+    },
+    {
+      "id": "phone-primary",
+      "width": 390,
+      "height": 844,
+      "status": "PENDING_CAPTURE"
+    },
+    {
+      "id": "phone-412",
+      "width": 412,
+      "height": 915,
+      "status": "PENDING_CAPTURE"
+    },
+    {
+      "id": "landscape-check",
+      "width": 844,
+      "height": 390,
+      "status": "PENDING_CHECK"
+    },
+    {
+      "id": "tablet-check",
+      "width": 768,
+      "height": 1024,
+      "status": "PENDING_CHECK"
+    }
+  ],
+  "fixtures": {
+    "declared": 21,
+    "sessionRecipesImplemented": 10,
+    "visualOnlyFailClosed": 1,
+    "status": "IN_PROGRESS"
+  },
+  "screenshots": {
+    "status": "PLAYWRIGHT_CAPTURE_RUNNER_IMPLEMENTED_EXECUTION_PENDING",
+    "hashAlgorithm": "sha256",
+    "naming": "<BASE_SHA_12>__<fixture-id>__<width>x<height>__<sha256-12>.png"
+  },
+  "performance": {
+    "renderP50Ms": null,
+    "renderP95Ms": null,
+    "renderFrequencyHz": null,
+    "domNodes": null,
+    "uiBundleBytes": null,
+    "longTasks": null,
+    "autoSimUiUpdateRateHz": null,
+    "focusChurn": null,
+    "scrollChurn": null,
+    "status": "PLAYWRIGHT_CAPTURE_RUNNER_IMPLEMENTED_EXECUTION_PENDING"
+  },
+  "packageGraph": {
+    "status": "REPAIRED_PENDING_EXECUTION",
+    "finding": "K-01 source defect repaired: Android offline builder now copies web/cutscene-player.js and Android/package-graph tests guard the dependency.",
+    "reproduction": "node --test scripts/test-muir-package-graph.mjs && npm run build:android:offline && npm run test:android:offline",
+    "executed": false
+  },
+  "identityId01": {
+    "status": "BLOCKED",
+    "finding": "Historical canon says editable name/surname, but current GameState, initial state, save validation, PlayerView and production UI expose no player identity contract.",
+    "evidence": "analysis/muir/ID-01_PLAYER_IDENTITY.md",
+    "gateImpact": "P3_BLOCKER"
+  },
+  "cinematics": {
+    "status": "REPAIRED_PENDING_EXECUTION",
+    "finding": "Web/PlayCanvas paths defined; Android transitive cutscene module now packaged and guarded; exact-head clean execution pending.",
+    "evidence": "analysis/muir/K-02_CINEMATIC_RESOLUTION.md"
+  },
+  "productChanges": "NONE",
+  "gameplayChanges": "NONE",
+  "evidenceHashes": {
+    "status": "PENDING_GENERATION"
+  },
+  "tooling": {
+    "node": null,
+    "npm": null,
+    "browser": "Playwright Chromium 1.55.0 in certification CI",
+    "visualRunner": "scripts/capture-muir-browser.mjs",
+    "status": "RUNNER_RECONCILED_EXACT_HEAD_EXECUTION_PENDING"
+  },
+  "surfaceMap": {
+    "status": "DOCUMENTED",
+    "evidence": "analysis/muir/P0_SURFACE_MAP.md"
+  },
+  "screenDataActionMap": {
+    "status": "DOCUMENTED",
+    "evidence": "analysis/muir/P0_SCREEN_DATA_ACTION_MAP.md"
+  },
+  "platformPersistenceParity": {
+    "status": "SOURCE_PARITY_CONFIRMED_EXECUTION_PENDING",
+    "evidence": "analysis/muir/P0_PLATFORM_PERSISTENCE_PARITY.md"
+  },
+  "instrumentation": {
+    "status": "IMPLEMENTED_EXECUTION_PENDING",
+    "browserGlobal": "__MUIR_METRICS__",
+    "metrics": [
+      "hero geometry",
+      "first primary CTA geometry",
+      "main scroll geometry",
+      "navigation geometry",
+      "navigation typography",
+      "touch targets <44px",
+      "horizontal overflow",
+      "DOM node count",
+      "render samples/p50/p95",
+      "Long Tasks",
+      "focus churn",
+      "scroll churn"
+    ],
+    "note": "Instrumentation is loaded only by the MUIR test harness."
+  },
+  "evidenceIndex": {
+    "status": "BUILDER_IMPLEMENTED_EXECUTION_PENDING",
+    "command": "node scripts/build-muir-evidence.mjs",
+    "output": "analysis/muir/evidence/evidence-index.json"
+  }
+}
