@@ -15,7 +15,6 @@ const save=read('src/save/save.ts');
 const session=read('src/session/game-session.ts');
 const sessionValidation=read('src/session/validate-session.ts');
 const ui=read('web/game-ui.js');
-const ui=read('web/game-ui.js');
 const contract=read('analysis/muir/ID-01_PLAYER_IDENTITY.md');
 
 assert(types.includes('playerIdentity?: import("./player-identity.js").PlayerIdentity'),'legacy-compatible GameState identity contract missing');
@@ -37,8 +36,6 @@ assert(ui.includes("run('identity',{displayName:identityInput.value})"),'profile
 assert(ui.includes('playerDisplayName:displayName'),'new-career flow must pass identity into GameSession.create');
 assert(ui.includes('identityInput.value=v.player.displayName'),'profile input must derive from public PlayerView identity');
 assert(ui.includes('n.textContent=text'),'presentation helper must render supplied identity as text, not HTML');
-assert(ui.includes("run('identity',{displayName:identityInput.value})"),'production edit flow missing');
-assert(ui.includes('playerDisplayName:displayName'),'production creation flow missing');
 assert(contract.includes('Status: **IMPLEMENTED_PENDING_CERTIFICATION**'),'ID-01 contract status mismatch');
 
 execFileSync('git',['merge-base','--is-ancestor',P2,'HEAD'],{cwd:root,stdio:'pipe'});
@@ -59,8 +56,7 @@ const allowed=new Set([
   'scripts/test-muir-id01-gate.mjs',
   'analysis/muir/ID-01_PLAYER_IDENTITY.md',
   'web/game-ui.js',
-  '.github/workflows/muir-id01-player-identity.yml',
-  'web/game-ui.js'
+  '.github/workflows/muir-id01-player-identity.yml'
 ]);
 const forbidden=changed.filter(p=>!allowed.has(p));
 assert.deepEqual(forbidden,[],'ID-01 changed out-of-scope files: '+forbidden.join(', '));
