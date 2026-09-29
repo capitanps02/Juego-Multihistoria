@@ -124,6 +124,44 @@ try{
       await context.close();
     }
   }
+
+  {
+    const viewport=viewportCases[1];
+    const context=await browser.newContext({viewport:{width:viewport.width,height:viewport.height},reducedMotion:'reduce'});
+    const page=await context.newPage();
+    try{
+      await openFixture(page,'result',viewport);
+      await clickShadowButton(page,'Volver a Inicio');
+      await page.waitForFunction(()=>Boolean(document.querySelector('#game').shadowRoot.querySelector('.p3-home')));
+      const m=await homeMetrics(page);
+      assert(m.gridClass.includes('has-pending'),'result must mark pending priority on Home');
+      assert(m.children[0]?.className.includes('next'),'result action must be first Home block');
+      assert.equal(m.cta.text,'Volver a tu decisión');
+      assert(m.cta.bottom<=m.nav.y,'result CTA must be fully visible before the bottom navigation');
+      assert.deepEqual(m.overflow,[],'result Home horizontal overflow: '+JSON.stringify(m.overflow));
+      rows.push({fixture:'home-result',viewport:viewport.id,...m});
+    }finally{
+      await context.close();
+    }
+  }
+
+  {
+    const viewport=viewportCases[1];
+    const context=await browser.newContext({viewport:{width:viewport.width,height:viewport.height},reducedMotion:'reduce'});
+    const page=await context.newPage();
+    try{
+      await openFixture(page,'period-summary',viewport);
+      const m=await homeMetrics(page);
+      assert(!m.gridClass.includes('has-pending'),'summary must not impersonate a pending decision/offer/result');
+      assert(m.children[0]?.className.includes('home-hero'),'summary keeps player identity before the normal loop');
+      assert.equal(m.cta.text,'Seguir simulando');
+      assert(m.cta.bottom<=m.nav.y,'summary CTA must be fully visible before the bottom navigation');
+      assert.deepEqual(m.overflow,[],'summary Home horizontal overflow: '+JSON.stringify(m.overflow));
+      rows.push({fixture:'home-summary',viewport:viewport.id,...m});
+    }finally{
+      await context.close();
+    }
+  }
 }finally{
   await browser.close();
   server.close();
