@@ -13,6 +13,7 @@ on:
       - 'MUIR-RTM.md'
       - 'docs/muir/P4_GATE.md'
       - 'scripts/test-muir-p4-copy.mjs'
+      - 'scripts/test-player-actions-ui-contract.mjs'
       - '.github/workflows/muir-p4-copy.yml'
       - 'analysis/muir/p4/**'
 
