@@ -42,6 +42,12 @@ jobs:
         run: node scripts/test-muir-p7-baseline.mjs
       - name: P7 semantic component and authority contract
         run: node scripts/test-muir-p7-semantic-components.mjs
+      - name: Exact P6 vs P7 runtime and public-view equivalence
+        run: |
+          git worktree add --detach /tmp/muir-p6 e2b54ec654a32b8665925bec7811363003e482ed
+          ln -s "$GITHUB_WORKSPACE/node_modules" /tmp/muir-p6/node_modules
+          (cd /tmp/muir-p6 && node scripts/build.mjs)
+          MUIR_P7_PREDECESSOR_ROOT=/tmp/muir-p6 node scripts/test-muir-p7-equivalence.mjs
       - name: Football DB V2 and public sports regressions
         run: node --test scripts/test-football-catalog.mjs scripts/test-football-v2-integrity.mjs scripts/test-football-database-v2-persistence.mjs scripts/test-posttest-feedback.mjs scripts/test-t55-a19-ui.mjs
       - name: Public offer regressions
