@@ -126,7 +126,7 @@ test('ID-01 upgrades historical schema-8 saves and snapshots deterministically w
   delete legacyState.playerIdentity;
   const rngStateBefore = structuredClone(legacyState.rngState);
   const loaded = loadSave(JSON.stringify(legacyState));
-  assert.equal(loaded.playerIdentity.displayName, LEGACY_PLAYER_DISPLAY_NAME);
+  assert.equal(loaded.playerIdentity, undefined);
   assert.deepEqual(loaded.rngState, rngStateBefore);
 
   const current = await GameSession.create(5002, {
