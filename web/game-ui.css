@@ -240,6 +240,27 @@ button.player-action-back{min-height:48px;white-space:normal;overflow-wrap:anywh
 .decision-choices .choice{min-height:64px;min-width:0;max-width:100%}
 .decision-choices .choice>span:last-child{min-width:0;max-width:100%;overflow-wrap:anywhere;word-break:normal}
 .decision-memories button{min-height:48px}
+
+/* MUIR P9 immersive results */
+.result-sheet{min-width:0}
+.result-sheet>*{min-width:0;max-width:100%}
+.result-sheet h1{max-width:100%;overflow-wrap:anywhere;word-break:normal}
+.result-choice{margin:2px 0 18px;padding:14px 16px;border-left:3px solid #409cff;border-radius:0 14px 14px 0;background:#0a84ff0d}
+.result-choice .eyebrow{margin-bottom:6px;color:#8fc4ff}
+.result-choice .chosen{margin:0;color:#f5f5f7;font-size:clamp(17px,2vw,22px);font-weight:650;line-height:1.35;overflow-wrap:anywhere}
+.result-consequences,.result-messages,.result-match-summary{min-width:0;max-width:100%;overflow-wrap:anywhere}
+.result-consequences{margin:18px 0;padding:18px;border-color:#ffffff20;background:linear-gradient(165deg,#ffffff08,#ffffff04)}
+.result-consequences h2,.result-match-summary h2{font-size:15px;letter-spacing:-.01em}
+.result-consequences .consequence-row{align-items:flex-start;min-width:0}
+.result-consequences .consequence-row>span{min-width:0;overflow-wrap:anywhere}
+.result-consequences .consequence-row>strong{flex:0 0 auto}
+.result-consequences .story-text,.result-consequences .result-deferred,.result-messages .story-text{max-width:72ch;overflow-wrap:anywhere}
+.result-deferred{line-height:1.55}
+.result-match-summary{margin:18px 0}
+.result-match-summary .data-row{min-width:0}
+.result-match-summary .data-row span,.result-match-summary .data-row strong{overflow-wrap:anywhere}
+.result-continue{position:sticky;bottom:0;z-index:2;width:100%;min-height:52px;margin-top:18px;box-shadow:0 -12px 28px #111114d9,0 7px 22px #0a84ff26}
+
 .immersive .navigation{opacity:.52}
 @media(max-width:1150px){
   .cinema-top{margin-bottom:0;padding:14px 18px 8px}
@@ -260,6 +281,10 @@ button.player-action-back{min-height:48px;white-space:normal;overflow-wrap:anywh
   .decision-choices{gap:10px;margin-top:18px}
   .decision-choices .choice{min-height:56px;padding:14px}
   .decision-choice-sheet .intel summary{min-height:48px;line-height:1.35;padding:13px 0}
+  .result-choice{padding:12px 14px;margin-bottom:14px}
+  .result-consequences,.result-match-summary{padding:15px;margin:14px 0}
+  .result-consequences .consequence-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px}
+  .result-continue{min-height:54px;margin-top:14px}
 }
 @media(max-width:380px){
   .cinema-top .eyebrow{display:none}
