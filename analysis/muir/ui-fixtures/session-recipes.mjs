@@ -3,7 +3,7 @@
 import {GameSession} from '../../../dist/session/game-session.js';
 import {EVENTS} from '../../../dist/content/events/index.js';
 import {fixtureById} from './fixtures.mjs';
-import {certifyActiveAgentInPlace} from '../../../dist/simulation/npc-authority.js';
+import {certifyRepresentationInPlace} from '../../../dist/simulation/representation-authority.js';
 
 const command=(session,type,extra={})=>({type,commandId:'muir-'+type+'-'+session.getView().revision,expectedRevision:session.getView().revision,...extra});
 
@@ -47,7 +47,11 @@ async function actionResult(f){
 }
 async function playerActionAgent(f){
   const base=await initial(f),snapshot=base.exportSnapshot();
-  certifyActiveAgentInPlace(snapshot.state,'NPC_AGT_01');
+  certifyRepresentationInPlace(snapshot.state,'NPC_AGT_01',{
+    commissionPct:10,
+    services:['market'],
+    contactPolicy:'inform_first'
+  },'muir-p6-test-fixture');
   return GameSession.resume(snapshot);
 }
 async function offer(f){
