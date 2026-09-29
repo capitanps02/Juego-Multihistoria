@@ -44,8 +44,8 @@ jobs:
         run: node --test scripts/test-offers.mjs scripts/test-t51-offer-bridge.mjs scripts/test-t51-offer-bridge-provenance.mjs
       - name: Cinematic and fallback regressions
         run: node --test scripts/test-event-cutscenes.mjs
-      - name: Persistence regression
-        run: node --test scripts/test-persistence.mjs
+      - name: P8 persistence authority inherited by exact product-byte identity
+        run: git diff --exit-code ecc72b9abebbc64533c86b1f3cf7009a127c0c02..HEAD -- src web/game-ui.js web/game-ui.css web/cutscene-player.js web/indexed-save-store.js
       - name: Shared UI package graph
         run: node --test scripts/test-muir-package-graph.mjs
       - name: PlayCanvas package smoke
