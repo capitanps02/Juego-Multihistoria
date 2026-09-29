@@ -11,7 +11,7 @@ const types={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=
 const server=http.createServer((req,res)=>{
   try{
     const url=new URL(req.url,'http://127.0.0.1');
-    let rel=decodeURIComponent(url.pathname).replace(/^\/+/, '');
+    let rel=decodeURIComponent(url.pathname).replace(/^[/]+/, '');
     if(!rel)rel='analysis/muir/ui-fixtures/index.html';
     const file=path.resolve(root,rel);
     if(!file.startsWith(root+path.sep)&&file!==root){res.writeHead(403);res.end('forbidden');return;}
