@@ -268,8 +268,8 @@ Scope: presentation-only for Mundo, Carrera, Relaciones, Perfil and Tu partida. 
 | P8-CAREER-003 | Public milestones remain visible without artificial progression | UI-A5 | P8.3 | presentation-only MilestoneCard | milestone fixtures | p8-career.json · workflow 36608026921 | MUIR-P8 | revert P8 milestone presentation | PASS |
 | P8-CAREER-004 | Public offer history uses OfferCard | UI-A5 | P8.3 | P7 OfferCard in factual offer section | offer-history fixture | p8-career.json · workflow 36608026921 | MUIR-P8 | restore P7 order | PASS |
 | P8-CAREER-005 | Public decisions/actions remain a factual timeline | UI-A5 | P8.3 | semantic section + 0 nested-panel wrapper | 60-entry timeline fixture | p8-career.json · workflow 36608026921 | MUIR-P8 | restore P7 timeline | PASS |
-| P8-REL-001 | Relationships show public contact name/role plus presentation portrait/initials only | UI-A5 | P8.4 | P7 PersonCard + P8 responsive public-contact layout | empty/one/long/many fixtures | pending P8.4 evidence | MUIR-P8 | revert P8 relations layout | IN_PROGRESS |
-| P8-PROFILE-001 | Profile renders only public PlayerView identity, contract and condition fields | UI-A5 | P8.4 | public identity + sibling stats/contract stack | profile/long-club/zero-contract fixtures | pending P8.4 evidence | MUIR-P8 | revert P8 profile layout | IN_PROGRESS |
+| P8-REL-001 | Relationships show public contact name/role plus presentation portrait/initials only | UI-A5 | P8.4 | P7 PersonCard + P8 responsive public-contact layout | empty/one/long/many fixtures | p8-relations-profile.json · workflow 36610621251 | MUIR-P8 | revert P8 relations layout | PASS |
+| P8-PROFILE-001 | Profile renders only public PlayerView identity, contract and condition fields | UI-A5 | P8.4 | public identity + sibling stats/contract stack | profile/long-club/zero-contract fixtures | p8-relations-profile.json · workflow 36610621251 | MUIR-P8 | revert P8 profile layout | PASS |
 | P8-SAVE-001 | Local/current save UI remains available | UI-A5 | P8.5 | pending | save regressions | p8 evidence | MUIR-P8 | revert P8 save presentation | IN_PROGRESS |
 | P8-SAVE-002 | Existing import/export remains available and semantically unchanged | UI-A5 | P8.5 | pending | import/export regressions | p8 evidence | MUIR-P8 | revert P8 save presentation | IN_PROGRESS |
 | P8-SAVE-003 | Existing previous/legacy recovery remains available and semantically unchanged | UI-A5 | P8.5 | pending | save/legacy regressions | p8 evidence | MUIR-P8 | revert P8 save presentation | IN_PROGRESS |
@@ -279,11 +279,13 @@ Scope: presentation-only for Mundo, Carrera, Relaciones, Perfil and Tu partida. 
 | P8-A11Y-001 | Secondary surfaces remain keyboard/focus/AXE/text-scale accessible | UI-A5 | P8.1–P8.7 | baseline probe added | AXE/keyboard/text scale | p8 evidence | MUIR-P8 | revert offending semantic/style change | IN_PROGRESS |
 | P8-AUTH-001 | DB, PlayerView, save schema and gameplay authority remain unchanged | UI-A5 | P8.1–P8.7 | exact-predecessor/static guard | diff + equivalence/regressions | p8 evidence | MUIR-P8 | revert out-of-scope change | IN_PROGRESS |
 
-### P8 certified state through Pass 3
+### P8 certified state through Pass 4
 
 - Exact P7 predecessor remains `3f93206903441029d692eaa76def890ddc7a0cc0`.
 - Pass 1 baseline: PASS · workflow `36604587742`.
 - Pass 2 Mundo: PASS · workflow `36606402032`.
 - Pass 3 Carrera: PASS · workflow `36608026921`.
-- Public Relationships contract exposes `id/name/role`; the ID is presentation-internal only and no public relationship-type metric exists.
-- Pass 4 Relaciones/Perfil is IN_PROGRESS; no authority contract has been expanded.
+- Pass 4 Relaciones/Perfil: PASS · workflow `36610621251`.
+- Public Relationships contract remains `id/name/role`; the ID is presentation-internal only and no relationship metric was exposed.
+- Public Profile contract remains identity + age/position/appearances + form/fitness/fatigue + club/salary/contract months.
+- Pass 5 Tu partida is IN_PROGRESS; no save schema or persistence authority has been expanded.
