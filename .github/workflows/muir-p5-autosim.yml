@@ -14,6 +14,7 @@ on:
       - 'MUIR-RTM.md'
       - 'docs/muir/P5_GATE.md'
       - 'analysis/muir/p5/**'
+      - 'analysis/muir/ui-fixtures/browser-runner.mjs'
       - 'scripts/test-t55-auto-simulation.mjs'
       - 'scripts/test-player-actions-ui-contract.mjs'
       - '.github/workflows/muir-p5-autosim.yml'
