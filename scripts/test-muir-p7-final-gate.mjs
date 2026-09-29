@@ -18,6 +18,7 @@ const allowed=[
   /^analysis\/muir\/p7\//,
   /^analysis\/muir\/ui-fixtures\/(?:fixtures|session-recipes)\.mjs$/,
   /^scripts\/test-muir-p7-[^/]+\.mjs$/,
+  /^scripts\/test-t55-a19-ui\.mjs$/,
   /^docs\/muir\/P7_[A-Z0-9_-]+\.md$/,
   /^MUIR-RTM\.md$/,
   /^\.github\/workflows\/muir-p7-semantic-db\.yml$/
