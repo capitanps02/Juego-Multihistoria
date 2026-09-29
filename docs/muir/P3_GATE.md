@@ -1,6 +1,6 @@
 # MUIR P3 — Home vertical y core loop
 
-Status: **READY_FOR_GATE_CANDIDATE**
+**P3_GATE: PASS**, subject to executable exact-head verification by `scripts/test-muir-p3-final-gate.mjs`.
 
 Authorized predecessor: `315a46d87ffc15f688910f4dbc91651d935c9e7f`  
 P2 certified authority: `c41f58f6839ae14f2857f47026eacdfe4e189a3c`
@@ -77,6 +77,21 @@ The same shared `web/game-ui.js` + `web/game-ui.css` authority must pass:
 - Android offline clean build;
 - Android offline regression.
 
+## Implementation evidence
+
+Run `36555903464` on `bea84d673588ab89d2e160d6140980fb462b0231` passed all product/platform checks:
+- scope + command equivalence;
+- deterministic 69-capture matrix;
+- IDLE / DECISION / OFFER / RESULT / SUMMARY / LONG NAME Home probe;
+- Home AXE + 130% text;
+- P2 shell regression;
+- package graph;
+- PlayCanvas package;
+- Android offline clean package;
+- Android offline regression.
+
+That run's only failure was inside the final gate changed-file parser, which had serialized its newline regex with doubled backslashes and therefore treated the full allowed file list as one path.
+
 ## PASS rule
 
-This document is a candidate record, not self-certification. P3 becomes PASS only when the exact HEAD containing this record completes the `MUIR P3 Home` workflow successfully, including the final executable P3 gate. The resulting workflow run and exact SHA are the certification evidence.
+**P3_GATE: PASS**, subject to executable exact-head verification. The exact HEAD containing this PASS record must complete the full `MUIR P3 Home` workflow successfully, including `Final executable P3 gate`.
