@@ -18,7 +18,7 @@ function body(source,name){
 test('P9.2 remains a presentation-only successor of the frozen P9.1 baseline',()=>{
   assert.equal(git('merge-base','HEAD',PASS1),PASS1);
   const files=git('diff','--name-only',PASS1+'..HEAD').split(/\r?\n/).filter(Boolean);
-  const allowed=/^(?:web\/(?:game-ui\.(?:js|css)|cutscene-player\.js)|analysis\/muir\/p9\/|android\/app\/src\/androidTest\/|android\/app\/src\/main\/java\/com\/multihistoria\/MainActivity\.java$|scripts\/test-muir-p9-|docs\/muir\/P9_|\.github\/workflows\/muir-p9-|MUIR-RTM\.md$)/;
+  const allowed=/^(?:web\/(?:game-ui\.(?:js|css)|cutscene-player\.js)|analysis\/muir\/p9\/|android\/app\/src\/androidTest\/|android\/app\/src\/main\/java\/com\/multihistoria\/MainActivity\.java$|android\/app\/src\/main\/java\/com\/multihistoria\/MainActivity\.java$|scripts\/test-muir-p9-|docs\/muir\/P9_|\.github\/workflows\/muir-p9-|MUIR-RTM\.md$)/;
   assert.deepEqual(files.filter(x=>!allowed.test(x)),[]);
   assert.equal(git('diff','--name-only',P8+'..HEAD','--','src'),'', 'P9.2 must not modify src authority');
 });
