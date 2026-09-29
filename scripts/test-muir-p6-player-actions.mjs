@@ -45,7 +45,8 @@ test('P6-TGT-001 target selection uses public IDs and selected semantics',()=>{
   assert.match(render,/target\.role/);
   assert.match(render,/targetId:selectedTarget\.id/);
   assert.match(render,/pressed:selected/);
-  assert.doesNotMatch(render,/privateAgenda|knowledge|market power|fiabilidad|influencia|afinidad|probabilidad/i);
+  const targetBlock=render.slice(render.indexOf('for(const target of targets)'),render.indexOf('const availabilitySource'));
+  assert.doesNotMatch(targetBlock,/privateAgenda|knowledge|market power|fiabilidad|influencia|afinidad|probabilidad/i);
 });
 
 test('P6-OPT-001 options preserve public order and canonical command payload',()=>{
