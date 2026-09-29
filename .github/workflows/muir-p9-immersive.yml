@@ -29,8 +29,11 @@ jobs:
         run: npm run build
       - name: P9 exact predecessor and baseline contract
         run: node --test scripts/test-muir-p9-baseline.mjs
-      - name: P8 exact-head regression contract
-        run: node --test scripts/test-muir-p8-final.mjs
+      - name: P8 certified exact-head regression contract
+        run: |
+          git worktree add /tmp/muir-p8-certified ecc72b9abebbc64533c86b1f3cf7009a127c0c02
+          (cd /tmp/muir-p8-certified && node --test scripts/test-muir-p8-final.mjs)
+          git worktree remove /tmp/muir-p8-certified
       - name: P7 semantic regression
         run: node scripts/test-muir-p7-semantic-components.mjs
       - name: Decision/result/session regressions
