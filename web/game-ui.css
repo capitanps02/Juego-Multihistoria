@@ -100,6 +100,8 @@ button.player-action-back{min-height:48px;white-space:normal;overflow-wrap:anywh
 .semantic-card .data-row span{min-width:0}
 .semantic-card .data-row strong{min-width:0;overflow-wrap:anywhere}
 .contract-summary .data-row:first-of-type{padding-top:0}
+.profile-grid .data-row{min-width:0;flex-wrap:wrap}
+.profile-grid .data-row span,.profile-grid .data-row strong{min-width:0;overflow-wrap:anywhere}
 .offer-card .offer-comparison{align-items:flex-start}
 .offer-card .offer-comparison strong{max-width:68%;line-height:1.45;white-space:normal}
 .offer-loan-state{margin-top:14px}
