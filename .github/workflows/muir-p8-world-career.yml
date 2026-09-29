@@ -34,7 +34,7 @@ jobs:
       - name: Football DB public regressions
         run: node --test scripts/test-football-catalog.mjs scripts/test-football-v2-integrity.mjs scripts/test-football-database-v2-persistence.mjs
       - name: Save/import regressions
-        run: node --test scripts/test-save-compatibility.mjs scripts/test-t55-a19-ui.mjs
+        run: node --test scripts/test-saves.mjs scripts/test-t5-save-compat.mjs scripts/test-persistence.mjs scripts/test-t55-a19-ui.mjs
       - name: Install browser tooling
         run: |
           npm install --no-save playwright@1.55.0 axe-core@4
