@@ -25,7 +25,7 @@ PlayerView.player = { displayName: string }
 
 ## Product name policy
 
-- accepted length: 1–64 Unicode code points;
+- accepted length: **2–32 Unicode grapheme clusters**;
 - letters and Unicode combining marks are accepted;
 - ordinary Unicode spaces, apostrophe `'`, typographic apostrophe `’`, hyphen `-` and period `.` are accepted;
 - leading/trailing whitespace is removed;
@@ -33,7 +33,7 @@ PlayerView.player = { displayName: string }
 - Unicode text is otherwise preserved; no NFC/NFD/NFKC/NFKD normalization is applied;
 - digits, control characters, angle brackets and HTML/script syntax are rejected by the allowed-character contract.
 
-The previous 32-grapheme audit value was only a probe and is not used as product policy.
+ID-01 explicitly adopts the master plan's proposed **2–32 grapheme** policy as the product decision for this implementation. It is therefore visible, versioned and tested rather than silently inferred from a byte/code-point limit.
 
 ## Creation and editing
 
@@ -82,11 +82,12 @@ Accepted:
 - `Alejandro Fernandez-Ruiz`
 - `Noa D'Avila`
 - `Marta Álvarez`
-- 64-code-point approved boundary case
+- 32-grapheme approved boundary case, including combining-mark graphemes
 
 Directed QA also validates:
 - creation -> PlayerView;
 - canonical whitespace normalization;
+- grapheme-count validation (including combining marks);
 - save -> load exact preservation;
 - SessionSnapshot resume exact preservation;
 - migration of schema-8 and session snapshots with no identity;
