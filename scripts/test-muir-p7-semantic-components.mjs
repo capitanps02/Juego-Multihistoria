@@ -29,6 +29,22 @@ for(const cls of ['news-card','latest-match-card','career-season-card','contract
 assert.ok(!ui.includes('bondType('),'P7 must not infer a relationship type from role');
 assert.ok(!ui.includes('relationship-label'),'P7 must not render inferred relationship labels');
 assert.ok(!css.includes('.relationship-label'),'obsolete inferred-relationship CSS must be removed');
+for(const preservedCopy of [
+  'HISTORIAL VIVO DE TU TRAYECTORIA',
+  'Tu carrera empieza aquí',
+  'Aún no has debutado',
+  'No hay noticias destacadas esta semana',
+  'Partida actual',
+  'Copia anterior',
+  'Código de historia',
+  'Abrir Tu partida y el contexto de guardado',
+  'No se ha podido cargar el juego',
+  'Reintentar carga',
+  'Cargando…',
+  'Comprobando la copia'
+])assert.ok(ui.includes(preservedCopy),'A19 player-facing regression: missing '+preservedCopy);
+assert.ok(!/Semilla/.test(ui),'technical seed terminology must not become player-facing');
+
 assert.ok(!ui.includes("m.rating===null?'—'"),'missing rating must not render a technical dash');
 assert.ok(!ui.includes("s.averageRating===null?'—'"),'missing season rating must not render a technical dash');
 assert.match(ui,/typeof m\.rating==='number'\?decimal\(m\.rating\):null/,'latest match optional rating must omit when absent');
