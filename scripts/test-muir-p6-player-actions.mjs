@@ -76,7 +76,7 @@ test('P6-OPTNL-001 no pressure, resources or invented counters enter Player Acti
 test('P6-RESP-001 Player Actions controls keep mobile targets and wrapping',()=>{
   assert.match(css,/player-action-card \.secondary\{margin-top:auto;min-height:48px\}/);
   assert.match(css,/player-action-option button\{width:100%;min-height:50px/);
-  assert.match(css,/button\.player-action-back\{min-height:48px\}/);
+  assert.match(css,/button\.player-action-back\{min-height:48px;white-space:normal;overflow-wrap:anywhere\}/);
   assert.match(css,/@media\(max-width:430px\)/);
   assert.match(css,/overflow-wrap:anywhere/);
 });
