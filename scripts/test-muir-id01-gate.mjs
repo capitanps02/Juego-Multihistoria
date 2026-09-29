@@ -14,6 +14,7 @@ const validation=read('src/save/validation.ts');
 const save=read('src/save/save.ts');
 const session=read('src/session/game-session.ts');
 const sessionValidation=read('src/session/validate-session.ts');
+const ui=read('web/game-ui.js');
 const contract=read('analysis/muir/ID-01_PLAYER_IDENTITY.md');
 
 assert(types.includes('playerIdentity?: import("./player-identity.js").PlayerIdentity'),'legacy-compatible GameState identity contract missing');
@@ -31,6 +32,8 @@ assert(session.includes('player: { displayName: ensurePlayerIdentityInPlace(s).d
 assert(session.includes('ensurePlayerIdentityInPlace(header.state)'),'legacy session identity upgrade missing');
 assert(session.includes('assertRuntimePlayerIdentity(header.state)'),'GameSession must enforce identity after legacy upgrade');
 assert(sessionValidation.includes('"identity"'),'identity receipt validation missing');
+assert(ui.includes("run('identity',{displayName:identityInput.value})"),'production edit flow missing');
+assert(ui.includes('playerDisplayName:displayName'),'production creation flow missing');
 assert(contract.includes('Status: **IMPLEMENTED_PENDING_CERTIFICATION**'),'ID-01 contract status mismatch');
 
 execFileSync('git',['merge-base','--is-ancestor',P2,'HEAD'],{cwd:root,stdio:'pipe'});
@@ -50,13 +53,14 @@ const allowed=new Set([
   'scripts/test-muir-id01-player-identity.mjs',
   'scripts/test-muir-id01-gate.mjs',
   'analysis/muir/ID-01_PLAYER_IDENTITY.md',
+  'web/game-ui.js',
   '.github/workflows/muir-id01-player-identity.yml'
 ]);
 const forbidden=changed.filter(p=>!allowed.has(p));
 assert.deepEqual(forbidden,[],'ID-01 changed out-of-scope files: '+forbidden.join(', '));
 assert(!changed.includes('src/core/rng.ts'),'ID-01 must not change RNG implementation');
 assert(!changed.some(p=>p.startsWith('src/narrative/')||p.startsWith('src/simulation/')||p.startsWith('src/content/events/')),'ID-01 must not change narrative/simulation/event authority');
-assert(!changed.some(p=>p.startsWith('web/')||p.startsWith('android/')||p.startsWith('playcanvas/')),'ID-01 must not change production UI/platform files');
+assert(!changed.some(p=>(p.startsWith('web/')&&p!=='web/game-ui.js')||p.startsWith('android/')||p.startsWith('playcanvas/')),'ID-01 may change only the shared production UI entry for identity input/edit');
 
 console.log(JSON.stringify({
   gate:'PASS',
