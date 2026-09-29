@@ -602,7 +602,7 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
     const news=el('div',undefined,'news-grid');if(!v.news.length)news.append(el('p','No hay noticias destacadas esta semana. Sigue simulando para ver cómo evoluciona el mundo.','muted semantic-empty'));for(const n of [...v.news].reverse().slice(0,30)){const card=newsCard(n);if(card)news.append(card);}main.append(news);
   }
   function relations(v,main){
-    main.append(el('span','NADIE LLEGA SOLO','eyebrow'),el('h1','Las personas de tu historia.'),el('p','Entrenadores, compañeros y familia. Cada tarjeta identifica el vínculo que forma parte de tu recorrido; no muestra métricas internas del sistema.','muted'));
+    main.append(el('span','NADIE LLEGA SOLO','eyebrow'),el('h1','Las personas de tu historia.'),el('p','Entrenadores, compañeros y familia. Cada tarjeta muestra únicamente el nombre y el rol públicos del contacto; no muestra métricas internas del sistema.','muted'));
     const grid=el('div',undefined,'people-grid');
     if(!v.contacts.length)grid.append(el('p','Aún no has creado vínculos relevantes.','muted'));
     for(const c of v.contacts){const card=personCard(c);if(card)grid.append(card);}
