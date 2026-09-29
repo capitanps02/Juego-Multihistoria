@@ -27,8 +27,10 @@ jobs:
       - run: npm ci
       - name: Build engine
         run: npm run build
-      - name: P9 exact predecessor and baseline contract
+      - name: P9 exact predecessor and frozen baseline contract
         run: node --test scripts/test-muir-p9-baseline.mjs
+      - name: P9 Decision presentation contract
+        run: node --test scripts/test-muir-p9-decisions.mjs
       - name: P8 certified exact-head regression contract
         run: |
           git worktree add /tmp/muir-p8-certified ecc72b9abebbc64533c86b1f3cf7009a127c0c02
@@ -44,8 +46,8 @@ jobs:
         run: node --test scripts/test-offers.mjs scripts/test-t51-offer-bridge.mjs scripts/test-t51-offer-bridge-provenance.mjs
       - name: Cinematic and fallback regressions
         run: node --test scripts/test-event-cutscenes.mjs
-      - name: P8 persistence authority inherited by exact product-byte identity
-        run: git diff --exit-code ecc72b9abebbc64533c86b1f3cf7009a127c0c02..HEAD -- src web/game-ui.js web/game-ui.css web/cutscene-player.js web/indexed-save-store.js
+      - name: P9 runtime and persistence authority scope guard
+        run: git diff --exit-code ecc72b9abebbc64533c86b1f3cf7009a127c0c02..HEAD -- src web/cutscene-player.js web/indexed-save-store.js
       - name: Shared UI package graph
         run: node --test scripts/test-muir-package-graph.mjs
       - name: PlayCanvas package smoke
@@ -54,8 +56,17 @@ jobs:
         run: |
           npm install --no-save playwright@1.55.0 axe-core@4
           npx playwright install --with-deps chromium
-      - name: P9 immersive browser baseline
-        run: node analysis/muir/p9/browser-baseline-probe.mjs
+      - name: Reproduce frozen P9.1 browser baseline
+        run: |
+          git worktree add /tmp/muir-p9-pass1 7db5d9ded08e0b020fc4a2f916fd974fa4091cbf
+          ln -s "$GITHUB_WORKSPACE/node_modules" /tmp/muir-p9-pass1/node_modules
+          (cd /tmp/muir-p9-pass1 && npm run build && node analysis/muir/p9/browser-baseline-probe.mjs)
+          mkdir -p analysis/muir/p9/evidence analysis/muir/p9/screenshots
+          cp /tmp/muir-p9-pass1/analysis/muir/p9/evidence/p9-baseline.json analysis/muir/p9/evidence/
+          cp /tmp/muir-p9-pass1/analysis/muir/p9/screenshots/*.png analysis/muir/p9/screenshots/
+          git worktree remove --force /tmp/muir-p9-pass1
+      - name: P9 Decision responsive and accessibility matrix
+        run: node analysis/muir/p9/browser-decisions-probe.mjs
       - name: Upload P9 baseline evidence
         if: always()
         uses: actions/upload-artifact@v4
