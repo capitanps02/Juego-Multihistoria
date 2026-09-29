@@ -62,6 +62,8 @@ jobs:
         run: node analysis/muir/p5/browser-autosim-probe.mjs
       - name: P5 running paused summary interruption AXE and viewports
         run: node analysis/muir/p5/browser-states-a11y-probe.mjs
+      - name: P5 browser background resume smoke
+        run: node analysis/muir/p5/browser-background-resume-probe.mjs
       - name: Deterministic viewport regression matrix
         run: node scripts/capture-muir-browser.mjs
       - name: P3 Home regression
