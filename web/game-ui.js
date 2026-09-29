@@ -140,6 +140,14 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
     p.prepend(portraitKey?photo(portraitKey,'person-portrait'):el('div',initials(c.name)||'·','initials person-initials'));
     if(c.role)p.append(el('p',c.role,'muted'));return p;
   }
+  function milestoneCard(title,{dateValue=null,summary=null,chips=[],rows=[]}={}){
+    const p=panel(title);p.classList.add('semantic-card','milestone-card');
+    if(dateValue){const t=el('time',date(dateValue),'eyebrow');t.dateTime=dateValue;p.prepend(t);}
+    if(summary)p.append(el('p',summary,'milestone-summary'));
+    if(chips.length){const list=el('div',undefined,'milestone-list');for(const label of chips)list.append(el('span',label,'milestone-chip'));p.append(list);}
+    appendSemanticRows(p,rows);
+    return p;
+  }
   const validViews=new Set(['home','career','world','relations','profile','save']);
   let historyReady=false;
   function routeState(){return {mhOwner:true,mhView:view,mhCinematic:cinematic};}
@@ -553,40 +561,58 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
   function offerHistory(v,main){for(const h of [...v.offerHistory].reverse()){const p=offerCard(h.offer,{explanation:h.explanation});if(p)main.append(p);}}
   function career(v,main){
     if(playerActionUi.screen!=='career'&&renderPlayerActions(v,main))return;
-    main.append(el('span','HISTORIAL VIVO DE TU TRAYECTORIA','eyebrow'),el('h1','Tu carrera.'));
+    main.classList.add('p8-career');
+    const intro=el('header',undefined,'career-intro');intro.append(el('span','HISTORIAL VIVO DE TU TRAYECTORIA','eyebrow'),el('h1','Tu carrera.'),el('p','Partidos, temporadas, hitos y decisiones que ya forman parte de tu historia.','muted'));main.append(intro);
     if(v.screen==='career'&&v.simulation?.mode==='idle'&&v.actions?.available){
       const manage=panel('Gestionar mi carrera');manage.classList.add('player-actions-entry');manage.append(el('p','Opcional: puedes hacer algo antes de simular. Nada es obligatorio.','muted'),button('Gestionar mi carrera',openPlayerActions,'secondary'));main.append(manage);
     }
     const retirement=retirementPanel(v);if(retirement)main.append(retirement);
     const recentPeriod=simulationSummary(v);if(recentPeriod)main.append(recentPeriod);
+
+    const latest=latestMatchCard(v.latestMatch,{empty:true});if(latest){latest.classList.add('career-latest');main.append(latest);}
+
+    const seasonsSection=el('section',undefined,'career-section career-seasons-section');seasonsSection.setAttribute('aria-labelledby','career-seasons-title');
+    const seasonsHead=el('div',undefined,'career-section-head'),seasonsTitle=el('h2','Temporadas');seasonsTitle.id='career-seasons-title';seasonsHead.append(seasonsTitle);seasonsSection.append(seasonsHead);
     if(!v.careerSeasons.length){
-      const empty=panel('Tu carrera empieza aquí');empty.classList.add('career-empty');
+      const empty=panel('Tu carrera empieza aquí');empty.classList.add('career-empty','semantic-empty');
       empty.append(el('p',v.age+' años · '+club(v)+' · Temporada '+v.season.replace('-',' / 20'),'career-start'));
       empty.append(el('p',v.appearances===0?'Aún no has debutado. Los partidos, hitos y cambios importantes aparecerán aquí.':'Tu historial deportivo empezará a agruparse por temporada cuando existan registros oficiales.','muted'));
-      main.append(empty);
+      seasonsSection.append(empty);
     }else{
       const seasons=el('div',undefined,'season-grid');
       for(const s of [...v.careerSeasons].reverse()){const card=careerSeasonCard(s);if(card)seasons.append(card);}
-      main.append(seasons);
+      seasonsSection.append(seasons);
     }
+    main.append(seasonsSection);
+
+    const milestoneCards=[];
     if(v.careerMilestones?.historyComplete&&v.careerMilestones.appearances>0){
-      const m=v.careerMilestones,p=panel('Hitos deportivos');
-      const chips=el('div',undefined,'milestone-list');chips.append(el('span','Debut oficial','milestone-chip'));
-      for(const [flag,label] of [['appearance10','10 partidos'],['appearance50','50 partidos'],['appearance100','100 partidos'],['appearance500','500 partidos'],['appearance700','700 partidos']])if(m[flag]===true)chips.append(el('span',label,'milestone-chip'));
-      p.append(chips);
-      for(const [label,value] of [['Partidos',m.appearances],['Goles',m.goals],['Asistencias',m.assists]]){const r=el('div',undefined,'data-row');r.append(el('span',label),el('strong',String(value)));p.append(r);}
-      main.append(p);
+      const m=v.careerMilestones,chips=['Debut oficial'];
+      for(const [flag,label] of [['appearance10','10 partidos'],['appearance50','50 partidos'],['appearance100','100 partidos'],['appearance500','500 partidos'],['appearance700','700 partidos']])if(m[flag]===true)chips.push(label);
+      milestoneCards.push(milestoneCard('Hitos deportivos',{chips,rows:[['Partidos',m.appearances],['Goles',m.goals],['Asistencias',m.assists]]}));
     }
-    const latest=latestMatchCard(v.latestMatch,{empty:true});if(latest)main.append(latest);
-    if(v.ageMilestones.length){const milestones=panel('Hitos de edad');for(const m of v.ageMilestones)milestones.append(el('p',`${m.age} años · ${date(m.date)} · ${clubName(m.club)}`,'muted'));main.append(milestones);}
-    offerHistory(v,main);
-    const history=panel('Decisiones y acciones');const list=el('div',undefined,'timeline');
+    for(const m of v.ageMilestones)milestoneCards.push(milestoneCard(m.age+' años',{dateValue:m.date,summary:clubName(m.club)}));
+    if(milestoneCards.length){
+      const milestones=el('section',undefined,'career-section career-milestones-section');milestones.setAttribute('aria-labelledby','career-milestones-title');
+      const head=el('div',undefined,'career-section-head'),title=el('h2','Hitos');title.id='career-milestones-title';head.append(title);milestones.append(head);
+      const grid=el('div',undefined,'career-milestone-grid');for(const card of milestoneCards)grid.append(card);milestones.append(grid);main.append(milestones);
+    }
+
+    if(v.offerHistory.length){
+      const offers=el('section',undefined,'career-section career-offers-section');offers.setAttribute('aria-labelledby','career-offers-title');
+      const head=el('div',undefined,'career-section-head'),title=el('h2','Historial de ofertas');title.id='career-offers-title';head.append(title);offers.append(head);
+      const list=el('div',undefined,'career-offer-list');offerHistory(v,list);offers.append(list);main.append(offers);
+    }
+
+    const history=el('section',undefined,'career-section career-history-section');history.setAttribute('aria-labelledby','career-history-title');
+    const historyHead=el('div',undefined,'career-section-head'),historyTitle=el('h2','Decisiones y acciones');historyTitle.id='career-history-title';historyHead.append(historyTitle);history.append(historyHead);
+    const list=el('div',undefined,'timeline');
     const actionHistory=v.actions?.history??[];
     const timeline=[
       ...v.journal.map((row,index)=>({kind:'decision',date:row.date,index,row})),
       ...actionHistory.map((row,index)=>({kind:'action',date:row.date,index,row}))
     ].sort((a,b)=>a.date.localeCompare(b.date)||(a.kind===b.kind?a.index-b.index:(a.kind==='decision'?-1:1)));
-    if(!timeline.length)list.append(el('p','Aún no hay decisiones ni acciones voluntarias registradas.','muted'));
+    if(!timeline.length)list.append(el('p','Aún no hay decisiones ni acciones voluntarias registradas.','muted semantic-empty'));
     for(const entry of [...timeline].reverse()){
       if(entry.kind==='decision'){
         const row=entry.row,item=panel(row.title);item.dataset.journalIndex=String(entry.index);item.tabIndex=-1;item.prepend(el('time',date(row.date),'eyebrow'));item.append(el('p',row.choiceLabel,'chosen'));row.messages.forEach(m=>item.append(el('p',m,'muted')));list.append(item);
