@@ -42,7 +42,10 @@ assert(!ui.includes('nextMatch'),'P3 must not invent future-match authority');
 assert(css.includes('.p3-home .next-content .primary,.p3-home .next-content .secondary{min-height:48px}'),'Home action 48px contract missing');
 assert(workflow.includes('P3 Home accessibility and 130% text'),'P3 a11y step missing');
 assert(workflow.includes('Final executable P3 gate'),'P3 final gate step missing');
-assert(gateDoc.includes('Status: **READY_FOR_GATE_CANDIDATE**'),'P3 gate document status mismatch');
+assert(gateDoc.includes('**P3_GATE: PASS**'),'P3 gate document status mismatch');
+const rtm=read('MUIR-RTM.md');
+const p3Section=rtm.slice(rtm.indexOf('## P3 — Home vertical y core loop'));
+assert(p3Section&&!p3Section.includes('READY_FOR_GATE'),'P3 RTM still contains READY_FOR_GATE rows');
 
 console.log(JSON.stringify({
   gate:'PASS',
