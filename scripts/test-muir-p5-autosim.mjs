@@ -73,6 +73,18 @@ for(const forbidden of ['Entrenamiento → Partido','Partido → Eventos','Event
 assert(css.includes('.auto-sim-state{'),'P5 auto-sim state styling missing');
 assert(css.includes('.p5-live-status{'),'P5 non-spamming live status missing');
 
+const gateDoc=read('docs/muir/P5_GATE.md');
+assert(gateDoc.includes('**P5_GATE: PASS**'),'P5 gate document must be closed before final certification');
+assert(gateDoc.includes('36571220138'),'P5 gate must retain executable candidate certification evidence');
+assert(gateDoc.includes('2.844141069397054 Hz'),'P5 gate must retain measured post-change visual rate');
+const rtm=read('MUIR-RTM.md');
+const p5Section=rtm.slice(rtm.indexOf('## P5 — Auto-simulación y Period Summary'));
+assert(p5Section.includes('MUIR-P5-STATE-001'),'P5 RTM section missing');
+assert(!p5Section.includes('IN_PROGRESS'),'P5 RTM still contains IN_PROGRESS requirements');
+for(const id of ['MUIR-P5-RENDER-002','MUIR-P5-EQ-001','MUIR-P5-RNG-001','MUIR-P5-A11Y-001','MUIR-P5-PARITY-001']){
+  assert(p5Section.includes(id),'P5 RTM missing '+id);
+}
+
 const changed=execFileSync('git',['diff','--name-only',PREDECESSOR+'...HEAD'],{cwd:root,encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
 const allowed=p=>
   p==='web/game-ui.js'||
