@@ -12,7 +12,7 @@ const head=execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).t
 const expected=process.env.MUIR_P3_EXPECTED_HEAD_SHA?.trim();
 if(expected)assert.equal(head,expected,'P3 final gate exact-head checkout mismatch');
 
-const changed=execFileSync('git',['diff','--name-only',PREDECESSOR+'...HEAD'],{cwd:root,encoding:'utf8'}).trim().split(/\\r?\\n/).filter(Boolean);
+const changed=execFileSync('git',['diff','--name-only',PREDECESSOR+'...HEAD'],{cwd:root,encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
 const allowed=p=>
   p==='web/game-ui.js'||
   p==='web/game-ui.css'||
