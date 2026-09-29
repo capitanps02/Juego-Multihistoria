@@ -261,10 +261,25 @@ button.player-action-back{min-height:48px;white-space:normal;overflow-wrap:anywh
 .result-match-summary .data-row span,.result-match-summary .data-row strong{overflow-wrap:anywhere}
 .result-continue{position:sticky;bottom:0;z-index:2;width:100%;min-height:52px;margin-top:18px;box-shadow:0 -12px 28px #111114d9,0 7px 22px #0a84ff26}
 
+/* MUIR P9 immersive offers */
+.offer-sheet{margin:auto 24px 24px;width:min(920px,calc(100% - 48px));max-height:calc(100% - 82px);overflow:auto;overscroll-behavior:contain;scrollbar-gutter:stable;padding:clamp(22px,3vw,32px);border-color:#ffffff24;background:#111114e8;backdrop-filter:blur(26px);box-shadow:0 20px 70px #0005;min-width:0}
+.offer-sheet>*{min-width:0;max-width:100%}
+.offer-sheet>h2{font-size:clamp(25px,3vw,38px);line-height:1.08;overflow-wrap:anywhere;margin-bottom:18px}
+.offer-sheet .offer-comparison{min-width:0}
+.offer-sheet .offer-comparison span,.offer-sheet .offer-comparison strong{min-width:0;overflow-wrap:anywhere}
+.offer-sheet .story-text{max-width:72ch;overflow-wrap:anywhere}
+.offer-sheet .offer-loan-state{margin:14px 0 0;padding:10px 12px;border-radius:12px;background:#ffffff06}
+.offer-actions{grid-template-columns:repeat(3,minmax(0,1fr));align-items:stretch;margin-top:22px}
+.offer-actions .choice{min-width:0;min-height:58px;justify-content:center;text-align:center;padding:14px;overflow-wrap:anywhere}
+.offer-actions .choice:nth-child(1){border-color:#30d15855}
+.offer-actions .choice:nth-child(2){border-color:#ff453a4d}
+.offer-actions .choice:nth-child(3){border-color:#d6b86a55}
+
 .immersive .navigation{opacity:.52}
 @media(max-width:1150px){
   .cinema-top{margin-bottom:0;padding:14px 18px 8px}
   .decision-sheet{margin:0 18px 18px;width:calc(100% - 36px);max-height:calc(100% - 66px)}
+  .offer-sheet{margin:0 18px 18px;width:calc(100% - 36px);max-height:calc(100% - 66px)}
   .decision-choices{grid-template-columns:1fr}
   .decision-choices .choice{min-height:56px}
 }
@@ -276,6 +291,10 @@ button.player-action-back{min-height:48px;white-space:normal;overflow-wrap:anywh
   .cinema-top{padding:10px 10px 8px;gap:8px}
   .cinema-top .eyebrow{max-width:48%;font-size:9px;line-height:1.35}
   .decision-sheet{margin:0 8px 8px;width:calc(100% - 16px);max-height:calc(100% - 58px);padding:18px;border-radius:20px}
+  .offer-sheet{margin:0 8px 8px;width:calc(100% - 16px);max-height:calc(100% - 58px);padding:18px;border-radius:20px}
+  .offer-sheet>h2{font-size:clamp(24px,7.5vw,32px);margin-bottom:14px}
+  .offer-actions{grid-template-columns:1fr;gap:10px;margin-top:18px}
+  .offer-actions .choice{min-height:56px}
   .decision-sheet h1{font-size:clamp(25px,8vw,34px);line-height:1.08;margin-bottom:13px}
   .decision-sheet .story-text{font-size:15px;line-height:1.58}
   .decision-choices{gap:10px;margin-top:18px}
