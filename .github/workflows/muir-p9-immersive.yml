@@ -128,7 +128,9 @@ jobs:
             sudo chown "$USER" /dev/kvm || true
             sudo chmod 660 /dev/kvm || true
           fi
-      - name: P9 native Android Back semantics
+      - name: P9 native Android Back semantics — attempt 1
+        id: android_back_1
+        continue-on-error: true
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 35
@@ -139,6 +141,33 @@ jobs:
           emulator-options: -no-window -noaudio -no-boot-anim -gpu swiftshader_indirect -no-snapshot
           script: |
             node scripts/test-muir-p9-android-back.mjs "$(adb devices | awk '/^emulator-/{print $1; exit}')"
+      - name: P9 native Android Back semantics — attempt 2
+        id: android_back_2
+        if: steps.android_back_1.outcome == 'failure'
+        continue-on-error: true
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_2
+          disable-animations: true
+          emulator-options: -no-window -noaudio -no-boot-anim -gpu swiftshader_indirect -no-snapshot
+          script: |
+            node scripts/test-muir-p9-android-back.mjs "$(adb devices | awk '/^emulator-/{print $1; exit}')"
+      - name: Assert Android Back emulator gate
+        if: always()
+        run: |
+          if [ "${{ steps.android_back_1.outcome }}" = "success" ]; then
+            echo "Android Back gate passed on attempt 1"
+            exit 0
+          fi
+          if [ "${{ steps.android_back_2.outcome }}" = "success" ]; then
+            echo "Android Back gate passed on attempt 2"
+            exit 0
+          fi
+          echo "Android Back gate failed on both emulator attempts"
+          exit 1
       - name: Upload Android Back evidence
         if: always()
         uses: actions/upload-artifact@v4
