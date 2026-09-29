@@ -42,8 +42,11 @@ jobs:
         run: node --test scripts/test-t55-auto-simulation.mjs
       - name: Player Actions auto-state regression
         run: node --test scripts/test-player-actions-ui-contract.mjs
-      - name: P4 semantic regression
-        run: node scripts/test-muir-p4-copy.mjs
+      - name: Certified P4 predecessor regression
+        run: |
+          git worktree add --detach /tmp/muir-p4 45371a41908e2ecdac71cfc5f2bf855f086f7866
+          (cd /tmp/muir-p4 && node scripts/test-muir-p4-copy.mjs)
+          git worktree remove /tmp/muir-p4
       - name: Install browser probe tooling
         run: |
           npm install --no-save playwright@1.55.0 axe-core@4
