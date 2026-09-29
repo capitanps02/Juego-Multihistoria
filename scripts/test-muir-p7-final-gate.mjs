@@ -16,6 +16,7 @@ const changed=git('diff','--name-only',P6+'..'+head).split(/\r?\n/).filter(Boole
 const allowed=[
   /^web\/game-ui\.(?:js|css)$/,
   /^analysis\/muir\/p7\//,
+  /^analysis\/muir\/ui-fixtures\/(?:fixtures|session-recipes)\.mjs$/,
   /^scripts\/test-muir-p7-[^/]+\.mjs$/,
   /^docs\/muir\/P7_[A-Z0-9_-]+\.md$/,
   /^MUIR-RTM\.md$/,
