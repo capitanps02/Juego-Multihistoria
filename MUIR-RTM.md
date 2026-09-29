@@ -303,22 +303,24 @@ Certified predecessor: P8 `ecc72b9abebbc64533c86b1f3cf7009a127c0c02` · workflow
 
 | REQ_ID | Description | Owner | Pass | Implementation | Test | Evidence | Gate | Rollback | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| P9-DEC-001 | Decision layout is immersive without changing public decision semantics | UI-A6 | P9.1–P9.6 | shared UI presentation only | baseline + browser/equivalence | P9 evidence | MUIR-P9 | revert P9 decision presentation | IN_PROGRESS |
-| P9-DEC-002 | 2/3/4 choices and long labels remain ordered, accessible and touch-friendly | UI-A6 | P9.2–P9.6 | choice presentation only | browser viewport/text-scale matrix | P9 evidence | MUIR-P9 | revert P9 choice layout | PENDING |
-| P9-DEC-003 | Decision never exposes predictive consequences or invented risk/probability | UI-A6 | P9.1–P9.6 | PlayerView choice id/label boundary | static + fixture guard | P9 evidence | MUIR-P9 | revert violating copy/data | IN_PROGRESS |
-| P9-RES-001 | Result remains a distinct post-choice state with exact public consequences and Continue | UI-A6 | P9.3–P9.6 | result presentation only | acknowledge/double-submit equivalence | P9 evidence | MUIR-P9 | revert P9 result presentation | PENDING |
-| P9-OFF-001 | OfferCard presents before/after faithfully from PublicOffer only | UI-A6 | P9.4–P9.6 | P7 OfferCard refinement | offer fixtures/equivalence | P9 evidence | MUIR-P9 | restore P8 OfferCard | PENDING |
-| P9-OFF-002 | Accept/Reject/Delegate remain present and command-equivalent | UI-A6 | P9.1–P9.6 | existing offer command path | static + runtime equivalence | P9 evidence | MUIR-P9 | restore P8 offer actions | IN_PROGRESS |
-| P9-OFF-003 | Loan presentation follows only PublicOffer terms.loan | UI-A6 | P9.4–P9.6 | factual loan presentation | loan/non-loan fixtures | P9 evidence | MUIR-P9 | revert loan presentation | PENDING |
+| P9-DEC-001 | Decision layout is immersive without changing public decision semantics | UI-A6 | P9.1–P9.6 | shared UI presentation only | baseline + browser/equivalence | workflow 36623464538 | MUIR-P9 | revert P9 decision presentation | PASS |
+| P9-DEC-002 | 2/3/4 choices and long labels remain ordered, accessible and touch-friendly | UI-A6 | P9.2–P9.6 | choice presentation only | browser viewport/text-scale matrix | workflow 36623464538 | MUIR-P9 | revert P9 choice layout | PASS |
+| P9-DEC-003 | Decision never exposes predictive consequences or invented risk/probability | UI-A6 | P9.1–P9.6 | PlayerView choice id/label boundary | static + fixture guard | workflow 36623464538 | MUIR-P9 | revert violating copy/data | PASS |
+| P9-RES-001 | Result remains a distinct post-choice state with exact public consequences and Continue | UI-A6 | P9.3–P9.6 | result presentation only | acknowledge/double-submit equivalence | workflow 36625586567 | MUIR-P9 | revert P9 result presentation | PASS |
+| P9-OFF-001 | OfferCard presents before/after faithfully from PublicOffer only | UI-A6 | P9.4–P9.6 | P7 OfferCard refinement | offer fixtures/equivalence | workflow 36626405086 | MUIR-P9 | restore P8 OfferCard | PASS |
+| P9-OFF-002 | Accept/Reject/Delegate remain present and command-equivalent | UI-A6 | P9.1–P9.6 | existing offer command path | static + runtime equivalence | workflow 36626405086 | MUIR-P9 | restore P8 offer actions | PASS |
+| P9-OFF-003 | Loan presentation follows only PublicOffer terms.loan | UI-A6 | P9.4–P9.6 | factual loan presentation | loan/non-loan fixtures | workflow 36626405086 | MUIR-P9 | revert loan presentation | PASS |
 | P9-CIN-001 | Existing cutscene player remains presentation-only and accessible | UI-A6 | P9.1–P9.6 | web/cutscene-player.js presentation | event/prologue browser + static | P9 evidence | MUIR-P9 | restore predecessor player | IN_PROGRESS |
 | P9-CIN-002 | Missing/error media has a safe non-blocking fallback | UI-A6 | P9.1–P9.6 | existing/further presentation fallback only | error/missing asset fixture | P9 evidence | MUIR-P9 | restore predecessor fallback | IN_PROGRESS |
 | P9-CIN-003 | Skip is available only where the real player supports it and never changes gameplay | UI-A6 | P9.1–P9.6 | existing skip presentation path | skip equivalence | P9 evidence | MUIR-P9 | restore predecessor skip path | IN_PROGRESS |
 | P9-EPI-001 | Epilogue remains a real separate closed-career state with safe history access | UI-A6 | P9.1–P9.6 | epilogue presentation only | epilogue fixture/browser | P9 evidence | MUIR-P9 | restore predecessor epilogue presentation | IN_PROGRESS |
-| P9-VDR-001 | Immersive navigation decision is evidence-based and Back never resolves pending state | UI-A6 | P9.1–P9.6 | VDR-IMMERSIVE-001 | back/focus/viewport probes | docs/muir/P9_VDR_IMMERSIVE_001.md | MUIR-P9 | restore predecessor navigation | PROPOSED |
+| P9-VDR-001 | Immersive navigation decision is evidence-based and Back never resolves pending state | UI-A6 | P9.1–P9.6 | VDR-IMMERSIVE-001 | back/focus/viewport probes | docs/muir/P9_VDR_IMMERSIVE_001.md + workflow 36623464538 | MUIR-P9 | restore predecessor navigation | PASS |
 | P9-ID-001 | Choice IDs are byte-for-byte unchanged by P9 | UI-A6 | P9.1–P9.6 | no content/runtime changes | before/after ID audit | P9 evidence | MUIR-P9 | revert offending commit | IN_PROGRESS |
 | P9-NAR-001 | Narrative semantics/copy are unchanged | UI-A6 | P9.1–P9.6 | wrapping/structure only | narrative diff | P9 evidence | MUIR-P9 | revert offending copy | IN_PROGRESS |
 | P9-A11Y-001 | Immersive states remain keyboard/focus/screen-reader/text-scale usable | UI-A6 | P9.2–P9.6 | semantic HTML/focus styles | AXE + keyboard + text scale | P9 evidence | MUIR-P9 | revert offending UI rule | PENDING |
 | P9-RESP-001 | Required phone and landscape viewports remain usable without horizontal overflow | UI-A6 | P9.2–P9.6 | responsive presentation | 360/390/412/landscape matrix | P9 evidence | MUIR-P9 | revert offending layout | PENDING |
+
+Pass 2 Decision: workflow `36623464538` PASS. Pass 3 Result: workflow `36625586567` PASS. Pass 4 Offer: workflow `36626405086` PASS. VDR-IMMERSIVE-001 accepted as MIXED.
 
 Pass 1 baseline authority test: `scripts/test-muir-p9-baseline.mjs`.  
 Pass 1 is not promoted to PASS until the exact current P9 HEAD completes the P9 workflow successfully.
