@@ -25,6 +25,10 @@ assert(!css.includes('.nav-button{font-size:8px}'), '8px mobile nav regression')
 assert(css.includes('bottom:calc(80px + var(--muir-safe-bottom))'), 'pause status must clear bottom safe-area');
 assert(css.includes('bottom:calc(82px + var(--muir-safe-bottom))'), 'alert must clear bottom safe-area');
 assert(css.includes('bottom:calc(88px + var(--muir-safe-bottom))'), 'busy status must clear bottom safe-area');
+assert(css.includes('.save-status{position:absolute;bottom:calc(12px + var(--muir-safe-bottom));right:calc(23px + var(--muir-safe-right));'), 'save status must clear desktop/landscape safe areas');
+assert(css.includes('.alert{position:absolute;z-index:20;left:max(calc(20px + var(--muir-safe-left)),20%);right:calc(20px + var(--muir-safe-right));bottom:calc(45px + var(--muir-safe-bottom));'), 'alert must clear base safe areas');
+assert(css.includes('.busy-status{position:absolute;inset:auto calc(25px + var(--muir-safe-right)) calc(25px + var(--muir-safe-bottom)) auto;'), 'busy status must clear base safe areas');
+assert(css.includes('.pause-status{position:absolute;left:50%;bottom:calc(12px + var(--muir-safe-bottom));'), 'pause status must clear base bottom safe area');
 assert(css.includes('.cinema-top button{font-size:10px;min-height:48px;padding:8px 11px}'), 'mobile cinematic topbar control must be at least 48px');
 
 const destinations=[
