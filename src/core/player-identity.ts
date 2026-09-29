@@ -1,6 +1,7 @@
 export const PLAYER_ID = "PLR_001" as const;
 export const LEGACY_PLAYER_DISPLAY_NAME = "Jugador";
-export const PLAYER_DISPLAY_NAME_MAX_CODE_POINTS = 64;
+export const PLAYER_DISPLAY_NAME_MIN_GRAPHEMES = 2;
+export const PLAYER_DISPLAY_NAME_MAX_GRAPHEMES = 32;
 
 export interface PlayerIdentity {
   id: typeof PLAYER_ID;
@@ -8,14 +9,19 @@ export interface PlayerIdentity {
 }
 
 const ALLOWED_PLAYER_NAME = /^[\p{L}\p{M}](?:[\p{L}\p{M}\p{Zs}'’.-]*[\p{L}\p{M}.])?$/u;
+const PLAYER_NAME_SEGMENTER = new Intl.Segmenter("es", { granularity: "grapheme" });
+
+export function playerDisplayNameGraphemeCount(value: string): number {
+  return Array.from(PLAYER_NAME_SEGMENTER.segment(value)).length;
+}
 
 export function normalizePlayerDisplayName(value: unknown): string | null {
   if (typeof value !== "string") return null;
   const trimmed = value.trim();
   if (!trimmed) return null;
   const normalizedSpaces = trimmed.replace(/\p{Zs}+/gu, " ");
-  const length = Array.from(normalizedSpaces).length;
-  if (length < 1 || length > PLAYER_DISPLAY_NAME_MAX_CODE_POINTS) return null;
+  const graphemes = playerDisplayNameGraphemeCount(normalizedSpaces);
+  if (graphemes < PLAYER_DISPLAY_NAME_MIN_GRAPHEMES || graphemes > PLAYER_DISPLAY_NAME_MAX_GRAPHEMES) return null;
   if (!ALLOWED_PLAYER_NAME.test(normalizedSpaces)) return null;
   return normalizedSpaces;
 }
