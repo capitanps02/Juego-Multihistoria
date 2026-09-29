@@ -13,10 +13,12 @@ function fromGit(sha,file){
   return execFileSync('git',['show',sha+':'+file],{cwd:root,encoding:'utf8'});
 }
 function functionBlock(source,name){
-  const start=source.indexOf('  function '+name+'(');
+  const starts=[source.indexOf('  function '+name+'('),source.indexOf('  async function '+name+'(')].filter(x=>x>=0);
+  const start=starts.length?Math.min(...starts):-1;
   assert(start>=0,'missing function '+name);
-  const next=source.indexOf('\n  function ',start+12);
-  return source.slice(start,next<0?source.length:next);
+  const candidates=[source.indexOf('\n  function ',start+1),source.indexOf('\n  async function ',start+1)].filter(x=>x>start);
+  const next=candidates.length?Math.min(...candidates):source.length;
+  return source.slice(start,next);
 }
 
 execFileSync('git',['merge-base','--is-ancestor',PREDECESSOR,'HEAD'],{cwd:root,stdio:'pipe'});
