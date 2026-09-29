@@ -90,26 +90,50 @@ Certified Relaciones / Perfil evidence:
 - P7 semantic / Football DB / save-import / package graph / PlayCanvas: PASS
 - DB/PlayerView/gameplay/save authority changes: 0
 
+## Pass 5 — Tu partida
+
+P8 Pass 5: **PASS** on SHA `c9402fd317786d2d109d89435a1ccb3316fc603b`.
+
+Workflow: `36612633876` = **SUCCESS**  
+Artifact: `muir-p8-b93ca2c811623163a26063e755f8e2b1c5c404aa`  
+Artifact digest: `sha256:a33a33f207f1d5eec04cc4e6a18a090be610073128d8ebd68bdc16200d25f648`
+
+Certified Tu partida evidence:
+
+- local/current save presentation: PASS
+- download current copy: PASS
+- current recovery/reload action: PASS
+- JSON import + confirmation: PASS
+- previous backup recovery + confirmation: PASS
+- legacy download-only copy: PASS
+- new story name + numeric story code + confirmation: PASS
+- save-standard / save-backup / save-legacy / save-full: PASS
+- persistence interruption stress, 100 decision cycles: PASS
+- save migration/import/export regressions: PASS
+- cloud/login/remote sync/fake slots introduced: 0
+- save schema / IndexedSaveStore / GameSession authority changes: 0
+- 360×800 / 390×844 / 412×915 / tablet / landscape: PASS
+- text scale 100/130/180%: PASS
+- horizontal layout/control overflow findings: 0
+- AXE serious/critical: 0
+- package graph / PlayCanvas: PASS
+
 ## Current state
 
-**IN_PROGRESS — PASS 5 TU PARTIDA**
+**IN_PROGRESS — PASS 6 HARDENING GLOBAL**
 
-Authorized product files remain presentation-only:
+Pass 6 consolidates the already-certified long/empty/responsive/a11y coverage across all five P8 surfaces. No new gameplay or data is authorized.
 
-- `web/game-ui.js`
-- `web/game-ui.css`
+Pass 6 must prove:
 
-Pass 5 must prove:
-
-- local/current save remains available;
-- download and import remain the same existing operations;
-- current recovery/reload remains available;
-- previous backup remains conditional on the existing store state;
-- legacy copy remains download-only and does not replace current save implicitly;
-- new story still uses public name + existing numeric story code;
-- no cloud, login, remote sync or fake slots are introduced;
-- save schema / IndexedSaveStore / GameSession authority remain unchanged;
-- full persistence stress, save migration and import/export regressions pass;
-- required responsive/a11y matrix remains green.
+- long Mundo feed, long Carrera, long Relaciones/Perfil and full save support remain usable together;
+- truthful empty states remain valid where the public contract permits emptiness;
+- 360×800 / 390×844 / 412×915 / tablet / landscape remain usable across P8;
+- 100/130/180% text scale remains usable on the long-state scenarios;
+- horizontal overflow findings remain 0;
+- AXE serious/critical remains 0;
+- keyboard/focus semantics remain intact;
+- internal IDs / private metrics / invented fields / cloud features remain 0;
+- authority files remain unchanged.
 
 P8 remains IN_PROGRESS. P9 is not authorized.
