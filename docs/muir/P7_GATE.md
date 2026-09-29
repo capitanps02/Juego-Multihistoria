@@ -53,6 +53,8 @@ The P7 workflow executes:
 11. Android offline package/regression
 12. exact-head final gate
 
+P7 PR: #879
+
 ## Current certification state
 
 **IN_PROGRESS / READY_FOR_CI**
