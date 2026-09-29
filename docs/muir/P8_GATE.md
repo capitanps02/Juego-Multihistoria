@@ -65,28 +65,51 @@ Certified Carrera evidence:
 - P7 semantic / Football DB / save-import / package graph / PlayCanvas: PASS
 - DB/PlayerView/gameplay/save authority changes: 0
 
+## Pass 4 — Relaciones / Perfil
+
+P8 Pass 4: **PASS** on SHA `5291e3fe34c7f8055565aea0a898a05219ea83a1`.
+
+Workflow: `36610621251` = **SUCCESS**  
+Artifact: `muir-p8-01491623dde3fa318105f4bee933f8f282eb06d2`  
+Artifact digest: `sha256:fb23f26bf785742832462206054f6571cb9b43ef1cfb5bfc2687e3f23ccdd63c`
+
+Certified Relaciones / Perfil evidence:
+
+- Relaciones empty / one / long Unicode / 24-contact states: PASS
+- P7 `PersonCard` reused: PASS
+- private trust/affinity/reliability/influence/probability/bond type visible: 0
+- Perfil public identity / condition / contract fields only: PASS
+- profile nested-panel findings: 0
+- long player name / long formatted club: PASS
+- GRL / invented attributes / fake tabs / nationality / market value introduced: 0
+- 360×800 / 390×844 / 412×915 / tablet / landscape: PASS
+- text scale 100/130/180%: PASS
+- horizontal layout overflow findings: 0
+- form controls escaping main viewport: 0
+- AXE serious/critical: 0
+- P7 semantic / Football DB / save-import / package graph / PlayCanvas: PASS
+- DB/PlayerView/gameplay/save authority changes: 0
+
 ## Current state
 
-**IN_PROGRESS — PASS 4 RELACIONES / PERFIL**
+**IN_PROGRESS — PASS 5 TU PARTIDA**
 
 Authorized product files remain presentation-only:
 
 - `web/game-ui.js`
 - `web/game-ui.css`
 
-Pass 4 must prove:
+Pass 5 must prove:
 
-- Relaciones renders only public contact name/role via P7 `PersonCard`;
-- no trust/affinity/reliability/influence/probability or inferred bond type is exposed;
-- empty, one, long Unicode and many-contact states remain usable;
-- Perfil renders only public identity, age, position, appearances, condition and contract fields;
-- Perfil contains no nested panel for `Tu momento`;
-- GRL, artificial attributes, fake tabs, nationality and market value introduced: 0;
-- long names and long formatted club names remain usable;
-- required phone/tablet/landscape viewports and 100/130/180% text remain usable;
-- AXE serious/critical remains 0;
-- P7 DB/market/gameplay authority remains unchanged.
-
-The full persistence stress test remains scheduled for P8.5/P8.7.
+- local/current save remains available;
+- download and import remain the same existing operations;
+- current recovery/reload remains available;
+- previous backup remains conditional on the existing store state;
+- legacy copy remains download-only and does not replace current save implicitly;
+- new story still uses public name + existing numeric story code;
+- no cloud, login, remote sync or fake slots are introduced;
+- save schema / IndexedSaveStore / GameSession authority remain unchanged;
+- full persistence stress, save migration and import/export regressions pass;
+- required responsive/a11y matrix remains green.
 
 P8 remains IN_PROGRESS. P9 is not authorized.
