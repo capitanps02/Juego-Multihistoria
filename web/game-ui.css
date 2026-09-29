@@ -106,7 +106,7 @@ button.player-action-back{min-height:48px;white-space:normal;overflow-wrap:anywh
 .offer-card .offer-comparison strong{max-width:68%;line-height:1.45;white-space:normal}
 .offer-loan-state{margin-top:14px}
 .person-card h2{overflow-wrap:anywhere;hyphens:auto}
-.person-card:not(.person-card-compact) .person-initials{width:85px;height:85px;min-width:85px}
+.person-card:not(.person-card-compact) .person-initials{width:85px;height:85px;min-width:85px;font-size:20px;line-height:1}
 .person-card-compact{min-width:0}
 .person-card-compact .person-copy{min-width:0}
 .person-card-compact .person-copy strong,.person-card-compact .person-copy p{display:block;overflow-wrap:anywhere}
