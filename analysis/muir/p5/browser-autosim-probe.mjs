@@ -55,7 +55,7 @@ try{
       };
     });
     try{
-      const url=`http://127.0.0.1:${port}/analysis/muir/ui-fixtures/index.html?fixture=auto-running&viewport=${viewport.id}&p5LiveAuto=1`;
+      const url=`http://127.0.0.1:${port}/analysis/muir/ui-fixtures/index.html?fixture=auto-running&viewport=${viewport.id}`;
       await page.goto(url,{waitUntil:'networkidle',timeout:30000});
       await page.waitForFunction(()=>globalThis.__MUIR_READY__?.ready===true,null,{timeout:30000});
       await page.waitForFunction(()=>{
@@ -63,6 +63,7 @@ try{
         return [...(root?.querySelectorAll('button')??[])].some(b=>b.textContent.trim()==='Pausar simulación');
       },null,{timeout:10000});
       const observedElapsed=await page.evaluate(()=>globalThis.__MUIR_PUBLIC_VIEW__?.().simulation?.elapsedDays??null);
+      await page.evaluate(()=>globalThis.__MUIR_RELEASE_AUTO_TIMER__?.());
       await page.waitForFunction(previous=>{
         const view=globalThis.__MUIR_PUBLIC_VIEW__?.();
         return view?.simulation?.mode==='auto_simulating'&&Number.isFinite(view.simulation.elapsedDays)&&Number.isFinite(previous)&&view.simulation.elapsedDays>previous;
