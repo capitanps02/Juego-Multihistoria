@@ -1,4 +1,5 @@
 import type { GameState } from "../core/types.js";
+import { inspectPlayerIdentity } from "../core/player-identity.js";
 import { assertPlayerActionState } from "../player-actions/validation.js";
 import { inspectSportMatchModelStore } from "../simulation/match-model.js";
 import { inspectCompetitionMomentStore } from "../simulation/competition-context.js";
@@ -34,6 +35,16 @@ function assertSportMatchModel(value: unknown): void {
   const world = legacy.record(state.world, "world");
   const issue = inspectSportMatchModelStore(world.sportMatchModel, state.date as string, value as GameState);
   if (issue) legacy.ensure(false, issue.path, issue.reason);
+}
+
+function assertPlayerIdentity(value: unknown, required: boolean): void {
+  const state = legacy.record(value, "state");
+  if (state.playerIdentity === undefined) {
+    if (required) legacy.ensure(false, "playerIdentity", "falta la identidad autoritativa del jugador");
+    return;
+  }
+  const issue = inspectPlayerIdentity(state.playerIdentity);
+  if (issue) legacy.ensure(false, "playerIdentity", issue);
 }
 
 const EMPLOYMENT_STATUSES: EmploymentStatus[] = ["contracted","loaned","unattached","expired_pending_resolution"];
@@ -258,6 +269,7 @@ export function validateGameSave(value: unknown, version: number): void {
   assertPenaltySetups(value);
   assertEmployment(value);
   assertVeteranMarketFacts(value);
+  assertPlayerIdentity(value, false);
   const state = value as GameState;
   if (state.playerActions !== undefined) assertPlayerActionState(state.playerActions, state.date);
 }
@@ -271,6 +283,7 @@ export function assertGameState(value: unknown): asserts value is GameState {
   assertPenaltySetups(value);
   assertEmployment(value);
   assertVeteranMarketFacts(value);
+  assertPlayerIdentity(value, true);
   const state = value as GameState;
   if (state.playerActions !== undefined) assertPlayerActionState(state.playerActions, state.date);
 }
