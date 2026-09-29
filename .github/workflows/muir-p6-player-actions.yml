@@ -77,6 +77,8 @@ jobs:
       - name: Android offline regression
         timeout-minutes: 6
         run: npm run test:android:offline
+      - name: P6 exact-head final executable gate
+        run: node scripts/test-muir-p6-final-gate.mjs
       - name: Upload P6 evidence
         if: always()
         uses: actions/upload-artifact@v4
