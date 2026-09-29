@@ -81,10 +81,10 @@ test('all P9 RTM requirements are PASS before final expensive gate',()=>{
 
 test('P9 final report/gate document exists and is ready for exact-head certification',()=>{
   const gate=read('docs/muir/P9_GATE.md');
-  assert.match(gate,/P9_GATE: READY_FOR_GATE/);
+  assert.match(gate,/P9_GATE: (?:READY_FOR_GATE|PASS)/);
   assert.match(gate,/P8_CERTIFIED_SHA: ecc72b9abebbc64533c86b1f3cf7009a127c0c02/);
   assert.match(gate,/P9_5_CERTIFIED_SHA: 8f104808e0c6bc8ac7a0697406add7a5c2731853/);
-  assert.match(gate,/ANDROID_EMULATOR_BACK: READY_FOR_GATE|ANDROID_EMULATOR_BACK: PASS/);
+  assert.match(gate,/ANDROID_EMULATOR_BACK: (?:READY_FOR_GATE|PASS)/);
   assert.match(gate,/ANDROID_PHYSICAL_BACK: NOT_EXECUTABLE/);
   assert.match(gate,/ANDROID_BACK_WIRING: PASS/);
 });
