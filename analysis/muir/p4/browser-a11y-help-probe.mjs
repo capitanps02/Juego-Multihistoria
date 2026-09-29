@@ -70,8 +70,17 @@ try{
       assert.equal(base.bodyVisible,false,viewport.id+' help body occupies permanent Home space');
       assert.equal(base.glossaryExists,false,viewport.id+' duplicated glossary remains in Home help');
       assert.deepEqual(base.serious,[],viewport.id+' serious/critical AXE violations: '+JSON.stringify(base.serious));
-      assert(base.operationalText.includes('Opcional:'),viewport.id+' Player Actions optionality not visible in available UI flow');
+      await page.evaluate(()=>{
+        const root=document.querySelector('#game').shadowRoot;
+        const button=[...root.querySelectorAll('.next button')].find(b=>b.textContent.trim()==='Gestionar mi carrera');
+        if(!button)throw Error('optional Player Actions entry missing');
+        button.click();
+      });
+      await page.waitForTimeout(50);
+      const optionality=await page.evaluate(()=>document.querySelector('#game').shadowRoot.querySelector('main')?.textContent??'');
+      assert(optionality.includes('Opcional: entra sólo si quieres hacer algo antes de simular.'),viewport.id+' Player Actions optionality wording missing');
 
+      await openHome(page,viewport.id);
       await page.evaluate(()=>{
         const root=document.querySelector('#game').shadowRoot;
         root.querySelector('.home-help summary').click();
