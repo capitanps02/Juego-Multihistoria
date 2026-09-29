@@ -71,7 +71,7 @@ GameSession.prototype.getView=function(){
 const base=await GameSession.create(424242,{events:[],microfeeds:false,sessionId});
 localStorage.setItem(storageKey,JSON.stringify(base.exportSnapshot()));
 const fixtureView=base.getView();
-if(['decision-poster','epilogue'].includes(scenario)&&fixtureView.cutscene){
+if(['decision-poster','decision-video','epilogue'].includes(scenario)&&fixtureView.cutscene){
   const sceneKey=[fixtureView.sessionId,fixtureView.cutscene.file,fixtureView.screen,fixtureView.decisionsMade].join(':');
   localStorage.setItem(storageKey+'.watched-cutscenes.v1',JSON.stringify([sceneKey]));
 }
