@@ -33,7 +33,7 @@ test('P8 Relaciones renders only public contact identity through PersonCard',()=
 });
 
 test('P8 Perfil composes public identity, condition and contract blocks without nested panels',()=>{
-  for(const token of ['v.player.displayName','v.age','position(v)','v.appearances','stats(v,false,true)','contractSummary(v)','profile-identity'])assert.ok(profile.includes(token),token);
+  for(const token of ['v.player.displayName','v.age','position(v)','v.appearances','stats(v,false,true)','contractSummary(v)','profile-identity','profile-details'])assert.ok(profile.includes(token),token);
   assert.match(hero,/v\.player\.displayName/);
   assert.match(stats,/embedded\?el\('section',undefined,'panel profile-moment'\):panel\('Tu momento'\)/);
   assert.doesNotMatch(profile,/\.append\(stats\(v\)\)/,'old stats panel must not be nested inside identity');
