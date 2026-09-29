@@ -7,7 +7,7 @@
     "build": "node scripts/build.mjs",
     "build:playcanvas": "npm run build && node scripts/build-playcanvas.mjs",
     "play": "npm run build:playcanvas && node scripts/serve-preview.mjs",
-    "test:playcanvas": "npm run build:playcanvas && node --test scripts/test-session.mjs scripts/test-saves.mjs scripts/test-t5-retirement-save-known-bug.mjs scripts/test-playcanvas.mjs scripts/test-t55-a19-ui.mjs scripts/test-player-actions-ui-contract.mjs",
+    "test:playcanvas": "npm run build:playcanvas && node --test scripts/test-session.mjs scripts/test-saves.mjs scripts/test-t5-retirement-save-known-bug.mjs scripts/test-playcanvas.mjs scripts/test-t55-a19-ui.mjs scripts/test-player-actions-ui-contract.mjs scripts/test-release-integrity.mjs",
     "test:session": "npm run build && node --test scripts/test-player-actions-session.mjs scripts/test-session.mjs scripts/test-t55-auto-simulation.mjs",
     "test:saves": "npm run build && node --test scripts/test-session.mjs scripts/test-saves.mjs scripts/test-t5-retirement-save-known-bug.mjs",
     "validate": "npm run build && node scripts/final-gate-v08.mjs",

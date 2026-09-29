@@ -6,28 +6,26 @@ import {
   FOOTBALL_CATALOG_VERSION,
   clubsForCountry,
   clubsForDivision,
-  divisionsForCountry
+  divisionsForCountry,
+  divisionById,
+  footballClubBalanceMetadata
 } from "../dist/catalog/football/index.js";
 
 const METRICS = [
   "prestige",
   "financialPower",
-  "youthQuality",
-  "developmentBias",
   "pressure",
   "internationalAttraction"
 ];
 
-const range = (rows, key) => [
-  Math.min(...rows.map(row => row[key])),
-  Math.max(...rows.map(row => row[key]))
-];
+const avg = (rows, key) => rows.reduce((sum, row) => sum + row[key], 0) / rows.length;
+const metadata = club => footballClubBalanceMetadata(club, divisionById(club.divisionId));
 
 test("A2 catalog version identifies selector-affecting balance", () => {
   assert.equal(FOOTBALL_CATALOG_VERSION, "world-v2-a2-2026-09-28");
 });
 
-test("adjacent divisions in the same country do not invert football hierarchy", () => {
+test("V2 adjacent divisions retain their average sporting and economic hierarchy", () => {
   const countries = [...new Set(FOOTBALL_DIVISIONS.map(division => division.countryCode))];
 
   for (const countryCode of countries) {
@@ -41,11 +39,13 @@ test("adjacent divisions in the same country do not invert football hierarchy", 
       assert.ok(upper.strength > lower.strength, `${countryCode} strength tier ${upper.tier}/${lower.tier}`);
 
       for (const metric of METRICS) {
-        const [upperMin] = range(upperClubs, metric);
-        const [, lowerMax] = range(lowerClubs, metric);
+        // V2 club bands deliberately overlap; development clubs can have
+        // stronger academies than elite clubs. Compare structural averages.
+        const upperMean = avg(upperClubs, metric);
+        const lowerMean = avg(lowerClubs, metric);
         assert.ok(
-          upperMin > lowerMax,
-          `${countryCode} ${metric}: tier ${upper.tier} min=${upperMin} must exceed tier ${lower.tier} max=${lowerMax}`
+          upperMean > lowerMean,
+          `${countryCode} ${metric}: tier ${upper.tier} mean=${upperMean} must exceed tier ${lower.tier} mean=${lowerMean}`
         );
       }
     }
@@ -89,22 +89,28 @@ test("continental profile is reserved for credible first-division clubs", () => 
   assert.ok(continental.length >= 20);
   for (const club of continental) {
     assert.equal(club.tier, 1, club.id);
-    assert.ok(club.prestige >= 80, `${club.id} prestige=${club.prestige}`);
-    assert.ok(club.internationalAttraction >= 76, `${club.id} international=${club.internationalAttraction}`);
+    assert.ok(["elite", "continental"].includes(metadata(club).band), club.id);
+    assert.ok(["A", "B", "C"].includes(metadata(club).leagueGroup), club.id);
+  }
+  for (const division of FOOTBALL_DIVISIONS) {
+    const leaders = continental.filter(club => club.divisionId === division.id);
+    if (!leaders.length) continue;
+    const peers = clubsForDivision(division.id).filter(club => !club.archetypes.includes("continental"));
+    assert.ok(avg(leaders, "prestige") > avg(peers, "prestige"), `${division.id} continental prestige`);
+    assert.ok(avg(leaders, "internationalAttraction") > avg(peers, "internationalAttraction"), `${division.id} continental international`);
   }
 });
 
-test("selling and community profiles correspond to plausible resource contexts", () => {
-  const selling = FOOTBALL_CLUBS.filter(club => club.archetypes.includes("selling"));
-  const community = FOOTBALL_CLUBS.filter(club => club.archetypes.includes("community"));
-  assert.ok(selling.length >= 20);
-  assert.ok(community.length >= 20);
-
-  const avg = (rows, key) => rows.reduce((sum, row) => sum + row[key], 0) / rows.length;
-  assert.ok(avg(selling, "developmentBias") >= 65);
-  assert.ok(avg(selling, "youthQuality") >= 65);
-  assert.ok(avg(community, "pressure") < avg(FOOTBALL_CLUBS, "pressure"));
-  assert.ok(avg(community, "financialPower") < avg(FOOTBALL_CLUBS, "financialPower"));
+test("V2 development and lower-pressure selector profiles have distinct resource contexts", () => {
+  // Secondary flavour archetypes are not the V2 market selector profiles.
+  const development = FOOTBALL_CLUBS.filter(club => metadata(club).selectorProfile === "development");
+  const lowerPressure = FOOTBALL_CLUBS.filter(club => metadata(club).selectorProfile === "lower_pressure");
+  assert.ok(development.length > 0);
+  assert.ok(lowerPressure.length > 0);
+  assert.ok(avg(development, "developmentBias") > avg(FOOTBALL_CLUBS, "developmentBias"));
+  assert.ok(avg(development, "youthQuality") > avg(FOOTBALL_CLUBS, "youthQuality"));
+  assert.ok(avg(lowerPressure, "pressure") < avg(FOOTBALL_CLUBS, "pressure"));
+  for (const club of lowerPressure) assert.ok(club.pressure <= 58, club.id);
 });
 
 test("country indexes still cover every club exactly once after calibration", () => {

@@ -2,10 +2,10 @@
   "integration": "T3.2",
   "targetScene": 2593315,
   "moduleCount": 170,
-  "bundleBytes": 17674202,
-  "bundleSha256": "20aa13f366268aee78075f1f267666e278cd9515676ede282c8c5205dd9b28bb",
+  "bundleBytes": 17674286,
+  "bundleSha256": "ac803333e2224f171f469736875f0d78877c81dc7f31eed759690273ede4c1a3",
   "inputs": {
-    "src/session/game-session.ts": "2c43453b0c015ebfff5ece5a69028b81f9a3d152a5c819b6515f735bcd4e0b49",
+    "src/session/game-session.ts": "dae3a0d3b9cd56861a10051582723e0db6606085f8fe657175069096c60e8d57",
     "src/content/event-cutscenes.ts": "b96eea76acdd77f066f7d8a72707c10e5a392434b8ada7cbf1da705e9d9dbcdc",
     "src/simulation/player-leadership-authority.ts": "a83f0b6df0feee6496aaa76beb02fee412ef2f7a8408c66881311aba5a6d3516",
     "src/session/decision-memories.ts": "188545abfbeb2384ab8cdb29b5eaf947a24f033c9171b490c73dc5dbdf300d22",
@@ -175,10 +175,20 @@
     "src/core/player-contacts.ts": "45e69763b7e7ff70f2831714dba2ff3f1e7d1a4a0298af5f3f19df99e6d0c127",
     "src/session/auto-simulation.ts": "57d688c71da9ee81eab39b09074321795bd036a622c59716c39ecd9972df20b0",
     "src/session/period-report.ts": "b802e59ef84208ecadca896ec67de8f5964dc353bb1bb56a36c934c81d6dc126",
-    "web/game-ui.js": "8af0280af4a547d5370df969847de191c0b81c6aabb73b0edbe400a066bc61b6",
+    "scripts/build-playcanvas.mjs": "6558ab9d8f0263efe2b56e239d92a03407d8f8147f27d72c41793f81b7d2c304",
+    "web/game-ui.js": "4efc44007bc3040732ee200c47ba85910356bc0f8aa553a9cabec1847d8bbfdc",
     "web/club-catalog-names.js": "eda25eaa6847342f68d0dc422e8bc60cebad403d8325b7ee359b7022230a2296",
     "web/club-names.js": "4258216e751822abeaffbd2db7eff0b0d4604d9d9a06bdb895a32db5b9c3aca4",
+    "web/cutscene-player.js": "846ba71b3a075adb228520fdf619cec7533375fab5f9312d425ba904538c4cb2",
     "web/game-ui.css": "4cecff31839d940a247e7e7fef0a20301e1c8a74d978af2a70f8e396ba23e695",
-    "web/indexed-save-store.js": "0a124e36954dcebeffe7761913eb1333e57a8fd8053cc07d89f0ed4409f5668d"
+    "web/indexed-save-store.js": "0a124e36954dcebeffe7761913eb1333e57a8fd8053cc07d89f0ed4409f5668d",
+    "web/assets/hero-clean-v1.png": "48d3cb0cf572d306afd0edea892af0de0fcbdeac56e5c916e188339159b22559",
+    "web/assets/locker-clean-v1.png": "b7b4bc21849d89f97f9f43f2334d39851a6833c77eda659071f6204970e504cb",
+    "web/assets/stadium-clean-v1.png": "9ecd06ef94fb013335d267254afa0e9b7552ab927d0a80a114c65a5324490645",
+    "design/reference-2026-09-13/assets/portraits/portrait_coach.jpg": "4f68c94129080a195eee6d1b45e148b0fe65ae28a2a095ceee46beee1db4781a",
+    "design/reference-2026-09-13/assets/portraits/portrait_doctor.jpg": "2fa79d8ac3774f60b5c2eba0e00941b099743068977ae26232a7a36a821b928e",
+    "design/reference-2026-09-13/assets/portraits/portrait_mother.jpg": "17e34e80533bf7cd21ab094828bf36cd9bb83b7f0949f4d2943a6774e8e1e532",
+    "design/reference-2026-09-13/assets/portraits/portrait_father.jpg": "b369cc9fae9b709977a1beae1b34f259fb2683970c8190f99cb1c493d0d39844",
+    "design/reference-2026-09-13/assets/portraits/portrait_agent.jpg": "ff2a2205c8104c36d5f8e0693e6fa429e1af66f8989913d6411b6ba70e86daa9"
   }
 }

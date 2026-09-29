@@ -281,7 +281,7 @@ function render(focus = false) {
         max_auto_weeks:'el tramo automático ha llegado a su límite'
       })[s.interruption.type] || 'ha ocurrido un momento relevante'}.`,'body'));
     }
-    story.append(action('Continuar','auto',{action:'start'}));
+    story.append(action('Continuar','auto',{action:'start'}),action('Terminar simulación','auto',{action:'stop'},'secondary'));
   } else if (v.screen === 'epilogue') {
     story.append(el('span','CIERRE DE CARRERA','eyebrow'),el('h1','Así se escribió tu historia.'),el('p',`Tu carrera termina a los ${v.age} años, después de ${v.decisionsMade} decisiones. Puedes volver sobre ellas en «Tu recorrido» o comenzar otra historia.`,'body'));
   } else {
