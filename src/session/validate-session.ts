@@ -274,7 +274,7 @@ export async function assertSessionSnapshot(value: unknown, context: SessionVali
   });
   ensure(offerIndex === commandOfferHistory.length, "market.history", "faltan recibos de ofertas directas");
   ensure(playerActionIndex === (state.playerActions?.history.length ?? 0), "playerActions.history", "faltan recibos de Player Actions");
-  if (lastIdentityName !== null) ensure(state.playerIdentity.displayName === lastIdentityName, "playerIdentity.displayName", "la identidad no coincide con el último recibo de edición");
+  if (lastIdentityName !== null) ensure(state.playerIdentity?.displayName === lastIdentityName, "playerIdentity.displayName", "la identidad no coincide con el último recibo de edición");
   ensure([...narrativeOfferHistory.keys()].every(index => index < choiceIndex), "market.history", "oferta narrativa sin recibo de elección");
 
   let pendingOfferBridgeMarker = false;
