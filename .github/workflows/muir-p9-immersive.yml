@@ -50,8 +50,8 @@ jobs:
         run: git diff --exit-code ecc72b9abebbc64533c86b1f3cf7009a127c0c02..HEAD -- src web/cutscene-player.js web/indexed-save-store.js
       - name: Shared UI package graph
         run: node --test scripts/test-muir-package-graph.mjs
-      - name: PlayCanvas package smoke
-        run: npm run test:playcanvas
+      - name: PlayCanvas focused package smoke
+        run: npm run build:playcanvas && node --test scripts/test-playcanvas.mjs scripts/test-t55-a19-ui.mjs
       - name: Install browser tooling
         run: |
           npm install --no-save playwright@1.55.0 axe-core@4
