@@ -38,6 +38,8 @@ async function open(page,scenario){
   await page.waitForFunction(()=>globalThis.__P9_READY__?.ready===true,null,{timeout:30000});
   await page.addScriptTag({path:axePath});
   if(scenario==='decision-video'){
+    await page.waitForFunction(()=>globalThis.__P9_ROOT__.querySelector('.cinematic-player')?.dataset.cutsceneState==='ready',null,{timeout:15000});
+    await page.evaluate(()=>globalThis.__P9_ROOT__.querySelector('.cinematic-player>.secondary')?.click());
     await page.waitForFunction(()=>globalThis.__P9_ROOT__.querySelector('.cinematic-player')?.dataset.cutsceneState==='playing',null,{timeout:15000});
   }
   if(scenario==='decision-missing'){
