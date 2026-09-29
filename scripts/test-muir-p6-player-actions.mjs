@@ -35,8 +35,9 @@ test('P6-AVAIL-001 unavailable and cooldown states carry text, not color alone',
   assert.match(css,/player-action-reason/);
 });
 
-test('P6-COOL-001 presentation preserves exact public expiry and removes approximation',()=>{
+test('P6-COOL-001 presentation preserves exact public expiry, removes approximation and suppresses duplicate reason',()=>{
   assert.match(web,/Disponible de nuevo el '\+date\(a\.cooldownUntil\)\+'\.'/);
+  assert.match(web,/duplicateCooldownReason=Boolean\(source\?\.cooldownUntil&&source\?\.unavailableReason\?\.includes\(source\.cooldownUntil\)\)/);
   assert.doesNotMatch(web,/Podrás volver a hacerlo mañana|próxima semana|Disponible en '\+days/);
 });
 

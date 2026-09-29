@@ -205,7 +205,8 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
     if(source?.available)return;
     const cooldown=cooldownText(v,source);
     if(cooldown)container.append(el('p',cooldown,'player-action-cooldown'));
-    if(source?.unavailableReason)container.append(el('p',source.unavailableReason,'player-action-reason'));
+    const duplicateCooldownReason=Boolean(source?.cooldownUntil&&source?.unavailableReason?.includes(source.cooldownUntil));
+    if(source?.unavailableReason&&!duplicateCooldownReason)container.append(el('p',source.unavailableReason,'player-action-reason'));
     else if(!cooldown)container.append(el('p',fallback,'player-action-reason'));
   }
   function selectedPlayerAction(v){for(const c of v.actions?.categories??[]){const a=c.actions.find(row=>row.id===playerActionUi.actionId);if(a)return a;}return null;}

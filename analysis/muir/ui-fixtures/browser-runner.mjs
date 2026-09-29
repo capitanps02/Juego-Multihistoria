@@ -268,6 +268,7 @@ switch(fixtureId){
     requireSurface(visibleText.includes('Cooldown activo'),'cooldown textual state');
     requireSurface(visibleText.includes('Disponible de nuevo el'),'exact public cooldown expiry');
     requireSurface(!visibleText.includes('próxima semana'),'no approximate cooldown');
+    requireSurface(![...root.querySelectorAll('.player-action-reason')].some(node=>/\d{4}-\d{2}-\d{2}/.test(node.textContent)),'no duplicate ISO cooldown reason');
     break;
   case 'player-actions-detail-none':
     requireSurface(h1==='Entrenamiento extra','target-none detail');
