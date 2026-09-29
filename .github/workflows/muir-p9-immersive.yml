@@ -9,7 +9,7 @@ on:
       - ui-a5/muir-p8-world-career
 
 concurrency:
-  group: muir-p9-immersive-${{ github.event.pull_request.number || github.ref }}
+  group: muir-p9-immersive-v2-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
