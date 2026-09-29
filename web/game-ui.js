@@ -4,7 +4,7 @@ import { createIndexedSaveStore } from './indexed-save-store.js';
 // UI reads PlayerView only. All career mutations go through GameSession commands.
 export function mountGame({root, GameSession, assets, css, storageKey='historia-jugador.preview.session.v1', events, cutsceneUrl=clip=>'/web/assets/cutscenes/'+clip.file}) {
   const KEY=storageKey;
-  let session=null, busy=false, busyLabel='Guardando tu historia…', paused=false, view='home', cinematic=false, message='', replacement=null, lastArt='stadium_bg', autoTimer=null;
+  let session=null, busy=false, busyLabel='Guardando…', paused=false, view='home', cinematic=false, message='', replacement=null, lastArt='stadium_bg', autoTimer=null;
   let savedRaw=null, disposeCutscene=null;
   const watchedKey=KEY+'.watched-cutscenes.v1';
   let watchedScenes=new Set();
@@ -80,7 +80,7 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
     savedRaw=JSON.stringify(next);
   }
   async function load(){
-    if(busy)return;busy=true;busyLabel='Cargando tu historia…';message='';render();
+    if(busy)return;busy=true;busyLabel='Cargando…';message='';render();
     try{const raw=await store.read();savedRaw=raw;if(raw){session=await GameSession.migrateFromSave(raw,{...sessionOptions,commit});cinematic=['decision','result','offer'].includes(session.getView().screen);}else{replacement=null;session=await GameSession.create(424242,{...sessionOptions,commit});}prepareHistory(); if(await store.legacyChanged())message='Otra pestaña ha cambiado la copia antigua. Puedes descargarla en Tu partida para revisarla antes de importar.'; }
     catch(e){console.error('Multihistoria load failed',e);session=null;message='No se ha podido cargar el juego. Comprueba tu conexión o almacenamiento e inténtalo de nuevo. Tu copia guardada se conserva.';view='save';}
     finally{busy=false;render();queueAutoStep();}
@@ -97,7 +97,7 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
     if(type==='auto'&&extra.action==='pause')clearTimeout(autoTimer);
     const command={type,commandId:crypto.randomUUID(),expectedRevision:session.getView().revision,...extra};
     let completed=false;
-    busy=true;busyLabel='Guardando tu historia…';message='';render();
+    busy=true;busyLabel='Guardando…';message='';render();
     try{
       const wasCinematic=cinematic;
       await session.dispatch(command);
@@ -153,7 +153,7 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
   function renderPlayerActions(v,main){
     if(v.screen!=='career'||v.simulation?.mode!=='idle'||!v.actions?.available){resetPlayerActions();return false;}
     if(playerActionUi.screen==='player_action_menu'){
-      main.append(el('span','GESTIONAR MI CARRERA','eyebrow'),el('h1','¿Qué quieres hacer?'),el('p','Estas acciones son opcionales. Puedes ignorarlas y volver a simular cuando quieras.','muted'));
+      main.append(el('span','GESTIONAR MI CARRERA','eyebrow'),el('h1','¿Qué quieres hacer?'),el('p','Opcional: entra sólo si quieres hacer algo antes de simular.','muted'));
       const grid=el('div',undefined,'player-action-grid');
       for(const c of v.actions.categories){
         const p=panel(c.label);p.classList.add('player-action-card');p.append(el('p',PLAYER_ACTION_CATEGORY_COPY[c.id]||'Acciones voluntarias de tu carrera.','muted'),button('Ver acciones',()=>{playerActionUi={screen:'player_action_category',categoryId:c.id,actionId:null,targetId:null,resultExecutionId:null};render(true);},'secondary'));grid.append(p);
@@ -318,7 +318,7 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
     content.append(
       el('span',date(v.date),'eyebrow'),
       el('h2',v.offer?.reason||v.decision?.title||v.result?.title||(v.screen==='epilogue'?'Una carrera para recordar':v.screen==='summary'?'El tiempo ha avanzado.':'El siguiente paso.')),
-      el('p',v.offer?'Hay una propuesta de contrato que necesita tu respuesta.':v.decision?'Hay un momento que necesita tu respuesta.':v.result?'Tu decisión ya forma parte de esta historia.':v.screen==='epilogue'?'Mira atrás y recorre los momentos que te han traído hasta aquí.':v.screen==='summary'?'Revisa qué cambió en este tramo antes de seguir simulando.':'Avanza tu carrera hasta el siguiente momento que requiera tu atención.','muted'),
+      el('p',v.offer?'Hay una propuesta de contrato que necesita tu respuesta.':v.decision?'Hay un momento que necesita tu respuesta.':v.result?'Tu decisión ya forma parte de esta historia.':v.screen==='epilogue'?'Mira atrás y recorre los momentos que te han traído hasta aquí.':v.screen==='summary'?'Revisa este tramo antes de seguir.':'Simula hasta el siguiente momento importante.','muted'),
       mainAction(v)
     );
     if(v.screen==='career'&&v.simulation?.mode==='idle'&&v.actions?.available)content.append(button('Gestionar mi carrera',openPlayerActions,'secondary'));
@@ -332,13 +332,15 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
 
     const sport=latestMatchPanel(v);if(sport){sport.classList.add('home-sport');grid.append(sport);}
     const recent=panel('El último capítulo');recent.classList.add('recent');recent.append(photo('hero_player','news-thumb'));const row=v.journal.at(-1);recent.append(el('h3',row?.title||'Todo empieza en Valdoria'),el('p',row?.messages[0]||'Una oportunidad de acercarte al primer equipo. Todavía queda todo por decidir.','muted'),button('Recorrer mi historia',()=>navigate('career')));grid.append(recent);
-    const chapter=panel('Tu carrera');chapter.classList.add('home-career');chapter.append(el('span',v.season.replace('-',' / 20'),'eyebrow'),el('div',String(v.decisionsMade),'big-number'),el('p',v.decisionsMade===1?'decisión que cuenta':'decisiones que cuentan','muted'),el('p','Tu recorrido se construye con lo que eliges y con lo que ocurre en el campo.'),button('Ver recorrido',()=>navigate('career')));grid.append(chapter);
+    const chapter=panel('Tu carrera');chapter.classList.add('home-career');chapter.append(el('span',v.season.replace('-',' / 20'),'eyebrow'),el('div',String(v.decisionsMade),'big-number'),el('p',v.decisionsMade===1?'decisión que cuenta':'decisiones que cuentan','muted'),el('p','Tu carrera cambia con tus decisiones y lo que pasa en el campo.'),button('Ver recorrido',()=>navigate('career')));grid.append(chapter);
     const people=panel('Tu entorno');people.classList.add('home-people');const contacts=v.contacts.slice(0,3);for(const c of contacts){const r=el('div',undefined,'contact-row');r.append(photo(portrait(c.id),'avatar'));const info=el('div');info.append(el('strong',c.name),el('p',c.role,'muted'));r.append(info);people.append(r);}people.append(button('Ver relaciones',()=>navigate('relations')));grid.append(people);
     const clock=panel('Tu contrato');clock.classList.add('home-contract');clock.append(el('p',v.contractMonths>0?Math.ceil(v.contractMonths)+' meses restantes':'Sin meses de contrato restantes'),el('p',v.contractMonths>0&&v.contractMonths<=6?'El contrato entra en su tramo final. Revisa las propuestas cuando lleguen.':'Las propuestas de contrato requieren tu respuesta.','muted'));grid.append(clock);
-    const tutorial=panel('Cómo se juega');tutorial.classList.add('tutorial','home-help');
-    tutorial.append(el('p','Multihistoria es una novela y simulador narrativo de carrera futbolística: los partidos se resuelven automáticamente y tú intervienes cuando una decisión puede cambiar la trayectoria.','tutorial-lead'));
-    const rules=el('ul',undefined,'tutorial-rules');for(const text of ['Simula el tiempo: entrenamientos, partidos y mundo avanzan.','Decide cuando aparezca un momento importante.','Tus decisiones y relaciones dejan memoria en la carrera.'])rules.append(el('li',text));tutorial.append(rules);
-    const glossary=el('div',undefined,'tutorial-glossary');for(const [title,copy]of[['Forma','Rendimiento actual.'],['Estado físico','Condición corporal y disponibilidad.'],['Fatiga','Desgaste acumulado; valores altos son peores.']]){const item=el('div');item.append(el('strong',title),el('small',copy));glossary.append(item);}tutorial.append(glossary);grid.append(tutorial);
+    const tutorial=el('details',undefined,'tutorial home-help');
+    tutorial.append(el('summary','Cómo se juega'));
+    const tutorialBody=el('div',undefined,'tutorial-body');
+    tutorialBody.append(el('p','Los partidos avanzan solos; tú decides cuando aparece un momento importante.','tutorial-lead'));
+    const rules=el('ul',undefined,'tutorial-rules');for(const text of ['Simula para avanzar el tiempo y el mundo.','Decide cuando aparezca un momento importante.','Tus decisiones y relaciones quedan en la carrera.'])rules.append(el('li',text));tutorialBody.append(rules);
+    tutorial.append(tutorialBody);grid.append(tutorial);
 
     main.append(grid);
     const sim=simulationSummary(v);if(sim)main.append(sim);
@@ -394,7 +396,7 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
     if(playerActionUi.screen!=='career'&&renderPlayerActions(v,main))return;
     main.append(el('span','HISTORIAL VIVO DE TU TRAYECTORIA','eyebrow'),el('h1','Tu carrera.'));
     if(v.screen==='career'&&v.simulation?.mode==='idle'&&v.actions?.available){
-      const manage=panel('Gestionar mi carrera');manage.classList.add('player-actions-entry');manage.append(el('p','Opcional: entra si quieres hacer algo antes de seguir simulando. No hay acciones obligatorias ni contador pendiente.','muted'),button('Gestionar mi carrera',openPlayerActions,'secondary'));main.append(manage);
+      const manage=panel('Gestionar mi carrera');manage.classList.add('player-actions-entry');manage.append(el('p','Opcional: puedes hacer algo antes de simular. Nada es obligatorio.','muted'),button('Gestionar mi carrera',openPlayerActions,'secondary'));main.append(manage);
     }
     const retirement=retirementPanel(v);if(retirement)main.append(retirement);
     const recentPeriod=simulationSummary(v);if(recentPeriod)main.append(recentPeriod);
@@ -487,11 +489,11 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
     main.append(n);
   }
   function render(focus=false){disposeCutscene?.();disposeCutscene=null;const v=session?.getView();shell.replaceChildren();shell.classList.toggle('immersive',cinematic&&!!v);const header=el('header',undefined,'topbar');const brand=el('div',undefined,'brand');brand.append(el('span','M','brand-mark'));const name=el('div');name.append(el('strong','Multihistoria'),el('small','Carrera de futbolista'));brand.append(name);const simMode=v?.simulation?.mode;const pause=v&&['auto_simulating','paused'].includes(simMode)?button(simMode==='paused'?'Reanudar':'Pausar',pauseToggle,'secondary',{ariaLabel:simMode==='paused'?'Reanudar la simulación':'Pausar la simulación',pressed:simMode==='paused'}):null;if(pause)pause.classList.add('pause-button');header.append(brand,el('span',v?'Temporada '+v.season.replace('-',' / 20'):'Una vida. Mil decisiones.','chapter'),...(pause?[pause]:[]),button(v?date(v.date)+' · Partida':'Tu partida',()=>navigate('save'),'date-button',{ariaLabel:v?'Abrir Tu partida y el contexto de guardado de '+date(v.date):'Abrir Tu partida'}));shell.append(header);
-    const nav=el('nav',undefined,'navigation');nav.setAttribute('aria-label','Navegación principal');for(const [key,label]of[['home','Inicio'],['career','Carrera'],['world','Mundo'],['relations','Relaciones'],['profile','Perfil'],['save','Tu partida']]){const b=button(label,()=>navigate(key),'nav-button');b.prepend(icon(key));if(key===view){b.classList.add('active');b.setAttribute('aria-current','page');}nav.append(b);}const foot=el('div',undefined,'nav-foot');foot.append(el('span','Cada elección cuenta.'),el('small','Una carrera de principio a fin.'));nav.append(foot);shell.append(nav);
+    const nav=el('nav',undefined,'navigation');nav.setAttribute('aria-label','Navegación principal');for(const [key,label]of[['home','Inicio'],['career','Carrera'],['world','Mundo'],['relations','Relaciones'],['profile','Perfil'],['save','Tu partida']]){const b=button(label,()=>navigate(key),'nav-button');b.prepend(icon(key));if(key===view){b.classList.add('active');b.setAttribute('aria-current','page');}nav.append(b);}const foot=el('div',undefined,'nav-foot');foot.append(el('span','Cada elección cuenta.'),el('small','De principio a fin.'));nav.append(foot);shell.append(nav);
     const main=el('main');main.tabIndex=-1;main.setAttribute('aria-busy',String(busy));shell.append(main);
     if(v){if(cinematic&&['decision','result','offer'].includes(v.screen))renderDecision(v,main);else({home,career,world,relations,profile,save:saves})[view](v,main);}else if(view==='save')saves(null,main);else main.append(el('h1','Tu historia está a punto de empezar.'));
-    if(message){const alert=el('div',undefined,'alert');alert.setAttribute('role','alert');alert.append(el('p',message),button('Abrir guardados',()=>navigate('save')));shell.append(alert);}
-    if(busy){const status=el('div',busyLabel,'busy-status');status.setAttribute('role','status');shell.append(status);}else if(paused||v?.simulation?.mode==='paused'){const status=el('div','Juego en pausa · pulsa Reanudar para continuar.','pause-status');status.setAttribute('role','status');status.setAttribute('aria-live','polite');shell.append(status);}else if(v?.simulation?.mode==='auto_simulating'){const status=el('div','Simulando el siguiente tramo…','save-status');status.setAttribute('role','status');status.setAttribute('aria-live','polite');shell.append(status);}else{const status=el('div',session?'Guardado automático · '+decisionCount(v?.decisionsMade||0):'','save-status');shell.append(status);}
+    if(message){const alert=el('div',undefined,'alert');alert.setAttribute('role','alert');alert.append(el('p',message),button('Tu partida',()=>navigate('save')));shell.append(alert);}
+    if(busy){const status=el('div',busyLabel,'busy-status');status.setAttribute('role','status');shell.append(status);}else if(paused||v?.simulation?.mode==='paused'){const status=el('div','Juego en pausa · reanuda cuando quieras.','pause-status');status.setAttribute('role','status');status.setAttribute('aria-live','polite');shell.append(status);}else if(v?.simulation?.mode==='auto_simulating'){const status=el('div','Simulando el siguiente tramo…','save-status');status.setAttribute('role','status');status.setAttribute('aria-live','polite');shell.append(status);}else{const status=el('div',session?'Guardado automático · '+decisionCount(v?.decisionsMade||0):'','save-status');shell.append(status);}
     if(focus){const target=cinematic&&v?.screen==='result'?main.querySelector('[data-result-continue]'):main.querySelector('h1');if(target?.tagName==='H1')target.tabIndex=-1;(target||main).focus({preventScroll:true});main.scrollTop=0;}
   }
   function keyboard(e){if(e.key==='Escape'&&!shell.querySelector('dialog[open]')){e.preventDefault();goBack();}if(['ArrowDown','ArrowRight','ArrowUp','ArrowLeft'].includes(e.key)&&e.target.closest('.choices,.navigation')){const group=e.target.closest('.choices,.navigation'),buttons=[...group.querySelectorAll('button:not(:disabled)')],index=buttons.indexOf(e.target.closest('button'));e.preventDefault();buttons[(index+(['ArrowDown','ArrowRight'].includes(e.key)?1:buttons.length-1))%buttons.length]?.focus();}}

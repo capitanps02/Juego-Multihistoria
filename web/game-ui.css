@@ -48,3 +48,9 @@ button.ghost{min-height:44px;margin-top:10px;background:transparent;border:1px s
   .player-action-result-actions{flex-direction:column}
   .player-action-result-actions button,button.ghost{width:100%}
 }
+
+.home-help{grid-column:1/-1;border:1px solid #ffffff0c;border-radius:24px;background:linear-gradient(165deg,#202023,#141416);min-width:0;overflow:hidden}
+.home-help>summary{cursor:pointer;display:flex;align-items:center;min-height:48px;padding:18px 22px;font-size:14px;font-weight:600;touch-action:manipulation}
+.home-help[open]>summary{border-bottom:1px solid #ffffff0c}
+.home-help .tutorial-body{padding:18px 22px 22px}
+.home-help .tutorial-rules{margin-bottom:0}

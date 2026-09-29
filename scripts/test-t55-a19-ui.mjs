@@ -8,11 +8,14 @@ const css=fs.readFileSync('web/game-ui.css','utf8');
 const retirementEvents=fs.readFileSync('src/content/events/34_plus/principal-events.ts','utf8');
 
 test('A19 onboarding explains the simulated career loop and player variables',()=>{
-  assert.match(ui,/novela y simulador narrativo de carrera futbolística/);
-  assert.match(ui,/los partidos se resuelven automáticamente/);
-  assert.match(ui,/Forma','Rendimiento actual/);
-  assert.match(ui,/Estado físico','Condición corporal/);
-  assert.match(ui,/Fatiga','Desgaste acumulado; valores altos son peores/);
+  assert.match(ui,/Cómo se juega/);
+  assert.match(ui,/Los partidos avanzan solos; tú decides cuando aparece un momento importante/);
+  assert.match(ui,/Simula para avanzar el tiempo y el mundo/);
+  assert.match(ui,/Rendimiento actual: refleja cómo estás compitiendo ahora/);
+  assert.match(ui,/Condición corporal y disponibilidad física/);
+  assert.match(ui,/Desgaste acumulado: cuanto más alta, peor/);
+  assert.match(ui,/meter\.setAttribute\('aria-label',label\+'\. '\+help\)/);
+  assert.match(ui,/Qué significan estos datos/);
 });
 
 test('A19 player-facing micro UX uses clear history, save and relationship language',()=>{
@@ -33,7 +36,7 @@ test('A19 player-facing micro UX uses clear history, save and relationship langu
   assert.match(ui,/date\(v\.date\)\+' · Partida'/);
   assert.match(ui,/No se ha podido cargar el juego/);
   assert.match(ui,/Reintentar carga/);
-  assert.match(ui,/Cargando tu historia/);
+  assert.match(ui,/Cargando…/);
   assert.match(ui,/Comprobando la copia/);
 });
 

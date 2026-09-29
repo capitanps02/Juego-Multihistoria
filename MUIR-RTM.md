@@ -119,3 +119,35 @@ P3 PR: #875
 | MUIR-P3-SCOPE-001 | P3 changes no engine/gameplay/RNG/persistence/DB/narrative/market authority | UI-A2 | P3.1–P3.6 | UI + tests/docs/workflow only | exact diff scope guard | final executable P3 gate | MUIR-P3-SCOPE | revert out-of-scope commit | PASS |
 
 P3 rows are `PASS`; the formal gate remains subject to executable exact-head verification of this exact RTM/P3_GATE commit.
+
+
+## P4 — Microcopy, onboarding y ayuda contextual
+
+P4 authorized predecessor: `3bb551e0701626d909cd42ffaa35b74e41d159b5` · P3 exact-head run `36556917840` SUCCESS  
+P4 branch: `ui-a2/muir-p4-microcopy`  
+P4 inventory: 283 user-facing/semantic literal occurrences · 263 frozen KEEP · 20 controlled ACORTA/MUEVE/ELIMINA  
+P4 measured operational reduction: 561 → 366 chars (**34.8%**) · 91 → 61 words (**33.0%**)  
+Protected narrative reduction: **0**
+
+| REQ_ID | Description | Owner | Pass | Implementation | Test | Evidence | Gate | Rollback | Status |
+|---|---|---|---|---|---|---|---|---|---|
+| MUIR-P4-COPY-001 | Microcopy inventory covers authorized P4 surfaces before replacement | UI-A2 | P4.1 | analysis/muir/p4/microcopy-inventory.{md,json} | reproducible source scan + classification | inventory JSON/MD | MUIR-P4 | revert P4 copy commits | PASS |
+| MUIR-P4-COPY-002 | Copy is classified as narrative/operational/instruction/redundant/feedback/error/help | UI-A2 | P4.1 | inventory classification | count/action audit | inventory JSON | MUIR-P4 | restore predecessor copy | PASS |
+| MUIR-P4-COPY-003 | Operational copy reduction is selective and measured, excluding protected narrative | UI-A2 | P4.2 | web/game-ui.js | exact before/after metrics + semantic guard | reduction-metrics.json | MUIR-P4 | revert individual copy | PASS |
+| MUIR-P4-HELP-001 | Permanent “Cómo se juega” footprint is reduced while help remains accessible | UI-A2 | P4.2–P4.3 | native details/summary in shared Home UI | browser help/AXE/text-scale probe | p4-a11y-help.json + viewport artifact | MUIR-P4 | restore full help panel | PASS |
+| MUIR-P4-TONE-001 | Tone is direct, youthful and non-infantile without changing canonical gameplay terminology | UI-A2 | P4.2–P4.3 | controlled copy edits only | candidate register + browser regression | inventory + screenshots | MUIR-P4 | revert tone edit | PASS |
+| MUIR-P4-SEM-001 | Decision/result semantics remain unchanged | UI-A2 | P4.3 | protected functions byte-identical to P3 | scripts/test-muir-p4-copy.mjs + P3 regressions | exact-head workflow | MUIR-P4 | revert violating edit | PASS |
+| MUIR-P4-CONTRACT-001 | Contract/offer/delegation semantics remain unchanged | UI-A2 | P4.3 | renderOffer + destructive blocks protected | exact semantic guard | exact-head workflow | MUIR-P4 | revert violating edit | PASS |
+| MUIR-P4-A11Y-001 | Accessible names/help/focus remain usable at required text scales | UI-A2 | P4.3 | native details/summary + existing accessible stat help | AXE + keyboard + 100/130/180% text | p4-a11y-help.json | MUIR-P4 | restore predecessor presentation | PASS |
+
+### P4 candidate gate state
+
+- P3 exact predecessor retained; branch is based directly on certified P3 SHA.
+- Gameplay/runtime/RNG/persistence/DB changes: **0**.
+- Decision, offer and destructive save/import blocks are guarded against semantic drift.
+- Player Actions remains explicitly optional.
+- “Cómo se juega” is optional contextual help using a native disclosure; no first-run persistence or tutorial game feature was added.
+- Deterministic 69-capture matrix: PASS on candidate QA.
+- 360×800 / 390×844 / 412×915 + AXE + 100/130/180% text: PASS on candidate QA.
+- P3 Home and P2 shell regressions: PASS on candidate QA.
+- Exact-head platform + final static certification is authoritative for the final P4 gate.

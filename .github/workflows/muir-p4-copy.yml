@@ -1,0 +1,85 @@
+name: MUIR P4 Microcopy
+
+on:
+  push:
+    branches:
+      - ui-a2/muir-p4-microcopy
+  pull_request:
+    branches:
+      - ui-a2/muir-p3-home
+    paths:
+      - 'web/game-ui.js'
+      - 'web/game-ui.css'
+      - 'MUIR-RTM.md'
+      - 'docs/muir/P4_GATE.md'
+      - 'scripts/test-muir-p4-copy.mjs'
+      - 'scripts/test-player-actions-ui-contract.mjs'
+      - 'scripts/test-t55-a19-ui.mjs'
+      - '.github/workflows/muir-p4-copy.yml'
+      - 'analysis/muir/p4/**'
+
+concurrency:
+  group: muir-p4-copy-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  certify-copy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      MUIR_P4_EXPECTED_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Build engine
+        run: npm run build
+      - name: P4 semantic, scope and optionality guard
+        run: node scripts/test-muir-p4-copy.mjs
+      - name: Install browser certification tooling
+        run: |
+          npm install --no-save playwright@1.55.0 axe-core@4
+          npx playwright install --with-deps chromium
+      - name: P4 deterministic viewport matrix
+        run: node scripts/capture-muir-browser.mjs
+      - name: P4 contextual help, AXE and text scale
+        run: node analysis/muir/p4/browser-a11y-help-probe.mjs
+      - name: P3 Home core-loop regression
+        run: node analysis/muir/p3/browser-home-probe.mjs
+      - name: P3 Home accessibility regression
+        run: node analysis/muir/p3/browser-a11y-probe.mjs
+      - name: P2 shell regression
+        run: |
+          node analysis/muir/p2/browser-safe-area-probe.mjs
+          node analysis/muir/p2/browser-a11y-probe.mjs
+          node analysis/muir/p2/browser-axe-probe.mjs
+          node analysis/muir/p2/browser-topbar-probe.mjs
+      - name: Shared UI package graph
+        run: node --test scripts/test-muir-package-graph.mjs
+      - name: PlayCanvas package
+        timeout-minutes: 10
+        run: npm run test:playcanvas
+      - name: Android offline clean package
+        timeout-minutes: 6
+        run: npm run android:offline
+      - name: Android offline regression
+        timeout-minutes: 6
+        run: npm run test:android:offline
+      - name: Final P4 static gate
+        run: node scripts/test-muir-p4-copy.mjs
+      - name: Upload P4 evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: muir-p4-${{ github.event.pull_request.head.sha || github.sha }}
+          if-no-files-found: warn
+          path: |
+            analysis/muir/screenshots/*.png
+            analysis/muir/evidence/browser-baseline.json
+            analysis/muir/p4/evidence/*.json

@@ -1,0 +1,2287 @@
+{
+  "baseline": "3bb551e0701626d909cd42ffaa35b74e41d159b5",
+  "source": "web/game-ui.js",
+  "generated_from_blob": "85ccd0b50e5b9d4482ca6928f3404d7e4485fc7c",
+  "total": 283,
+  "counts": {
+    "FEEDBACK": 9,
+    "OPERACIONAL": 194,
+    "INSTRUCCIÓN": 9,
+    "ERROR": 14,
+    "REDUNDANTE": 3,
+    "AYUDA": 8,
+    "NARRATIVO": 46
+  },
+  "actions": {
+    "ACORTA": 12,
+    "KEEP": 263,
+    "MUEVE": 5,
+    "ELIMINA": 3
+  },
+  "rows": [
+    {
+      "id": "P4-INV-001",
+      "line": 7,
+      "surface": "shell/runtime feedback",
+      "text": "Guardando tu historia…",
+      "type": "FEEDBACK",
+      "action": "ACORTA"
+    },
+    {
+      "id": "P4-INV-002",
+      "line": 26,
+      "surface": "shell/runtime feedback",
+      "text": "decisión",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-003",
+      "line": 38,
+      "surface": "shell/runtime feedback",
+      "text": "Representación",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-004",
+      "line": 39,
+      "surface": "shell/runtime feedback",
+      "text": "Cuerpo técnico",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-005",
+      "line": 40,
+      "surface": "shell/runtime feedback",
+      "text": "Equipo médico",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-006",
+      "line": 44,
+      "surface": "shell/runtime feedback",
+      "text": "Entorno profesional",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-007",
+      "line": 78,
+      "surface": "shell/runtime feedback",
+      "text": "Recupera la partida guardada antes de continuar.",
+      "type": "INSTRUCCIÓN",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-008",
+      "line": 83,
+      "surface": "shell/runtime feedback",
+      "text": "Cargando tu historia…",
+      "type": "FEEDBACK",
+      "action": "ACORTA"
+    },
+    {
+      "id": "P4-INV-009",
+      "line": 84,
+      "surface": "shell/runtime feedback",
+      "text": "Otra pestaña ha cambiado la copia antigua. Puedes descargarla en Tu partida para revisarla antes de importar.",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-010",
+      "line": 85,
+      "surface": "shell/runtime feedback",
+      "text": "No se ha podido cargar el juego. Comprueba tu conexión o almacenamiento e inténtalo de nuevo. Tu copia guardada se conserva.",
+      "type": "ERROR",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-011",
+      "line": 100,
+      "surface": "shell/runtime feedback",
+      "text": "Guardando tu historia…",
+      "type": "FEEDBACK",
+      "action": "ACORTA"
+    },
+    {
+      "id": "P4-INV-012",
+      "line": 126,
+      "surface": "shell/runtime feedback",
+      "text": "La situación de tu carrera ha cambiado. La pantalla se ha actualizado; vuelve a intentarlo.",
+      "type": "ERROR",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-013",
+      "line": 127,
+      "surface": "shell/runtime feedback",
+      "text": "Esta acción ya no está disponible.",
+      "type": "ERROR",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-014",
+      "line": 128,
+      "surface": "shell/runtime feedback",
+      "text": "No se pudo guardar el nombre del jugador.",
+      "type": "ERROR",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-015",
+      "line": 129,
+      "surface": "shell/runtime feedback",
+      "text": " La simulación se ha detenido en el último estado válido; puedes reintentar desde Tu partida.",
+      "type": "INSTRUCCIÓN",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-016",
+      "line": 134,
+      "surface": "Player Actions",
+      "text": "Habla con entrenador, representante o club cuando el sistema lo permita.",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-017",
+      "line": 135,
+      "surface": "Player Actions",
+      "text": "Trabaja aspectos concretos de tu preparación.",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-018",
+      "line": 136,
+      "surface": "Player Actions",
+      "text": "Consulta y gestiona tu relación con la representación.",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-019",
+      "line": 137,
+      "surface": "Player Actions",
+      "text": "Interactúa voluntariamente con personas de tu carrera.",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-020",
+      "line": 138,
+      "surface": "Player Actions",
+      "text": "Gestiona tu exposición pública cuando haya opciones disponibles.",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-021",
+      "line": 139,
+      "surface": "Player Actions",
+      "text": "Descanso y decisiones personales fuera del campo.",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-022",
+      "line": 140,
+      "surface": "Player Actions",
+      "text": "Recuperación y cuidado personal cuando estén disponibles.",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-023",
+      "line": 147,
+      "surface": "Player Actions",
+      "text": "Podrás volver a hacerlo mañana.",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-024",
+      "line": 148,
+      "surface": "Player Actions",
+      "text": "Podrás volver a hacerlo la próxima semana.",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-025",
+      "line": 149,
+      "surface": "Player Actions",
+      "text": "Disponible en ",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-026",
+      "line": 149,
+      "surface": "Player Actions",
+      "text": " días.",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-027",
+      "line": 156,
+      "surface": "Player Actions",
+      "text": "GESTIONAR MI CARRERA",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-028",
+      "line": 156,
+      "surface": "Player Actions",
+      "text": "¿Qué quieres hacer?",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-029",
+      "line": 156,
+      "surface": "Player Actions",
+      "text": "Estas acciones son opcionales. Puedes ignorarlas y volver a simular cuando quieras.",
+      "type": "REDUNDANTE",
+      "action": "ACORTA"
+    },
+    {
+      "id": "P4-INV-030",
+      "line": 159,
+      "surface": "Player Actions",
+      "text": "Acciones voluntarias de tu carrera.",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-031",
+      "line": 159,
+      "surface": "Player Actions",
+      "text": "Ver acciones",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-032",
+      "line": 161,
+      "surface": "Player Actions",
+      "text": "Volver a carrera",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-033",
+      "line": 167,
+      "surface": "Player Actions",
+      "text": "GESTIONAR MI CARRERA",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-034",
+      "line": 167,
+      "surface": "Player Actions",
+      "text": "Acciones voluntarias.",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-035",
+      "line": 171,
+      "surface": "Player Actions",
+      "text": "Ahora mismo no está disponible.",
+      "type": "ERROR",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-036",
+      "line": 175,
+      "surface": "Player Actions",
+      "text": "Volver a categorías",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-037",
+      "line": 175,
+      "surface": "Player Actions",
+      "text": "Volver a carrera",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-038",
+      "line": 181,
+      "surface": "Player Actions",
+      "text": "ACCIÓN VOLUNTARIA",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-039",
+      "line": 186,
+      "surface": "Player Actions",
+      "text": "¿Con quién?",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-040",
+      "line": 189,
+      "surface": "Player Actions",
+      "text": "player-action-option player-action-target",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-041",
+      "line": 193,
+      "surface": "Player Actions",
+      "text": "Este objetivo no está disponible.",
+      "type": "ERROR",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-042",
+      "line": 196,
+      "surface": "Player Actions",
+      "text": "No hay un objetivo disponible.",
+      "type": "ERROR",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-043",
+      "line": 200,
+      "surface": "Player Actions",
+      "text": "Ahora mismo no está disponible.",
+      "type": "ERROR",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-044",
+      "line": 214,
+      "surface": "Player Actions",
+      "text": "Elige primero una persona para ver las opciones disponibles.",
+      "type": "INSTRUCCIÓN",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-045",
+      "line": 220,
+      "surface": "Player Actions",
+      "text": "ACCIÓN COMPLETADA",
+      "type": "FEEDBACK",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-046",
+      "line": 220,
+      "surface": "Player Actions",
+      "text": "La acción se ha registrado correctamente.",
+      "type": "FEEDBACK",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-047",
+      "line": 221,
+      "surface": "Player Actions",
+      "text": "Realizar otra acción",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-048",
+      "line": 221,
+      "surface": "Player Actions",
+      "text": "Volver a carrera",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-049",
+      "line": 226,
+      "surface": "core CTA",
+      "text": "Revisar oferta",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-050",
+      "line": 227,
+      "surface": "core CTA",
+      "text": "Una decisión te espera",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-051",
+      "line": 228,
+      "surface": "core CTA",
+      "text": "Volver a tu decisión",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-052",
+      "line": 229,
+      "surface": "core CTA",
+      "text": "Ver mi carrera",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-053",
+      "line": 231,
+      "surface": "core CTA",
+      "text": "Seguir simulando",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-054",
+      "line": 232,
+      "surface": "core CTA",
+      "text": "Pausar simulación",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-055",
+      "line": 233,
+      "surface": "core CTA",
+      "text": "Reanudar simulación",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-056",
+      "line": 236,
+      "surface": "core CTA",
+      "text": "Simular semana",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-057",
+      "line": 238,
+      "surface": "Home stats",
+      "text": "TU HISTORIA, POR ESCRIBIR",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-058",
+      "line": 238,
+      "surface": "Home stats",
+      "text": "Una vida.\\nMil decisiones.",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-059",
+      "line": 238,
+      "surface": "Home stats",
+      "text": " años",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-060",
+      "line": 240,
+      "surface": "Home stats",
+      "text": "hero home-hero",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-061",
+      "line": 242,
+      "surface": "Home stats",
+      "text": "MI CARRERA",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-062",
+      "line": 242,
+      "surface": "Home stats",
+      "text": " años",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-063",
+      "line": 246,
+      "surface": "Home stats",
+      "text": "Tu momento",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-064",
+      "line": 248,
+      "surface": "Home stats",
+      "text": "Rendimiento actual: refleja cómo estás compitiendo ahora.",
+      "type": "AYUDA",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-065",
+      "line": 249,
+      "surface": "Home stats",
+      "text": "Estado físico",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-066",
+      "line": 249,
+      "surface": "Home stats",
+      "text": "Condición corporal y disponibilidad física.",
+      "type": "AYUDA",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-067",
+      "line": 250,
+      "surface": "Home stats",
+      "text": "Desgaste acumulado: cuanto más alta, peor.",
+      "type": "AYUDA",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-068",
+      "line": 262,
+      "surface": "Home stats",
+      "text": "Qué significan estos datos",
+      "type": "AYUDA",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-069",
+      "line": 263,
+      "surface": "Home stats",
+      "text": "Forma mide tu rendimiento actual. Estado físico refleja disponibilidad corporal. Fatiga es el desgaste acumulado: cuanto más alta, peor.",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-070",
+      "line": 266,
+      "surface": "Home stats",
+      "text": " partido disputado",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-071",
+      "line": 266,
+      "surface": "Home stats",
+      "text": " partidos disputados",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-072",
+      "line": 272,
+      "surface": "simulation/retirement",
+      "text": "Considerando el futuro",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-073",
+      "line": 272,
+      "surface": "simulation/retirement",
+      "text": "Has decidido encarar el final de tu carrera. El juego conservará este estado hasta que la historia avance.",
+      "type": "NARRATIVO",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-074",
+      "line": 273,
+      "surface": "simulation/retirement",
+      "text": "Retirada anunciada",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-075",
+      "line": 273,
+      "surface": "simulation/retirement",
+      "text": "Tu decisión ya es pública. La carrera continúa hasta su cierre según el estado del juego.",
+      "type": "NARRATIVO",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-076",
+      "line": 274,
+      "surface": "simulation/retirement",
+      "text": "Carrera finalizada",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-077",
+      "line": 274,
+      "surface": "simulation/retirement",
+      "text": "La etapa como futbolista ha terminado. Recorre tu carrera y el epílogo.",
+      "type": "NARRATIVO",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-078",
+      "line": 284,
+      "surface": "simulation/retirement",
+      "text": "Ver carrera",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-079",
+      "line": 285,
+      "surface": "simulation/retirement",
+      "text": "Empezar otra historia",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-080",
+      "line": 290,
+      "surface": "simulation/retirement",
+      "text": "Ha aparecido una decisión que necesita tu respuesta.",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-081",
+      "line": 290,
+      "surface": "simulation/retirement",
+      "text": "Ha llegado una oferta que necesita tu respuesta.",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-082",
+      "line": 290,
+      "surface": "simulation/retirement",
+      "text": "Una lesión importante requiere atención.",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-083",
+      "line": 290,
+      "surface": "simulation/retirement",
+      "text": "Hay novedades de selección internacional.",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-084",
+      "line": 290,
+      "surface": "simulation/retirement",
+      "text": "Tu rol deportivo ha cambiado.",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-085",
+      "line": 290,
+      "surface": "simulation/retirement",
+      "text": "Tu situación de club ha cambiado.",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-086",
+      "line": 290,
+      "surface": "simulation/retirement",
+      "text": "La temporada deportiva ha terminado.",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-087",
+      "line": 290,
+      "surface": "simulation/retirement",
+      "text": "Ha cambiado la temporada o una etapa de tu carrera.",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-088",
+      "line": 290,
+      "surface": "simulation/retirement",
+      "text": "Tu carrera ha alcanzado su cierre.",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-089",
+      "line": 290,
+      "surface": "simulation/retirement",
+      "text": "El tramo automático ha llegado a su límite.",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-090",
+      "line": 290,
+      "surface": "simulation/retirement",
+      "text": "La simulación se ha detenido en un momento relevante.",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-091",
+      "line": 293,
+      "surface": "simulation/retirement",
+      "text": "Resumen del periodo",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-092",
+      "line": 295,
+      "surface": "simulation/retirement",
+      "text": "Partidos disputados",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-093",
+      "line": 295,
+      "surface": "simulation/retirement",
+      "text": "Estado físico",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-094",
+      "line": 301,
+      "surface": "simulation/retirement",
+      "text": "Partidos del periodo · ",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-095",
+      "line": 305,
+      "surface": "simulation/retirement",
+      "text": " · Nota ",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-096",
+      "line": 307,
+      "surface": "simulation/retirement",
+      "text": "Ver historial deportivo",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-097",
+      "line": 313,
+      "surface": "Home",
+      "text": "PROLOGUE",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-098",
+      "line": 314,
+      "surface": "Home",
+      "text": "home-grid p3-home",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-099",
+      "line": 316,
+      "surface": "Home",
+      "text": "El final de un capítulo",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-100",
+      "line": 316,
+      "surface": "Home",
+      "text": "Tu último tramo",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-101",
+      "line": 316,
+      "surface": "Home",
+      "text": "Lo que viene ahora",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-102",
+      "line": 320,
+      "surface": "Home",
+      "text": "Una carrera para recordar",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-103",
+      "line": 320,
+      "surface": "Home",
+      "text": "El tiempo ha avanzado.",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-104",
+      "line": 320,
+      "surface": "Home",
+      "text": "El siguiente paso.",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-105",
+      "line": 321,
+      "surface": "Home",
+      "text": "Hay una propuesta de contrato que necesita tu respuesta.",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-106",
+      "line": 321,
+      "surface": "Home",
+      "text": "Hay un momento que necesita tu respuesta.",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-107",
+      "line": 321,
+      "surface": "Home",
+      "text": "Tu decisión ya forma parte de esta historia.",
+      "type": "NARRATIVO",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-108",
+      "line": 321,
+      "surface": "Home",
+      "text": "Mira atrás y recorre los momentos que te han traído hasta aquí.",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-109",
+      "line": 321,
+      "surface": "Home",
+      "text": "Revisa qué cambió en este tramo antes de seguir simulando.",
+      "type": "INSTRUCCIÓN",
+      "action": "ACORTA"
+    },
+    {
+      "id": "P4-INV-110",
+      "line": 321,
+      "surface": "Home",
+      "text": "Avanza tu carrera hasta el siguiente momento que requiera tu atención.",
+      "type": "INSTRUCCIÓN",
+      "action": "ACORTA"
+    },
+    {
+      "id": "P4-INV-111",
+      "line": 324,
+      "surface": "Home",
+      "text": "Gestionar mi carrera",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-112",
+      "line": 325,
+      "surface": "Home",
+      "text": "Terminar simulación",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-113",
+      "line": 334,
+      "surface": "Home",
+      "text": "El último capítulo",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-114",
+      "line": 334,
+      "surface": "Home",
+      "text": "Todo empieza en Valdoria",
+      "type": "NARRATIVO",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-115",
+      "line": 334,
+      "surface": "Home",
+      "text": "Una oportunidad de acercarte al primer equipo. Todavía queda todo por decidir.",
+      "type": "NARRATIVO",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-116",
+      "line": 334,
+      "surface": "Home",
+      "text": "Recorrer mi historia",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-117",
+      "line": 335,
+      "surface": "Home",
+      "text": "Tu carrera",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-118",
+      "line": 335,
+      "surface": "Home",
+      "text": "decisión que cuenta",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-119",
+      "line": 335,
+      "surface": "Home",
+      "text": "decisiones que cuentan",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-120",
+      "line": 335,
+      "surface": "Home",
+      "text": "Tu recorrido se construye con lo que eliges y con lo que ocurre en el campo.",
+      "type": "REDUNDANTE",
+      "action": "ACORTA"
+    },
+    {
+      "id": "P4-INV-121",
+      "line": 335,
+      "surface": "Home",
+      "text": "Ver recorrido",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-122",
+      "line": 336,
+      "surface": "Home",
+      "text": "Tu entorno",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-123",
+      "line": 336,
+      "surface": "Home",
+      "text": "Ver relaciones",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-124",
+      "line": 337,
+      "surface": "Home",
+      "text": "Tu contrato",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-125",
+      "line": 337,
+      "surface": "Home",
+      "text": " meses restantes",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-126",
+      "line": 337,
+      "surface": "Home",
+      "text": "Sin meses de contrato restantes",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-127",
+      "line": 337,
+      "surface": "Home",
+      "text": "El contrato entra en su tramo final. Revisa las propuestas cuando lleguen.",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-128",
+      "line": 337,
+      "surface": "Home",
+      "text": "Las propuestas de contrato requieren tu respuesta.",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-129",
+      "line": 338,
+      "surface": "Home",
+      "text": "Cómo se juega",
+      "type": "AYUDA",
+      "action": "MUEVE"
+    },
+    {
+      "id": "P4-INV-130",
+      "line": 339,
+      "surface": "Home",
+      "text": "Multihistoria es una novela y simulador narrativo de carrera futbolística: los partidos se resuelven automáticamente y tú intervienes cuando una decisión puede cambiar la trayectoria.",
+      "type": "OPERACIONAL",
+      "action": "MUEVE"
+    },
+    {
+      "id": "P4-INV-131",
+      "line": 340,
+      "surface": "Home",
+      "text": "Simula el tiempo: entrenamientos, partidos y mundo avanzan.",
+      "type": "OPERACIONAL",
+      "action": "MUEVE"
+    },
+    {
+      "id": "P4-INV-132",
+      "line": 340,
+      "surface": "Home",
+      "text": "Decide cuando aparezca un momento importante.",
+      "type": "OPERACIONAL",
+      "action": "MUEVE"
+    },
+    {
+      "id": "P4-INV-133",
+      "line": 340,
+      "surface": "Home",
+      "text": "Tus decisiones y relaciones dejan memoria en la carrera.",
+      "type": "OPERACIONAL",
+      "action": "MUEVE"
+    },
+    {
+      "id": "P4-INV-134",
+      "line": 341,
+      "surface": "Home",
+      "text": "Rendimiento actual.",
+      "type": "AYUDA",
+      "action": "ELIMINA"
+    },
+    {
+      "id": "P4-INV-135",
+      "line": 341,
+      "surface": "Home",
+      "text": "Estado físico",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-136",
+      "line": 341,
+      "surface": "Home",
+      "text": "Condición corporal y disponibilidad.",
+      "type": "AYUDA",
+      "action": "ELIMINA"
+    },
+    {
+      "id": "P4-INV-137",
+      "line": 341,
+      "surface": "Home",
+      "text": "Desgaste acumulado; valores altos son peores.",
+      "type": "AYUDA",
+      "action": "ELIMINA"
+    },
+    {
+      "id": "P4-INV-138",
+      "line": 346,
+      "surface": "Home",
+      "text": "Tu última respuesta de contrato",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-139",
+      "line": 350,
+      "surface": "decisions/offers",
+      "text": "Volver a Inicio",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-140",
+      "line": 351,
+      "surface": "decisions/offers",
+      "text": "DESPUÉS DE TU DECISIÓN",
+      "type": "NARRATIVO",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-141",
+      "line": 351,
+      "surface": "decisions/offers",
+      "text": "UN MOMENTO QUE CUENTA",
+      "type": "NARRATIVO",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-142",
+      "line": 358,
+      "surface": "decisions/offers",
+      "text": "consequence-row ",
+      "type": "NARRATIVO",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-143",
+      "line": 364,
+      "surface": "decisions/offers",
+      "text": "Resumen del partido",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-144",
+      "line": 364,
+      "surface": "decisions/offers",
+      "text": "Tu decisión queda registrada en el recorrido.",
+      "type": "NARRATIVO",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-145",
+      "line": 364,
+      "surface": "decisions/offers",
+      "text": "Partidos disputados",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-146",
+      "line": 364,
+      "surface": "decisions/offers",
+      "text": "Estado físico",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-147",
+      "line": 366,
+      "surface": "decisions/offers",
+      "text": "intel decision-memories",
+      "type": "NARRATIVO",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-148",
+      "line": 366,
+      "surface": "decisions/offers",
+      "text": "De tu historia · ",
+      "type": "NARRATIVO",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-149",
+      "line": 366,
+      "surface": "decisions/offers",
+      "text": "Decisiones anteriores relacionadas con este capítulo.",
+      "type": "NARRATIVO",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-150",
+      "line": 366,
+      "surface": "decisions/offers",
+      "text": "Ver este capítulo",
+      "type": "NARRATIVO",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-151",
+      "line": 367,
+      "surface": "decisions/offers",
+      "text": "Lo que sabes · lo que queda por descubrir",
+      "type": "NARRATIVO",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-152",
+      "line": 367,
+      "surface": "decisions/offers",
+      "text": "Lo que sabes",
+      "type": "NARRATIVO",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-153",
+      "line": 367,
+      "surface": "decisions/offers",
+      "text": "Lo que no está claro",
+      "type": "NARRATIVO",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-154",
+      "line": 370,
+      "surface": "decisions/offers",
+      "text": "Una propuesta para tu carrera. Revisa las condiciones antes de decidir.",
+      "type": "INSTRUCCIÓN",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-155",
+      "line": 371,
+      "surface": "decisions/offers",
+      "text": "Club propietario",
+      "type": "NARRATIVO",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-156",
+      "line": 371,
+      "surface": "decisions/offers",
+      "text": "Categoría",
+      "type": "NARRATIVO",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-157",
+      "line": 371,
+      "surface": "decisions/offers",
+      "text": "Salario mensual",
+      "type": "NARRATIVO",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-158",
+      "line": 371,
+      "surface": "decisions/offers",
+      "text": "Duración",
+      "type": "NARRATIVO",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-159",
+      "line": 371,
+      "surface": "decisions/offers",
+      "text": " meses",
+      "type": "NARRATIVO",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-160",
+      "line": 371,
+      "surface": "decisions/offers",
+      "text": " meses",
+      "type": "NARRATIVO",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-161",
+      "line": 371,
+      "surface": "decisions/offers",
+      "text": "Cláusula",
+      "type": "NARRATIVO",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-162",
+      "line": 371,
+      "surface": "decisions/offers",
+      "text": "Sin cláusula",
+      "type": "NARRATIVO",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-163",
+      "line": 371,
+      "surface": "decisions/offers",
+      "text": "Sin cláusula",
+      "type": "NARRATIVO",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-164",
+      "line": 374,
+      "surface": "decisions/offers",
+      "text": "La propuesta es una cesión.",
+      "type": "NARRATIVO",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-165",
+      "line": 374,
+      "surface": "decisions/offers",
+      "text": "La propuesta no es una cesión.",
+      "type": "NARRATIVO",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-166",
+      "line": 375,
+      "surface": "decisions/offers",
+      "text": "Si delegas esta oferta, tu representante solo aceptará si no baja el salario ni la categoría y asegura al menos 12 meses. La delegación termina con esta respuesta.",
+      "type": "NARRATIVO",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-167",
+      "line": 376,
+      "surface": "decisions/offers",
+      "text": "Aceptar oferta",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-168",
+      "line": 376,
+      "surface": "decisions/offers",
+      "text": "Rechazar oferta",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-169",
+      "line": 376,
+      "surface": "decisions/offers",
+      "text": "Delegar esta oferta",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-170",
+      "line": 377,
+      "surface": "decisions/offers",
+      "text": "Volver a Inicio",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-171",
+      "line": 379,
+      "surface": "decisions/offers",
+      "text": " al mes · ",
+      "type": "NARRATIVO",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-172",
+      "line": 379,
+      "surface": "decisions/offers",
+      "text": " meses",
+      "type": "NARRATIVO",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-173",
+      "line": 382,
+      "surface": "decisions/offers",
+      "text": "Último partido oficial",
+      "type": "NARRATIVO",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-174",
+      "line": 385,
+      "surface": "decisions/offers",
+      "text": "No disponible para este partido",
+      "type": "NARRATIVO",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-175",
+      "line": 385,
+      "surface": "decisions/offers",
+      "text": "No convocado",
+      "type": "NARRATIVO",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-176",
+      "line": 385,
+      "surface": "decisions/offers",
+      "text": "Suplente sin minutos",
+      "type": "NARRATIVO",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-177",
+      "line": 385,
+      "surface": "decisions/offers",
+      "text": "Entraste desde el banquillo",
+      "type": "NARRATIVO",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-178",
+      "line": 387,
+      "surface": "decisions/offers",
+      "text": "Competición",
+      "type": "NARRATIVO",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-179",
+      "line": 387,
+      "surface": "decisions/offers",
+      "text": "Valoración",
+      "type": "NARRATIVO",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-180",
+      "line": 388,
+      "surface": "decisions/offers",
+      "text": "primera convocatoria",
+      "type": "NARRATIVO",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-181",
+      "line": 388,
+      "surface": "decisions/offers",
+      "text": "primera suplencia",
+      "type": "NARRATIVO",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-182",
+      "line": 388,
+      "surface": "decisions/offers",
+      "text": "primera titularidad",
+      "type": "NARRATIVO",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-183",
+      "line": 388,
+      "surface": "decisions/offers",
+      "text": "primer partido completo",
+      "type": "NARRATIVO",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-184",
+      "line": 388,
+      "surface": "decisions/offers",
+      "text": "primer gol",
+      "type": "NARRATIVO",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-185",
+      "line": 388,
+      "surface": "decisions/offers",
+      "text": "primera asistencia",
+      "type": "NARRATIVO",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-186",
+      "line": 389,
+      "surface": "decisions/offers",
+      "text": "partido nº ",
+      "type": "NARRATIVO",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-187",
+      "line": 390,
+      "surface": "decisions/offers",
+      "text": "Hitos: ",
+      "type": "NARRATIVO",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-188",
+      "line": 395,
+      "surface": "Career/World/Relations",
+      "text": "HISTORIAL VIVO DE TU TRAYECTORIA",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-189",
+      "line": 395,
+      "surface": "Career/World/Relations",
+      "text": "Tu carrera.",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-190",
+      "line": 397,
+      "surface": "Career/World/Relations",
+      "text": "Gestionar mi carrera",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-191",
+      "line": 397,
+      "surface": "Career/World/Relations",
+      "text": "Opcional: entra si quieres hacer algo antes de seguir simulando. No hay acciones obligatorias ni contador pendiente.",
+      "type": "INSTRUCCIÓN",
+      "action": "ACORTA"
+    },
+    {
+      "id": "P4-INV-192",
+      "line": 397,
+      "surface": "Career/World/Relations",
+      "text": "Gestionar mi carrera",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-193",
+      "line": 402,
+      "surface": "Career/World/Relations",
+      "text": "Tu carrera empieza aquí",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-194",
+      "line": 403,
+      "surface": "Career/World/Relations",
+      "text": " años · ",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-195",
+      "line": 403,
+      "surface": "Career/World/Relations",
+      "text": " · Temporada ",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-196",
+      "line": 404,
+      "surface": "Career/World/Relations",
+      "text": "Aún no has debutado. Los partidos, hitos y cambios importantes aparecerán aquí.",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-197",
+      "line": 404,
+      "surface": "Career/World/Relations",
+      "text": "Tu historial deportivo empezará a agruparse por temporada cuando existan registros oficiales.",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-198",
+      "line": 409,
+      "surface": "Career/World/Relations",
+      "text": "Temporada ",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-199",
+      "line": 411,
+      "surface": "Career/World/Relations",
+      "text": "Valoración media",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-200",
+      "line": 417,
+      "surface": "Career/World/Relations",
+      "text": "Hitos deportivos",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-201",
+      "line": 418,
+      "surface": "Career/World/Relations",
+      "text": "Debut oficial",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-202",
+      "line": 419,
+      "surface": "Career/World/Relations",
+      "text": "10 partidos",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-203",
+      "line": 419,
+      "surface": "Career/World/Relations",
+      "text": "50 partidos",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-204",
+      "line": 419,
+      "surface": "Career/World/Relations",
+      "text": "100 partidos",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-205",
+      "line": 419,
+      "surface": "Career/World/Relations",
+      "text": "500 partidos",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-206",
+      "line": 419,
+      "surface": "Career/World/Relations",
+      "text": "700 partidos",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-207",
+      "line": 425,
+      "surface": "Career/World/Relations",
+      "text": "Hitos de edad",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-208",
+      "line": 427,
+      "surface": "Career/World/Relations",
+      "text": "Decisiones y acciones",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-209",
+      "line": 433,
+      "surface": "Career/World/Relations",
+      "text": "Aún no hay decisiones ni acciones voluntarias registradas.",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-210",
+      "line": 438,
+      "surface": "Career/World/Relations",
+      "text": "Acción voluntaria · ",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-211",
+      "line": 444,
+      "surface": "Career/World/Relations",
+      "text": "MÁS ALLÁ DEL TERRENO DE JUEGO",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-212",
+      "line": 444,
+      "surface": "Career/World/Relations",
+      "text": "El mundo sigue.",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-213",
+      "line": 444,
+      "surface": "Career/World/Relations",
+      "text": "Resultados, movimientos y noticias pueden avanzar aunque no exista una decisión narrativa esta semana.",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-214",
+      "line": 445,
+      "surface": "Career/World/Relations",
+      "text": "El fútbol nunca se detiene.",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-215",
+      "line": 446,
+      "surface": "Career/World/Relations",
+      "text": "No hay noticias destacadas esta semana. Sigue simulando para ver cómo evoluciona el mundo.",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-216",
+      "line": 449,
+      "surface": "Save/Import/Profile",
+      "text": "NADIE LLEGA SOLO",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-217",
+      "line": 449,
+      "surface": "Save/Import/Profile",
+      "text": "Las personas de tu historia.",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-218",
+      "line": 449,
+      "surface": "Save/Import/Profile",
+      "text": "Entrenadores, compañeros y familia. Cada tarjeta identifica el vínculo que forma parte de tu recorrido; no muestra métricas internas del sistema.",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-219",
+      "line": 451,
+      "surface": "Save/Import/Profile",
+      "text": "Aún no has creado vínculos relevantes.",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-220",
+      "line": 459,
+      "surface": "Save/Import/Profile",
+      "text": "EL PROTAGONISTA ERES TÚ",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-221",
+      "line": 459,
+      "surface": "Save/Import/Profile",
+      "text": "Tu perfil.",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-222",
+      "line": 460,
+      "surface": "Save/Import/Profile",
+      "text": "En este momento",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-223",
+      "line": 461,
+      "surface": "Save/Import/Profile",
+      "text": "Nombre y apellido",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-224",
+      "line": 463,
+      "surface": "Save/Import/Profile",
+      "text": "Entre 2 y 32 caracteres visibles. Se admiten tildes, apóstrofos y guiones.",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-225",
+      "line": 464,
+      "surface": "Save/Import/Profile",
+      "text": "Guardar nombre",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-226",
+      "line": 465,
+      "surface": "Save/Import/Profile",
+      "text": " años",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-227",
+      "line": 465,
+      "surface": "Save/Import/Profile",
+      "text": "Posición",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-228",
+      "line": 465,
+      "surface": "Save/Import/Profile",
+      "text": "Salario mensual",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-229",
+      "line": 465,
+      "surface": "Save/Import/Profile",
+      "text": "Contrato restante",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-230",
+      "line": 465,
+      "surface": "Save/Import/Profile",
+      "text": " meses",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-231",
+      "line": 468,
+      "surface": "Save/Import/Profile",
+      "text": "No hay una partida guardada.",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-232",
+      "line": 470,
+      "surface": "Save/Import/Profile",
+      "text": "Comprobando la copia…",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-233",
+      "line": 470,
+      "surface": "Save/Import/Profile",
+      "text": "La copia supera 8 MiB.",
+      "type": "ERROR",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-234",
+      "line": 470,
+      "surface": "Save/Import/Profile",
+      "text": "Recuperar esta copia",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-235",
+      "line": 472,
+      "surface": "Save/Import/Profile",
+      "text": "No se pudo importar. ",
+      "type": "ERROR",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-236",
+      "line": 473,
+      "surface": "Save/Import/Profile",
+      "text": "Guardando tu historia…",
+      "type": "FEEDBACK",
+      "action": "ACORTA"
+    },
+    {
+      "id": "P4-INV-237",
+      "line": 475,
+      "surface": "Save/Import/Profile",
+      "text": "CONTINÚA DONDE LO DEJASTE",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-238",
+      "line": 475,
+      "surface": "Save/Import/Profile",
+      "text": "Tu partida.",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-239",
+      "line": 476,
+      "surface": "Save/Import/Profile",
+      "text": "Partida actual",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-240",
+      "line": 476,
+      "surface": "Save/Import/Profile",
+      "text": "Partida sin abrir",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-241",
+      "line": 476,
+      "surface": "Save/Import/Profile",
+      "text": "Es el último estado guardado de esta carrera. La partida local y PlayCanvas se guardan por separado; puedes descargar una copia e importarla en el otro navegador.",
+      "type": "INSTRUCCIÓN",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-242",
+      "line": 477,
+      "surface": "Save/Import/Profile",
+      "text": "Descargar copia",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-243",
+      "line": 477,
+      "surface": "Save/Import/Profile",
+      "text": "Recuperar partida actual",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-244",
+      "line": 477,
+      "surface": "Save/Import/Profile",
+      "text": "Reintentar carga",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-245",
+      "line": 478,
+      "surface": "Save/Import/Profile",
+      "text": "Importar copia de partida",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-246",
+      "line": 479,
+      "surface": "Save/Import/Profile",
+      "text": "Importar copia de partida",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-247",
+      "line": 480,
+      "surface": "Save/Import/Profile",
+      "text": "Guardado automático activo",
+      "type": "FEEDBACK",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-248",
+      "line": 480,
+      "surface": "Save/Import/Profile",
+      "text": "La copia antigua procede del sistema de guardado anterior. Descargarla no restaura ni sustituye tu partida actual.",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-249",
+      "line": 481,
+      "surface": "Save/Import/Profile",
+      "text": "Descargar copia antigua",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-250",
+      "line": 481,
+      "surface": "Save/Import/Profile",
+      "text": "No hay copia antigua.",
+      "type": "ERROR",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-251",
+      "line": 482,
+      "surface": "Save/Import/Profile",
+      "text": "Copia anterior",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-252",
+      "line": 482,
+      "surface": "Save/Import/Profile",
+      "text": "Estado anterior de recuperación. Si lo restauras, volverás a ese punto y la partida actual quedará protegida durante la sustitución.",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-253",
+      "line": 482,
+      "surface": "Save/Import/Profile",
+      "text": "Recuperar copia anterior",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-254",
+      "line": 482,
+      "surface": "Save/Import/Profile",
+      "text": "No hay copia anterior.",
+      "type": "ERROR",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-255",
+      "line": 483,
+      "surface": "Save/Import/Profile",
+      "text": "Otra historia",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-256",
+      "line": 483,
+      "surface": "Save/Import/Profile",
+      "text": "Empieza una carrera distinta usando un nombre y un código de historia. El mismo código permite reproducir esta historia desde el inicio; tu identidad se guarda con la partida. Conservaremos una copia de tu carrera actual.",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-257",
+      "line": 484,
+      "surface": "Save/Import/Profile",
+      "text": "Nombre y apellido",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-258",
+      "line": 484,
+      "surface": "Save/Import/Profile",
+      "text": "Nombre y apellido de la nueva carrera",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-259",
+      "line": 485,
+      "surface": "Save/Import/Profile",
+      "text": "Código de historia",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-260",
+      "line": 485,
+      "surface": "Save/Import/Profile",
+      "text": "Código de historia de la nueva carrera",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-261",
+      "line": 486,
+      "surface": "Save/Import/Profile",
+      "text": "Empezar otra carrera",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-262",
+      "line": 486,
+      "surface": "Save/Import/Profile",
+      "text": "Introduce el nombre del jugador para empezar otra carrera.",
+      "type": "ERROR",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-263",
+      "line": 486,
+      "surface": "Save/Import/Profile",
+      "text": "Introduce un código de historia entre 0 y 4294967295.",
+      "type": "ERROR",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-264",
+      "line": 486,
+      "surface": "Save/Import/Profile",
+      "text": "Empezar otra carrera",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-265",
+      "line": 486,
+      "surface": "Save/Import/Profile",
+      "text": "La partida actual pasará a la copia anterior.",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-266",
+      "line": 489,
+      "surface": "shell/navigation/status",
+      "text": "Carrera de futbolista",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-267",
+      "line": 489,
+      "surface": "shell/navigation/status",
+      "text": "Reanudar la simulación",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-268",
+      "line": 489,
+      "surface": "shell/navigation/status",
+      "text": "Pausar la simulación",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-269",
+      "line": 489,
+      "surface": "shell/navigation/status",
+      "text": "Temporada ",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-270",
+      "line": 489,
+      "surface": "shell/navigation/status",
+      "text": "Una vida. Mil decisiones.",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-271",
+      "line": 489,
+      "surface": "shell/navigation/status",
+      "text": " · Partida",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-272",
+      "line": 489,
+      "surface": "shell/navigation/status",
+      "text": "Tu partida",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-273",
+      "line": 489,
+      "surface": "shell/navigation/status",
+      "text": "Abrir Tu partida y el contexto de guardado de ",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-274",
+      "line": 489,
+      "surface": "shell/navigation/status",
+      "text": "Abrir Tu partida",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-275",
+      "line": 490,
+      "surface": "shell/navigation/status",
+      "text": "Navegación principal",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-276",
+      "line": 490,
+      "surface": "shell/navigation/status",
+      "text": "Tu partida",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-277",
+      "line": 490,
+      "surface": "shell/navigation/status",
+      "text": "Cada elección cuenta.",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-278",
+      "line": 490,
+      "surface": "shell/navigation/status",
+      "text": "Una carrera de principio a fin.",
+      "type": "REDUNDANTE",
+      "action": "ACORTA"
+    },
+    {
+      "id": "P4-INV-279",
+      "line": 492,
+      "surface": "shell/navigation/status",
+      "text": "Tu historia está a punto de empezar.",
+      "type": "OPERACIONAL",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-280",
+      "line": 493,
+      "surface": "shell/navigation/status",
+      "text": "Abrir guardados",
+      "type": "OPERACIONAL",
+      "action": "ACORTA"
+    },
+    {
+      "id": "P4-INV-281",
+      "line": 494,
+      "surface": "shell/navigation/status",
+      "text": "Juego en pausa · pulsa Reanudar para continuar.",
+      "type": "INSTRUCCIÓN",
+      "action": "ACORTA"
+    },
+    {
+      "id": "P4-INV-282",
+      "line": 494,
+      "surface": "shell/navigation/status",
+      "text": "Simulando el siguiente tramo…",
+      "type": "FEEDBACK",
+      "action": "KEEP"
+    },
+    {
+      "id": "P4-INV-283",
+      "line": 494,
+      "surface": "shell/navigation/status",
+      "text": "Guardado automático · ",
+      "type": "FEEDBACK",
+      "action": "KEEP"
+    }
+  ]
+}
