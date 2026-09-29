@@ -85,7 +85,7 @@ function assertScenario(scenario,m,width){
   assert.ok(!inventedProfile.test(m.text),scenario+' invented profile field');
   assert.equal(m.roleTabs,0,scenario+' introduced fake profile tabs');
   if(isRelations&&width<=430)assert.equal(m.peopleColumns,1,scenario+' phone relationship grid must be one column');
-  if(scenario==='relations-empty'){assert.equal(m.relationCards,0);assert.equal(m.relationsEmpty,1);assert.match(m.text,/Aún no has creado vínculos relevantes/);}
+  if(scenario==='relations-empty'){assert.equal(m.relationCards,0);assert.equal(m.relationsEmpty,1);assert.match(m.text,/Aún no hay personas registradas en esta etapa de tu historia/);}
   if(scenario==='relations-one')assert.equal(m.relationCards,1);
   if(scenario==='relations-long'){assert.equal(m.relationCards,1);assert.match(m.text,/Alejandra María de los Ángeles Fernández-Rodríguez/);}
   if(scenario==='relations-many')assert.equal(m.relationCards,24);
