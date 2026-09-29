@@ -135,9 +135,23 @@ public final class MainActivity extends Activity {
         }
     }
 
+    private void exitFromBack() {
+        super.onBackPressed();
+    }
+
     @Override public void onBackPressed() {
-        if (game != null && game.canGoBack()) game.goBack();
-        else super.onBackPressed();
+        if (game == null) {
+            exitFromBack();
+            return;
+        }
+        if (game.canGoBack()) {
+            game.goBack();
+            return;
+        }
+        game.evaluateJavascript("history.length > 1", value -> {
+            if ("true".equals(value)) game.evaluateJavascript("history.back()", null);
+            else exitFromBack();
+        });
     }
 
     @Override protected void onDestroy() {
