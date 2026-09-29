@@ -31,7 +31,7 @@ if(!viewportSpec)throw Error('Unknown viewport '+viewport);
 const nativeSetTimeout=globalThis.setTimeout.bind(globalThis);
 const nativeClearTimeout=globalThis.clearTimeout.bind(globalThis);
 const AUTO_TIMER_SENTINEL=2147483001;
-let autoTimerFrozen=fixtureId==='auto-running';
+let autoTimerFrozen=fixtureId==='auto-running'&&params.get('p5LiveAuto')!=='1';
 if(autoTimerFrozen){
   globalThis.setTimeout=(fn,ms,...args)=>Number(ms)===140?AUTO_TIMER_SENTINEL:nativeSetTimeout(fn,ms,...args);
   globalThis.clearTimeout=id=>id===AUTO_TIMER_SENTINEL?undefined:nativeClearTimeout(id);
