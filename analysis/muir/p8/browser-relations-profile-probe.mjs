@@ -52,13 +52,17 @@ async function inspect(page,scale=1){
       }
     }
     const nodes=[main,...main.querySelectorAll('*')];
-    const overflow=nodes.filter(n=>n.scrollWidth>n.clientWidth+1).slice(0,50).map(n=>({tag:n.tagName,className:String(n.className),text:(n.textContent||'').trim().slice(0,100),clientWidth:n.clientWidth,scrollWidth:n.scrollWidth}));
+    const layoutNodes=nodes.filter(n=>!['INPUT','TEXTAREA','SELECT'].includes(n.tagName));
+    const overflow=layoutNodes.filter(n=>n.scrollWidth>n.clientWidth+1).slice(0,50).map(n=>({tag:n.tagName,className:String(n.className),text:(n.textContent||'').trim().slice(0,100),clientWidth:n.clientWidth,scrollWidth:n.scrollWidth}));
+    const mainRect=main.getBoundingClientRect();
+    const controlOverflow=[...main.querySelectorAll('input,textarea,select')].filter(n=>{const r=n.getBoundingClientRect();return r.left<mainRect.left-1||r.right>mainRect.right+1||r.width>mainRect.width+1;}).map(n=>{const r=n.getBoundingClientRect();return {tag:n.tagName,left:r.left,right:r.right,width:r.width,mainLeft:mainRect.left,mainRight:mainRect.right};});
     const axeResult=await axe.run(main,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21a','wcag21aa']},resultTypes:['violations']});
     const peopleGrid=main.querySelector('.people-grid');
     return {
       text:main.innerText,
       h1:main.querySelector('h1')?.textContent.trim()??'',
       overflow,
+      controlOverflow,
       serious:axeResult.violations.filter(v=>v.impact==='serious'||v.impact==='critical').map(v=>({id:v.id,impact:v.impact,nodes:v.nodes.length})),
       mainTabIndex:main.tabIndex,
       relationCards:main.querySelectorAll('.people-grid .person-card').length,
@@ -78,7 +82,8 @@ function assertScenario(scenario,m,width){
   const isRelations=scenario.startsWith('relations-');
   assert.equal(m.h1,isRelations?'Las personas de tu historia.':'Tu perfil.',scenario+' heading');
   assert.equal(m.mainTabIndex,0,scenario+' main focus');
-  assert.deepEqual(m.overflow,[],scenario+' horizontal overflow');
+  assert.deepEqual(m.overflow,[],scenario+' horizontal layout overflow');
+  assert.deepEqual(m.controlOverflow,[],scenario+' form control escaped main viewport');
   assert.deepEqual(m.serious,[],scenario+' serious/critical AXE');
   assert.ok(!rawId.test(m.text),scenario+' leaked internal ID');
   assert.ok(!privateMetrics.test(m.text),scenario+' leaked private relationship metric or technical copy');
