@@ -88,12 +88,28 @@ localStorage.setItem(key,JSON.stringify({variant}));
 const root=document.querySelector('#game').attachShadow({mode:'open'});
 const [assets,css]=await Promise.all([fetch('/web/assets.json').then(r=>r.json()),fetch('/web/game-ui.css').then(r=>r.text())]);
 mountGame({root,GameSession:FixtureGameSession,assets,css,storageKey:key,events:[]});
-for(let i=0;i<120&&!root.querySelector('main');i++)await new Promise(r=>setTimeout(r,25));
-if(!root.querySelector('main'))throw Error('P7 fixture did not mount');
+for(let i=0;i<160;i++){
+  const main=root.querySelector('main');
+  if(main&&main.getAttribute('aria-busy')==='false'&&root.querySelector('.navigation'))break;
+  await new Promise(r=>setTimeout(r,25));
+  if(i===159)throw Error('P7 fixture did not finish loading');
+}
 if(!variant.startsWith('offer-')){
   const button=[...root.querySelectorAll('.nav-button')].find(node=>node.textContent.trim()===route);
   if(!button)throw Error('P7 route button missing: '+route);
   button.click();
   await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+  const expected={Mundo:'El mundo sigue.',Carrera:'Tu carrera.',Perfil:'Tu perfil.',Relaciones:'Las personas de tu historia.'}[route];
+  for(let i=0;i<80;i++){
+    if(!expected||root.querySelector('main h1')?.textContent.trim()===expected)break;
+    await new Promise(r=>setTimeout(r,20));
+    if(i===79)throw Error('P7 fixture did not reach route: '+route);
+  }
+}else{
+  for(let i=0;i<80;i++){
+    if(root.querySelector('.offer-card'))break;
+    await new Promise(r=>setTimeout(r,20));
+    if(i===79)throw Error('P7 offer fixture did not reach OfferCard');
+  }
 }
 globalThis.__MUIR_P7_READY__={ready:true,variant,route};
