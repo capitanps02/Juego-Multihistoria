@@ -43,7 +43,13 @@ jobs:
       - name: P6 predecessor and public-contract baseline
         run: node scripts/test-muir-p6-baseline.mjs
       - name: Player Actions core session narrative content and UI regressions
-        run: node --test scripts/test-player-actions-core.mjs scripts/test-player-actions-session.mjs scripts/test-player-actions-narrative-bridge.mjs scripts/test-player-actions-content.mjs scripts/test-player-actions-ui-contract.mjs
+        run: node --test scripts/test-player-actions-core.mjs scripts/test-player-actions-session.mjs scripts/test-player-actions-narrative-bridge.mjs scripts/test-player-actions-content.mjs scripts/test-player-actions-ui-contract.mjs scripts/test-muir-p6-player-actions.mjs
+      - name: Exact P5 vs P6 runtime equivalence
+        run: |
+          git worktree add --detach /tmp/muir-p5 603797a9b9bae15bfb7382603111673573f873cc
+          ln -s "$GITHUB_WORKSPACE/node_modules" /tmp/muir-p5/node_modules
+          (cd /tmp/muir-p5 && node scripts/build.mjs)
+          MUIR_P6_PREDECESSOR_ROOT=/tmp/muir-p5 node scripts/test-muir-p6-equivalence.mjs
       - name: Auto-simulation regression
         run: node --test scripts/test-t55-auto-simulation.mjs
       - name: Install browser certification tooling
@@ -52,6 +58,8 @@ jobs:
           npx playwright install --with-deps chromium
       - name: Deterministic viewport baseline
         run: node scripts/capture-muir-browser.mjs
+      - name: P6 Player Actions browser accessibility text-scale and double-submit
+        run: node analysis/muir/p6/browser-player-actions-probe.mjs
       - name: Shared UI package graph
         run: node --test scripts/test-muir-package-graph.mjs
       - name: PlayCanvas package
