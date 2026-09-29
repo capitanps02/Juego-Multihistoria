@@ -37,12 +37,16 @@ jobs:
         run: node --test scripts/test-muir-p8-career.mjs
       - name: P8 Relaciones y Perfil static contract
         run: node --test scripts/test-muir-p8-relations-profile.mjs
+      - name: P8 Tu partida static contract
+        run: node --test scripts/test-muir-p8-save.mjs
       - name: P7 semantic regression
         run: node scripts/test-muir-p7-semantic-components.mjs
       - name: Football DB public regressions
         run: node --test scripts/test-football-catalog.mjs scripts/test-football-v2-integrity.mjs scripts/test-football-database-v2-persistence.mjs
       - name: Save/import regressions
         run: node --test scripts/test-saves.mjs scripts/test-t5-save-compat.mjs scripts/test-t55-a19-ui.mjs
+      - name: P8 persistence interruption stress
+        run: node --test scripts/test-persistence.mjs
       - name: Install browser tooling
         run: |
           npm install --no-save playwright@1.55.0 axe-core@4
