@@ -24,7 +24,7 @@ const allowed=[
 ];
 for(const file of changed)assert(allowed.some(re=>re.test(file)),'P7 out-of-scope file: '+file);
 const baseline=JSON.parse(fs.readFileSync(path.join(root,'analysis/muir/p7/evidence/p7-baseline.json'),'utf8'));
-const browser=JSON.parse(fs.readFileSync(path.join(root,'analysis/muir/p7/evidence/p7-browser-semantic-components.json'),'utf8'));
+const browser=JSON.parse(fs.readFileSync(path.join(root,'analysis/muir/p7/evidence/p7-browser-semantic.json'),'utf8'));
 const equivalence=JSON.parse(fs.readFileSync(path.join(root,'analysis/muir/p7/evidence/p7-equivalence-report.json'),'utf8'));
 assert.equal(baseline.gate,'PASS','P7 baseline evidence failed');
 assert.equal(browser.gate,'PASS','P7 browser evidence failed');
