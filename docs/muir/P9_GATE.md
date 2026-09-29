@@ -9,6 +9,7 @@ P9_4_CERTIFIED_SHA: 998e8e0b493f3db52b16df9088bd6878c6ec5f79
 P9_5_CERTIFIED_SHA: 8f104808e0c6bc8ac7a0697406add7a5c2731853
 
 ANDROID_BACK_WIRING: PASS
+ANDROID_SPA_BACK_ROUTING: READY_FOR_GATE
 ANDROID_EMULATOR_BACK: READY_FOR_GATE
 ANDROID_PHYSICAL_BACK: NOT_EXECUTABLE
 
@@ -23,4 +24,4 @@ Final P9 PASS requires a SUCCESS run of MUIR P9 Immersive on the exact containin
 - src/** byte-identical to certified P8;
 - MUIR RTM P9 rows all PASS.
 
-Physical-device Android Back remains outside CI. P9.6 adds an Android API 35 emulator instrumentation phase that invokes the unchanged MainActivity Back path against pending Decision and Result and verifies the persisted state remains byte-identical.
+Physical-device Android Back remains outside CI. Android API 35 instrumentation demonstrated that WebView.canGoBack() can be false while SPA history.length is 2. P9.6 therefore permits one presentation-only Android product change: MainActivity falls back to SPA history.back() before exiting the Activity. The emulator gate must verify pending Decision and Result remain byte-identical across native Back.
