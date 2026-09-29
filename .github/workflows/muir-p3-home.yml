@@ -69,4 +69,4 @@ jobs:
       - name: Android offline clean package
         run: npm run android:offline
       - name: Android offline
-        run: npm run test:android-offline
+        run: npm run test:android:offline
