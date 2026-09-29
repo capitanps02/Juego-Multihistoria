@@ -3,6 +3,7 @@ import { decisionMemories, type DecisionMemory } from "./decision-memories.js";
 import { careerTerms, marketState, respondToOffer, type CareerOffer, type OfferAction, type OfferDecision } from "../simulation/offers.js";
 import type { AgeMilestone } from "../simulation/age-milestones.js";
 import type { EventDefinition, GameState } from "../core/types.js";
+import { ensurePlayerIdentityInPlace, makePlayerIdentity, normalizePlayerDisplayName } from "../core/player-identity.js";
 import {
   PLAYER_ACTION_CATALOG,
   evaluatePlayerAction,
@@ -34,7 +35,7 @@ import { MICROFEEDS_30_34 } from "../content/microfeeds/30_34.js";
 import { MICROFEEDS_34_PLUS } from "../content/microfeeds/34_plus.js";
 import { generateEpilogue } from "../epilogue/generator.js";
 import { ENGINE_BUILD } from "../core/build.js";
-import { assertGameState, parseSaveJson, record, validateData } from "../save/validation.js";
+import { assertGameState, assertRuntimePlayerIdentity, parseSaveJson, record, validateData } from "../save/validation.js";
 import { assertSessionSnapshot } from "./validate-session.js";
 import { knownPlayerContacts } from "../core/player-contacts.js";
 import { NPC_CATALOG } from "../catalog/npcs.js";
@@ -72,6 +73,7 @@ interface CommandBase { commandId: string; expectedRevision: number; }
 export type SessionCommand =
   | (CommandBase & { type: "continue"; maxDays?: number })
   | (CommandBase & { type: "auto"; action: "start" | "step" | "pause" | "resume" | "stop"; maxWeeks?: number })
+  | (CommandBase & { type: "identity"; displayName: string })
   | (CommandBase & { type: "player_action"; actionId: string; optionId: string; targetId?: string })
   | (CommandBase & { type: "choose"; pendingInstanceId: string; choiceId: string })
   | (CommandBase & { type: "acknowledge" })
@@ -215,6 +217,8 @@ export interface PlayerView {
   careerMilestones: CareerSportMilestones;
   latestMatch: CareerMatchResult | null;
   retirementStatus: GameState["retirement"]["status"];
+  /** Public protagonist identity only; internal PLR_001 id is not exposed to presentation. */
+  player: { displayName: string };
   date: string;
   age: number;
   club: string;
@@ -266,6 +270,11 @@ function commandFingerprint(c: SessionCommand): string {
   if (c.type === "offer") {
     requireThat(validId(c.offerId) && ["accept","reject","delegate"].includes(c.action), "INVALID_COMMAND", "Oferta o respuesta no válida.");
     return JSON.stringify([c.type,c.expectedRevision,c.offerId,c.action]);
+  }
+  if (c.type === "identity") {
+    const displayName = normalizePlayerDisplayName(c.displayName);
+    requireThat(displayName !== null, "INVALID_IDENTITY", "El nombre del jugador no es válido.");
+    return JSON.stringify([c.type, c.expectedRevision, displayName]);
   }
   if (c.type === "player_action") {
     requireThat(validId(c.actionId) && validId(c.optionId), "INVALID_COMMAND", "Acción u opción de jugador no válida.");
@@ -485,16 +494,18 @@ export class GameSession {
     this.#commit = commit ?? (async () => {});
   }
 
-  static async create(seed: number, options: SessionOptions & { sessionId?: string; microfeeds?: boolean } = {}): Promise<GameSession> {
+  static async create(seed: number, options: SessionOptions & { sessionId?: string; microfeeds?: boolean; playerDisplayName?: string } = {}): Promise<GameSession> {
     requireThat(Number.isSafeInteger(seed) && seed >= 0 && seed <= 0xffffffff, "INVALID_SEED", "La semilla debe ser un entero entre 0 y 4294967295.");
     const sessionId = options.sessionId ?? globalThis.crypto.randomUUID();
     requireThat(validId(sessionId), "INVALID_SESSION", "Identificador de partida no válido.");
+    const initialDisplayName = options.playerDisplayName === undefined ? undefined : normalizePlayerDisplayName(options.playerDisplayName);
+    requireThat(options.playerDisplayName === undefined || initialDisplayName !== null, "INVALID_IDENTITY", "El nombre del jugador no es válido.");
     const events = structuredClone(options.events ?? EVENTS);
     const activeContentIdentity = await contentIdentity(events);
     const activeEvidence = await buildActiveEventEvidence(events);
     const snapshot: SessionSnapshot = {
       sessionVersion: SESSION_VERSION, build: SESSION_BUILD, contentIdentity: activeContentIdentity,
-      sessionId, revision: 0, microfeeds: options.microfeeds ?? true, state: createInitialState(seed),
+      sessionId, revision: 0, microfeeds: options.microfeeds ?? true, state: createInitialState(seed, initialDisplayName ?? undefined),
       pendingDecision: null, pendingResult: null, receipts: [], journal: [], decisionProvenance: [], needsWorldAdvance: false,
       autoSimulation: idleAutoSimulationState()
     };
@@ -520,6 +531,8 @@ export class GameSession {
     const activeEvidence = await buildActiveEventEvidence(events);
     const contentSources = options.contentSources ?? LEGACY_CONTENT_SOURCES;
     const header=record(snapshot,"session");
+    ensurePlayerIdentityInPlace(header.state);
+    assertRuntimePlayerIdentity(header.state);
     requireThat(typeof header.contentIdentity === "string", "INVALID_SAVE", "Falta la identidad del contenido.");
     requireThat(header.contentIdentity === activeContentIdentity, "CONTENT_CHANGED", "El contenido cambió; conserva la partida para migrarla antes de continuar.");
     await assertSessionSnapshot(snapshot, { events, activeContentIdentity, activeEvidence, contentSources });
@@ -546,6 +559,8 @@ export class GameSession {
     const routes = options.migrationRoutes ?? CONTENT_MIGRATION_ROUTES;
     const contentSources = options.contentSources ?? LEGACY_CONTENT_SOURCES;
     const header = record(snapshot,"session");
+    ensurePlayerIdentityInPlace(header.state);
+    assertRuntimePlayerIdentity(header.state);
     requireThat(typeof header.contentIdentity === "string", "INVALID_SAVE", "Falta la identidad del contenido.");
     const sourceContentIdentity = header.contentIdentity;
     if (sourceContentIdentity === activeContentIdentity) return GameSession.resume(snapshot, options);
@@ -593,6 +608,7 @@ export class GameSession {
       screen: result ? "result" : p ? "decision" : s.market?.pending ? "offer" : summaryScreen ? "summary" : s.retirement.status === "closed" ? "epilogue" : "career",
       offer: s.market?.pending ? publicOffer(s.market.pending) : null, offerHistory: (s.market?.history ?? []).map(h=>({...h,offer:publicOffer(h.offer)})),
       ageMilestones: s.ageMilestones ? structuredClone(s.ageMilestones) : [],
+      player: { displayName: ensurePlayerIdentityInPlace(s).displayName },
       careerSeasons: careerSeasonRecords(s), careerMilestones: careerSportMilestones(s), latestMatch: latestCareerMatchResult(s), retirementStatus: s.retirement.status,
       date: s.date, age: s.age, club: s.club, appearances: Number(s.sport.appearances ?? 0),
       salaryMonthly: Number(s.contract.salaryMonthly ?? 0), decisionsMade: s.history.length,
@@ -655,6 +671,14 @@ export class GameSession {
         requireThat(flow.mode === "paused", "AUTO_STATE", "Sólo se puede abandonar un bloque automático pausado.");
         next.autoSimulation = idleAutoSimulationState();
       }
+    } else if (command.type === "identity") {
+      requireThat(!next.pendingDecision && !next.pendingResult && !next.state.market?.pending,
+        "IDENTITY_STATE", "Resuelve la situación pendiente antes de editar la identidad.");
+      requireThat(this.#autoFlow(next).mode === "idle",
+        "IDENTITY_STATE", "Finaliza el bloque de simulación automática antes de editar la identidad.");
+      const displayName = normalizePlayerDisplayName(command.displayName);
+      requireThat(displayName !== null, "INVALID_IDENTITY", "El nombre del jugador no es válido.");
+      next.state.playerIdentity = makePlayerIdentity(displayName);
     } else if (command.type === "player_action") {
       const block = playerActionSessionBlock(next);
       if (block) throw new SessionError(block.code, block.message);

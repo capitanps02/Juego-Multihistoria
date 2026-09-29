@@ -1,4 +1,5 @@
 import type { EventDefinition } from "../core/types.js";
+import { normalizePlayerDisplayName } from "../core/player-identity.js";
 import { offerBridgeSpec } from "../narrative/offer-bridge.js";
 import type { OfferDecision, OfferDisposition } from "../simulation/offers.js";
 import type { DecisionContentProvenance, SessionSnapshot } from "./game-session.js";
@@ -212,13 +213,13 @@ export async function assertSessionSnapshot(value: unknown, context: SessionVali
   }
 
   const ids = new Set<string>();
-  let previousType: unknown = null, choiceIndex = 0, offerIndex = 0, playerActionIndex = 0;
+  let previousType: unknown = null, choiceIndex = 0, offerIndex = 0, playerActionIndex = 0, lastIdentityName: string | null = null;
   if ((s.sessionVersion as number) >= 2) ensure(state.market !== undefined, "market", "falta el estado de ofertas");
   receipts.forEach((x, i) => {
     const r = record(x, `receipts[${i}]`), path = `receipts[${i}]`;
     string(r.commandId, `${path}.commandId`); ensure(r.commandId.length <= 200 && !ids.has(r.commandId), path, "identificador excesivo o duplicado"); ids.add(r.commandId);
     integer(r.revision, `${path}.revision`, 1); ensure(r.revision === i + 1, `${path}.revision`, "orden de revisiones incorrecto");
-    oneOf(r.type, ["continue", "auto", "player_action", "choose", "acknowledge", "offer"], `${path}.type`); string(r.fingerprint, `${path}.fingerprint`);
+    oneOf(r.type, ["continue", "auto", "identity", "player_action", "choose", "acknowledge", "offer"], `${path}.type`); string(r.fingerprint, `${path}.fingerprint`);
     const f = list(parseSaveJson(r.fingerprint), `${path}.fingerprint`);
     ensure(f[0] === r.type && f[1] === i, `${path}.fingerprint`, "comando y revisión no coinciden");
     if (r.type === "continue") {
@@ -245,6 +246,13 @@ export async function assertSessionSnapshot(value: unknown, context: SessionVali
       const h = commandOfferHistory[offerIndex++];
       ensure(h && h.offer.id === f[2] && h.action === f[3], path, "respuesta distinta de la oferta registrada");
     }
+    if (r.type === "identity") {
+      ensure(f.length === 3 && previousType !== "choose", path, "edición de identidad incorrecta");
+      string(f[2], `${path}.displayName`);
+      const normalized = normalizePlayerDisplayName(f[2]);
+      ensure(normalized !== null && normalized === f[2], `${path}.displayName`, "nombre de jugador no canónico");
+      lastIdentityName = f[2] as string;
+    }
     if (r.type === "player_action") {
       ensure(f.length === 5 && previousType !== "choose", path, "acción de jugador incorrecta");
       string(f[2], `${path}.actionId`); string(f[3], `${path}.optionId`);
@@ -266,6 +274,7 @@ export async function assertSessionSnapshot(value: unknown, context: SessionVali
   });
   ensure(offerIndex === commandOfferHistory.length, "market.history", "faltan recibos de ofertas directas");
   ensure(playerActionIndex === (state.playerActions?.history.length ?? 0), "playerActions.history", "faltan recibos de Player Actions");
+  if (lastIdentityName !== null) ensure(state.playerIdentity?.displayName === lastIdentityName, "playerIdentity.displayName", "la identidad no coincide con el último recibo de edición");
   ensure([...narrativeOfferHistory.keys()].every(index => index < choiceIndex), "market.history", "oferta narrativa sin recibo de elección");
 
   let pendingOfferBridgeMarker = false;

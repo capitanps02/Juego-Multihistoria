@@ -1,0 +1,181 @@
+import test from 'node:test';
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+import { GameSession } from '../dist/session/game-session.js';
+import { createInitialState } from '../dist/content/initial-state.js';
+import { loadSave, serializeSave } from '../dist/save/save.js';
+import {
+  LEGACY_PLAYER_DISPLAY_NAME,
+  PLAYER_DISPLAY_NAME_MIN_GRAPHEMES,
+  PLAYER_DISPLAY_NAME_MAX_GRAPHEMES,
+  playerDisplayNameGraphemeCount
+} from '../dist/core/player-identity.js';
+
+const command = (session, type, extra = {}) => ({
+  type,
+  commandId: crypto.randomUUID(),
+  expectedRevision: session.getView().revision,
+  ...extra
+});
+
+const errorCode = code => error => error?.code === code;
+
+const matrix = [
+  'Leo',
+  'Alex Monteiro',
+  'Alejandro Fernandez-Ruiz',
+  "Noa D'Avila",
+  'Marta Álvarez'
+];
+
+test('ID-01 creation publishes canonical public identity for the required name matrix', async () => {
+  for (let i = 0; i < matrix.length; i++) {
+    const name = matrix[i];
+    const session = await GameSession.create(1000 + i, {
+      sessionId: `id01-matrix-${i}`,
+      playerDisplayName: name
+    });
+    const view = session.getView();
+    const snapshot = session.exportSnapshot();
+    assert.deepEqual(view.player, { displayName: name });
+    assert.equal(snapshot.state.playerIdentity.id, 'PLR_001');
+    assert.equal(snapshot.state.playerIdentity.displayName, name);
+    assert.equal(JSON.stringify(view).includes('"id":"PLR_001"'), false);
+  }
+});
+
+test('ID-01 canonicalizes outer/repeated spaces but preserves accents, apostrophes and hyphens', async () => {
+  const session = await GameSession.create(2001, {
+    sessionId: 'id01-normalization',
+    playerDisplayName: "  Noa   D'Ávila-Ruiz  "
+  });
+  assert.equal(session.getView().player.displayName, "Noa D'Ávila-Ruiz");
+  assert.equal(session.exportSnapshot().state.playerIdentity.displayName, "Noa D'Ávila-Ruiz");
+});
+
+test('ID-01 enforces the explicit 2-32 grapheme product limit', async () => {
+  assert.equal(PLAYER_DISPLAY_NAME_MIN_GRAPHEMES, 2);
+  assert.equal(PLAYER_DISPLAY_NAME_MAX_GRAPHEMES, 32);
+
+  const combiningGrapheme = 'A\u0301';
+  const boundary = combiningGrapheme.repeat(PLAYER_DISPLAY_NAME_MAX_GRAPHEMES);
+  assert.equal(playerDisplayNameGraphemeCount(boundary), 32);
+  const session = await GameSession.create(2002, {
+    sessionId: 'id01-boundary',
+    playerDisplayName: boundary
+  });
+  assert.equal(session.getView().player.displayName, boundary);
+
+  await assert.rejects(
+    GameSession.create(2003, {
+      sessionId: 'id01-too-long',
+      playerDisplayName: combiningGrapheme.repeat(PLAYER_DISPLAY_NAME_MAX_GRAPHEMES + 1)
+    }),
+    errorCode('INVALID_IDENTITY')
+  );
+  await assert.rejects(
+    GameSession.create(2004, {
+      sessionId: 'id01-too-short',
+      playerDisplayName: 'A'
+    }),
+    errorCode('INVALID_IDENTITY')
+  );
+});
+
+test('ID-01 rejects HTML/script-like and control-character input at the session boundary', async () => {
+  for (const invalid of ['<script>alert(1)</script>', 'Leo\nRuiz', '1234', "Noa <b>D'Avila</b>"]) {
+    await assert.rejects(
+      GameSession.create(2100, {
+        sessionId: 'id01-invalid-' + Buffer.from(invalid).toString('hex').slice(0, 20),
+        playerDisplayName: invalid
+      }),
+      errorCode('INVALID_IDENTITY')
+    );
+  }
+});
+
+test('ID-01 identity command is transactional, replay-safe and consumes zero RNG', async () => {
+  let committed;
+  const session = await GameSession.create(3001, {
+    sessionId: 'id01-edit',
+    playerDisplayName: 'Leo',
+    commit: async snapshot => { committed = snapshot; }
+  });
+  const before = session.exportSnapshot();
+  const rngBefore = structuredClone(before.state.rngState);
+  const c = command(session, 'identity', { displayName: 'Marta Álvarez' });
+  const first = await session.dispatch(c);
+  const after = session.exportSnapshot();
+
+  assert.equal(first.replayed, false);
+  assert.equal(first.view.player.displayName, 'Marta Álvarez');
+  assert.equal(after.state.playerIdentity.displayName, 'Marta Álvarez');
+  assert.deepEqual(after.state.rngState, rngBefore);
+  assert.equal(after.revision, before.revision + 1);
+  assert.equal(after.receipts.at(-1).type, 'identity');
+  assert.deepEqual(committed, after);
+
+  const replay = await session.dispatch(c);
+  assert.equal(replay.replayed, true);
+  assert.equal(replay.view.player.displayName, 'Marta Álvarez');
+  assert.deepEqual(session.exportSnapshot(), after);
+});
+
+test('ID-01 save/load and session resume preserve accepted identity exactly', async () => {
+  const state = createInitialState(4001, "Noa D'Avila");
+  const raw = serializeSave(state);
+  const loaded = loadSave(raw);
+  assert.equal(loaded.playerIdentity.displayName, "Noa D'Avila");
+
+  const session = await GameSession.create(4002, {
+    sessionId: 'id01-resume',
+    playerDisplayName: 'Marta Álvarez'
+  });
+  await session.dispatch(command(session, 'identity', { displayName: 'Alejandro Fernandez-Ruiz' }));
+  const resumed = await GameSession.resume(session.exportSnapshot());
+  assert.equal(resumed.getView().player.displayName, 'Alejandro Fernandez-Ruiz');
+  assert.equal(resumed.exportSnapshot().state.playerIdentity.displayName, 'Alejandro Fernandez-Ruiz');
+});
+
+test('ID-01 upgrades historical schema-8 saves and snapshots deterministically without RNG draws', async () => {
+  const legacyState = createInitialState(5001, 'Leo');
+  delete legacyState.playerIdentity;
+  const rngStateBefore = structuredClone(legacyState.rngState);
+  const loaded = loadSave(JSON.stringify(legacyState));
+  assert.equal(loaded.playerIdentity, undefined);
+  assert.deepEqual(loaded.rngState, rngStateBefore);
+
+  const current = await GameSession.create(5002, {
+    sessionId: 'id01-legacy-snapshot',
+    playerDisplayName: 'Leo'
+  });
+  const legacySnapshot = current.exportSnapshot();
+  const rngSnapshotBefore = structuredClone(legacySnapshot.state.rngState);
+  delete legacySnapshot.state.playerIdentity;
+  const resumed = await GameSession.resume(legacySnapshot);
+  assert.equal(resumed.getView().player.displayName, LEGACY_PLAYER_DISPLAY_NAME);
+  assert.deepEqual(resumed.exportSnapshot().state.rngState, rngSnapshotBefore);
+});
+
+test('ID-01 production UI exposes real creation and edit flows using the canonical session contract', () => {
+  const ui = fs.readFileSync('web/game-ui.js','utf8');
+  assert.ok(ui.includes("identityInput.value=v.player.displayName"), 'Perfil must read PlayerView.player.displayName');
+  assert.ok(ui.includes("run('identity',{displayName:identityInput.value})"), 'Perfil must dispatch the identity command');
+  assert.ok(ui.includes("playerDisplayName:displayName"), 'new-career flow must pass the user-entered identity to GameSession.create');
+  assert.ok(ui.includes("newPlayerName.type='text'"), 'new-career flow needs a real text input');
+  assert.ok(ui.includes("identityInput.type='text'"), 'profile edit flow needs a real text input');
+  assert.equal(ui.includes('innerHTML'), false, 'identity flow must not introduce HTML interpolation');
+});
+
+test('ID-01 invalid edit rolls back identity, revision and RNG', async () => {
+  const session = await GameSession.create(6001, {
+    sessionId: 'id01-invalid-edit',
+    playerDisplayName: 'Leo'
+  });
+  const before = session.exportSnapshot();
+  await assert.rejects(
+    session.dispatch(command(session, 'identity', { displayName: '<img src=x onerror=alert(1)>' })),
+    errorCode('INVALID_IDENTITY')
+  );
+  assert.deepEqual(session.exportSnapshot(), before);
+});
