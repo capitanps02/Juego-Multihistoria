@@ -73,10 +73,11 @@ test('P8 RTM has no unfinished requirement row before the final gate',()=>{
   assert.deepEqual(rows.filter(row=>!row.endsWith('| PASS |')),[],'unfinished P8 RTM row');
 });
 
-test('P8 gate records six completed passes and final READY_FOR_GATE state',()=>{
-  for(const pass of ['Pass 1','Pass 2','Pass 3','Pass 4','Pass 5','Pass 6'])assert.match(gate,new RegExp('## '+pass+' —|## '+pass+' — certified|## '+pass+' — Hardening|## '+pass+' — Tu partida|## '+pass+' — Relaciones'),pass+' gate record missing');
-  assert.match(gate,/READY_FOR_GATE — PASS 7 FINAL EXACT-HEAD/);
-  assert.match(gate,/P9 remains unauthorized/);
+test('P8 gate records all seven passes and final certified state',()=>{
+  for(const pass of ['Pass 1','Pass 2','Pass 3','Pass 4','Pass 5','Pass 6','Pass 7'])assert.match(gate,new RegExp('## '+pass+' —|## '+pass+' — certified|## '+pass+' — Hardening|## '+pass+' — Tu partida|## '+pass+' — Relaciones|## '+pass+' — Final exact-head certification'),pass+' gate record missing');
+  assert.match(gate,/PASS — P8 CERTIFIED/);
+  assert.match(gate,/current branch HEAD is \*\*SUCCESS\*\*/);
+  assert.match(gate,/P9 remains unauthorized and has not been started/);
 });
 
 test('P8 final product still excludes invented secondary-surface families',()=>{
