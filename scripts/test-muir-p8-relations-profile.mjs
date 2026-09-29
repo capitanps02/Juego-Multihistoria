@@ -47,8 +47,8 @@ test('P8 Perfil does not invent GRL, attributes, tabs or market identity',()=>{
 
 test('P8 Relaciones/Perfil responsive styles cover long names and mobile stacking',()=>{
   assert.match(css,/\.p8-relations \.people-grid\{grid-template-columns:minmax\(0,1fr\)\}/);
-  assert.match(css,/\.p8-profile \.profile-grid\{grid-template-columns:minmax\(280px,\.9fr\) minmax\(0,1\.1fr\)/);
-  assert.match(css,/\.p8-profile \.profile-grid>\.profile-hero\{grid-row:span 3/);
+  assert.match(css,/\.p8-profile \.profile-grid\{grid-template-columns:minmax\(260px,\.85fr\) minmax\(0,1\.15fr\)/);
+  assert.match(css,/\.p8-profile \.profile-details\{display:grid/);
   assert.match(css,/@media\(max-width:820px\)/);
   assert.match(css,/@media\(max-width:430px\)/);
   assert.match(css,/overflow-wrap:anywhere/);
