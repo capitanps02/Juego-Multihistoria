@@ -11,6 +11,7 @@ on:
       - 'web/game-ui.js'
       - 'web/game-ui.css'
       - 'MUIR-RTM.md'
+      - 'docs/muir/P4_GATE.md'
       - 'scripts/test-muir-p4-copy.mjs'
       - '.github/workflows/muir-p4-copy.yml'
       - 'analysis/muir/p4/**'
@@ -60,10 +61,13 @@ jobs:
       - name: Shared UI package graph
         run: node --test scripts/test-muir-package-graph.mjs
       - name: PlayCanvas package
+        timeout-minutes: 6
         run: npm run test:playcanvas
       - name: Android offline clean package
+        timeout-minutes: 6
         run: npm run android:offline
       - name: Android offline regression
+        timeout-minutes: 6
         run: npm run test:android:offline
       - name: Final P4 static gate
         run: node scripts/test-muir-p4-copy.mjs
