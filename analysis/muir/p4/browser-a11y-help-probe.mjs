@@ -56,7 +56,7 @@ try{
           summary:summary?.textContent.trim()??'',
           summaryHeight:summary?.getBoundingClientRect().height??0,
           summaryTabIndex:summary?.tabIndex??-1,
-          bodyVisible:body?getComputedStyle(body).display!=='none'&&body.getClientRects().length>0:false,
+          bodyVisible:Boolean(help?.open&&body&&getComputedStyle(body).display!=='none'&&body.getClientRects().length>0),
           glossaryExists:Boolean(help?.querySelector('.tutorial-glossary')),
           serious:axeResult.violations.filter(v=>v.impact==='serious'||v.impact==='critical').map(v=>({id:v.id,impact:v.impact,nodes:v.nodes.length})),
           operationalText:root.textContent
