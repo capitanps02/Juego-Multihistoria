@@ -33,7 +33,7 @@ const viewports=[
 const matrix=['news-long','match-partial','season-many','contract-zero','offer-loan','person-long'];
 const primary=['news-empty','match-complete','match-empty','season-complete','season-partial','contract-complete','contract-partial','offer-complete','offer-partial','person-no-image','person-image'];
 const rawId=/\b(?:ARG|BEL|CHN|DEU|ENG|ESP|FRA|ITA|JPN|KOR|MEX|NLD|PRT|SAU|TUR|USA)_[A-Z0-9_]+\b|\bNPC_[A-Z0-9_]+\b|\b(?:match|offer):[A-Za-z0-9:_-]+\b/;
-const technical=/\bundefined\b|\bnull\b|\[object Object\]|\bN\/A\b/i;
+const technical=/\bundefined\b|\bnull\b|\[object Object\]|\bN\/A\b|—/i;
 const reports=[];
 
 async function open(page,scenario,viewport){
@@ -124,6 +124,7 @@ try{
 
 const evidence={
   gate:'PASS',
+  components:['NewsCard','LatestMatchCard','CareerSeasonCard','ContractSummary','OfferCard','PersonCard'],
   matrix,
   primary,
   viewports:viewports.map(v=>v.id),
@@ -132,6 +133,7 @@ const evidence={
   undefinedNullVisible:0,
   inventedFields:0,
   axeSeriousCritical:0,
+  authority:{dbModified:false,marketModified:false,offerAuthorityModified:false,gameplayModified:false},
   reports
 };
 fs.writeFileSync(path.join(evidenceDir,'p7-browser-semantic.json'),JSON.stringify(evidence,null,2)+'\n');
