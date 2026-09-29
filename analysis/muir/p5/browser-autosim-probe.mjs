@@ -102,16 +102,22 @@ try{
           activeText:root.activeElement?.textContent?.trim()??''
         };
         globalThis.__MUIR_RELEASE_AUTO_TIMER__?.();
-        return new Promise(resolve=>setTimeout(()=>{
+        return new Promise(resolve=>setTimeout(async()=>{
           const refreshed=globalThis.__MUIR_METRICS__;
+          const settledSnapshot=await globalThis.__MUIR_READ_SAVED_SNAPSHOT__?.();
+          result.now=performance.now();
+          result.revision=settledSnapshot?.revision??result.revision;
+          result.elapsedDays=settledSnapshot?.autoSimulation?.elapsedDays??result.elapsedDays;
+          result.mode=settledSnapshot?.autoSimulation?.mode??result.mode;
           result.focusChanges=refreshed?.focusChanges??result.focusChanges;
           result.scrollEvents=refreshed?.scrollEvents??result.scrollEvents;
-          result.visualPatches=globalThis.__P5_VISUAL_PATCHES__??0;
+          globalThis.__P5_VISUAL_PATCHES__=0;
+          result.visualPatches=0;
           resolve(result);
         },120));
       });
 
-      await page.waitForTimeout(450);
+      await page.waitForTimeout(700);
 
       const end=await page.evaluate(async()=>{
         const root=document.querySelector('#game').shadowRoot;
@@ -152,6 +158,11 @@ try{
 
       assert(logicTicks>0,viewport.id+' probe observed no logical auto steps');
       assert.equal(daysAdvanced,logicTicks*7,viewport.id+' logical step/day relation changed during baseline probe');
+      assert.equal(fullRenders,0,viewport.id+' normal auto ticks rebuilt the shell');
+      assert(visualRateHz<=4.0,viewport.id+' visual refresh exceeded 4 Hz: '+visualRateHz);
+      assert.equal(focusChurn,0,viewport.id+' focus changed during normal auto ticks');
+      assert.equal(end.activeText,start.activeText,viewport.id+' active control changed during normal auto ticks');
+      if(start.maxScroll>0)assert.equal(end.scrollTop,start.scrollTop,viewport.id+' scroll position changed during normal auto ticks');
 
       records.push({
         viewport,
