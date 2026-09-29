@@ -322,9 +322,6 @@ globalThis.__MUIR_RELEASE_AUTO_TIMER__=()=>releaseAutoTimer();
 globalThis.__MUIR_START_AUTO_PROBE__=async()=>{
   if(fixtureId!=='auto-running')return;
   releaseAutoTimer();
-  await clickText('Pausar simulación');
-  await waitForSurface(()=>[...root.querySelectorAll('button')].some(b=>b.textContent.trim()==='Reanudar simulación'),'auto-sim paused for probe');
-  await clickText('Reanudar simulación');
 };
 globalThis.__MUIR_READY__={
   baseSha:MUIR_BASE_SHA,
