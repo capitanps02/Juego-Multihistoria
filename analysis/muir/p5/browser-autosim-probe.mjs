@@ -63,6 +63,11 @@ try{
         const root=document.querySelector('#game')?.shadowRoot;
         return [...(root?.querySelectorAll('button')??[])].some(b=>b.textContent.trim()==='Pausar simulación');
       },null,{timeout:10000});
+      const resumedElapsed=await page.evaluate(()=>globalThis.__MUIR_PUBLIC_VIEW__?.().simulation?.elapsedDays??null);
+      await page.waitForFunction(previous=>{
+        const now=globalThis.__MUIR_PUBLIC_VIEW__?.().simulation?.elapsedDays;
+        return Number.isFinite(now)&&Number.isFinite(previous)&&now>previous;
+      },resumedElapsed,{timeout:5000});
       await page.waitForTimeout(30);
 
       const start=await page.evaluate(()=>{
