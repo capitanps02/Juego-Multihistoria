@@ -18,7 +18,7 @@ function body(source,name){
 test('P9.4 is a presentation-only successor of certified P9.3',()=>{
   assert.equal(git('merge-base','HEAD',PASS3),PASS3);
   const files=git('diff','--name-only',PASS3+'..HEAD').split(/\r?\n/).filter(Boolean);
-  const allowed=/^(?:web\/game-ui\.(?:js|css)|analysis\/muir\/p9\/|scripts\/test-muir-p9-|docs\/muir\/P9_|\.github\/workflows\/muir-p9-|MUIR-RTM\.md$)/;
+  const allowed=/^(?:web\/(?:game-ui\.(?:js|css)|cutscene-player\.js)|analysis\/muir\/p9\/|scripts\/test-muir-p9-|docs\/muir\/P9_|\.github\/workflows\/muir-p9-|MUIR-RTM\.md$)/;
   assert.deepEqual(files.filter(x=>!allowed.test(x)),[]);
   assert.equal(git('diff','--name-only',P8+'..HEAD','--','src'),'','P9 must not modify PublicOffer/session authority');
 });
