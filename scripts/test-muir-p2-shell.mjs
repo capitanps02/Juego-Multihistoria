@@ -25,6 +25,7 @@ assert(!css.includes('.nav-button{font-size:8px}'), '8px mobile nav regression')
 assert(css.includes('bottom:calc(80px + var(--muir-safe-bottom))'), 'pause status must clear bottom safe-area');
 assert(css.includes('bottom:calc(82px + var(--muir-safe-bottom))'), 'alert must clear bottom safe-area');
 assert(css.includes('bottom:calc(88px + var(--muir-safe-bottom))'), 'busy status must clear bottom safe-area');
+assert(css.includes('.cinema-top button{font-size:10px;min-height:48px;padding:8px 11px}'), 'mobile cinematic topbar control must be at least 48px');
 
 const destinations=[
   ['home','Inicio'],
