@@ -283,7 +283,7 @@ export function assertGameState(value: unknown): asserts value is GameState {
   assertPenaltySetups(value);
   assertEmployment(value);
   assertVeteranMarketFacts(value);
-  assertPlayerIdentity(value, true);
+  assertPlayerIdentity(value, false);
   const state = value as GameState;
   if (state.playerActions !== undefined) assertPlayerActionState(state.playerActions, state.date);
 }
