@@ -43,6 +43,8 @@ jobs:
         run: node scripts/capture-muir-browser.mjs
       - name: P2 simulated safe-area probe
         run: node analysis/muir/p2/browser-safe-area-probe.mjs
+      - name: P2 keyboard focus and ARIA probe
+        run: node analysis/muir/p2/browser-a11y-probe.mjs
       - name: Shared UI package graph
         run: node --test scripts/test-muir-package-graph.mjs
       - name: PlayCanvas package
