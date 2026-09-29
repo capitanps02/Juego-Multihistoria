@@ -340,8 +340,8 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
     const rules=el('ul',undefined,'tutorial-rules');for(const text of ['Simula el tiempo: entrenamientos, partidos y mundo avanzan.','Decide cuando aparezca un momento importante.','Tus decisiones y relaciones dejan memoria en la carrera.'])rules.append(el('li',text));tutorial.append(rules);
     const glossary=el('div',undefined,'tutorial-glossary');for(const [title,copy]of[['Forma','Rendimiento actual.'],['Estado físico','Condición corporal y disponibilidad.'],['Fatiga','Desgaste acumulado; valores altos son peores.']]){const item=el('div');item.append(el('strong',title),el('small',copy));glossary.append(item);}tutorial.append(glossary);grid.append(tutorial);
 
-    const sim=simulationSummary(v);if(sim)main.append(sim);
     main.append(grid);
+    const sim=simulationSummary(v);if(sim)main.append(sim);
     const retirement=retirementPanel(v);if(retirement)main.append(retirement);
     if(v.offerHistory.length){const h=v.offerHistory.at(-1),p=panel('Tu última respuesta de contrato');p.append(el('p',h.explanation));main.append(p);}
   }
