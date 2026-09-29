@@ -117,4 +117,4 @@ P3 remains blocked until:
 1. the exact ID-01 implementation HEAD passes its certification workflow; and
 2. a separate MUIR predecessor exception names the exact authorized successor SHA stacked directly on P2 certified authority.
 
-UI-A2 must consume `PlayerView.player.displayName`; it must not invent, hardcode or privately derive a player name.
+`web/game-ui.js` may expose the certified name field in existing creation/Profile forms only; it must not redesign Home. UI-A2 must consume `PlayerView.player.displayName`; it must not invent, hardcode or privately derive a player name.
