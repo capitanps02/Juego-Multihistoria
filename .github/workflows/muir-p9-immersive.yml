@@ -37,6 +37,8 @@ jobs:
         run: node --test scripts/test-muir-p9-offers.mjs
       - name: P9 Cinematic presentation contract
         run: node --test scripts/test-muir-p9-cinematics.mjs
+      - name: P9 final authority equivalence contract
+        run: node --test scripts/test-muir-p9-final.mjs
       - name: P8 certified exact-head regression contract
         run: |
           git worktree add /tmp/muir-p8-certified ecc72b9abebbc64533c86b1f3cf7009a127c0c02
@@ -56,8 +58,14 @@ jobs:
         run: git diff --exit-code ecc72b9abebbc64533c86b1f3cf7009a127c0c02..HEAD -- src web/indexed-save-store.js
       - name: Shared UI package graph
         run: node --test scripts/test-muir-package-graph.mjs
-      - name: PlayCanvas focused package smoke
-        run: npm run build:playcanvas && node --test scripts/test-playcanvas.mjs scripts/test-t55-a19-ui.mjs
+      - name: P9 final persistence and save regressions
+        run: node --test scripts/test-persistence.mjs scripts/test-saves.mjs scripts/test-t5-save-compat.mjs scripts/test-t5-retirement-save-known-bug.mjs
+      - name: P9 full session regression
+        run: node --test scripts/test-session.mjs
+      - name: PlayCanvas full final package regression
+        run: npm run test:playcanvas
+      - name: Android offline package and authority regression
+        run: npm run test:android:offline
       - name: Install browser tooling
         run: |
           npm install --no-save playwright@1.55.0 axe-core@4
