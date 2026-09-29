@@ -220,7 +220,7 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
         const heading=p.querySelector('h2');if(heading){heading.classList.add('player-action-category-title');heading.prepend(icon(PLAYER_ACTION_CATEGORY_ICONS[c.id]||'career'));}
         p.append(el('p',PLAYER_ACTION_CATEGORY_COPY[c.id]||'Acciones voluntarias de tu carrera.','muted'),button('Ver acciones',()=>{playerActionUi={screen:'player_action_category',categoryId:c.id,actionId:null,targetId:null,resultExecutionId:null};render(true);},'secondary',{ariaLabel:'Ver acciones de '+c.label}));grid.append(p);
       }
-      main.append(grid,button('Volver a carrera',()=>{resetPlayerActions();render(true);},'ghost'));
+      main.append(grid,button('Volver a carrera',()=>{resetPlayerActions();render(true);},'ghost player-action-back'));
       return true;
     }
     const category=v.actions.categories.find(c=>c.id===playerActionUi.categoryId);
@@ -235,7 +235,7 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
         p.append(button('Abrir',()=>{playerActionUi={screen:'player_action_detail',categoryId:category.id,actionId:a.id,targetId:null,resultExecutionId:null};render(true);},'secondary',{disabled:!a.available,ariaLabel:'Abrir '+a.label}));
         list.append(p);
       }
-      main.append(list,button('Volver a categorías',()=>{playerActionUi={screen:'player_action_menu',categoryId:null,actionId:null,targetId:null,resultExecutionId:null};render(true);},'ghost'),button('Volver a carrera',()=>{resetPlayerActions();render(true);},'ghost'));
+      main.append(list,button('Volver a categorías',()=>{playerActionUi={screen:'player_action_menu',categoryId:null,actionId:null,targetId:null,resultExecutionId:null};render(true);},'ghost player-action-back'),button('Volver a carrera',()=>{resetPlayerActions();render(true);},'ghost player-action-back'));
       return true;
     }
     const a=selectedPlayerAction(v);
@@ -281,7 +281,7 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
         options.append(p);
       }
       if(requiresTarget&&!selectedTarget)options.append(el('p','Elige primero una persona para ver las opciones disponibles.','player-action-reason'));
-      main.append(options,button('Volver',()=>{playerActionUi={screen:'player_action_category',categoryId:category.id,actionId:null,targetId:null,resultExecutionId:null};render(true);},'ghost'));
+      main.append(options,button('Volver',()=>{playerActionUi={screen:'player_action_category',categoryId:category.id,actionId:null,targetId:null,resultExecutionId:null};render(true);},'ghost player-action-back'));
       return true;
     }
     if(playerActionUi.screen==='player_action_result'){

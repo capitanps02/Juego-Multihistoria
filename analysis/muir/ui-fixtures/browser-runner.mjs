@@ -165,6 +165,13 @@ else if(fixture.route==='save')await clickText('Tu partida');
 if(fixture.recipe==='player-actions-menu')await clickText('Gestionar mi carrera');
 if(fixture.recipe==='player-actions-category'){await clickText('Gestionar mi carrera');await clickCardButton('Entrenamiento','Ver acciones');}
 if(fixture.recipe==='player-actions-detail'){await clickText('Gestionar mi carrera');await clickCardButton('Entrenamiento','Ver acciones');await clickCardButton('Entrenamiento extra','Abrir');}
+if(fixture.recipe==='player-actions-category-unavailable'){await clickText('Gestionar mi carrera');await clickCardButton('Salud','Ver acciones');}
+if(fixture.recipe==='player-actions-cooldown'){await clickText('Gestionar mi carrera');await clickCardButton('Entrenamiento','Ver acciones');}
+if(fixture.recipe==='player-actions-detail-none'){await clickText('Gestionar mi carrera');await clickCardButton('Entrenamiento','Ver acciones');await clickCardButton('Entrenamiento extra','Abrir');}
+if(fixture.recipe==='player-actions-detail-coach'){await clickText('Gestionar mi carrera');await clickCardButton('Carrera','Ver acciones');await clickCardButton('Hablar con entrenador','Abrir');}
+if(fixture.recipe==='player-actions-detail-agent'){await clickText('Gestionar mi carrera');await clickCardButton('Representante','Ver acciones');await clickCardButton('Preguntar por mercado','Abrir');}
+if(fixture.recipe==='player-actions-detail-teammate'){await clickText('Gestionar mi carrera');await clickCardButton('Relaciones','Ver acciones');await clickCardButton('Hablar con un compañero','Abrir');}
+if(fixture.recipe==='player-actions-options'){await clickText('Gestionar mi carrera');await clickCardButton('Imagen','Ver acciones');await clickCardButton('Conceder entrevista','Abrir');}
 if(fixture.recipe==='cinematic-missing-asset'){
   // PROLOGUE uses preload="none". Use the real product control, then explicitly call load()
   // so headless Chromium deterministically requests the deliberately missing WebM even when
@@ -238,6 +245,7 @@ switch(fixtureId){
     break;
   case 'player-actions-menu':
     requireSurface(h1==='¿Qué quieres hacer?','player actions menu');
+    requireSurface(root.querySelectorAll('.player-action-category-card').length===7,'seven public categories');
     break;
   case 'player-actions-category':
     requireSurface(h1==='Entrenamiento','training category');
@@ -248,6 +256,38 @@ switch(fixtureId){
   case 'player-actions-result':
     requireSurface(Boolean(root.querySelector('.player-action-result')),'player action result card');
     requireSurface(visibleText.includes('ACCIÓN COMPLETADA'),'player action result');
+    requireSurface(visibleText.includes('Completas una sesión técnica adicional.'),'canonical public result text');
+    requireSurface([...root.querySelectorAll('button')].some(b=>b.textContent.trim()==='Volver a Inicio'),'real Home destination label');
+    break;
+  case 'player-actions-category-unavailable':
+    requireSurface(h1==='Salud','health unavailable category');
+    requireSurface(visibleText.includes('No disponible'),'unavailable textual state');
+    break;
+  case 'player-actions-cooldown':
+    requireSurface(h1==='Entrenamiento','training cooldown category');
+    requireSurface(visibleText.includes('Cooldown activo'),'cooldown textual state');
+    requireSurface(visibleText.includes('Disponible de nuevo el'),'exact public cooldown expiry');
+    requireSurface(!visibleText.includes('próxima semana'),'no approximate cooldown');
+    break;
+  case 'player-actions-detail-none':
+    requireSurface(h1==='Entrenamiento extra','target-none detail');
+    requireSurface(!root.querySelector('.player-action-targets'),'target-none has no empty selector');
+    break;
+  case 'player-actions-detail-coach':
+    requireSurface(h1==='Hablar con entrenador','coach detail');
+    requireSurface(root.querySelectorAll('.player-action-target').length>=1,'coach public target');
+    break;
+  case 'player-actions-detail-agent':
+    requireSurface(h1==='Preguntar por mercado','agent detail');
+    requireSurface(root.querySelectorAll('.player-action-target').length>=1,'agent public target');
+    break;
+  case 'player-actions-detail-teammate':
+    requireSurface(h1==='Hablar con un compañero','teammate detail');
+    requireSurface(root.querySelectorAll('.player-action-target').length>=1,'teammate public target');
+    break;
+  case 'player-actions-options':
+    requireSurface(h1==='Conceder entrevista','options detail');
+    for(const label of ['Tono humilde','Tono ambicioso','Poner al equipo primero'])requireSurface([...root.querySelectorAll('.player-action-options button')].some(b=>b.textContent.trim()===label),'canonical option '+label);
     break;
   case 'injury-public':
     requireSurface(Boolean(root.querySelector('.period-summary')),'injury period summary');
