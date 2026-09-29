@@ -597,9 +597,20 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
     history.append(list);main.append(history);
   }
   function world(v,main){
-    main.append(el('span','MÁS ALLÁ DEL TERRENO DE JUEGO','eyebrow'),el('h1','El mundo sigue.'),el('p','Resultados, movimientos y noticias pueden avanzar aunque no exista una decisión narrativa esta semana.','muted'));
-    const banner=el('article',undefined,'world-banner');banner.append(photo('stadium_bg'));banner.append(el('h2','El fútbol nunca se detiene.'));main.append(banner);
-    const news=el('div',undefined,'news-grid');if(!v.news.length)news.append(el('p','No hay noticias destacadas esta semana. Sigue simulando para ver cómo evoluciona el mundo.','muted semantic-empty'));for(const n of [...v.news].reverse().slice(0,30)){const card=newsCard(n);if(card)news.append(card);}main.append(news);
+    main.classList.add('p8-world');
+    const intro=el('header',undefined,'world-intro');
+    const currentDate=el('time',date(v.date),'eyebrow world-current-date');currentDate.dateTime=v.date;
+    intro.append(el('span','ACTUALIDAD DE TU MUNDO','eyebrow'),el('h1','El mundo sigue.'),currentDate,el('p','Noticias públicas de tu entorno futbolístico, sin añadir resultados, clasificaciones ni mercado.','muted'));
+    main.append(intro);
+    const feed=el('section',undefined,'world-feed');feed.setAttribute('aria-labelledby','world-news-title');
+    const heading=el('div',undefined,'world-feed-header'),title=el('h2','Noticias');title.id='world-news-title';heading.append(title,el('span','Más recientes primero','muted'));feed.append(heading);
+    const news=el('div',undefined,'news-grid');
+    if(!v.news.length){
+      const empty=el('div',undefined,'world-empty semantic-empty');
+      empty.append(el('strong','No hay noticias destacadas esta semana.'),el('p','Sigue simulando para ver las noticias públicas que genere tu historia.','muted'));news.append(empty);
+    }
+    for(const n of [...v.news].reverse()){const card=newsCard(n);if(card)news.append(card);}
+    feed.append(news);main.append(feed);
   }
   function relations(v,main){
     main.append(el('span','NADIE LLEGA SOLO','eyebrow'),el('h1','Las personas de tu historia.'),el('p','Entrenadores, compañeros y familia. Cada tarjeta muestra únicamente el nombre y el rol públicos del contacto; no muestra métricas internas del sistema.','muted'));
