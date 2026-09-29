@@ -63,12 +63,25 @@ assert.equal(inventory.baseline,PREDECESSOR,'inventory baseline mismatch');
 assert(inventory.total>=250,'inventory unexpectedly incomplete');
 assert(inventory.actions.KEEP>=250,'inventory does not freeze the majority of copy');
 
+
+// Final gate records must travel with the certified exact head.
+const rtm=read('MUIR-RTM.md');
+const p4Section=rtm.slice(rtm.indexOf('## P4 — Microcopy, onboarding y ayuda contextual'));
+assert(p4Section.includes('MUIR-P4-COPY-001'),'P4 RTM section missing');
+assert(!p4Section.includes('NOT_STARTED'),'P4 RTM still contains NOT_STARTED requirements');
+assert(!p4Section.includes('IN_PROGRESS'),'P4 RTM still contains IN_PROGRESS requirements');
+assert(p4Section.includes('34.8%'),'P4 measured reduction missing from RTM');
+const gateDoc=read('docs/muir/P4_GATE.md');
+assert(gateDoc.includes('**P4_GATE: PASS**'),'P4 gate document status mismatch');
+assert(gateDoc.includes('Gameplay changes: **NONE**'),'P4 gate must state no gameplay changes');
+
 // Scope guard.
 const changed=execFileSync('git',['diff','--name-only',PREDECESSOR+'...HEAD'],{cwd:root,encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
 const allowed=p=>
   p==='web/game-ui.js'||
   p==='web/game-ui.css'||
   p==='MUIR-RTM.md'||
+  p==='docs/muir/P4_GATE.md'||
   p==='scripts/test-muir-p4-copy.mjs'||
   p==='.github/workflows/muir-p4-copy.yml'||
   p==='docs/muir/P4_GATE.md'||
