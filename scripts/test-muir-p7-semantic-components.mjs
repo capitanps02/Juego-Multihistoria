@@ -53,7 +53,7 @@ assert.match(semanticSource,/clubName\(m\.club\)/,'latest match club must be for
 assert.match(semanticSource,/clubName\(s\.club\)/,'season club must be formatted');
 assert.match(semanticSource,/offerTermValue\('registrationClub'/,'loan registration club must be formatted');
 assert.match(semanticSource,/run\('offer',\{offerId:o\.id,action\}\)/,'canonical offer command changed');
-assert.match(semanticSource,/\[\['accept','Aceptar oferta'\],\['reject','Rechazar oferta'\],\['delegate','Delegar esta oferta'\]\]/,'offer action set/order changed');
+assert.match(ui,/\[\['accept','Aceptar oferta'\],\['reject','Rechazar oferta'\],\['delegate','Delegar esta oferta'\]\]/,'offer action set/order changed');
 
 assert.equal(fixtures.schema,'muir-p7-semantic-fixtures-v1');
 for(const key of ['short','medium','long']){
