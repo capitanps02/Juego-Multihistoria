@@ -29300,7 +29300,7 @@ function mountGame({root, GameSession, assets, css, storageKey='historia-jugador
       const row=el('div',undefined,'meter');
       const name=el('span',label);name.title=help;
       row.append(name,el('strong',Math.round(value)+' / 100'));
-      const meter=el('progress');meter.max=100;meter.value=value;meter.setAttribute('aria-label',label+'. '+help);
+      const meter=el('progress');meter.max=100;meter.value=Math.round(value);meter.setAttribute('aria-label',label+'. '+help);
       row.append(meter,el('small',help,'meter-help'));p.append(row);
     }
     p.append(el('p',v.appearances+(v.appearances===1?' partido disputado':' partidos disputados'),'muted'));
