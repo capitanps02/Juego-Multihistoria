@@ -201,25 +201,27 @@ button.player-action-back{min-height:48px;white-space:normal;overflow-wrap:anywh
 
 
 /* MUIR P8 — Tu partida: local save/recovery presentation only. */
-.p8-saves .save-intro{max-width:900px;margin-bottom:22px}
-.p8-saves .save-intro h1{margin-bottom:12px}
-.p8-saves .save-intro>.muted{max-width:72ch;margin-bottom:0}
-.p8-saves>.panel{max-width:920px}
-.p8-saves .save-current-meta{font-size:15px;font-weight:650;margin-bottom:8px}
-.p8-saves .save-auto-status{display:inline-flex;align-items:center;gap:8px;margin:18px 0 0;padding:8px 11px;border-radius:999px;background:#30d15814;border:1px solid #30d15835;color:#bfe8c7;font-size:11px}
-.p8-saves .save-current-actions{margin-top:18px}
-.p8-saves .save-recovery>.muted{max-width:70ch}
-.p8-saves .save-import-block{padding:16px 0 6px}
-.p8-saves .save-import-block input{width:100%;min-width:0}
-.p8-saves .save-recovery-block{margin-top:16px;padding-top:16px;border-top:1px solid #ffffff12}
-.p8-saves .save-recovery-block h3{margin:0 0 7px;font-size:14px}
-.p8-saves .save-recovery-block .muted{max-width:68ch}
-.p8-saves .save-new-fields{display:grid;grid-template-columns:minmax(0,1fr) minmax(180px,.55fr);gap:14px;margin:18px 0}
-.p8-saves .save-new-fields input{width:100%;min-width:0;margin:0}
-.p8-saves .save-new-story>.secondary,.p8-saves .save-new-story>.primary{margin-top:2px}
+.p8-save .save-intro{max-width:900px;margin-bottom:22px}
+.p8-save .save-intro h1{margin-bottom:12px}
+.p8-save .save-intro>.muted{max-width:72ch;margin-bottom:0}
+.p8-save>.panel{max-width:960px}
+.p8-save .save-current-meta{font-size:15px;font-weight:650;margin-bottom:8px}
+.p8-save .save-auto-status{display:inline-flex;align-items:center;gap:8px;margin:18px 0 0;padding:8px 11px;border-radius:999px;background:#30d15814;border:1px solid #30d15835;color:#bfe8c7;font-size:11px}
+.p8-save .save-current-actions{margin-top:18px}
+.p8-save .save-recovery>.muted{max-width:72ch}
+.p8-save .save-support-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-top:18px}
+.p8-save .save-support-card{min-width:0;padding:18px;border:1px solid #ffffff12;border-radius:16px;background:#ffffff04}
+.p8-save .save-support-card h3{margin:0 0 7px;font-size:14px}
+.p8-save .save-support-card .muted{min-height:38px}
+.p8-save .save-import input[type=file]{width:100%;min-width:0;margin:0}
+.p8-save .save-backup button,.p8-save .save-legacy button{width:100%;white-space:normal}
+.p8-save .save-new-fields{display:grid;grid-template-columns:minmax(0,1fr) minmax(180px,.55fr);gap:14px;margin:18px 0}
+.p8-save .save-new-story input{width:100%;min-width:0;margin:0}
+.p8-save .save-new-story>button{margin-top:2px}
 @media(max-width:430px){
-  .p8-saves .save-actions{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
-  .p8-saves .save-actions button{width:100%;white-space:normal}
-  .p8-saves .save-new-fields{grid-template-columns:minmax(0,1fr)}
-  .p8-saves .save-recovery-block button,.p8-saves .save-new-story>button{width:100%;white-space:normal}
+  .p8-save .save-actions{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
+  .p8-save .save-actions button{width:100%;white-space:normal}
+  .p8-save .save-support-grid{grid-template-columns:minmax(0,1fr)}
+  .p8-save .save-new-fields{grid-template-columns:minmax(0,1fr)}
+  .p8-save .save-new-story>button{width:100%;white-space:normal}
 }
