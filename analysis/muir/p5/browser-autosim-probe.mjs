@@ -73,17 +73,15 @@ try{
         main.scrollTop=requested;
         const pause=[...root.querySelectorAll('button')].find(b=>b.textContent.trim()==='Pausar simulación');
         pause?.focus({preventScroll:true});
-        const key=Object.keys(localStorage).find(k=>k.includes('.auto-running')&&!k.includes('watched-cutscenes'));
-        if(!key)throw Error('auto-running persisted snapshot key not found');
-        const snapshot=JSON.parse(localStorage.getItem(key));
+        const view=globalThis.__MUIR_PUBLIC_VIEW__?.();
+        if(!view)throw Error('test-only live public view is unavailable');
         const metrics=globalThis.__MUIR_METRICS__;
         return {
           now:performance.now(),
-          storageKey:key,
-          revision:snapshot.revision,
-          elapsedDays:snapshot.autoSimulation?.elapsedDays??null,
-          mode:snapshot.autoSimulation?.mode??null,
-          maxWeeks:snapshot.autoSimulation?.maxWeeks??null,
+          revision:view.revision,
+          elapsedDays:view.simulation?.elapsedDays??null,
+          mode:view.simulation?.mode??null,
+          maxWeeks:view.simulation?.maxWeeks??null,
           renderCount:metrics?.render?.count??0,
           mutationBatches:metrics?.uiMutationBatches??0,
           focusChanges:metrics?.focusChanges??0,
@@ -98,16 +96,17 @@ try{
 
       await page.waitForTimeout(700);
 
-      const end=await page.evaluate(storageKey=>{
+      const end=await page.evaluate(()=>{
         const root=document.querySelector('#game').shadowRoot;
         const main=root.querySelector('main');
-        const snapshot=JSON.parse(localStorage.getItem(storageKey));
+        const view=globalThis.__MUIR_PUBLIC_VIEW__?.();
+        if(!view)throw Error('test-only live public view is unavailable');
         const metrics=globalThis.__MUIR_METRICS__;
         return {
           now:performance.now(),
-          revision:snapshot.revision,
-          elapsedDays:snapshot.autoSimulation?.elapsedDays??null,
-          mode:snapshot.autoSimulation?.mode??null,
+          revision:view.revision,
+          elapsedDays:view.simulation?.elapsedDays??null,
+          mode:view.simulation?.mode??null,
           renderCount:metrics?.render?.count??0,
           mutationBatches:metrics?.uiMutationBatches??0,
           focusChanges:metrics?.focusChanges??0,
@@ -118,7 +117,7 @@ try{
           maxScroll:Math.max(0,main.scrollHeight-main.clientHeight),
           activeText:root.activeElement?.textContent?.trim()??''
         };
-      },start.storageKey);
+      });
 
       const durationMs=end.now-start.now;
       const logicTicks=end.revision-start.revision;
