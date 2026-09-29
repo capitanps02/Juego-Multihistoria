@@ -51,7 +51,8 @@ async function inspect(page,scale=1){
         if(Number.isFinite(size)&&size>0)node.style.fontSize=(size*scale)+'px';
       }
     }
-    const nodes=[main,...main.querySelectorAll('*')];
+    const semanticRoots=[...main.querySelectorAll('.semantic-card,.semantic-empty')];
+    const nodes=[main,...semanticRoots.flatMap(node=>[node,...node.querySelectorAll('*')])];
     const overflow=nodes.filter(n=>n.scrollWidth>n.clientWidth+1).slice(0,30).map(n=>({tag:n.tagName,className:n.className,text:n.textContent.trim().slice(0,90),clientWidth:n.clientWidth,scrollWidth:n.scrollWidth}));
     const semantic=[...main.querySelectorAll('.semantic-card')].map(n=>({className:n.className,text:n.textContent.trim(),tag:n.tagName,tabIndex:n.tabIndex}));
     const axeResult=await axe.run(main,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21a','wcag21aa']},resultTypes:['violations']});
