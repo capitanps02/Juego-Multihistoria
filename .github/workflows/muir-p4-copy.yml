@@ -14,6 +14,7 @@ on:
       - 'docs/muir/P4_GATE.md'
       - 'scripts/test-muir-p4-copy.mjs'
       - 'scripts/test-player-actions-ui-contract.mjs'
+      - 'scripts/test-t55-a19-ui.mjs'
       - '.github/workflows/muir-p4-copy.yml'
       - 'analysis/muir/p4/**'
 
