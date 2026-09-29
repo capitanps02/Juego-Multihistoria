@@ -26,7 +26,19 @@ const server=http.createServer((req,res)=>{
     const file=path.resolve(rootDir,rel);
     if(!file.startsWith(rootDir+path.sep)&&file!==rootDir){res.writeHead(403);res.end('forbidden');return;}
     if(!fs.existsSync(file)||fs.statSync(file).isDirectory()){res.writeHead(404);res.end('not found');return;}
-    res.setHeader('Content-Type',types[path.extname(file)]||'application/octet-stream');fs.createReadStream(file).pipe(res);
+    const stat=fs.statSync(file),contentType=types[path.extname(file)]||'application/octet-stream';
+    res.setHeader('Content-Type',contentType);
+    if(contentType==='video/webm')res.setHeader('Accept-Ranges','bytes');
+    const range=req.headers.range;
+    if(contentType==='video/webm'&&range){
+      const match=/bytes=(\d*)-(\d*)/.exec(range);
+      if(!match){res.writeHead(416,{'Content-Range':'bytes */'+stat.size});res.end();return;}
+      const start=match[1]?Number(match[1]):0,end=Math.min(match[2]?Number(match[2]):stat.size-1,stat.size-1);
+      if(!Number.isFinite(start)||!Number.isFinite(end)||start<0||end<start||start>=stat.size){res.writeHead(416,{'Content-Range':'bytes */'+stat.size});res.end();return;}
+      res.writeHead(206,{'Content-Range':`bytes ${start}-${end}/${stat.size}`,'Content-Length':String(end-start+1)});
+      fs.createReadStream(file,{start,end}).pipe(res);return;
+    }
+    res.setHeader('Content-Length',String(stat.size));fs.createReadStream(file).pipe(res);
   }catch(error){res.writeHead(500);res.end(String(error));}
 });
 await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
@@ -40,7 +52,16 @@ async function open(page,scenario){
   if(scenario==='decision-video'){
     await page.waitForFunction(()=>globalThis.__P9_ROOT__.querySelector('.cinematic-player')?.dataset.cutsceneState==='ready',null,{timeout:15000});
     await page.evaluate(()=>globalThis.__P9_ROOT__.querySelector('.cinematic-player>.secondary')?.click());
-    await page.waitForFunction(()=>globalThis.__P9_ROOT__.querySelector('.cinematic-player')?.dataset.cutsceneState==='playing',null,{timeout:15000});
+    await page.waitForFunction(()=>{
+      const player=globalThis.__P9_ROOT__.querySelector('.cinematic-player'),video=player?.querySelector('video');
+      return player?.dataset.cutsceneState==='playing'||player?.dataset.cutsceneState==='fallback'||Boolean(video?.error);
+    },null,{timeout:15000}).catch(async error=>{
+      const diagnostic=await page.evaluate(()=>{
+        const player=globalThis.__P9_ROOT__.querySelector('.cinematic-player'),video=player?.querySelector('video');
+        return {state:player?.dataset.cutsceneState,readyState:video?.readyState,networkState:video?.networkState,errorCode:video?.error?.code,currentSrc:video?.currentSrc};
+      });
+      throw new Error('decision-video playback timeout: '+JSON.stringify(diagnostic),{cause:error});
+    });
   }
   if(scenario==='decision-missing'){
     await page.waitForFunction(()=>globalThis.__P9_ROOT__.querySelector('.cinematic-player')?.dataset.cutsceneState==='fallback',null,{timeout:15000});
