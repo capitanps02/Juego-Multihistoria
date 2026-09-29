@@ -10,7 +10,7 @@ export function createCutscenePlayer({document:doc,clip,url,posterUrl=null,autop
   const video=doc.createElement('video');video.controls=true;video.playsInline=true;video.preload='none';video.muted=true;video.hidden=true;
   video.setAttribute('aria-label',clip.title);video.src=url;if(posterUrl)video.poster=posterUrl;
   const close=doc.createElement('button');close.type='button';close.className='glass';close.textContent='Saltar escena';close.hidden=true;
-  const status=doc.createElement('p');status.className='muted';status.setAttribute('role','status');status.hidden=true;
+  const status=doc.createElement('p');status.className='muted cutscene-status';status.setAttribute('role','status');status.setAttribute('aria-live','polite');status.hidden=true;
   let disposed=false;
   const state=value=>{element.dataset.state=value;};
   const stop=(nextState='poster',message='')=>{video.pause();video.hidden=true;close.hidden=true;play.hidden=false;if(poster)poster.hidden=false;state(nextState);status.textContent=message;status.hidden=!message;};
@@ -33,14 +33,14 @@ export function createCutscenePlayer({document:doc,clip,url,posterUrl=null,autop
 function createProloguePlayer({doc,clip,url,posterUrl,autoplay,onStarted}) {
   const element=doc.createElement('section');element.className='event-cutscene';element.dataset.state='poster';
   const replay=doc.createElement('button');replay.type='button';replay.className='secondary';replay.textContent='Ver prólogo';
-  const dialog=doc.createElement('dialog');dialog.className='prologue-dialog';dialog.setAttribute('aria-label',clip.title);
-  const title=doc.createElement('h2');title.textContent='Antes de tu historia';
+  const dialog=doc.createElement('dialog');dialog.className='prologue-dialog cinematic-dialog';dialog.dataset.cutsceneState='ready';
+  const title=doc.createElement('h2');title.id='prologue-dialog-title';title.textContent='Antes de tu historia';dialog.setAttribute('aria-labelledby',title.id);
   const poster=posterUrl?doc.createElement('img'):null;
   if(poster){poster.className='cutscene-poster prologue-poster';poster.src=posterUrl;poster.alt='';poster.setAttribute('aria-hidden','true');}
   const video=doc.createElement('video');video.controls=true;video.playsInline=true;video.preload='none';video.src=url;if(posterUrl)video.poster=posterUrl;video.setAttribute('aria-label',clip.title);video.hidden=true;
   const play=doc.createElement('button');play.type='button';play.className='primary';play.textContent='Reproducir prólogo con sonido';
   const skip=doc.createElement('button');skip.type='button';skip.className='secondary';skip.textContent='Saltar prólogo';
-  const status=doc.createElement('p');status.setAttribute('role','status');status.textContent='Un minuto antes de empezar tu carrera.';
+  const status=doc.createElement('p');status.className='muted prologue-status';status.setAttribute('role','status');status.setAttribute('aria-live','polite');status.textContent='Un minuto antes de empezar tu carrera.';
   let disposed=false;
   const state=value=>{element.dataset.state=value;dialog.dataset.state=value;};
   const finish=()=>{state('complete');onStarted();video.pause();dialog.close();replay.focus({preventScroll:true});};
