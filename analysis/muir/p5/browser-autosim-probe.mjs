@@ -55,20 +55,19 @@ try{
       };
     });
     try{
-      const url=`http://127.0.0.1:${port}/analysis/muir/ui-fixtures/index.html?fixture=auto-running&viewport=${viewport.id}`;
+      const url=`http://127.0.0.1:${port}/analysis/muir/ui-fixtures/index.html?fixture=auto-running&viewport=${viewport.id}&p5LiveAuto=1`;
       await page.goto(url,{waitUntil:'networkidle',timeout:30000});
       await page.waitForFunction(()=>globalThis.__MUIR_READY__?.ready===true,null,{timeout:30000});
-      await page.evaluate(async()=>{await globalThis.__MUIR_START_AUTO_PROBE__?.();});
       await page.waitForFunction(()=>{
         const root=document.querySelector('#game')?.shadowRoot;
         return [...(root?.querySelectorAll('button')??[])].some(b=>b.textContent.trim()==='Pausar simulación');
       },null,{timeout:10000});
-      const resumedElapsed=await page.evaluate(()=>globalThis.__MUIR_PUBLIC_VIEW__?.().simulation?.elapsedDays??null);
+      const observedElapsed=await page.evaluate(()=>globalThis.__MUIR_PUBLIC_VIEW__?.().simulation?.elapsedDays??null);
       await page.waitForFunction(previous=>{
-        const now=globalThis.__MUIR_PUBLIC_VIEW__?.().simulation?.elapsedDays;
-        return Number.isFinite(now)&&Number.isFinite(previous)&&now>previous;
-      },resumedElapsed,{timeout:5000});
-      await page.waitForTimeout(30);
+        const view=globalThis.__MUIR_PUBLIC_VIEW__?.();
+        return view?.simulation?.mode==='auto_simulating'&&Number.isFinite(view.simulation.elapsedDays)&&Number.isFinite(previous)&&view.simulation.elapsedDays>previous;
+      },observedElapsed,{timeout:5000});
+      await page.waitForTimeout(20);
 
       const start=await page.evaluate(()=>{
         const root=document.querySelector('#game').shadowRoot;
@@ -99,7 +98,7 @@ try{
         };
       });
 
-      await page.waitForTimeout(700);
+      await page.waitForTimeout(300);
 
       const end=await page.evaluate(()=>{
         const root=document.querySelector('#game').shadowRoot;
