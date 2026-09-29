@@ -1,4 +1,5 @@
 import test from 'node:test';
+import fs from 'node:fs';
 import assert from 'node:assert/strict';
 import { GameSession } from '../dist/session/game-session.js';
 import { createInitialState } from '../dist/content/initial-state.js';
@@ -154,6 +155,16 @@ test('ID-01 upgrades historical schema-8 saves and snapshots deterministically w
   const resumed = await GameSession.resume(legacySnapshot);
   assert.equal(resumed.getView().player.displayName, LEGACY_PLAYER_DISPLAY_NAME);
   assert.deepEqual(resumed.exportSnapshot().state.rngState, rngSnapshotBefore);
+});
+
+test('ID-01 production UI exposes real creation and edit flows using the canonical session contract', () => {
+  const ui = fs.readFileSync('web/game-ui.js','utf8');
+  assert.ok(ui.includes("identityInput.value=v.player.displayName"), 'Perfil must read PlayerView.player.displayName');
+  assert.ok(ui.includes("run('identity',{displayName:identityInput.value})"), 'Perfil must dispatch the identity command');
+  assert.ok(ui.includes("playerDisplayName:displayName"), 'new-career flow must pass the user-entered identity to GameSession.create');
+  assert.ok(ui.includes("newPlayerName.type='text'"), 'new-career flow needs a real text input');
+  assert.ok(ui.includes("identityInput.type='text'"), 'profile edit flow needs a real text input');
+  assert.equal(ui.includes('innerHTML'), false, 'identity flow must not introduce HTML interpolation');
 });
 
 test('ID-01 invalid edit rolls back identity, revision and RNG', async () => {
