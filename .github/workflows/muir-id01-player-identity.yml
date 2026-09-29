@@ -12,6 +12,7 @@ on:
       - 'src/save/save.ts'
       - 'src/session/game-session.ts'
       - 'src/session/validate-session.ts'
+      - 'web/game-ui.js'
       - 'scripts/test-muir-id01-player-identity.mjs'
       - 'scripts/test-muir-id01-gate.mjs'
       - 'analysis/muir/ID-01_PLAYER_IDENTITY.md'
