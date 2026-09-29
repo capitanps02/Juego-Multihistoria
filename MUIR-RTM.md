@@ -11,7 +11,7 @@ Created: 2026-09-28 · P1 started: 2026-09-29
 
 ## Status vocabulary
 
-`NOT_STARTED` · `IN_PROGRESS` · `BLOCKED` · `PASS` · `FAIL` · `N/A_JUSTIFIED`
+`NOT_STARTED` · `IN_PROGRESS` · `BLOCKED` · `READY_FOR_GATE` · `PASS` · `FAIL` · `N/A_JUSTIFIED`
 
 No requirement may be marked PASS without reproducible evidence tied to the baseline SHA.
 
@@ -94,3 +94,28 @@ P2 final certified SHA: emitted by the exact-head Final executable P2 gate (non-
 - Safe-area ownership is centralized at the shared `.mh` shell, including status overlays and compact short-landscape handling.
 - `web/game-ui.js` remains unchanged from P1 certified authority.
 - Run #31 passed shell contract, deterministic viewport matrix, simulated safe areas, keyboard/ARIA, AXE, compact auto-sim topbar, navigation A/B, shared package graph, PlayCanvas, Android offline clean package, Android safe-area parity and Android offline tests.
+
+
+## P3 — Home vertical y core loop
+
+Authorized predecessor: `315a46d87ffc15f688910f4dbc91651d935c9e7f` · ID-01 exact-head certification run `36551396008` SUCCESS · predecessor exception recorded in #873  
+P3 branch: `ui-a2/muir-p3-home`  
+P3 PR: #875
+
+| REQ_ID | Description | Owner | Pass | Implementation | Test | Evidence | Gate | Rollback | Status |
+|---|---|---|---|---|---|---|---|---|---|
+| MUIR-P3-BASE-001 | P3 starts from the exact authorized P2+ID-01 predecessor | UI-A2 | P3.1 | branch ancestry | merge-base + exact-head guards | test-muir-p3-home + final gate | MUIR-P3 | recreate branch from authorized predecessor | READY_FOR_GATE |
+| MUIR-P3-ID-001 | Home identifies the protagonist from public PlayerView identity plus age, position and club | UI-A2 | P3.1–P3.3 | web/game-ui.js Home hero | real identity edit + long-name browser probe | home-core-loop.json | MUIR-P3-ID | revert Home hero only | READY_FOR_GATE |
+| MUIR-P3-LOOP-001 | Home makes the current primary career action immediately legible without changing command semantics | UI-A2 | P3.1–P3.3 | Home next/core-loop block | mainAction/run equivalence + browser CTA geometry | static gate + home-core-loop.json | MUIR-P3-LOOP | restore predecessor Home composition | READY_FOR_GATE |
+| MUIR-P3-PEND-001 | Decision, offer and result pending states receive priority and are never hidden by normal Home content | UI-A2 | P3.2–P3.3 | urgent Home ordering | deterministic decision/offer/result fixtures | home-core-loop.json | MUIR-P3-LOOP | restore predecessor ordering | READY_FOR_GATE |
+| MUIR-P3-SUM-001 | Summary is presented as a continuation state, not a fabricated pending event | UI-A2 | P3.3 | existing public simulation summary + Home CTA | deterministic period-summary fixture | home-core-loop.json | MUIR-P3-LOOP | restore predecessor summary composition | READY_FOR_GATE |
+| MUIR-P3-DATA-001 | Home uses only public runtime data and introduces no GRL, stars, future match or other invented authority | UI-A2 | P3.1–P3.6 | PlayerView-derived UI only | static scope/data guard | test-muir-p3-home + final gate | MUIR-P3-SCOPE | revert violating Home field | READY_FOR_GATE |
+| MUIR-P3-TOUCH-001 | Home primary and optional secondary core-loop actions meet 48 px touch height | UI-A2 | P3.3–P3.4 | P3 Home CSS | 360/390/412 browser geometry | home-core-loop.json + home-a11y.json | MUIR-P3-A11Y | revert P3 action sizing | READY_FOR_GATE |
+| MUIR-P3-VIEW-001 | 360x800, 390x844 and 412x915 Home states have no horizontal overflow and keep the primary action usable | UI-A2 | P3.3–P3.5 | shared Home CSS | deterministic viewport matrix + Home probe | screenshots + browser-baseline + Home evidence | MUIR-P3-VIEW | revert offending P3 layout rule | READY_FOR_GATE |
+| MUIR-P3-AUX-001 | Landscape and tablet remain free of severe P3 regressions | UI-A2 | P3.5 | shared responsive CSS | 844x390 + 768x1024 deterministic captures | screenshot artifact | MUIR-P3-VIEW | revert P3 responsive rule | READY_FOR_GATE |
+| MUIR-P3-A11Y-001 | Home actions remain keyboard-focusable, AXE has no serious/critical findings, and 130% text causes no horizontal overflow | UI-A2 | P3.4–P3.5 | native controls + wrapping CSS | P3 Home a11y/text probe + P2 shell regression | home-a11y.json + P2 evidence | MUIR-P3-A11Y | revert P3 typography/layout rule | READY_FOR_GATE |
+| MUIR-P3-ACTIONS-001 | Player Actions remains optional and secondary on Home | UI-A2 | P3.2–P3.4 | existing optional entry retained | static guard + browser probe | test-muir-p3-home + Home evidence | MUIR-P3-LOOP | restore predecessor optional entry | READY_FOR_GATE |
+| MUIR-P3-PARITY-001 | Shared Home presentation remains authoritative across Web, PlayCanvas and Android offline | UI-A2 | P3.5–P3.6 | web/game-ui.js + web/game-ui.css | package graph + PlayCanvas + Android offline | exact-head workflow | MUIR-P3-PARITY | revert P3 shared UI changes | READY_FOR_GATE |
+| MUIR-P3-SCOPE-001 | P3 changes no engine/gameplay/RNG/persistence/DB/narrative/market authority | UI-A2 | P3.1–P3.6 | UI + tests/docs/workflow only | exact diff scope guard | final executable P3 gate | MUIR-P3-SCOPE | revert out-of-scope commit | READY_FOR_GATE |
+
+P3 rows are `READY_FOR_GATE`, not `PASS`, until the exact HEAD containing this RTM and `docs/muir/P3_GATE.md` completes the full `MUIR P3 Home` workflow successfully.
