@@ -100,4 +100,8 @@ try{
   server.close();
 }
 
-console.log(JSON.stringify({gate:'PASS',cases:results.length,results}));
+const report={gate:'PASS',cases:results.length,results};
+const evidenceDir=path.join(root,'analysis','muir','p2','evidence');
+fs.mkdirSync(evidenceDir,{recursive:true});
+fs.writeFileSync(path.join(evidenceDir,'safe-area.json'),JSON.stringify(report,null,2)+'\n');
+console.log(JSON.stringify(report));
