@@ -653,14 +653,15 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
     const intro=el('header',undefined,'profile-intro');
     intro.append(el('span','EL PROTAGONISTA ERES TÚ','eyebrow'),el('h1','Tu perfil.'),el('p','Tu identidad, tu situación actual y tu contrato, usando únicamente datos de tu carrera.','muted'));main.append(intro);
     const grid=el('div',undefined,'profile-grid');grid.append(hero(v));
-    const identity=panel('Identidad');identity.classList.add('profile-identity');
+    const details=el('div',undefined,'profile-details');
+    const identity=panel('En este momento');identity.classList.add('profile-identity');
     const identityLabel=el('label','Nombre y apellido','file-label'),identityInput=el('input');
     identityInput.type='text';identityInput.value=v.player.displayName;identityInput.autocomplete='name';identityInput.setAttribute('aria-describedby','mh-player-name-help');
     const identityHelp=el('small','Entre 2 y 32 caracteres visibles. Se admiten tildes, apóstrofos y guiones.','muted');identityHelp.id='mh-player-name-help';
     identityLabel.append(identityInput,identityHelp);identity.append(identityLabel,button('Guardar nombre',()=>run('identity',{displayName:identityInput.value}),'secondary'));
     for(const [label,value]of[['Edad',v.age+' años'],['Posición',position(v)],['Partidos',v.appearances]]){const r=semanticRow(label,value);if(r)identity.append(r);}
     const moment=stats(v,false,true),contract=contractSummary(v);
-    grid.append(identity,moment,contract);main.append(grid);
+    details.append(identity,moment,contract);grid.append(details);main.append(grid);
   }
   async function download(){try{const raw=await store.readRaw();if(!raw)throw Error('No hay una partida guardada.');downloadText(raw,'multihistoria-partida.json');}catch(e){message=e.message;render();}}
   function downloadText(raw,filename){if(win.AndroidBridge?.saveTextFile){win.AndroidBridge.saveTextFile(filename,raw);return;}const url=URL.createObjectURL(new Blob([raw],{type:'application/json'}));const a=el('a');a.href=url;a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(url),1500);}
