@@ -1,0 +1,78 @@
+name: MUIR P2 shell
+
+on:
+  pull_request:
+    branches:
+      - ui-a0/muir-p1-design-contract
+    paths:
+      - 'web/game-ui.css'
+      - 'MUIR-RTM.md'
+      - 'scripts/test-muir-p2-shell.mjs'
+      - 'scripts/test-muir-p2-final-gate.mjs'
+      - 'docs/muir/P2_GATE.md'
+      - 'docs/muir/decisions/VDR-NAV-001.md'
+      - '.github/workflows/muir-p2-shell.yml'
+      - 'analysis/muir/p2/**'
+
+concurrency:
+  group: muir-p2-shell-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  certify-shell:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      MUIR_P2_EXPECTED_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Build engine
+        run: npm run build
+      - name: P2 shell contract
+        run: node scripts/test-muir-p2-shell.mjs
+      - name: Install browser certification tooling
+        run: |
+          npm install --no-save playwright@1.55.0 axe-core@4
+          npx playwright install --with-deps chromium
+      - name: P2 deterministic viewport matrix
+        run: node scripts/capture-muir-browser.mjs
+      - name: P2 simulated safe-area probe
+        run: node analysis/muir/p2/browser-safe-area-probe.mjs
+      - name: P2 keyboard focus and ARIA probe
+        run: node analysis/muir/p2/browser-a11y-probe.mjs
+      - name: P2 AXE shell audit
+        run: node analysis/muir/p2/browser-axe-probe.mjs
+      - name: P2 compact auto-sim topbar probe
+        run: node analysis/muir/p2/browser-topbar-probe.mjs
+      - name: P2 navigation five-vs-six A/B probe
+        run: node analysis/muir/p2/nav-ab-probe.mjs
+      - name: Upload P2 visual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: muir-p2-${{ github.event.pull_request.head.sha || github.sha }}
+          if-no-files-found: error
+          path: |
+            analysis/muir/screenshots/*.png
+            analysis/muir/evidence/browser-baseline.json
+            analysis/muir/p2/evidence/*.json
+      - name: Shared UI package graph
+        run: node --test scripts/test-muir-package-graph.mjs
+      - name: PlayCanvas package
+        run: npm run test:playcanvas
+      - name: Android offline clean package
+        run: npm run android:offline
+      - name: Android safe-area parity smoke
+        run: node analysis/muir/p2/android-safe-area-smoke.mjs
+      - name: Android offline
+        run: npm run test:android:offline
+      - name: Final executable P2 gate
+        run: node scripts/test-muir-p2-final-gate.mjs
