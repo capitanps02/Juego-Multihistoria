@@ -71,4 +71,5 @@ await settle();await clickNav('Tu partida');await settle();
 
 globalThis.__P8_SAVE_ROOT__=root;
 globalThis.__P8_SAVE_SCENARIO__=scenario;
+globalThis.__P8_SAVE_IMPORT_RAW__=firstRaw;
 globalThis.__P8_SAVE_READY__={ready:true,scenario};
