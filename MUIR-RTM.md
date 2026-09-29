@@ -4,6 +4,8 @@ Baseline authority: `main@36d3d1b0750b0ded877e55953f223e2de1169a46`
 P0 certified SHA: `c5b6d0d6d18802a62d174bf450c95ebf1d0403c0` · run #73 / `36533739689` · FINAL GATE PASS  
 P0 branch: `ui-a0/muir-p0-baseline`  
 P1 branch: `ui-a0/muir-p1-design-contract`  
+P1 certified SHA: `dcd9087cb68a73ed9a20db85e1ee96b434942826` · run #1 / `36537442358` · DESIGN-CONTRACT GATE PASS  
+P2 branch: `ui-a1/muir-p2-shell`  
 Owner: UI-A0  
 Created: 2026-09-28 · P1 started: 2026-09-29
 
@@ -63,3 +65,27 @@ No requirement may be marked PASS without reproducible evidence tied to the base
 | MUIR-P1-AB-001 | One evidence-based A/B rubric covers all ten required criteria | UI-A0 | P1.4 | A/B rubric | rubric completeness review | ab-rubric.md | MUIR-P1 | remove rubric | PASS |
 | MUIR-P1-VDR-001 | VDR template and four required proposed decisions exist | UI-A0 | P1.4 | docs/muir/decisions/* | VDR schema review | VDR files | MUIR-P1 | reject/supersede VDR | PASS |
 | MUIR-P1-SCOPE-001 | P1 redesigns no complete production screen and changes no gameplay/data authority | UI-A0 | P1.4 | docs/tokens only; production UI unchanged | diff scope audit | P1 scope evidence | MUIR-P1 | revert out-of-scope change | PASS |
+
+
+## P2 — Shell móvil, topbar, navegación y safe areas
+
+| REQ_ID | Description | Owner | Pass | Implementation | Test | Evidence | Gate | Rollback | Status |
+|---|---|---|---|---|---|---|---|---|---|
+| MUIR-P2-BASE-001 | P2 starts exactly from the certified P1 SHA | UI-A1 | P2.1 | branch ancestry | exact SHA/merge-base guard | scripts/test-muir-p2-shell.mjs | MUIR-P2-SHELL | recreate branch from P1 certified SHA | PASS |
+| MUIR-P2-SAFE-001 | Global shell consumes top/right/bottom/left safe-area insets without changing gameplay | UI-A1 | P2.1 | web/game-ui.css | static shell contract + later viewport evidence | game-ui.css + P2 CI | MUIR-P2-SHELL | revert safe-area variables/padding | PASS |
+| MUIR-P2-NAV-001 | All six real destinations remain directly reachable until VDR-NAV-001 is evidence-decided | UI-A1 | P2.1 | unchanged web/game-ui.js + nav CSS | six-destination contract | scripts/test-muir-p2-shell.mjs | MUIR-P2-SHELL | revert nav styling | PASS |
+| MUIR-P2-TOUCH-001 | Shell navigation/topbar controls meet at least 48 px touch height | UI-A1 | P2.1 | date/pause 48 px; nav 53 px | static contract + browser geometry pending | scripts/test-muir-p2-shell.mjs | MUIR-P2-SHELL | restore P1 geometry | IN_PROGRESS |
+| MUIR-P2-TYPE-001 | Primary mobile navigation labels do not fall below P1 caption floor | UI-A1 | P2.1 | nav mobile 10 px | static contract + browser typography pending | scripts/test-muir-p2-shell.mjs | MUIR-P2-SHELL | restore P1 typography | IN_PROGRESS |
+| MUIR-P2-TOP-001 | Mobile topbar remains readable and non-overlapping at 360/390/412 widths | UI-A1 | P2.2 | mobile shell/topbar CSS | deterministic viewport captures | P2 browser evidence | MUIR-P2-VIEW | revert mobile topbar tuning | NOT_STARTED |
+| MUIR-P2-VIEW-001 | 360x800, 390x844 and 412x915 shell layouts are visually verified with no horizontal overflow | UI-A1 | P2.2 | shared UI | deterministic browser captures | P2 screenshots/metrics | MUIR-P2-VIEW | revert offending shell rule | NOT_STARTED |
+| MUIR-P2-AUX-001 | Landscape and tablet shell are checked for severe breakage and safe-area behavior | UI-A1 | P2.2 | shared UI | 844x390 + 768x1024 probes | P2 screenshots/metrics | MUIR-P2-VIEW | revert offending responsive rule | NOT_STARTED |
+| MUIR-P2-A11Y-001 | Focus order, aria-current, keyboard navigation and visible focus remain correct | UI-A1 | P2.3 | existing JS semantics + shell CSS | keyboard/focus/axe checks | P2 accessibility evidence | MUIR-P2-A11Y | revert shell-only styling | IN_PROGRESS |
+| MUIR-P2-PARITY-001 | The same shell presentation authority remains shared by Web, PlayCanvas and Android offline | UI-A1 | P2.1 | web/game-ui.css only | package graph + PlayCanvas + Android offline CI | MUIR P2 shell workflow | MUIR-P2-SHELL | revert P2 shell commit | IN_PROGRESS |
+| MUIR-P2-SCOPE-001 | P2 changes no gameplay, RNG, persistence, public data, DB or Player Actions authority | UI-A1 | P2.1 | CSS + test/workflow/RTM only | changed-file scope guard | scripts/test-muir-p2-shell.mjs | MUIR-P2-SHELL | revert out-of-scope commit | IN_PROGRESS |
+
+### P2 decision state
+
+- VDR-NAV-001: PROPOSED. P2.1 preserves all six direct destinations; no information architecture change is authorized before A/B evidence.
+- VDR-IMMERSIVE-001: PROPOSED. P2.1 does not change immersive navigation behavior.
+- Safe-area ownership is centralized at the shared `.mh` shell. Mobile status overlays also clear the bottom inset.
+- P2.1 changes presentation only; `web/game-ui.js` is byte-identical to P1 certified authority.
