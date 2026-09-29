@@ -33,7 +33,9 @@ test('A4-001 CAREER MENU: career UI exposes optional Player Actions entry',async
   assert.equal(view.actions.available,true);
   assert.match(preview,/Gestionar mi carrera/);
   assert.match(web,/Gestionar mi carrera/);
-  assert.match(web,/Estas acciones son opcionales/);
+  assert.match(web,/Opcional:/);
+  assert.match(web,/sólo si quieres|Nada es obligatorio/);
+  assert.doesNotMatch(web,/Debes gestionar|Completa tus acciones|Te quedan tareas/);
 });
 
 test('A4-002 SIMULATE PRIMARY: SIMULAR remains the primary career CTA',()=>{
