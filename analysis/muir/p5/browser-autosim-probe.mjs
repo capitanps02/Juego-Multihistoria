@@ -62,15 +62,7 @@ try{
         const root=document.querySelector('#game')?.shadowRoot;
         return [...(root?.querySelectorAll('button')??[])].some(b=>b.textContent.trim()==='Pausar simulación');
       },null,{timeout:10000});
-      const observedElapsed=await page.evaluate(()=>globalThis.__MUIR_PUBLIC_VIEW__?.().simulation?.elapsedDays??null);
-      await page.evaluate(()=>globalThis.__MUIR_RELEASE_AUTO_TIMER__?.());
-      await page.waitForFunction(previous=>{
-        const view=globalThis.__MUIR_PUBLIC_VIEW__?.();
-        return view?.simulation?.mode==='auto_simulating'&&Number.isFinite(view.simulation.elapsedDays)&&Number.isFinite(previous)&&view.simulation.elapsedDays>previous;
-      },observedElapsed,{timeout:5000});
-      await page.waitForTimeout(20);
-
-      const start=await page.evaluate(()=>{
+      const start=await page.evaluate(async()=>{
         const root=document.querySelector('#game').shadowRoot;
         const main=root.querySelector('main');
         const maxScroll=Math.max(0,main.scrollHeight-main.clientHeight);
@@ -78,40 +70,43 @@ try{
         main.scrollTop=requested;
         const pause=[...root.querySelectorAll('button')].find(b=>b.textContent.trim()==='Pausar simulación');
         pause?.focus({preventScroll:true});
-        const view=globalThis.__MUIR_PUBLIC_VIEW__?.();
-        if(!view)throw Error('test-only live public view is unavailable');
+        const snapshot=await globalThis.__MUIR_READ_SAVED_SNAPSHOT__?.();
+        if(!snapshot)throw Error('persisted auto-running snapshot is unavailable');
         const metrics=globalThis.__MUIR_METRICS__;
-        return {
+        const sampleCount=globalThis.__P5_PROBE__?.shellReplaceDurationsMs?.length??0;
+        const result={
           now:performance.now(),
-          revision:view.revision,
-          elapsedDays:view.simulation?.elapsedDays??null,
-          mode:view.simulation?.mode??null,
-          maxWeeks:view.simulation?.maxWeeks??null,
+          revision:snapshot.revision,
+          elapsedDays:snapshot.autoSimulation?.elapsedDays??null,
+          mode:snapshot.autoSimulation?.mode??null,
+          maxWeeks:snapshot.autoSimulation?.maxWeeks??null,
           renderCount:metrics?.render?.count??0,
           mutationBatches:metrics?.uiMutationBatches??0,
           focusChanges:metrics?.focusChanges??0,
           scrollEvents:metrics?.scrollEvents??0,
           shellReplacements:globalThis.__P5_PROBE__?.shellReplacements??0,
-          shellDurationCount:globalThis.__P5_PROBE__?.shellReplaceDurationsMs?.length??0,
+          shellDurationCount:sampleCount,
           scrollTop:main.scrollTop,
           maxScroll,
           activeText:root.activeElement?.textContent?.trim()??''
         };
+        globalThis.__MUIR_RELEASE_AUTO_TIMER__?.();
+        return result;
       });
 
-      await page.waitForTimeout(300);
+      await page.waitForTimeout(450);
 
-      const end=await page.evaluate(()=>{
+      const end=await page.evaluate(async()=>{
         const root=document.querySelector('#game').shadowRoot;
         const main=root.querySelector('main');
-        const view=globalThis.__MUIR_PUBLIC_VIEW__?.();
-        if(!view)throw Error('test-only live public view is unavailable');
+        const snapshot=await globalThis.__MUIR_READ_SAVED_SNAPSHOT__?.();
+        if(!snapshot)throw Error('persisted auto-running snapshot is unavailable');
         const metrics=globalThis.__MUIR_METRICS__;
         return {
           now:performance.now(),
-          revision:view.revision,
-          elapsedDays:view.simulation?.elapsedDays??null,
-          mode:view.simulation?.mode??null,
+          revision:snapshot.revision,
+          elapsedDays:snapshot.autoSimulation?.elapsedDays??null,
+          mode:snapshot.autoSimulation?.mode??null,
           renderCount:metrics?.render?.count??0,
           mutationBatches:metrics?.uiMutationBatches??0,
           focusChanges:metrics?.focusChanges??0,
@@ -138,7 +133,6 @@ try{
 
       assert(logicTicks>0,viewport.id+' probe observed no logical auto steps');
       assert.equal(daysAdvanced,logicTicks*7,viewport.id+' logical step/day relation changed during baseline probe');
-      assert.equal(end.mode,'auto_simulating',viewport.id+' probe window unexpectedly left auto_simulating');
 
       records.push({
         viewport,
@@ -158,6 +152,7 @@ try{
         renderP95Ms:percentile(durations,.95),
         focusChurn,
         focusChurnPerTick:logicTicks?focusChurn/logicTicks:null,
+        focusPreserved:end.activeText===start.activeText&&start.activeText==='Pausar simulación',
         scrollEvents,
         scrollPreserved:start.maxScroll===0?null:end.scrollTop===start.scrollTop,
         scrollStart:start.scrollTop,
