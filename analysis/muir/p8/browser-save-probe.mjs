@@ -34,6 +34,7 @@ const server=http.createServer((req,res)=>{
 await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
 const browser=await chromium.launch({headless:true});
 const records=[];
+const interactionRecords=[];
 const forbidden=/\bcloud\b|\bnube\b|login|iniciar sesi[oó]n|sincroniz|remote slot|slot remoto|cuenta online/i;
 
 async function open(page,scenario){
@@ -114,6 +115,16 @@ function assertScenario(scenario,m,width){
   if(scenario==='save-full'){assert.equal(m.supportCards,3);assert.equal(m.backupCards,1);assert.equal(m.legacyCards,1);assert.ok(m.buttons.includes('Recuperar copia anterior'));assert.ok(m.buttons.includes('Descargar copia antigua'));}
 }
 
+async function withPage(scenario,fn){
+  const context=await browser.newContext({viewport:{width:390,height:844},reducedMotion:'reduce',acceptDownloads:true});
+  const page=await context.newPage();
+  try{await open(page,scenario);return await fn(page);}finally{await context.close();}
+}
+async function dialogText(page){
+  await page.locator('dialog[open]').waitFor({state:'visible',timeout:10000});
+  return page.locator('dialog[open]').innerText();
+}
+
 try{
   for(const viewport of viewports){
     for(const scenario of scenarios){
@@ -143,6 +154,51 @@ try{
       }finally{await context.close();}
     }
   }
+
+  await withPage('save-standard',async page=>{
+    const raw=await page.evaluate(()=>globalThis.__P8_SAVE_IMPORT_RAW__);
+    await page.locator('#mh-import').setInputFiles({name:'multihistoria-import.json',mimeType:'application/json',buffer:Buffer.from(raw)});
+    const text=await dialogText(page);
+    assert.match(text,/Recuperar esta copia/);
+    assert.match(text,/Se conservará una copia de la partida actual/);
+    await page.locator('dialog[open] button').filter({hasText:'Cancelar'}).click();
+    interactionRecords.push({interaction:'import-confirmation',gate:'PASS'});
+  });
+
+  await withPage('save-backup',async page=>{
+    await page.getByRole('button',{name:'Recuperar copia anterior'}).click();
+    const text=await dialogText(page);
+    assert.match(text,/Recuperar esta copia/);
+    await page.locator('dialog[open] button').filter({hasText:'Cancelar'}).click();
+    interactionRecords.push({interaction:'backup-recovery-confirmation',gate:'PASS'});
+  });
+
+  await withPage('save-standard',async page=>{
+    await page.locator('input[aria-label="Nombre y apellido de la nueva carrera"]').fill('María O’Neill-Sáez');
+    await page.locator('input[aria-label="Código de historia de la nueva carrera"]').fill('123456');
+    await page.getByRole('button',{name:'Empezar otra carrera'}).click();
+    const text=await dialogText(page);
+    assert.match(text,/Empezar otra carrera/);
+    assert.match(text,/La partida actual pasará a la copia anterior/);
+    await page.locator('dialog[open] button').filter({hasText:'Cancelar'}).click();
+    interactionRecords.push({interaction:'new-story-confirmation',gate:'PASS'});
+  });
+
+  await withPage('save-standard',async page=>{
+    const pending=page.waitForEvent('download');
+    await page.getByRole('button',{name:'Descargar copia',exact:true}).click();
+    const download=await pending;
+    assert.equal(download.suggestedFilename(),'multihistoria-partida.json');
+    interactionRecords.push({interaction:'current-download',gate:'PASS',filename:download.suggestedFilename()});
+  });
+
+  await withPage('save-legacy',async page=>{
+    const pending=page.waitForEvent('download');
+    await page.getByRole('button',{name:'Descargar copia antigua'}).click();
+    const download=await pending;
+    assert.equal(download.suggestedFilename(),'multihistoria-copia-antigua.json');
+    interactionRecords.push({interaction:'legacy-download',gate:'PASS',filename:download.suggestedFilename()});
+  });
 }finally{await browser.close();server.close();}
 
 const evidence={
@@ -159,10 +215,12 @@ const evidence={
   previousBackup:true,
   legacyDownload:true,
   newStory:true,
+  interactions:interactionRecords,
   cloudFeatures:0,
+  remoteSlots:0,
   horizontalOverflowFindings:0,
   axeSeriousCritical:0,
   records
 };
 fs.writeFileSync(path.join(evidenceDir,'p8-save.json'),JSON.stringify(evidence,null,2)+'\n');
-console.log(JSON.stringify({gate:evidence.gate,captures:evidence.captures,scenarios:evidence.scenarios,viewports:evidence.viewports,textScales:evidence.textScales}));
+console.log(JSON.stringify({gate:evidence.gate,captures:evidence.captures,scenarios:evidence.scenarios,viewports:evidence.viewports,textScales:evidence.textScales,interactions:interactionRecords.map(x=>x.interaction)}));
