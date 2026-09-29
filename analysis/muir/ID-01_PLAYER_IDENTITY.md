@@ -39,7 +39,9 @@ ID-01 explicitly adopts the master plan's proposed **2–32 grapheme** policy as
 
 - `createInitialState(seed, playerDisplayName?)` persists canonical identity without consuming RNG.
 - `GameSession.create(..., { playerDisplayName })` validates the supplied name.
-- missing creation input uses the deterministic neutral fallback `Jugador`;
+- production `Tu partida > Otra historia` provides a real text input and passes it as `playerDisplayName`;
+- production `Perfil` reads `PlayerView.player.displayName` and edits it through the canonical `identity` command;
+- missing historical identity uses the deterministic neutral fallback `Jugador`;
 - `SessionCommand { type:"identity", displayName }` edits the identity transactionally;
 - identity edits are allowed only while no decision/result/offer is pending and auto-simulation is idle;
 - identity commands increment session revision and receive normal replay-safe receipts;
@@ -99,7 +101,7 @@ Directed QA also validates:
 
 ## Scope
 
-Authorized implementation files are limited to player identity, GameState wiring, initial-state creation, save/runtime validation, GameSession/SessionSnapshot command validation, directed tests and ID-01 certification files.
+Authorized implementation files are limited to player identity, GameState wiring, initial-state creation, save/runtime validation, GameSession/SessionSnapshot command validation, the minimal shared `web/game-ui.js` creation/edit controls, directed tests and ID-01 certification files.
 
 Forbidden:
 - event/catalog changes;
@@ -107,7 +109,7 @@ Forbidden:
 - RNG implementation changes;
 - market/contract/national-team authority changes;
 - Player Actions authority changes;
-- MUIR production UI changes.
+- Home/core-loop redesign, shell/nav changes or any production UI change beyond the two identity input/edit controls.
 
 ## P3 handoff
 
