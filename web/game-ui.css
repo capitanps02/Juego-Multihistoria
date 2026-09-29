@@ -342,3 +342,40 @@ button.player-action-back{min-height:48px;white-space:normal;overflow-wrap:anywh
   .decision-sheet{padding:16px}
   .decision-choices .choice{padding:13px 12px}
 }
+
+
+/* MUIR P9 cinematic / fallback / epilogue */
+.event-cutscene{min-width:0;overflow:hidden;background:linear-gradient(165deg,#0e0e12e8,#050507f0);border-color:#ffffff2b;box-shadow:0 16px 44px #0005}
+.event-cutscene[data-state="loading"]{border-color:#409cff55}
+.event-cutscene[data-state="playing"]{border-color:#ffffff32}
+.event-cutscene[data-state="complete"]{border-color:#30d15842}
+.event-cutscene[data-state="error"]{border-color:#ff9f0a55}
+.cutscene-poster{display:block;width:100%;aspect-ratio:16/9;max-height:52vh;object-fit:cover;border-radius:10px;margin:0 0 .75rem;filter:saturate(.78) brightness(.72)}
+.event-cutscene video{max-width:100%;aspect-ratio:16/9}
+.event-cutscene>button{min-height:48px;overflow-wrap:anywhere}
+.event-cutscene>p[role="status"]{margin:.75rem 0 0;line-height:1.5;overflow-wrap:anywhere}
+.prologue-dialog{min-width:0;scrollbar-gutter:stable;overscroll-behavior:contain}
+.prologue-dialog h2{overflow-wrap:anywhere}
+.prologue-dialog .prologue-poster{max-height:58vh}
+.prologue-dialog button{min-height:48px;white-space:normal;overflow-wrap:anywhere}
+.prologue-dialog p[role="status"]{line-height:1.5;overflow-wrap:anywhere}
+.p9-epilogue{min-width:0}
+.p9-epilogue>.event-cutscene{width:min(980px,100%);margin:0 auto 18px}
+.p9-epilogue>.p3-home{opacity:.92}
+.p9-epilogue>.retirement-panel{max-width:980px;margin:18px auto;border-color:#d6b86a66;background:linear-gradient(165deg,#211d14,#141414)}
+.p9-epilogue>.retirement-panel .dialog-actions{display:flex;flex-wrap:wrap;gap:10px}
+.p9-epilogue>.retirement-panel .dialog-actions button{min-height:48px;white-space:normal}
+
+@media(max-width:820px){
+  .event-cutscene{padding:12px;margin:12px 0}
+  .cutscene-poster,.event-cutscene video{max-height:42vh}
+  .prologue-dialog{width:calc(100vw - 20px);max-height:calc(100vh - 20px);padding:14px;border-radius:16px}
+  .prologue-dialog .prologue-poster,.prologue-dialog video{max-height:46vh}
+  .prologue-dialog button{width:100%;margin:8px 0 0}
+  .p9-epilogue>.event-cutscene,.p9-epilogue>.retirement-panel{width:100%;margin-left:0;margin-right:0}
+}
+@media(max-width:390px){
+  .cutscene-poster,.event-cutscene video{max-height:34vh}
+  .prologue-dialog .prologue-poster,.prologue-dialog video{max-height:38vh}
+  .p9-epilogue>.retirement-panel .dialog-actions{display:grid;grid-template-columns:1fr}
+}
