@@ -15,7 +15,7 @@ concurrency:
 jobs:
   p9-baseline:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
         with:
@@ -97,3 +97,54 @@ jobs:
           path: |
             analysis/muir/p9/evidence/*.json
             analysis/muir/p9/screenshots/*.png
+
+  p9-android-back:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - run: npm ci
+      - name: Build Android offline assets
+        run: npm run android:offline
+      - name: Install Android API 35 emulator image
+        run: |
+          yes | "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null || true
+          "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" "platform-tools" "emulator" "platforms;android-35" "system-images;android-35;google_apis;x86_64"
+          echo no | "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/avdmanager" create avd --force --name muir-p9-api35 --package "system-images;android-35;google_apis;x86_64"
+      - name: Build app and instrumentation APKs
+        working-directory: android
+        run: gradle --no-daemon :app:assembleDebug :app:assembleDebugAndroidTest
+      - name: Boot dedicated Android emulator
+        run: |
+          sudo chmod 666 /dev/kvm || true
+          nohup "$ANDROID_SDK_ROOT/emulator/emulator" -avd muir-p9-api35 -no-window -noaudio -no-boot-anim -gpu swiftshader_indirect -no-snapshot -wipe-data > /tmp/muir-p9-emulator.log 2>&1 &
+          "$ANDROID_SDK_ROOT/platform-tools/adb" wait-for-device
+          timeout 240 bash -c 'until [ "$("$ANDROID_SDK_ROOT/platform-tools/adb" shell getprop sys.boot_completed | tr -d "\r")" = "1" ]; do sleep 2; done'
+          "$ANDROID_SDK_ROOT/platform-tools/adb" shell input keyevent 82
+      - name: P9 native Android Back semantics
+        run: |
+          SERIAL=$("$ANDROID_SDK_ROOT/platform-tools/adb" devices | awk '/^emulator-/{print $1; exit}')
+          test -n "$SERIAL"
+          node scripts/test-muir-p9-android-back.mjs "$SERIAL"
+      - name: Upload Android Back evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: muir-p9-android-back-${{ github.sha }}
+          if-no-files-found: warn
+          path: |
+            analysis/muir/p9/evidence/p9-android-back.json
+            /tmp/muir-p9-emulator.log
