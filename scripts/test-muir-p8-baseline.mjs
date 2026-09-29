@@ -12,10 +12,13 @@ test('P8 is rooted in the exact certified P7 predecessor',()=>{
   assert.equal(git('merge-base','HEAD',P7),P7);
 });
 
-test('Pass 1 changes presentation evidence only',()=>{
+test('P8 scope remains presentation-only after the certified Pass 1 baseline',()=>{
   const files=git('diff','--name-only',P7+'..HEAD').split(/\r?\n/).filter(Boolean);
-  const allowed=/^(?:docs\/muir\/P8_|analysis\/muir\/p8\/|scripts\/test-muir-p8-|\.github\/workflows\/muir-p8-|MUIR-RTM\.md$)/;
+  const allowed=/^(?:web\/game-ui\.(?:js|css)|docs\/muir\/P8_|analysis\/muir\/p8\/|scripts\/test-muir-p8-|\.github\/workflows\/muir-p8-|MUIR-RTM\.md$)/;
   assert.deepEqual(files.filter(file=>!allowed.test(file)),[]);
+  assert.equal(files.some(file=>file.startsWith('src/')),false,'P8 must not modify src/** authority');
+  assert.equal(files.includes('web/indexed-save-store.js'),false);
+  assert.equal(files.includes('web/save-store.js'),false);
 });
 
 test('P7 semantic components are still present',()=>{
