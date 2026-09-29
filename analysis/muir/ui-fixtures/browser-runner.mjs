@@ -1,6 +1,7 @@
 // MUIR P0 browser harness. TEST-ONLY; never imported by production entrypoints.
 import {GameSession} from '/dist/session/game-session.js';
 import {mountGame} from '/web/game-ui.js';
+import {createIndexedSaveStore} from '/web/indexed-save-store.js';
 import {MUIR_BASE_SHA,MUIR_VIEWPORTS,fixtureById} from '/analysis/muir/ui-fixtures/fixtures.mjs';
 import {buildFixtureSession,fixtureEventCatalog} from '/analysis/muir/ui-fixtures/session-recipes.mjs';
 
@@ -32,8 +33,12 @@ const nativeSetTimeout=globalThis.setTimeout.bind(globalThis);
 const nativeClearTimeout=globalThis.clearTimeout.bind(globalThis);
 const AUTO_TIMER_SENTINEL=2147483001;
 let autoTimerFrozen=fixtureId==='auto-running';
+let frozenAutoCallback=null;
 if(autoTimerFrozen){
-  globalThis.setTimeout=(fn,ms,...args)=>Number(ms)===140?AUTO_TIMER_SENTINEL:nativeSetTimeout(fn,ms,...args);
+  globalThis.setTimeout=(fn,ms,...args)=>{
+    if(Number(ms)===140){frozenAutoCallback=()=>fn(...args);return AUTO_TIMER_SENTINEL;}
+    return nativeSetTimeout(fn,ms,...args);
+  };
   globalThis.clearTimeout=id=>id===AUTO_TIMER_SENTINEL?undefined:nativeClearTimeout(id);
 }
 function releaseAutoTimer(){
@@ -41,6 +46,9 @@ function releaseAutoTimer(){
   autoTimerFrozen=false;
   globalThis.setTimeout=nativeSetTimeout;
   globalThis.clearTimeout=nativeClearTimeout;
+  const callback=frozenAutoCallback;
+  frozenAutoCallback=null;
+  if(callback)callback();
 }
 
 document.documentElement.dataset.muirVisualTest='true';
@@ -81,7 +89,24 @@ const cutsceneUrl=clip=>{
   return '/web/assets/cutscenes/'+clip.file;
 };
 
+const p5CommandLog=[];
+const nativeSessionDispatch=GameSession.prototype.dispatch;
+GameSession.prototype.dispatch=function(command){
+  p5CommandLog.push({
+    type:command?.type??null,
+    action:command?.action??null,
+    maxWeeks:command?.maxWeeks??null,
+    expectedRevision:command?.expectedRevision??null
+  });
+  return nativeSessionDispatch.call(this,command);
+};
+globalThis.__MUIR_COMMAND_LOG__=p5CommandLog;
 mountGame({root,GameSession,assets,css:deterministicCss,storageKey,cutsceneUrl,events:fixtureEventCatalog(fixtureId)});
+const p5ProbeStore=createIndexedSaveStore({storage:localStorage,indexedDB,key:storageKey,validate:async()=>{}});
+globalThis.__MUIR_READ_SAVED_SNAPSHOT__=async()=>{
+  const raw=await p5ProbeStore.readRaw();
+  return raw?JSON.parse(raw):null;
+};
 const mutationObserver=new MutationObserver(records=>{perf.uiMutationBatches++;perf.uiMutationRecords+=records.length;});
 mutationObserver.observe(root,{subtree:true,childList:true,characterData:true,attributes:true});
 
@@ -305,12 +330,10 @@ const refreshDynamicMetrics=()=>{
 refreshDynamicMetrics();
 setInterval(refreshDynamicMetrics,100);
 globalThis.__MUIR_METRICS__=metrics;
+globalThis.__MUIR_RELEASE_AUTO_TIMER__=()=>releaseAutoTimer();
 globalThis.__MUIR_START_AUTO_PROBE__=async()=>{
   if(fixtureId!=='auto-running')return;
   releaseAutoTimer();
-  await clickText('Pausar simulación');
-  await waitForSurface(()=>[...root.querySelectorAll('button')].some(b=>b.textContent.trim()==='Reanudar simulación'),'auto-sim paused for probe');
-  await clickText('Reanudar simulación');
 };
 globalThis.__MUIR_READY__={
   baseSha:MUIR_BASE_SHA,

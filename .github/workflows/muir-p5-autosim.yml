@@ -1,0 +1,103 @@
+name: MUIR P5 Auto Simulation
+
+on:
+  push:
+    branches:
+      - ui-a3/muir-p5-autosim
+  pull_request:
+    branches:
+      - ui-a2/muir-p4-microcopy
+    paths:
+      - 'web/game-ui.js'
+      - 'web/game-ui.css'
+      - 'MUIR-RTM.md'
+      - 'docs/muir/P5_GATE.md'
+      - 'analysis/muir/p5/**'
+      - 'analysis/muir/ui-fixtures/browser-runner.mjs'
+      - 'scripts/test-muir-p5-autosim.mjs'
+      - '.github/workflows/muir-p5-autosim.yml'
+
+concurrency:
+  group: muir-p5-autosim-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  certify-p5:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      MUIR_P5_EXPECTED_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Build engine
+        run: npm run build
+      - name: P5 scope and presentation guard
+        run: node scripts/test-muir-p5-autosim.mjs
+      - name: Auto-simulation runtime regression
+        run: node --test scripts/test-t55-auto-simulation.mjs
+      - name: Player Actions auto-state regression
+        run: node --test scripts/test-player-actions-ui-contract.mjs
+      - name: Period report regression
+        run: node --test scripts/test-period-report.mjs
+      - name: Certified P4 predecessor regression
+        run: |
+          git worktree add --detach /tmp/muir-p4 45371a41908e2ecdac71cfc5f2bf855f086f7866
+          (cd /tmp/muir-p4 && node scripts/test-muir-p4-copy.mjs)
+          git worktree remove /tmp/muir-p4
+      - name: Install browser certification tooling
+        run: |
+          npm install --no-save playwright@1.55.0 axe-core@4
+          npx playwright install --with-deps chromium
+      - name: P5 command snapshot RNG and save-load equivalence
+        run: node analysis/muir/p5/browser-equivalence-probe.mjs
+      - name: P5 cadence focus and scroll telemetry
+        run: node analysis/muir/p5/browser-autosim-probe.mjs
+      - name: P5 running paused summary interruption AXE and viewports
+        run: node analysis/muir/p5/browser-states-a11y-probe.mjs
+      - name: P5 browser background resume smoke
+        run: node analysis/muir/p5/browser-background-resume-probe.mjs
+      - name: Deterministic viewport regression matrix
+        run: node scripts/capture-muir-browser.mjs
+      - name: P3 Home regression
+        run: |
+          node analysis/muir/p3/browser-home-probe.mjs
+          node analysis/muir/p3/browser-a11y-probe.mjs
+      - name: P2 shell regression
+        run: |
+          node analysis/muir/p2/browser-safe-area-probe.mjs
+          node analysis/muir/p2/browser-a11y-probe.mjs
+          node analysis/muir/p2/browser-axe-probe.mjs
+          node analysis/muir/p2/browser-topbar-probe.mjs
+      - name: Shared UI package graph
+        run: node --test scripts/test-muir-package-graph.mjs
+      - name: PlayCanvas package
+        timeout-minutes: 10
+        run: npm run test:playcanvas
+      - name: Android offline clean package
+        timeout-minutes: 6
+        run: npm run android:offline
+      - name: Android offline regression
+        timeout-minutes: 6
+        run: npm run test:android:offline
+      - name: Final P5 static gate
+        run: node scripts/test-muir-p5-autosim.mjs
+      - name: Upload P5 evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: muir-p5-${{ github.event.pull_request.head.sha || github.sha }}
+          if-no-files-found: warn
+          path: |
+            analysis/muir/screenshots/*.png
+            analysis/muir/evidence/browser-baseline.json
+            analysis/muir/p5/evidence/*.json
+            analysis/muir/p3/evidence/*.json
+            analysis/muir/p2/evidence/*.json
