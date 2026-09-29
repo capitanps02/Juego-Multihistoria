@@ -59,7 +59,7 @@ test('cutscene player remains presentation-only',()=>{
 test('Android hardware Back is wired to WebView history and therefore the tested P9 popstate path',()=>{
   assert.match(mainActivity,/@Override public void onBackPressed\(\)/);
   assert.match(mainActivity,/if \(game != null && game\.canGoBack\(\)\) game\.goBack\(\)/);
-  const goBack=body(ui,'goBack');
+  const start=ui.indexOf('function goBack()');const end=ui.indexOf('async function pauseToggle',start);assert.ok(start>=0&&end>start);const goBack=ui.slice(start,end);
   assert.match(goBack,/closeCinematic\(\)/);
   assert.doesNotMatch(goBack,/run\(/);
 });
@@ -67,7 +67,7 @@ test('Android hardware Back is wired to WebView history and therefore the tested
 test('accepted VDR is evidence-backed MIXED, not provisional',()=>{
   assert.match(vdr,/Status: ACCEPTED/);
   assert.match(vdr,/Accepted decision — MIXED/);
-  assert.match(vdr,/mobile bottom navigation hidden/i);
+  assert.match(vdr,/Mobile immersive[^\n]*bottom navigation hidden/i);
   assert.match(vdr,/Back never dispatches/);
 });
 
