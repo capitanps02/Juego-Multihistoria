@@ -8,6 +8,9 @@ on:
       - 'web/game-ui.css'
       - 'MUIR-RTM.md'
       - 'scripts/test-muir-p2-shell.mjs'
+      - 'scripts/test-muir-p2-final-gate.mjs'
+      - 'docs/muir/P2_GATE.md'
+      - 'docs/muir/decisions/VDR-NAV-001.md'
       - '.github/workflows/muir-p2-shell.yml'
       - 'analysis/muir/p2/**'
 
@@ -71,3 +74,5 @@ jobs:
         run: node analysis/muir/p2/android-safe-area-smoke.mjs
       - name: Android offline
         run: npm run test:android:offline
+      - name: Final executable P2 gate
+        run: node scripts/test-muir-p2-final-gate.mjs
