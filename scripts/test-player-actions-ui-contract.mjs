@@ -86,6 +86,34 @@ test('A4-006 CATEGORY: UI renders public categories/actions dynamically',async()
   assert.ok(!web.includes("if(age===23"));
 });
 
+test('Completed auto-summary can return to Player Actions without advancing or changing world state',async()=>{
+  const session=await GameSession.create(42,{events:[],microfeeds:false});
+  await session.dispatch(command(session,'auto',{action:'start',maxWeeks:1}));
+  assert.equal(session.getView().screen,'summary');
+  assert.equal(session.getView().actions.available,false);
+  const before=session.exportSnapshot().state;
+  const stop=command(session,'auto',{action:'stop'});
+  await session.dispatch(stop);
+  assert.equal(session.getView().screen,'career');
+  assert.equal(session.getView().simulation.mode,'idle');
+  assert.equal(session.getView().actions.available,true);
+  assert.deepEqual(session.exportSnapshot().state,before);
+  assert.equal((await session.dispatch(stop)).replayed,true);
+  const restored=await GameSession.resume(JSON.parse(JSON.stringify(session.exportSnapshot())),{events:[]});
+  assert.deepEqual(restored.exportSnapshot(),session.exportSnapshot());
+  assert.equal(restored.getView().actions.available,true);
+  assert.match(web,/v\.screen==='summary'\)content\.append\(button\('Terminar simulación'/);
+});
+
+test('Stopping an active auto block is still rejected without mutation',async()=>{
+  const session=await GameSession.create(42,{events:[],microfeeds:false});
+  await session.dispatch(command(session,'auto',{action:'start',maxWeeks:6}));
+  assert.equal(session.getView().simulation.mode,'auto_simulating');
+  const before=session.exportSnapshot();
+  await assert.rejects(session.dispatch(command(session,'auto',{action:'stop'})),error=>error.code==='AUTO_STATE');
+  assert.deepEqual(session.exportSnapshot(),before);
+});
+
 test('A4-007 COOLDOWN: action becomes disabled and UI humanizes cooldown',async()=>{
   const session=await GameSession.create(424242);
   await session.dispatch(command(session,'player_action',{actionId:'PA_TRAIN_EXTRA',optionId:'TECHNIQUE'}));

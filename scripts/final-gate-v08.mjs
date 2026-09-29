@@ -12,3 +12,4 @@ let migration=false; try{const raw=fs.readFileSync('examples/save-v07-seed-42424
 if(process.env.UPDATE_V08_FIXTURE==='1') fs.writeFileSync('examples/save-v08-seed-424242.json',serializeSave(a.state,true));
 const result={schema:CURRENT_SCHEMA_VERSION,buildErrors:errors.length,buildWarnings:warnings.length,reproducible,microfeedIndependent,migrationV7toV8:migration,exampleRetired:a.state.retirement.status==='closed',exampleAge:a.state.age,epilogueFamilies:a.state.epilogue.families,passed:errors.length===0&&warnings.length===0&&reproducible&&microfeedIndependent&&migration&&a.state.retirement.status==='closed'};
 fs.writeFileSync('qa/final-gate-v08.json',JSON.stringify(result,null,2)); console.log(JSON.stringify(result,null,2));
+if (!result.passed) process.exitCode = 1;

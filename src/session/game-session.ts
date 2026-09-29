@@ -652,7 +652,7 @@ export class GameSession {
         flow.mode = "auto_simulating";
         flow.interruption = null;
       } else {
-        requireThat(flow.mode === "paused", "AUTO_STATE", "Sólo se puede abandonar un bloque automático pausado.");
+        requireThat(["paused", "showing_summary", "season_transition"].includes(flow.mode), "AUTO_STATE", "Sólo se puede terminar un bloque automático pausado o finalizado.");
         next.autoSimulation = idleAutoSimulationState();
       }
     } else if (command.type === "player_action") {

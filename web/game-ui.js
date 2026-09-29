@@ -242,7 +242,7 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
       const row=el('div',undefined,'meter');
       const name=el('span',label);name.title=help;
       row.append(name,el('strong',Math.round(value)+' / 100'));
-      const meter=el('progress');meter.max=100;meter.value=value;meter.setAttribute('aria-label',label+'. '+help);
+      const meter=el('progress');meter.max=100;meter.value=Math.round(value);meter.setAttribute('aria-label',label+'. '+help);
       row.append(meter,el('small',help,'meter-help'));p.append(row);
     }
     p.append(el('p',v.appearances+(v.appearances===1?' partido disputado':' partidos disputados'),'muted'));
@@ -299,7 +299,7 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
     const content=el('div',undefined,'next-content');content.append(el('span',date(v.date),'eyebrow'),el('h2',v.offer?.reason||v.decision?.title||v.result?.title||(v.screen==='epilogue'?'Una carrera para recordar':v.screen==='summary'?'El tiempo ha avanzado.':'El siguiente paso.')),
       el('p',v.offer?'Hay una propuesta de contrato que necesita tu respuesta.':v.decision?'Hay un momento que necesita tu respuesta.':v.result?'Tu decisión ya forma parte de esta historia.':v.screen==='epilogue'?'Mira atrás y recorre los momentos que te han traído hasta aquí.':v.screen==='summary'?'Revisa qué cambió en este tramo antes de seguir simulando.':'Entrenamientos, partidos y conversaciones. Avanza hasta que la vida te pida decidir.','muted'),mainAction(v));
     if(v.screen==='career'&&v.simulation?.mode==='idle'&&v.actions?.available)content.append(button('Gestionar mi carrera',openPlayerActions,'secondary'));
-    if(v.screen==='career'&&v.simulation?.mode==='paused')content.append(button('Terminar simulación',()=>run('auto',{action:'stop'}),'secondary'));
+    if((v.screen==='career'&&v.simulation?.mode==='paused')||v.screen==='summary')content.append(button('Terminar simulación',()=>run('auto',{action:'stop'}),'secondary'));
     next.append(content);grid.append(next,stats(v));
     const recent=panel('El último capítulo');recent.classList.add('recent');recent.append(photo('hero_player','news-thumb'));const row=v.journal.at(-1);recent.append(el('h3',row?.title||'Todo empieza en Valdoria'),el('p',row?.messages[0]||'Una oportunidad de acercarte al primer equipo. Todavía queda todo por decidir.','muted'),button('Recorrer mi historia',()=>navigate('career')));grid.append(recent);
     const tutorial=panel('Cómo se juega');tutorial.classList.add('tutorial');
