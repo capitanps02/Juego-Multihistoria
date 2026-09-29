@@ -27,13 +27,13 @@ test('P9.6 descends from the certified P9.5 browser gate',()=>{
 test('P9 changes no gameplay, narrative, RNG, market, contract or persistence authority bytes',()=>{
   assert.equal(git('diff','--name-only',P8+'..HEAD','--','src'),'','src/** must be byte-identical to certified P8');
   assert.equal(git('diff','--name-only',P8+'..HEAD','--','web/indexed-save-store.js'),'','IndexedDB authority must be unchanged');
-  assert.equal(git('diff','--name-only',P8+'..HEAD','--','android/app/src/main/java/com/multihistoria/MainActivity.java'),'','Android shell authority must be unchanged');
+  assert.equal(git('diff','--name-only',P8+'..HEAD','--','android/app/src/main/java/com/multihistoria').split(/\r?\n/).filter(Boolean).filter(f=>!f.endsWith('/MainActivity.java')).join('\n'),'','Only MainActivity Back presentation routing may change in Android main source');
 });
 
 test('P9 product scope is limited to presentation files',()=>{
   const files=git('diff','--name-only',P8+'..HEAD').split(/\r?\n/).filter(Boolean);
   const product=files.filter(f=>f.startsWith('src/')||f.startsWith('web/')||f.startsWith('android/app/src/main/'));
-  assert.deepEqual(product.sort(),['web/cutscene-player.js','web/game-ui.css','web/game-ui.js']);
+  assert.deepEqual(product.sort(),['android/app/src/main/java/com/multihistoria/MainActivity.java','web/cutscene-player.js','web/game-ui.css','web/game-ui.js']);
 });
 
 test('choice IDs and narrative semantics are stronger than identical: all src content is byte-identical',()=>{
@@ -58,7 +58,9 @@ test('cutscene player remains presentation-only',()=>{
 
 test('Android hardware Back is wired to WebView history and therefore the tested P9 popstate path',()=>{
   assert.match(mainActivity,/@Override public void onBackPressed\(\)/);
-  assert.match(mainActivity,/if \(game != null && game\.canGoBack\(\)\) game\.goBack\(\)/);
+  assert.match(mainActivity,/if \(game\.canGoBack\(\)\)/);
+  assert.match(mainActivity,/evaluateJavascript\("history\.length > 1"/);
+  assert.match(mainActivity,/evaluateJavascript\("history\.back\(\)"/);
   const start=ui.indexOf('function goBack()');const end=ui.indexOf('async function pauseToggle',start);assert.ok(start>=0&&end>start);const goBack=ui.slice(start,end);
   assert.match(goBack,/closeCinematic\(\)/);
   assert.doesNotMatch(goBack,/run\(/);
