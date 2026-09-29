@@ -107,8 +107,7 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
     const progress=autoSimulationProgress(v);
     const dateButton=shell.querySelector('.date-button span');
     if(dateButton)dateButton.textContent=date(v.date)+' · Partida';
-    const currentDate=shell.querySelector('[data-p5-auto-date]');
-    if(currentDate)currentDate.textContent=date(v.date);
+    for(const currentDate of shell.querySelectorAll('[data-p5-auto-date]'))currentDate.textContent=date(v.date);
     const progressBar=shell.querySelector('[data-p5-auto-progress]');
     const progressText=shell.querySelector('[data-p5-auto-progress-text]');
     if(progress&&progressBar){
@@ -136,9 +135,7 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
     const viewBefore=view;
     let completed=false;
     busy=true;busyLabel='Guardando…';message='';
-    if(quietAutoStep){
-      const main=shell.querySelector('main');if(main)main.setAttribute('aria-busy','true');
-    }else render();
+    if(!quietAutoStep)render();
     try{
       const wasCinematic=cinematic;
       await session.dispatch(command);
@@ -173,10 +170,8 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
       busy=false;
       const latest=session?.getView();
       const normalAutoTick=completed&&quietAutoStep&&viewBefore==='home'&&!cinematic&&latest?.screen==='career'&&latest?.simulation?.mode==='auto_simulating';
-      if(normalAutoTick){
-        const main=shell.querySelector('main');if(main)main.setAttribute('aria-busy','false');
-        scheduleAutoPresentation();
-      }else render(true);
+      if(normalAutoTick)scheduleAutoPresentation();
+      else render(true);
       if(completed)queueAutoStep();
     }
   }
