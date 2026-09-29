@@ -7,6 +7,12 @@ const scenario=params.get('scenario')||'decision-2';
 const sessionId='muir-p9-'+scenario;
 const storageKey='muir.p9.'+scenario;
 const originalGetView=GameSession.prototype.getView;
+const originalDispatch=GameSession.prototype.dispatch;
+globalThis.__P9_COMMAND_LOG__=[];
+GameSession.prototype.dispatch=function(command){
+  globalThis.__P9_COMMAND_LOG__.push(structuredClone(command));
+  return originalDispatch.call(this,command);
+};
 const clone=value=>structuredClone(value);
 const terms=(club='ESP_LEON',salary=12000,months=12,extra={})=>({club,ownerClub:club,registrationClub:club,leagueTier:1,months,salary,releaseClause:null,loan:false,...extra});
 const long='Esta decisión llega después de semanas de conversaciones, partidos y dudas. '.repeat(22).trim();
