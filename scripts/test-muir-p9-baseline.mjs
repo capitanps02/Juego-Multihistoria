@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import {execFileSync} from 'node:child_process';
 
 const P8='ecc72b9abebbc64533c86b1f3cf7009a127c0c02';
+const PASS1='7db5d9ded08e0b020fc4a2f916fd974fa4091cbf';
 const git=(...args)=>execFileSync('git',args,{encoding:'utf8'}).trim();
 const ui=fs.readFileSync(new URL('../web/game-ui.js',import.meta.url),'utf8');
 const css=fs.readFileSync(new URL('../web/game-ui.css',import.meta.url),'utf8');
@@ -22,8 +23,9 @@ test('P9 is rooted in the exact certified P8 predecessor',()=>{
   assert.equal(git('merge-base','HEAD',P8),P8);
 });
 
-test('Pass 1 changes only P9 evidence/test/workflow files',()=>{
-  const files=git('diff','--name-only',P8+'..HEAD').split(/\r?\n/).filter(Boolean);
+test('Pass 1 baseline is frozen and HEAD descends from it',()=>{
+  assert.equal(git('merge-base','HEAD',PASS1),PASS1);
+  const files=git('diff','--name-only',P8+'..'+PASS1).split(/\r?\n/).filter(Boolean);
   const allowed=/^(?:docs\/muir\/P9_|analysis\/muir\/p9\/|scripts\/test-muir-p9-|\.github\/workflows\/muir-p9-|MUIR-RTM\.md$)/;
   assert.deepEqual(files.filter(file=>!allowed.test(file)),[]);
   assert.equal(files.some(file=>file.startsWith('src/')),false);
