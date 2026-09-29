@@ -51,7 +51,7 @@ try{
         await page.waitForFunction(()=>globalThis.__MUIR_READY__?.ready===true,null,{timeout:30000});
         await page.addScriptTag({path:axePath});
         const metric=await page.evaluate(async()=>{
-          const root=document.querySelector('#root')?.shadowRoot;
+          const root=document.querySelector('#game')?.shadowRoot;
           const main=root?.querySelector('main');
           const nodes=main?[main,...main.querySelectorAll('*')]:[];
           const overflow=nodes.filter(n=>n.scrollWidth>n.clientWidth+1).slice(0,25).map(n=>({tag:n.tagName,className:String(n.className),text:(n.textContent||'').trim().slice(0,100),clientWidth:n.clientWidth,scrollWidth:n.scrollWidth}));
