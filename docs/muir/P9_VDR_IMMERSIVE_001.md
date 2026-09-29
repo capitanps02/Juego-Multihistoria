@@ -1,49 +1,58 @@
 # VDR-IMMERSIVE-001 — Immersive navigation
 
-Status: PROPOSED
-Owner: UI-A6 / P9
-Baseline SHA: ecc72b9abebbc64533c86b1f3cf7009a127c0c02
+Status: ACCEPTED  
+Owner: UI-A6 / P9  
+Baseline SHA: `ecc72b9abebbc64533c86b1f3cf7009a127c0c02`  
+Decision-certified SHA: `8308794aa5734a2b06c5b952925aba07c5cc9f68`  
+Evidence workflow: `36623464538` — SUCCESS
 
 ## Question
 
 Should the main bottom navigation remain visible during Decision / Result / Offer / cinematic presentation?
 
-## Baseline
+## Accepted decision — MIXED
 
-Current implementation: VISIBLE on mobile and desktop; only opacity is reduced while immersive presentation is open.
-Back/Escape closes the immersive presentation and leaves the pending runtime state untouched.
+- **Mobile immersive (<=820 px): bottom navigation hidden.**
+- **Wider / landscape immersive: navigation remains available but visually secondary.**
+- Every immersive Decision / Result / Offer surface retains explicit safe **Volver a Inicio** presentation exit.
+- Browser/Android-style Back closes the immersive presentation only.
+- Back never dispatches `choose`, `acknowledge` or `offer`.
+- Result Continue remains explicit and is never mapped to Back.
+- Decision/Offer exit never answers the pending state.
 
-## Option A — Visible
+## Evidence
 
-Benefits:
-- immediate access to the rest of the game
-- no user can feel trapped
-- preserves current shell behavior
+The accepted behavior was tested at:
+- 360×800
+- 390×844
+- 412×915
+- 844×390 landscape
+- text scale 100 %, 130 %, 180 %
 
-Risks:
-- 66 px mobile height is consumed at <=820 px
-- accidental navigation competes with irreversible-looking choices
-- weaker cinematic hierarchy
-- 4 long choices + copy + intel become more cramped at 360×800
+P9.2 browser evidence confirmed:
+- 2 / 3 / 4 choices remain usable;
+- safe exit touch targets >=48 px;
+- no horizontal overflow;
+- AXE serious/critical = 0;
+- keyboard choice navigation remains functional;
+- Back closes immersive presentation with zero `choose` / `acknowledge` commands.
 
-## Option B — Hidden while immersive
+P9.3 and P9.4 subsequently reused the same VDR and passed Result and Offer browser matrices without changing the navigation decision.
 
-Benefits:
-- maximum narrative focus
-- recovers mobile vertical space
-- removes accidental taps on unrelated destinations
+## Rejected alternatives
 
-Risks:
-- safe exit must remain obvious
-- Back/history/focus return must be proven
-- hiding all navigation on desktop may be unnecessarily restrictive
+### Always visible
 
-## Candidate for executable comparison
+Rejected on mobile because it consumes the bottom shell row during the highest-density narrative states and increases accidental navigation surface.
 
-MIXED:
-- mobile immersive: hide bottom nav but keep explicit safe “Volver a Inicio”/Back semantics
-- desktop immersive: keep navigation available but visually secondary
-- Result Continue remains primary and never mapped to Back
-- Offer/Decision Back never answers the pending state
+### Always hidden
 
-No decision is accepted until viewport, keyboard, focus-return and Android-style Back probes pass.
+Rejected for wider/landscape layouts because it removes useful navigation without a measured space benefit and is more restrictive than required.
+
+## Rollback
+
+Restore the P8 navigation behavior and remove the P9 immersive mobile override if:
+- Back ever resolves a pending state;
+- safe exit becomes unavailable;
+- focus return regresses;
+- Android back certification fails in P9.6.
