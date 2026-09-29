@@ -4,9 +4,11 @@ on:
   push:
     branches:
       - ui-a5/muir-p8-world-career
+      - ui-a5/muir-p8-ci-baseline-v2
   pull_request:
     branches:
       - ui-a5/muir-p7-semantic-db
+      - ui-a5/muir-p8-world-career
 
 concurrency:
   group: muir-p8-world-career-${{ github.event.pull_request.number || github.ref }}
@@ -33,14 +35,14 @@ jobs:
         run: node scripts/test-muir-p7-semantic-components.mjs
       - name: Football DB public regressions
         run: node --test scripts/test-football-catalog.mjs scripts/test-football-v2-integrity.mjs scripts/test-football-database-v2-persistence.mjs
+      - name: Save/import regressions
+        run: node --test scripts/test-saves.mjs scripts/test-t5-save-compat.mjs scripts/test-persistence.mjs scripts/test-t55-a19-ui.mjs
       - name: Install browser tooling
         run: |
           npm install --no-save playwright@1.55.0 axe-core@4
           npx playwright install --with-deps chromium
       - name: P8 baseline browser matrix
         run: node analysis/muir/p8/browser-baseline-probe.mjs
-      - name: Save/import regressions
-        run: node --test scripts/test-saves.mjs scripts/test-t5-save-compat.mjs scripts/test-persistence.mjs
       - name: Shared UI package graph
         run: node --test scripts/test-muir-package-graph.mjs
       - name: PlayCanvas package smoke
