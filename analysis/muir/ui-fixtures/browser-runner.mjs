@@ -28,6 +28,21 @@ const viewport=params.get('viewport')||'phone-primary';
 const viewportSpec=MUIR_VIEWPORTS.find(v=>v.id===viewport);
 if(!viewportSpec)throw Error('Unknown viewport '+viewport);
 
+const nativeSetTimeout=globalThis.setTimeout.bind(globalThis);
+const nativeClearTimeout=globalThis.clearTimeout.bind(globalThis);
+const AUTO_TIMER_SENTINEL=2147483001;
+let autoTimerFrozen=fixtureId==='auto-running';
+if(autoTimerFrozen){
+  globalThis.setTimeout=(fn,ms,...args)=>Number(ms)===140?AUTO_TIMER_SENTINEL:nativeSetTimeout(fn,ms,...args);
+  globalThis.clearTimeout=id=>id===AUTO_TIMER_SENTINEL?undefined:nativeClearTimeout(id);
+}
+function releaseAutoTimer(){
+  if(!autoTimerFrozen)return;
+  autoTimerFrozen=false;
+  globalThis.setTimeout=nativeSetTimeout;
+  globalThis.clearTimeout=nativeClearTimeout;
+}
+
 document.documentElement.dataset.muirVisualTest='true';
 const root=document.querySelector('#game').attachShadow({mode:'open'});
 const [assets,css]=await Promise.all([
@@ -126,9 +141,13 @@ if(fixture.recipe==='player-actions-menu')await clickText('Gestionar mi carrera'
 if(fixture.recipe==='player-actions-category'){await clickText('Gestionar mi carrera');await clickCardButton('Entrenamiento','Ver acciones');}
 if(fixture.recipe==='player-actions-detail'){await clickText('Gestionar mi carrera');await clickCardButton('Entrenamiento','Ver acciones');await clickCardButton('Entrenamiento extra','Abrir');}
 if(fixture.recipe==='cinematic-missing-asset'){
-  // PROLOGUE uses preload="none"; explicitly start playback so the missing URL is actually requested.
-  // Without this, the dialog can open correctly while never exercising the media-error fallback.
+  // PROLOGUE uses preload="none". Use the real product control, then explicitly call load()
+  // so headless Chromium deterministically requests the deliberately missing WebM even when
+  // synthetic DOM click activation is not treated as a trusted media-play gesture.
   await clickText('Reproducir prólogo con sonido');
+  const prologueVideo=root.querySelector('dialog.prologue-dialog video');
+  if(!prologueVideo)throw Error('MUIR prologue video element missing');
+  prologueVideo.load();
   for(let i=0;i<160;i++){
     if(root.textContent.includes('No se ha podido cargar el prólogo. Puedes continuar con tu historia.'))break;
     await new Promise(r=>setTimeout(r,25));
@@ -286,6 +305,13 @@ const refreshDynamicMetrics=()=>{
 refreshDynamicMetrics();
 setInterval(refreshDynamicMetrics,100);
 globalThis.__MUIR_METRICS__=metrics;
+globalThis.__MUIR_START_AUTO_PROBE__=async()=>{
+  if(fixtureId!=='auto-running')return;
+  releaseAutoTimer();
+  await clickText('Pausar simulación');
+  await waitForSurface(()=>[...root.querySelectorAll('button')].some(b=>b.textContent.trim()==='Reanudar simulación'),'auto-sim paused for probe');
+  await clickText('Reanudar simulación');
+};
 globalThis.__MUIR_READY__={
   baseSha:MUIR_BASE_SHA,
   fixtureId,

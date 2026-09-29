@@ -130,3 +130,22 @@ P0 correction:
 - no production cutscene code, gameplay, save, RNG or UI styling is changed.
 
 This explains a three-target failure pattern because `cinematic-fallback` is captured at the three required phone widths.
+
+
+### Browser artifact #72 — exact residual failures
+
+Artifact `muir-p0-certification` from exact-head run #72 captured **63 / 69** targets.
+
+Only two fixtures failed, at the three mandatory phone widths each:
+
+- `auto-running` × 3: timeout waiting for `__MUIR_READY__`;
+- `cinematic-fallback` × 3: timeout waiting for `__MUIR_READY__`.
+
+All other 63 browser targets were captured.
+
+P0 harness corrections:
+- `auto-running`: freeze only the product 140 ms auto-step timer while the stable visual state is asserted and captured; after the screenshot, release the timer and drive the real Pause → Resume controls so the auto-sim UI update-rate metric is still measured;
+- `cinematic-fallback`: after using the real `Reproducir prólogo con sonido` control, explicitly call `video.load()` so headless Chromium requests the deliberately missing WebM despite `preload="none"` and synthetic activation restrictions;
+- capture errors now retain browser `pageerror` details for future diagnosis.
+
+No production source, styling, gameplay, save, RNG or authority contract is modified.

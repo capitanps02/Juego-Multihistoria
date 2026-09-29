@@ -51,14 +51,17 @@ for(const {fixture,viewport} of targets){
     const ready=await page.evaluate(()=>globalThis.__MUIR_READY__);
     const png=await page.screenshot({fullPage:false,type:'png'});
     if(png.readUInt32BE(16)!==viewport.width||png.readUInt32BE(20)!==viewport.height)throw Error(`Viewport screenshot mismatch: ${png.readUInt32BE(16)}x${png.readUInt32BE(20)} != ${viewport.width}x${viewport.height}`);
-    if(fixture.id==='auto-running')await page.waitForTimeout(1500);
+    if(fixture.id==='auto-running'){
+      await page.evaluate(async()=>{await globalThis.__MUIR_START_AUTO_PROBE__?.();});
+      await page.waitForTimeout(1500);
+    }
     const metrics=await page.evaluate(()=>globalThis.__MUIR_METRICS__);
     const hash=crypto.createHash('sha256').update(png).digest('hex');
     const name=`${MUIR_BASE_SHA.slice(0,12)}__${fixture.id}__${viewport.width}x${viewport.height}__${hash.slice(0,12)}.png`;
     fs.writeFileSync(path.join(outDir,name),png);
     records.push({fixtureId:fixture.id,surface:fixture.surface,viewportId:viewport.id,width:viewport.width,height:viewport.height,file:'analysis/muir/screenshots/'+name,sha256:hash,bytes:png.length,ready,metrics});
   }catch(error){
-    errors.push({fixtureId:fixture.id,viewportId:viewport.id,error:String(error?.stack||error)});
+    errors.push({fixtureId:fixture.id,viewportId:viewport.id,error:String(error?.stack||error),pageErrors});
   }finally{
     await context.close();
   }
