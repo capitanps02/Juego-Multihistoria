@@ -29,8 +29,10 @@ jobs:
       - run: npm ci
       - name: Build engine
         run: npm run build
-      - name: Exact P7 predecessor and P8 static baseline
+      - name: Exact P7 predecessor and P8 scope guard
         run: node --test scripts/test-muir-p8-baseline.mjs
+      - name: P8 Mundo static contract
+        run: node --test scripts/test-muir-p8-world.mjs
       - name: P7 semantic regression
         run: node scripts/test-muir-p7-semantic-components.mjs
       - name: Football DB public regressions
@@ -41,8 +43,10 @@ jobs:
         run: |
           npm install --no-save playwright@1.55.0 axe-core@4
           npx playwright install --with-deps chromium
-      - name: P8 baseline browser matrix
+      - name: P8 secondary-surface regression matrix
         run: node analysis/muir/p8/browser-baseline-probe.mjs
+      - name: P8 Mundo semantic browser matrix
+        run: node analysis/muir/p8/browser-world-probe.mjs
       - name: Shared UI package graph
         run: node --test scripts/test-muir-package-graph.mjs
       - name: PlayCanvas package smoke
@@ -51,7 +55,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: muir-p8-baseline-${{ github.sha }}
+          name: muir-p8-${{ github.sha }}
           if-no-files-found: warn
           path: |
             analysis/muir/p8/evidence/*.json
