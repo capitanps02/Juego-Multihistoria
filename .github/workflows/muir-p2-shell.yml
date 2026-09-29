@@ -35,6 +35,12 @@ jobs:
         run: npm run build
       - name: P2 shell contract
         run: node scripts/test-muir-p2-shell.mjs
+      - name: Install browser certification tooling
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+      - name: P2 deterministic viewport matrix
+        run: node scripts/capture-muir-browser.mjs
       - name: Shared UI package graph
         run: node --test scripts/test-muir-package-graph.mjs
       - name: PlayCanvas package
