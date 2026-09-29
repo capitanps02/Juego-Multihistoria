@@ -5,7 +5,9 @@ import { createInitialState } from '../dist/content/initial-state.js';
 import { loadSave, serializeSave } from '../dist/save/save.js';
 import {
   LEGACY_PLAYER_DISPLAY_NAME,
-  PLAYER_DISPLAY_NAME_MAX_CODE_POINTS
+  PLAYER_DISPLAY_NAME_MIN_GRAPHEMES,
+  PLAYER_DISPLAY_NAME_MAX_GRAPHEMES,
+  playerDisplayNameGraphemeCount
 } from '../dist/core/player-identity.js';
 
 const command = (session, type, extra = {}) => ({
@@ -50,17 +52,30 @@ test('ID-01 canonicalizes outer/repeated spaces but preserves accents, apostroph
   assert.equal(session.exportSnapshot().state.playerIdentity.displayName, "Noa D'Ávila-Ruiz");
 });
 
-test('ID-01 has an explicit 64-code-point product limit', async () => {
-  const boundary = 'A'.repeat(PLAYER_DISPLAY_NAME_MAX_CODE_POINTS);
+test('ID-01 enforces the explicit 2-32 grapheme product limit', async () => {
+  assert.equal(PLAYER_DISPLAY_NAME_MIN_GRAPHEMES, 2);
+  assert.equal(PLAYER_DISPLAY_NAME_MAX_GRAPHEMES, 32);
+
+  const combiningGrapheme = 'A\u0301';
+  const boundary = combiningGrapheme.repeat(PLAYER_DISPLAY_NAME_MAX_GRAPHEMES);
+  assert.equal(playerDisplayNameGraphemeCount(boundary), 32);
   const session = await GameSession.create(2002, {
     sessionId: 'id01-boundary',
     playerDisplayName: boundary
   });
   assert.equal(session.getView().player.displayName, boundary);
+
   await assert.rejects(
     GameSession.create(2003, {
       sessionId: 'id01-too-long',
-      playerDisplayName: 'A'.repeat(PLAYER_DISPLAY_NAME_MAX_CODE_POINTS + 1)
+      playerDisplayName: combiningGrapheme.repeat(PLAYER_DISPLAY_NAME_MAX_GRAPHEMES + 1)
+    }),
+    errorCode('INVALID_IDENTITY')
+  );
+  await assert.rejects(
+    GameSession.create(2004, {
+      sessionId: 'id01-too-short',
+      playerDisplayName: 'A'
     }),
     errorCode('INVALID_IDENTITY')
   );
