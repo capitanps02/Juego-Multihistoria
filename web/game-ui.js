@@ -310,7 +310,8 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
     return p;
   }
   function home(v,main){
-    if(v.screen==='epilogue'||v.cutscene?.eventId==='PROLOGUE')appendCutscene(v,main);
+    const prologue=v.cutscene?.eventId==='PROLOGUE';
+    if(v.screen==='epilogue')appendCutscene(v,main);
     const grid=el('div',undefined,'home-grid p3-home');
     const identity=homeHero(v);
     const next=panel(v.screen==='epilogue'?'El final de un capítulo':v.screen==='summary'?'Tu último tramo':'Lo que viene ahora');next.classList.add('next');next.append(photo('stadium_bg','card-bg'));
@@ -342,6 +343,7 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
 
     const sim=simulationSummary(v);if(sim)main.append(sim);
     main.append(grid);
+    if(prologue)appendCutscene(v,main);
     const retirement=retirementPanel(v);if(retirement)main.append(retirement);
     if(v.offerHistory.length){const h=v.offerHistory.at(-1),p=panel('Tu última respuesta de contrato');p.append(el('p',h.explanation));main.append(p);}
   }
