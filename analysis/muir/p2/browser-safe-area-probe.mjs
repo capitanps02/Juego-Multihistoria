@@ -26,7 +26,7 @@ const cases=[
   {id:'phone-360-safe',viewport:'phone-360',width:360,height:800,insets:{top:44,right:0,bottom:34,left:0},base:6},
   {id:'phone-390-safe',viewport:'phone-primary',width:390,height:844,insets:{top:44,right:0,bottom:34,left:0},base:6},
   {id:'phone-412-safe',viewport:'phone-412',width:412,height:915,insets:{top:47,right:0,bottom:34,left:0},base:8},
-  {id:'landscape-safe',viewport:'landscape-check',width:844,height:390,insets:{top:0,right:44,bottom:21,left:44},base:12},
+  {id:'landscape-safe',viewport:'landscape-check',width:844,height:390,insets:{top:0,right:44,bottom:21,left:44},base:6},
   {id:'tablet-safe',viewport:'tablet-check',width:768,height:1024,insets:{top:24,right:0,bottom:20,left:0},base:8}
 ];
 
@@ -79,7 +79,7 @@ try{
         assert(b.height>=48,c.id+' nav target below 48px: '+b.text);
         assert(b.fontSize>=10,c.id+' nav label below 10px: '+b.text);
       }
-      if(c.width<=820){
+      if(c.width<=820||c.id==='landscape-safe'){
         assert(metrics.nav.bottom<=c.height-(c.base+c.insets.bottom)+.5,c.id+' bottom nav intrudes bottom safe-area');
         assert(metrics.nav.x>=c.base+c.insets.left-.5,c.id+' bottom nav intrudes left safe-area');
       }else{
