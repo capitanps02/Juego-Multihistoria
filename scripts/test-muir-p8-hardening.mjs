@@ -9,8 +9,11 @@ const ui=fs.readFileSync('web/game-ui.js','utf8');
 const read=path=>fs.readFileSync(path,'utf8');
 const baseline=read('analysis/muir/p8/browser-baseline-probe.mjs');
 const world=read('analysis/muir/p8/browser-world-probe.mjs');
+const worldFixture=read('analysis/muir/p8/world-fixture-runner.mjs');
 const career=read('analysis/muir/p8/browser-career-probe.mjs');
+const careerFixture=read('analysis/muir/p8/career-fixture-runner.mjs');
 const rp=read('analysis/muir/p8/browser-relations-profile-probe.mjs');
+const rpFixture=read('analysis/muir/p8/relations-profile-fixture-runner.mjs');
 const save=read('analysis/muir/p8/browser-save-probe.mjs');
 
 test('P8.6 authority remains presentation-only from exact P7',()=>{
@@ -32,12 +35,12 @@ test('P8.6 all five target viewports are covered across the secondary-surface pr
 });
 
 test('P8.6 long-state coverage spans every list-heavy P8 surface',()=>{
-  assert.match(world,/Array\.from\(\{length:80\}/,'80-news fixture missing');
+  assert.match(worldFixture,/Array\.from\(\{length:80\}/,'80-news fixture missing');
   assert.match(world,/world-many/);
-  assert.match(career,/Array\.from\(\{length:20\}/,'20-season fixture missing');
+  assert.match(careerFixture,/Array\.from\(\{length:20\}/,'20-season fixture missing');
   assert.match(career,/timelineCards,60|timelineCards:60|60,'/,'60-entry career expectation missing');
-  assert.match(rp,/Array\.from\(\{length:24\}/,'24-contact fixture missing');
-  assert.match(rp,/Alejandra María de los Ángeles Fernández-Rodríguez/);
+  assert.match(rpFixture,/Array\.from\(\{length:24\}/,'24-contact fixture missing');
+  assert.match(rpFixture,/Alejandra María de los Ángeles Fernández-Rodríguez/);
   for(const scenario of ['save-standard','save-backup','save-legacy','save-full'])assert.match(save,new RegExp(scenario));
 });
 
