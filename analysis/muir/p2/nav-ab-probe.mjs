@@ -54,15 +54,34 @@ try{
           const saveTop=root.querySelector('.date-button');
           const nav=root.querySelector('.navigation');
           const overflow=[...root.querySelectorAll('*')].filter(n=>n.scrollWidth>n.clientWidth+1).slice(0,20).map(n=>({tag:n.tagName,className:n.className,clientWidth:n.clientWidth,scrollWidth:n.scrollWidth}));
+          const buttonRects=buttons.map(b=>({text:b.textContent.trim(),ariaLabel:b.getAttribute('aria-label'),tabIndex:b.tabIndex,...rect(b),fontSize:parseFloat(getComputedStyle(b).fontSize)}));
+          const sorted=[...buttonRects].sort((a,b)=>a.x-b.x);
+          const gaps=sorted.slice(1).map((b,i)=>b.x-sorted[i].right);
+          const navSave=buttonRects.find(b=>b.text==='Tu partida')??null;
+          const topSaveRect={text:saveTop.textContent.trim(),ariaLabel:saveTop.getAttribute('aria-label'),tabIndex:saveTop.tabIndex,...rect(saveTop)};
+          const centerY=r=>r.y+r.height/2;
           return {
             visibleDestinations:buttons.map(b=>b.textContent.trim()),
             nav:rect(nav),
-            buttonWidths:buttons.map(b=>rect(b).width),
-            minButtonWidth:Math.min(...buttons.map(b=>rect(b).width)),
-            maxButtonWidth:Math.max(...buttons.map(b=>rect(b).width)),
-            minButtonHeight:Math.min(...buttons.map(b=>rect(b).height)),
-            labelSizes:buttons.map(b=>parseFloat(getComputedStyle(b).fontSize)),
-            saveTopbar:{text:saveTop.textContent.trim(),ariaLabel:saveTop.getAttribute('aria-label'),...rect(saveTop)},
+            buttonRects,
+            buttonWidths:buttonRects.map(b=>b.width),
+            minButtonWidth:Math.min(...buttonRects.map(b=>b.width)),
+            maxButtonWidth:Math.max(...buttonRects.map(b=>b.width)),
+            minButtonHeight:Math.min(...buttonRects.map(b=>b.height)),
+            labelSizes:buttonRects.map(b=>b.fontSize),
+            minGapPx:gaps.length?Math.min(...gaps):null,
+            maxGapPx:gaps.length?Math.max(...gaps):null,
+            saveTopbar:topSaveRect,
+            navSave,
+            access:{
+              tapsToSave:1,
+              visibleSaveLabel:navSave?.text??topSaveRect.text,
+              accessibleSaveName:navSave?.ariaLabel||navSave?.text||topSaveRect.ariaLabel||topSaveRect.text,
+              saveSurface:navSave?'primary-nav':'topbar',
+              saveCenterY:navSave?centerY(navSave):centerY(topSaveRect),
+              distanceFromBottom:innerHeight-(navSave?centerY(navSave):centerY(topSaveRect)),
+              directFocusable:(navSave??topSaveRect).tabIndex>=0
+            },
             overflow
           };
         });
@@ -70,14 +89,20 @@ try{
         assert(metrics.labelSizes.every(x=>x>=10),variant+' '+viewport.id+' label <10');
         assert(metrics.saveTopbar.height>=48,variant+' '+viewport.id+' topbar save target <48');
         assert.equal(metrics.overflow.length,0,variant+' '+viewport.id+' horizontal overflow');
+        assert(metrics.access.tapsToSave===1,variant+' '+viewport.id+' Tu partida must remain one-tap accessible');
+        assert(metrics.access.directFocusable,variant+' '+viewport.id+' Tu partida route must remain keyboard focusable');
+        assert(metrics.access.accessibleSaveName?.includes('Tu partida')||metrics.access.accessibleSaveName==='Tu partida',variant+' '+viewport.id+' accessible save name must identify Tu partida');
         if(variant==='A-six'){
           assert.equal(metrics.visibleDestinations.length,6,'A must expose six bottom destinations');
           assert(metrics.visibleDestinations.includes('Tu partida'),'A must expose Tu partida in nav');
+          assert.equal(metrics.access.saveSurface,'primary-nav','A keeps save in primary nav');
+          assert.equal(metrics.access.visibleSaveLabel,'Tu partida','A exposes the exact visible Tu partida label');
         }else{
           assert.equal(metrics.visibleDestinations.length,5,'B must expose five bottom destinations');
           assert(!metrics.visibleDestinations.includes('Tu partida'),'B hides only duplicate Tu partida nav entry');
           assert(metrics.saveTopbar.text.includes('Partida'),'B must retain persistent topbar route to Tu partida');
           assert(metrics.saveTopbar.ariaLabel?.includes('Tu partida'),'B topbar route must retain accessible Tu partida name');
+          assert.equal(metrics.access.saveSurface,'topbar','B moves save access to topbar');
         }
         rows.push({viewport:viewport.id,width:viewport.width,height:viewport.height,variant,...metrics});
       }finally{
@@ -101,9 +126,27 @@ for(const viewport of ['phone-360','phone-primary','phone-412']){
     minButtonWidthA:a.minButtonWidth,
     minButtonWidthB:b.minButtonWidth,
     minButtonWidthDelta:b.minButtonWidth-a.minButtonWidth,
-    saveTopbarHeight:b.saveTopbar.height,
+    minButtonHeightA:a.minButtonHeight,
+    minButtonHeightB:b.minButtonHeight,
+    minLabelPxA:Math.min(...a.labelSizes),
+    minLabelPxB:Math.min(...b.labelSizes),
+    minGapPxA:a.minGapPx,
+    minGapPxB:b.minGapPx,
     overflowA:a.overflow.length,
-    overflowB:b.overflow.length
+    overflowB:b.overflow.length,
+    tapsToSaveA:a.access.tapsToSave,
+    tapsToSaveB:b.access.tapsToSave,
+    visibleSaveLabelA:a.access.visibleSaveLabel,
+    visibleSaveLabelB:b.access.visibleSaveLabel,
+    saveSurfaceA:a.access.saveSurface,
+    saveSurfaceB:b.access.saveSurface,
+    distanceFromBottomA:a.access.distanceFromBottom,
+    distanceFromBottomB:b.access.distanceFromBottom,
+    reachDistanceDelta:b.access.distanceFromBottom-a.access.distanceFromBottom,
+    focusableA:a.access.directFocusable,
+    focusableB:b.access.directFocusable,
+    accessibleNameA:a.access.accessibleSaveName,
+    accessibleNameB:b.access.accessibleSaveName
   });
 }
 console.log(JSON.stringify({gate:'PASS',rows:rows.length,comparisons}));
