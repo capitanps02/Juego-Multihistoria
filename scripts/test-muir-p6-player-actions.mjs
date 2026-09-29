@@ -55,9 +55,9 @@ test('P6-OPT-001 options preserve public order and canonical command payload',()
   assert.doesNotMatch(render,/availableOptions\.sort/);
 });
 
-test('P6-RES-001 result uses public history without invented success fallback',()=>{
-  assert.match(render,/v\.actions\?\.history/);
-  assert.match(render,/row\.executionId===playerActionUi\.resultExecutionId/);
+test('P6-RES-001 result uses public lastResult without invented success fallback',()=>{
+  assert.match(render,/v\.actions\?\.lastResult/);
+  assert.match(render,/result\.executionId!==playerActionUi\.resultExecutionId/);
   assert.doesNotMatch(render,/La acción se ha registrado correctamente/);
   assert.match(render,/Volver a Inicio/);
   assert.match(render,/navigate\('home'\)/);
@@ -68,7 +68,7 @@ test('P6-OPTNL-001 no pressure, resources or invented counters enter Player Acti
     assert.equal(render.includes(forbidden),false,forbidden);
   }
   assert.match(render,/Opcional: entra sólo si quieres hacer algo antes de simular\./);
-  assert.match(web,/SIMULAR/);
+  assert.match(web,/button\('Simular'/);
 });
 
 test('P6-RESP-001 Player Actions controls keep mobile targets and wrapping',()=>{

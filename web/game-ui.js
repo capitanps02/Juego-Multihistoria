@@ -285,9 +285,9 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
       return true;
     }
     if(playerActionUi.screen==='player_action_result'){
-      const result=(v.actions?.history??[]).find(row=>row.executionId===playerActionUi.resultExecutionId)??null;
-      if(!result){playerActionUi={screen:'player_action_menu',categoryId:null,actionId:null,targetId:null,resultExecutionId:null};return renderPlayerActions(v,main);}
-      const p=panel(result.actionLabel);p.classList.add('player-action-result');p.prepend(el('span','ACCIÓN COMPLETADA','eyebrow'));p.append(el('p',result.text,'story-text'));
+      const result=v.actions?.lastResult??null;
+      if(!result||result.executionId!==playerActionUi.resultExecutionId){playerActionUi={screen:'player_action_menu',categoryId:null,actionId:null,targetId:null,resultExecutionId:null};return renderPlayerActions(v,main);}
+      const p=panel(a.label);p.classList.add('player-action-result');p.prepend(el('span','ACCIÓN COMPLETADA','eyebrow'));p.append(el('p',result.text,'story-text'));
       const actions=el('div',undefined,'player-action-result-actions');actions.append(button('Realizar otra acción',()=>{playerActionUi={screen:'player_action_menu',categoryId:null,actionId:null,targetId:null,resultExecutionId:null};render(true);}),button('Volver a Inicio',()=>navigate('home'),'primary'));p.append(actions);main.append(p);return true;
     }
     resetPlayerActions();return false;
