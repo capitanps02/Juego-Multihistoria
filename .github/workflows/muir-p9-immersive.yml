@@ -36,8 +36,10 @@ jobs:
           git worktree remove /tmp/muir-p8-certified
       - name: P7 semantic regression
         run: node scripts/test-muir-p7-semantic-components.mjs
-      - name: Decision/result/session regressions
-        run: node --test scripts/test-session.mjs scripts/test-t55-consequences.mjs scripts/test-t55-a19-ui.mjs
+      - name: Decision/result focused session smoke
+        run: node --test scripts/test-muir-p9-session-smoke.mjs
+      - name: Decision consequence and UI regressions
+        run: node --test scripts/test-t55-consequences.mjs scripts/test-t55-a19-ui.mjs
       - name: Offer/PublicOffer/delegation regressions
         run: node --test scripts/test-offers.mjs scripts/test-t51-offer-bridge.mjs scripts/test-t51-offer-bridge-provenance.mjs
       - name: Cinematic and fallback regressions
