@@ -78,6 +78,8 @@ jobs:
         run: node analysis/muir/p9/browser-results-probe.mjs
       - name: P9 Offer responsive and accessibility matrix
         run: node analysis/muir/p9/browser-offers-probe.mjs
+      - name: P9 Cinematic real-video and fallback matrix
+        run: node analysis/muir/p9/browser-cinematics-probe.mjs
       - name: P9 Cinematic responsive and fallback matrix
         run: node analysis/muir/p9/browser-cinematics-probe.mjs
       - name: Upload P9 baseline evidence
