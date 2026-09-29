@@ -46,6 +46,8 @@ jobs:
         run: node scripts/capture-muir-browser.mjs
       - name: P3 Home identity and core-loop probe
         run: node analysis/muir/p3/browser-home-probe.mjs
+      - name: P3 Home accessibility and 130% text
+        run: node analysis/muir/p3/browser-a11y-probe.mjs
       - name: P2 shell regression
         run: |
           node analysis/muir/p2/browser-safe-area-probe.mjs
@@ -70,3 +72,5 @@ jobs:
         run: npm run android:offline
       - name: Android offline
         run: npm run test:android:offline
+      - name: Final executable P3 gate
+        run: node scripts/test-muir-p3-final-gate.mjs
