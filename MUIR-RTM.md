@@ -223,3 +223,30 @@ P6 exact-head workflow and `scripts/test-muir-p6-final-gate.mjs` are authoritati
 - Gameplay/balance/catalog/availability/cooldown/facts/intents/save-schema changes: **0**.
 - Invented counters/resources/consequences: **0**.
 - Candidate code SHA `435caa6546b303e5977547f09663260cf9ca823c` completed workflow `36589963173` with SUCCESS, including the executable final gate. The RTM-closing commit must itself repeat that exact-head workflow successfully; until then the branch-level certification is still pending.
+
+
+## P7 — Componentes semánticos Football Database V2
+
+P7 authorized predecessor: `e2b54ec654a32b8665925bec7811363003e482ed` · P6 exact-head run `36591367106` SUCCESS  
+P7 branch: `ui-a5/muir-p7-semantic-db`  
+Football Database V2: `world-v2-a2-2026-09-28` · canonical release train PR #865  
+P7 scope: presentation-only; no `src/**`, DB, market, offer authority, gameplay, RNG or save-schema change.
+
+| REQ_ID | Description | Owner | Pass | Implementation | Test | Evidence | Gate | Rollback | Status |
+|---|---|---|---|---|---|---|---|---|---|
+| P7-NEWS-001 | NewsCard renders only public `news[].date/text` and has truthful empty/long states | UI-A5 | P7.2–P7.5 | web/game-ui.js + CSS | static semantic gate + browser variants | p7-browser-semantic-components.json + screenshots | MUIR-P7 | revert NewsCard extraction | READY_FOR_GATE |
+| P7-MATCH-001 | LatestMatchCard uses only public latest-match facts and omits unavailable optionals | UI-A5 | P7.2–P7.5 | web/game-ui.js | full/partial/empty browser variants | p7 browser evidence | MUIR-P7 | revert LatestMatchCard extraction | READY_FOR_GATE |
+| P7-SEASON-001 | CareerSeasonCard presents only authorized public season statistics | UI-A5 | P7.3–P7.5 | web/game-ui.js | long/partial/multi-season fixtures + static contract | semantic fixtures + browser evidence | MUIR-P7 | revert CareerSeasonCard extraction | READY_FOR_GATE |
+| P7-CONTRACT-001 | ContractSummary presents public club/salary/months without free-agent or role inference | UI-A5 | P7.3–P7.5 | web/game-ui.js | complete/zero-month variants | browser semantic evidence | MUIR-P7 | revert ContractSummary extraction | READY_FOR_GATE |
+| P7-OFFER-001 | OfferCard preserves PublicOffer before/terms semantics and canonical actions | UI-A5 | P7.4–P7.5 | web/game-ui.js | loan/non-loan + command static guard | semantic/browser evidence | MUIR-P7 | restore predecessor offer renderer | READY_FOR_GATE |
+| P7-PERSON-001 | PersonCard uses public name/role and presentation portrait/initials only | UI-A5 | P7.4–P7.5 | web/game-ui.js | long/no-image/known-image variants | browser semantic evidence | MUIR-P7 | restore predecessor contact renderer | READY_FOR_GATE |
+| P7-ID-001 | No club/person/match/offer internal ID is visible to the player | UI-A5 | P7.1–P7.5 | existing club formatter + semantic renderers | static ID guard + browser text scan | semantic/browser evidence | MUIR-P7 | revert offending renderer | READY_FOR_GATE |
+| P7-OPT-001 | Missing optional public fields never render technical null/undefined/N/A/dash placeholders | UI-A5 | P7.1–P7.5 | optional row omission | partial fixtures + browser scan | semantic/browser evidence | MUIR-P7 | restore safe omission | READY_FOR_GATE |
+| P7-LONG-001 | Long club/person/news values wrap without losing decision-relevant information | UI-A5 | P7.1–P7.5 | semantic responsive CSS | 360/390/412/tablet + 130/180% text | P7 screenshots/browser evidence | MUIR-P7 | revert P7 wrapping CSS | READY_FOR_GATE |
+| P7-DBAUTH-001 | Football Database V2 is read-only from P7 and existing formatters are reused unchanged | UI-A5 | P7.1–P7.5 | no src/catalog or formatter changes | exact P6→P7 diff + baseline gate | p7-baseline.json | MUIR-P7 | revert out-of-scope diff | READY_FOR_GATE |
+| P7-OFFAUTH-001 | PublicOffer authority and offer command semantics are unchanged | UI-A5 | P7.1–P7.5 | presentation renderer only | public whitelist + canonical command guards | semantic gate | MUIR-P7 | revert OfferCard change | READY_FOR_GATE |
+| P7-RESP-001 | Semantic components work at 360×800, 390×844, 412×915 and tablet without horizontal overflow | UI-A5 | P7.5 | shared CSS | dedicated Playwright matrix | screenshots + p7 browser evidence | MUIR-P7 | revert offending style | READY_FOR_GATE |
+| P7-A11Y-001 | Components have readable semantic grouping, no serious/critical AXE finding and survive text scaling | UI-A5 | P7.5 | native article/time/text controls | AXE + 100/130/180% text probe | p7 browser evidence | MUIR-P7 | revert offending semantic/style change | READY_FOR_GATE |
+| P7-MKTAUTH-001 | Market state/results/gameplay remain unchanged because P7 modifies no runtime authority | UI-A5 | P7.1–P7.5 | no src changes | exact diff + football/match regressions | baseline + workflow | MUIR-P7 | revert out-of-scope diff | READY_FOR_GATE |
+
+P7 rows remain `READY_FOR_GATE` until an exact-head workflow succeeds. They must be promoted to `PASS` only after reproducible CI evidence exists on the candidate SHA, followed by one final exact-head certification run on the RTM-closing SHA.
