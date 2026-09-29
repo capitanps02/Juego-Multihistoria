@@ -35,7 +35,7 @@ import { MICROFEEDS_30_34 } from "../content/microfeeds/30_34.js";
 import { MICROFEEDS_34_PLUS } from "../content/microfeeds/34_plus.js";
 import { generateEpilogue } from "../epilogue/generator.js";
 import { ENGINE_BUILD } from "../core/build.js";
-import { assertGameState, parseSaveJson, record, validateData } from "../save/validation.js";
+import { assertGameState, assertRuntimePlayerIdentity, parseSaveJson, record, validateData } from "../save/validation.js";
 import { assertSessionSnapshot } from "./validate-session.js";
 import { knownPlayerContacts } from "../core/player-contacts.js";
 import { NPC_CATALOG } from "../catalog/npcs.js";
@@ -532,6 +532,7 @@ export class GameSession {
     const contentSources = options.contentSources ?? LEGACY_CONTENT_SOURCES;
     const header=record(snapshot,"session");
     ensurePlayerIdentityInPlace(header.state);
+    assertRuntimePlayerIdentity(header.state);
     requireThat(typeof header.contentIdentity === "string", "INVALID_SAVE", "Falta la identidad del contenido.");
     requireThat(header.contentIdentity === activeContentIdentity, "CONTENT_CHANGED", "El contenido cambió; conserva la partida para migrarla antes de continuar.");
     await assertSessionSnapshot(snapshot, { events, activeContentIdentity, activeEvidence, contentSources });
@@ -559,6 +560,7 @@ export class GameSession {
     const contentSources = options.contentSources ?? LEGACY_CONTENT_SOURCES;
     const header = record(snapshot,"session");
     ensurePlayerIdentityInPlace(header.state);
+    assertRuntimePlayerIdentity(header.state);
     requireThat(typeof header.contentIdentity === "string", "INVALID_SAVE", "Falta la identidad del contenido.");
     const sourceContentIdentity = header.contentIdentity;
     if (sourceContentIdentity === activeContentIdentity) return GameSession.resume(snapshot, options);
