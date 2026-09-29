@@ -16,7 +16,6 @@ on:
       - 'scripts/test-muir-id01-player-identity.mjs'
       - 'scripts/test-muir-id01-gate.mjs'
       - 'analysis/muir/ID-01_PLAYER_IDENTITY.md'
-      - 'web/game-ui.js'
       - '.github/workflows/muir-id01-player-identity.yml'
 
 concurrency:
