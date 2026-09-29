@@ -29,6 +29,8 @@ assert(css.includes('.save-status{position:absolute;bottom:calc(12px + var(--mui
 assert(css.includes('.alert{position:absolute;z-index:20;left:max(calc(20px + var(--muir-safe-left)),20%);right:calc(20px + var(--muir-safe-right));bottom:calc(45px + var(--muir-safe-bottom));'), 'alert must clear base safe areas');
 assert(css.includes('.busy-status{position:absolute;inset:auto calc(25px + var(--muir-safe-right)) calc(25px + var(--muir-safe-bottom)) auto;'), 'busy status must clear base safe areas');
 assert(css.includes('.pause-status{position:absolute;left:50%;bottom:calc(12px + var(--muir-safe-bottom));'), 'pause status must clear base bottom safe area');
+assert(css.includes('@media(max-height:500px) and (orientation:landscape){.mh{grid-template-columns:minmax(0,1fr);grid-template-rows:60px minmax(0,1fr) 60px;'), 'short landscape must use the compact shell');
+assert(css.includes('min-height:0}.topbar{padding:5px 10px;border-radius:16px;gap:8px}'), 'short landscape must clear the legacy 580px minimum');
 assert(css.includes('.cinema-top button{font-size:10px;min-height:48px;padding:8px 11px}'), 'mobile cinematic topbar control must be at least 48px');
 
 const destinations=[
