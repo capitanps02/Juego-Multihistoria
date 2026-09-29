@@ -67,4 +67,8 @@ try{
   await browser.close();
   server.close();
 }
-console.log(JSON.stringify({gate:'PASS',cases:rows.length,rows}));
+const report={gate:'PASS',cases:rows.length,rows};
+const evidenceDir=path.join(root,'analysis','muir','p2','evidence');
+fs.mkdirSync(evidenceDir,{recursive:true});
+fs.writeFileSync(path.join(evidenceDir,'topbar.json'),JSON.stringify(report,null,2)+'\n');
+console.log(JSON.stringify(report));
