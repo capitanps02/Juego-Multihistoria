@@ -393,7 +393,7 @@ export interface RuntimeState {
 
 export interface GameState {
   /** Canonical protagonist identity. Historical raw saves are upgraded before entering runtime. */
-  playerIdentity: import("./player-identity.js").PlayerIdentity;
+  playerIdentity?: import("./player-identity.js").PlayerIdentity;
   /** Present on Football Database V2-native saves; historical schema-8 saves may omit it. */
   footballCatalogVersion?: string;
   /** Optional/lazy V1 Player Actions store. Historical saves omit it. */
