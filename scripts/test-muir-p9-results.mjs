@@ -25,7 +25,7 @@ function resultBranch(){
 test('P9.3 is a presentation-only successor of certified P9.2',()=>{
   assert.equal(git('merge-base','HEAD',PASS2),PASS2);
   const files=git('diff','--name-only',PASS2+'..HEAD').split(/\r?\n/).filter(Boolean);
-  const allowed=/^(?:web\/(?:game-ui\.(?:js|css)|cutscene-player\.js)|analysis\/muir\/p9\/|android\/app\/src\/androidTest\/|android\/app\/src\/main\/java\/com\/multihistoria\/MainActivity\.java$|scripts\/test-muir-p9-|docs\/muir\/P9_|\.github\/workflows\/muir-p9-|MUIR-RTM\.md$)/;
+  const allowed=/^(?:web\/(?:game-ui\.(?:js|css)|cutscene-player\.js)|analysis\/muir\/p9\/|android\/app\/src\/androidTest\/|android\/app\/src\/main\/java\/com\/multihistoria\/MainActivity\.java$|android\/app\/src\/main\/java\/com\/multihistoria\/MainActivity\.java$|scripts\/test-muir-p9-|docs\/muir\/P9_|\.github\/workflows\/muir-p9-|MUIR-RTM\.md$)/;
   assert.deepEqual(files.filter(x=>!allowed.test(x)),[]);
   assert.equal(git('diff','--name-only',P8+'..HEAD','--','src'),'','P9 must not modify src authority');
 });
