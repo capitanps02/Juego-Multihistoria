@@ -64,6 +64,7 @@ const deterministicCss=css+`
 
 const session=await buildFixtureSession(fixtureId);
 const snapshot=session.exportSnapshot();
+globalThis.__MUIR_PUBLIC_VIEW__=()=>structuredClone(session.getView());
 const storageKey='muir.p0.'+MUIR_BASE_SHA.slice(0,12)+'.'+fixtureId;
 localStorage.setItem(storageKey,JSON.stringify(snapshot));
 
