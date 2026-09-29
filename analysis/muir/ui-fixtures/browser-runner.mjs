@@ -1,6 +1,7 @@
 // MUIR P0 browser harness. TEST-ONLY; never imported by production entrypoints.
 import {GameSession} from '/dist/session/game-session.js';
 import {mountGame} from '/web/game-ui.js';
+import {createIndexedSaveStore} from '/web/indexed-save-store.js';
 import {MUIR_BASE_SHA,MUIR_VIEWPORTS,fixtureById} from '/analysis/muir/ui-fixtures/fixtures.mjs';
 import {buildFixtureSession,fixtureEventCatalog} from '/analysis/muir/ui-fixtures/session-recipes.mjs';
 
@@ -71,7 +72,6 @@ const deterministicCss=css+`
 
 const session=await buildFixtureSession(fixtureId);
 const snapshot=session.exportSnapshot();
-globalThis.__MUIR_PUBLIC_VIEW__=()=>structuredClone(session.getView());
 const storageKey='muir.p0.'+MUIR_BASE_SHA.slice(0,12)+'.'+fixtureId;
 localStorage.setItem(storageKey,JSON.stringify(snapshot));
 
@@ -90,6 +90,11 @@ const cutsceneUrl=clip=>{
 };
 
 mountGame({root,GameSession,assets,css:deterministicCss,storageKey,cutsceneUrl,events:fixtureEventCatalog(fixtureId)});
+const p5ProbeStore=createIndexedSaveStore({storage:localStorage,indexedDB,key:storageKey,validate:async()=>{}});
+globalThis.__MUIR_READ_SAVED_SNAPSHOT__=async()=>{
+  const raw=await p5ProbeStore.readRaw();
+  return raw?JSON.parse(raw):null;
+};
 const mutationObserver=new MutationObserver(records=>{perf.uiMutationBatches++;perf.uiMutationRecords+=records.length;});
 mutationObserver.observe(root,{subtree:true,childList:true,characterData:true,attributes:true});
 
