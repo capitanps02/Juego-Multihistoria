@@ -670,7 +670,7 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
     });}catch(e){message='No se pudo importar. '+e.message;busy=false;render();}}
   function confirmReplace(title,body,accept){const dialog=el('dialog',undefined,'dialog');dialog.append(el('h2',title),el('p',body));const actions=el('div',undefined,'dialog-actions');actions.append(button('Cancelar',()=>dialog.close()),button('Confirmar',async()=>{dialog.close();busy=true;busyLabel='Guardando tu historia…';message='';render();try{await accept();}catch(e){message=e.message;}finally{busy=false;render();}},'primary'));dialog.append(actions);shell.append(dialog);dialog.addEventListener('close',()=>dialog.remove());dialog.showModal();}
   function saves(v,main){
-    main.classList.add('p8-saves');
+    main.classList.add('p8-save');
     const intro=el('header',undefined,'save-intro');
     intro.append(el('span','CONTINÚA DONDE LO DEJASTE','eyebrow'),el('h1','Tu partida.'),el('p','Gestiona la copia local de esta carrera, recupera una copia existente o empieza otra historia.','muted'));main.append(intro);
 
@@ -681,18 +681,23 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
     current.append(currentActions,el('p','Guardado automático activo','save-auto-status'));main.append(current);
 
     const recovery=panel('Copias y recuperación');recovery.classList.add('save-recovery');
-    recovery.append(el('p','Puedes importar una copia JSON para recuperarla en este dispositivo. Antes de sustituir la partida se mostrará una confirmación.','muted'));
-    const importWrap=el('div',undefined,'save-import-block');
+    recovery.append(el('p','Estas opciones trabajan únicamente con copias locales de tu partida. Antes de sustituirla se mostrará una confirmación.','muted'));
+    const support=el('div',undefined,'save-support-grid');
+
+    const importBlock=el('section',undefined,'save-support-card save-import');
+    importBlock.append(el('h3','Importar una copia'),el('p','Selecciona una copia JSON compatible para recuperarla en este dispositivo.','muted'));
     const input=el('input');input.type='file';input.accept='.json,application/json';input.id='mh-import';input.setAttribute('aria-label','Importar copia de partida');input.addEventListener('change',()=>importFile(input.files[0]));
-    const label=el('label','Importar copia de partida','file-label');label.append(input);importWrap.append(label);recovery.append(importWrap);
+    const label=el('label','Importar copia de partida','file-label');label.append(input);importBlock.append(label);support.append(importBlock);
+
     if(hasBackup()){
-      const previous=el('section',undefined,'save-recovery-block save-previous');previous.append(el('h3','Copia anterior'),el('p','Estado anterior de recuperación. Si lo restauras, volverás a ese punto y la partida actual quedará protegida durante la sustitución.','muted'),button('Recuperar copia anterior',async()=>{try{const raw=await store.previous();if(!raw)throw Error('No hay copia anterior.');await importFile(new File([raw],'anterior.json',{type:'application/json'}));}catch(e){message=e.message;render();}}));recovery.append(previous);
+      const previous=el('section',undefined,'save-support-card save-backup');previous.append(el('h3','Copia anterior'),el('p','Estado anterior de recuperación. Si lo restauras, volverás a ese punto y la partida actual quedará protegida durante la sustitución.','muted'),button('Recuperar copia anterior',async()=>{try{const raw=await store.previous();if(!raw)throw Error('No hay copia anterior.');await importFile(new File([raw],'anterior.json',{type:'application/json'}));}catch(e){message=e.message;render();}}));support.append(previous);
     }
+
     const legacy=store.legacyRaw();
     if(legacy){
-      const old=el('section',undefined,'save-recovery-block save-legacy');old.append(el('h3','Copia antigua'),el('p','Procede del sistema de guardado anterior. Descargarla no restaura ni sustituye tu partida actual.','muted'),button('Descargar copia antigua',()=>downloadText(legacy,'multihistoria-copia-antigua.json')));recovery.append(old);
+      const old=el('section',undefined,'save-support-card save-legacy');old.append(el('h3','Copia antigua'),el('p','Procede del sistema de guardado anterior. Descargarla no restaura ni sustituye tu partida actual.','muted'),button('Descargar copia antigua',()=>downloadText(legacy,'multihistoria-copia-antigua.json')));support.append(old);
     }
-    main.append(recovery);
+    recovery.append(support);main.append(recovery);
 
     const n=panel('Otra historia');n.classList.add('save-new-story');n.append(el('p','Empieza una carrera distinta usando un nombre y un código de historia. El mismo código permite reproducir esta historia desde el inicio; tu identidad se guarda con la partida. Conservaremos una copia de tu carrera actual.','muted'));
     const fields=el('div',undefined,'save-new-fields');
