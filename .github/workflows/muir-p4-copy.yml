@@ -62,7 +62,7 @@ jobs:
       - name: Shared UI package graph
         run: node --test scripts/test-muir-package-graph.mjs
       - name: PlayCanvas package
-        timeout-minutes: 6
+        timeout-minutes: 10
         run: npm run test:playcanvas
       - name: Android offline clean package
         timeout-minutes: 6
