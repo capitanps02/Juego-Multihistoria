@@ -84,6 +84,7 @@ const allowed=p=>
   p==='docs/muir/P4_GATE.md'||
   p==='scripts/test-muir-p4-copy.mjs'||
   p==='scripts/test-player-actions-ui-contract.mjs'||
+  p==='scripts/test-t55-a19-ui.mjs'||
   p==='.github/workflows/muir-p4-copy.yml'||
   p==='docs/muir/P4_GATE.md'||
   p.startsWith('analysis/muir/p4/');
