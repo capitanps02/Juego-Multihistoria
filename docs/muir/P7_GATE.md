@@ -1,0 +1,62 @@
+# MUIR P7 — Gate
+
+## Authority
+
+- P6 certified / exact P7 predecessor: `e2b54ec654a32b8665925bec7811363003e482ed`
+- P6 exact-head workflow: `36591367106` = **SUCCESS**
+- P7 branch: `ui-a5/muir-p7-semantic-db`
+- Football Database V2: `world-v2-a2-2026-09-28`
+
+## Scope
+
+P7 is presentation-semantic only.
+
+Allowed product files:
+
+- `web/game-ui.js`
+- `web/game-ui.css`
+
+Allowed evidence/test/docs/workflow files are limited to P7-specific paths plus `MUIR-RTM.md`.
+
+Forbidden:
+
+- any `src/**` modification
+- Football Database mutation
+- PlayerView expansion
+- market/offer command change
+- gameplay/RNG/persistence change
+- invented standings/GRL/private relationship data
+
+## Candidate components
+
+- NewsCard
+- LatestMatchCard
+- CareerSeasonCard
+- ContractSummary
+- OfferCard
+- PersonCard
+
+## Executable gate
+
+The P7 workflow executes:
+
+1. exact predecessor + DB V2 baseline
+2. semantic component/static authority audit
+3. Football DB V2 / match / UI / offer regressions
+4. Chromium semantic-component matrix
+5. 360×800 / 390×844 / 412×915 / 768×1024
+6. 100 / 130 / 180% text scale probes
+7. AXE serious/critical audit
+8. internal-ID / undefined/null / N/A / technical-dash visible-text audit
+9. P6 Player Actions browser regression
+10. PlayCanvas shared package regression
+11. Android offline package/regression
+12. exact-head final gate
+
+## Current certification state
+
+**IN_PROGRESS / READY_FOR_CI**
+
+No P7 RTM row may be treated as PASS until the exact current HEAD workflow completes successfully.
+
+P8 must not begin before a final exact-head P7 workflow is SUCCESS and this document is closed to PASS.
