@@ -18,7 +18,9 @@ const contract=read('analysis/muir/ID-01_PLAYER_IDENTITY.md');
 
 assert(types.includes('playerIdentity?: import("./player-identity.js").PlayerIdentity'),'legacy-compatible GameState identity contract missing');
 assert(identity.includes('PLAYER_ID = "PLR_001"'),'PLR_001 authority missing');
-assert(identity.includes('PLAYER_DISPLAY_NAME_MAX_CODE_POINTS = 64'),'explicit name limit missing');
+assert(identity.includes('PLAYER_DISPLAY_NAME_MIN_GRAPHEMES = 2'),'explicit minimum grapheme limit missing');
+assert(identity.includes('PLAYER_DISPLAY_NAME_MAX_GRAPHEMES = 32'),'explicit maximum grapheme limit missing');
+assert(identity.includes('new Intl.Segmenter("es", { granularity: "grapheme" })'),'grapheme segmentation contract missing');
 assert(initial.includes('playerIdentity: makePlayerIdentity(playerDisplayName)'),'new-career identity missing');
 assert(validation.includes('assertPlayerIdentity(value, false)'),'raw-save optional identity validation missing');
 assert((validation.match(/assertPlayerIdentity\(value, false\)/g) ?? []).length >= 2,'save/runtime validation must accept historical absence while validating persisted identity');
