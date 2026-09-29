@@ -60,6 +60,7 @@ test('P6-RES-001 result uses public lastResult without invented success fallback
   assert.match(render,/v\.actions\?\.lastResult/);
   assert.match(render,/result\.executionId!==playerActionUi\.resultExecutionId/);
   assert.doesNotMatch(render,/La acción se ha registrado correctamente/);
+  assert.match(render,/el\('h1',a\.label\)/);
   assert.match(render,/Volver a Inicio/);
   assert.match(render,/navigate\('home'\)/);
 });

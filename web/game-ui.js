@@ -288,7 +288,7 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
     if(playerActionUi.screen==='player_action_result'){
       const result=v.actions?.lastResult??null;
       if(!result||result.executionId!==playerActionUi.resultExecutionId){playerActionUi={screen:'player_action_menu',categoryId:null,actionId:null,targetId:null,resultExecutionId:null};return renderPlayerActions(v,main);}
-      const p=panel(a.label);p.classList.add('player-action-result');p.prepend(el('span','ACCIÓN COMPLETADA','eyebrow'));p.append(el('p',result.text,'story-text'));
+      const p=el('article',undefined,'panel player-action-result');p.append(el('span','ACCIÓN COMPLETADA','eyebrow'),el('h1',a.label),el('p',result.text,'story-text'));
       const actions=el('div',undefined,'player-action-result-actions');actions.append(button('Realizar otra acción',()=>{playerActionUi={screen:'player_action_menu',categoryId:null,actionId:null,targetId:null,resultExecutionId:null};render(true);}),button('Volver a Inicio',()=>navigate('home'),'primary'));p.append(actions);main.append(p);return true;
     }
     resetPlayerActions();return false;
