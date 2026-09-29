@@ -1,0 +1,60 @@
+name: MUIR P5 Auto Simulation
+
+on:
+  push:
+    branches:
+      - ui-a3/muir-p5-autosim
+  pull_request:
+    branches:
+      - ui-a2/muir-p4-microcopy
+    paths:
+      - 'web/game-ui.js'
+      - 'web/game-ui.css'
+      - 'preview/app.js'
+      - 'MUIR-RTM.md'
+      - 'docs/muir/P5_GATE.md'
+      - 'analysis/muir/p5/**'
+      - 'scripts/test-t55-auto-simulation.mjs'
+      - 'scripts/test-player-actions-ui-contract.mjs'
+      - '.github/workflows/muir-p5-autosim.yml'
+
+concurrency:
+  group: muir-p5-autosim-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  p5-baseline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Build engine
+        run: npm run build
+      - name: Auto-simulation runtime regression
+        run: node --test scripts/test-t55-auto-simulation.mjs
+      - name: Player Actions auto-state regression
+        run: node --test scripts/test-player-actions-ui-contract.mjs
+      - name: P4 semantic regression
+        run: node scripts/test-muir-p4-copy.mjs
+      - name: Install browser probe tooling
+        run: |
+          npm install --no-save playwright@1.55.0 axe-core@4
+          npx playwright install --with-deps chromium
+      - name: P5 auto-sim cadence focus and scroll probe
+        run: node analysis/muir/p5/browser-autosim-probe.mjs
+      - name: Upload P5 baseline evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: muir-p5-baseline-${{ github.event.pull_request.head.sha || github.sha }}
+          if-no-files-found: warn
+          path: |
+            analysis/muir/p5/evidence/*.json
