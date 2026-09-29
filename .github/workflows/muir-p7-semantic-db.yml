@@ -7,6 +7,7 @@ on:
   pull_request:
     branches:
       - ui-a4/muir-p6-player-actions
+      - ui-a5/muir-p7-ci-base
     paths:
       - 'web/game-ui.js'
       - 'web/game-ui.css'
