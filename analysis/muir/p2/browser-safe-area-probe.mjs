@@ -51,6 +51,7 @@ try{
         const topbar=root.querySelector('.topbar');
         const nav=root.querySelector('.navigation');
         const date=root.querySelector('.date-button');
+        const status=root.querySelector('.save-status,.pause-status,.busy-status,.alert');
         const buttons=[...root.querySelectorAll('.nav-button')];
         const rect=n=>{const r=n.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height,right:r.right,bottom:r.bottom};};
         const style=n=>getComputedStyle(n);
@@ -60,6 +61,7 @@ try{
           topbar:rect(topbar),
           nav:rect(nav),
           date:rect(date),
+          status:status&&style(status).display!=='none'?{className:status.className,...rect(status)}:null,
           navButtons:buttons.map(b=>({text:b.textContent.trim(),...rect(b),fontSize:parseFloat(style(b).fontSize)})),
           overflow
         };
@@ -82,6 +84,10 @@ try{
         assert(metrics.nav.x>=c.base+c.insets.left-.5,c.id+' bottom nav intrudes left safe-area');
       }else{
         assert(metrics.nav.x>=c.base+c.insets.left-.5,c.id+' side nav intrudes left safe-area');
+      }
+      if(metrics.status){
+        assert(metrics.status.right<=c.width-c.insets.right+.5,c.id+' status overlay intrudes right safe-area');
+        assert(metrics.status.bottom<=c.height-c.insets.bottom+.5,c.id+' status overlay intrudes bottom safe-area');
       }
       assert.deepEqual(metrics.overflow,[],c.id+' horizontal overflow: '+JSON.stringify(metrics.overflow));
       results.push({id:c.id,pass:true,metrics});
