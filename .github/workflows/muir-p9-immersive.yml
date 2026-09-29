@@ -119,26 +119,28 @@ jobs:
       - run: npm ci
       - name: Build Android offline assets
         run: npm run android:offline
-      - name: Install Android API 35 emulator image
-        run: |
-          yes | "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null || true
-          "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" "platform-tools" "emulator" "platforms;android-35" "system-images;android-35;google_apis;x86_64"
-          echo no | "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/avdmanager" create avd --force --name muir-p9-api35 --package "system-images;android-35;google_apis;x86_64"
       - name: Build app and instrumentation APKs
         working-directory: android
         run: gradle --no-daemon :app:assembleDebug :app:assembleDebugAndroidTest
-      - name: Boot dedicated Android emulator
+      - name: Enable KVM for Android emulator
         run: |
-          sudo chmod 666 /dev/kvm || true
-          nohup "$ANDROID_SDK_ROOT/emulator/emulator" -avd muir-p9-api35 -no-window -noaudio -no-boot-anim -gpu swiftshader_indirect -no-snapshot -wipe-data > /tmp/muir-p9-emulator.log 2>&1 &
-          "$ANDROID_SDK_ROOT/platform-tools/adb" wait-for-device
-          timeout 240 bash -c 'until [ "$("$ANDROID_SDK_ROOT/platform-tools/adb" shell getprop sys.boot_completed | tr -d "\r")" = "1" ]; do sleep 2; done'
-          "$ANDROID_SDK_ROOT/platform-tools/adb" shell input keyevent 82
+          if [ -e /dev/kvm ]; then
+            sudo chown "$USER" /dev/kvm || true
+            sudo chmod 660 /dev/kvm || true
+          fi
       - name: P9 native Android Back semantics
-        run: |
-          SERIAL=$("$ANDROID_SDK_ROOT/platform-tools/adb" devices | awk '/^emulator-/{print $1; exit}')
-          test -n "$SERIAL"
-          node scripts/test-muir-p9-android-back.mjs "$SERIAL"
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_2
+          disable-animations: true
+          emulator-options: -no-window -noaudio -no-boot-anim -gpu swiftshader_indirect -no-snapshot
+          script: |
+            SERIAL=$(adb devices | awk '/^emulator-/{print $1; exit}')
+            test -n "$SERIAL"
+            node scripts/test-muir-p9-android-back.mjs "$SERIAL"
       - name: Upload Android Back evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -147,4 +149,3 @@ jobs:
           if-no-files-found: warn
           path: |
             analysis/muir/p9/evidence/p9-android-back.json
-            /tmp/muir-p9-emulator.log
