@@ -1,6 +1,9 @@
 name: MUIR P4 Microcopy
 
 on:
+  push:
+    branches:
+      - ui-a2/muir-p4-microcopy
   pull_request:
     branches:
       - ui-a2/muir-p3-home
