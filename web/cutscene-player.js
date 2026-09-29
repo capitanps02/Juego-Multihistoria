@@ -16,11 +16,12 @@ export function createCutscenePlayer({document:doc,clip,url,posterUrl=null,autop
   const stop=(nextState='poster',message='')=>{video.pause();video.hidden=true;close.hidden=true;play.hidden=false;if(poster)poster.hidden=false;state(nextState);status.textContent=message;status.hidden=!message;};
   const start=()=>{
     if(disposed)return;
-    if(poster)poster.hidden=true;video.hidden=false;close.hidden=false;play.hidden=true;status.hidden=false;state('loading');close.focus({preventScroll:true});status.textContent='Sonido original disponible en los controles del vídeo.';
+    if(poster)poster.hidden=true;video.hidden=false;close.hidden=false;play.hidden=true;status.hidden=false;state('loading');close.focus({preventScroll:true});status.textContent='Cargando escena…';
     Promise.resolve(video.play()).catch(()=>{if(!disposed){state('poster');status.textContent='Pulsa reproducir en los controles del vídeo.';}});
   };
   play.addEventListener('click',start);
-  video.addEventListener('playing',()=>{if(disposed)return;state('playing');onStarted();},{once:true});
+  video.addEventListener('playing',()=>{if(disposed)return;state('playing');status.textContent='Sonido original disponible en los controles del vídeo.';onStarted();},{once:true});
+  video.addEventListener('waiting',()=>{if(disposed||video.hidden)return;state('loading');status.hidden=false;status.textContent='Cargando escena…';});
   video.addEventListener('ended',()=>stop('complete','Escena terminada. Puedes volver a verla o continuar.'));
   if(autoplay)queueMicrotask(()=>{if(!disposed)start();});
   close.addEventListener('click',()=>{onStarted();stop('complete','Escena omitida. Puedes continuar.');play.focus();});
@@ -45,8 +46,9 @@ function createProloguePlayer({doc,clip,url,posterUrl,autoplay,onStarted}) {
   const state=value=>{element.dataset.state=value;dialog.dataset.state=value;};
   const finish=()=>{state('complete');onStarted();video.pause();dialog.close();replay.focus({preventScroll:true});};
   const open=()=>{if(disposed)return;state('poster');dialog.showModal();play.hidden=false;video.hidden=true;if(poster)poster.hidden=false;status.textContent='Un minuto antes de empezar tu carrera.';play.focus();};
-  play.addEventListener('click',()=>{if(poster)poster.hidden=true;video.hidden=false;video.muted=false;play.hidden=true;state('loading');status.textContent='';video.play().catch(()=>{if(!disposed){state('poster');play.hidden=false;if(poster)poster.hidden=false;status.textContent='Pulsa reproducir para iniciar el prólogo.';}});});
-  video.addEventListener('playing',()=>{if(disposed)return;state('playing');onStarted();},{once:true});
+  play.addEventListener('click',()=>{if(poster)poster.hidden=true;video.hidden=false;video.muted=false;play.hidden=true;state('loading');status.textContent='Cargando prólogo…';video.play().catch(()=>{if(!disposed){state('poster');play.hidden=false;if(poster)poster.hidden=false;status.textContent='Pulsa reproducir para iniciar el prólogo.';}});});
+  video.addEventListener('playing',()=>{if(disposed)return;state('playing');status.textContent='';onStarted();},{once:true});
+  video.addEventListener('waiting',()=>{if(disposed||video.hidden)return;state('loading');status.textContent='Cargando prólogo…';});
   video.addEventListener('ended',finish);
   video.addEventListener('error',()=>{if(disposed)return;video.pause();video.hidden=true;if(poster)poster.hidden=false;play.hidden=true;state('error');status.textContent='No se ha podido cargar el prólogo. Puedes continuar con tu historia.';skip.textContent='Empezar historia';});
   skip.addEventListener('click',finish);
