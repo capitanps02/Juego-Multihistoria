@@ -1,4 +1,5 @@
 import type { GameState } from "../core/types.js";
+import { ensurePlayerIdentityInPlace } from "../core/player-identity.js";
 import { makeRngStream } from "../core/rng.js";
 import { assertGameState, ensure, parseSaveJson, record, validateGameSave } from "./validation.js";
 
@@ -105,6 +106,7 @@ export function loadSave(raw:string):GameState{
   else if(version===6) state=v7to8(v6to7(parsed) as unknown as Record<string,unknown>);
   else if(version===7) state=v7to8(parsed);
   else state=parsed as unknown as GameState;
+  ensurePlayerIdentityInPlace(state);
   assertGameState(state);
   return state;
 }
