@@ -183,7 +183,7 @@ button.player-action-back{min-height:48px;white-space:normal;overflow-wrap:anywh
 .p8-profile .profile-hero .player-name{overflow-wrap:anywhere;hyphens:auto}
 .p8-profile .profile-details{display:grid;gap:16px;min-width:0}
 .p8-profile .profile-details>.panel{margin:0}
-.p8-profile .profile-identity input{width:100%}
+.p8-profile .profile-identity input{width:100%;min-width:0}
 .p8-profile .profile-identity .secondary{margin:14px 0 4px;width:100%}
 .p8-profile .profile-moment{min-width:0}
 .p8-profile .profile-moment .meter:last-of-type{margin-bottom:16px}
