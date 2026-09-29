@@ -51,20 +51,22 @@ Schema remains 8.
 
 Raw schema-2..8 saves may omit `playerIdentity`. `validateGameSave` therefore treats absence as historical input compatibility, while validating any persisted identity that is present.
 
-Before a loaded save or historical session snapshot enters runtime:
+Historical raw `loadSave` preserves the exact frozen object shape and therefore does **not** inject identity into schema-2..8 fixtures.
+
+Before a historical **SessionSnapshot** enters interactive runtime, `GameSession.resume/migrateAndResume` materializes:
 
 ```
 missing playerIdentity -> { id:"PLR_001", displayName:"Jugador" }
 ```
 
-This upgrade:
+This session-boundary upgrade:
 - is deterministic;
 - consumes zero RNG;
 - never overwrites an existing persisted identity;
 - preserves all other state exactly;
 - keeps the fallback editable through the normal identity command.
 
-Runtime `assertGameState` requires identity to be present and valid.
+Any persisted identity that is present is validated strictly. Interactive `GameSession` guarantees identity before publishing `PlayerView`; raw historical `GameState` loads may remain identity-less to preserve frozen compatibility.
 
 ## Public/private boundary
 
