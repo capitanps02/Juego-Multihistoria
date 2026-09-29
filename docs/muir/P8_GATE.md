@@ -137,21 +137,44 @@ Evidence chain:
 
 The companion long/responsive static contract is included in the final P8.7 exact-head gate.
 
-## Current state
+## Pass 7 — Final exact-head certification
 
-**READY_FOR_GATE — PASS 7 FINAL EXACT-HEAD**
+Pre-certification full gate on SHA `1e1fb61b72efda45720f34c249ae1c4cc14630ef`:
 
-Pass 7 must run on the final branch HEAD and prove:
+- workflow `36615705748`: **SUCCESS**
+- final exact-head static contract: PASS
+- P7 predecessor / scope guard: PASS
+- Mundo / Carrera / Relaciones / Perfil / Tu partida static contracts: PASS
+- cross-surface hardening + long-responsive contracts: PASS
+- P7 semantic + Football DB public regressions: PASS
+- save/import regressions: PASS
+- persistence interruption stress, 100 decision cycles: PASS
+- five browser matrices: PASS
+- package graph: PASS
+- PlayCanvas package smoke: PASS
+- artifact digest: `sha256:2a4085a5e942108de3186ad4814258bee50eb6dce64bdd3e10b5a41144b8776f`
 
-- exact P7 certified predecessor;
-- all P8 static contracts including long/responsive and final contract;
-- P7 semantic + Football DB public regressions;
-- save/import regressions + 100-cycle persistence stress;
-- all five browser matrices;
-- required viewports and text scales;
-- AXE / overflow / keyboard-focus semantics;
-- package graph + PlayCanvas;
-- no DB / PlayerView / save schema / gameplay authority changes;
-- no P9 work included.
+This certification commit changes only P8 evidence/RTM/final-contract files. Product bytes remain those already certified through P8.5/P8.6.
 
-P8 becomes PASS only after that exact-head workflow is SUCCESS. P9 remains unauthorized until then.
+## Final state
+
+**PASS — P8 CERTIFIED**
+
+This PASS is valid only when the workflow on the current branch HEAD is **SUCCESS**.  
+If the branch HEAD changes afterward, P8 returns to **READY_FOR_GATE** until that new HEAD passes the full P8 workflow.
+
+Certified scope:
+
+- Mundo: PASS
+- Carrera: PASS
+- Relaciones: PASS
+- Perfil: PASS
+- Tu partida: PASS
+- long/responsive hardening: PASS
+- accessibility/text-scale/overflow: PASS
+- DB authority unchanged: PASS
+- PlayerView authority unchanged: PASS
+- save schema / IndexedSaveStore authority unchanged: PASS
+- gameplay / RNG authority unchanged: PASS
+
+P9 remains unauthorized and has not been started.
