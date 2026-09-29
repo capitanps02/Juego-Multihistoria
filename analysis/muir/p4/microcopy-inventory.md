@@ -82,3 +82,12 @@ This duplicates stats help already exposed by `Tu momento`. P4 candidate is a mi
 ## Pass-1 decision
 
 No production string replacement is permitted until the remaining mechanical scan is reconciled against this candidate register. The next implementation pass may only touch rows marked ACORTA / MUEVE / ELIMINA after adding semantic guards.
+
+
+## Pass 2 measured reduction
+
+- Operational candidate set: **561 → 366 characters (34.8% reduction)**.
+- Operational candidate set: **91 → 61 words (33% reduction)**.
+- Permanent Home-help footprint: **467 → 13 characters (97.2% reduction)**; full help remains available through native `details/summary`.
+- Protected narrative reduction: **0**.
+- Destructive confirmation blocks: preserved.
