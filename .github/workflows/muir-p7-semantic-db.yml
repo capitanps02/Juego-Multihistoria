@@ -60,7 +60,7 @@ jobs:
           npm install --no-save playwright@1.55.0 axe-core@4
           npx playwright install --with-deps chromium
       - name: P7 semantic responsive accessibility matrix
-        run: node analysis/muir/p7/browser-semantic-components-probe.mjs
+        run: node analysis/muir/p7/browser-semantic-probe.mjs
       - name: P6 Player Actions visual regression
         run: node analysis/muir/p6/browser-player-actions-probe.mjs
       - name: Shared UI package graph
