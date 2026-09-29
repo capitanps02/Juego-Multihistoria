@@ -1,0 +1,178 @@
+name: MUIR P9 Immersive
+
+on:
+  push:
+    branches:
+      - ui-a6/muir-p9-immersive
+  pull_request:
+    branches:
+      - ui-a5/muir-p8-world-career
+
+concurrency:
+  group: muir-p9-immersive-cert-${{ github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  p9-baseline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Build engine
+        run: npm run build
+      - name: P9 exact predecessor and frozen baseline contract
+        run: node --test scripts/test-muir-p9-baseline.mjs
+      - name: P9 Decision presentation contract
+        run: node --test scripts/test-muir-p9-decisions.mjs
+      - name: P9 Result presentation contract
+        run: node --test scripts/test-muir-p9-results.mjs
+      - name: P9 Offer presentation contract
+        run: node --test scripts/test-muir-p9-offers.mjs
+      - name: P9 Cinematic presentation contract
+        run: node --test scripts/test-muir-p9-cinematics.mjs
+      - name: P9 final authority equivalence contract
+        run: node --test scripts/test-muir-p9-final.mjs
+      - name: P8 certified exact-head regression contract
+        run: |
+          git worktree add /tmp/muir-p8-certified ecc72b9abebbc64533c86b1f3cf7009a127c0c02
+          (cd /tmp/muir-p8-certified && node --test scripts/test-muir-p8-final.mjs)
+          git worktree remove /tmp/muir-p8-certified
+      - name: P7 semantic regression
+        run: node scripts/test-muir-p7-semantic-components.mjs
+      - name: Decision/result focused session smoke
+        run: node --test scripts/test-muir-p9-session-smoke.mjs
+      - name: Decision consequence and UI regressions
+        run: node --test scripts/test-t55-consequences.mjs scripts/test-t55-a19-ui.mjs
+      - name: Offer/PublicOffer/delegation regressions
+        run: node --test scripts/test-offers.mjs scripts/test-t51-offer-bridge.mjs scripts/test-t51-offer-bridge-provenance.mjs
+      - name: Cinematic and fallback regressions
+        run: node --test scripts/test-event-cutscenes.mjs
+      - name: P9 runtime and persistence authority scope guard
+        run: git diff --exit-code ecc72b9abebbc64533c86b1f3cf7009a127c0c02..HEAD -- src web/indexed-save-store.js
+      - name: Shared UI package graph
+        run: node --test scripts/test-muir-package-graph.mjs
+      - name: P9 final persistence and save regressions
+        run: node --test scripts/test-persistence.mjs scripts/test-saves.mjs scripts/test-t5-save-compat.mjs scripts/test-t5-retirement-save-known-bug.mjs
+      - name: P9 full session regression
+        run: node --test scripts/test-session.mjs
+      - name: PlayCanvas full final package regression
+        run: npm run test:playcanvas
+      - name: Android offline package and authority regression
+        run: npm run test:android:offline
+      - name: Install browser tooling
+        run: |
+          npm install --no-save playwright@1.55.0 axe-core@4
+          npx playwright install --with-deps chromium
+      - name: Reproduce frozen P9.1 browser baseline
+        run: |
+          git worktree add /tmp/muir-p9-pass1 7db5d9ded08e0b020fc4a2f916fd974fa4091cbf
+          ln -s "$GITHUB_WORKSPACE/node_modules" /tmp/muir-p9-pass1/node_modules
+          (cd /tmp/muir-p9-pass1 && npm run build)
+          MUIR_ROOT=/tmp/muir-p9-pass1 node analysis/muir/p9/browser-baseline-probe.mjs
+          mkdir -p analysis/muir/p9/evidence analysis/muir/p9/screenshots
+          cp /tmp/muir-p9-pass1/analysis/muir/p9/evidence/p9-baseline.json analysis/muir/p9/evidence/
+          cp /tmp/muir-p9-pass1/analysis/muir/p9/screenshots/*.png analysis/muir/p9/screenshots/
+          git worktree remove --force /tmp/muir-p9-pass1
+      - name: P9 Decision responsive and accessibility matrix
+        run: node analysis/muir/p9/browser-decisions-probe.mjs
+      - name: P9 Result responsive and accessibility matrix
+        run: node analysis/muir/p9/browser-results-probe.mjs
+      - name: P9 Offer responsive and accessibility matrix
+        run: node analysis/muir/p9/browser-offers-probe.mjs
+      - name: P9 Cinematic real-video and fallback matrix
+        run: node analysis/muir/p9/browser-cinematics-probe.mjs
+      - name: Upload P9 baseline evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: muir-p9-${{ github.sha }}
+          if-no-files-found: warn
+          path: |
+            analysis/muir/p9/evidence/*.json
+            analysis/muir/p9/screenshots/*.png
+
+  p9-android-back:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - run: npm ci
+      - name: Build Android offline assets
+        run: npm run android:offline
+      - name: Build app and instrumentation APKs
+        working-directory: android
+        run: gradle --no-daemon :app:assembleDebug :app:assembleDebugAndroidTest
+      - name: Enable KVM for Android emulator
+        run: |
+          if [ -e /dev/kvm ]; then
+            sudo chown "$USER" /dev/kvm || true
+            sudo chmod 660 /dev/kvm || true
+          fi
+      - name: P9 native Android Back semantics — attempt 1
+        id: android_back_1
+        continue-on-error: true
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_2
+          disable-animations: true
+          emulator-options: -no-window -noaudio -no-boot-anim -gpu swiftshader_indirect -no-snapshot
+          script: |
+            node scripts/test-muir-p9-android-back.mjs "$(adb devices | awk '/^emulator-/{print $1; exit}')"
+      - name: P9 native Android Back semantics — attempt 2
+        id: android_back_2
+        if: steps.android_back_1.outcome == 'failure'
+        continue-on-error: true
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_2
+          disable-animations: true
+          emulator-options: -no-window -noaudio -no-boot-anim -gpu swiftshader_indirect -no-snapshot
+          script: |
+            node scripts/test-muir-p9-android-back.mjs "$(adb devices | awk '/^emulator-/{print $1; exit}')"
+      - name: Assert Android Back emulator gate
+        if: always()
+        run: |
+          if [ "${{ steps.android_back_1.outcome }}" = "success" ]; then
+            echo "Android Back gate passed on attempt 1"
+            exit 0
+          fi
+          if [ "${{ steps.android_back_2.outcome }}" = "success" ]; then
+            echo "Android Back gate passed on attempt 2"
+            exit 0
+          fi
+          echo "Android Back gate failed on both emulator attempts"
+          exit 1
+      - name: Upload Android Back evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: muir-p9-android-back-${{ github.sha }}
+          if-no-files-found: warn
+          path: |
+            analysis/muir/p9/evidence/p9-android-back.json

@@ -13,8 +13,9 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
   function appendCutscene(v,target){
     if(!v.cutscene)return;
     const sceneKey=[v.sessionId,v.cutscene.file,v.screen,v.decisionsMade].join(':');
-    const player=createCutscenePlayer({document:doc,clip:v.cutscene,url:cutsceneUrl(v.cutscene),autoplay:!watchedScenes.has(sceneKey),onStarted(){watchedScenes.add(sceneKey);try{localStorage.setItem(watchedKey,JSON.stringify([...watchedScenes].slice(-512)));}catch{}}});
-    if(player){target.append(player.element);disposeCutscene=player.dispose;}
+    const posterKey=v.cutscene.eventId==='PROLOGUE'?'hero_player':v.cutscene.eventId==='EPILOGUE'?'stadium_bg':lastArt;
+    const player=createCutscenePlayer({document:doc,clip:v.cutscene,url:cutsceneUrl(v.cutscene),posterUrl:assets[posterKey]||assets.stadium_bg||assets.prematch_scene||null,autoplay:!watchedScenes.has(sceneKey),onStarted(){watchedScenes.add(sceneKey);try{localStorage.setItem(watchedKey,JSON.stringify([...watchedScenes].slice(-512)));}catch{}}});
+    if(player){player.element.dataset.cutsceneKind=v.cutscene.eventId==='PROLOGUE'?'prologue':v.cutscene.eventId==='EPILOGUE'?'epilogue':'event';target.append(player.element);disposeCutscene=player.dispose;}
   }
   let playerActionUi={screen:'career',categoryId:null,actionId:null,targetId:null,resultExecutionId:null};
 
@@ -493,6 +494,7 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
     return p;
   }
   function home(v,main){
+    if(v.screen==='epilogue')main.classList.add('p9-epilogue');
     if(v.screen==='epilogue'||v.cutscene?.eventId==='PROLOGUE')appendCutscene(v,main);
     const grid=el('div',undefined,'home-grid p3-home');
     const identity=homeHero(v);
@@ -536,28 +538,29 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
   }
   function portrait(id){return ({NPC_CCH_01:'portrait_coach',NPC_MED_01:'portrait_doctor',NPC_FAM_01:'portrait_mother',NPC_FAM_02:'portrait_father',NPC_AGT_01:'portrait_agent',NPC_AGT_02:'portrait_agent'})[id]||null;}
   function renderDecision(v,main){if(v.screen==='offer'){renderOffer(v,main);return;}const d=v.decision, result=v.screen==='result';if(d)lastArt=['preseason','sport','team','captaincy','tactical'].includes(d.family)?'prematch_scene':'stadium_bg';
-    main.classList.add('cinema');main.append(photo(lastArt,'cinema-bg'));const top=el('div',undefined,'cinema-top');top.append(button('Volver a Inicio',closeCinematic,'glass'),el('span',date(v.date)+' · '+club(v),'eyebrow'));main.append(top);
-    const sheet=el('section',undefined,'decision-sheet');sheet.append(el('span',result?'DESPUÉS DE TU DECISIÓN':'UN MOMENTO QUE CUENTA','eyebrow'),el('h1',result?v.result.title:d.title));
+    main.classList.add('cinema',result?'cinema-result':'cinema-decision');main.append(photo(lastArt,'cinema-bg'));const top=el('div',undefined,'cinema-top');top.append(button('Volver a Inicio',closeCinematic,'glass'),el('span',date(v.date)+' · '+club(v),'eyebrow'));main.append(top);
+    const sheet=el('section',undefined,'decision-sheet '+(result?'result-sheet':'decision-choice-sheet'));sheet.dataset.immersiveState=result?'result':'decision';const heading=el('h1',result?v.result.title:d.title);heading.id='immersive-title';sheet.setAttribute('aria-labelledby',heading.id);sheet.append(el('span',result?'DESPUÉS DE TU DECISIÓN':'UN MOMENTO QUE CUENTA','eyebrow'),heading);
     appendCutscene(v,sheet);
     if(result){
-      sheet.append(el('p',v.result.choiceLabel,'chosen'));
+      const choiceSummary=el('div',undefined,'result-choice');choiceSummary.append(el('span','TU DECISIÓN','eyebrow'),el('p',v.result.choiceLabel,'chosen'));sheet.append(choiceSummary);
       const visible=v.result.visibleEffects??[], narrative=v.result.narrativeEffects??[], deferred=v.result.hiddenEffects??[];
       if(visible.length||narrative.length||deferred.length){
-        const consequences=el('section',undefined,'consequence-summary');consequences.append(el('h2','Consecuencias'));
+        const consequences=el('section',undefined,'consequence-summary result-consequences');const consequenceHeading=el('h2','Consecuencias');consequenceHeading.id='result-consequences-title';consequences.setAttribute('aria-labelledby',consequenceHeading.id);consequences.append(consequenceHeading);
         for(const effect of visible){const row=el('div',undefined,'consequence-row '+(effect.favorable===true?'favorable':effect.favorable===false?'unfavorable':'neutral'));row.append(el('span',effect.label),el('strong',deltaText(effect.delta)));consequences.append(row);}
         narrative.forEach(message=>consequences.append(el('p',message,'story-text')));
         const narrated=new Set(narrative);(v.result.messages??[]).filter(message=>!narrated.has(message)).forEach(message=>consequences.append(el('p',message,'story-text')));
-        deferred.forEach(message=>consequences.append(el('p',message,'muted')));
+        deferred.forEach(message=>consequences.append(el('p',message,'muted result-deferred')));
         sheet.append(consequences);
-      }else v.result.messages.forEach(m=>sheet.append(el('p',m,'story-text')));
-      if(v.resultCategory==='match'){const summary=el('section',undefined,'match-summary');summary.append(el('h2','Resumen del partido'),el('p','Tu decisión queda registrada en el recorrido.','muted'));const rows=[['Fecha',date(v.date)],['Partidos disputados',String(v.appearances)],['Forma',`${Math.round(v.form)} / 100`],['Estado físico',`${Math.round(v.fitness)} / 100`]];for(const [label,value]of rows){const row=el('div',undefined,'data-row');row.append(el('span',label),el('strong',value));summary.append(row);}sheet.append(summary);}const next=button('Continuar',()=>run('acknowledge'),'primary',{blockedWhenPaused:true});next.setAttribute('data-result-continue','');sheet.append(next);}
+      }else{const messages=el('section',undefined,'result-messages');(v.result.messages??[]).forEach(m=>messages.append(el('p',m,'story-text')));sheet.append(messages);}
+      if(v.resultCategory==='match'){const summary=el('section',undefined,'match-summary result-match-summary');const matchHeading=el('h2','Resumen del partido');matchHeading.id='result-match-title';summary.setAttribute('aria-labelledby',matchHeading.id);summary.append(matchHeading,el('p','Tu decisión queda registrada en el recorrido.','muted'));const rows=[['Fecha',date(v.date)],['Partidos disputados',String(v.appearances)],['Forma',`${Math.round(v.form)} / 100`],['Estado físico',`${Math.round(v.fitness)} / 100`]];for(const [label,value]of rows){const row=el('div',undefined,'data-row');row.append(el('span',label),el('strong',value));summary.append(row);}sheet.append(summary);}const next=button('Continuar',()=>run('acknowledge'),'primary result-continue',{blockedWhenPaused:true});next.setAttribute('data-result-continue','');sheet.append(next);}
     else{sheet.append(el('p',d.body,'story-text'));
       if(d.memories?.length){const memories=el('details',undefined,'intel decision-memories');memories.append(el('summary','De tu historia · '+d.memories.length));memories.append(el('p','Decisiones anteriores relacionadas con este capítulo.','muted'));for(const memory of d.memories){const row=el('div',undefined,'decision-memory');row.append(el('time',date(memory.date),'eyebrow'),el('h3',memory.title),el('p',memory.choiceLabel),button('Ver este capítulo',()=>{navigate('career');const target=root.querySelector('[data-journal-index="'+memory.journalIndex+'"]');if(target){target.scrollIntoView({block:'start'});target.focus({preventScroll:true});}}));memories.append(row);}sheet.append(memories);}
-      const intel=el('details',undefined,'intel');intel.open=true;intel.append(el('summary','Lo que sabes · lo que queda por descubrir'));for(const [title,lines]of[['Lo que sabes',d.visible],['Lo que no está claro',d.uncertain]]){if(lines.length){intel.append(el('h3',title));lines.forEach(t=>intel.append(el('p',t)));}}sheet.append(intel);const choices=el('div',undefined,'choices');d.choices.forEach((c,i)=>{const b=button('',()=>run('choose',{pendingInstanceId:d.instanceId,choiceId:c.id}),'choice',{blockedWhenPaused:true});b.replaceChildren(el('span',String.fromCharCode(65+i),'choice-key'),el('span',c.label));choices.append(b);});sheet.append(choices);}
+      const intel=el('details',undefined,'intel');intel.open=true;intel.append(el('summary','Lo que sabes · lo que queda por descubrir'));for(const [title,lines]of[['Lo que sabes',d.visible],['Lo que no está claro',d.uncertain]]){if(lines.length){intel.append(el('h3',title));lines.forEach(t=>intel.append(el('p',t)));}}sheet.append(intel);const choices=el('div',undefined,'choices decision-choices');choices.setAttribute('role','group');choices.setAttribute('aria-label','Opciones de decisión');d.choices.forEach((c,i)=>{const b=button('',()=>run('choose',{pendingInstanceId:d.instanceId,choiceId:c.id}),'choice',{blockedWhenPaused:true});b.replaceChildren(el('span',String.fromCharCode(65+i),'choice-key'),el('span',c.label));choices.append(b);});sheet.append(choices);}
     main.append(sheet);}
   function renderOffer(v,main){
     const o=v.offer,p=offerCard(o,{actions:[['accept','Aceptar oferta'],['reject','Rechazar oferta'],['delegate','Delegar esta oferta']],explanation:'Una propuesta para tu carrera. Revisa las condiciones antes de decidir.',delegateHelp:true});
-    p.append(button('Volver a Inicio',closeCinematic));main.append(p);
+    main.classList.add('cinema','cinema-offer');main.append(photo('stadium_bg','cinema-bg'));const top=el('div',undefined,'cinema-top');top.append(button('Volver a Inicio',closeCinematic,'glass'),el('span',date(v.date)+' · '+club(v),'eyebrow'));main.append(top);
+    p.classList.add('offer-sheet');p.dataset.immersiveState='offer';const heading=p.querySelector('h2');if(heading){heading.id='immersive-offer-title';p.setAttribute('aria-labelledby',heading.id);}const actions=p.querySelector('.choices');if(actions){actions.classList.add('offer-actions');actions.setAttribute('role','group');actions.setAttribute('aria-label','Respuesta a la oferta');}main.append(p);
   }
   function offerHistory(v,main){for(const h of [...v.offerHistory].reverse()){const p=offerCard(h.offer,{explanation:h.explanation});if(p)main.append(p);}}
   function career(v,main){
