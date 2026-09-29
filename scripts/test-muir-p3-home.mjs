@@ -35,6 +35,8 @@ assert(ui.includes("function homeHero(v)"),'P3 Home identity hero missing');
 assert(ui.includes("v.player.displayName,'player-name'"),'P3 Home must use PlayerView.player.displayName');
 assert(!functionBlock(ui,'homeHero').includes("'Jugador'"),'P3 Home must not hardcode a fallback identity');
 assert(ui.includes("const urgent=['offer','decision','result'].includes(v.screen)"),'pending decision/offer/result priority missing');
+const homeBlock=functionBlock(ui,'home');
+assert(homeBlock.indexOf('main.append(grid)') < homeBlock.indexOf('if(prologue)appendCutscene(v,main)'),'Home core loop must render before the optional prologue block');
 assert(ui.includes("grid.append(stats(v,true))"),'compact Home moment panel missing');
 assert(ui.includes("const sport=latestMatchPanel(v)"),'P3 must reuse canonical latestMatch presentation when available');
 assert(!functionBlock(ui,'home').includes('nextMatch'),'P3 must not invent a next-match authority');
