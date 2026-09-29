@@ -24,8 +24,11 @@ const allowed=[
 for(const file of changed)assert(allowed.some(re=>re.test(file)),'P7 out-of-scope file: '+file);
 const baseline=JSON.parse(fs.readFileSync(path.join(root,'analysis/muir/p7/evidence/p7-baseline.json'),'utf8'));
 const browser=JSON.parse(fs.readFileSync(path.join(root,'analysis/muir/p7/evidence/p7-browser-semantic-components.json'),'utf8'));
+const equivalence=JSON.parse(fs.readFileSync(path.join(root,'analysis/muir/p7/evidence/p7-equivalence-report.json'),'utf8'));
 assert.equal(baseline.gate,'PASS','P7 baseline evidence failed');
 assert.equal(browser.gate,'PASS','P7 browser evidence failed');
+assert.equal(equivalence.gate,'PASS','P7 P6->P7 equivalence failed');
+assert.equal(equivalence.predecessorSha,P6,'P7 equivalence used wrong predecessor');
 assert.equal(browser.internalIdsVisible,0);
 assert.equal(browser.undefinedNullVisible,0);
 assert.equal(browser.inventedFields,0);
@@ -33,4 +36,4 @@ assert.deepEqual(browser.authority,{dbModified:false,marketModified:false,offerA
 for(const component of ['NewsCard','LatestMatchCard','CareerSeasonCard','ContractSummary','OfferCard','PersonCard'])assert(browser.components.includes(component),'missing component evidence '+component);
 for(const viewport of ['phone-360','phone-primary','phone-412','tablet'])assert(browser.viewports.includes(viewport),'missing viewport '+viewport);
 for(const scale of ['100%','130%','180%'])assert(browser.textScales.includes(scale),'missing text scale '+scale);
-console.log(JSON.stringify({gate:'PASS',head,p6:P6,changedFiles:changed.length,components:browser.components.length,viewports:browser.viewports,textScales:browser.textScales}));
+console.log(JSON.stringify({gate:'PASS',head,p6:P6,changedFiles:changed.length,components:browser.components.length,viewports:browser.viewports,textScales:browser.textScales,equivalence:'PASS'}));
