@@ -1,0 +1,45 @@
+name: MUIR P2 shell
+
+on:
+  pull_request:
+    branches:
+      - ui-a0/muir-p1-design-contract
+    paths:
+      - 'web/game-ui.css'
+      - 'MUIR-RTM.md'
+      - 'scripts/test-muir-p2-shell.mjs'
+      - '.github/workflows/muir-p2-shell.yml'
+      - 'analysis/muir/p2/**'
+
+concurrency:
+  group: muir-p2-shell-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  certify-shell:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      MUIR_P2_EXPECTED_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Build engine
+        run: npm run build
+      - name: P2 shell contract
+        run: node scripts/test-muir-p2-shell.mjs
+      - name: Shared UI package graph
+        run: node --test scripts/test-muir-package-graph.mjs
+      - name: PlayCanvas package
+        run: npm run test:playcanvas
+      - name: Android offline clean package
+        run: npm run android:offline
+      - name: Android offline
+        run: npm run test:android:offline
