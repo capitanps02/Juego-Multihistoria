@@ -417,15 +417,16 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
     }
     return button('Simular semana',()=>run('continue',{maxDays:7}),'primary',{blockedWhenPaused:true});
   }
-  function hero(v){const h=el('article',undefined,'hero');h.append(photo('hero_player'));const c=el('div',undefined,'hero-copy');c.append(el('span','TU HISTORIA, POR ESCRIBIR','eyebrow'),el('h1','Una vida.\nMil decisiones.'),el('p',position(v)+' · '+v.age+' años'),el('p',club(v),'muted'));h.append(c);return h;}
+  function hero(v){const h=el('article',undefined,'hero profile-hero');h.append(photo('hero_player'));const c=el('div',undefined,'hero-copy');c.append(el('span','TU PERFIL','eyebrow'),el('h1',v.player.displayName,'player-name'),el('p',position(v)+' · '+v.age+' años'),el('p',club(v),'muted'));h.append(c);return h;}
   function homeHero(v){
     const h=el('article',undefined,'hero home-hero');h.append(photo('hero_player'));
     const c=el('div',undefined,'hero-copy');
     c.append(el('span','MI CARRERA','eyebrow'),el('h1',v.player.displayName,'player-name'),el('p',position(v)+' · '+v.age+' años'),el('p',club(v),'muted'));
     h.append(c);return h;
   }
-  function stats(v,compact=false){
-    const p=panel('Tu momento');if(compact)p.classList.add('moment-compact');
+  function stats(v,compact=false,embedded=false){
+    const p=embedded?el('section',undefined,'panel profile-moment'):panel('Tu momento');
+    if(embedded)p.append(el('h2','Tu momento'));if(compact)p.classList.add('moment-compact');
     const rows=[
       ['Forma',v.form,'Rendimiento actual: refleja cómo estás compitiendo ahora.'],
       ['Estado físico',v.fitness,'Condición corporal y disponibilidad física.'],
@@ -641,27 +642,25 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
   function relations(v,main){
     main.classList.add('p8-relations');
     const intro=el('header',undefined,'relations-intro');
-    intro.append(el('span','NADIE LLEGA SOLO','eyebrow'),el('h1','Las personas de tu historia.'),el('p','Personas que ya forman parte de tu carrera. Consulta quiénes son y qué papel tienen en tu historia.','muted'));main.append(intro);
-    const grid=el('div',undefined,'people-grid');
-    if(!v.contacts.length){
-      const empty=el('div',undefined,'relations-empty semantic-empty');
-      empty.append(el('strong','Aún no has creado vínculos relevantes.'),el('p','Cuando aparezcan nuevos contactos públicos en tu carrera, los verás aquí.','muted'));grid.append(empty);
-    }
+    intro.append(el('span','NADIE LLEGA SOLO','eyebrow'),el('h1','Las personas de tu historia.'),el('p','Personas que aparecen en tu carrera y el papel que ocupan en ella.','muted'));main.append(intro);
+    const grid=el('div',undefined,'people-grid relations-grid');
+    if(!v.contacts.length)grid.append(el('p','Aún no hay personas registradas en esta etapa de tu historia.','muted semantic-empty relations-empty'));
     for(const c of v.contacts){const card=personCard(c);if(card)grid.append(card);}
     main.append(grid);
   }
   function profile(v,main){
     main.classList.add('p8-profile');
     const intro=el('header',undefined,'profile-intro');
-    intro.append(el('span','EL PROTAGONISTA ERES TÚ','eyebrow'),el('h1','Tu perfil.'),el('p','Tu identidad, situación deportiva y contrato actual en un solo lugar.','muted'));main.append(intro);
+    intro.append(el('span','EL PROTAGONISTA ERES TÚ','eyebrow'),el('h1','Tu perfil.'),el('p','Tu identidad, tu situación actual y tu contrato, usando únicamente datos de tu carrera.','muted'));main.append(intro);
     const grid=el('div',undefined,'profile-grid');grid.append(hero(v));
-    const details=el('div',undefined,'profile-details'),identity=panel('En este momento');identity.classList.add('profile-identity');
+    const identity=panel('Identidad');identity.classList.add('profile-identity');
     const identityLabel=el('label','Nombre y apellido','file-label'),identityInput=el('input');
     identityInput.type='text';identityInput.value=v.player.displayName;identityInput.autocomplete='name';identityInput.setAttribute('aria-describedby','mh-player-name-help');
     const identityHelp=el('small','Entre 2 y 32 caracteres visibles. Se admiten tildes, apóstrofos y guiones.','muted');identityHelp.id='mh-player-name-help';
     identityLabel.append(identityInput,identityHelp);identity.append(identityLabel,button('Guardar nombre',()=>run('identity',{displayName:identityInput.value}),'secondary'));
     for(const [label,value]of[['Edad',v.age+' años'],['Posición',position(v)],['Partidos',v.appearances]]){const r=semanticRow(label,value);if(r)identity.append(r);}
-    details.append(identity,stats(v),contractSummary(v));grid.append(details);main.append(grid);
+    const moment=stats(v,false,true),contract=contractSummary(v);
+    grid.append(identity,moment,contract);main.append(grid);
   }
   async function download(){try{const raw=await store.readRaw();if(!raw)throw Error('No hay una partida guardada.');downloadText(raw,'multihistoria-partida.json');}catch(e){message=e.message;render();}}
   function downloadText(raw,filename){if(win.AndroidBridge?.saveTextFile){win.AndroidBridge.saveTextFile(filename,raw);return;}const url=URL.createObjectURL(new Blob([raw],{type:'application/json'}));const a=el('a');a.href=url;a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(url),1500);}
