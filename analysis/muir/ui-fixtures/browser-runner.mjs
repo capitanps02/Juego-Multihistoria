@@ -31,9 +31,13 @@ if(!viewportSpec)throw Error('Unknown viewport '+viewport);
 const nativeSetTimeout=globalThis.setTimeout.bind(globalThis);
 const nativeClearTimeout=globalThis.clearTimeout.bind(globalThis);
 const AUTO_TIMER_SENTINEL=2147483001;
-let autoTimerFrozen=fixtureId==='auto-running'&&params.get('p5LiveAuto')!=='1';
+let autoTimerFrozen=fixtureId==='auto-running';
+let frozenAutoCallback=null;
 if(autoTimerFrozen){
-  globalThis.setTimeout=(fn,ms,...args)=>Number(ms)===140?AUTO_TIMER_SENTINEL:nativeSetTimeout(fn,ms,...args);
+  globalThis.setTimeout=(fn,ms,...args)=>{
+    if(Number(ms)===140){frozenAutoCallback=()=>fn(...args);return AUTO_TIMER_SENTINEL;}
+    return nativeSetTimeout(fn,ms,...args);
+  };
   globalThis.clearTimeout=id=>id===AUTO_TIMER_SENTINEL?undefined:nativeClearTimeout(id);
 }
 function releaseAutoTimer(){
@@ -41,6 +45,9 @@ function releaseAutoTimer(){
   autoTimerFrozen=false;
   globalThis.setTimeout=nativeSetTimeout;
   globalThis.clearTimeout=nativeClearTimeout;
+  const callback=frozenAutoCallback;
+  frozenAutoCallback=null;
+  if(callback)nativeSetTimeout(callback,140);
 }
 
 document.documentElement.dataset.muirVisualTest='true';
@@ -306,6 +313,7 @@ const refreshDynamicMetrics=()=>{
 refreshDynamicMetrics();
 setInterval(refreshDynamicMetrics,100);
 globalThis.__MUIR_METRICS__=metrics;
+globalThis.__MUIR_RELEASE_AUTO_TIMER__=()=>releaseAutoTimer();
 globalThis.__MUIR_START_AUTO_PROBE__=async()=>{
   if(fixtureId!=='auto-running')return;
   releaseAutoTimer();
