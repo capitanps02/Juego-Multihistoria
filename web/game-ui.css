@@ -144,3 +144,28 @@ button.player-action-back{min-height:48px;white-space:normal;overflow-wrap:anywh
   .p8-world .news-card{padding:16px}
   .p8-world .world-empty{padding:18px}
 }
+
+/* MUIR P8 — Carrera: factual hierarchy using public semantic cards only. */
+.p8-career .career-intro{max-width:900px;margin-bottom:22px}
+.p8-career .career-intro h1{margin-bottom:12px}
+.p8-career .career-intro>.muted{max-width:70ch;margin-bottom:0}
+.p8-career .career-latest{max-width:920px;margin-bottom:26px;border-color:#409cff24}
+.p8-career .career-section{max-width:1120px;margin:0 0 28px;min-width:0}
+.p8-career .career-section-head{display:flex;align-items:baseline;justify-content:space-between;gap:14px;padding:0 2px 11px;margin-bottom:12px;border-bottom:1px solid #ffffff12}
+.p8-career .career-section-head h2{margin:0;font-size:18px}
+.p8-career .season-grid{margin-bottom:0}
+.p8-career .career-milestone-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.p8-career .milestone-card{padding:18px 20px;border-radius:18px}
+.p8-career .milestone-card>h2{margin-bottom:12px}
+.p8-career .milestone-summary{font-weight:600;color:#e5e5ea;overflow-wrap:anywhere}
+.p8-career .milestone-card .milestone-list{margin-bottom:10px}
+.p8-career .career-offer-list{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;max-width:920px}
+.p8-career .career-offer-list>.panel{margin:0}
+.p8-career .career-history-section .timeline{max-width:920px}
+.p8-career .career-history-section .timeline>.panel{margin:0}
+.p8-career .career-empty{max-width:920px}
+@media(max-width:430px){
+  .p8-career .career-section{margin-bottom:22px}
+  .p8-career .career-milestone-grid{grid-template-columns:minmax(0,1fr)}
+  .p8-career .milestone-card{padding:16px}
+}
