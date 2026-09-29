@@ -53,6 +53,8 @@ function apply(view){
     v.screen='result';v.result={title:'Después de tu decisión',choiceLabel:'Elegiste hablar primero',messages:['La conversación ya forma parte de tu historia.'],visibleEffects:[{label:'Forma',delta:1,favorable:true}],narrativeEffects:['El entrenador toma nota de tu postura.'],hiddenEffects:[]};
     if(scenario==='result-long'){v.result.messages=[long];v.result.narrativeEffects=[long.slice(0,700)];v.result.visibleEffects=[{label:'Forma',delta:1,favorable:true},{label:'Estado físico',delta:-0.5,favorable:false}];}
     if(scenario==='result-match'){v.resultCategory='match';v.appearances=117;v.form=76;v.fitness=88;}
+    if(scenario==='result-message-only'){v.result.visibleEffects=[];v.result.narrativeEffects=[];v.result.hiddenEffects=[];v.result.messages=['No hay un cambio numérico público en este momento.','La decisión queda registrada en tu historia.'];}
+    if(scenario==='result-mixed'){v.result.visibleEffects=[{label:'Forma',delta:1,favorable:true},{label:'Estado físico',delta:-1,favorable:false},{label:'Reputación',delta:0,favorable:null}];v.result.narrativeEffects=['El cuerpo técnico registra tu postura.'];v.result.hiddenEffects=['Hay consecuencias que todavía no son públicas.'];}
     return v;
   }
   if(scenario.startsWith('offer-')){
