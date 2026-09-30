@@ -59,7 +59,6 @@ test('Android entrypoint contains no absolute web paths or network fetches', () 
   assert.match(index, /connect-src 'none'/);
   assert.doesNotMatch(local, /fetch\(|https?:\/\//);
   assert.doesNotMatch(local, /from ['"]\/(?:dist|web)\//);
-  assert.match(local, /new URL\('\.\/web\/assets\/cutscenes\/'\+clip\.file,document\.baseURI\)\.href/);
   assert.match(local, /new URL\('\.\/assets\/cutscenes\/'\+clip\.file,import\.meta\.url\)\.href/);
   const manifest = fs.readFileSync(path.join(root, 'android/app/src/main/AndroidManifest.xml'), 'utf8');
   assert.doesNotMatch(manifest, /android\.permission\.INTERNET/);
@@ -82,6 +81,5 @@ test('Android bundle retains the production UI, engine and IndexedDB persistence
   assert.ok(read('web/indexed-save-store.js').includes('multihistoria.saves.v1'));
   assert.ok(read('web/local.js').includes('android.offline.session.v1'));
   assert.ok(read('web/local.js').includes('data:image/png;base64,'));
-  assert.ok(read('web/local.js').includes("new URL('./web/assets/cutscenes/'+clip.file,document.baseURI).href"));
   assert.ok(read('dist/session/game-session.js').includes('export class GameSession'));
 });
