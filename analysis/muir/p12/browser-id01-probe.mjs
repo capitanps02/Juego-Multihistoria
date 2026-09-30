@@ -87,9 +87,11 @@ try{
             const root=document.querySelector('#game').shadowRoot,main=root.querySelector('main');
             for(const node of [main,...main.querySelectorAll('*')]){const size=parseFloat(getComputedStyle(node).fontSize);if(Number.isFinite(size)&&size>0)node.style.fontSize=(size*1.8)+'px';}
             const input=main.querySelector('input[autocomplete="name"]'),r=input.getBoundingClientRect();
-            return {value:input.value,usable:r.width>=44&&r.height>=44&&r.left>=0&&r.right<=innerWidth+1,overflow:[...main.querySelectorAll('*')].filter(n=>n.scrollWidth>n.clientWidth+1).length};
+            const layoutOverflow=[...main.querySelectorAll('*')].filter(n=>!['INPUT','TEXTAREA','SELECT'].includes(n.tagName)&&n.scrollWidth>n.clientWidth+1).length;
+            const controlOverflow=[...main.querySelectorAll('input,button,select,textarea')].filter(n=>{const x=n.getBoundingClientRect();return x.left<main.getBoundingClientRect().left-1||x.right>main.getBoundingClientRect().right+1;}).length;
+            return {value:input.value,usable:r.width>=44&&r.height>=44&&r.left>=0&&r.right<=innerWidth+1,layoutOverflow,controlOverflow};
           },name);
-          assert.deepEqual(extreme,{value:name,usable:true,overflow:0},viewport.id+' boundary identity failed at 180%');
+          assert.deepEqual(extreme,{value:name,usable:true,layoutOverflow:0,controlOverflow:0},viewport.id+' boundary identity failed at 180%');
         }
         records.push({viewport:viewport.id,name,home,profile,extreme});
       }finally{await context.close();}
