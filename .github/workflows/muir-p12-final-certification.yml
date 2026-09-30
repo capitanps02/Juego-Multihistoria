@@ -106,6 +106,8 @@ jobs:
           node analysis/muir/p9/browser-results-probe.mjs
           node analysis/muir/p9/browser-offers-probe.mjs
           node analysis/muir/p9/browser-cinematics-probe.mjs
+      - name: P12 ID-01 browser matrix
+        run: node analysis/muir/p12/browser-id01-probe.mjs
       - name: Reproduce exact P11 extended visual set
         run: |
           git worktree add --detach /tmp/muir-p11-visual 81f802a2c2ef14a69d0b0b6251e40532615509aa
