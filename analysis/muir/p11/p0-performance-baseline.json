@@ -1,0 +1,16 @@
+{
+  "schema": "muir-p11-p0-reference-v1",
+  "productBaseSha": "36d3d1b0750b0ded877e55953f223e2de1169a46",
+  "certifiedP0Head": "c5b6d0d6d18802a62d174bf450c95ebf1d0403c0",
+  "workflowRun": 36533739689,
+  "artifactId": 11018871985,
+  "artifactDigest": "sha256:1c83e325e02e4ea43522a88f2d37f04ad0a4140d87ad7e30144f871bd1c48454",
+  "uiSourceBytes": {
+    "webUi": 52636,
+    "webCss": 19717,
+    "cutscenePlayer": 4662,
+    "total": 77015
+  },
+  "playcanvasBundleBytes": 17674202,
+  "browserComparisonPolicy": "Browser render/response/long-task deltas are reproduced from certified P0 head with the exact P11 harness and compared only on common successful targets."
+}
