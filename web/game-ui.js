@@ -206,6 +206,7 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
     }
     queueAutoStep();
   }
+  function platformresume(){if(doc.visibilityState!=='hidden')queueAutoStep();}
   function patchAutoPresentation(){
     autoVisualTimer=null;
     const v=session?.getView();
@@ -734,6 +735,6 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
   }
   function keyboard(e){if(e.key==='Escape'&&!shell.querySelector('dialog[open]')){e.preventDefault();goBack();}if(['ArrowDown','ArrowRight','ArrowUp','ArrowLeft'].includes(e.key)&&e.target.closest('.choices,.navigation')){const group=e.target.closest('.choices,.navigation'),buttons=[...group.querySelectorAll('button:not(:disabled)')],index=buttons.indexOf(e.target.closest('button'));e.preventDefault();buttons[(index+(['ArrowDown','ArrowRight'].includes(e.key)?1:buttons.length-1))%buttons.length]?.focus();}}
   function popstate(e){const s=e.state;resetPlayerActions();if(!s?.mhOwner){view='home';cinematic=false;message='';render(true);return;}view=validViews.has(s.mhView)?s.mhView:'home';cinematic=Boolean(s.mhCinematic)&&Boolean(session&&['decision','result','offer'].includes(session.getView().screen));message='';render(true);}
-  root.addEventListener('keydown',keyboard);win.addEventListener?.('popstate',popstate);doc.addEventListener('visibilitychange',visibilitychange);load();
-  return ()=>{disposeCutscene?.();clearTimeout(autoTimer);if(autoVisualTimer!==null)clearTimeout(autoVisualTimer);store.close().catch(()=>{});root.removeEventListener('keydown',keyboard);win.removeEventListener?.('popstate',popstate);doc.removeEventListener('visibilitychange',visibilitychange);shell.remove();style.remove();};
+  root.addEventListener('keydown',keyboard);win.addEventListener?.('popstate',popstate);win.addEventListener?.('muir:platform-resume',platformresume);doc.addEventListener('visibilitychange',visibilitychange);load();
+  return ()=>{disposeCutscene?.();clearTimeout(autoTimer);if(autoVisualTimer!==null)clearTimeout(autoVisualTimer);store.close().catch(()=>{});root.removeEventListener('keydown',keyboard);win.removeEventListener?.('popstate',popstate);win.removeEventListener?.('muir:platform-resume',platformresume);doc.removeEventListener('visibilitychange',visibilitychange);shell.remove();style.remove();};
 }

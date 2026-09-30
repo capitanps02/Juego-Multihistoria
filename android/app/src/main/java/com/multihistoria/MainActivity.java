@@ -85,6 +85,24 @@ public final class MainActivity extends Activity {
         game.loadUrl(ASSET_ORIGIN + "index.html");
     }
 
+    private void signalPlatformResume() {
+        if (game == null) return;
+        game.post(() -> {
+            if (game != null) game.evaluateJavascript(
+                "window.dispatchEvent(new Event('muir:platform-resume'))", null);
+        });
+    }
+
+    @Override protected void onResume() {
+        super.onResume();
+        signalPlatformResume();
+    }
+
+    @Override public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) signalPlatformResume();
+    }
+
     private final class AndroidBridge {
         @JavascriptInterface public void saveTextFile(final String filename, final String text) {
             runOnUiThread(() -> {
