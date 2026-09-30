@@ -1,7 +1,7 @@
 {
   "schema": "muir-platform-parity-v1",
   "predecessorSha": "512730e8e1830935e841751c72419daf82e84ca9",
-  "certificationPolicy": "Statuses marked PASS are conditional on the exact closing HEAD workflows; physical/manual-only items remain DEFERRED_TO_P12.",
+  "certificationPolicy": "PASS requires direct/reproducible evidence for the stated platform scope. Surfaces without direct Android runtime coverage remain DEFERRED, including their cross-platform visual/functional/a11y cells; physical/manual-only items remain DEFERRED_TO_P12.",
   "sourceOfPresentation": "web/game-ui.js + web/game-ui.css",
   "surfaces": [
     {
@@ -42,11 +42,11 @@
       "web": "PASS",
       "playcanvas": "PASS",
       "android": "DEFERRED",
-      "visual": "PASS",
-      "functional": "PASS",
+      "visual": "DEFERRED",
+      "functional": "DEFERRED",
       "assets": "PASS",
-      "a11y": "PASS",
-      "notes": "PlayCanvas state matrix direct; Android inherits shared UI but no direct Summary fixture"
+      "a11y": "DEFERRED",
+      "notes": "PlayCanvas state matrix direct; Android inherits shared UI but no direct Summary fixture; direct Android visual/functional/accessibility runtime verification deferred to P12"
     },
     {
       "surface": "Player Actions",
@@ -141,33 +141,33 @@
       "web": "PASS",
       "playcanvas": "PASS",
       "android": "DEFERRED",
-      "visual": "PASS",
-      "functional": "PASS",
+      "visual": "DEFERRED",
+      "functional": "DEFERRED",
       "assets": "PASS",
-      "a11y": "PASS",
-      "notes": "PlayCanvas direct; Android direct Offer fixture not executed"
+      "a11y": "DEFERRED",
+      "notes": "PlayCanvas direct; Android direct Offer fixture not executed; direct Android visual/functional/accessibility runtime verification deferred to P12"
     },
     {
       "surface": "Cinematic",
       "web": "PASS",
       "playcanvas": "PASS",
       "android": "DEFERRED",
-      "visual": "PASS",
-      "functional": "PASS",
+      "visual": "DEFERRED",
+      "functional": "DEFERRED",
       "assets": "PASS",
-      "a11y": "PASS",
-      "notes": "Assets packaged 33/33; PlayCanvas direct asset lookup; Android playback manual repeat P12"
+      "a11y": "DEFERRED",
+      "notes": "Assets packaged 33/33; PlayCanvas direct asset lookup; Android playback manual repeat P12; direct Android visual/functional/accessibility runtime verification deferred to P12"
     },
     {
       "surface": "Epilogue",
       "web": "PASS",
       "playcanvas": "PASS",
       "android": "DEFERRED",
-      "visual": "PASS",
-      "functional": "PASS",
+      "visual": "DEFERRED",
+      "functional": "DEFERRED",
       "assets": "PASS",
-      "a11y": "PASS",
-      "notes": "PlayCanvas direct state+cutscene; Android direct epilogue fixture not executed"
+      "a11y": "DEFERRED",
+      "notes": "PlayCanvas direct state+cutscene; Android direct epilogue fixture not executed; direct Android visual/functional/accessibility runtime verification deferred to P12"
     }
   ],
   "platformChecks": {
