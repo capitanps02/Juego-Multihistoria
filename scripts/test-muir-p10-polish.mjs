@@ -26,7 +26,7 @@ for(const token of [
 ]) assert.ok(css.includes(token),'missing P1 production token '+token);
 
 assert.ok(!/cursor\s*:\s*wait/.test(css),'disabled controls must not globally look like loading');
-assert.ok(css.includes('button:disabled{cursor:not-allowed;opacity:.55}'),'disabled semantics must be explicit');
+assert.ok(css.includes('button:disabled{cursor:not-allowed;opacity:var(--muir-disabled-opacity)}'),'disabled semantics must be explicit');
 assert.ok(css.includes('a:focus-visible'),'anchors need the same focus-visible contract');
 assert.ok(css.includes('main:focus-visible'),'focusable main needs visible focus');
 assert.ok(css.includes('.timeline [data-journal-index]:focus-visible'),'timeline focus must use focus-visible');
@@ -46,6 +46,12 @@ assert.ok(contrast('#ffffff','#075fbd')>=4.5,'primary CTA gradient end must meet
 assert.ok(contrast('#8b8b90','#202023')>=4.5,'small muted text must meet AA on surface-2');
 assert.ok(css.includes('--muir-primary-start:#0a6dcc')&&css.includes('--muir-primary-end:#075fbd'),'accessible primary gradient tokens missing');
 assert.ok(css.includes('--muir-text-small-muted:#8b8b90'),'small-text contrast token missing');
+assert.ok(css.includes('--muir-disabled-opacity:.58'),'shared disabled opacity token missing');
+assert.ok(css.includes('--muir-error-bg:#382224')&&css.includes('--muir-error-border:#ff453a80'),'shared error tokens missing');
+assert.ok(css.includes('--muir-loading-bg:#17171be8')&&css.includes('--muir-loading-border:#409cff88'),'shared loading tokens missing');
+assert.ok(css.includes('--muir-empty-color:#a1a1a6'),'shared empty-state token missing');
+assert.ok(css.includes('.semantic-empty{color:var(--muir-empty-color)}'),'empty state must use shared semantic token');
+assert.ok(css.includes('.player-action-card button:disabled,.player-action-option button:disabled{opacity:var(--muir-disabled-opacity);cursor:not-allowed}'),'Player Actions disabled state must use shared semantics');
 
 const visibleTiny=[];
 for(const m of css.matchAll(/font-size\s*:\s*([0-9.]+)px/g)){
