@@ -6,7 +6,7 @@ on:
       - ui-a8/muir-p12-final-certification
 
 concurrency:
-  group: muir-p12-final-${{ github.sha }}
+  group: muir-p12-final-${{ github.ref_name }}
   cancel-in-progress: true
 
 jobs:
@@ -112,6 +112,10 @@ jobs:
           node analysis/muir/p9/browser-results-probe.mjs
           node analysis/muir/p9/browser-offers-probe.mjs
           node analysis/muir/p9/browser-cinematics-probe.mjs
+      - name: Critical text scale / reduced motion / polish
+        run: |
+          node scripts/test-muir-p10-polish.mjs
+          node analysis/muir/p10/browser-critical-text-scale-probe.mjs
       - name: P12 ID-01 browser matrix
         run: node analysis/muir/p12/browser-id01-probe.mjs
       - name: Reproduce exact P11 extended visual set
@@ -275,3 +279,40 @@ jobs:
           path: |
             analysis/2026-09-15/T3.3-android-runtime.json
             analysis/muir/p9/evidence/p9-android-back.json
+
+
+  final-certification:
+    if: always()
+    needs: [preflight-functional, visual-a11y, performance-platforms, android-runtime]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Download exact-run evidence
+        uses: actions/download-artifact@v4
+        with:
+          pattern: muir-p12-*-${{ github.sha }}
+          path: analysis/muir/p12/downloaded
+          merge-multiple: false
+      - name: G1-G15 + final certification aggregator
+        env:
+          P12_PREFLIGHT_JOB: ${{ needs.preflight-functional.result }}
+          P12_VISUAL_A11Y_JOB: ${{ needs.visual-a11y.result }}
+          P12_PERFORMANCE_JOB: ${{ needs.performance-platforms.result }}
+          P12_ANDROID_JOB: ${{ needs.android-runtime.result }}
+        run: node scripts/test-muir-p12-final-gates.mjs
+      - name: Upload final certification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: muir-p12-final-certification-${{ github.sha }}
+          if-no-files-found: error
+          path: |
+            muir-final-certification.md
+            analysis/muir/p12/evidence/final-gates.json
+            analysis/muir/p12/evidence/ab-final.json

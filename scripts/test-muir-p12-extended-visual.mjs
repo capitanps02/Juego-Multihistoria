@@ -20,8 +20,13 @@ const evidenceFiles=[
 ];
 
 const read=(base,rel)=>JSON.parse(fs.readFileSync(path.join(base,rel),'utf8'));
+const stableScreenshotId=row=>{
+  const raw=row.screenshot??row.file??'';
+  if(!raw)return 'unknown';
+  return path.basename(raw).replace(/__[0-9a-f]{12,64}\.png$/i,'.png');
+};
 const key=row=>[
-  row.fixtureId??row.scenario??row.target??'unknown',
+  row.fixtureId??row.scenario??row.target??stableScreenshotId(row),
   typeof row.viewport==='string'?row.viewport:(row.viewport?.id??row.viewportId??'unknown'),
   row.width??row.viewport?.width??'',
   row.height??row.viewport?.height??'',
@@ -39,6 +44,8 @@ for(const rel of evidenceFiles){
   currentCaptures+=curRows.length;
   const baseMap=new Map(baseRows.map(row=>[key(row),row]));
   const curMap=new Map(curRows.map(row=>[key(row),row]));
+  assert.equal(baseMap.size,baseRows.length,'duplicate exact-P11 visual keys in '+rel);
+  assert.equal(curMap.size,curRows.length,'duplicate P12 visual keys in '+rel);
   const keys=new Set([...baseMap.keys(),...curMap.keys()]);
   for(const k of [...keys].sort()){
     const b=baseMap.get(k),c=curMap.get(k);
@@ -57,12 +64,13 @@ for(const rel of evidenceFiles){
 const counts={UNCHANGED:0,REGRESSION:0,NEEDS_REVIEW:0};
 for(const e of entries)counts[e.classification]=(counts[e.classification]??0)+1;
 const report={
-  schema:'muir-p12-extended-visual-v1',
+  schema:'muir-p12-extended-visual-v2',
   exactP11Sha:'81f802a2c2ef14a69d0b0b6251e40532615509aa',
   p12Head:process.env.GITHUB_SHA??null,
   evidenceFiles,
   baselineCaptures,
   currentCaptures,
+  classifiedCaptures:entries.length,
   counts,
   unreviewed:counts.NEEDS_REVIEW??0,
   regressions:counts.REGRESSION??0,
@@ -74,6 +82,7 @@ fs.writeFileSync(path.join(root,'analysis/muir/p12/evidence/extended-visual-diff
 
 assert.equal(currentCaptures,baselineCaptures,'P12 extended visual capture count differs from exact P11');
 assert.ok(currentCaptures>=300,'P12 extended visual coverage unexpectedly small: '+currentCaptures);
+assert.equal(entries.length,currentCaptures,'every P12 screenshot must be individually classified');
 assert.equal(counts.REGRESSION??0,0,'P12 extended visual regressions remain');
 assert.equal(counts.NEEDS_REVIEW??0,0,'P12 extended visual diffs require review');
-console.log(JSON.stringify({status:'PASS',captures:currentCaptures,counts,evidenceFiles:evidenceFiles.length},null,2));
+console.log(JSON.stringify({status:'PASS',captures:currentCaptures,classified:entries.length,counts,evidenceFiles:evidenceFiles.length},null,2));
