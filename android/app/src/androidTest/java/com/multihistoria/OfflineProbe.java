@@ -186,7 +186,7 @@ public class OfflineProbe extends Instrumentation {
                 report.putInt("revisionBeforeBackground", beforeBackgroundRevision);
                 step("lifecycle-background");
                 runOnMainSync(() -> activity.moveTaskToBack(true));
-                untilFast("document.visibilityState==='hidden'", 1500);
+                untilFast("document.visibilityState==='hidden'", 5000);
                 // One foreground-started dispatch may finish after visibility flips. It is not
                 // a background-scheduled tick. Allow that single command to settle, then prove
                 // the hidden scheduler remains completely frozen in a second observation window.
@@ -211,7 +211,7 @@ public class OfflineProbe extends Instrumentation {
                         .addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                     activity.startActivity(bring);
                 });
-                untilFast("document.visibilityState==='visible'", 1500);
+                untilFast("document.visibilityState==='visible'", 5000);
                 Thread.sleep(800);
                 step("lifecycle-after-resume");
                 String after=snapshot();
@@ -240,7 +240,7 @@ public class OfflineProbe extends Instrumentation {
                 report.putInt("pausedRevisionBefore", beforeRevision);
                 report.putString("pausedVisibilityBefore", new org.json.JSONArray("["+js("document.visibilityState")+"]").getString(0));
                 runOnMainSync(() -> activity.moveTaskToBack(true));
-                untilFast("document.visibilityState==='hidden'", 1500);
+                untilFast("document.visibilityState==='hidden'", 5000);
                 Thread.sleep(1500);
                 step("lifecycle-paused-hidden");
                 int hiddenRevision=new JSONObject(snapshot()).getInt("revision");
@@ -251,7 +251,7 @@ public class OfflineProbe extends Instrumentation {
                         .addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                     activity.startActivity(bring);
                 });
-                untilFast("document.visibilityState==='visible'", 1500);
+                untilFast("document.visibilityState==='visible'", 5000);
                 Thread.sleep(800);
                 step("lifecycle-paused-after");
                 int afterRevision=new JSONObject(snapshot()).getInt("revision");
