@@ -1,0 +1,50 @@
+name: MUIR P11 Package Platforms
+
+on:
+  push:
+    branches:
+      - ui-a7/muir-p11-performance-platforms
+
+concurrency:
+  group: muir-p11-package-platforms-${{ github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  package-platforms:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Build engine
+        run: npm run build
+      - name: Existing shared package graph
+        run: node --test scripts/test-muir-package-graph.mjs
+      - name: Build PlayCanvas
+        run: npm run build:playcanvas
+      - name: PlayCanvas adapter smoke
+        run: node --test scripts/test-playcanvas.mjs
+      - name: Build Android offline
+        run: npm run android:offline
+      - name: Android offline regression
+        run: node --test scripts/test-android-offline.mjs
+      - name: P11 transitive and negative package graph
+        run: node --test scripts/test-muir-p11-package-graph.mjs
+      - name: Cutscene contract regression
+        run: node --test scripts/test-event-cutscenes.mjs
+      - name: Upload package evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: muir-p11-package-${{ github.sha }}
+          if-no-files-found: error
+          path: |
+            playcanvas/manifest.json
+            android/app/src/main/assets/offline-manifest.json
+            android/app/src/main/assets/web/local.js
