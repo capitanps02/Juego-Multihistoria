@@ -125,7 +125,7 @@ async function clickCardButton(cardTitle,buttonText){
     const cards=[...root.querySelectorAll('.player-action-card')];
     const card=cards.find(node=>node.querySelector('h2')?.textContent.trim()===cardTitle);
     const b=card?[...card.querySelectorAll('button')].find(node=>node.textContent.trim()===buttonText):null;
-    if(b&&!b.disabled){const started=performance.now();b.click();await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));perf.renderSamples.push(performance.now()-started);return;}
+    if(b&&!b.disabled){const started=performance.now();b.click();await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));perf.responseSamples.push(performance.now()-started);return;}
     await new Promise(r=>setTimeout(r,25));
   }
   throw Error('MUIR harness could not find enabled '+buttonText+' in card '+cardTitle);
