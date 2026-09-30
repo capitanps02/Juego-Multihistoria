@@ -1,7 +1,7 @@
 # MUIR P11 — Package graph / platform packaging report
 
 PREDECESSOR: 512730e8e1830935e841751c72419daf82e84ca9
-STATUS: PASS_CONDITIONAL_EXACT_HEAD
+STATUS: PASS_CANDIDATE_AWAITING_SEAL_GATE
 
 ## Android offline closure
 - 436 packaged files on the certified package candidate.
@@ -22,8 +22,8 @@ STATUS: PASS_CONDITIONAL_EXACT_HEAD
 
 ## PlayCanvas
 - Generated modules: 171.
-- Candidate generated bundle: 17,731,199 B.
-- Candidate SHA-256: a3fd6bcd74693c3fcb49817181a1514ff0c03835935717632e510c90a091b6ce.
+- Candidate generated bundle: 17,732,697 B.
+- Candidate SHA-256: 59bbd0cc1f16c985ebd0ba6678a371ca6987ac3359628272e6fdcb176a2f9ec3.
 - Engine/RNG/state package regression: PASS.
 - Generated adapter Chromium smoke: PASS.
 - Summary/Decision/Result/Offer/Epilogue state matrix: PASS.
@@ -34,4 +34,4 @@ STATUS: PASS_CONDITIONAL_EXACT_HEAD
 - Android local cinematic closure is byte-for-byte checked.
 - Missing-media fallback remains mandatory and tested separately.
 
-Final certification remains conditional on the exact closing HEAD package workflow.
+Exact candidate c4af2520 Package Platforms run 36736403339 = SUCCESS. Final PASS remains valid only when the evidence-only closing HEAD repeats the exact package workflow successfully.

@@ -35,7 +35,7 @@
       "functional": "PASS",
       "assets": "PASS",
       "a11y": "PASS",
-      "notes": "Android lifecycle exact-head gate required"
+      "notes": "Direct PlayCanvas + Android lifecycle; exact candidate c4af2520 Android Runtime PASS"
     },
     {
       "surface": "Summary",
@@ -182,7 +182,7 @@
       "evidence": "adapter browser smoke + state matrix + RNG/state package regression"
     },
     "android": {
-      "status": "PASS_CONDITIONAL_EXACT_HEAD",
+      "status": "PASS",
       "offlinePackage": "PASS",
       "processRestore": "PASS",
       "back": "PASS",
@@ -195,11 +195,11 @@
       "threeButtonNavigation": "DEFERRED_TO_P12",
       "physicalCutout": "DEFERRED_TO_P12",
       "talkBack": "DEFERRED_TO_P12",
-      "evidenceRun": 36730898762,
-      "evidenceHead": "27918517794f493a2d6f54228d3c37e4914dee30",
+      "evidenceRun": 36736403180,
+      "evidenceHead": "c4af2520abc7f810c3318359dfa7456745b7dbcd",
       "lifecycleEvidence": {
-        "running": "hidden scheduler frozen after one allowed in-flight command; foreground produced valid pending interruption without duplicate revision burst",
-        "paused": "revision remained 0 -> 0 -> 0 across foreground/background/foreground"
+        "running": "native onPause suspended scheduler; revision stayed 1 -> 1 throughout background (delta 0), then foreground resumed to revision 2 without duplicate burst",
+        "paused": "paused auto-sim preserved its revision across native pause/resume"
       }
     }
   },
