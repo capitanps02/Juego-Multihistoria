@@ -324,3 +324,29 @@ Pass 2 Decision: workflow `36623464538` PASS. Pass 3 Result: workflow `366255865
 
 Pass 1 baseline authority test: `scripts/test-muir-p9-baseline.mjs`.  
 Pass 1 is not promoted to PASS until the exact current P9 HEAD completes the P9 workflow successfully.
+
+
+## P10 — Pulido global / iconografía / accesibilidad
+
+P10 branch: `ui-a0-a8/muir-p10-polish-a11y`  
+Exact certified predecessor: P9 `21b7eb5fa1df25863a7018cd33eddfbab792c113` · workflow `36637412035` SUCCESS.  
+Scope: presentation consistency and accessibility only. No gameplay, RNG, GameSession, PlayerView, Football DB, Player Actions rules, persistence authority or narrative changes.
+
+| REQ_ID | Description | Owner | Pass | Implementation | Test | Evidence | Gate | Rollback | Status |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| P10-CONS-001 | Global surfaces use one coherent visual system without reopening layout/gameplay | UI-A0 + UI-A8 | P10.1–P10.6 | shared CSS + audit matrix | global browser/regression matrix | analysis/muir/p10/consistency-matrix.md | MUIR-P10 | revert offending normalization | IN_PROGRESS |
+| P10-RADIUS-001 | Radius variants map to P1 semantic roles with documented exceptions | UI-A0 + UI-A8 | P10.1–P10.6 | web/game-ui.css tokens | static gate + browser diffs | P10_PASS2_NORMALIZATION.md | MUIR-P10 | restore component-local radius | IN_PROGRESS |
+| P10-SPACE-001 | System-level spacing uses P1 canonical scale with justified micro exceptions | UI-A0 + UI-A8 | P10.1–P10.6 | web/game-ui.css tokens | static gate + responsive matrix | P10_PASS2_NORMALIZATION.md | MUIR-P10 | restore component-local spacing | IN_PROGRESS |
+| P10-TYPE-001 | Typography hierarchy is consistent and visible text does not fall below 10 px caption floor | UI-A0 + UI-A8 | P10.1–P10.6 | shared CSS type token | static gate + text-scale matrix | P10 workflow evidence | MUIR-P10 | restore local size only with evidence | IN_PROGRESS |
+| P10-ICON-001 | One SVG icon family is used; no emoji icon pack or competing library is introduced | UI-A0 + UI-A8 | P10.1–P10.6 | web/game-ui.js icon helper | static icon contract + browser regression | P10 workflow evidence | MUIR-P10 | restore P9 icon helper | IN_PROGRESS |
+| P10-EMPTY-001 | Empty states remain factual, consistent and feature-neutral | UI-A0 + UI-A8 | P10.1–P10.6 | existing semantic empty states | P7/P8 + P10 browser probes | P10 workflow evidence | MUIR-P10 | restore certified P9 copy/state | PENDING |
+| P10-ERROR-001 | Error states remain textual, semantic and recoverable | UI-A0 + UI-A8 | P10.1–P10.6 | existing role=alert + danger presentation | AXE/browser/functional regression | P10 workflow evidence | MUIR-P10 | restore P9 error styling | PENDING |
+| P10-DIS-001 | Disabled controls are distinguishable from loading and retain accessible semantics | UI-A0 + UI-A8 | P10.1–P10.6 | disabled cursor/state normalization | static + Player Actions/browser probes | P10 workflow evidence | MUIR-P10 | restore local disabled rule | IN_PROGRESS |
+| P10-FOCUS-001 | All interactive/programmatic focus targets expose consistent focus-visible treatment | UI-A0 + UI-A8 | P10.1–P10.6 | shared focus token/rules | keyboard/focus probes | P10 workflow evidence | MUIR-P10 | restore component focus rule | IN_PROGRESS |
+| P10-AXE-001 | Fresh P10 AXE matrix reports zero new critical violations | UI-A0 + UI-A8 | P10.3–P10.6 | no ARIA silencing | P2–P9 browser AXE probes | P10 workflow evidence | MUIR-P10 | revert offending P10 rule | PENDING |
+| P10-TALK-001 | TalkBack behavior is physically/manual verified or formally deferred | UI-A0 + UI-A8 | P10.4–P10.6 | N/A presentation verification | manual TalkBack | manual record / P12 deferral | MUIR-P10 | N/A | MANUAL_REQUIRED |
+| P10-TEXT-001 | Critical surfaces remain usable at 100%, 130% and extreme text scale | UI-A0 + UI-A8 | P10.4–P10.6 | wrapping/type normalization | P3/P6/P7/P8/P9 text probes | P10 workflow evidence | MUIR-P10 | revert offending type/spacing rule | PENDING |
+| P10-MOTION-001 | prefers-reduced-motion preserves complete functionality without essential animation | UI-A0 + UI-A8 | P10.4–P10.6 | existing reduced-motion hard override | static + auto-sim/browser probes | P10 workflow evidence | MUIR-P10 | restore certified P9 rule | PENDING |
+| P10-RESP-001 | 360x800, 390x844, 412x915, landscape and tablet remain usable cross-surface | UI-A0 + UI-A8 | P10.5–P10.6 | shared responsive CSS only | deterministic/browser matrices | P10 workflow evidence | MUIR-P10 | revert offending normalization | PENDING |
+
+P10 may only promote these rows to PASS after the exact containing HEAD completes the complete MUIR P10 workflow successfully and all visual diffs are reviewed. TalkBack may be recorded as formally deferred only with an explicit non-PASS/manual status and P12 ownership.
