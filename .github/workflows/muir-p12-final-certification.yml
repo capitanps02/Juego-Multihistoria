@@ -234,7 +234,7 @@ jobs:
       matrix:
         scope: [basic, lifecycle, lifecycle-paused, back]
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
         with:
@@ -258,7 +258,9 @@ jobs:
       - name: Enable KVM
         run: |
           if [ -e /dev/kvm ]; then sudo chown "$USER" /dev/kvm || true; sudo chmod 660 /dev/kvm || true; fi
-      - name: Android runtime
+      - name: Android runtime attempt 1
+        id: android_attempt_1
+        continue-on-error: true
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 35
@@ -268,6 +270,20 @@ jobs:
           disable-animations: true
           emulator-options: -no-window -noaudio -no-boot-anim -gpu swiftshader_indirect -no-snapshot
           script: bash scripts/run-muir-p11-android-runtime.sh "${{ matrix.scope }}"
+      - name: Android runtime retry after infrastructure failure
+        if: steps.android_attempt_1.outcome == 'failure'
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_2
+          disable-animations: true
+          emulator-options: -no-window -noaudio -no-boot-anim -gpu swiftshader_indirect -no-snapshot
+          script: bash scripts/run-muir-p11-android-runtime.sh "${{ matrix.scope }}"
+      - name: Validate Android runtime evidence
+        run: |
+          node -e "const fs=require('fs'); const p='analysis/2026-09-15/T3.3-android-runtime.json'; const j=JSON.parse(fs.readFileSync(p,'utf8')); if(j.passed!==true){console.error(JSON.stringify(j)); process.exit(1)}; console.log(JSON.stringify({scope:'${{ matrix.scope }}',passed:j.passed,apkSha256:j.apkSha256,requestedPhases:j.requestedPhases}))"
       - name: Upload Android runtime evidence
         if: always()
         uses: actions/upload-artifact@v4

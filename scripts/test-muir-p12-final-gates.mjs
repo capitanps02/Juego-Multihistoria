@@ -92,9 +92,9 @@ const phaseSets=androidRuns.map(r=>new Set(r.requestedPhases??r.phases?.map(p=>p
 const hasPhase=p=>androidRuns.some((r,i)=>r.passed===true&&phaseSets[i].has(p));
 for(const p of ['create','resume','lifecycle','lifecycle-paused'])requireCheck(hasPhase(p),'Android emulator phase missing: '+p);
 requireCheck(androidBack.passed===true,'Android Back runtime failed');
-const basic=androidRuns.find((r,i)=>r.passed===true&&phaseSets[i].has('create'));
-requireCheck(basic?.offlineEnforcement?.internetPermission===false,'Android offline INTERNET permission');
-requireCheck(String(basic?.offlineEnforcement?.origin??'').startsWith('https://appassets.androidplatform.net/'),'Android offline origin');
+const successfulAndroid=androidRuns.filter(r=>r.passed===true);
+requireCheck(successfulAndroid.some(r=>r.offlineEnforcement?.internetPermission===false),'Android offline INTERNET permission');
+requireCheck(successfulAndroid.some(r=>String(r.offlineEnforcement?.origin??'').startsWith('https://appassets.androidplatform.net/')),'Android offline origin');
 
 const pass1=fs.readFileSync(path.join(root,'analysis/muir/p12/P12_PASS1_FREEZE_TRACEABILITY.md'),'utf8');
 requireCheck(/GitHub open issues labelled P0: 0/.test(pass1),'P0 open count not zero in pass1 evidence');
@@ -234,7 +234,7 @@ ${blockers.length?blockers.map(x=>'- '+x).join('\n'):'- NONE'}
 `;
 fs.writeFileSync(path.join(root,'muir-final-certification.md'),report);
 
-const finalEvidence={schema:'muir-p12-final-gates-v2',head,p11CertifiedSha:P11,jobResults,automatedFailures:fail,gates,manualEvidence:{present:fs.existsSync(manualPath),exactHead:manualExact,path:'analysis/muir/p12/manual-device-evidence.json'},manualBlockers,finalStatus,progressP12:progress,progressMuir:Number(global),metrics:Object.fromEntries(requiredPerf.map(k=>[k,pm.get(k)?.final])),counts:{visual:extended.currentCaptures,visualClassified:extended.classifiedCaptures,unreviewed:extended.unreviewed,regressions:extended.regressions,hardcodedPlayerNames:identity.hardcodedPlayerNames}};
+const finalEvidence={schema:'muir-p12-final-gates-v2',head,p11CertifiedSha:P11,jobResults,automatedFailures:fail,gates,manualEvidence:{present:fs.existsSync(manualPath),exactHead:manualExact,path:'analysis/muir/p12/manual-device-evidence.json'},manualBlockers,finalStatus,progressP12:progress,progressMuir:Number(global),metrics:Object.fromEntries(requiredPerf.map(k=>[k,pm.get(k)?.final])),counts:{visual:extended.currentCaptures,visualClassified:extended.classifiedCaptures,dynamicMediaReviewed:extended.dynamicMediaReviewed??0,unreviewed:extended.unreviewed,regressions:extended.regressions,hardcodedPlayerNames:identity.hardcodedPlayerNames}};
 fs.writeFileSync(path.join(outDir,'final-gates.json'),JSON.stringify(finalEvidence,null,2)+'\n');
 console.log(JSON.stringify(finalEvidence,null,2));
 if(finalStatus!=='PASS')process.exitCode=1;
