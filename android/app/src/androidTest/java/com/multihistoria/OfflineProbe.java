@@ -186,55 +186,33 @@ public class OfflineProbe extends Instrumentation {
                 report.putInt("revisionBeforeBackground", beforeBackgroundRevision);
                 step("lifecycle-background");
                 runOnMainSync(() -> activity.moveTaskToBack(true));
-                Thread.sleep(500);
-                // Android WebView does not guarantee document.visibilityState propagation on every
-                // background transition. Native onPause emits muir:platform-pause; certify the
-                // actual requirement by revision quiescence instead. One foreground-started
-                // dispatch may finish after the platform pause. Its exact
-                // completion latency is not deterministic on CI. Allow at most that one revision,
-                // then require a full stable window before judging the hidden scheduler.
-                step("lifecycle-hidden-quiescence");
-                int hiddenSettledRevision=beforeBackgroundRevision;
-                long hiddenStableSince=System.currentTimeMillis();
-                long hiddenSettleDeadline=System.currentTimeMillis()+8000;
-                boolean hiddenQuiescent=false;
-                while(System.currentTimeMillis()<hiddenSettleDeadline) {
-                    Thread.sleep(500);
-                    int currentRevision=new JSONObject(snapshot()).getInt("revision");
-                    int currentDelta=currentRevision-beforeBackgroundRevision;
-                    if(currentDelta<0 || currentDelta>1) throw new Exception("Unexpected auto-sim burst while entering background: "+beforeBackgroundRevision+" -> "+currentRevision);
-                    if(currentRevision!=hiddenSettledRevision) {
-                        hiddenSettledRevision=currentRevision;
-                        hiddenStableSince=System.currentTimeMillis();
-                    }
-                    if(System.currentTimeMillis()-hiddenStableSince>=2000) {
-                        hiddenQuiescent=true;
-                        break;
-                    }
-                }
-                if(!hiddenQuiescent) throw new Exception("Foreground in-flight command did not reach a stable hidden state");
-                step("lifecycle-hidden-settled");
-                int entryDelta=hiddenSettledRevision-beforeBackgroundRevision;
-                report.putInt("backgroundEntryInFlightDelta", entryDelta);
-                report.putInt("revisionHiddenSettled", hiddenSettledRevision);
-                Thread.sleep(1500);
-                step("lifecycle-hidden-end");
-                String hiddenEnd=snapshot();
-                int hiddenEndRevision=new JSONObject(hiddenEnd).getInt("revision");
-                report.putString("visibilityHidden", new org.json.JSONArray("["+js("document.visibilityState")+"]").getString(0));
-                report.putInt("revisionHiddenEnd", hiddenEndRevision);
-                if(hiddenEndRevision!=hiddenSettledRevision) throw new Exception("Auto-sim scheduler advanced after hidden quiescence: "+hiddenSettledRevision+" -> "+hiddenEndRevision);
+                // Do not execute JavaScript while Android has the WebView backgrounded: WebView may
+                // suspend evaluateJavascript itself. Native onPause records the session revision in
+                // the shared shell and suspends the scheduler. Let the app remain backgrounded long
+                // enough that an unsuspended 140 ms scheduler would have advanced many times.
+                Thread.sleep(3500);
                 step("lifecycle-foreground");
                 runOnMainSync(() -> {
                     Intent bring=new Intent(activity, MainActivity.class)
                         .addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                     activity.startActivity(bring);
                 });
+                untilFast(ROOT+"?.querySelector('.mh')?.dataset.platformSuspended==='false' && Boolean("+ROOT+"?.querySelector('.mh')?.dataset.platformPauseRevision) && Boolean("+ROOT+"?.querySelector('.mh')?.dataset.platformResumeRevision)", 5000);
+                int pauseEventRevision=Integer.parseInt(js("String("+ROOT+"?.querySelector('.mh')?.dataset.platformPauseRevision) ").replace(""",""));
+                int resumeEventRevision=Integer.parseInt(js("String("+ROOT+"?.querySelector('.mh')?.dataset.platformResumeRevision) ").replace(""",""));
+                int backgroundDelta=resumeEventRevision-pauseEventRevision;
+                report.putInt("platformPauseRevision",pauseEventRevision);
+                report.putInt("platformResumeRevision",resumeEventRevision);
+                report.putInt("backgroundRevisionDelta",backgroundDelta);
+                if(pauseEventRevision<beforeBackgroundRevision || pauseEventRevision>beforeBackgroundRevision+1)
+                    throw new Exception("Unexpected revision at platform pause: "+beforeBackgroundRevision+" -> "+pauseEventRevision);
+                if(backgroundDelta<0 || backgroundDelta>1)
+                    throw new Exception("Auto-sim advanced repeatedly while backgrounded: "+pauseEventRevision+" -> "+resumeEventRevision);
                 Thread.sleep(1200);
                 step("lifecycle-after-resume");
                 String after=snapshot();
                 int afterRevision=new JSONObject(after).getInt("revision");
-                int resumeDelta=afterRevision-hiddenEndRevision;
+                int resumeDelta=afterRevision-resumeEventRevision;
                 boolean surfacedInterruption="true".equals(js("Boolean("+ROOT+"?.querySelector('.decision-sheet,.offer-sheet,.period-summary,.result-sheet,.p9-epilogue'))"));
                 report.putInt("revisionAfterResume", afterRevision);
                 report.putInt("resumeRevisionDelta", resumeDelta);
@@ -258,17 +236,20 @@ public class OfflineProbe extends Instrumentation {
                 report.putInt("pausedRevisionBefore", beforeRevision);
                 report.putString("pausedVisibilityBefore", new org.json.JSONArray("["+js("document.visibilityState")+"]").getString(0));
                 runOnMainSync(() -> activity.moveTaskToBack(true));
-                Thread.sleep(2000);
-                step("lifecycle-paused-hidden");
-                int hiddenRevision=new JSONObject(snapshot()).getInt("revision");
-                report.putInt("pausedRevisionHidden", hiddenRevision);
-                if(hiddenRevision!=beforeRevision) throw new Exception("Paused auto-sim advanced while hidden: "+beforeRevision+" -> "+hiddenRevision);
+                Thread.sleep(3000);
                 runOnMainSync(() -> {
                     Intent bring=new Intent(activity, MainActivity.class)
                         .addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                     activity.startActivity(bring);
                 });
-                Thread.sleep(1200);
+                untilFast(ROOT+"?.querySelector('.mh')?.dataset.platformSuspended==='false' && Boolean("+ROOT+"?.querySelector('.mh')?.dataset.platformPauseRevision) && Boolean("+ROOT+"?.querySelector('.mh')?.dataset.platformResumeRevision)", 5000);
+                int pausedPlatformPauseRevision=Integer.parseInt(js("String("+ROOT+"?.querySelector('.mh')?.dataset.platformPauseRevision) ").replace(""",""));
+                int pausedPlatformResumeRevision=Integer.parseInt(js("String("+ROOT+"?.querySelector('.mh')?.dataset.platformResumeRevision) ").replace(""",""));
+                report.putInt("pausedPlatformPauseRevision",pausedPlatformPauseRevision);
+                report.putInt("pausedPlatformResumeRevision",pausedPlatformResumeRevision);
+                if(pausedPlatformPauseRevision!=beforeRevision || pausedPlatformResumeRevision!=beforeRevision)
+                    throw new Exception("Paused auto-sim changed revision across native lifecycle: "+beforeRevision+" -> "+pausedPlatformPauseRevision+" -> "+pausedPlatformResumeRevision);
+                Thread.sleep(700);
                 step("lifecycle-paused-after");
                 int afterRevision=new JSONObject(snapshot()).getInt("revision");
                 report.putInt("pausedRevisionAfter", afterRevision);

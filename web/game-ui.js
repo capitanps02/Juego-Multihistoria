@@ -206,8 +206,14 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
     if(doc.visibilityState==='hidden'){suspendAutoScheduler();return;}
     if(!platformSuspended)queueAutoStep();
   }
-  function platformpause(){platformSuspended=true;suspendAutoScheduler();}
-  function platformresume(){platformSuspended=false;if(doc.visibilityState!=='hidden')queueAutoStep();}
+  function platformpause(){
+    platformSuspended=true;suspendAutoScheduler();shell.dataset.platformSuspended='true';
+    const revision=session?.getView?.().revision;if(Number.isInteger(revision))shell.dataset.platformPauseRevision=String(revision);
+  }
+  function platformresume(){
+    const revision=session?.getView?.().revision;if(Number.isInteger(revision))shell.dataset.platformResumeRevision=String(revision);
+    shell.dataset.platformSuspended='false';platformSuspended=false;if(doc.visibilityState!=='hidden')queueAutoStep();
+  }
   function patchAutoPresentation(){
     autoVisualTimer=null;
     const v=session?.getView();
