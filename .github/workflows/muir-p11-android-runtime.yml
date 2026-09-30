@@ -11,8 +11,17 @@ concurrency:
 
 jobs:
   android-runtime:
+    name: android-runtime-${{ matrix.scope }}
+    strategy:
+      fail-fast: false
+      matrix:
+        scope:
+          - basic
+          - lifecycle
+          - lifecycle-paused
+          - back
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
         with:
@@ -40,7 +49,7 @@ jobs:
             sudo chown "$USER" /dev/kvm || true
             sudo chmod 660 /dev/kvm || true
           fi
-      - name: P11 Android offline / process restore / Back
+      - name: P11 Android runtime ${{ matrix.scope }}
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 35
@@ -49,12 +58,12 @@ jobs:
           profile: pixel_2
           disable-animations: true
           emulator-options: -no-window -noaudio -no-boot-anim -gpu swiftshader_indirect -no-snapshot
-          script: bash scripts/run-muir-p11-android-runtime.sh
+          script: bash scripts/run-muir-p11-android-runtime.sh "${{ matrix.scope }}"
       - name: Upload Android runtime evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: muir-p11-android-runtime-${{ github.sha }}
+          name: muir-p11-android-runtime-${{ matrix.scope }}-${{ github.sha }}
           if-no-files-found: warn
           path: |
             analysis/2026-09-15/T3.3-android-runtime.json

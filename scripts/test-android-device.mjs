@@ -11,7 +11,12 @@ const adb=path.join(sdk,'platform-tools',process.platform==='win32'?'adb.exe':'a
 if(!fs.existsSync(adb)) throw Error('adb not found at '+adb);
 const apk=path.join(root,'android/app/build/outputs/apk/debug/app-debug.apk');
 const testApk=path.join(root,'android/app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk');
-const report={pass:'T3.3',serial,apkSha256:createHash('sha256').update(fs.readFileSync(apk)).digest('hex'),phases:[],passed:false};
+const requestedPhases=process.argv.slice(3);
+const phases=requestedPhases.length?requestedPhases:['create','resume','lifecycle','lifecycle-paused'];
+const allowedPhases=new Set(['create','resume','lifecycle','lifecycle-paused']);
+for(const phase of phases)if(!allowedPhases.has(phase))throw Error('Unknown Android runtime phase: '+phase);
+if(phases.includes('resume')&&!phases.includes('create'))throw Error('resume requires create in the same emulator run');
+const report={pass:'T3.3',serial,requestedPhases:phases,apkSha256:createHash('sha256').update(fs.readFileSync(apk)).digest('hex'),phases:[],passed:false};
 const call=(...args)=>{
   try{return execFileSync(adb,['-s',serial,...args],{encoding:'utf8',timeout:180000});}
   catch(error){
@@ -38,7 +43,7 @@ try {
     origin:'https://appassets.androidplatform.net/assets/',
     cspConnectSrc:'none'
   };
-  for(const phase of ['create','resume','lifecycle','lifecycle-paused']) {
+  for(const phase of phases) {
     if(phase==='resume') call('shell','am','force-stop','com.multihistoria');
     const output=call('shell','am','instrument','-r','-w','-e','phase',phase,'com.multihistoria.test/com.multihistoria.OfflineProbe');
     report.phases.push({phase,output}); console.log(output);
