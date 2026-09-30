@@ -51,6 +51,18 @@ public class OfflineProbe extends Instrumentation {
         }
         throw new Exception("Timeout waiting for Decision through auto-sim interruptions. UI=" + js(ROOT+"?.textContent"));
     }
+    private void installDecisionFixture() throws Exception {
+        step("decision-fixture-build");
+        js("window.__p11DecisionFixture=null;(async()=>{try{const [{GameSession},{createIndexedSaveStore}]=await Promise.all([import(new URL('dist/session/game-session.js',location.href).href),import(new URL('web/indexed-save-store.js',location.href).href)]);const s=await GameSession.create(424242,{commit:async()=>{},sessionId:'p11-android-back-fixture'});for(let i=0;i<40;i++){const v=s.getView();if(v.screen==='decision')break;if(v.screen==='result'){await s.dispatch({type:'acknowledge',commandId:'p11-fixture-ack-'+i,expectedRevision:v.revision});continue;}if(v.screen==='offer'){await s.dispatch({type:'offer',offerId:v.offer.id,action:'reject',commandId:'p11-fixture-offer-'+i,expectedRevision:v.revision});continue;}await s.dispatch({type:'continue',maxDays:90,commandId:'p11-fixture-continue-'+i,expectedRevision:v.revision});}const v=s.getView();if(v.screen!=='decision')throw Error('Decision fixture not reached: '+v.screen);const store=createIndexedSaveStore({storage:localStorage,indexedDB,key:'historia-jugador.android.offline.session.v1',validate:()=>{}});const expected=await store.readRaw();await store.write(s.exportSnapshot(),expected);await store.close();window.__p11DecisionFixture='PASS';}catch(e){window.__p11DecisionFixture='ERROR:'+e.message;}})();");
+        until("window.__p11DecisionFixture!==null");
+        String encoded=js("window.__p11DecisionFixture");
+        String outcome=new org.json.JSONArray("["+encoded+"]").getString(0);
+        if(outcome.startsWith("ERROR:"))throw new Exception(outcome);
+        step("decision-fixture-reload");
+        js("location.reload();true");
+        until(ROOT+"?.querySelector('.choice:not(:disabled)')");
+    }
+
     private String snapshot() throws Exception {
         js("window.__probe=null; (async()=>{try{const {createIndexedSaveStore}=await import(new URL('web/indexed-save-store.js',location.href).href); const store=createIndexedSaveStore({storage:localStorage,indexedDB,key:'historia-jugador.android.offline.session.v1',validate:()=>{}});window.__probe=await store.read();await store.close();}catch(e){window.__probe='ERROR:'+e.message}})();");
         until("window.__probe!==null");
@@ -73,7 +85,7 @@ public class OfflineProbe extends Instrumentation {
             if(!"true".equals(js("typeof AndroidBridge==='object' && typeof AndroidBridge.saveTextFile==='function'"))) throw new Exception("Missing Android file bridge");
             android.content.SharedPreferences prefs=getTargetContext().getSharedPreferences("offline-probe",0);
             if("p9back".equals(phase)) {
-                step("decision-wait-choice"); advanceUntilDecision();
+                installDecisionFixture();
                 step("decision-snapshot-before"); String decisionBefore=snapshot();
                 JSONObject decisionSave=new JSONObject(decisionBefore);
                 if(decisionSave.isNull("pendingDecision") || decisionSave.getJSONArray("journal").length()!=0) throw new Exception("Decision baseline invalid");
