@@ -187,24 +187,40 @@ public class OfflineProbe extends Instrumentation {
                 step("lifecycle-background");
                 runOnMainSync(() -> activity.moveTaskToBack(true));
                 untilFast("document.visibilityState==='hidden'", 5000);
-                // One foreground-started dispatch may finish after visibility flips. It is not
-                // a background-scheduled tick. Allow that single command to settle, then prove
-                // the hidden scheduler remains completely frozen in a second observation window.
-                Thread.sleep(2000);
+                // One foreground-started dispatch may finish after visibility flips. Its exact
+                // completion latency is not deterministic on CI. Allow at most that one revision,
+                // then require a full stable window before judging the hidden scheduler.
+                step("lifecycle-hidden-quiescence");
+                int hiddenSettledRevision=beforeBackgroundRevision;
+                long hiddenStableSince=System.currentTimeMillis();
+                long hiddenSettleDeadline=System.currentTimeMillis()+8000;
+                boolean hiddenQuiescent=false;
+                while(System.currentTimeMillis()<hiddenSettleDeadline) {
+                    Thread.sleep(500);
+                    int currentRevision=new JSONObject(snapshot()).getInt("revision");
+                    int currentDelta=currentRevision-beforeBackgroundRevision;
+                    if(currentDelta<0 || currentDelta>1) throw new Exception("Unexpected auto-sim burst while entering background: "+beforeBackgroundRevision+" -> "+currentRevision);
+                    if(currentRevision!=hiddenSettledRevision) {
+                        hiddenSettledRevision=currentRevision;
+                        hiddenStableSince=System.currentTimeMillis();
+                    }
+                    if(System.currentTimeMillis()-hiddenStableSince>=2000) {
+                        hiddenQuiescent=true;
+                        break;
+                    }
+                }
+                if(!hiddenQuiescent) throw new Exception("Foreground in-flight command did not reach a stable hidden state");
                 step("lifecycle-hidden-settled");
-                String hiddenSettled=snapshot();
-                int hiddenSettledRevision=new JSONObject(hiddenSettled).getInt("revision");
                 int entryDelta=hiddenSettledRevision-beforeBackgroundRevision;
                 report.putInt("backgroundEntryInFlightDelta", entryDelta);
                 report.putInt("revisionHiddenSettled", hiddenSettledRevision);
-                if(entryDelta<0 || entryDelta>1) throw new Exception("Unexpected auto-sim burst while entering background: "+beforeBackgroundRevision+" -> "+hiddenSettledRevision);
                 Thread.sleep(1500);
                 step("lifecycle-hidden-end");
                 String hiddenEnd=snapshot();
                 int hiddenEndRevision=new JSONObject(hiddenEnd).getInt("revision");
                 report.putString("visibilityHidden", new org.json.JSONArray("["+js("document.visibilityState")+"]").getString(0));
                 report.putInt("revisionHiddenEnd", hiddenEndRevision);
-                if(hiddenEndRevision!=hiddenSettledRevision) throw new Exception("Auto-sim scheduler advanced after hidden state settled: "+hiddenSettledRevision+" -> "+hiddenEndRevision);
+                if(hiddenEndRevision!=hiddenSettledRevision) throw new Exception("Auto-sim scheduler advanced after hidden quiescence: "+hiddenSettledRevision+" -> "+hiddenEndRevision);
                 step("lifecycle-foreground");
                 runOnMainSync(() -> {
                     Intent bring=new Intent(activity, MainActivity.class)
