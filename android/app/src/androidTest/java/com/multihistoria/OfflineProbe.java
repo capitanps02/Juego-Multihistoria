@@ -70,6 +70,17 @@ public class OfflineProbe extends Instrumentation {
         js("location.reload();true");
         until(ROOT+"?.querySelector('.choice:not(:disabled)')");
     }
+    private void installLifecycleFixture() throws Exception {
+        step("lifecycle-fixture-build");
+        js("window.__p11LifecycleFixture=null;(async()=>{try{const [{GameSession},{createIndexedSaveStore}]=await Promise.all([import(new URL('dist/session/game-session.js',location.href).href),import(new URL('web/indexed-save-store.js',location.href).href)]);const s=await GameSession.create(424242,{commit:async()=>{},sessionId:'p11-android-lifecycle-fixture'});const v=s.getView();await s.dispatch({type:'auto',action:'start',maxWeeks:12,commandId:'p11-lifecycle-start',expectedRevision:v.revision});if(s.getView().simulation.mode!=='auto_simulating')throw Error('Lifecycle fixture did not enter auto_simulating');const store=createIndexedSaveStore({storage:localStorage,indexedDB,key:'historia-jugador.android.offline.session.v1',validate:()=>{}});const expected=await store.readRaw();await store.write(s.exportSnapshot(),expected);await store.close();window.__p11LifecycleFixture='PASS';}catch(e){window.__p11LifecycleFixture='ERROR:'+e.message;}})();");
+        until("window.__p11LifecycleFixture!==null");
+        String encoded=js("window.__p11LifecycleFixture");
+        String outcome=new org.json.JSONArray("["+encoded+"]").getString(0);
+        if(outcome.startsWith("ERROR:"))throw new Exception(outcome);
+        step("lifecycle-fixture-reload");
+        js("location.reload();true");
+        untilFast(ROOT+"?.querySelector('.p5-live-status')", 1500);
+    }
 
     private String snapshot() throws Exception {
         js("window.__probe=null; (async()=>{try{const {createIndexedSaveStore}=await import(new URL('web/indexed-save-store.js',location.href).href); const store=createIndexedSaveStore({storage:localStorage,indexedDB,key:'historia-jugador.android.offline.session.v1',validate:()=>{}});window.__probe=await store.read();await store.close();}catch(e){window.__probe='ERROR:'+e.message}})();");
@@ -154,11 +165,7 @@ public class OfflineProbe extends Instrumentation {
                 return;
             }
             if("lifecycle".equals(phase)) {
-                step("lifecycle-start-auto");
-                js("(()=>{const r="+ROOT+";const b=[...r.querySelectorAll('button:not(:disabled)')].find(x=>x.textContent.trim().startsWith('Simular'));if(!b)throw Error('Simular CTA missing');b.click();return true;})()");
-                // The first auto step is scheduled at 140 ms and may legitimately hit a Decision.
-                // Observe the running state with a fast poll and background before that first step.
-                untilFast(ROOT+"?.querySelector('.p5-live-status')", 1000);
+                installLifecycleFixture();
                 report.putString("visibilityBefore", new org.json.JSONArray("["+js("document.visibilityState")+"]").getString(0));
                 step("lifecycle-background");
                 runOnMainSync(() -> activity.moveTaskToBack(true));
