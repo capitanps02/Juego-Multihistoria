@@ -41,6 +41,12 @@ jobs:
           scripts/test-offers.mjs
           scripts/test-event-cutscenes.mjs
           scripts/test-football-catalog.mjs
+      - name: Exact P11 gameplay equivalence
+        run: |
+          git worktree add --detach /tmp/muir-p11-equivalence 81f802a2c2ef14a69d0b0b6251e40532615509aa
+          ln -s "$GITHUB_WORKSPACE/node_modules" /tmp/muir-p11-equivalence/node_modules
+          (cd /tmp/muir-p11-equivalence && npm run build)
+          MUIR_P12_PREDECESSOR_ROOT=/tmp/muir-p11-equivalence node scripts/test-muir-p12-equivalence.mjs
       - name: Full repository regression
         run: npm test
       - name: Shared UI package graph
