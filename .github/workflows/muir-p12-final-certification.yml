@@ -218,7 +218,7 @@ jobs:
             echo "P0 capture #$i exit was $P0_CAPTURE_EXIT; comparator uses successful common targets and enforces coverage."
           done
       - name: Stable compare P0 and final
-        run: node scripts/compare-muir-p12-performance-stable.mjs
+        run: node scripts/test-muir-p12-performance-stable.mjs
       - name: Dedicated auto-sim performance
         run: node analysis/muir/p5/browser-autosim-probe.mjs
       - name: Build PlayCanvas and metrics
