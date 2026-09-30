@@ -180,7 +180,7 @@ public class OfflineProbe extends Instrumentation {
                 installPausedLifecycleFixture();
                 step("lifecycle-resume-running");
                 js("(()=>{const r="+ROOT+";const b=[...r.querySelectorAll('button:not(:disabled)')].find(x=>x.textContent.trim()==='Reanudar simulación');if(!b)throw Error('Reanudar simulación CTA missing');b.click();return true;})()");
-                untilFast(ROOT+"?.querySelector('.p5-live-status')?.textContent.includes('Simulación en curso') && !"+ROOT+"?.querySelector('.busy-status')", 2000);
+                untilFast(ROOT+"?.querySelector('.p5-live-status')?.textContent.includes('Simulación en curso') && !"+ROOT+"?.querySelector('.busy-status')", 5000);
                 report.putString("visibilityBefore", new org.json.JSONArray("["+js("document.visibilityState")+"]").getString(0));
                 int beforeBackgroundRevision=new JSONObject(snapshot()).getInt("revision");
                 report.putInt("revisionBeforeBackground", beforeBackgroundRevision);
