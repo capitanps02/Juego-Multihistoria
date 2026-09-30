@@ -14,7 +14,7 @@ DATE: 2026-09-30
 - Open MUIR issues returned by repository issue search: P0 = 0; P1 = 0; MUIR open = 0.
 - Repository test inventory at entry: 193 `scripts/test-*` files; 41 MUIR-specific test files.
 - Fixture-related files at entry: 46.
-- Canonical P12 minimum visual states from the contract: 53, before viewport multiplication.
+- Canonical P12 minimum visual states from the contract: 54, before viewport multiplication.
 - Required core artifacts located: MUIR-RTM, baseline, P11 performance, P11 platform parity, UI fixtures and VDR directory.
 
 ## P12-only scope
