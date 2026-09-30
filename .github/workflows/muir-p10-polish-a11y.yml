@@ -76,6 +76,8 @@ jobs:
         run: |
           node analysis/muir/p5/browser-states-a11y-probe.mjs
           node analysis/muir/p5/browser-autosim-probe.mjs
+      - name: P10 critical Home and auto-sim text scale
+        run: node analysis/muir/p10/browser-critical-text-scale-probe.mjs
       - name: Player Actions accessibility and text scale
         run: node analysis/muir/p6/browser-player-actions-probe.mjs
       - name: Semantic component accessibility and text scale
