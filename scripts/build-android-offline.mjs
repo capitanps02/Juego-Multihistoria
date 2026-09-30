@@ -31,6 +31,7 @@ copy(path.join(root, 'web', 'club-catalog-names.js'), path.join(assetsRoot, 'web
 copy(path.join(root, 'web', 'club-names.js'), path.join(assetsRoot, 'web', 'club-names.js'));
 copy(path.join(root, 'web', 'indexed-save-store.js'), path.join(assetsRoot, 'web', 'indexed-save-store.js'));
 fs.cpSync(path.join(root, 'web', 'assets', 'cutscenes'), path.join(assetsRoot, 'web', 'assets', 'cutscenes'), { recursive: true });
+fs.cpSync(path.join(root, 'web', 'assets', 'cutscenes'), path.join(assetsRoot, 'web', 'assets', 'cutscenes'), { recursive: true });
 
 const assets = JSON.parse(fs.readFileSync(path.join(root, 'web', 'assets.json'), 'utf8'));
 const css = fs.readFileSync(path.join(root, 'web', 'game-ui.css'), 'utf8');
