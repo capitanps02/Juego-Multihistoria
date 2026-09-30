@@ -32,6 +32,12 @@ jobs:
         run: npm run build
       - name: P10 exact predecessor / scope / static polish gate
         run: node scripts/test-muir-p10-polish.mjs
+      - name: Install browser certification tooling
+        run: |
+          npm install --no-save playwright@1.55.0 axe-core@4 pixelmatch@7.1.0 pngjs@7.0.0
+          npx playwright install --with-deps chromium
+      - name: P10 critical Home and auto-sim text scale
+        run: node analysis/muir/p10/browser-critical-text-scale-probe.mjs
       - name: Gameplay and functional regressions
         run: >
           node --test
@@ -48,10 +54,6 @@ jobs:
         run: npm run test:playcanvas
       - name: Android offline package/regression
         run: npm run test:android:offline
-      - name: Install browser certification tooling
-        run: |
-          npm install --no-save playwright@1.55.0 axe-core@4 pixelmatch@7.1.0 pngjs@7.0.0
-          npx playwright install --with-deps chromium
       - name: Reproduce exact certified P9 visual baseline
         run: |
           git worktree add --detach /tmp/muir-p9-visual 21b7eb5fa1df25863a7018cd33eddfbab792c113
@@ -76,8 +78,6 @@ jobs:
         run: |
           node analysis/muir/p5/browser-states-a11y-probe.mjs
           node analysis/muir/p5/browser-autosim-probe.mjs
-      - name: P10 critical Home and auto-sim text scale
-        run: node analysis/muir/p10/browser-critical-text-scale-probe.mjs
       - name: Player Actions accessibility and text scale
         run: node analysis/muir/p6/browser-player-actions-probe.mjs
       - name: Semantic component accessibility and text scale
