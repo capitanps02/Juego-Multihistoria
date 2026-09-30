@@ -4,7 +4,7 @@ import {execFileSync} from 'node:child_process';
 
 const P9='21b7eb5fa1df25863a7018cd33eddfbab792c113';
 const read=p=>fs.readFileSync(p,'utf8');
-const git=(...args)=>execFileSync('git',args,{encoding:'utf8'}).trim();
+const gitRaw=(...args)=>execFileSync('git',args,{encoding:'utf8'});\nconst git=(...args)=>gitRaw(...args).trim();
 
 assert.equal(git('merge-base',P9,'HEAD'),P9,'P10 must descend from exact certified P9');
 
@@ -14,7 +14,7 @@ assert.deepEqual(forbidden,[],'P10 must not change gameplay, persistence or Foot
 
 const css=read('web/game-ui.css');
 const js=read('web/game-ui.js');
-const p9js=git('show',P9+':web/game-ui.js');
+const p9js=gitRaw('show',P9+':web/game-ui.js');
 
 for(const token of [
   '--muir-space-1:6px','--muir-space-8:24px',
