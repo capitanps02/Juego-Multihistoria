@@ -1,14 +1,14 @@
 {
   "schema": "muir-p10-visual-review-v1",
   "p9CertifiedSha": "21b7eb5fa1df25863a7018cd33eddfbab792c113",
-  "reviewedSetSha256": "2dc293d96b0a938917b6c82538b6d635f26791a080445c069802420df44df01b",
+  "reviewedSetSha256": "46bb2cf0719edc9af7f7395d1ffeff6632437a7a6deb468b3447e6b73accecfc",
   "classification": "EXPECTED_P10",
   "reviewedCount": 90,
-  "reviewMethod": "Manual before/after/diff review of all 90 deterministic captures from exact-head run 36687027520, grouped across fifteen contact sheets, plus structural overflow/touch-target guards.",
-  "note": "Expected P10 deltas only: tokenized radius/spacing/type, accessible blue CTA contrast, small-muted contrast, mobile shell hardening for extreme text scale, progress rounding, and focus/icon semantics. No clipping, hidden critical action, horizontal overflow increase, touch-target regression, broken choice/offer/action layout, or unexpected content/data change observed.",
+  "reviewMethod": "Manual before/after/diff review of the 90 deterministic captures. The 87 unchanged reviewed pairs remain identical to run 36687027520; the three epilogue-retirement pairs changed only because the stabilized runner freezes visible video at 0:00 and were re-reviewed at 360/390/412 in run 36690033717.",
+  "note": "Expected P10 deltas only: tokenized radius/spacing/type, accessible blue CTA contrast, small-muted contrast, mobile shell hardening for extreme text scale, progress rounding, focus/icon semantics, and deterministic video-frame capture. No clipping, hidden critical action, horizontal overflow increase, touch-target regression, broken choice/offer/action layout, or unexpected content/data change observed.",
   "reviewer": "UI-A0 + UI-A8",
   "reviewedAt": "2026-09-30",
-  "sourceRunId": 36687027520,
-  "sourceArtifactId": 11084962993,
-  "sourceArtifactSha256": "34fdb38e1bf57181bfc148b2fbb45cdc7772e10863bd0f8b58ec0260e9b8eac3"
+  "sourceRunId": 36690033717,
+  "sourceArtifactId": 11085903164,
+  "sourceArtifactSha256": "b83f04ebf01aac4c7a8d4bf1d44748f75bdae7d4e3a276e17cb8e21a8b63e82a"
 }
