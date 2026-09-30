@@ -112,7 +112,8 @@ server.close();
 
 const phoneCount=MUIR_FIXTURES.length*3;
 const renderSamples=records.flatMap(row=>row.metrics?.render?.samplesMs??[]).filter(Number.isFinite).sort((a,b)=>a-b);
-const percentile=p=>renderSamples.length?renderSamples[Math.min(renderSamples.length-1,Math.ceil(renderSamples.length*p)-1)]:null;
+const responseSamples=records.flatMap(row=>row.metrics?.response?.samplesMs??[]).filter(Number.isFinite).sort((a,b)=>a-b);
+const percentile=(samples,p)=>samples.length?samples[Math.min(samples.length-1,Math.ceil(samples.length*p)-1)]:null;
 const report={
   schema:'muir-browser-baseline-v1',
   baseSha:MUIR_BASE_SHA,
@@ -126,8 +127,11 @@ const report={
   errors,
   aggregate:{
     renderSampleCount:renderSamples.length,
-    renderP50Ms:percentile(.5),
-    renderP95Ms:percentile(.95),
+    renderP50Ms:percentile(renderSamples,.5),
+    renderP95Ms:percentile(renderSamples,.95),
+    responseSampleCount:responseSamples.length,
+    responseP50Ms:percentile(responseSamples,.5),
+    responseP95Ms:percentile(responseSamples,.95),
     maxDomNodes:Math.max(0,...records.map(row=>row.metrics?.domNodes??0)),
     maxLongTaskMs:Math.max(0,...records.flatMap(row=>row.metrics?.longTasks??[]).map(x=>x.duration??0)),
     undersizedTouchTargetCount:records.reduce((sum,row)=>sum+(row.metrics?.undersizedTouchTargets?.length??0),0),
