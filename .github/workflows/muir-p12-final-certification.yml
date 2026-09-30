@@ -206,15 +206,7 @@ jobs:
             P0_CAPTURE_EXIT=$?
             set -e
             cp /tmp/muir-p0-performance/analysis/muir/evidence/browser-baseline.json "analysis/muir/p11/evidence/p0-same-harness-browser-baseline-$i.json"
-            node - "$i" <<'NODE'
-            const fs=require('fs');
-            const i=process.argv[2];
-            const p='analysis/muir/p11/evidence/p0-same-harness-browser-baseline-'+i+'.json';
-            const r=JSON.parse(fs.readFileSync(p,'utf8'));
-            console.log(JSON.stringify({run:Number(i),captured:r.captured,errors:r.errors?.length??0,responseSamples:r.aggregate?.responseSampleCount??0}));
-            if((r.captured??0)<50)process.exit(2);
-            if((r.aggregate?.responseSampleCount??0)<20)process.exit(3);
-            NODE
+            P0_RUN="$i" node -e "const fs=require('fs'); const i=process.env.P0_RUN; const p='analysis/muir/p11/evidence/p0-same-harness-browser-baseline-'+i+'.json'; const r=JSON.parse(fs.readFileSync(p,'utf8')); console.log(JSON.stringify({run:Number(i),captured:r.captured,errors:r.errors?.length??0,responseSamples:r.aggregate?.responseSampleCount??0})); if((r.captured??0)<50)process.exit(2); if((r.aggregate?.responseSampleCount??0)<20)process.exit(3);"
             echo "P0 capture #$i exit was $P0_CAPTURE_EXIT; comparator uses successful common targets and enforces coverage."
           done
       - name: Stable compare P0 and final
