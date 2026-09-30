@@ -12,7 +12,7 @@ concurrency:
 jobs:
   package-platforms:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
         with:
@@ -22,6 +22,10 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - name: Install PlayCanvas browser smoke tooling
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
       - name: Build engine
         run: npm run build
       - name: Existing shared package graph
@@ -30,6 +34,8 @@ jobs:
         run: npm run build:playcanvas
       - name: PlayCanvas adapter smoke
         run: node --test scripts/test-playcanvas.mjs
+      - name: PlayCanvas generated adapter browser smoke
+        run: node analysis/muir/p11/browser-playcanvas-adapter-probe.mjs
       - name: Build Android offline
         run: npm run android:offline
       - name: Android offline regression
@@ -48,3 +54,4 @@ jobs:
             playcanvas/manifest.json
             android/app/src/main/assets/offline-manifest.json
             android/app/src/main/assets/web/local.js
+            analysis/muir/p11/evidence/playcanvas-adapter-browser.json
