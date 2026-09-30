@@ -16,9 +16,12 @@ jobs:
   p10:
     runs-on: ubuntu-latest
     timeout-minutes: 90
+    env:
+      MUIR_P10_EXPECTED_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
