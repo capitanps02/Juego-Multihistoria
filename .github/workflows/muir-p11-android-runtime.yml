@@ -49,7 +49,12 @@ jobs:
           profile: pixel_2
           disable-animations: true
           emulator-options: -no-window -noaudio -no-boot-anim -gpu swiftshader_indirect -no-snapshot
-          script: adb devices -l && echo "Using emulator serial: $ANDROID_SERIAL" && test -n "$ANDROID_SERIAL" && node scripts/test-android-device.mjs "$ANDROID_SERIAL" && node scripts/test-muir-p9-android-back.mjs "$ANDROID_SERIAL"
+          script: >-
+            adb devices -l &&
+            echo "Using emulator serial $ANDROID_SERIAL" &&
+            test -n "$ANDROID_SERIAL" &&
+            node scripts/test-android-device.mjs "$ANDROID_SERIAL" &&
+            node scripts/test-muir-p9-android-back.mjs "$ANDROID_SERIAL"
       - name: Upload Android runtime evidence
         if: always()
         uses: actions/upload-artifact@v4
