@@ -109,6 +109,51 @@ public class OfflineProbe extends Instrumentation {
                 finish(Activity.RESULT_OK, report);
                 return;
             }
+            if("lifecycle".equals(phase)) {
+                step("lifecycle-start-auto");
+                js("(()=>{const r="+ROOT+";const b=[...r.querySelectorAll('button:not(:disabled)')].find(x=>x.textContent.trim().startsWith('Simular'));if(!b)throw Error('Simular CTA missing');b.click();return true;})()");
+                until(ROOT+"?.querySelector('.p5-live-status')");
+                Thread.sleep(500);
+                step("lifecycle-before-background");
+                String before=snapshot();
+                JSONObject beforeSave=new JSONObject(before);
+                int beforeRevision=beforeSave.getInt("revision");
+                String beforeVisibility=new org.json.JSONArray("["+js("document.visibilityState")+"]").getString(0);
+                report.putString("visibilityBefore", beforeVisibility);
+                step("lifecycle-background");
+                runOnMainSync(() -> activity.moveTaskToBack(true));
+                Thread.sleep(1500);
+                String hiddenVisibility=new org.json.JSONArray("["+js("document.visibilityState")+"]").getString(0);
+                String during=snapshot();
+                JSONObject duringSave=new JSONObject(during);
+                int duringRevision=duringSave.getInt("revision");
+                report.putString("visibilityHidden", hiddenVisibility);
+                report.putInt("revisionBeforeBackground", beforeRevision);
+                report.putInt("revisionDuringBackground", duringRevision);
+                if(!"hidden".equals(hiddenVisibility)) throw new Exception("Document did not enter hidden visibility state");
+                if(duringRevision!=beforeRevision) throw new Exception("Auto-sim advanced while app was backgrounded: "+beforeRevision+" -> "+duringRevision);
+                step("lifecycle-foreground");
+                runOnMainSync(() -> {
+                    Intent bring=new Intent(activity, MainActivity.class)
+                        .addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                    activity.startActivity(bring);
+                });
+                until("document.visibilityState==='visible' && "+ROOT+"?.querySelector('.p5-live-status')");
+                Thread.sleep(800);
+                String after=snapshot();
+                JSONObject afterSave=new JSONObject(after);
+                int afterRevision=afterSave.getInt("revision");
+                report.putInt("revisionAfterResume", afterRevision);
+                report.putString("visibilityAfter", new org.json.JSONArray("["+js("document.visibilityState")+"]").getString(0));
+                if(afterRevision<=duringRevision) throw new Exception("Auto-sim did not resume after foreground");
+                step("lifecycle-pause");
+                js("(()=>{const r="+ROOT+";const b=[...r.querySelectorAll('button:not(:disabled)')].find(x=>x.textContent.trim()==='Pausar simulación');if(b)b.click();return true;})()");
+                until("!"+ROOT+"?.querySelector('.p5-live-status') || "+ROOT+"?.textContent.includes('Juego en pausa')");
+                report.putString("stream", "PASS lifecycle: auto-sim paused in background and resumed once in foreground; startupMs=" + startupMs + "\n");
+                finish(Activity.RESULT_OK, report);
+                return;
+            }
+
             if("create".equals(phase)) {
                 step("create-initial-snapshot");
                 String raw=snapshot(); JSONObject save=new JSONObject(raw);
