@@ -198,8 +198,8 @@ public class OfflineProbe extends Instrumentation {
                     activity.startActivity(bring);
                 });
                 untilFast(ROOT+"?.querySelector('.mh')?.dataset.platformSuspended==='false' && Boolean("+ROOT+"?.querySelector('.mh')?.dataset.platformPauseRevision) && Boolean("+ROOT+"?.querySelector('.mh')?.dataset.platformResumeRevision)", 5000);
-                int pauseEventRevision=Integer.parseInt(js("String("+ROOT+"?.querySelector('.mh')?.dataset.platformPauseRevision) ").replace(""",""));
-                int resumeEventRevision=Integer.parseInt(js("String("+ROOT+"?.querySelector('.mh')?.dataset.platformResumeRevision) ").replace(""",""));
+                int pauseEventRevision=Integer.parseInt(js("Number("+ROOT+"?.querySelector('.mh')?.dataset.platformPauseRevision)"));
+                int resumeEventRevision=Integer.parseInt(js("Number("+ROOT+"?.querySelector('.mh')?.dataset.platformResumeRevision)"));
                 int backgroundDelta=resumeEventRevision-pauseEventRevision;
                 report.putInt("platformPauseRevision",pauseEventRevision);
                 report.putInt("platformResumeRevision",resumeEventRevision);
@@ -243,8 +243,8 @@ public class OfflineProbe extends Instrumentation {
                     activity.startActivity(bring);
                 });
                 untilFast(ROOT+"?.querySelector('.mh')?.dataset.platformSuspended==='false' && Boolean("+ROOT+"?.querySelector('.mh')?.dataset.platformPauseRevision) && Boolean("+ROOT+"?.querySelector('.mh')?.dataset.platformResumeRevision)", 5000);
-                int pausedPlatformPauseRevision=Integer.parseInt(js("String("+ROOT+"?.querySelector('.mh')?.dataset.platformPauseRevision) ").replace(""",""));
-                int pausedPlatformResumeRevision=Integer.parseInt(js("String("+ROOT+"?.querySelector('.mh')?.dataset.platformResumeRevision) ").replace(""",""));
+                int pausedPlatformPauseRevision=Integer.parseInt(js("Number("+ROOT+"?.querySelector('.mh')?.dataset.platformPauseRevision)"));
+                int pausedPlatformResumeRevision=Integer.parseInt(js("Number("+ROOT+"?.querySelector('.mh')?.dataset.platformResumeRevision)"));
                 report.putInt("pausedPlatformPauseRevision",pausedPlatformPauseRevision);
                 report.putInt("pausedPlatformResumeRevision",pausedPlatformResumeRevision);
                 if(pausedPlatformPauseRevision!=beforeRevision || pausedPlatformResumeRevision!=beforeRevision)
