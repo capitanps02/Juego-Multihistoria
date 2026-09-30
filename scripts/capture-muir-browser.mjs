@@ -68,6 +68,11 @@ async function freezeVisibleMedia(page){
             setTimeout(finish,1200);
           });
         }
+        // Native video poster/frame/controls rendering is not byte-deterministic across
+        // Chromium runs. Preserve the exact media box/layout but mask its pixels in this
+        // visual-regression runner. Dedicated P9 cinematic probes still exercise real media.
+        video.style.setProperty('visibility','hidden','important');
+        video.dataset.muirVisualMediaMasked='true';
       }catch{}
     }
     await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
@@ -113,7 +118,7 @@ const report={
   baseSha:MUIR_BASE_SHA,
   generatedAt:new Date().toISOString(),
   browser:{name:'Playwright Chromium',version:browserVersion},
-  visualDeterminism:{visibleVideoFrame:'paused@0s',runner:'current P10 harness applied to both products'},
+  visualDeterminism:{visibleVideoFrame:'layout-preserved pixels masked after pause@0s',runner:'current P10 harness applied to both products',mediaCoverage:'real video behavior covered separately by P9 cinematic probes'},
   targetCount:targets.length,
   expectedPhoneCaptures:phoneCount,
   captured:records.length,
