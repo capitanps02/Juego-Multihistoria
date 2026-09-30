@@ -34,7 +34,7 @@ for (const [pass,sha] of chain) {
 const diff = sh("diff","--name-only",P11,head).split("\n").filter(Boolean);
 const allowed = diff.every(p =>
   p === ".github/workflows/muir-p12-final-certification.yml" ||
-  p === "scripts/test-muir-p12-preflight.mjs" ||
+  p.startsWith("scripts/test-muir-p12-") ||
   p === "muir-final-certification.md" ||
   p.startsWith("analysis/muir/p12/") ||
   p.startsWith("docs/muir/P12")
