@@ -24,12 +24,15 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
   const doc=root.ownerDocument, win=doc.defaultView||globalThis, el=(tag,text,cls)=>{const n=doc.createElement(tag);if(text!==undefined)n.textContent=text;if(cls)n.className=cls;return n;};
   const style=el('style');style.textContent=css;root.append(style);
   const shell=el('div',undefined,'mh');shell.dataset.release='2026-09-28-cinematicas-prologo';root.append(shell);
-  const date=s=>new Intl.DateTimeFormat('es-ES',{day:'numeric',month:'short',year:'numeric',timeZone:'UTC'}).format(new Date(s+'T00:00:00Z'));
+  const dateFormatter=new Intl.DateTimeFormat('es-ES',{day:'numeric',month:'short',year:'numeric',timeZone:'UTC'});
+  const moneyFormatter=new Intl.NumberFormat('es-ES',{style:'currency',currency:'EUR',maximumFractionDigits:0});
+  const decimalFormatter=new Intl.NumberFormat('es-ES',{maximumFractionDigits:1});
+  const date=s=>dateFormatter.format(new Date(s+'T00:00:00Z'));
   const decisionCount=n=>`${n} ${n===1?'decisión':'decisiones'}`;
   const hasBackup=()=>store.hasPrevious();
-  const money=n=>new Intl.NumberFormat('es-ES',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(n);
+  const money=n=>moneyFormatter.format(n);
   const clubName=formatClubName;
-  const decimal=n=>new Intl.NumberFormat('es-ES',{maximumFractionDigits:1}).format(n);
+  const decimal=n=>decimalFormatter.format(n);
   const deltaText=n=>{const rounded=Math.round(n*10)/10;return rounded===0&&n!==0?(n>0?'+':'−')+'<0,1':(rounded>0?'+':'')+decimal(rounded);};
   function autoSimulationProgress(v){
     const maxWeeks=Number(v?.simulation?.maxWeeks),elapsedRaw=Number(v?.simulation?.elapsedDays);
