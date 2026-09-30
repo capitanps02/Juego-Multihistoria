@@ -89,7 +89,7 @@ public class OfflineProbe extends Instrumentation {
                 return;
             }
             if("create".equals(phase)) {
-                js("[..."+ROOT+".querySelectorAll('button')].find(b=>b.textContent.includes('Simular semana')).click()");
+                step("create-click-simulate"); js("[..."+ROOT+".querySelectorAll('button')].find(b=>b.textContent.trim().startsWith('Simular'))?.click()");
                 until(ROOT+"?.querySelector('.choice:not(:disabled)')");
                 js(ROOT+".querySelector('.choice').click()");
                 until(ROOT+"?.querySelector('.chosen') && !"+ROOT+"?.querySelector('.busy-status')");
