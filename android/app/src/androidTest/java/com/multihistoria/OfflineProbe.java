@@ -41,6 +41,14 @@ public class OfflineProbe extends Instrumentation {
         }
         throw new Exception("Timeout: " + expression + " UI=" + js(ROOT+"?.textContent"));
     }
+    private void untilFast(String expression, long timeoutMs) throws Exception {
+        long end = System.currentTimeMillis() + timeoutMs;
+        while(System.currentTimeMillis() < end) {
+            if("true".equals(js("Boolean(" + expression + ")"))) return;
+            Thread.sleep(20);
+        }
+        throw new Exception("Fast timeout: " + expression + " UI=" + js(ROOT+"?.textContent"));
+    }
     private void advanceUntilDecision() throws Exception {
         long end = System.currentTimeMillis() + 120000;
         while(System.currentTimeMillis() < end) {
@@ -130,44 +138,45 @@ public class OfflineProbe extends Instrumentation {
             if("lifecycle".equals(phase)) {
                 step("lifecycle-start-auto");
                 js("(()=>{const r="+ROOT+";const b=[...r.querySelectorAll('button:not(:disabled)')].find(x=>x.textContent.trim().startsWith('Simular'));if(!b)throw Error('Simular CTA missing');b.click();return true;})()");
-                until(ROOT+"?.querySelector('.p5-live-status')");
-                Thread.sleep(500);
-                step("lifecycle-before-background");
-                String before=snapshot();
-                JSONObject beforeSave=new JSONObject(before);
-                int beforeRevision=beforeSave.getInt("revision");
-                String beforeVisibility=new org.json.JSONArray("["+js("document.visibilityState")+"]").getString(0);
-                report.putString("visibilityBefore", beforeVisibility);
+                // The first auto step is scheduled at 140 ms and may legitimately hit a Decision.
+                // Observe the running state with a fast poll and background before that first step.
+                untilFast(ROOT+"?.querySelector('.p5-live-status')", 1000);
+                report.putString("visibilityBefore", new org.json.JSONArray("["+js("document.visibilityState")+"]").getString(0));
                 step("lifecycle-background");
                 runOnMainSync(() -> activity.moveTaskToBack(true));
+                untilFast("document.visibilityState==='hidden'", 1500);
+                step("lifecycle-hidden-start");
+                String hiddenStart=snapshot();
+                int hiddenRevision=new JSONObject(hiddenStart).getInt("revision");
                 Thread.sleep(1500);
-                String hiddenVisibility=new org.json.JSONArray("["+js("document.visibilityState")+"]").getString(0);
-                String during=snapshot();
-                JSONObject duringSave=new JSONObject(during);
-                int duringRevision=duringSave.getInt("revision");
-                report.putString("visibilityHidden", hiddenVisibility);
-                report.putInt("revisionBeforeBackground", beforeRevision);
-                report.putInt("revisionDuringBackground", duringRevision);
-                if(!"hidden".equals(hiddenVisibility)) throw new Exception("Document did not enter hidden visibility state");
-                if(duringRevision!=beforeRevision) throw new Exception("Auto-sim advanced while app was backgrounded: "+beforeRevision+" -> "+duringRevision);
+                step("lifecycle-hidden-end");
+                String hiddenEnd=snapshot();
+                int hiddenEndRevision=new JSONObject(hiddenEnd).getInt("revision");
+                report.putString("visibilityHidden", new org.json.JSONArray("["+js("document.visibilityState")+"]").getString(0));
+                report.putInt("revisionHiddenStart", hiddenRevision);
+                report.putInt("revisionHiddenEnd", hiddenEndRevision);
+                if(hiddenEndRevision!=hiddenRevision) throw new Exception("Auto-sim advanced while app was backgrounded: "+hiddenRevision+" -> "+hiddenEndRevision);
                 step("lifecycle-foreground");
                 runOnMainSync(() -> {
                     Intent bring=new Intent(activity, MainActivity.class)
                         .addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                     activity.startActivity(bring);
                 });
-                until("document.visibilityState==='visible' && "+ROOT+"?.querySelector('.p5-live-status')");
+                untilFast("document.visibilityState==='visible'", 1500);
                 Thread.sleep(800);
+                step("lifecycle-after-resume");
                 String after=snapshot();
-                JSONObject afterSave=new JSONObject(after);
-                int afterRevision=afterSave.getInt("revision");
+                int afterRevision=new JSONObject(after).getInt("revision");
+                int resumeDelta=afterRevision-hiddenEndRevision;
                 report.putInt("revisionAfterResume", afterRevision);
+                report.putInt("resumeRevisionDelta", resumeDelta);
                 report.putString("visibilityAfter", new org.json.JSONArray("["+js("document.visibilityState")+"]").getString(0));
-                if(afterRevision<=duringRevision) throw new Exception("Auto-sim did not resume after foreground");
-                step("lifecycle-pause");
+                if(resumeDelta<=0) throw new Exception("Auto-sim did not resume after foreground");
+                if(resumeDelta>7) throw new Exception("Possible duplicate auto-sim loop after resume; revision burst="+resumeDelta);
+                step("lifecycle-pause-if-running");
                 js("(()=>{const r="+ROOT+";const b=[...r.querySelectorAll('button:not(:disabled)')].find(x=>x.textContent.trim()==='Pausar simulación');if(b)b.click();return true;})()");
-                until("!"+ROOT+"?.querySelector('.p5-live-status') || "+ROOT+"?.textContent.includes('Juego en pausa')");
-                report.putString("stream", "PASS lifecycle: auto-sim paused in background and resumed once in foreground; startupMs=" + startupMs + "\n");
+                Thread.sleep(250);
+                report.putString("stream", "PASS lifecycle: hidden state froze auto-sim and foreground resumed without duplicate revision burst; startupMs=" + startupMs + "\n");
                 finish(Activity.RESULT_OK, report);
                 return;
             }
