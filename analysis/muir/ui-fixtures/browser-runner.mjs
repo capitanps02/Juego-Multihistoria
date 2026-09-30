@@ -18,7 +18,9 @@ Element.prototype.replaceChildren=function(...nodes){
   if(this.classList?.contains('mh')){
     const started=performance.now();
     const result=nativeReplaceChildren.apply(this,nodes);
-    perf.renderSamples.push(performance.now()-started);
+    // render() rebuilds the shell synchronously after clearing it. Measure through
+    // the end of that synchronous stack instead of timing DOM removal alone.
+    queueMicrotask(()=>perf.renderSamples.push(performance.now()-started));
     return result;
   }
   return nativeReplaceChildren.apply(this,nodes);
