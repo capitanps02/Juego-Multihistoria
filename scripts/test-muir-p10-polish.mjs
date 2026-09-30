@@ -4,7 +4,8 @@ import {execFileSync} from 'node:child_process';
 
 const P9='21b7eb5fa1df25863a7018cd33eddfbab792c113';
 const read=p=>fs.readFileSync(p,'utf8');
-const gitRaw=(...args)=>execFileSync('git',args,{encoding:'utf8'});\nconst git=(...args)=>gitRaw(...args).trim();
+const gitRaw=(...args)=>execFileSync('git',args,{encoding:'utf8'});
+const git=(...args)=>gitRaw(...args).trim();
 
 assert.equal(git('merge-base',P9,'HEAD'),P9,'P10 must descend from exact certified P9');
 
