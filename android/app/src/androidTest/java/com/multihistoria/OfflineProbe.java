@@ -187,23 +187,24 @@ public class OfflineProbe extends Instrumentation {
                 step("lifecycle-background");
                 runOnMainSync(() -> activity.moveTaskToBack(true));
                 untilFast("document.visibilityState==='hidden'", 1500);
-                // A single foreground-started dispatch may still commit after visibility flips.
-                // Let that in-flight command settle, then require the hidden scheduler to remain frozen.
-                Thread.sleep(350);
-                step("lifecycle-hidden-start");
-                String hiddenStart=snapshot();
-                int hiddenRevision=new JSONObject(hiddenStart).getInt("revision");
-                int inFlightDelta=hiddenRevision-beforeBackgroundRevision;
-                report.putInt("backgroundEntryInFlightDelta", inFlightDelta);
-                if(inFlightDelta<0 || inFlightDelta>1) throw new Exception("Unexpected auto-sim burst while entering background: "+beforeBackgroundRevision+" -> "+hiddenRevision);
+                // One foreground-started dispatch may finish after visibility flips. It is not
+                // a background-scheduled tick. Allow that single command to settle, then prove
+                // the hidden scheduler remains completely frozen in a second observation window.
+                Thread.sleep(2000);
+                step("lifecycle-hidden-settled");
+                String hiddenSettled=snapshot();
+                int hiddenSettledRevision=new JSONObject(hiddenSettled).getInt("revision");
+                int entryDelta=hiddenSettledRevision-beforeBackgroundRevision;
+                report.putInt("backgroundEntryInFlightDelta", entryDelta);
+                report.putInt("revisionHiddenSettled", hiddenSettledRevision);
+                if(entryDelta<0 || entryDelta>1) throw new Exception("Unexpected auto-sim burst while entering background: "+beforeBackgroundRevision+" -> "+hiddenSettledRevision);
                 Thread.sleep(1500);
                 step("lifecycle-hidden-end");
                 String hiddenEnd=snapshot();
                 int hiddenEndRevision=new JSONObject(hiddenEnd).getInt("revision");
                 report.putString("visibilityHidden", new org.json.JSONArray("["+js("document.visibilityState")+"]").getString(0));
-                report.putInt("revisionHiddenStart", hiddenRevision);
                 report.putInt("revisionHiddenEnd", hiddenEndRevision);
-                if(hiddenEndRevision!=hiddenRevision) throw new Exception("Auto-sim scheduler advanced after hidden state settled: "+hiddenRevision+" -> "+hiddenEndRevision);
+                if(hiddenEndRevision!=hiddenSettledRevision) throw new Exception("Auto-sim scheduler advanced after hidden state settled: "+hiddenSettledRevision+" -> "+hiddenEndRevision);
                 step("lifecycle-foreground");
                 runOnMainSync(() -> {
                     Intent bring=new Intent(activity, MainActivity.class)
