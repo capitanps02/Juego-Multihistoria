@@ -12,13 +12,30 @@ let commandIndex=0;
 const command=(s,type,extra={})=>({type,commandId:'p11-pc-state-'+(commandIndex++),expectedRevision:s.getView().revision,...extra});
 
 async function makeSnapshot(target){
-  const opts=target==='summary'?{events:[],microfeeds:false,sessionId:'p11-pc-summary'}:{sessionId:'p11-pc-'+target};
-  const s=await GameSession.create(target==='summary'?1:424242,opts);
+  const s=await GameSession.create(424242,{sessionId:'p11-pc-'+target});
   if(target==='summary'){
-    await s.dispatch(command(s,'auto',{action:'start',maxWeeks:4}));
-    for(let i=0;i<20&&s.getView().simulation.mode==='auto_simulating';i++)await s.dispatch(command(s,'auto',{action:'step'}));
-    assert.equal(s.getView().screen,'summary','summary snapshot not reached');
-    return JSON.stringify(s.exportSnapshot());
+    for(let i=0;i<600;i++){
+      const v=s.getView();
+      if(v.screen==='summary')return JSON.stringify(s.exportSnapshot());
+      if(v.screen==='decision'){
+        await s.dispatch(command(s,'choose',{pendingInstanceId:v.decision.instanceId,choiceId:v.decision.choices[0].id}));
+        continue;
+      }
+      if(v.screen==='result'){
+        await s.dispatch(command(s,'acknowledge'));
+        continue;
+      }
+      if(v.screen==='offer'){
+        await s.dispatch(command(s,'offer',{offerId:v.offer.id,action:'accept'}));
+        continue;
+      }
+      const mode=v.simulation?.mode;
+      if(mode==='idle')await s.dispatch(command(s,'auto',{action:'start',maxWeeks:4}));
+      else if(mode==='auto_simulating')await s.dispatch(command(s,'auto',{action:'step'}));
+      else if(mode==='paused')await s.dispatch(command(s,'auto',{action:'resume'}));
+      else throw new Error('Unexpected auto-sim state while reaching summary: '+mode+' / '+v.screen);
+    }
+    throw new Error('Could not reach canonical summary');
   }
   for(let i=0;i<3000;i++){
     const v=s.getView();
