@@ -64,7 +64,7 @@ jobs:
       - name: Shell focus keyboard AXE and safe area
         run: |
           node analysis/muir/p2/browser-safe-area-probe.mjs
-          node analysis/muir/p2/browser-a11y-probe.mjs
+          node analysis/muir/p10/browser-shell-a11y-probe.mjs
           node analysis/muir/p2/browser-axe-probe.mjs
           node analysis/muir/p2/browser-topbar-probe.mjs
       - name: Home and contextual-help accessibility
