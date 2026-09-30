@@ -177,7 +177,10 @@ public class OfflineProbe extends Instrumentation {
                 return;
             }
             if("lifecycle".equals(phase)) {
-                installLifecycleFixture();
+                installPausedLifecycleFixture();
+                step("lifecycle-resume-running");
+                js("(()=>{const r="+ROOT+";const b=[...r.querySelectorAll('button:not(:disabled)')].find(x=>x.textContent.trim()==='Reanudar simulación');if(!b)throw Error('Reanudar simulación CTA missing');b.click();return true;})()");
+                untilFast(ROOT+"?.querySelector('.p5-live-status')", 1000);
                 report.putString("visibilityBefore", new org.json.JSONArray("["+js("document.visibilityState")+"]").getString(0));
                 step("lifecycle-background");
                 runOnMainSync(() -> activity.moveTaskToBack(true));
