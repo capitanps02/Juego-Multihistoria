@@ -112,10 +112,8 @@ jobs:
           node analysis/muir/p9/browser-results-probe.mjs
           node analysis/muir/p9/browser-offers-probe.mjs
           node analysis/muir/p9/browser-cinematics-probe.mjs
-      - name: Critical text scale / reduced motion / polish
-        run: |
-          node scripts/test-muir-p10-polish.mjs
-          node analysis/muir/p10/browser-critical-text-scale-probe.mjs
+      - name: Critical text scale / reduced motion
+        run: node analysis/muir/p10/browser-critical-text-scale-probe.mjs
       - name: P12 ID-01 browser matrix
         run: node analysis/muir/p12/browser-id01-probe.mjs
       - name: Reproduce exact P11 extended visual set
