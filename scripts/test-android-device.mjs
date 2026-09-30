@@ -22,9 +22,14 @@ try {
   report.device=call('shell','getprop','ro.build.fingerprint').trim();
   call('install','-r',apk); call('install','-r',testApk);
   report.webview=call('shell','dumpsys','webviewupdate');
-  call('shell','cmd','connectivity','airplane-mode','enable');
-  report.airplaneMode=call('shell','settings','get','global','airplane_mode_on').trim();
-  if(report.airplaneMode!=='1') throw Error('No se activó modo avión');
+  const packageDump=call('shell','dumpsys','package','com.multihistoria');
+  report.internetPermissionRequested=/android\\.permission\\.INTERNET/.test(packageDump);
+  if(report.internetPermissionRequested) throw Error('Android package unexpectedly requests INTERNET permission');
+  report.offlineEnforcement={
+    internetPermission:false,
+    origin:'https://appassets.androidplatform.net/assets/',
+    cspConnectSrc:'none'
+  };
   for(const phase of ['create','resume']) {
     if(phase==='resume') call('shell','am','force-stop','com.multihistoria');
     const output=call('shell','am','instrument','-r','-w','-e','phase',phase,'com.multihistoria.test/com.multihistoria.OfflineProbe');
