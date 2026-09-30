@@ -35,8 +35,9 @@ jobs:
           cp analysis/muir/evidence/browser-baseline.json analysis/muir/p11/evidence/current-browser-baseline.json
       - name: Reproduce P0 with exact same P11 harness
         run: |
-          git worktree add --detach /tmp/muir-p0-performance 36d3d1b0750b0ded877e55953f223e2de1169a46
+          git worktree add --detach /tmp/muir-p0-performance c5b6d0d6d18802a62d174bf450c95ebf1d0403c0
           ln -s "$GITHUB_WORKSPACE/node_modules" /tmp/muir-p0-performance/node_modules
+          mkdir -p /tmp/muir-p0-performance/analysis/muir/ui-fixtures
           cp analysis/muir/ui-fixtures/browser-runner.mjs /tmp/muir-p0-performance/analysis/muir/ui-fixtures/browser-runner.mjs
           cp scripts/capture-muir-browser.mjs /tmp/muir-p0-performance/scripts/capture-muir-browser.mjs
           (cd /tmp/muir-p0-performance && npm run build && node scripts/capture-muir-browser.mjs)
