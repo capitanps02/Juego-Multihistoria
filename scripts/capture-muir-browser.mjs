@@ -40,6 +40,39 @@ for(const fixture of MUIR_FIXTURES){
 
 const records=[];
 const errors=[];
+
+// Test-only visual determinism: video playback timing must not change screenshot hashes.
+// Product media behavior is untouched; visible videos are paused and rewound only inside
+// this deterministic screenshot runner, identically for certified P9 and current P10.
+async function freezeVisibleMedia(page){
+  await page.evaluate(async()=>{
+    const root=document.querySelector('#game')?.shadowRoot;
+    const videos=[...(root?.querySelectorAll('video')??[])].filter(video=>!video.hidden&&video.getClientRects().length>0);
+    for(const video of videos){
+      try{
+        video.pause();
+        if(video.readyState<1){
+          video.preload='metadata';
+          video.load();
+          await Promise.race([
+            new Promise(resolve=>video.addEventListener('loadedmetadata',resolve,{once:true})),
+            new Promise(resolve=>setTimeout(resolve,1200))
+          ]);
+        }
+        if(video.readyState>=1&&Number.isFinite(video.duration)&&video.duration>0&&Math.abs(video.currentTime)>0.001){
+          await new Promise(resolve=>{
+            let done=false;
+            const finish=()=>{if(done)return;done=true;resolve();};
+            video.addEventListener('seeked',finish,{once:true});
+            try{video.currentTime=0;}catch{finish();}
+            setTimeout(finish,1200);
+          });
+        }
+      }catch{}
+    }
+    await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+  });
+}
 for(const {fixture,viewport} of targets){
   const context=await browser.newContext({viewport:{width:viewport.width,height:viewport.height},reducedMotion:'reduce'});
   const page=await context.newPage();
@@ -50,6 +83,7 @@ for(const {fixture,viewport} of targets){
     await page.goto(url,{waitUntil:'networkidle',timeout:30000});
     await page.waitForFunction(()=>globalThis.__MUIR_READY__?.ready===true,null,{timeout:30000});
     await page.waitForTimeout(150);
+    await freezeVisibleMedia(page);
     const ready=await page.evaluate(()=>globalThis.__MUIR_READY__);
     const png=await page.screenshot({fullPage:false,type:'png'});
     if(png.readUInt32BE(16)!==viewport.width||png.readUInt32BE(20)!==viewport.height)throw Error(`Viewport screenshot mismatch: ${png.readUInt32BE(16)}x${png.readUInt32BE(20)} != ${viewport.width}x${viewport.height}`);
@@ -79,6 +113,7 @@ const report={
   baseSha:MUIR_BASE_SHA,
   generatedAt:new Date().toISOString(),
   browser:{name:'Playwright Chromium',version:browserVersion},
+  visualDeterminism:{visibleVideoFrame:'paused@0s',runner:'current P10 harness applied to both products'},
   targetCount:targets.length,
   expectedPhoneCaptures:phoneCount,
   captured:records.length,

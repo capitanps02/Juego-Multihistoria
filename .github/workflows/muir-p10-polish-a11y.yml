@@ -58,6 +58,8 @@ jobs:
         run: |
           git worktree add --detach /tmp/muir-p9-visual 21b7eb5fa1df25863a7018cd33eddfbab792c113
           ln -s "$GITHUB_WORKSPACE/node_modules" /tmp/muir-p9-visual/node_modules
+          # Keep the product at exact certified P9 while using the same deterministic visual runner on both sides.
+          cp scripts/capture-muir-browser.mjs /tmp/muir-p9-visual/scripts/capture-muir-browser.mjs
           (cd /tmp/muir-p9-visual && npm run build && node scripts/capture-muir-browser.mjs)
       - name: Global deterministic capture
         run: node scripts/capture-muir-browser.mjs

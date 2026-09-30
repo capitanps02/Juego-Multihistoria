@@ -53,7 +53,8 @@ try{
       assert.equal(initial.navLabel,'Navegación principal',viewport.id+' nav accessible name');
       assert.equal(initial.buttons.length,6,viewport.id+' six nav buttons');
       assert.deepEqual(initial.current,['Inicio'],viewport.id+' exactly Inicio selected');
-      // P8+ certified contract: main is intentionally reachable in the keyboard tab order.\n      assert.equal(initial.mainTabIndex,0,viewport.id+' main keyboard landmark target');
+      // P8+ certified contract: main is intentionally reachable in the keyboard tab order.
+      assert.equal(initial.mainTabIndex,0,viewport.id+' main keyboard landmark target');
       assert.equal(initial.reducedMotion,true,viewport.id+' reduced-motion media query');
 
       await page.evaluate(()=>{
