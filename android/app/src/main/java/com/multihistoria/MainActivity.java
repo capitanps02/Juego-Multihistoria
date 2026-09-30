@@ -85,12 +85,22 @@ public final class MainActivity extends Activity {
         game.loadUrl(ASSET_ORIGIN + "index.html");
     }
 
+    private void signalPlatformPause() {
+        if (game == null) return;
+        game.evaluateJavascript("window.dispatchEvent(new Event('muir:platform-pause'))", null);
+    }
+
     private void signalPlatformResume() {
         if (game == null) return;
         game.post(() -> {
             if (game != null) game.evaluateJavascript(
                 "window.dispatchEvent(new Event('muir:platform-resume'))", null);
         });
+    }
+
+    @Override protected void onPause() {
+        signalPlatformPause();
+        super.onPause();
     }
 
     @Override protected void onResume() {

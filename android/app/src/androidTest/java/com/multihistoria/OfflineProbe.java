@@ -186,8 +186,11 @@ public class OfflineProbe extends Instrumentation {
                 report.putInt("revisionBeforeBackground", beforeBackgroundRevision);
                 step("lifecycle-background");
                 runOnMainSync(() -> activity.moveTaskToBack(true));
-                untilFast("document.visibilityState==='hidden'", 5000);
-                // One foreground-started dispatch may finish after visibility flips. Its exact
+                Thread.sleep(500);
+                // Android WebView does not guarantee document.visibilityState propagation on every
+                // background transition. Native onPause emits muir:platform-pause; certify the
+                // actual requirement by revision quiescence instead. One foreground-started
+                // dispatch may finish after the platform pause. Its exact
                 // completion latency is not deterministic on CI. Allow at most that one revision,
                 // then require a full stable window before judging the hidden scheduler.
                 step("lifecycle-hidden-quiescence");
@@ -227,8 +230,7 @@ public class OfflineProbe extends Instrumentation {
                         .addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                     activity.startActivity(bring);
                 });
-                untilFast("document.visibilityState==='visible'", 5000);
-                Thread.sleep(800);
+                Thread.sleep(1200);
                 step("lifecycle-after-resume");
                 String after=snapshot();
                 int afterRevision=new JSONObject(after).getInt("revision");
@@ -256,8 +258,7 @@ public class OfflineProbe extends Instrumentation {
                 report.putInt("pausedRevisionBefore", beforeRevision);
                 report.putString("pausedVisibilityBefore", new org.json.JSONArray("["+js("document.visibilityState")+"]").getString(0));
                 runOnMainSync(() -> activity.moveTaskToBack(true));
-                untilFast("document.visibilityState==='hidden'", 5000);
-                Thread.sleep(1500);
+                Thread.sleep(2000);
                 step("lifecycle-paused-hidden");
                 int hiddenRevision=new JSONObject(snapshot()).getInt("revision");
                 report.putInt("pausedRevisionHidden", hiddenRevision);
@@ -267,8 +268,7 @@ public class OfflineProbe extends Instrumentation {
                         .addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                     activity.startActivity(bring);
                 });
-                untilFast("document.visibilityState==='visible'", 5000);
-                Thread.sleep(800);
+                Thread.sleep(1200);
                 step("lifecycle-paused-after");
                 int afterRevision=new JSONObject(snapshot()).getInt("revision");
                 report.putInt("pausedRevisionAfter", afterRevision);

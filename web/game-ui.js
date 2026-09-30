@@ -4,7 +4,7 @@ import { createIndexedSaveStore } from './indexed-save-store.js';
 // UI reads PlayerView only. All career mutations go through GameSession commands.
 export function mountGame({root, GameSession, assets, css, storageKey='historia-jugador.preview.session.v1', events, cutsceneUrl=clip=>'/web/assets/cutscenes/'+clip.file}) {
   const KEY=storageKey;
-  let session=null, busy=false, busyLabel='Guardando…', paused=false, view='home', cinematic=false, message='', replacement=null, lastArt='stadium_bg', autoTimer=null, autoVisualTimer=null, lastAutoVisualAt=0;
+  let session=null, busy=false, busyLabel='Guardando…', paused=false, platformSuspended=false, view='home', cinematic=false, message='', replacement=null, lastArt='stadium_bg', autoTimer=null, autoVisualTimer=null, lastAutoVisualAt=0;
   const AUTO_VISUAL_MIN_MS=280;
   let savedRaw=null, disposeCutscene=null;
   const watchedKey=KEY+'.watched-cutscenes.v1';
@@ -189,28 +189,29 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
     catch(e){console.error('Multihistoria load failed',e);session=null;message='No se ha podido cargar el juego. Comprueba tu conexión o almacenamiento e inténtalo de nuevo. Tu copia guardada se conserva.';view='save';}
     finally{busy=false;render();queueAutoStep();}
   }
+  function suspendAutoScheduler(){
+    clearTimeout(autoTimer);autoTimer=null;
+    if(autoVisualTimer!==null){clearTimeout(autoVisualTimer);autoVisualTimer=null;}
+  }
   function queueAutoStep(){
     clearTimeout(autoTimer);
     autoTimer=null;
-    if(!session||paused||doc.visibilityState==='hidden'||session.getView().simulation?.mode!=='auto_simulating')return;
+    if(!session||paused||platformSuspended||doc.visibilityState==='hidden'||session.getView().simulation?.mode!=='auto_simulating')return;
     autoTimer=setTimeout(()=>{
       autoTimer=null;
-      if(doc.visibilityState!=='hidden'&&!busy&&!paused&&session?.getView().simulation?.mode==='auto_simulating')run('auto',{action:'step'});
+      if(!platformSuspended&&doc.visibilityState!=='hidden'&&!busy&&!paused&&session?.getView().simulation?.mode==='auto_simulating')run('auto',{action:'step'});
     },140);
   }
   function visibilitychange(){
-    if(doc.visibilityState==='hidden'){
-      clearTimeout(autoTimer);autoTimer=null;
-      if(autoVisualTimer!==null){clearTimeout(autoVisualTimer);autoVisualTimer=null;}
-      return;
-    }
-    queueAutoStep();
+    if(doc.visibilityState==='hidden'){suspendAutoScheduler();return;}
+    if(!platformSuspended)queueAutoStep();
   }
-  function platformresume(){if(doc.visibilityState!=='hidden')queueAutoStep();}
+  function platformpause(){platformSuspended=true;suspendAutoScheduler();}
+  function platformresume(){platformSuspended=false;if(doc.visibilityState!=='hidden')queueAutoStep();}
   function patchAutoPresentation(){
     autoVisualTimer=null;
     const v=session?.getView();
-    if(!v||view!=='home'||cinematic||v.simulation?.mode!=='auto_simulating')return false;
+    if(platformSuspended||doc.visibilityState==='hidden'||!v||view!=='home'||cinematic||v.simulation?.mode!=='auto_simulating')return false;
     const progress=autoSimulationProgress(v);
     const dateButton=shell.querySelector('.date-button span');
     if(dateButton)dateButton.textContent=date(v.date)+' · Partida';
@@ -227,7 +228,7 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
     return true;
   }
   function scheduleAutoPresentation(){
-    if(autoVisualTimer!==null)return;
+    if(autoVisualTimer!==null||platformSuspended||doc.visibilityState==='hidden')return;
     const v=session?.getView();
     if(!v||v.simulation?.mode!=='auto_simulating'||view!=='home'||cinematic)return;
     const wait=Math.max(0,AUTO_VISUAL_MIN_MS-(performance.now()-lastAutoVisualAt));
@@ -735,6 +736,6 @@ export function mountGame({root, GameSession, assets, css, storageKey='historia-
   }
   function keyboard(e){if(e.key==='Escape'&&!shell.querySelector('dialog[open]')){e.preventDefault();goBack();}if(['ArrowDown','ArrowRight','ArrowUp','ArrowLeft'].includes(e.key)&&e.target.closest('.choices,.navigation')){const group=e.target.closest('.choices,.navigation'),buttons=[...group.querySelectorAll('button:not(:disabled)')],index=buttons.indexOf(e.target.closest('button'));e.preventDefault();buttons[(index+(['ArrowDown','ArrowRight'].includes(e.key)?1:buttons.length-1))%buttons.length]?.focus();}}
   function popstate(e){const s=e.state;resetPlayerActions();if(!s?.mhOwner){view='home';cinematic=false;message='';render(true);return;}view=validViews.has(s.mhView)?s.mhView:'home';cinematic=Boolean(s.mhCinematic)&&Boolean(session&&['decision','result','offer'].includes(session.getView().screen));message='';render(true);}
-  root.addEventListener('keydown',keyboard);win.addEventListener?.('popstate',popstate);win.addEventListener?.('muir:platform-resume',platformresume);doc.addEventListener('visibilitychange',visibilitychange);load();
-  return ()=>{disposeCutscene?.();clearTimeout(autoTimer);if(autoVisualTimer!==null)clearTimeout(autoVisualTimer);store.close().catch(()=>{});root.removeEventListener('keydown',keyboard);win.removeEventListener?.('popstate',popstate);win.removeEventListener?.('muir:platform-resume',platformresume);doc.removeEventListener('visibilitychange',visibilitychange);shell.remove();style.remove();};
+  root.addEventListener('keydown',keyboard);win.addEventListener?.('popstate',popstate);win.addEventListener?.('muir:platform-pause',platformpause);win.addEventListener?.('muir:platform-resume',platformresume);doc.addEventListener('visibilitychange',visibilitychange);load();
+  return ()=>{disposeCutscene?.();clearTimeout(autoTimer);if(autoVisualTimer!==null)clearTimeout(autoVisualTimer);store.close().catch(()=>{});root.removeEventListener('keydown',keyboard);win.removeEventListener?.('popstate',popstate);win.removeEventListener?.('muir:platform-pause',platformpause);win.removeEventListener?.('muir:platform-resume',platformresume);doc.removeEventListener('visibilitychange',visibilitychange);shell.remove();style.remove();};
 }
