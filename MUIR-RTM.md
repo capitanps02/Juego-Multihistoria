@@ -364,4 +364,46 @@ P10 rows are closed by the final certification contract. TalkBack is explicitly 
 - TalkBack physical/manual execution: **DEFERRED_TO_P12**, not claimed PASS.
 - Final closing commit changes certification/evidence harness only; P10 product authority remains presentation-only.
 - **P10 status: PASS only while the complete MUIR P10 workflow succeeds on the exact current branch HEAD, including the final exact-head certification contract.**
-- P11 remains unauthorized and has not been started.
+- P11 is active on `ui-a7/muir-p11-performance-platforms`; certification is conditional on the exact-head P11 workflows and the P11 RTM below.
+
+
+## P11 — Performance / Web / PlayCanvas / Android parity
+
+P11 branch: `ui-a7/muir-p11-performance-platforms`  
+Exact certified predecessor: P10 `512730e8e1830935e841751c72419daf82e84ca9` · workflow `36707193460` SUCCESS.  
+Scope: measurement, targeted presentation optimization, shared-UI platform parity, package graph, offline Android runtime/lifecycle and evidence. No gameplay/RNG/GameSession/PlayerView/DB/save-schema authority changes.
+
+| REQ_ID | Description | Owner | Pass | Implementation | Test | Evidence | Gate | Rollback | Status |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| P11-PERF-001 | P0 certified baseline is bound and replayed with the P11 harness on common targets | UI-A7 | P11.1/P11.7 | p0-performance-baseline + same-harness comparator | Chromium common-target replay | P0 run 36533739689 · P11 Performance Compare | MUIR-P11 | reject unbound/mismatched baseline | PASS_CONDITIONAL_EXACT_HEAD |
+| P11-PERF-002 | Render p95 has no unjustified >10% regression | UI-A7 | P11.1/P11.2/P11.7 | off-DOM frame staging + formatter cache | same-harness render telemetry | candidate 6663c8a: 63.0 -> 38.5 ms | MUIR-P11 | revert optimization if gate regresses | PASS_CONDITIONAL_EXACT_HEAD |
+| P11-PERF-003 | Normal-interaction response p95 <=200 ms absent long simulation/media-negative work | UI-A7 | P11.1/P11.7 | dedicated response telemetry | action -> two-frame samples | candidate 6663c8a: 202.5 -> 182.3 ms; negative media reported separately | MUIR-P11 | revert offending presentation path | PASS_CONDITIONAL_EXACT_HEAD |
+| P11-PERF-004 | DOM nodes do not grow >15% without justification | UI-A7 | P11.1/P11.7 | shared UI only | browser matrix | 154 -> 147 | MUIR-P11 | revert offending DOM expansion | PASS_CONDITIONAL_EXACT_HEAD |
+| P11-PERF-005 | UI bundle/source growth is reviewed without changing budgets | UI-A7 | P11.1/P11.7 | P11_BUNDLE_REVIEW.md | source graph + generated PlayCanvas bytes | source +65.43% REVIEWED_JUSTIFIED; generated bundle +0.32% | MUIR-P11 | invalidate review if runtime gates fail | REVIEWED_JUSTIFIED |
+| P11-PERF-006 | Long tasks are measured and the same-harness p95 has no unjustified regression | UI-A7 | P11.1/P11.2/P11.7 | targeted formatter/render work only | PerformanceObserver longtask | candidate 6663c8a: 141 -> 127 ms p95 | MUIR-P11 | revert offending optimization | PASS_CONDITIONAL_EXACT_HEAD |
+| P11-AUTO-001 | Auto-sim logic stays authoritative while visual updates remain <=4 Hz with zero normal-tick focus/scroll/full-render churn | UI-A7 | P11.1/P11.5/P11.7 | P5 visual throttling + hidden scheduler suspension | dedicated P5/P11 probe + Android lifecycle | ~2.84 Hz; focus 0; scroll preserved; DOM replacements 0 | MUIR-P11 | restore certified scheduler and re-test | PASS_CONDITIONAL_EXACT_HEAD |
+| P11-PC-001 | PlayCanvas generated package builds with complete shared UI module graph | UI-A7 | P11.3 | build-playcanvas + transitive graph | package workflow | 171 modules / 17,731,199 B on package candidate | MUIR-P11 | revert builder change | PASS_CONDITIONAL_EXACT_HEAD |
+| P11-PC-002 | Generated PlayCanvas adapter executes shared UI states in a browser runtime | UI-A7 | P11.3/P11.6 | generated adapter browser probes | Home/Career/World/Relations/Profile/Save/Player Actions/Auto + Summary/Decision/Result/Offer/Epilogue | package workflow matrices, zero page errors | MUIR-P11 | revert adapter-only change | PASS_CONDITIONAL_EXACT_HEAD |
+| P11-AND-001 | Android offline artifact builds and regression suite runs without network dependency | UI-A7 | P11.4 | WebViewAssetLoader offline package | test:android:offline | 436-file package candidate, no INTERNET permission | MUIR-P11 | revert packaging change | PASS_CONDITIONAL_EXACT_HEAD |
+| P11-AND-002 | Android contains full transitive engine/UI/assets graph | UI-A7 | P11.4 | scripts/lib/muir-package-graph.mjs | transitive graph test | package workflow graph gate | MUIR-P11 | reject incomplete package | PASS_CONDITIONAL_EXACT_HEAD |
+| P11-AND-003 | Package gate demonstrably fails for missing module and missing cutscene asset | UI-A7 | P11.4 | negative graph fixtures | negative tests | 2 negative cases detected correctly | MUIR-P11 | restore negative gate | PASS_CONDITIONAL_EXACT_HEAD |
+| P11-ASSET-001 | Cutscene module/URLs/assets resolve on Web/PlayCanvas/Android with safe fallback | UI-A7 | P11.3/P11.4 | shared player + platform resolver | 29-clip contract + 33/33 Android WebM closure + browser adapter asset lookup | package workflows | MUIR-P11 | revert resolver/package change | PASS_CONDITIONAL_EXACT_HEAD |
+| P11-ASSET-002 | Club names/DB helpers and semantic resources remain available offline | UI-A7 | P11.4/P11.6 | transitive local module graph | Android offline regression / no undefined IDs | package workflow | MUIR-P11 | reject package | PASS_CONDITIONAL_EXACT_HEAD |
+| P11-LIFE-001 | Running auto-sim freezes while hidden and resumes without duplicate loop; paused auto-sim remains paused | UI-A7 | P11.5 | visibility-aware shared scheduler; Android instrumentation | lifecycle + lifecycle-paused phases | exact-head Android Runtime required | MUIR-P11 | revert scheduler if result/RNG changes | PENDING_EXACT_HEAD |
+| P11-LIFE-002 | Process kill/reload restores exact persisted state offline | UI-A7 | P11.5 | existing IndexedDB save authority | create -> force-stop -> resume | Android runtime lineage PASS | MUIR-P11 | revert platform shell change | PASS_CONDITIONAL_EXACT_HEAD |
+| P11-BACK-001 | Android native Back never accepts/rejects/acknowledges pending Decision/Result | UI-A7 | P11.5 | existing history/back semantics | canonical Decision/Result fixtures | Android 15 run 36720543330 | MUIR-P11 | revert platform/back change | PASS_CONDITIONAL_EXACT_HEAD |
+| P11-SAFE-001 | Critical controls remain inside Android WebView safe viewport; CSS retains safe-area contract | UI-A7 | P11.5 | shared env(safe-area-inset-*) CSS | instrumentation bounds + offline static gate | Android exact-head required; physical cutout/gesture repeated in P12 | MUIR-P11 | revert offending inset rule | PASS_CONDITIONAL_EXACT_HEAD |
+| P11-PARITY-001 | Shared Web presentation remains the single visual source across Web/PlayCanvas/Android | UI-A7 | P11.3-P11.7 | shared game-ui.js/css + platform adapters | browser/adapter/Android surface matrices | analysis/muir/p11/muir-platform-parity.json | MUIR-P11 | reject visual fork | PASS_CONDITIONAL_EXACT_HEAD |
+| P11-IMP-001 | Android exposes existing import/export controls and bridge without changing save schema | UI-A7 | P11.5/P11.6 | existing file input + AndroidBridge ACTION_CREATE_DOCUMENT | instrumentation surface/bridge check | native picker roundtrip remains DEFERRED_TO_P12 | MUIR-P11 | revert platform bridge change | DEFERRED_TO_P12 |
+
+### P11 certification contract
+
+- P10 predecessor must remain exactly `512730e8e1830935e841751c72419daf82e84ca9`.
+- P11 changes under `src/`: **0**; gameplay/RNG/GameSession/PlayerView/DB/save schema remain unchanged.
+- Exact-head certification requires all four P11 workflows on the closing HEAD: Package Platforms, Performance Platforms, Performance Compare and Android Runtime.
+- Generated PlayCanvas adapter runtime is tested in Chromium; direct execution inside the remote PlayCanvas editor/scene 2593315 is **NOT_EXECUTABLE_IN_CURRENT_ENVIRONMENT** and is not falsely claimed.
+- Gesture-navigation mode, 3-button mode, physical cutout and TalkBack are **DEFERRED_TO_P12** for device/manual repetition.
+- Full native Android document-picker import/export roundtrip is **DEFERRED_TO_P12**; P11 verifies shared controls, bridge/API wiring and save authority.
+- Play Store release readiness is outside P11; target/compile/min SDK are informational and release signing/AAB/policy remain external.
+- P11 is **not PASS** until the exact closing HEAD completes the four required workflows successfully and the final evidence artifacts are generated.
+- P12 must not start before explicit authorization.

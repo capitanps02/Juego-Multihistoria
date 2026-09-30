@@ -1,0 +1,213 @@
+{
+  "schema": "muir-platform-parity-v1",
+  "predecessorSha": "512730e8e1830935e841751c72419daf82e84ca9",
+  "certificationPolicy": "Statuses marked PASS are conditional on the exact closing HEAD workflows; physical/manual-only items remain DEFERRED_TO_P12.",
+  "sourceOfPresentation": "web/game-ui.js + web/game-ui.css",
+  "surfaces": [
+    {
+      "surface": "Shell",
+      "web": "PASS",
+      "playcanvas": "PASS",
+      "android": "PASS",
+      "visual": "PASS",
+      "functional": "PASS",
+      "assets": "PASS",
+      "a11y": "PASS",
+      "notes": "Shared shell; Android safe viewport instrumented"
+    },
+    {
+      "surface": "Home",
+      "web": "PASS",
+      "playcanvas": "PASS",
+      "android": "PASS",
+      "visual": "PASS",
+      "functional": "PASS",
+      "assets": "PASS",
+      "a11y": "PASS",
+      "notes": "Direct PlayCanvas + Android navigation smoke"
+    },
+    {
+      "surface": "Auto-sim",
+      "web": "PASS",
+      "playcanvas": "PASS",
+      "android": "PASS",
+      "visual": "PASS",
+      "functional": "PASS",
+      "assets": "PASS",
+      "a11y": "PASS",
+      "notes": "Android lifecycle exact-head gate required"
+    },
+    {
+      "surface": "Summary",
+      "web": "PASS",
+      "playcanvas": "PASS",
+      "android": "DEFERRED",
+      "visual": "PASS",
+      "functional": "PASS",
+      "assets": "PASS",
+      "a11y": "PASS",
+      "notes": "PlayCanvas state matrix direct; Android inherits shared UI but no direct Summary fixture"
+    },
+    {
+      "surface": "Player Actions",
+      "web": "PASS",
+      "playcanvas": "PASS",
+      "android": "PASS",
+      "visual": "PASS",
+      "functional": "PASS",
+      "assets": "PASS",
+      "a11y": "PASS",
+      "notes": "Direct adapter and Android surface navigation"
+    },
+    {
+      "surface": "Mundo",
+      "web": "PASS",
+      "playcanvas": "PASS",
+      "android": "PASS",
+      "visual": "PASS",
+      "functional": "PASS",
+      "assets": "PASS",
+      "a11y": "PASS",
+      "notes": "Direct adapter and Android surface navigation"
+    },
+    {
+      "surface": "Carrera",
+      "web": "PASS",
+      "playcanvas": "PASS",
+      "android": "PASS",
+      "visual": "PASS",
+      "functional": "PASS",
+      "assets": "PASS",
+      "a11y": "PASS",
+      "notes": "Direct adapter and Android surface navigation"
+    },
+    {
+      "surface": "Relaciones",
+      "web": "PASS",
+      "playcanvas": "PASS",
+      "android": "PASS",
+      "visual": "PASS",
+      "functional": "PASS",
+      "assets": "PASS",
+      "a11y": "PASS",
+      "notes": "Direct adapter and Android surface navigation"
+    },
+    {
+      "surface": "Perfil",
+      "web": "PASS",
+      "playcanvas": "PASS",
+      "android": "PASS",
+      "visual": "PASS",
+      "functional": "PASS",
+      "assets": "PASS",
+      "a11y": "PASS",
+      "notes": "Direct adapter and Android surface navigation"
+    },
+    {
+      "surface": "Tu partida",
+      "web": "PASS",
+      "playcanvas": "PASS",
+      "android": "PASS",
+      "visual": "PASS",
+      "functional": "PASS",
+      "assets": "PASS",
+      "a11y": "PASS",
+      "notes": "Controls/bridge present; native picker roundtrip deferred"
+    },
+    {
+      "surface": "Decision",
+      "web": "PASS",
+      "playcanvas": "PASS",
+      "android": "PASS",
+      "visual": "PASS",
+      "functional": "PASS",
+      "assets": "PASS",
+      "a11y": "PASS",
+      "notes": "PlayCanvas matrix + Android native Back fixture"
+    },
+    {
+      "surface": "Result",
+      "web": "PASS",
+      "playcanvas": "PASS",
+      "android": "PASS",
+      "visual": "PASS",
+      "functional": "PASS",
+      "assets": "PASS",
+      "a11y": "PASS",
+      "notes": "PlayCanvas matrix + Android native Back fixture"
+    },
+    {
+      "surface": "Offer",
+      "web": "PASS",
+      "playcanvas": "PASS",
+      "android": "DEFERRED",
+      "visual": "PASS",
+      "functional": "PASS",
+      "assets": "PASS",
+      "a11y": "PASS",
+      "notes": "PlayCanvas direct; Android direct Offer fixture not executed"
+    },
+    {
+      "surface": "Cinematic",
+      "web": "PASS",
+      "playcanvas": "PASS",
+      "android": "DEFERRED",
+      "visual": "PASS",
+      "functional": "PASS",
+      "assets": "PASS",
+      "a11y": "PASS",
+      "notes": "Assets packaged 33/33; PlayCanvas direct asset lookup; Android playback manual repeat P12"
+    },
+    {
+      "surface": "Epilogue",
+      "web": "PASS",
+      "playcanvas": "PASS",
+      "android": "DEFERRED",
+      "visual": "PASS",
+      "functional": "PASS",
+      "assets": "PASS",
+      "a11y": "PASS",
+      "notes": "PlayCanvas direct state+cutscene; Android direct epilogue fixture not executed"
+    }
+  ],
+  "platformChecks": {
+    "web": {
+      "status": "PASS",
+      "evidence": "P10 certified browser matrix + P11 same-harness performance"
+    },
+    "playcanvas": {
+      "status": "PASS",
+      "runtimeScope": "generated adapter in Chromium",
+      "remoteScene2593315": "NOT_EXECUTABLE_IN_CURRENT_ENVIRONMENT",
+      "evidence": "adapter browser smoke + state matrix + RNG/state package regression"
+    },
+    "android": {
+      "status": "PASS_CONDITIONAL_EXACT_HEAD",
+      "offlinePackage": "PASS",
+      "processRestore": "PASS",
+      "back": "PASS",
+      "lifecycleRunning": "PENDING_EXACT_HEAD",
+      "lifecyclePaused": "PENDING_EXACT_HEAD",
+      "safeViewport": "PASS_CONDITIONAL_EXACT_HEAD",
+      "importExportControlsAndBridge": "PASS",
+      "nativePickerRoundtrip": "DEFERRED_TO_P12",
+      "gestureNavigation": "DEFERRED_TO_P12",
+      "threeButtonNavigation": "DEFERRED_TO_P12",
+      "physicalCutout": "DEFERRED_TO_P12",
+      "talkBack": "DEFERRED_TO_P12"
+    }
+  },
+  "authority": {
+    "gameplayModified": false,
+    "rngModified": false,
+    "playerViewModified": false,
+    "dbModified": false,
+    "saveSchemaModified": false
+  },
+  "androidRelease": {
+    "compileSdk": 35,
+    "targetSdk": 35,
+    "minSdk": 23,
+    "playStoreReady": "NO / EXTERNAL RELEASE TRACK REQUIRED"
+  }
+}
