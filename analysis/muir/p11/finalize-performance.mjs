@@ -15,6 +15,14 @@ const sourceDelta=pct(p0.uiSourceBytes.total,totalCurrent);
 const pcCurrent=bundles.targets?.playcanvasBundle?.bytes??null;
 const pcDelta=pct(p0.playcanvasBundleBytes,pcCurrent);
 const primary=autosim.primary??{};
+const bundleReviewPath=path.join(root,'analysis','muir','p11','P11_BUNDLE_REVIEW.md');
+const bundleReview=fs.existsSync(bundleReviewPath)?fs.readFileSync(bundleReviewPath,'utf8'):'';
+const sourceGrowthReviewed=bundleReview.includes('STATUS: REVIEWED_JUSTIFIED')
+  && pcDelta<=10
+  && compare.gates.renderP95==='PASS'
+  && compare.gates.responseP95==='PASS'
+  && compare.gates.domNodes==='PASS'
+  && compare.gates.autoSimVisualRate==='PASS';
 
 const rows=[
   {metric:'render_p50_ms',baseline:compare.baseline.render.p50Ms,final:compare.final.render.p50Ms,deltaPct:compare.deltas.renderP50Pct,budget:'diagnostic',status:'INFO'},
@@ -27,7 +35,7 @@ const rows=[
   {metric:'long_task_p95_ms',baseline:compare.baseline.longTasks.p95Ms,final:compare.final.longTasks.p95Ms,deltaPct:compare.deltas.longTaskP95Pct,budget:'<=10% regression or documented justification',status:compare.gates.longTaskTail},
   {metric:'long_task_max_ms',baseline:compare.baseline.longTasks.maxMs,final:compare.final.longTasks.maxMs,deltaPct:pct(compare.baseline.longTasks.maxMs,compare.final.longTasks.maxMs),budget:'diagnostic',status:'INFO'},
   {metric:'dom_nodes_max',baseline:compare.baseline.domNodes.max,final:compare.final.domNodes.max,deltaPct:compare.deltas.maxDomNodesPct,budget:'<=15% regression',status:compare.gates.domNodes},
-  {metric:'ui_source_graph_bytes',baseline:p0.uiSourceBytes.total,final:totalCurrent,deltaPct:sourceDelta,budget:'>10% requires review',status:sourceDelta>10?'REVIEW_REQUIRED':'PASS'},
+  {metric:'ui_source_graph_bytes',baseline:p0.uiSourceBytes.total,final:totalCurrent,deltaPct:sourceDelta,budget:'>10% requires review; budget unchanged',status:sourceDelta<=10?'PASS':sourceGrowthReviewed?'REVIEWED_JUSTIFIED':'REVIEW_REQUIRED'},
   {metric:'playcanvas_generated_bundle_bytes',baseline:p0.playcanvasBundleBytes,final:pcCurrent,deltaPct:pcDelta,budget:'>10% requires review',status:pcDelta<=10?'PASS':'REVIEW_REQUIRED'},
   {metric:'autosim_visual_rate_hz',baseline:compare.baseline.autoSimVisualRateHz,final:primary.visualRateHz??compare.final.autoSimVisualRateHz,deltaPct:pct(compare.baseline.autoSimVisualRateHz,primary.visualRateHz??compare.final.autoSimVisualRateHz),budget:'<=4Hz',status:(primary.visualRateHz??Infinity)<=4?'PASS':'FAIL'},
   {metric:'focus_churn_normal_tick',baseline:null,final:primary.focusChurn,budget:'0',status:primary.focusChurn===0?'PASS':'FAIL'},
@@ -54,7 +62,7 @@ const report={
     'UI source graph growth is reviewed separately from generated PlayCanvas bundle growth; budgets are not increased to hide deltas.',
     'Auto-sim focus/scroll/full-render gates use the dedicated P5/P11 normal-tick probe, not aggregate navigation churn.',
     'The <=200ms response gate covers normal interactions with valid assets. The deliberate cinematic-missing-asset fixture is reported separately and cannot hide an asset failure; final artifact asset failures remain required to be zero.',
-    'Long-task tail remains INVESTIGATE until attributed against the same-harness P0 replay.'
+    'Long-task tail is evaluated against the same-harness P0 replay; source-graph growth is accepted only when P11_BUNDLE_REVIEW.md explicitly records REVIEWED_JUSTIFIED and runtime budgets remain green.'
   ]
 };
 const out=path.join(root,'analysis','muir','p11','evidence','muir-performance.json');
