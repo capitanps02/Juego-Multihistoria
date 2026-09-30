@@ -1,0 +1,251 @@
+name: MUIR P12 Final Certification
+
+on:
+  push:
+    branches:
+      - ui-a8/muir-p12-final-certification
+
+concurrency:
+  group: muir-p12-final-${{ github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  preflight-functional:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: P12 exact ancestry / clean scope / artifacts
+        run: node scripts/test-muir-p12-preflight.mjs
+      - name: Build engine
+        run: npm run build
+      - name: ID-01 directed matrix
+        run: node --test scripts/test-muir-id01-player-identity.mjs
+      - name: Core functional regression
+        run: >
+          node --test
+          scripts/test-session.mjs
+          scripts/test-saves.mjs
+          scripts/test-t55-auto-simulation.mjs
+          scripts/test-player-actions-core.mjs
+          scripts/test-player-actions-session.mjs
+          scripts/test-player-actions-ui-contract.mjs
+          scripts/test-period-report.mjs
+          scripts/test-offers.mjs
+          scripts/test-event-cutscenes.mjs
+          scripts/test-football-catalog.mjs
+      - name: Full repository regression
+        run: npm test
+      - name: Shared UI package graph
+        run: node --test scripts/test-muir-package-graph.mjs
+      - name: Upload preflight evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: muir-p12-preflight-${{ github.sha }}
+          if-no-files-found: warn
+          path: analysis/muir/p12/evidence/*.json
+
+  visual-a11y:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: Install browser certification tooling
+        run: |
+          npm install --no-save playwright@1.55.0 axe-core@4 pixelmatch@7.1.0 pngjs@7.0.0
+          npx playwright install --with-deps chromium
+      - run: npm run build
+      - name: Reproduce exact certified P10 visual baseline
+        run: |
+          git worktree add --detach /tmp/muir-p10-visual 512730e8e1830935e841751c72419daf82e84ca9
+          ln -s "$GITHUB_WORKSPACE/node_modules" /tmp/muir-p10-visual/node_modules
+          cp scripts/capture-muir-browser.mjs /tmp/muir-p10-visual/scripts/capture-muir-browser.mjs
+          (cd /tmp/muir-p10-visual && npm run build && node scripts/capture-muir-browser.mjs)
+      - name: Capture final candidate
+        run: node scripts/capture-muir-browser.mjs
+      - name: Compare screenshots against approved P10
+        run: node analysis/muir/p10/visual-diff-probe.mjs /tmp/muir-p10-visual
+      - name: Shell / Home / help accessibility
+        run: |
+          node analysis/muir/p2/browser-safe-area-probe.mjs
+          node analysis/muir/p10/browser-shell-a11y-probe.mjs
+          node analysis/muir/p2/browser-axe-probe.mjs
+          node analysis/muir/p2/browser-topbar-probe.mjs
+          node analysis/muir/p3/browser-home-probe.mjs
+          node analysis/muir/p3/browser-a11y-probe.mjs
+          node analysis/muir/p4/browser-a11y-help-probe.mjs
+      - name: Auto-sim / Player Actions / semantic accessibility
+        run: |
+          node analysis/muir/p5/browser-states-a11y-probe.mjs
+          node analysis/muir/p5/browser-autosim-probe.mjs
+          node analysis/muir/p6/browser-player-actions-probe.mjs
+          node analysis/muir/p7/browser-semantic-probe.mjs
+      - name: Secondary and immersive matrices
+        run: |
+          node analysis/muir/p8/browser-baseline-probe.mjs
+          node analysis/muir/p8/browser-world-probe.mjs
+          node analysis/muir/p8/browser-career-probe.mjs
+          node analysis/muir/p8/browser-relations-profile-probe.mjs
+          node analysis/muir/p8/browser-save-probe.mjs
+          node analysis/muir/p9/browser-decisions-probe.mjs
+          node analysis/muir/p9/browser-results-probe.mjs
+          node analysis/muir/p9/browser-offers-probe.mjs
+          node analysis/muir/p9/browser-cinematics-probe.mjs
+      - name: Visual review gate
+        run: node scripts/test-muir-p10-visual-gate.mjs
+      - name: Upload visual and a11y evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: muir-p12-visual-a11y-${{ github.sha }}
+          if-no-files-found: warn
+          path: |
+            analysis/muir/evidence/*.json
+            analysis/muir/screenshots/*.png
+            analysis/muir/p2/evidence/*.json
+            analysis/muir/p3/evidence/*.json
+            analysis/muir/p4/evidence/*.json
+            analysis/muir/p5/evidence/*.json
+            analysis/muir/p6/evidence/*.json
+            analysis/muir/p7/evidence/*.json
+            analysis/muir/p8/evidence/*.json
+            analysis/muir/p8/screenshots/*.png
+            analysis/muir/p9/evidence/*.json
+            analysis/muir/p9/screenshots/*.png
+            analysis/muir/p10/evidence/*.json
+            analysis/muir/p10/visual-diffs/*.png
+
+  performance-platforms:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: Install browser tooling
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+      - run: npm run build
+      - name: Capture final performance
+        run: |
+          node scripts/capture-muir-browser.mjs
+          mkdir -p analysis/muir/p11/evidence
+          cp analysis/muir/evidence/browser-baseline.json analysis/muir/p11/evidence/current-browser-baseline.json
+      - name: Reproduce P0 with same harness
+        run: |
+          git worktree add --detach /tmp/muir-p0-performance c5b6d0d6d18802a62d174bf450c95ebf1d0403c0
+          ln -s "$GITHUB_WORKSPACE/node_modules" /tmp/muir-p0-performance/node_modules
+          mkdir -p /tmp/muir-p0-performance/analysis/muir/ui-fixtures
+          cp analysis/muir/ui-fixtures/browser-runner.mjs /tmp/muir-p0-performance/analysis/muir/ui-fixtures/browser-runner.mjs
+          cp scripts/capture-muir-browser.mjs /tmp/muir-p0-performance/scripts/capture-muir-browser.mjs
+          (cd /tmp/muir-p0-performance && npm run build)
+          set +e
+          (cd /tmp/muir-p0-performance && node scripts/capture-muir-browser.mjs)
+          set -e
+          cp /tmp/muir-p0-performance/analysis/muir/evidence/browser-baseline.json analysis/muir/p11/evidence/p0-same-harness-browser-baseline.json
+      - name: Compare P0 and final
+        run: node scripts/compare-muir-p11-performance.mjs analysis/muir/p11/evidence/p0-same-harness-browser-baseline.json analysis/muir/p11/evidence/current-browser-baseline.json analysis/muir/p11/evidence/p11-performance-compare.json
+      - name: Dedicated auto-sim performance
+        run: node analysis/muir/p5/browser-autosim-probe.mjs
+      - name: Build PlayCanvas and metrics
+        run: |
+          npm run build:playcanvas
+          node scripts/measure-muir-bundles.mjs
+          node analysis/muir/p11/finalize-performance.mjs
+      - name: PlayCanvas generated runtime
+        run: |
+          node --test scripts/test-playcanvas.mjs
+          node analysis/muir/p11/browser-playcanvas-adapter-probe.mjs
+          node analysis/muir/p11/browser-playcanvas-state-matrix.mjs
+      - name: Android offline / graphs / assets
+        run: |
+          npm run android:offline
+          node --test scripts/test-android-offline.mjs
+          node --test scripts/test-muir-p11-package-graph.mjs
+          node --test scripts/test-event-cutscenes.mjs
+      - name: Upload performance/platform evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: muir-p12-performance-platforms-${{ github.sha }}
+          if-no-files-found: error
+          path: |
+            analysis/muir/p11/evidence/*.json
+            analysis/muir/p5/evidence/p5-autosim-probe.json
+            analysis/muir/evidence/bundle-metrics.json
+            analysis/muir/p11/evidence/playcanvas-adapter-browser.json
+            analysis/muir/p11/evidence/playcanvas-state-matrix.json
+            playcanvas/manifest.json
+            android/app/src/main/assets/offline-manifest.json
+
+  android-runtime:
+    name: android-runtime-${{ matrix.scope }}
+    strategy:
+      fail-fast: false
+      matrix:
+        scope: [basic, lifecycle, lifecycle-paused, back]
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - run: npm ci
+      - run: npm run android:offline
+      - name: Build app and instrumentation APKs
+        working-directory: android
+        run: gradle --no-daemon :app:assembleDebug :app:assembleDebugAndroidTest
+      - name: Enable KVM
+        run: |
+          if [ -e /dev/kvm ]; then sudo chown "$USER" /dev/kvm || true; sudo chmod 660 /dev/kvm || true; fi
+      - name: Android runtime
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_2
+          disable-animations: true
+          emulator-options: -no-window -noaudio -no-boot-anim -gpu swiftshader_indirect -no-snapshot
+          script: bash scripts/run-muir-p11-android-runtime.sh "${{ matrix.scope }}"
+      - name: Upload Android runtime evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: muir-p12-android-${{ matrix.scope }}-${{ github.sha }}
+          if-no-files-found: warn
+          path: |
+            analysis/2026-09-15/T3.3-android-runtime.json
+            analysis/muir/p9/evidence/p9-android-back.json
