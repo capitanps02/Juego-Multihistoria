@@ -50,10 +50,17 @@ jobs:
         run: npm run test:android:offline
       - name: Install browser certification tooling
         run: |
-          npm install --no-save playwright@1.55.0 axe-core@4
+          npm install --no-save playwright@1.55.0 axe-core@4 pixelmatch@7.1.0 pngjs@7.0.0
           npx playwright install --with-deps chromium
+      - name: Reproduce exact certified P9 visual baseline
+        run: |
+          git worktree add --detach /tmp/muir-p9-visual 21b7eb5fa1df25863a7018cd33eddfbab792c113
+          ln -s "$GITHUB_WORKSPACE/node_modules" /tmp/muir-p9-visual/node_modules
+          (cd /tmp/muir-p9-visual && npm run build && node scripts/capture-muir-browser.mjs)
       - name: Global deterministic capture
         run: node scripts/capture-muir-browser.mjs
+      - name: Compare P10 screenshots against exact P9
+        run: node analysis/muir/p10/visual-diff-probe.mjs /tmp/muir-p9-visual
       - name: Shell focus keyboard AXE and safe area
         run: |
           node analysis/muir/p2/browser-safe-area-probe.mjs
@@ -86,6 +93,8 @@ jobs:
           node analysis/muir/p9/browser-results-probe.mjs
           node analysis/muir/p9/browser-offers-probe.mjs
           node analysis/muir/p9/browser-cinematics-probe.mjs
+      - name: P10 visual review gate
+        run: node scripts/test-muir-p10-visual-gate.mjs
       - name: Upload P10 evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -106,3 +115,5 @@ jobs:
             analysis/muir/p9/evidence/*.json
             analysis/muir/p9/screenshots/*.png
             analysis/muir/p10/*.md
+            analysis/muir/p10/evidence/*.json
+            analysis/muir/p10/visual-diffs/*.png
