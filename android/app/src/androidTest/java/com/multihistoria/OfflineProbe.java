@@ -82,6 +82,18 @@ public class OfflineProbe extends Instrumentation {
         untilFast(ROOT+"?.querySelector('.p5-live-status')", 1500);
     }
 
+    private void installPausedLifecycleFixture() throws Exception {
+        step("lifecycle-paused-fixture-build");
+        js("window.__p11PausedLifecycleFixture=null;(async()=>{try{const [{GameSession},{createIndexedSaveStore},{startAutoSimulationState}]=await Promise.all([import(new URL('dist/session/game-session.js',location.href).href),import(new URL('web/indexed-save-store.js',location.href).href),import(new URL('dist/session/auto-simulation.js',location.href).href)]);const s=await GameSession.create(424242,{commit:async()=>{},sessionId:'p11-android-lifecycle-paused-fixture'});const snap=s.exportSnapshot();snap.autoSimulation=startAutoSimulationState(snap.state,12);snap.autoSimulation.mode='paused';const store=createIndexedSaveStore({storage:localStorage,indexedDB,key:'historia-jugador.android.offline.session.v1',validate:()=>{}});const expected=await store.readRaw();await store.write(snap,expected);await store.close();window.__p11PausedLifecycleFixture='PASS';}catch(e){window.__p11PausedLifecycleFixture='ERROR:'+e.message;}})();");
+        until("window.__p11PausedLifecycleFixture!==null");
+        String encoded=js("window.__p11PausedLifecycleFixture");
+        String outcome=new org.json.JSONArray("["+encoded+"]").getString(0);
+        if(outcome.startsWith("ERROR:"))throw new Exception(outcome);
+        step("lifecycle-paused-fixture-reload");
+        js("location.reload();true");
+        until(ROOT+"?.textContent.includes('Juego en pausa') || [..."+ROOT+".querySelectorAll('button')].some(b=>b.textContent.trim()==='Reanudar simulación')");
+    }
+
     private String snapshot() throws Exception {
         js("window.__probe=null; (async()=>{try{const {createIndexedSaveStore}=await import(new URL('web/indexed-save-store.js',location.href).href); const store=createIndexedSaveStore({storage:localStorage,indexedDB,key:'historia-jugador.android.offline.session.v1',validate:()=>{}});window.__probe=await store.read();await store.close();}catch(e){window.__probe='ERROR:'+e.message}})();");
         until("window.__probe!==null");
@@ -202,6 +214,37 @@ public class OfflineProbe extends Instrumentation {
                 js("(()=>{const r="+ROOT+";const b=[...r.querySelectorAll('button:not(:disabled)')].find(x=>x.textContent.trim()==='Pausar simulación');if(b)b.click();return true;})()");
                 Thread.sleep(250);
                 report.putString("stream", "PASS lifecycle: hidden state froze auto-sim and foreground resumed without duplicate revision burst; startupMs=" + startupMs + "\n");
+                finish(Activity.RESULT_OK, report);
+                return;
+            }
+
+            if("lifecycle-paused".equals(phase)) {
+                installPausedLifecycleFixture();
+                step("lifecycle-paused-before");
+                String before=snapshot();
+                int beforeRevision=new JSONObject(before).getInt("revision");
+                report.putInt("pausedRevisionBefore", beforeRevision);
+                report.putString("pausedVisibilityBefore", new org.json.JSONArray("["+js("document.visibilityState")+"]").getString(0));
+                runOnMainSync(() -> activity.moveTaskToBack(true));
+                untilFast("document.visibilityState==='hidden'", 1500);
+                Thread.sleep(1500);
+                step("lifecycle-paused-hidden");
+                int hiddenRevision=new JSONObject(snapshot()).getInt("revision");
+                report.putInt("pausedRevisionHidden", hiddenRevision);
+                if(hiddenRevision!=beforeRevision) throw new Exception("Paused auto-sim advanced while hidden: "+beforeRevision+" -> "+hiddenRevision);
+                runOnMainSync(() -> {
+                    Intent bring=new Intent(activity, MainActivity.class)
+                        .addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                    activity.startActivity(bring);
+                });
+                untilFast("document.visibilityState==='visible'", 1500);
+                Thread.sleep(800);
+                step("lifecycle-paused-after");
+                int afterRevision=new JSONObject(snapshot()).getInt("revision");
+                report.putInt("pausedRevisionAfter", afterRevision);
+                if(afterRevision!=beforeRevision) throw new Exception("Paused auto-sim advanced after foreground: "+beforeRevision+" -> "+afterRevision);
+                if(!"true".equals(js(ROOT+"?.textContent.includes('Juego en pausa') || [..."+ROOT+".querySelectorAll('button')].some(b=>b.textContent.trim()==='Reanudar simulación')"))) throw new Exception("Paused UI state was not preserved");
+                report.putString("stream", "PASS lifecycle-paused: paused auto-sim remained frozen across background and foreground; startupMs=" + startupMs + "\n");
                 finish(Activity.RESULT_OK, report);
                 return;
             }

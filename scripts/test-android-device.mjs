@@ -38,7 +38,7 @@ try {
     origin:'https://appassets.androidplatform.net/assets/',
     cspConnectSrc:'none'
   };
-  for(const phase of ['create','resume','lifecycle']) {
+  for(const phase of ['create','resume','lifecycle','lifecycle-paused']) {
     if(phase==='resume') call('shell','am','force-stop','com.multihistoria');
     const output=call('shell','am','instrument','-r','-w','-e','phase',phase,'com.multihistoria.test/com.multihistoria.OfflineProbe');
     report.phases.push({phase,output}); console.log(output);
