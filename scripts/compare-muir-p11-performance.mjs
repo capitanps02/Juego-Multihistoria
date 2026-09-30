@@ -81,3 +81,4 @@ comparison.status=Object.values(comparison.gates).includes('FAIL')?'FAIL':Object
 fs.mkdirSync(path.dirname(outputPath),{recursive:true});
 fs.writeFileSync(outputPath,JSON.stringify(comparison,null,2)+'\n');
 console.log(JSON.stringify(comparison));
+if(comparison.status==='FAIL')process.exitCode=1;
