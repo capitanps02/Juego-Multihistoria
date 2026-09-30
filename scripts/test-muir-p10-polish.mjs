@@ -32,6 +32,21 @@ assert.ok(css.includes('main:focus-visible'),'focusable main needs visible focus
 assert.ok(css.includes('.timeline [data-journal-index]:focus-visible'),'timeline focus must use focus-visible');
 assert.ok(css.includes('@media(prefers-reduced-motion:reduce)'),'reduced-motion contract must remain present');
 
+const rgb=hex=>[0,2,4].map(i=>parseInt(hex.slice(1+i,3+i),16)/255);
+const luminance=hex=>{
+  const [r,g,b]=rgb(hex).map(v=>v<=0.04045?v/12.92:((v+0.055)/1.055)**2.4);
+  return 0.2126*r+0.7152*g+0.0722*b;
+};
+const contrast=(a,b)=>{
+  const x=luminance(a),y=luminance(b);
+  return (Math.max(x,y)+0.05)/(Math.min(x,y)+0.05);
+};
+assert.ok(contrast('#ffffff','#0a6dcc')>=4.5,'primary CTA gradient start must meet AA normal-text contrast');
+assert.ok(contrast('#ffffff','#075fbd')>=4.5,'primary CTA gradient end must meet AA normal-text contrast');
+assert.ok(contrast('#8b8b90','#202023')>=4.5,'small muted text must meet AA on surface-2');
+assert.ok(css.includes('--muir-primary-start:#0a6dcc')&&css.includes('--muir-primary-end:#075fbd'),'accessible primary gradient tokens missing');
+assert.ok(css.includes('--muir-text-small-muted:#8b8b90'),'small-text contrast token missing');
+
 const visibleTiny=[];
 for(const m of css.matchAll(/font-size\s*:\s*([0-9.]+)px/g)){
   const n=Number(m[1]);
