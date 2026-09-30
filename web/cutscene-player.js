@@ -8,8 +8,7 @@ export function createCutscenePlayer({document:doc,clip,url,posterUrl=null,autop
   const poster=posterUrl?doc.createElement('img'):null;
   if(poster){poster.className='cutscene-poster';poster.decoding='async';poster.src=posterUrl;poster.alt='';poster.setAttribute('aria-hidden','true');}
   const video=doc.createElement('video');video.controls=true;video.playsInline=true;video.preload='none';video.muted=true;video.hidden=true;
-  video.setAttribute('aria-label',clip.title);
-  const ensureSource=()=>{if(!video.getAttribute('src'))video.src=url;};
+  video.setAttribute('aria-label',clip.title);video.src=url;
   const close=doc.createElement('button');close.type='button';close.className='glass';close.textContent='Saltar escena';close.hidden=true;
   const status=doc.createElement('p');status.className='muted cutscene-status';status.setAttribute('role','status');status.setAttribute('aria-live','polite');status.hidden=true;
   let disposed=false,started=false;
@@ -18,7 +17,7 @@ export function createCutscenePlayer({document:doc,clip,url,posterUrl=null,autop
   const stop=(nextState='ready',message='')=>{video.pause();video.hidden=true;close.hidden=true;play.hidden=false;if(poster)poster.hidden=false;state(nextState);status.textContent=message;status.hidden=!message;};
   const start=()=>{
     if(disposed)return;
-    ensureSource();if(posterUrl&&!video.poster)video.poster=posterUrl;if(poster)poster.hidden=true;video.hidden=false;close.hidden=false;play.hidden=true;status.hidden=false;state('loading');close.focus({preventScroll:true});status.textContent='Cargando escena…';
+    if(posterUrl&&!video.poster)video.poster=posterUrl;if(poster)poster.hidden=true;video.hidden=false;close.hidden=false;play.hidden=true;status.hidden=false;state('loading');close.focus({preventScroll:true});status.textContent='Cargando escena…';
     Promise.resolve(video.play()).catch(error=>{if(disposed)return;if(video.error||error?.name==='NotSupportedError')stop('fallback','No se ha podido cargar la escena. Puedes seguir con tu decisión.');else{state('ready');status.textContent='Pulsa reproducir en los controles del vídeo.';}});
   };
   play.addEventListener('click',start);
@@ -40,8 +39,7 @@ function createProloguePlayer({doc,clip,url,posterUrl,autoplay,onStarted}) {
   const title=doc.createElement('h2');title.id='prologue-dialog-title';title.textContent='Antes de tu historia';dialog.setAttribute('aria-labelledby',title.id);
   const poster=posterUrl?doc.createElement('img'):null;
   if(poster){poster.className='cutscene-poster prologue-poster';poster.decoding='async';poster.src=posterUrl;poster.alt='';poster.setAttribute('aria-hidden','true');}
-  const video=doc.createElement('video');video.controls=true;video.playsInline=true;video.preload='none';video.setAttribute('aria-label',clip.title);video.hidden=true;
-  const ensureSource=()=>{if(!video.getAttribute('src'))video.src=url;};
+  const video=doc.createElement('video');video.controls=true;video.playsInline=true;video.preload='none';video.src=url;video.setAttribute('aria-label',clip.title);video.hidden=true;
   const play=doc.createElement('button');play.type='button';play.className='primary';play.textContent='Reproducir prólogo con sonido';
   const skip=doc.createElement('button');skip.type='button';skip.className='secondary';skip.textContent='Saltar prólogo';
   const status=doc.createElement('p');status.className='muted prologue-status';status.setAttribute('role','status');status.setAttribute('aria-live','polite');status.textContent='Un minuto antes de empezar tu carrera.';
@@ -51,7 +49,7 @@ function createProloguePlayer({doc,clip,url,posterUrl,autoplay,onStarted}) {
   const finish=()=>{state('complete');markStarted();video.pause();dialog.close();replay.focus({preventScroll:true});};
   const open=()=>{if(disposed)return;state('ready');dialog.showModal();play.hidden=false;video.hidden=true;if(poster)poster.hidden=false;status.textContent='Un minuto antes de empezar tu carrera.';play.focus();};
   const fallback=()=>{video.pause();video.hidden=true;if(poster)poster.hidden=false;play.hidden=true;state('fallback');status.textContent='No se ha podido cargar el prólogo. Puedes continuar con tu historia.';skip.textContent='Empezar historia';};
-  play.addEventListener('click',()=>{ensureSource();if(posterUrl&&!video.poster)video.poster=posterUrl;if(poster)poster.hidden=true;video.hidden=false;video.muted=false;play.hidden=true;state('loading');status.textContent='Cargando prólogo…';video.play().catch(error=>{if(disposed)return;if(video.error||error?.name==='NotSupportedError')fallback();else{state('ready');play.hidden=false;if(poster)poster.hidden=false;status.textContent='Pulsa reproducir para iniciar el prólogo.';}});});
+  play.addEventListener('click',()=>{if(posterUrl&&!video.poster)video.poster=posterUrl;if(poster)poster.hidden=true;video.hidden=false;video.muted=false;play.hidden=true;state('loading');status.textContent='Cargando prólogo…';video.play().catch(error=>{if(disposed)return;if(video.error||error?.name==='NotSupportedError')fallback();else{state('ready');play.hidden=false;if(poster)poster.hidden=false;status.textContent='Pulsa reproducir para iniciar el prólogo.';}});});
   video.addEventListener('playing',()=>{if(disposed)return;state('playing');status.textContent='';markStarted();});
   video.addEventListener('waiting',()=>{if(disposed||video.hidden)return;state('loading');status.textContent='Cargando prólogo…';});
   video.addEventListener('ended',finish);
