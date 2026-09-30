@@ -88,15 +88,17 @@ for(const {fixture,viewport} of targets){
     await page.goto(url,{waitUntil:'networkidle',timeout:30000});
     await page.waitForFunction(()=>globalThis.__MUIR_READY__?.ready===true,null,{timeout:30000});
     await page.waitForTimeout(150);
-    await freezeVisibleMedia(page);
-    const ready=await page.evaluate(()=>globalThis.__MUIR_READY__);
-    const png=await page.screenshot({fullPage:false,type:'png'});
-    if(png.readUInt32BE(16)!==viewport.width||png.readUInt32BE(20)!==viewport.height)throw Error(`Viewport screenshot mismatch: ${png.readUInt32BE(16)}x${png.readUInt32BE(20)} != ${viewport.width}x${viewport.height}`);
     if(fixture.id==='auto-running'){
       await page.evaluate(async()=>{await globalThis.__MUIR_START_AUTO_PROBE__?.();});
       await page.waitForTimeout(1500);
     }
+    // Performance evidence must describe the product runtime, not deterministic
+    // screenshot preparation. Read it before video metadata/seek work and screenshot.
     const metrics=await page.evaluate(()=>globalThis.__MUIR_METRICS__);
+    await freezeVisibleMedia(page);
+    const ready=await page.evaluate(()=>globalThis.__MUIR_READY__);
+    const png=await page.screenshot({fullPage:false,type:'png'});
+    if(png.readUInt32BE(16)!==viewport.width||png.readUInt32BE(20)!==viewport.height)throw Error(`Viewport screenshot mismatch: ${png.readUInt32BE(16)}x${png.readUInt32BE(20)} != ${viewport.width}x${viewport.height}`);
     const hash=crypto.createHash('sha256').update(png).digest('hex');
     const name=`${MUIR_BASE_SHA.slice(0,12)}__${fixture.id}__${viewport.width}x${viewport.height}__${hash.slice(0,12)}.png`;
     fs.writeFileSync(path.join(outDir,name),png);
