@@ -42,6 +42,10 @@ function summarize(rows){
 function pair(i){
   const p0=load(path.join(ev,`p0-same-harness-browser-baseline-${i}.json`));
   const cur=load(path.join(ev,`current-browser-baseline-${i}.json`));
+  const currentDeclared=cur.targetCount??cur.records.length;
+  const currentCaptured=cur.captured??cur.records.length;
+  const currentErrors=cur.errors?.length??0;
+  if(currentCaptured!==currentDeclared||currentErrors!==0)throw Error('run '+i+': current capture incomplete '+currentCaptured+'/'+currentDeclared+' errors='+currentErrors);
   const currentKeys=new Set(cur.records.map(key));
   const base=p0.records.filter(row=>currentKeys.has(key(row)));
   const baseKeys=new Set(base.map(key));
