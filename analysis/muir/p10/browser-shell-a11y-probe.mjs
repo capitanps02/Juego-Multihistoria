@@ -110,7 +110,7 @@ try{
       });
       assert.deepEqual(unlabeled,[],viewport.id+' no unlabeled buttons on career shell');
 
-      results.push({viewport:viewport.id,mainFocus,focusStyle,afterEnter,unlabeledButtons:unlabeled.length});
+      results.push({viewport:viewport.id,mainFocus:initial.mainTabIndex,focusStyle,afterEnter,unlabeledButtons:unlabeled.length});
     }finally{
       await context.close();
     }
