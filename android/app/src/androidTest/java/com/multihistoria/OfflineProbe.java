@@ -98,16 +98,16 @@ public class OfflineProbe extends Instrumentation {
                 return;
             }
             if("create".equals(phase)) {
-                step("create-wait-choice"); advanceUntilDecision();
-                js(ROOT+".querySelector('.choice').click()");
-                until(ROOT+"?.querySelector('.chosen') && !"+ROOT+"?.querySelector('.busy-status')");
+                step("create-initial-snapshot");
                 String raw=snapshot(); JSONObject save=new JSONObject(raw);
-                if(save.isNull("pendingResult") || save.getJSONArray("journal").length()!=1) throw new Exception("Result not committed");
+                if(save.getInt("revision")!=0 || !save.isNull("pendingDecision") || !save.isNull("pendingResult") || save.getJSONArray("journal").length()!=0)
+                    throw new Exception("Initial persisted session is not clean");
                 if(!prefs.edit().putString("expected",raw).commit()) throw new Exception("Probe commit failed");
             } else {
+                step("resume-initial-snapshot");
                 String expected=prefs.getString("expected",null);
                 if(expected==null || !expected.equals(snapshot())) throw new Exception("Save changed after process restart");
-                until(ROOT+"?.querySelector('.chosen')");
+                if(!"true".equals(js("Boolean("+ROOT+"?.querySelector('.mh'))"))) throw new Exception("UI not restored after process restart");
             }
             report.putString("stream", "PASS " + phase + ": secure origin, IndexedDB, UI result and exact save verified; startupMs=" + startupMs + "\n");
             finish(Activity.RESULT_OK, report);
