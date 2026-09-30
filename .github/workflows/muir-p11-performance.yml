@@ -57,6 +57,14 @@ jobs:
           echo "P0 capture exit was $P0_CAPTURE_EXIT; partial replay is accepted only because comparator uses the successful common target intersection and enforces coverage."
       - name: Compare P0 and P11
         run: node scripts/compare-muir-p11-performance.mjs analysis/muir/p11/evidence/p0-same-harness-browser-baseline.json analysis/muir/p11/evidence/current-browser-baseline.json analysis/muir/p11/evidence/p11-performance-compare.json
+      - name: Dedicated auto-sim normal-tick performance
+        run: node analysis/muir/p5/browser-autosim-probe.mjs
+      - name: Rebuild platform bundle metrics
+        run: |
+          npm run build:playcanvas
+          node scripts/measure-muir-bundles.mjs
+      - name: Finalize P11 performance artifact
+        run: node analysis/muir/p11/finalize-performance.mjs
       - name: Upload performance evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -65,3 +73,5 @@ jobs:
           if-no-files-found: error
           path: |
             analysis/muir/p11/evidence/*.json
+            analysis/muir/p5/evidence/p5-autosim-probe.json
+            analysis/muir/evidence/bundle-metrics.json
