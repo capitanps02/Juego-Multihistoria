@@ -41,6 +41,16 @@ public class OfflineProbe extends Instrumentation {
         }
         throw new Exception("Timeout: " + expression + " UI=" + js(ROOT+"?.textContent"));
     }
+    private void advanceUntilDecision() throws Exception {
+        long end = System.currentTimeMillis() + 120000;
+        while(System.currentTimeMillis() < end) {
+            if("true".equals(js("Boolean("+ROOT+"?.querySelector('.choice:not(:disabled)'))"))) return;
+            String action = js("(()=>{const r="+ROOT+";if(!r)return 'loading';const bs=[...r.querySelectorAll('button:not(:disabled)')];const summary=bs.find(b=>b.textContent.trim()==='Seguir simulando');if(summary){summary.click();return 'summary';}const reject=bs.find(b=>b.textContent.trim()==='Rechazar oferta');if(reject){reject.click();return 'offer-reject';}const sim=bs.find(b=>b.textContent.trim().startsWith('Simular'));if(sim&&!r.querySelector('.p5-live-status')){sim.click();return 'simulate';}return 'wait';})()");
+            if(action != null && !action.equals(""wait"") && !action.equals(""loading"")) step("advance-"+action.replace(""",""));
+            Thread.sleep(250);
+        }
+        throw new Exception("Timeout waiting for Decision through auto-sim interruptions. UI=" + js(ROOT+"?.textContent"));
+    }
     private String snapshot() throws Exception {
         js("window.__probe=null; (async()=>{try{const {createIndexedSaveStore}=await import(new URL('web/indexed-save-store.js',location.href).href); const store=createIndexedSaveStore({storage:localStorage,indexedDB,key:'historia-jugador.android.offline.session.v1',validate:()=>{}});window.__probe=await store.read();await store.close();}catch(e){window.__probe='ERROR:'+e.message}})();");
         until("window.__probe!==null");
@@ -63,8 +73,7 @@ public class OfflineProbe extends Instrumentation {
             if(!"true".equals(js("typeof AndroidBridge==='object' && typeof AndroidBridge.saveTextFile==='function'"))) throw new Exception("Missing Android file bridge");
             android.content.SharedPreferences prefs=getTargetContext().getSharedPreferences("offline-probe",0);
             if("p9back".equals(phase)) {
-                step("decision-click-simulate"); js("[..."+ROOT+".querySelectorAll('button')].find(b=>b.textContent.trim().startsWith('Simular'))?.click()");
-                step("decision-wait-choice"); until(ROOT+"?.querySelector('.choice:not(:disabled)')");
+                step("decision-wait-choice"); advanceUntilDecision();
                 step("decision-snapshot-before"); String decisionBefore=snapshot();
                 JSONObject decisionSave=new JSONObject(decisionBefore);
                 if(decisionSave.isNull("pendingDecision") || decisionSave.getJSONArray("journal").length()!=0) throw new Exception("Decision baseline invalid");
@@ -89,8 +98,7 @@ public class OfflineProbe extends Instrumentation {
                 return;
             }
             if("create".equals(phase)) {
-                step("create-click-simulate"); js("[..."+ROOT+".querySelectorAll('button')].find(b=>b.textContent.trim().startsWith('Simular'))?.click()");
-                until(ROOT+"?.querySelector('.choice:not(:disabled)')");
+                step("create-wait-choice"); advanceUntilDecision();
                 js(ROOT+".querySelector('.choice').click()");
                 until(ROOT+"?.querySelector('.chosen') && !"+ROOT+"?.querySelector('.busy-status')");
                 String raw=snapshot(); JSONObject save=new JSONObject(raw);

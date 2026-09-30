@@ -12,7 +12,15 @@ if(!fs.existsSync(adb)) throw Error('adb not found at '+adb);
 const apk=path.join(root,'android/app/build/outputs/apk/debug/app-debug.apk');
 const testApk=path.join(root,'android/app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk');
 const report={pass:'T3.3',serial,apkSha256:createHash('sha256').update(fs.readFileSync(apk)).digest('hex'),phases:[],passed:false};
-const call=(...args)=>execFileSync(adb,['-s',serial,...args],{encoding:'utf8',timeout:120000});
+const call=(...args)=>{
+  try{return execFileSync(adb,['-s',serial,...args],{encoding:'utf8',timeout:180000});}
+  catch(error){
+    const details=[error?.stdout,error?.stderr].filter(Boolean).join('\n');
+    if(details)console.error(details);
+    if(details)error.message+='\n'+details;
+    throw error;
+  }
+};
 try {
   const bootDeadline=Date.now()+120000;
   while(call('shell','getprop','sys.boot_completed').trim()!=='1') {
