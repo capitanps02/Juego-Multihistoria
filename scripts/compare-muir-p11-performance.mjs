@@ -40,8 +40,19 @@ function summarize(rows){
   };
 }
 const baseline=summarize(base), final=summarize(now);
+const coverage={
+  p0Declared:p0.targetCount??p0.records.length,
+  p0Captured:p0.records.length,
+  p0Errors:p0.errors?.length??0,
+  currentDeclared:current.targetCount??current.records.length,
+  currentCaptured:current.records.length,
+  commonTargets:base.length
+};
+if(coverage.commonTargets<50)throw new Error('Insufficient common performance targets: '+coverage.commonTargets);
+if(baseline.response.count<20||final.response.count<20)throw new Error('Insufficient response samples for comparison');
 const comparison={
   schema:'muir-p11-performance-compare-v1',
+  coverage,
   p0ProductSha:'36d3d1b0750b0ded877e55953f223e2de1169a46',
   p10CertifiedBaseSha:'512730e8e1830935e841751c72419daf82e84ca9',
   currentHead:process.env.GITHUB_SHA??null,
@@ -58,6 +69,15 @@ const comparison={
     autoSimVisualRatePct:pct(baseline.autoSimVisualRateHz,final.autoSimVisualRateHz)
   }
 };
+comparison.gates={
+  renderP95: final.render.p95Ms<=baseline.render.p95Ms*1.10?'PASS':'FAIL',
+  responseP95: final.response.p95Ms<=200?'PASS':'FAIL',
+  domNodes: final.domNodes.max<=baseline.domNodes.max*1.15?'PASS':'FAIL',
+  autoSimVisualRate: Number.isFinite(final.autoSimVisualRateHz)&&final.autoSimVisualRateHz<=4?'PASS':'FAIL',
+  horizontalOverflow: final.horizontalOverflowFindings===0?'PASS':'FAIL',
+  longTaskTail: final.longTasks.p95Ms<=baseline.longTasks.p95Ms*1.10?'PASS':'INVESTIGATE'
+};
+comparison.status=Object.values(comparison.gates).includes('FAIL')?'FAIL':Object.values(comparison.gates).includes('INVESTIGATE')?'INVESTIGATE':'PASS';
 fs.mkdirSync(path.dirname(outputPath),{recursive:true});
 fs.writeFileSync(outputPath,JSON.stringify(comparison,null,2)+'\n');
 console.log(JSON.stringify(comparison));
