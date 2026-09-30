@@ -182,12 +182,20 @@ public class OfflineProbe extends Instrumentation {
                 js("(()=>{const r="+ROOT+";const b=[...r.querySelectorAll('button:not(:disabled)')].find(x=>x.textContent.trim()==='Reanudar simulación');if(!b)throw Error('Reanudar simulación CTA missing');b.click();return true;})()");
                 untilFast(ROOT+"?.querySelector('.p5-live-status')", 1000);
                 report.putString("visibilityBefore", new org.json.JSONArray("["+js("document.visibilityState")+"]").getString(0));
+                int beforeBackgroundRevision=new JSONObject(snapshot()).getInt("revision");
+                report.putInt("revisionBeforeBackground", beforeBackgroundRevision);
                 step("lifecycle-background");
                 runOnMainSync(() -> activity.moveTaskToBack(true));
                 untilFast("document.visibilityState==='hidden'", 1500);
+                // A single foreground-started dispatch may still commit after visibility flips.
+                // Let that in-flight command settle, then require the hidden scheduler to remain frozen.
+                Thread.sleep(350);
                 step("lifecycle-hidden-start");
                 String hiddenStart=snapshot();
                 int hiddenRevision=new JSONObject(hiddenStart).getInt("revision");
+                int inFlightDelta=hiddenRevision-beforeBackgroundRevision;
+                report.putInt("backgroundEntryInFlightDelta", inFlightDelta);
+                if(inFlightDelta<0 || inFlightDelta>1) throw new Exception("Unexpected auto-sim burst while entering background: "+beforeBackgroundRevision+" -> "+hiddenRevision);
                 Thread.sleep(1500);
                 step("lifecycle-hidden-end");
                 String hiddenEnd=snapshot();
@@ -195,7 +203,7 @@ public class OfflineProbe extends Instrumentation {
                 report.putString("visibilityHidden", new org.json.JSONArray("["+js("document.visibilityState")+"]").getString(0));
                 report.putInt("revisionHiddenStart", hiddenRevision);
                 report.putInt("revisionHiddenEnd", hiddenEndRevision);
-                if(hiddenEndRevision!=hiddenRevision) throw new Exception("Auto-sim advanced while app was backgrounded: "+hiddenRevision+" -> "+hiddenEndRevision);
+                if(hiddenEndRevision!=hiddenRevision) throw new Exception("Auto-sim scheduler advanced after hidden state settled: "+hiddenRevision+" -> "+hiddenEndRevision);
                 step("lifecycle-foreground");
                 runOnMainSync(() -> {
                     Intent bring=new Intent(activity, MainActivity.class)
