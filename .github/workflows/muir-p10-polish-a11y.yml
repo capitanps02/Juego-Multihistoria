@@ -1,0 +1,125 @@
+name: MUIR P10 Polish A11y
+
+on:
+  push:
+    branches:
+      - ui-a0-a8/muir-p10-polish-a11y
+  pull_request:
+    branches:
+      - ui-a6/muir-p9-immersive
+
+concurrency:
+  group: muir-p10-polish-a11y-${{ github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  p10:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      MUIR_P10_EXPECTED_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Build engine
+        run: npm run build
+      - name: P10 exact predecessor / scope / static polish gate
+        run: node scripts/test-muir-p10-polish.mjs
+      - name: Install browser certification tooling
+        run: |
+          npm install --no-save playwright@1.55.0 axe-core@4 pixelmatch@7.1.0 pngjs@7.0.0
+          npx playwright install --with-deps chromium
+      - name: P10 critical Home and auto-sim text scale
+        run: node analysis/muir/p10/browser-critical-text-scale-probe.mjs
+      - name: Gameplay and functional regressions
+        run: >
+          node --test
+          scripts/test-session.mjs
+          scripts/test-t55-auto-simulation.mjs
+          scripts/test-player-actions-ui-contract.mjs
+          scripts/test-period-report.mjs
+          scripts/test-offers.mjs
+          scripts/test-event-cutscenes.mjs
+          scripts/test-saves.mjs
+      - name: Shared UI package graph
+        run: node --test scripts/test-muir-package-graph.mjs
+      - name: PlayCanvas smoke
+        run: npm run test:playcanvas
+      - name: Android offline package/regression
+        run: npm run test:android:offline
+      - name: Reproduce exact certified P9 visual baseline
+        run: |
+          git worktree add --detach /tmp/muir-p9-visual 21b7eb5fa1df25863a7018cd33eddfbab792c113
+          ln -s "$GITHUB_WORKSPACE/node_modules" /tmp/muir-p9-visual/node_modules
+          # Keep the product at exact certified P9 while using the same deterministic visual runner on both sides.
+          cp scripts/capture-muir-browser.mjs /tmp/muir-p9-visual/scripts/capture-muir-browser.mjs
+          (cd /tmp/muir-p9-visual && npm run build && node scripts/capture-muir-browser.mjs)
+      - name: Global deterministic capture
+        run: node scripts/capture-muir-browser.mjs
+      - name: Compare P10 screenshots against exact P9
+        run: node analysis/muir/p10/visual-diff-probe.mjs /tmp/muir-p9-visual
+      - name: Shell focus keyboard AXE and safe area
+        run: |
+          node analysis/muir/p2/browser-safe-area-probe.mjs
+          node analysis/muir/p10/browser-shell-a11y-probe.mjs
+          node analysis/muir/p2/browser-axe-probe.mjs
+          node analysis/muir/p2/browser-topbar-probe.mjs
+      - name: Home and contextual-help accessibility
+        run: |
+          node analysis/muir/p3/browser-home-probe.mjs
+          node analysis/muir/p3/browser-a11y-probe.mjs
+          node analysis/muir/p4/browser-a11y-help-probe.mjs
+      - name: Auto-sim accessibility and reduced motion
+        run: |
+          node analysis/muir/p5/browser-states-a11y-probe.mjs
+          node analysis/muir/p5/browser-autosim-probe.mjs
+      - name: Player Actions accessibility and text scale
+        run: node analysis/muir/p6/browser-player-actions-probe.mjs
+      - name: Semantic component accessibility and text scale
+        run: node analysis/muir/p7/browser-semantic-probe.mjs
+      - name: Secondary surfaces responsive accessibility matrix
+        run: |
+          node analysis/muir/p8/browser-baseline-probe.mjs
+          node analysis/muir/p8/browser-world-probe.mjs
+          node analysis/muir/p8/browser-career-probe.mjs
+          node analysis/muir/p8/browser-relations-profile-probe.mjs
+          node analysis/muir/p8/browser-save-probe.mjs
+      - name: Immersive Decision Result Offer Cinematic matrices
+        run: |
+          node analysis/muir/p9/browser-decisions-probe.mjs
+          node analysis/muir/p9/browser-results-probe.mjs
+          node analysis/muir/p9/browser-offers-probe.mjs
+          node analysis/muir/p9/browser-cinematics-probe.mjs
+      - name: P10 visual review gate
+        run: node scripts/test-muir-p10-visual-gate.mjs
+      - name: P10 final exact-head certification contract
+        run: node scripts/test-muir-p10-final-gate.mjs
+      - name: Upload P10 evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: muir-p10-${{ github.sha }}
+          if-no-files-found: warn
+          path: |
+            analysis/muir/evidence/*.json
+            analysis/muir/screenshots/*.png
+            analysis/muir/p2/evidence/*.json
+            analysis/muir/p3/evidence/*.json
+            analysis/muir/p4/evidence/*.json
+            analysis/muir/p5/evidence/*.json
+            analysis/muir/p6/evidence/*.json
+            analysis/muir/p7/evidence/*.json
+            analysis/muir/p8/evidence/*.json
+            analysis/muir/p8/screenshots/*.png
+            analysis/muir/p9/evidence/*.json
+            analysis/muir/p9/screenshots/*.png
+            analysis/muir/p10/*.md
+            analysis/muir/p10/evidence/*.json
+            analysis/muir/p10/visual-diffs/*.png

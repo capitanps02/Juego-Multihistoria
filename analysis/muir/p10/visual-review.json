@@ -1,0 +1,14 @@
+{
+  "schema": "muir-p10-visual-review-v1",
+  "p9CertifiedSha": "21b7eb5fa1df25863a7018cd33eddfbab792c113",
+  "reviewedSetSha256": "85a12f0384b61478e184bc8e3022e92cc19bef0e9ebc2c7845a8de0db35afafa",
+  "classification": "EXPECTED_P10",
+  "reviewedCount": 90,
+  "reviewMethod": "Manual before/after/diff review of all 90 deterministic captures on run 36693644130. The 87 non-media pairs remain equivalent to the previously reviewed set; the three epilogue-retirement pairs were re-reviewed at 360/390/412 after masking native video pixels while preserving media layout.",
+  "note": "Expected P10 deltas only: tokenized radius/spacing/type, accessible blue CTA contrast, small-muted contrast, mobile shell hardening for extreme text scale, progress rounding, focus/icon semantics, and deterministic media masking in the visual-regression runner. No clipping, hidden critical action, horizontal overflow increase, touch-target regression, broken choice/offer/action layout, or unexpected content/data change observed.",
+  "reviewer": "UI-A0 + UI-A8",
+  "reviewedAt": "2026-09-30",
+  "sourceRunId": 36693644130,
+  "sourceArtifactId": 11087938540,
+  "sourceArtifactSha256": "540cb62438bc23a8431d2da3c79f2289ab85d277cd46aa4d00efcc94bae83767"
+}

@@ -53,7 +53,8 @@ try{
       assert.equal(initial.navLabel,'Navegación principal',viewport.id+' nav accessible name');
       assert.equal(initial.buttons.length,6,viewport.id+' six nav buttons');
       assert.deepEqual(initial.current,['Inicio'],viewport.id+' exactly Inicio selected');
-      // P8+ certified contract: main is intentionally reachable in the keyboard tab order.\n      assert.equal(initial.mainTabIndex,0,viewport.id+' main keyboard landmark target');
+      // P8+ certified contract: main is intentionally reachable in the keyboard tab order.
+      assert.equal(initial.mainTabIndex,0,viewport.id+' main keyboard landmark target');
       assert.equal(initial.reducedMotion,true,viewport.id+' reduced-motion media query');
 
       await page.evaluate(()=>{
@@ -110,7 +111,7 @@ try{
       });
       assert.deepEqual(unlabeled,[],viewport.id+' no unlabeled buttons on career shell');
 
-      results.push({viewport:viewport.id,focusStyle,afterEnter,unlabeledButtons:unlabeled.length});
+      results.push({viewport:viewport.id,mainFocus:initial.mainTabIndex,focusStyle,afterEnter,unlabeledButtons:unlabeled.length});
     }finally{
       await context.close();
     }
@@ -121,7 +122,7 @@ try{
 }
 
 const report={gate:'PASS',viewports:results.length,results};
-const evidenceDir=path.join(root,'analysis','muir','p2','evidence');
+const evidenceDir=path.join(root,'analysis','muir','p10','evidence');
 fs.mkdirSync(evidenceDir,{recursive:true});
-fs.writeFileSync(path.join(evidenceDir,'a11y.json'),JSON.stringify(report,null,2)+'\n');
+fs.writeFileSync(path.join(evidenceDir,'shell-a11y.json'),JSON.stringify(report,null,2)+'\n');
 console.log(JSON.stringify(report));
