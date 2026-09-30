@@ -186,15 +186,21 @@
       "offlinePackage": "PASS",
       "processRestore": "PASS",
       "back": "PASS",
-      "lifecycleRunning": "PENDING_EXACT_HEAD",
-      "lifecyclePaused": "PENDING_EXACT_HEAD",
-      "safeViewport": "PASS_CONDITIONAL_EXACT_HEAD",
+      "lifecycleRunning": "PASS",
+      "lifecyclePaused": "PASS",
+      "safeViewport": "PASS",
       "importExportControlsAndBridge": "PASS",
       "nativePickerRoundtrip": "DEFERRED_TO_P12",
       "gestureNavigation": "DEFERRED_TO_P12",
       "threeButtonNavigation": "DEFERRED_TO_P12",
       "physicalCutout": "DEFERRED_TO_P12",
-      "talkBack": "DEFERRED_TO_P12"
+      "talkBack": "DEFERRED_TO_P12",
+      "evidenceRun": 36730898762,
+      "evidenceHead": "27918517794f493a2d6f54228d3c37e4914dee30",
+      "lifecycleEvidence": {
+        "running": "hidden scheduler frozen after one allowed in-flight command; foreground produced valid pending interruption without duplicate revision burst",
+        "paused": "revision remained 0 -> 0 -> 0 across foreground/background/foreground"
+      }
     }
   },
   "authority": {
