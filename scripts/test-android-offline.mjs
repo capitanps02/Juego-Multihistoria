@@ -68,6 +68,11 @@ test('Android entrypoint contains no absolute web paths or network fetches', () 
   assert.match(activity, /ACTION_CREATE_DOCUMENT/);
   assert.match(activity, /saveTextFile/);
   assert.match(activity, /setAllowFileAccess\(false\)/);
+  const css=read('web/game-ui.css');
+  for(const edge of ['top','right','bottom','left'])assert.match(css,new RegExp('safe-area-inset-'+edge));
+  assert.match(css,/bottom:calc\(80px \+ var\(--muir-safe-bottom\)\)/);
+  assert.match(read('web/game-ui.js'),/input\[type=file\]|type='file'|type="file"/);
+  assert.match(read('web/game-ui.js'),/Descargar copia/);
   assert.match(gradle, /namespace 'com\.multihistoria'/);
   assert.match(gradle, /applicationId 'com\.multihistoria'/);
 });

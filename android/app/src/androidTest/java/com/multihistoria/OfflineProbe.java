@@ -83,6 +83,24 @@ public class OfflineProbe extends Instrumentation {
             report.putLong("startupMs", startupMs);
             if(!"true".equals(js("isSecureContext && !!crypto.subtle && !!indexedDB"))) throw new Exception("Missing web APIs");
             if(!"true".equals(js("typeof AndroidBridge==='object' && typeof AndroidBridge.saveTextFile==='function'"))) throw new Exception("Missing Android file bridge");
+            step("platform-safe-area");
+            int viewportHeight=(int)Math.round(Double.parseDouble(js("innerHeight")));
+            int topbarTop=(int)Math.round(Double.parseDouble(js(ROOT+"?.querySelector('.topbar')?.getBoundingClientRect().top")));
+            int navBottom=(int)Math.round(Double.parseDouble(js(ROOT+"?.querySelector('.navigation')?.getBoundingClientRect().bottom")));
+            report.putInt("viewportHeight",viewportHeight);
+            report.putInt("topbarTop",topbarTop);
+            report.putInt("navigationBottom",navBottom);
+            if(topbarTop<0 || navBottom>viewportHeight+1) throw new Exception("Critical controls escape WebView safe viewport");
+            step("platform-save-surface");
+            js("[..."+ROOT+".querySelectorAll('button')].find(b=>b.textContent.trim()==='Tu partida')?.click()");
+            until(ROOT+"?.querySelector('main h1')?.textContent.trim()==='Tu partida.'");
+            if(!"true".equals(js("Boolean("+ROOT+"?.querySelector('input[type=file][accept*=json]'))"))) throw new Exception("Android import JSON control missing");
+            if(!"true".equals(js("[..."+ROOT+".querySelectorAll('button')].some(b=>b.textContent.includes('Descargar copia'))"))) throw new Exception("Android export control missing");
+            report.putBoolean("importControl",true);
+            report.putBoolean("exportControl",true);
+            report.putBoolean("androidBridge",true);
+            js("[..."+ROOT+".querySelectorAll('button')].find(b=>b.textContent.trim()==='Inicio')?.click()");
+            until("Boolean("+ROOT+"?.querySelector('.home-grid'))");
             android.content.SharedPreferences prefs=getTargetContext().getSharedPreferences("offline-probe",0);
             if("p9back".equals(phase)) {
                 installDecisionFixture();
