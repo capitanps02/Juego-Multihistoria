@@ -106,6 +106,23 @@ jobs:
           node analysis/muir/p9/browser-results-probe.mjs
           node analysis/muir/p9/browser-offers-probe.mjs
           node analysis/muir/p9/browser-cinematics-probe.mjs
+      - name: Reproduce exact P11 extended visual set
+        run: |
+          git worktree add --detach /tmp/muir-p11-visual 81f802a2c2ef14a69d0b0b6251e40532615509aa
+          ln -s "$GITHUB_WORKSPACE/node_modules" /tmp/muir-p11-visual/node_modules
+          (cd /tmp/muir-p11-visual && npm run build)
+          (cd /tmp/muir-p11-visual && node scripts/capture-muir-browser.mjs)
+          (cd /tmp/muir-p11-visual && node analysis/muir/p8/browser-baseline-probe.mjs)
+          (cd /tmp/muir-p11-visual && node analysis/muir/p8/browser-world-probe.mjs)
+          (cd /tmp/muir-p11-visual && node analysis/muir/p8/browser-career-probe.mjs)
+          (cd /tmp/muir-p11-visual && node analysis/muir/p8/browser-relations-profile-probe.mjs)
+          (cd /tmp/muir-p11-visual && node analysis/muir/p8/browser-save-probe.mjs)
+          (cd /tmp/muir-p11-visual && node analysis/muir/p9/browser-decisions-probe.mjs)
+          (cd /tmp/muir-p11-visual && node analysis/muir/p9/browser-results-probe.mjs)
+          (cd /tmp/muir-p11-visual && node analysis/muir/p9/browser-offers-probe.mjs)
+          (cd /tmp/muir-p11-visual && node analysis/muir/p9/browser-cinematics-probe.mjs)
+      - name: P12 extended exact-P11 visual gate
+        run: node scripts/test-muir-p12-extended-visual.mjs /tmp/muir-p11-visual
       - name: Visual review gate
         run: node scripts/test-muir-p10-visual-gate.mjs
       - name: Upload visual and a11y evidence
@@ -129,6 +146,7 @@ jobs:
             analysis/muir/p9/screenshots/*.png
             analysis/muir/p10/evidence/*.json
             analysis/muir/p10/visual-diffs/*.png
+            analysis/muir/p12/evidence/*.json
 
   performance-platforms:
     runs-on: ubuntu-latest
