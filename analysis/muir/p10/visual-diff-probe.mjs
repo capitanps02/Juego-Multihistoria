@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import crypto from 'node:crypto';
 import pixelmatch from 'pixelmatch';
 import {PNG} from 'pngjs';
 
@@ -68,6 +69,24 @@ for(const cur of currentReport.records){
     entries.push({key,fixtureId:cur.fixtureId,viewportId:cur.viewportId,baselineSha256:base.sha256,currentSha256:cur.sha256,classification:'REGRESSION',reason:structuralReason});
   }
 }
+const reviewSetMaterial=[...entries].sort((a,b)=>a.key.localeCompare(b.key)).map(e=>[
+  e.key,e.baselineSha256??'',e.currentSha256??'',e.pixelDiffCount??'',
+  e.baselineOverflow??'',e.currentOverflow??'',
+  e.baselineUndersizedTouchTargets??'',e.currentUndersizedTouchTargets??''
+].join('|')).join('\n');
+const reviewSetSha256=crypto.createHash('sha256').update(reviewSetMaterial).digest('hex');
+const bulkReviewValid=
+  review.reviewedSetSha256===reviewSetSha256&&
+  review.classification==='EXPECTED_P10'&&
+  !entries.some(e=>e.classification==='REGRESSION');
+if(bulkReviewValid){
+  for(const e of entries){
+    if(e.classification==='NEEDS_REVIEW'){
+      e.classification='EXPECTED_P10';
+      e.note=review.note??'Hash-bound P10 visual review.';
+    }
+  }
+}
 const counts={UNCHANGED:0,EXPECTED_P10:0,PREEXISTING:0,REGRESSION:0,NEEDS_REVIEW:0};
 for(const e of entries)counts[e.classification]=(counts[e.classification]??0)+1;
 const report={
@@ -76,8 +95,10 @@ const report={
   generatedAt:new Date().toISOString(),
   baselineCaptured:baselineReport.captured,
   currentCaptured:currentReport.captured,
+  reviewSetSha256,
+  bulkReviewValid,
   counts,
   entries
 };
 fs.writeFileSync(path.join(evidenceDir,'visual-diff-manifest.json'),JSON.stringify(report,null,2)+'\n');
-console.log(JSON.stringify({counts,manifest:'analysis/muir/p10/evidence/visual-diff-manifest.json'}));
+console.log(JSON.stringify({counts,reviewSetSha256,bulkReviewValid,manifest:'analysis/muir/p10/evidence/visual-diff-manifest.json'}));
