@@ -79,6 +79,23 @@ public class OfflineProbe extends Instrumentation {
         if(raw.startsWith("ERROR:")) throw new Exception(raw);
         return raw;
     }
+    private void navigateSurface(String buttonLabel, String expectedHeading) throws Exception {
+        step("surface-"+buttonLabel);
+        js("(()=>{const r="+ROOT+";const b=[...r.querySelectorAll('button:not(:disabled)')].find(x=>x.textContent.trim()==="+JSONObject.quote(buttonLabel)+");if(!b)throw Error('Missing surface button: "+buttonLabel+"');b.click();return true;})()");
+        until(ROOT+"?.querySelector('main h1')?.textContent.trim()==="+JSONObject.quote(expectedHeading));
+    }
+    private void validateBasicSurfaceMatrix(Bundle report) throws Exception {
+        navigateSurface("Carrera","Tu carrera.");
+        step("surface-player-actions");
+        js("(()=>{const r="+ROOT+";const b=[...r.querySelectorAll('button:not(:disabled)')].find(x=>x.textContent.trim()==='Gestionar mi carrera');if(!b)throw Error('Player Actions entry missing');b.click();return true;})()");
+        until(ROOT+"?.querySelector('main h1')?.textContent.trim()==='¿Qué quieres hacer?'");
+        navigateSurface("Mundo","El mundo sigue.");
+        navigateSurface("Relaciones","Las personas de tu historia.");
+        navigateSurface("Perfil","Tu perfil.");
+        navigateSurface("Tu partida","Tu partida.");
+        navigateSurface("Inicio","Jugador");
+        report.putString("surfaceMatrix","PASS Home/Carrera/Player Actions/Mundo/Relaciones/Perfil/Tu partida");
+    }
     @Override public void onStart() {
         Bundle report = new Bundle();
         long startedAt = System.nanoTime();
@@ -110,6 +127,7 @@ public class OfflineProbe extends Instrumentation {
             js("[..."+ROOT+".querySelectorAll('button')].find(b=>b.textContent.trim()==='Inicio')?.click()");
             until("Boolean("+ROOT+"?.querySelector('.home-grid'))");
             android.content.SharedPreferences prefs=getTargetContext().getSharedPreferences("offline-probe",0);
+            if("create".equals(phase)) validateBasicSurfaceMatrix(report);
             if("p9back".equals(phase)) {
                 installDecisionFixture();
                 step("decision-snapshot-before"); String decisionBefore=snapshot();
