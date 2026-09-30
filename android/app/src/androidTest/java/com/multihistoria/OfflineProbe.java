@@ -46,7 +46,7 @@ public class OfflineProbe extends Instrumentation {
         while(System.currentTimeMillis() < end) {
             if("true".equals(js("Boolean("+ROOT+"?.querySelector('.choice:not(:disabled)'))"))) return;
             String action = js("(()=>{const r="+ROOT+";if(!r)return 'loading';const bs=[...r.querySelectorAll('button:not(:disabled)')];const summary=bs.find(b=>b.textContent.trim()==='Seguir simulando');if(summary){summary.click();return 'summary';}const reject=bs.find(b=>b.textContent.trim()==='Rechazar oferta');if(reject){reject.click();return 'offer-reject';}const sim=bs.find(b=>b.textContent.trim().startsWith('Simular'));if(sim&&!r.querySelector('.p5-live-status')){sim.click();return 'simulate';}return 'wait';})()");
-            if(action != null && !action.equals(""wait"") && !action.equals(""loading"")) step("advance-"+action.replace(""",""));
+            if(action != null && !action.equals("\\\"wait\\\"") && !action.equals("\\\"loading\\\"")) step("advance-"+action.replace("\\\"",""));
             Thread.sleep(250);
         }
         throw new Exception("Timeout waiting for Decision through auto-sim interruptions. UI=" + js(ROOT+"?.textContent"));
