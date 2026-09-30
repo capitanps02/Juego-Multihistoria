@@ -18,15 +18,22 @@ function pct(baseValue,currentValue){
   if(!Number.isFinite(baseValue)||!Number.isFinite(currentValue)||baseValue===0)return null;
   return (currentValue-baseValue)/baseValue*100;
 }
+const negativeResponseFixtures=new Set(['cinematic-fallback']);
 function summarize(rows){
   const render=flat(rows,row=>row.metrics?.render?.samplesMs??[]);
-  const response=flat(rows,row=>row.metrics?.response?.samplesMs??[]);
+  const responseAll=flat(rows,row=>row.metrics?.response?.samplesMs??[]);
+  const normalRows=rows.filter(row=>!negativeResponseFixtures.has(row.fixtureId));
+  const fallbackRows=rows.filter(row=>negativeResponseFixtures.has(row.fixtureId));
+  const response=flat(normalRows,row=>row.metrics?.response?.samplesMs??[]);
+  const fallbackResponse=flat(fallbackRows,row=>row.metrics?.response?.samplesMs??[]);
   const longTasks=flat(rows,row=>(row.metrics?.longTasks??[]).map(entry=>entry.duration));
   const primaryAuto=rows.find(row=>row.fixtureId==='auto-running'&&row.viewportId==='phone-primary');
   return {
     targets:rows.length,
     render:{count:render.length,p50Ms:percentile(render,.5),p95Ms:percentile(render,.95)},
-    response:{count:response.length,p50Ms:percentile(response,.5),p95Ms:percentile(response,.95)},
+    response:{count:response.length,p50Ms:percentile(response,.5),p95Ms:percentile(response,.95),population:'normal interactions with valid assets'},
+    responseAll:{count:responseAll.length,p50Ms:percentile(responseAll,.5),p95Ms:percentile(responseAll,.95)},
+    fallbackResponse:{count:fallbackResponse.length,p50Ms:percentile(fallbackResponse,.5),p95Ms:percentile(fallbackResponse,.95),fixtures:[...negativeResponseFixtures]},
     longTasks:{
       count:longTasks.length,
       over50ms:longTasks.filter(value=>value>50).length,
@@ -56,7 +63,7 @@ const comparison={
   p0ProductSha:'36d3d1b0750b0ded877e55953f223e2de1169a46',
   p10CertifiedBaseSha:'512730e8e1830935e841751c72419daf82e84ca9',
   currentHead:process.env.GITHUB_SHA??null,
-  method:'same P11 browser harness; intersection of fixture+viewport targets',
+  method:'same P11 browser harness; intersection of fixture+viewport targets; <=200ms response gate excludes only deliberate missing-media negative fixtures, which remain reported separately',
   baseline,
   final,
   deltas:{
@@ -64,6 +71,8 @@ const comparison={
     renderP95Pct:pct(baseline.render.p95Ms,final.render.p95Ms),
     responseP50Pct:pct(baseline.response.p50Ms,final.response.p50Ms),
     responseP95Pct:pct(baseline.response.p95Ms,final.response.p95Ms),
+    responseAllP95Pct:pct(baseline.responseAll.p95Ms,final.responseAll.p95Ms),
+    fallbackResponseP95Pct:pct(baseline.fallbackResponse.p95Ms,final.fallbackResponse.p95Ms),
     longTaskP95Pct:pct(baseline.longTasks.p95Ms,final.longTasks.p95Ms),
     maxDomNodesPct:pct(baseline.domNodes.max,final.domNodes.max),
     autoSimVisualRatePct:pct(baseline.autoSimVisualRateHz,final.autoSimVisualRateHz)

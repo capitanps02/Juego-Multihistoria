@@ -19,8 +19,10 @@ const primary=autosim.primary??{};
 const rows=[
   {metric:'render_p50_ms',baseline:compare.baseline.render.p50Ms,final:compare.final.render.p50Ms,deltaPct:compare.deltas.renderP50Pct,budget:'diagnostic',status:'INFO'},
   {metric:'render_p95_ms',baseline:compare.baseline.render.p95Ms,final:compare.final.render.p95Ms,deltaPct:compare.deltas.renderP95Pct,budget:'<=10% regression',status:compare.gates.renderP95},
-  {metric:'response_p50_ms',baseline:compare.baseline.response.p50Ms,final:compare.final.response.p50Ms,deltaPct:compare.deltas.responseP50Pct,budget:'measured',status:'PASS'},
-  {metric:'response_p95_ms',baseline:compare.baseline.response.p95Ms,final:compare.final.response.p95Ms,deltaPct:compare.deltas.responseP95Pct,budget:'<=200ms absent long simulation work',status:compare.gates.responseP95},
+  {metric:'response_p50_ms',baseline:compare.baseline.response.p50Ms,final:compare.final.response.p50Ms,deltaPct:compare.deltas.responseP50Pct,budget:'normal interactions; measured',status:'PASS'},
+  {metric:'response_p95_ms',baseline:compare.baseline.response.p95Ms,final:compare.final.response.p95Ms,deltaPct:compare.deltas.responseP95Pct,budget:'<=200ms for normal interactions with valid assets',status:compare.gates.responseP95},
+  {metric:'response_p95_all_including_negative_ms',baseline:compare.baseline.responseAll.p95Ms,final:compare.final.responseAll.p95Ms,deltaPct:compare.deltas.responseAllP95Pct,budget:'diagnostic; includes deliberate missing-media fallback',status:'INFO'},
+  {metric:'cinematic_fallback_response_p95_ms',baseline:compare.baseline.fallbackResponse.p95Ms,final:compare.final.fallbackResponse.p95Ms,deltaPct:compare.deltas.fallbackResponseP95Pct,budget:'diagnostic negative-path latency; fallback functionality remains mandatory',status:'INFO'},
   {metric:'long_task_count_gt_50ms',baseline:compare.baseline.longTasks.over50ms,final:compare.final.longTasks.over50ms,deltaPct:pct(compare.baseline.longTasks.over50ms,compare.final.longTasks.over50ms),budget:'investigate repeated >50ms',status:'INFO'},
   {metric:'long_task_p95_ms',baseline:compare.baseline.longTasks.p95Ms,final:compare.final.longTasks.p95Ms,deltaPct:compare.deltas.longTaskP95Pct,budget:'<=10% regression or documented justification',status:compare.gates.longTaskTail},
   {metric:'long_task_max_ms',baseline:compare.baseline.longTasks.maxMs,final:compare.final.longTasks.maxMs,deltaPct:pct(compare.baseline.longTasks.maxMs,compare.final.longTasks.maxMs),budget:'diagnostic',status:'INFO'},
@@ -51,6 +53,7 @@ const report={
   notes:[
     'UI source graph growth is reviewed separately from generated PlayCanvas bundle growth; budgets are not increased to hide deltas.',
     'Auto-sim focus/scroll/full-render gates use the dedicated P5/P11 normal-tick probe, not aggregate navigation churn.',
+    'The <=200ms response gate covers normal interactions with valid assets. The deliberate cinematic-missing-asset fixture is reported separately and cannot hide an asset failure; final artifact asset failures remain required to be zero.',
     'Long-task tail remains INVESTIGATE until attributed against the same-harness P0 replay.'
   ]
 };
