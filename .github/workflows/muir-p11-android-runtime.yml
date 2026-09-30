@@ -50,9 +50,7 @@ jobs:
           disable-animations: true
           emulator-options: -no-window -noaudio -no-boot-anim -gpu swiftshader_indirect -no-snapshot
           script: |
-            SERIAL="$(adb devices | awk '/^emulator-/{print $1; exit}')"
-            node scripts/test-android-device.mjs "$SERIAL"
-            node scripts/test-muir-p9-android-back.mjs "$SERIAL"
+            SERIAL="$(adb devices | awk '/^emulator-/{print $1; exit}')" && node scripts/test-android-device.mjs "$SERIAL" && node scripts/test-muir-p9-android-back.mjs "$SERIAL"
       - name: Upload Android runtime evidence
         if: always()
         uses: actions/upload-artifact@v4
