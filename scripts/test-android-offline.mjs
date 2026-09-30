@@ -45,6 +45,9 @@ test('Android package has a complete local entrypoint and verified file manifest
   assert.ok(manifest.files.some(file => file.path === 'web/cutscene-player.js'));
   assert.ok(manifest.files.some(file => file.path === 'web/club-catalog-names.js'));
   assert.ok(manifest.files.some(file => file.path === 'web/club-names.js'));
+  const packagedCutscenes=manifest.files.filter(file=>file.path.startsWith('web/assets/cutscenes/')&&file.path.endsWith('.webm'));
+  const sourceCutscenes=fs.readdirSync(path.join(root,'web/assets/cutscenes')).filter(file=>file.endsWith('.webm'));
+  assert.equal(packagedCutscenes.length,sourceCutscenes.length,'all offline cutscenes must be packaged');
 });
 
 test('Android entrypoint contains no absolute web paths or network fetches', () => {
@@ -56,6 +59,7 @@ test('Android entrypoint contains no absolute web paths or network fetches', () 
   assert.match(index, /connect-src 'none'/);
   assert.doesNotMatch(local, /fetch\(|https?:\/\//);
   assert.doesNotMatch(local, /from ['"]\/(?:dist|web)\//);
+  assert.match(local, /new URL\('\.\/assets\/cutscenes\/'\+clip\.file,import\.meta\.url\)\.href/);
   const manifest = fs.readFileSync(path.join(root, 'android/app/src/main/AndroidManifest.xml'), 'utf8');
   assert.doesNotMatch(manifest, /android\.permission\.INTERNET/);
   assert.match(activity, /WebViewAssetLoader/);
@@ -64,6 +68,11 @@ test('Android entrypoint contains no absolute web paths or network fetches', () 
   assert.match(activity, /ACTION_CREATE_DOCUMENT/);
   assert.match(activity, /saveTextFile/);
   assert.match(activity, /setAllowFileAccess\(false\)/);
+  const css=read('web/game-ui.css');
+  for(const edge of ['top','right','bottom','left'])assert.match(css,new RegExp('safe-area-inset-'+edge));
+  assert.match(css,/bottom:calc\(80px \+ var\(--muir-safe-bottom\)\)/);
+  assert.match(read('web/game-ui.js'),/input\[type=file\]|type='file'|type="file"/);
+  assert.match(read('web/game-ui.js'),/Descargar copia/);
   assert.match(gradle, /namespace 'com\.multihistoria'/);
   assert.match(gradle, /applicationId 'com\.multihistoria'/);
 });

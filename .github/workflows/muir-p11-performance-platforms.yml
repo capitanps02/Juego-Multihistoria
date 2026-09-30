@@ -1,0 +1,32 @@
+name: MUIR P11 Performance Platforms
+
+on:
+  push:
+    branches:
+      - ui-a7/muir-p11-performance-platforms
+
+concurrency:
+  group: muir-p11-platforms-${{ github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  p11-package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Build engine
+        run: npm run build
+      - name: P11 package graph and negative detection
+        run: node --test scripts/test-muir-package-graph.mjs
+      - name: PlayCanvas build and regression
+        run: npm run test:playcanvas
+      - name: Android offline build and regression
+        run: npm run test:android:offline

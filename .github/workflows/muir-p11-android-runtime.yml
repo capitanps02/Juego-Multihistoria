@@ -1,0 +1,70 @@
+name: MUIR P11 Android Runtime
+
+on:
+  push:
+    branches:
+      - ui-a7/muir-p11-performance-platforms
+
+concurrency:
+  group: muir-p11-android-runtime-${{ github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  android-runtime:
+    name: android-runtime-${{ matrix.scope }}
+    strategy:
+      fail-fast: false
+      matrix:
+        scope:
+          - basic
+          - lifecycle
+          - lifecycle-paused
+          - back
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - run: npm ci
+      - name: Build Android offline assets
+        run: npm run android:offline
+      - name: Build app and instrumentation APKs
+        working-directory: android
+        run: gradle --no-daemon :app:assembleDebug :app:assembleDebugAndroidTest
+      - name: Enable KVM
+        run: |
+          if [ -e /dev/kvm ]; then
+            sudo chown "$USER" /dev/kvm || true
+            sudo chmod 660 /dev/kvm || true
+          fi
+      - name: P11 Android runtime ${{ matrix.scope }}
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_2
+          disable-animations: true
+          emulator-options: -no-window -noaudio -no-boot-anim -gpu swiftshader_indirect -no-snapshot
+          script: bash scripts/run-muir-p11-android-runtime.sh "${{ matrix.scope }}"
+      - name: Upload Android runtime evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: muir-p11-android-runtime-${{ matrix.scope }}-${{ github.sha }}
+          if-no-files-found: warn
+          path: |
+            analysis/2026-09-15/T3.3-android-runtime.json
+            analysis/muir/p9/evidence/p9-android-back.json

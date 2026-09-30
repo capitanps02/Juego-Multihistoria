@@ -1,0 +1,77 @@
+name: MUIR P11 Performance Compare
+
+on:
+  push:
+    branches:
+      - ui-a7/muir-p11-performance-platforms
+
+concurrency:
+  group: muir-p11-performance-${{ github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  performance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Install browser performance tooling
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Build current product
+        run: npm run build
+      - name: Capture current P11 performance
+        run: |
+          node scripts/capture-muir-browser.mjs
+          mkdir -p analysis/muir/p11/evidence
+          cp analysis/muir/evidence/browser-baseline.json analysis/muir/p11/evidence/current-browser-baseline.json
+      - name: Reproduce P0 with exact same P11 harness
+        run: |
+          git worktree add --detach /tmp/muir-p0-performance c5b6d0d6d18802a62d174bf450c95ebf1d0403c0
+          ln -s "$GITHUB_WORKSPACE/node_modules" /tmp/muir-p0-performance/node_modules
+          mkdir -p /tmp/muir-p0-performance/analysis/muir/ui-fixtures
+          cp analysis/muir/ui-fixtures/browser-runner.mjs /tmp/muir-p0-performance/analysis/muir/ui-fixtures/browser-runner.mjs
+          cp scripts/capture-muir-browser.mjs /tmp/muir-p0-performance/scripts/capture-muir-browser.mjs
+          (cd /tmp/muir-p0-performance && npm run build)
+          set +e
+          (cd /tmp/muir-p0-performance && node scripts/capture-muir-browser.mjs)
+          P0_CAPTURE_EXIT=$?
+          set -e
+          cp /tmp/muir-p0-performance/analysis/muir/evidence/browser-baseline.json analysis/muir/p11/evidence/p0-same-harness-browser-baseline.json
+          node - <<'NODE'
+          const fs=require('fs');
+          const p='analysis/muir/p11/evidence/p0-same-harness-browser-baseline.json';
+          const r=JSON.parse(fs.readFileSync(p,'utf8'));
+          console.log(JSON.stringify({captured:r.captured,errors:r.errors?.length??0,responseSamples:r.aggregate?.responseSampleCount??0}));
+          if((r.captured??0)<50)process.exit(2);
+          if((r.aggregate?.responseSampleCount??0)<20)process.exit(3);
+          NODE
+          echo "P0 capture exit was $P0_CAPTURE_EXIT; partial replay is accepted only because comparator uses the successful common target intersection and enforces coverage."
+      - name: Compare P0 and P11
+        run: node scripts/compare-muir-p11-performance.mjs analysis/muir/p11/evidence/p0-same-harness-browser-baseline.json analysis/muir/p11/evidence/current-browser-baseline.json analysis/muir/p11/evidence/p11-performance-compare.json
+      - name: Dedicated auto-sim normal-tick performance
+        run: node analysis/muir/p5/browser-autosim-probe.mjs
+      - name: Rebuild platform bundle metrics
+        run: |
+          npm run build:playcanvas
+          node scripts/measure-muir-bundles.mjs
+      - name: Finalize P11 performance artifact
+        run: node analysis/muir/p11/finalize-performance.mjs
+      - name: Upload performance evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: muir-p11-performance-${{ github.sha }}
+          if-no-files-found: error
+          path: |
+            analysis/muir/p11/evidence/*.json
+            analysis/muir/p5/evidence/p5-autosim-probe.json
+            analysis/muir/evidence/bundle-metrics.json

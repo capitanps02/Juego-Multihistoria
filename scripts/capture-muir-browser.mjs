@@ -88,15 +88,17 @@ for(const {fixture,viewport} of targets){
     await page.goto(url,{waitUntil:'networkidle',timeout:30000});
     await page.waitForFunction(()=>globalThis.__MUIR_READY__?.ready===true,null,{timeout:30000});
     await page.waitForTimeout(150);
-    await freezeVisibleMedia(page);
-    const ready=await page.evaluate(()=>globalThis.__MUIR_READY__);
-    const png=await page.screenshot({fullPage:false,type:'png'});
-    if(png.readUInt32BE(16)!==viewport.width||png.readUInt32BE(20)!==viewport.height)throw Error(`Viewport screenshot mismatch: ${png.readUInt32BE(16)}x${png.readUInt32BE(20)} != ${viewport.width}x${viewport.height}`);
     if(fixture.id==='auto-running'){
       await page.evaluate(async()=>{await globalThis.__MUIR_START_AUTO_PROBE__?.();});
       await page.waitForTimeout(1500);
     }
+    // Performance evidence must describe the product runtime, not deterministic
+    // screenshot preparation. Read it before video metadata/seek work and screenshot.
     const metrics=await page.evaluate(()=>globalThis.__MUIR_METRICS__);
+    await freezeVisibleMedia(page);
+    const ready=await page.evaluate(()=>globalThis.__MUIR_READY__);
+    const png=await page.screenshot({fullPage:false,type:'png'});
+    if(png.readUInt32BE(16)!==viewport.width||png.readUInt32BE(20)!==viewport.height)throw Error(`Viewport screenshot mismatch: ${png.readUInt32BE(16)}x${png.readUInt32BE(20)} != ${viewport.width}x${viewport.height}`);
     const hash=crypto.createHash('sha256').update(png).digest('hex');
     const name=`${MUIR_BASE_SHA.slice(0,12)}__${fixture.id}__${viewport.width}x${viewport.height}__${hash.slice(0,12)}.png`;
     fs.writeFileSync(path.join(outDir,name),png);
@@ -112,7 +114,8 @@ server.close();
 
 const phoneCount=MUIR_FIXTURES.length*3;
 const renderSamples=records.flatMap(row=>row.metrics?.render?.samplesMs??[]).filter(Number.isFinite).sort((a,b)=>a-b);
-const percentile=p=>renderSamples.length?renderSamples[Math.min(renderSamples.length-1,Math.ceil(renderSamples.length*p)-1)]:null;
+const responseSamples=records.flatMap(row=>row.metrics?.response?.samplesMs??[]).filter(Number.isFinite).sort((a,b)=>a-b);
+const percentile=(samples,p)=>samples.length?samples[Math.min(samples.length-1,Math.ceil(samples.length*p)-1)]:null;
 const report={
   schema:'muir-browser-baseline-v1',
   baseSha:MUIR_BASE_SHA,
@@ -126,8 +129,11 @@ const report={
   errors,
   aggregate:{
     renderSampleCount:renderSamples.length,
-    renderP50Ms:percentile(.5),
-    renderP95Ms:percentile(.95),
+    renderP50Ms:percentile(renderSamples,.5),
+    renderP95Ms:percentile(renderSamples,.95),
+    responseSampleCount:responseSamples.length,
+    responseP50Ms:percentile(responseSamples,.5),
+    responseP95Ms:percentile(responseSamples,.95),
     maxDomNodes:Math.max(0,...records.map(row=>row.metrics?.domNodes??0)),
     maxLongTaskMs:Math.max(0,...records.flatMap(row=>row.metrics?.longTasks??[]).map(x=>x.duration??0)),
     undersizedTouchTargetCount:records.reduce((sum,row)=>sum+(row.metrics?.undersizedTouchTargets?.length??0),0),

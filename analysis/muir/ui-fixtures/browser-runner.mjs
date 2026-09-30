@@ -6,7 +6,7 @@ import {MUIR_BASE_SHA,MUIR_VIEWPORTS,fixtureById} from '/analysis/muir/ui-fixtur
 import {buildFixtureSession,fixtureEventCatalog} from '/analysis/muir/ui-fixtures/session-recipes.mjs';
 
 const params=new URLSearchParams(location.search);
-const perf={renderSamples:[],longTasks:[],focusChanges:0,scrollEvents:0,uiMutationBatches:0,uiMutationRecords:0,startedAt:performance.now()};
+const perf={renderSamples:[],responseSamples:[],longTasks:[],focusChanges:0,scrollEvents:0,uiMutationBatches:0,uiMutationRecords:0,startedAt:performance.now()};
 let lastFocus=document.activeElement;
 document.addEventListener('focusin',()=>{perf.focusChanges++;lastFocus=document.activeElement;},{capture:true});
 addEventListener('scroll',()=>{perf.scrollEvents++;},{capture:true,passive:true});
@@ -18,7 +18,9 @@ Element.prototype.replaceChildren=function(...nodes){
   if(this.classList?.contains('mh')){
     const started=performance.now();
     const result=nativeReplaceChildren.apply(this,nodes);
-    perf.renderSamples.push(performance.now()-started);
+    // render() rebuilds the shell synchronously after clearing it. Measure through
+    // the end of that synchronous stack instead of timing DOM removal alone.
+    queueMicrotask(()=>perf.renderSamples.push(performance.now()-started));
     return result;
   }
   return nativeReplaceChildren.apply(this,nodes);
@@ -115,7 +117,7 @@ async function clickText(text){
   for(let i=0;i<80;i++){
     const buttons=[...root.querySelectorAll('button')];
     const b=buttons.find(x=>x.textContent.trim()===text);
-    if(b&&!b.disabled){const started=performance.now();b.click();await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));perf.renderSamples.push(performance.now()-started);return;}
+    if(b&&!b.disabled){const started=performance.now();b.click();await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));perf.responseSamples.push(performance.now()-started);return;}
     await new Promise(r=>setTimeout(r,25));
   }
   throw Error('MUIR harness could not find enabled button: '+text);
@@ -125,7 +127,7 @@ async function clickCardButton(cardTitle,buttonText){
     const cards=[...root.querySelectorAll('.player-action-card')];
     const card=cards.find(node=>node.querySelector('h2')?.textContent.trim()===cardTitle);
     const b=card?[...card.querySelectorAll('button')].find(node=>node.textContent.trim()===buttonText):null;
-    if(b&&!b.disabled){const started=performance.now();b.click();await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));perf.renderSamples.push(performance.now()-started);return;}
+    if(b&&!b.disabled){const started=performance.now();b.click();await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));perf.responseSamples.push(performance.now()-started);return;}
     await new Promise(r=>setTimeout(r,25));
   }
   throw Error('MUIR harness could not find enabled '+buttonText+' in card '+cardTitle);
@@ -340,6 +342,7 @@ const metrics={
   elapsedMs:performance.now()-perf.startedAt,
   domNodes:allNodes.length,
   render:{samplesMs:[],p50Ms:null,p95Ms:null,count:0,frequencyHz:0},
+  response:{samplesMs:[],p50Ms:null,p95Ms:null,count:0},
   longTasks:perf.longTasks,
   focusChanges:perf.focusChanges,
   scrollEvents:perf.scrollEvents,
@@ -360,7 +363,9 @@ const metrics={
 const refreshDynamicMetrics=()=>{
   metrics.elapsedMs=performance.now()-perf.startedAt;
   const renderSorted=[...perf.renderSamples].sort((a,b)=>a-b);
+  const responseSorted=[...perf.responseSamples].sort((a,b)=>a-b);
   metrics.render={samplesMs:renderSorted,p50Ms:percentile(renderSorted,.5),p95Ms:percentile(renderSorted,.95),count:renderSorted.length,frequencyHz:metrics.elapsedMs>0?renderSorted.length/(metrics.elapsedMs/1000):0};
+  metrics.response={samplesMs:responseSorted,p50Ms:percentile(responseSorted,.5),p95Ms:percentile(responseSorted,.95),count:responseSorted.length};
   metrics.focusChanges=perf.focusChanges;
   metrics.scrollEvents=perf.scrollEvents;
   metrics.uiMutationBatches=perf.uiMutationBatches;

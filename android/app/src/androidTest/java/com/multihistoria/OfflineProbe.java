@@ -41,6 +41,59 @@ public class OfflineProbe extends Instrumentation {
         }
         throw new Exception("Timeout: " + expression + " UI=" + js(ROOT+"?.textContent"));
     }
+    private void untilFast(String expression, long timeoutMs) throws Exception {
+        long end = System.currentTimeMillis() + timeoutMs;
+        while(System.currentTimeMillis() < end) {
+            if("true".equals(js("Boolean(" + expression + ")"))) return;
+            Thread.sleep(20);
+        }
+        throw new Exception("Fast timeout: " + expression + " UI=" + js(ROOT+"?.textContent"));
+    }
+    private void advanceUntilDecision() throws Exception {
+        long end = System.currentTimeMillis() + 120000;
+        while(System.currentTimeMillis() < end) {
+            if("true".equals(js("Boolean("+ROOT+"?.querySelector('.choice:not(:disabled)'))"))) return;
+            String action = js("(()=>{const r="+ROOT+";if(!r)return 'loading';const bs=[...r.querySelectorAll('button:not(:disabled)')];const summary=bs.find(b=>b.textContent.trim()==='Seguir simulando');if(summary){summary.click();return 'summary';}const reject=bs.find(b=>b.textContent.trim()==='Rechazar oferta');if(reject){reject.click();return 'offer-reject';}const sim=bs.find(b=>b.textContent.trim().startsWith('Simular'));if(sim&&!r.querySelector('.p5-live-status')){sim.click();return 'simulate';}return 'wait';})()");
+            if(action != null && !action.equals("\"wait\"") && !action.equals("\"loading\"")) step("advance-"+action.replace("\"",""));
+            Thread.sleep(250);
+        }
+        throw new Exception("Timeout waiting for Decision through auto-sim interruptions. UI=" + js(ROOT+"?.textContent"));
+    }
+    private void installDecisionFixture() throws Exception {
+        step("decision-fixture-build");
+        js("window.__p11DecisionFixture=null;(async()=>{try{const [{GameSession},{createIndexedSaveStore}]=await Promise.all([import(new URL('dist/session/game-session.js',location.href).href),import(new URL('web/indexed-save-store.js',location.href).href)]);const s=await GameSession.create(424242,{commit:async()=>{},sessionId:'p11-android-back-fixture'});for(let i=0;i<40;i++){const v=s.getView();if(v.screen==='decision')break;if(v.screen==='result'){await s.dispatch({type:'acknowledge',commandId:'p11-fixture-ack-'+i,expectedRevision:v.revision});continue;}if(v.screen==='offer'){await s.dispatch({type:'offer',offerId:v.offer.id,action:'reject',commandId:'p11-fixture-offer-'+i,expectedRevision:v.revision});continue;}await s.dispatch({type:'continue',maxDays:90,commandId:'p11-fixture-continue-'+i,expectedRevision:v.revision});}const v=s.getView();if(v.screen!=='decision')throw Error('Decision fixture not reached: '+v.screen);const store=createIndexedSaveStore({storage:localStorage,indexedDB,key:'historia-jugador.android.offline.session.v1',validate:()=>{}});const expected=await store.readRaw();await store.write(s.exportSnapshot(),expected);await store.close();window.__p11DecisionFixture='PASS';}catch(e){window.__p11DecisionFixture='ERROR:'+e.message;}})();");
+        until("window.__p11DecisionFixture!==null");
+        String encoded=js("window.__p11DecisionFixture");
+        String outcome=new org.json.JSONArray("["+encoded+"]").getString(0);
+        if(outcome.startsWith("ERROR:"))throw new Exception(outcome);
+        step("decision-fixture-reload");
+        js("location.reload();true");
+        until(ROOT+"?.querySelector('.choice:not(:disabled)')");
+    }
+    private void installLifecycleFixture() throws Exception {
+        step("lifecycle-fixture-build");
+        js("window.__p11LifecycleFixture=null;(async()=>{try{const [{GameSession},{createIndexedSaveStore},{startAutoSimulationState}]=await Promise.all([import(new URL('dist/session/game-session.js',location.href).href),import(new URL('web/indexed-save-store.js',location.href).href),import(new URL('dist/session/auto-simulation.js',location.href).href)]);const s=await GameSession.create(424242,{commit:async()=>{},sessionId:'p11-android-lifecycle-fixture'});const snap=s.exportSnapshot();snap.autoSimulation=startAutoSimulationState(snap.state,12);const store=createIndexedSaveStore({storage:localStorage,indexedDB,key:'historia-jugador.android.offline.session.v1',validate:()=>{}});const expected=await store.readRaw();await store.write(snap,expected);await store.close();window.__p11LifecycleFixture='PASS';}catch(e){window.__p11LifecycleFixture='ERROR:'+e.message;}})();");
+        until("window.__p11LifecycleFixture!==null");
+        String encoded=js("window.__p11LifecycleFixture");
+        String outcome=new org.json.JSONArray("["+encoded+"]").getString(0);
+        if(outcome.startsWith("ERROR:"))throw new Exception(outcome);
+        step("lifecycle-fixture-reload");
+        js("location.reload();true");
+        untilFast(ROOT+"?.querySelector('.p5-live-status')", 1500);
+    }
+
+    private void installPausedLifecycleFixture() throws Exception {
+        step("lifecycle-paused-fixture-build");
+        js("window.__p11PausedLifecycleFixture=null;(async()=>{try{const [{GameSession},{createIndexedSaveStore},{startAutoSimulationState}]=await Promise.all([import(new URL('dist/session/game-session.js',location.href).href),import(new URL('web/indexed-save-store.js',location.href).href),import(new URL('dist/session/auto-simulation.js',location.href).href)]);const s=await GameSession.create(424242,{commit:async()=>{},sessionId:'p11-android-lifecycle-paused-fixture'});const snap=s.exportSnapshot();snap.autoSimulation=startAutoSimulationState(snap.state,12);snap.autoSimulation.mode='paused';const store=createIndexedSaveStore({storage:localStorage,indexedDB,key:'historia-jugador.android.offline.session.v1',validate:()=>{}});const expected=await store.readRaw();await store.write(snap,expected);await store.close();window.__p11PausedLifecycleFixture='PASS';}catch(e){window.__p11PausedLifecycleFixture='ERROR:'+e.message;}})();");
+        until("window.__p11PausedLifecycleFixture!==null");
+        String encoded=js("window.__p11PausedLifecycleFixture");
+        String outcome=new org.json.JSONArray("["+encoded+"]").getString(0);
+        if(outcome.startsWith("ERROR:"))throw new Exception(outcome);
+        step("lifecycle-paused-fixture-reload");
+        js("location.reload();true");
+        until(ROOT+"?.textContent.includes('Juego en pausa') || [..."+ROOT+".querySelectorAll('button')].some(b=>b.textContent.trim()==='Reanudar simulación')");
+    }
+
     private String snapshot() throws Exception {
         js("window.__probe=null; (async()=>{try{const {createIndexedSaveStore}=await import(new URL('web/indexed-save-store.js',location.href).href); const store=createIndexedSaveStore({storage:localStorage,indexedDB,key:'historia-jugador.android.offline.session.v1',validate:()=>{}});window.__probe=await store.read();await store.close();}catch(e){window.__probe='ERROR:'+e.message}})();");
         until("window.__probe!==null");
@@ -48,6 +101,23 @@ public class OfflineProbe extends Instrumentation {
         String raw=new org.json.JSONArray("["+encoded+"]").getString(0);
         if(raw.startsWith("ERROR:")) throw new Exception(raw);
         return raw;
+    }
+    private void navigateSurface(String buttonLabel, String expectedHeading) throws Exception {
+        step("surface-"+buttonLabel);
+        js("(()=>{const r="+ROOT+";const b=[...r.querySelectorAll('button:not(:disabled)')].find(x=>x.textContent.trim()==="+JSONObject.quote(buttonLabel)+");if(!b)throw Error('Missing surface button: "+buttonLabel+"');b.click();return true;})()");
+        until(ROOT+"?.querySelector('main h1')?.textContent.trim()==="+JSONObject.quote(expectedHeading));
+    }
+    private void validateBasicSurfaceMatrix(Bundle report) throws Exception {
+        navigateSurface("Carrera","Tu carrera.");
+        step("surface-player-actions");
+        js("(()=>{const r="+ROOT+";const b=[...r.querySelectorAll('button:not(:disabled)')].find(x=>x.textContent.trim()==='Gestionar mi carrera');if(!b)throw Error('Player Actions entry missing');b.click();return true;})()");
+        until(ROOT+"?.querySelector('main h1')?.textContent.trim()==='¿Qué quieres hacer?'");
+        navigateSurface("Mundo","El mundo sigue.");
+        navigateSurface("Relaciones","Las personas de tu historia.");
+        navigateSurface("Perfil","Tu perfil.");
+        navigateSurface("Tu partida","Tu partida.");
+        navigateSurface("Inicio","Jugador");
+        report.putString("surfaceMatrix","PASS Home/Carrera/Player Actions/Mundo/Relaciones/Perfil/Tu partida");
     }
     @Override public void onStart() {
         Bundle report = new Bundle();
@@ -61,10 +131,28 @@ public class OfflineProbe extends Instrumentation {
             report.putLong("startupMs", startupMs);
             if(!"true".equals(js("isSecureContext && !!crypto.subtle && !!indexedDB"))) throw new Exception("Missing web APIs");
             if(!"true".equals(js("typeof AndroidBridge==='object' && typeof AndroidBridge.saveTextFile==='function'"))) throw new Exception("Missing Android file bridge");
+            step("platform-safe-area");
+            int viewportHeight=(int)Math.round(Double.parseDouble(js("innerHeight")));
+            int topbarTop=(int)Math.round(Double.parseDouble(js(ROOT+"?.querySelector('.topbar')?.getBoundingClientRect().top")));
+            int navBottom=(int)Math.round(Double.parseDouble(js(ROOT+"?.querySelector('.navigation')?.getBoundingClientRect().bottom")));
+            report.putInt("viewportHeight",viewportHeight);
+            report.putInt("topbarTop",topbarTop);
+            report.putInt("navigationBottom",navBottom);
+            if(topbarTop<0 || navBottom>viewportHeight+1) throw new Exception("Critical controls escape WebView safe viewport");
+            step("platform-save-surface");
+            js("[..."+ROOT+".querySelectorAll('button')].find(b=>b.textContent.trim()==='Tu partida')?.click()");
+            until(ROOT+"?.querySelector('main h1')?.textContent.trim()==='Tu partida.'");
+            if(!"true".equals(js("Boolean("+ROOT+"?.querySelector('input[type=file][accept*=json]'))"))) throw new Exception("Android import JSON control missing");
+            if(!"true".equals(js("[..."+ROOT+".querySelectorAll('button')].some(b=>b.textContent.includes('Descargar copia'))"))) throw new Exception("Android export control missing");
+            report.putBoolean("importControl",true);
+            report.putBoolean("exportControl",true);
+            report.putBoolean("androidBridge",true);
+            js("[..."+ROOT+".querySelectorAll('button')].find(b=>b.textContent.trim()==='Inicio')?.click()");
+            until("Boolean("+ROOT+"?.querySelector('.home-grid'))");
             android.content.SharedPreferences prefs=getTargetContext().getSharedPreferences("offline-probe",0);
+            if("create".equals(phase)) validateBasicSurfaceMatrix(report);
             if("p9back".equals(phase)) {
-                step("decision-click-simulate"); js("[..."+ROOT+".querySelectorAll('button')].find(b=>b.textContent.trim().startsWith('Simular'))?.click()");
-                step("decision-wait-choice"); until(ROOT+"?.querySelector('.choice:not(:disabled)')");
+                installDecisionFixture();
                 step("decision-snapshot-before"); String decisionBefore=snapshot();
                 JSONObject decisionSave=new JSONObject(decisionBefore);
                 if(decisionSave.isNull("pendingDecision") || decisionSave.getJSONArray("journal").length()!=0) throw new Exception("Decision baseline invalid");
@@ -88,18 +176,101 @@ public class OfflineProbe extends Instrumentation {
                 finish(Activity.RESULT_OK, report);
                 return;
             }
+            if("lifecycle".equals(phase)) {
+                installPausedLifecycleFixture();
+                step("lifecycle-resume-running");
+                js("(()=>{const r="+ROOT+";const b=[...r.querySelectorAll('button:not(:disabled)')].find(x=>x.textContent.trim()==='Reanudar simulación');if(!b)throw Error('Reanudar simulación CTA missing');b.click();return true;})()");
+                untilFast(ROOT+"?.querySelector('.p5-live-status')?.textContent.includes('Simulación en curso') && !"+ROOT+"?.querySelector('.busy-status')", 5000);
+                report.putString("visibilityBefore", new org.json.JSONArray("["+js("document.visibilityState")+"]").getString(0));
+                int beforeBackgroundRevision=new JSONObject(snapshot()).getInt("revision");
+                report.putInt("revisionBeforeBackground", beforeBackgroundRevision);
+                step("lifecycle-background");
+                runOnMainSync(() -> activity.moveTaskToBack(true));
+                // Do not execute JavaScript while Android has the WebView backgrounded: WebView may
+                // suspend evaluateJavascript itself. Native onPause records the session revision in
+                // the shared shell and suspends the scheduler. Let the app remain backgrounded long
+                // enough that an unsuspended 140 ms scheduler would have advanced many times.
+                Thread.sleep(3500);
+                step("lifecycle-foreground");
+                runOnMainSync(() -> {
+                    Intent bring=new Intent(activity, MainActivity.class)
+                        .addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                    activity.startActivity(bring);
+                });
+                untilFast(ROOT+"?.querySelector('.mh')?.dataset.platformSuspended==='false' && Boolean("+ROOT+"?.querySelector('.mh')?.dataset.platformPauseRevision) && Boolean("+ROOT+"?.querySelector('.mh')?.dataset.platformResumeRevision)", 5000);
+                int pauseEventRevision=Integer.parseInt(js("Number("+ROOT+"?.querySelector('.mh')?.dataset.platformPauseRevision)"));
+                int resumeEventRevision=Integer.parseInt(js("Number("+ROOT+"?.querySelector('.mh')?.dataset.platformResumeRevision)"));
+                int backgroundDelta=resumeEventRevision-pauseEventRevision;
+                report.putInt("platformPauseRevision",pauseEventRevision);
+                report.putInt("platformResumeRevision",resumeEventRevision);
+                report.putInt("backgroundRevisionDelta",backgroundDelta);
+                if(pauseEventRevision<beforeBackgroundRevision || pauseEventRevision>beforeBackgroundRevision+1)
+                    throw new Exception("Unexpected revision at platform pause: "+beforeBackgroundRevision+" -> "+pauseEventRevision);
+                if(backgroundDelta<0 || backgroundDelta>1)
+                    throw new Exception("Auto-sim advanced repeatedly while backgrounded: "+pauseEventRevision+" -> "+resumeEventRevision);
+                Thread.sleep(1200);
+                step("lifecycle-after-resume");
+                String after=snapshot();
+                int afterRevision=new JSONObject(after).getInt("revision");
+                int resumeDelta=afterRevision-resumeEventRevision;
+                boolean surfacedInterruption="true".equals(js("Boolean("+ROOT+"?.querySelector('.decision-sheet,.offer-sheet,.period-summary,.result-sheet,.p9-epilogue'))"));
+                report.putInt("revisionAfterResume", afterRevision);
+                report.putInt("resumeRevisionDelta", resumeDelta);
+                report.putBoolean("resumeSurfacedInterruption", surfacedInterruption);
+                report.putString("visibilityAfter", new org.json.JSONArray("["+js("document.visibilityState")+"]").getString(0));
+                if(resumeDelta<=0 && !surfacedInterruption) throw new Exception("Foreground neither resumed auto-sim nor surfaced its pending interruption");
+                if(resumeDelta>7) throw new Exception("Possible duplicate auto-sim loop after resume; revision burst="+resumeDelta);
+                step("lifecycle-pause-if-running");
+                js("(()=>{const r="+ROOT+";const b=[...r.querySelectorAll('button:not(:disabled)')].find(x=>x.textContent.trim()==='Pausar simulación');if(b)b.click();return true;})()");
+                Thread.sleep(250);
+                report.putString("stream", "PASS lifecycle: hidden state froze auto-sim and foreground resumed without duplicate revision burst; startupMs=" + startupMs + "\n");
+                finish(Activity.RESULT_OK, report);
+                return;
+            }
+
+            if("lifecycle-paused".equals(phase)) {
+                installPausedLifecycleFixture();
+                step("lifecycle-paused-before");
+                String before=snapshot();
+                int beforeRevision=new JSONObject(before).getInt("revision");
+                report.putInt("pausedRevisionBefore", beforeRevision);
+                report.putString("pausedVisibilityBefore", new org.json.JSONArray("["+js("document.visibilityState")+"]").getString(0));
+                runOnMainSync(() -> activity.moveTaskToBack(true));
+                Thread.sleep(3000);
+                runOnMainSync(() -> {
+                    Intent bring=new Intent(activity, MainActivity.class)
+                        .addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                    activity.startActivity(bring);
+                });
+                untilFast(ROOT+"?.querySelector('.mh')?.dataset.platformSuspended==='false' && Boolean("+ROOT+"?.querySelector('.mh')?.dataset.platformPauseRevision) && Boolean("+ROOT+"?.querySelector('.mh')?.dataset.platformResumeRevision)", 5000);
+                int pausedPlatformPauseRevision=Integer.parseInt(js("Number("+ROOT+"?.querySelector('.mh')?.dataset.platformPauseRevision)"));
+                int pausedPlatformResumeRevision=Integer.parseInt(js("Number("+ROOT+"?.querySelector('.mh')?.dataset.platformResumeRevision)"));
+                report.putInt("pausedPlatformPauseRevision",pausedPlatformPauseRevision);
+                report.putInt("pausedPlatformResumeRevision",pausedPlatformResumeRevision);
+                if(pausedPlatformPauseRevision!=beforeRevision || pausedPlatformResumeRevision!=beforeRevision)
+                    throw new Exception("Paused auto-sim changed revision across native lifecycle: "+beforeRevision+" -> "+pausedPlatformPauseRevision+" -> "+pausedPlatformResumeRevision);
+                Thread.sleep(700);
+                step("lifecycle-paused-after");
+                int afterRevision=new JSONObject(snapshot()).getInt("revision");
+                report.putInt("pausedRevisionAfter", afterRevision);
+                if(afterRevision!=beforeRevision) throw new Exception("Paused auto-sim advanced after foreground: "+beforeRevision+" -> "+afterRevision);
+                if(!"true".equals(js(ROOT+"?.textContent.includes('Juego en pausa') || [..."+ROOT+".querySelectorAll('button')].some(b=>b.textContent.trim()==='Reanudar simulación')"))) throw new Exception("Paused UI state was not preserved");
+                report.putString("stream", "PASS lifecycle-paused: paused auto-sim remained frozen across background and foreground; startupMs=" + startupMs + "\n");
+                finish(Activity.RESULT_OK, report);
+                return;
+            }
+
             if("create".equals(phase)) {
-                js("[..."+ROOT+".querySelectorAll('button')].find(b=>b.textContent.includes('Simular semana')).click()");
-                until(ROOT+"?.querySelector('.choice:not(:disabled)')");
-                js(ROOT+".querySelector('.choice').click()");
-                until(ROOT+"?.querySelector('.chosen') && !"+ROOT+"?.querySelector('.busy-status')");
+                step("create-initial-snapshot");
                 String raw=snapshot(); JSONObject save=new JSONObject(raw);
-                if(save.isNull("pendingResult") || save.getJSONArray("journal").length()!=1) throw new Exception("Result not committed");
+                if(save.getInt("revision")!=0 || !save.isNull("pendingDecision") || !save.isNull("pendingResult") || save.getJSONArray("journal").length()!=0)
+                    throw new Exception("Initial persisted session is not clean");
                 if(!prefs.edit().putString("expected",raw).commit()) throw new Exception("Probe commit failed");
             } else {
+                step("resume-initial-snapshot");
                 String expected=prefs.getString("expected",null);
                 if(expected==null || !expected.equals(snapshot())) throw new Exception("Save changed after process restart");
-                until(ROOT+"?.querySelector('.chosen')");
+                if(!"true".equals(js("Boolean("+ROOT+"?.querySelector('.mh'))"))) throw new Exception("UI not restored after process restart");
             }
             report.putString("stream", "PASS " + phase + ": secure origin, IndexedDB, UI result and exact save verified; startupMs=" + startupMs + "\n");
             finish(Activity.RESULT_OK, report);
