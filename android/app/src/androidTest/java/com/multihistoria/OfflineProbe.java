@@ -217,10 +217,12 @@ public class OfflineProbe extends Instrumentation {
                 String after=snapshot();
                 int afterRevision=new JSONObject(after).getInt("revision");
                 int resumeDelta=afterRevision-hiddenEndRevision;
+                boolean surfacedInterruption="true".equals(js("Boolean("+ROOT+"?.querySelector('.decision-sheet,.offer-sheet,.period-summary,.result-sheet,.p9-epilogue'))"));
                 report.putInt("revisionAfterResume", afterRevision);
                 report.putInt("resumeRevisionDelta", resumeDelta);
+                report.putBoolean("resumeSurfacedInterruption", surfacedInterruption);
                 report.putString("visibilityAfter", new org.json.JSONArray("["+js("document.visibilityState")+"]").getString(0));
-                if(resumeDelta<=0) throw new Exception("Auto-sim did not resume after foreground");
+                if(resumeDelta<=0 && !surfacedInterruption) throw new Exception("Foreground neither resumed auto-sim nor surfaced its pending interruption");
                 if(resumeDelta>7) throw new Exception("Possible duplicate auto-sim loop after resume; revision burst="+resumeDelta);
                 step("lifecycle-pause-if-running");
                 js("(()=>{const r="+ROOT+";const b=[...r.querySelectorAll('button:not(:disabled)')].find(x=>x.textContent.trim()==='Pausar simulación');if(b)b.click();return true;})()");
