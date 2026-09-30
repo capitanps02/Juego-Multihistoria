@@ -30,6 +30,7 @@ copy(path.join(root, 'web', 'cutscene-player.js'), path.join(assetsRoot, 'web', 
 copy(path.join(root, 'web', 'club-catalog-names.js'), path.join(assetsRoot, 'web', 'club-catalog-names.js'));
 copy(path.join(root, 'web', 'club-names.js'), path.join(assetsRoot, 'web', 'club-names.js'));
 copy(path.join(root, 'web', 'indexed-save-store.js'), path.join(assetsRoot, 'web', 'indexed-save-store.js'));
+fs.cpSync(path.join(root, 'web', 'assets', 'cutscenes'), path.join(assetsRoot, 'web', 'assets', 'cutscenes'), { recursive: true });
 
 const assets = JSON.parse(fs.readFileSync(path.join(root, 'web', 'assets.json'), 'utf8'));
 const css = fs.readFileSync(path.join(root, 'web', 'game-ui.css'), 'utf8');
@@ -37,7 +38,8 @@ const local = `import { GameSession } from '../dist/session/game-session.js';
 import { mountGame } from './game-ui.js';
 const assets=${JSON.stringify(assets)};
 const css=${JSON.stringify(css)};
-mountGame({root:document.querySelector('#game').attachShadow({mode:'open'}),GameSession,assets,css,storageKey:'historia-jugador.android.offline.session.v1'});
+const cutsceneUrl=clip=>new URL('./assets/cutscenes/'+clip.file,import.meta.url).href;
+mountGame({root:document.querySelector('#game').attachShadow({mode:'open'}),GameSession,assets,css,cutsceneUrl,storageKey:'historia-jugador.android.offline.session.v1'});
 `;
 write(path.join(assetsRoot, 'web', 'local.js'), local);
 
@@ -74,7 +76,7 @@ const manifest = {
   storage: { type: 'IndexedDB', key: 'historia-jugador.android.offline.session.v1', legacyMigration: 'localStorage', androidRuntimeVerified },
   origin: 'https://appassets.androidplatform.net/assets/',
   networkPolicy: { internetPermission: false, connectSrc: 'none', externalUrls: [] },
-  resources: { images: 'data-uri-in-local.js', fonts: 'system-only' },
+  resources: { images: 'data-uri-in-local.js', fonts: 'system-only', cutscenes: 'web/assets/cutscenes' },
   files,
   generatedAt: '2026-09-15'
 };
