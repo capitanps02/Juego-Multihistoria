@@ -210,7 +210,7 @@ button.player-action-back{min-height:48px;white-space:normal;overflow-wrap:anywh
 .p8-save .save-current-actions{margin-top:18px}
 .p8-save .save-recovery>.muted{max-width:72ch}
 .p8-save .save-support-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-top:18px}
-.p8-save .save-support-card{min-width:0;padding:18px;border:1px solid #ffffff12;border-radius:16px;background:#ffffff04}
+.p8-save .save-support-card{min-width:0;padding:18px;border:1px solid #ffffff12;border-radius:var(--muir-radius-medium);background:#ffffff04}
 .p8-save .save-support-card h3{margin:0 0 7px;font-size:14px}
 .p8-save .save-support-card .muted{min-height:38px}
 .p8-save .save-import input[type=file]{width:100%;min-width:0;margin:0}
