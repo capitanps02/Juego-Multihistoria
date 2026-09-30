@@ -83,6 +83,8 @@ async function mount(target,snapshot){
     window.__pcInstance=instance;instance.initialize();
   });
   await page.waitForFunction(()=>document.querySelector('#multihistoria-game')?.shadowRoot?.querySelector('main')?.getAttribute('aria-busy')==='false',null,{timeout:30000});
+  const expectedSelector={summary:'.period-summary',decision:'.decision-choice-sheet',result:'.result-sheet',offer:'.offer-sheet',epilogue:'.p9-epilogue'}[target];
+  await page.waitForFunction(selector=>Boolean(document.querySelector('#multihistoria-game')?.shadowRoot?.querySelector(selector)),expectedSelector,{timeout:30000});
   const state=await page.evaluate(target=>{
     const root=document.querySelector('#multihistoria-game').shadowRoot;
     return {
