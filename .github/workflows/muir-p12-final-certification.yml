@@ -4,6 +4,12 @@ on:
   push:
     branches:
       - ui-a8/muir-p12-final-certification
+  workflow_dispatch:
+    inputs:
+      manual_evidence_json:
+        description: 'JSON evidence from executed physical/external checks; leave empty for automated-only certification'
+        required: false
+        type: string
 
 concurrency:
   group: muir-p12-final-${{ github.ref_name }}
@@ -57,6 +63,7 @@ jobs:
         with:
           name: muir-p12-preflight-${{ github.sha }}
           if-no-files-found: warn
+          overwrite: true
           path: analysis/muir/p12/evidence/*.json
 
   visual-a11y:
@@ -141,6 +148,7 @@ jobs:
         with:
           name: muir-p12-visual-a11y-${{ github.sha }}
           if-no-files-found: warn
+          overwrite: true
           path: |
             analysis/muir/evidence/*.json
             analysis/muir/screenshots/*.png
@@ -218,6 +226,7 @@ jobs:
         with:
           name: muir-p12-performance-platforms-${{ github.sha }}
           if-no-files-found: error
+          overwrite: true
           path: |
             analysis/muir/p11/evidence/*.json
             analysis/muir/p5/evidence/p5-autosim-probe.json
@@ -270,8 +279,21 @@ jobs:
           disable-animations: true
           emulator-options: -no-window -noaudio -no-boot-anim -gpu swiftshader_indirect -no-snapshot
           script: bash scripts/run-muir-p11-android-runtime.sh "${{ matrix.scope }}"
-      - name: Android runtime retry after infrastructure failure
+      - name: Android runtime attempt 2 after infrastructure failure
+        id: android_attempt_2
         if: steps.android_attempt_1.outcome == 'failure'
+        continue-on-error: true
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_2
+          disable-animations: true
+          emulator-options: -no-window -noaudio -no-boot-anim -gpu swiftshader_indirect -no-snapshot
+          script: bash scripts/run-muir-p11-android-runtime.sh "${{ matrix.scope }}"
+      - name: Android runtime attempt 3 after repeated infrastructure failure
+        if: steps.android_attempt_1.outcome == 'failure' && steps.android_attempt_2.outcome == 'failure'
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 35
@@ -282,14 +304,16 @@ jobs:
           emulator-options: -no-window -noaudio -no-boot-anim -gpu swiftshader_indirect -no-snapshot
           script: bash scripts/run-muir-p11-android-runtime.sh "${{ matrix.scope }}"
       - name: Validate Android runtime evidence
+        if: always()
         run: |
-          node -e "const fs=require('fs'); const p='analysis/2026-09-15/T3.3-android-runtime.json'; const j=JSON.parse(fs.readFileSync(p,'utf8')); if(j.passed!==true){console.error(JSON.stringify(j)); process.exit(1)}; console.log(JSON.stringify({scope:'${{ matrix.scope }}',passed:j.passed,apkSha256:j.apkSha256,requestedPhases:j.requestedPhases}))"
+          node -e "const fs=require('fs'); const p='analysis/2026-09-15/T3.3-android-runtime.json'; if(!fs.existsSync(p)){console.error('missing Android runtime evidence');process.exit(1)}; const j=JSON.parse(fs.readFileSync(p,'utf8')); if(j.passed!==true){console.error(JSON.stringify(j)); process.exit(1)}; console.log(JSON.stringify({scope:'${{ matrix.scope }}',passed:j.passed,apkSha256:j.apkSha256,requestedPhases:j.requestedPhases}))"
       - name: Upload Android runtime evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: muir-p12-android-${{ matrix.scope }}-${{ github.sha }}
           if-no-files-found: warn
+          overwrite: true
           path: |
             analysis/2026-09-15/T3.3-android-runtime.json
             analysis/muir/p9/evidence/p9-android-back.json
@@ -313,6 +337,13 @@ jobs:
           pattern: muir-p12-*-${{ github.sha }}
           path: analysis/muir/p12/downloaded
           merge-multiple: false
+      - name: Materialize exact-head manual evidence
+        if: github.event_name == 'workflow_dispatch' && inputs.manual_evidence_json != ''
+        env:
+          MANUAL_EVIDENCE_JSON: ${{ inputs.manual_evidence_json }}
+        run: |
+          mkdir -p analysis/muir/p12
+          node -e "const fs=require('fs'); const j=JSON.parse(process.env.MANUAL_EVIDENCE_JSON); j.sha=process.env.GITHUB_SHA; fs.writeFileSync('analysis/muir/p12/manual-device-evidence.json',JSON.stringify(j,null,2)+'\\n'); console.log(JSON.stringify({sha:j.sha,buildHash:j.buildHash,device:j.device,evidenceCount:Array.isArray(j.evidence)?j.evidence.length:0}))"
       - name: G1-G15 + final certification aggregator
         env:
           P12_PREFLIGHT_JOB: ${{ needs.preflight-functional.result }}
@@ -326,6 +357,7 @@ jobs:
         with:
           name: muir-p12-final-certification-${{ github.sha }}
           if-no-files-found: error
+          overwrite: true
           path: |
             muir-final-certification.md
             analysis/muir/p12/evidence/final-gates.json

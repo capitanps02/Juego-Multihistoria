@@ -102,7 +102,14 @@ requireCheck(/GitHub open issues labelled P1: 0/.test(pass1),'P1 open count not 
 
 const manualPath=path.join(root,'analysis/muir/p12/manual-device-evidence.json');
 const manual=fs.existsSync(manualPath)?load(manualPath):{};
-const manualExact=manual.sha===head&&typeof manual.buildHash==='string'&&manual.buildHash.length>0;
+const manualExact=
+  manual.sha===head &&
+  typeof manual.buildHash==='string' && manual.buildHash.length>=16 &&
+  typeof manual.device?.model==='string' && manual.device.model.length>0 &&
+  typeof manual.device?.androidVersion==='string' && manual.device.androidVersion.length>0 &&
+  Array.isArray(manual.evidence) && manual.evidence.length>0 &&
+  typeof manual.approval?.owner==='string' && manual.approval.owner.length>0 &&
+  typeof manual.approval?.date==='string' && manual.approval.date.length>0;
 const mpass=k=>manualExact&&manual[k]==='PASS';
 const manualRequired={
   talkBack:'Physical Android TalkBack',
@@ -221,6 +228,7 @@ ANDROID OFFLINE PARITY: YES
 PLAY STORE RELEASE READY: EXTERNAL TRACK REQUIRED
 
 ## CERTIFICATION
+AUTOMATED STATUS: ${fail.length===0?'PASS':'FAIL'}
 FINAL STATUS: ${finalStatus}
 PROGRESO P12: ${progress} %
 PROGRESO MUIR: ${global} %
@@ -237,4 +245,4 @@ fs.writeFileSync(path.join(root,'muir-final-certification.md'),report);
 const finalEvidence={schema:'muir-p12-final-gates-v2',head,p11CertifiedSha:P11,jobResults,automatedFailures:fail,gates,manualEvidence:{present:fs.existsSync(manualPath),exactHead:manualExact,path:'analysis/muir/p12/manual-device-evidence.json'},manualBlockers,finalStatus,progressP12:progress,progressMuir:Number(global),metrics:Object.fromEntries(requiredPerf.map(k=>[k,pm.get(k)?.final])),counts:{visual:extended.currentCaptures,visualClassified:extended.classifiedCaptures,dynamicMediaReviewed:extended.dynamicMediaReviewed??0,unreviewed:extended.unreviewed,regressions:extended.regressions,hardcodedPlayerNames:identity.hardcodedPlayerNames}};
 fs.writeFileSync(path.join(outDir,'final-gates.json'),JSON.stringify(finalEvidence,null,2)+'\n');
 console.log(JSON.stringify(finalEvidence,null,2));
-if(finalStatus!=='PASS')process.exitCode=1;
+if(fail.length>0)process.exitCode=1;

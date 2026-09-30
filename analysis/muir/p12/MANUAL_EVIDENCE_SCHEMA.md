@@ -32,3 +32,17 @@ Required shape:
 ```
 
 Browser/emulator evidence must never be relabelled as physical TalkBack, cutout, navigation-mode or native-picker evidence.
+
+
+## Exact-head workflow
+
+Manual evidence must **not** be committed after testing because that would change the SHA it is meant to certify.
+
+After executing the physical/external checks:
+1. Open the **MUIR P12 Final Certification** workflow.
+2. Use **Run workflow** on the exact final branch/SHA.
+3. Paste the evidence object in the `manual_evidence_json` input.
+4. The workflow overwrites its `sha` field at runtime with `GITHUB_SHA`.
+5. The final aggregator accepts it only when build hash, device metadata, evidence references and approval metadata are present.
+
+This keeps the product and certification HEAD unchanged while allowing G5/G13/G15 to close with real external evidence.
