@@ -183,12 +183,15 @@ jobs:
           npm install --no-save playwright@1.55.0
           npx playwright install --with-deps chromium
       - run: npm run build
-      - name: Capture final performance
+      - name: Capture final performance x3
         run: |
-          node scripts/capture-muir-browser.mjs
           mkdir -p analysis/muir/p11/evidence
-          cp analysis/muir/evidence/browser-baseline.json analysis/muir/p11/evidence/current-browser-baseline.json
-      - name: Reproduce P0 with same harness
+          for i in 1 2 3; do
+            echo "P12 exact-head performance capture current #$i"
+            node scripts/capture-muir-browser.mjs
+            cp analysis/muir/evidence/browser-baseline.json "analysis/muir/p11/evidence/current-browser-baseline-$i.json"
+          done
+      - name: Reproduce P0 with same harness x3
         run: |
           git worktree add --detach /tmp/muir-p0-performance c5b6d0d6d18802a62d174bf450c95ebf1d0403c0
           ln -s "$GITHUB_WORKSPACE/node_modules" /tmp/muir-p0-performance/node_modules
@@ -196,12 +199,26 @@ jobs:
           cp analysis/muir/ui-fixtures/browser-runner.mjs /tmp/muir-p0-performance/analysis/muir/ui-fixtures/browser-runner.mjs
           cp scripts/capture-muir-browser.mjs /tmp/muir-p0-performance/scripts/capture-muir-browser.mjs
           (cd /tmp/muir-p0-performance && npm run build)
-          set +e
-          (cd /tmp/muir-p0-performance && node scripts/capture-muir-browser.mjs)
-          set -e
-          cp /tmp/muir-p0-performance/analysis/muir/evidence/browser-baseline.json analysis/muir/p11/evidence/p0-same-harness-browser-baseline.json
-      - name: Compare P0 and final
-        run: node scripts/compare-muir-p11-performance.mjs analysis/muir/p11/evidence/p0-same-harness-browser-baseline.json analysis/muir/p11/evidence/current-browser-baseline.json analysis/muir/p11/evidence/p11-performance-compare.json
+          for i in 1 2 3; do
+            echo "P12 same-harness P0 performance capture #$i"
+            set +e
+            (cd /tmp/muir-p0-performance && node scripts/capture-muir-browser.mjs)
+            P0_CAPTURE_EXIT=$?
+            set -e
+            cp /tmp/muir-p0-performance/analysis/muir/evidence/browser-baseline.json "analysis/muir/p11/evidence/p0-same-harness-browser-baseline-$i.json"
+            node - "$i" <<'NODE'
+            const fs=require('fs');
+            const i=process.argv[2];
+            const p='analysis/muir/p11/evidence/p0-same-harness-browser-baseline-'+i+'.json';
+            const r=JSON.parse(fs.readFileSync(p,'utf8'));
+            console.log(JSON.stringify({run:Number(i),captured:r.captured,errors:r.errors?.length??0,responseSamples:r.aggregate?.responseSampleCount??0}));
+            if((r.captured??0)<50)process.exit(2);
+            if((r.aggregate?.responseSampleCount??0)<20)process.exit(3);
+            NODE
+            echo "P0 capture #$i exit was $P0_CAPTURE_EXIT; comparator uses successful common targets and enforces coverage."
+          done
+      - name: Stable compare P0 and final
+        run: node scripts/compare-muir-p12-performance-stable.mjs
       - name: Dedicated auto-sim performance
         run: node analysis/muir/p5/browser-autosim-probe.mjs
       - name: Build PlayCanvas and metrics
